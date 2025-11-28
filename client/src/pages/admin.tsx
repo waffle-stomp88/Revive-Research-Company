@@ -75,6 +75,8 @@ const productFormSchema = insertProductSchema.extend({
   price: z.string().min(1, "Price is required"),
   originalPrice: z.string().optional(),
   benefits: z.string().optional(),
+  stockAmount: z.coerce.number().int().optional(),
+  dosageOptions: z.string().optional(),
 });
 
 type ProductFormValues = z.infer<typeof productFormSchema>;
@@ -108,6 +110,8 @@ function ProductsTab() {
       benefits: "",
       usage: "",
       imageUrl: "",
+      stockAmount: 0,
+      dosageOptions: "",
     },
   });
 
@@ -173,6 +177,8 @@ function ProductsTab() {
         benefits: product.benefits?.join(", ") || "",
         usage: product.usage || "",
         imageUrl: product.imageUrl || "",
+        stockAmount: product.stockAmount || 0,
+        dosageOptions: product.dosageOptions?.join(", ") || "",
       });
     } else {
       setEditingProduct(null);
@@ -185,6 +191,7 @@ function ProductsTab() {
     const data = {
       ...values,
       benefits: values.benefits ? values.benefits.split(",").map((b) => b.trim()).filter(Boolean) : [],
+      dosageOptions: values.dosageOptions ? values.dosageOptions.split(",").map((d) => d.trim()).filter(Boolean) : [],
       originalPrice: values.originalPrice || null,
       imageUrl: values.imageUrl || null,
     };
@@ -287,6 +294,34 @@ function ProductsTab() {
                         <FormLabel>Original Price (optional)</FormLabel>
                         <FormControl>
                           <Input {...field} type="text" data-testid="input-product-original-price" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="stockAmount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Stock Amount (units)</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="number" data-testid="input-product-stock" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="dosageOptions"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Dosage Options (comma-separated)</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="10mg, 12mg, 15mg, 20mg" data-testid="input-product-dosages" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

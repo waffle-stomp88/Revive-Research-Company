@@ -9,6 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import {
@@ -44,6 +51,7 @@ export default function ProductDetail() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [quantity, setQuantity] = useState(1);
+  const [selectedDosage, setSelectedDosage] = useState<string>("");
   const [purchaseType, setPurchaseType] = useState<PurchaseType>("one-time");
   const [subscriptionInterval, setSubscriptionInterval] = useState<SubscriptionInterval>("monthly");
 
@@ -303,30 +311,56 @@ export default function ProductDetail() {
                 </motion.div>
               )}
 
-              <div className="flex items-center gap-4">
-                <Label className="text-sm font-medium">Quantity:</Label>
-                <div className="flex items-center border border-border rounded-md">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleQuantityChange(-1)}
-                    disabled={quantity <= 1}
-                    data-testid="button-quantity-minus"
-                  >
-                    <Minus className="h-4 w-4" />
-                  </Button>
-                  <span className="w-12 text-center font-medium" data-testid="text-quantity">
-                    {quantity}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleQuantityChange(1)}
-                    disabled={quantity >= 10}
-                    data-testid="button-quantity-plus"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
+              {product.dosageOptions && product.dosageOptions.length > 0 && (
+                <div>
+                  <Label className="text-sm font-medium mb-3 block">Dosage:</Label>
+                  <Select value={selectedDosage} onValueChange={setSelectedDosage}>
+                    <SelectTrigger data-testid="select-dosage">
+                      <SelectValue placeholder="Select dosage amount" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {product.dosageOptions.map((dosage) => (
+                        <SelectItem key={dosage} value={dosage}>
+                          {dosage}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              <div className="space-y-3">
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">In Stock:</Label>
+                  <p className="text-lg font-semibold mt-1" data-testid="text-stock-amount">
+                    {product.stockAmount || 0} units available
+                  </p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Label className="text-sm font-medium">Quantity:</Label>
+                  <div className="flex items-center border border-border rounded-md">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleQuantityChange(-1)}
+                      disabled={quantity <= 1}
+                      data-testid="button-quantity-minus"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <span className="w-12 text-center font-medium" data-testid="text-quantity">
+                      {quantity}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleQuantityChange(1)}
+                      disabled={quantity >= 10}
+                      data-testid="button-quantity-plus"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>

@@ -39,6 +39,8 @@ export const products = pgTable("products", {
   originalPrice: decimal("original_price", { precision: 10, scale: 2 }),
   category: text("category").notNull(),
   inStock: boolean("in_stock").default(true),
+  stockAmount: integer("stock_amount").default(0),
+  dosageOptions: text("dosage_options").array(),
   featured: boolean("featured").default(false),
   benefits: text("benefits").array(),
   usage: text("usage"),
