@@ -35,16 +35,16 @@ import {
   Lock,
   FlaskConical,
   Star,
-  Rocket,
-  Heart,
+  Terminal,
   DollarSign,
   Gift,
+  CircuitBoard,
 } from "lucide-react";
 
 const HERO_CONTENT = {
-  eyebrow: "PARTNER PROGRAM",
-  headline: "Grow With Us",
-  subheadline: "Join an exclusive network of researchers, educators, and wellness professionals. Earn premium commissions while representing the gold standard in peptide research compounds.",
+  eyebrow: "// PARTNER_PROTOCOL",
+  headline: "SYNC WITH US",
+  subheadline: "Join an elite network of researchers, educators, and wellness professionals. Earn premium commissions while representing the gold standard in peptide research compounds.",
 };
 
 const VALUE_PROPS = [
@@ -52,25 +52,22 @@ const VALUE_PROPS = [
     icon: Crown,
     title: "Premium Products",
     description: "Lab-verified research compounds trusted by serious researchers worldwide. Quality you can stand behind.",
-    color: "#E7FB10",
   },
   {
     icon: Shield,
     title: "Your Reputation Matters",
     description: "We protect your credibility with transparent testing, verified purity, and ethical business practices.",
-    color: "#21d8ff",
   },
   {
     icon: TrendingUp,
     title: "Built for Success",
     description: "Marketing assets, dedicated support, and competitive commissions. Everything you need to thrive.",
-    color: "#9d4edd",
   },
 ];
 
 const IDEAL_PARTNER = {
-  heading: "Who We're Looking For",
-  subheading: "We partner with passionate individuals who share our commitment to quality and education.",
+  heading: "TARGET_PROFILE",
+  subheading: "We partner with driven individuals who share our commitment to quality and education.",
   qualifications: [
     {
       icon: FlaskConical,
@@ -91,7 +88,7 @@ const IDEAL_PARTNER = {
 };
 
 const NOT_FOR = {
-  heading: "Please Note",
+  heading: "ACCESS_DENIED",
   items: [
     "Coupon sites focused only on discounts",
     "Anyone making unapproved health claims",
@@ -101,45 +98,41 @@ const NOT_FOR = {
 };
 
 const PROGRAM_BENEFITS = {
-  heading: "Partner Benefits",
+  heading: "PARTNER_PERKS",
   benefits: [
     {
       icon: DollarSign,
       title: "20% Commission",
       description: "On every qualified sale. No caps.",
-      color: "#E7FB10",
     },
     {
       icon: Zap,
       title: "Priority Support",
       description: "Dedicated partner success team.",
-      color: "#21d8ff",
     },
     {
       icon: Gift,
       title: "Marketing Assets",
       description: "Professional content library.",
-      color: "#9d4edd",
     },
     {
       icon: Lock,
       title: "Exclusive Access",
       description: "Early products & partner promos.",
-      color: "#E7FB10",
     },
   ],
   stats: [
-    { value: "20%", label: "Commission", color: "#E7FB10" },
-    { value: "30", label: "Day Cookie", color: "#21d8ff" },
-    { value: "$100", label: "Min Payout", color: "#9d4edd" },
-    { value: "Monthly", label: "Payouts", color: "#E7FB10" },
+    { value: "20%", label: "Commission" },
+    { value: "30", label: "Day Cookie" },
+    { value: "$100", label: "Min Payout" },
+    { value: "Monthly", label: "Payouts" },
   ],
 };
 
 const APPLICATION_CONTENT = {
-  heading: "Ready to Partner?",
-  subheading: "Tell us about yourself. We review every application personally.",
-  note: "Applications reviewed within 48-72 hours. We'll reach out if there's a fit.",
+  heading: "INITIATE_CONNECTION",
+  subheading: "Submit your credentials. We review every application personally.",
+  note: "Applications processed within 48-72 hours. We'll establish contact if there's a match.",
 };
 
 const affiliateFormSchema = z.object({
@@ -156,22 +149,59 @@ const affiliateFormSchema = z.object({
 
 type AffiliateFormData = z.infer<typeof affiliateFormSchema>;
 
-const FloatingParticle = ({ delay, duration, x, y, size }: { delay: number; duration: number; x: string; y: string; size: number }) => (
+const GridBackground = () => (
+  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div 
+      className="absolute inset-0 opacity-[0.03]"
+      style={{
+        backgroundImage: `
+          linear-gradient(#21d8ff 1px, transparent 1px),
+          linear-gradient(90deg, #21d8ff 1px, transparent 1px)
+        `,
+        backgroundSize: "50px 50px",
+      }}
+    />
+    <div 
+      className="absolute inset-0 opacity-[0.02]"
+      style={{
+        backgroundImage: `
+          linear-gradient(#21d8ff 1px, transparent 1px),
+          linear-gradient(90deg, #21d8ff 1px, transparent 1px)
+        `,
+        backgroundSize: "10px 10px",
+      }}
+    />
+  </div>
+);
+
+const ScanLine = () => (
   <motion.div
-    className="absolute rounded-full bg-gradient-to-r from-[#E7FB10]/20 to-[#21d8ff]/20"
-    style={{ left: x, top: y, width: size, height: size }}
+    className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#21d8ff]/30 to-transparent pointer-events-none"
     animate={{
-      y: [0, -30, 0],
-      opacity: [0.3, 0.7, 0.3],
-      scale: [1, 1.2, 1],
+      top: ["0%", "100%"],
     }}
     transition={{
-      duration,
-      delay,
+      duration: 8,
       repeat: Infinity,
-      ease: "easeInOut",
+      ease: "linear",
     }}
   />
+);
+
+const GlitchText = ({ children, className }: { children: string; className?: string }) => (
+  <motion.span
+    className={`relative inline-block ${className}`}
+    whileHover={{
+      textShadow: [
+        "0 0 0 transparent",
+        "-2px 0 #21d8ff, 2px 0 #E7FB10",
+        "0 0 0 transparent",
+      ],
+    }}
+    transition={{ duration: 0.2 }}
+  >
+    {children}
+  </motion.span>
 );
 
 export default function AffiliatePage() {
@@ -241,33 +271,26 @@ export default function AffiliatePage() {
   };
 
   return (
-    <main className="min-h-screen overflow-hidden">
+    <main className="min-h-screen overflow-hidden bg-[#0a0a0f]">
       {/* Hero Section */}
       <section className="relative pt-32 pb-24 md:pt-40 md:pb-32 overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#9d4edd]/5 via-background to-background" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(157,78,221,0.15),transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(33,216,255,0.1),transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(231,251,16,0.08),transparent_50%)]" />
+        <GridBackground />
+        <ScanLine />
         
-        {/* Floating Particles */}
-        <FloatingParticle delay={0} duration={4} x="10%" y="20%" size={8} />
-        <FloatingParticle delay={1} duration={5} x="85%" y="30%" size={6} />
-        <FloatingParticle delay={2} duration={4.5} x="70%" y="60%" size={10} />
-        <FloatingParticle delay={0.5} duration={5.5} x="20%" y="70%" size={7} />
-        <FloatingParticle delay={1.5} duration={4} x="50%" y="15%" size={5} />
-        <FloatingParticle delay={2.5} duration={5} x="30%" y="50%" size={9} />
+        {/* Glow effects */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#21d8ff]/5 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-[#21d8ff]/3 rounded-full blur-[80px] pointer-events-none" />
 
         <div className="container max-w-4xl mx-auto px-4 text-center relative z-10">
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
             <Badge 
-              className="mb-6 bg-gradient-to-r from-[#9d4edd] to-[#21d8ff] text-white border-0 px-4 py-1.5 text-sm"
+              className="mb-6 bg-transparent border border-[#21d8ff]/50 text-[#21d8ff] font-mono text-xs tracking-wider"
             >
-              <Rocket className="h-3.5 w-3.5 mr-2 animate-pulse" />
+              <Terminal className="h-3 w-3 mr-2" />
               {HERO_CONTENT.eyebrow}
             </Badge>
           </motion.div>
@@ -279,16 +302,16 @@ export default function AffiliatePage() {
             className="font-display text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6"
             data-testid="text-affiliate-headline"
           >
-            <span className="bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#9d4edd] bg-clip-text text-transparent">
+            <GlitchText className="text-[#21d8ff] drop-shadow-[0_0_30px_rgba(33,216,255,0.5)]">
               {HERO_CONTENT.headline}
-            </span>
+            </GlitchText>
           </motion.h1>
           
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
+            className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10"
             data-testid="text-affiliate-subheadline"
           >
             {HERO_CONTENT.subheadline}
@@ -303,53 +326,51 @@ export default function AffiliatePage() {
             <Button
               size="lg"
               onClick={() => scrollToSection("apply")}
-              className="gap-2 bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] text-black font-semibold hover:opacity-90 shadow-[0_0_30px_rgba(231,251,16,0.3)] hover:shadow-[0_0_40px_rgba(231,251,16,0.5)] transition-all duration-300"
+              className="gap-2 bg-[#21d8ff] text-black font-bold hover:bg-[#21d8ff]/90 shadow-[0_0_30px_rgba(33,216,255,0.4)] hover:shadow-[0_0_50px_rgba(33,216,255,0.6)] transition-all duration-300 border-0"
               data-testid="button-apply-now"
             >
-              <Heart className="h-4 w-4" />
-              Join the Team
+              <CircuitBoard className="h-4 w-4" />
+              INITIALIZE
               <ArrowRight className="h-4 w-4" />
             </Button>
             <Button
               size="lg"
               variant="outline"
               onClick={() => scrollToSection("benefits")}
-              className="gap-2 border-[#9d4edd]/50 hover:border-[#9d4edd] hover:bg-[#9d4edd]/10"
+              className="gap-2 border-[#21d8ff]/30 text-[#21d8ff] hover:bg-[#21d8ff]/10 hover:border-[#21d8ff]/50 bg-transparent"
             >
               <Sparkles className="h-4 w-4" />
-              See Benefits
+              VIEW_PERKS
             </Button>
           </motion.div>
         </div>
 
-        {/* Animated gradient line */}
+        {/* Bottom border glow */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-[#21d8ff]/20" />
         <motion.div 
           className="absolute bottom-0 left-0 right-0 h-px"
-          style={{
-            background: "linear-gradient(90deg, transparent, #E7FB10, #21d8ff, #9d4edd, transparent)",
-          }}
+          style={{ background: "linear-gradient(90deg, transparent, #21d8ff, transparent)" }}
           animate={{ opacity: [0.3, 0.8, 0.3] }}
           transition={{ duration: 3, repeat: Infinity }}
         />
       </section>
 
       {/* Value Props Section */}
-      <section className="py-20 md:py-28 relative">
-        <div className="container max-w-6xl mx-auto px-4">
+      <section className="py-20 md:py-28 relative bg-[#0d0d12]">
+        <GridBackground />
+        
+        <div className="container max-w-6xl mx-auto px-4 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <Badge className="mb-4 bg-[#21d8ff]/10 text-[#21d8ff] border-[#21d8ff]/30">
-              <Star className="h-3 w-3 mr-2" />
-              WHY PARTNER WITH US
-            </Badge>
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-              Built for <span className="text-[#21d8ff]">Your Success</span>
+            <p className="text-[#21d8ff] font-mono text-sm mb-4 tracking-widest">// WHY_PARTNER</p>
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 text-white">
+              BUILT FOR <span className="text-[#21d8ff]">SUCCESS</span>
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-gray-500 max-w-2xl mx-auto">
               Our products and reputation speak for themselves. As a partner, you benefit from everything we've built.
             </p>
           </motion.div>
@@ -367,23 +388,17 @@ export default function AffiliatePage() {
                 variants={itemVariants}
               >
                 <Card 
-                  className="p-6 h-full border-2 transition-all duration-500 hover:scale-[1.02] group"
-                  style={{ 
-                    borderColor: `${item.color}30`,
-                    background: `linear-gradient(135deg, ${item.color}05, transparent)`,
-                  }}
+                  className="p-6 h-full bg-[#12121a] border-[#21d8ff]/10 hover:border-[#21d8ff]/40 transition-all duration-500 group"
                   data-testid={`card-value-${index + 1}`}
                 >
                   <motion.div 
-                    className="w-14 h-14 rounded-xl flex items-center justify-center mb-5"
-                    style={{ backgroundColor: `${item.color}15` }}
-                    whileHover={{ rotate: [0, -10, 10, 0], scale: 1.1 }}
-                    transition={{ duration: 0.5 }}
+                    className="w-14 h-14 rounded-lg bg-[#21d8ff]/5 border border-[#21d8ff]/20 flex items-center justify-center mb-5 group-hover:shadow-[0_0_20px_rgba(33,216,255,0.2)] transition-all duration-300"
+                    whileHover={{ scale: 1.05 }}
                   >
-                    <item.icon className="h-7 w-7" style={{ color: item.color }} />
+                    <item.icon className="h-7 w-7 text-[#21d8ff]" />
                   </motion.div>
-                  <h3 className="font-display text-xl font-semibold mb-3">{item.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed">{item.description}</p>
+                  <h3 className="font-display text-xl font-semibold mb-3 text-white">{item.title}</h3>
+                  <p className="text-gray-500 leading-relaxed">{item.description}</p>
                 </Card>
               </motion.div>
             ))}
@@ -392,27 +407,11 @@ export default function AffiliatePage() {
       </section>
 
       {/* Stats Banner */}
-      <section id="benefits" className="py-12 relative overflow-hidden">
-        <div 
-          className="absolute inset-0"
-          style={{
-            background: "linear-gradient(135deg, rgba(157,78,221,0.1) 0%, rgba(33,216,255,0.1) 50%, rgba(231,251,16,0.1) 100%)",
-          }}
-        />
-        <motion.div
-          className="absolute inset-0 opacity-30"
-          animate={{
-            backgroundPosition: ["0% 0%", "100% 100%"],
-          }}
-          transition={{ duration: 20, repeat: Infinity, repeatType: "reverse" }}
-          style={{
-            backgroundImage: "linear-gradient(45deg, transparent 40%, rgba(231,251,16,0.1) 50%, transparent 60%)",
-            backgroundSize: "200% 200%",
-          }}
-        />
+      <section id="benefits" className="py-16 relative overflow-hidden bg-[#0a0a0f] border-y border-[#21d8ff]/10">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#21d8ff]/5 via-transparent to-[#21d8ff]/5" />
         
         <div className="container max-w-5xl mx-auto px-4 relative z-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {PROGRAM_BENEFITS.stats.map((stat, index) => (
               <motion.div
                 key={stat.label}
@@ -423,13 +422,12 @@ export default function AffiliatePage() {
                 className="text-center"
               >
                 <motion.p 
-                  className="font-display text-4xl md:text-5xl font-bold mb-2"
-                  style={{ color: stat.color }}
-                  whileHover={{ scale: 1.1 }}
+                  className="font-display text-4xl md:text-5xl font-bold mb-2 text-[#21d8ff] drop-shadow-[0_0_10px_rgba(33,216,255,0.3)]"
+                  whileHover={{ scale: 1.05 }}
                 >
                   {stat.value}
                 </motion.p>
-                <p className="text-sm text-muted-foreground uppercase tracking-wider">{stat.label}</p>
+                <p className="text-xs text-gray-600 uppercase tracking-widest font-mono">{stat.label}</p>
               </motion.div>
             ))}
           </div>
@@ -437,18 +435,20 @@ export default function AffiliatePage() {
       </section>
 
       {/* Benefits Grid */}
-      <section className="py-20 md:py-28">
-        <div className="container max-w-6xl mx-auto px-4">
+      <section className="py-20 md:py-28 relative bg-[#0d0d12]">
+        <GridBackground />
+        
+        <div className="container max-w-6xl mx-auto px-4 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-              {PROGRAM_BENEFITS.heading}
+            <p className="text-[#21d8ff] font-mono text-sm mb-4 tracking-widest">// {PROGRAM_BENEFITS.heading}</p>
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 text-white">
+              What You Get
             </h2>
-            <p className="text-muted-foreground">Everything you need to succeed as a partner</p>
           </motion.div>
 
           <motion.div 
@@ -464,27 +464,17 @@ export default function AffiliatePage() {
                 variants={itemVariants}
               >
                 <Card 
-                  className="p-6 h-full text-center group cursor-pointer transition-all duration-300"
-                  style={{
-                    boxShadow: `0 0 0 1px ${item.color}20`,
-                  }}
+                  className="p-6 h-full text-center bg-[#12121a] border-[#21d8ff]/10 hover:border-[#21d8ff]/30 transition-all duration-300 group"
                   data-testid={`card-benefit-${index + 1}`}
                 >
                   <motion.div 
-                    className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 transition-all duration-300"
-                    style={{ 
-                      backgroundColor: `${item.color}10`,
-                      boxShadow: `0 0 20px ${item.color}20`,
-                    }}
-                    whileHover={{ 
-                      scale: 1.1, 
-                      boxShadow: `0 0 30px ${item.color}40`,
-                    }}
+                    className="w-16 h-16 rounded-lg bg-[#21d8ff]/5 border border-[#21d8ff]/20 flex items-center justify-center mx-auto mb-4 group-hover:shadow-[0_0_25px_rgba(33,216,255,0.2)] transition-all duration-300"
+                    whileHover={{ scale: 1.1 }}
                   >
-                    <item.icon className="h-8 w-8" style={{ color: item.color }} />
+                    <item.icon className="h-8 w-8 text-[#21d8ff]" />
                   </motion.div>
-                  <h3 className="font-display text-lg font-semibold mb-2">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground">{item.description}</p>
+                  <h3 className="font-display text-lg font-semibold mb-2 text-white">{item.title}</h3>
+                  <p className="text-sm text-gray-500">{item.description}</p>
                 </Card>
               </motion.div>
             ))}
@@ -493,8 +483,8 @@ export default function AffiliatePage() {
       </section>
 
       {/* Who We're Looking For */}
-      <section className="py-20 md:py-28 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-muted/50 to-background" />
+      <section className="py-20 md:py-28 relative overflow-hidden bg-[#0a0a0f]">
+        <GridBackground />
         
         <div className="container max-w-6xl mx-auto px-4 relative z-10">
           <motion.div
@@ -503,14 +493,11 @@ export default function AffiliatePage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <Badge className="mb-4 bg-[#E7FB10]/10 text-[#E7FB10] border-[#E7FB10]/30">
-              <Users className="h-3 w-3 mr-2" />
-              IDEAL PARTNERS
-            </Badge>
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-              {IDEAL_PARTNER.heading}
+            <p className="text-[#21d8ff] font-mono text-sm mb-4 tracking-widest">// {IDEAL_PARTNER.heading}</p>
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 text-white">
+              Ideal Partners
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-gray-500 max-w-2xl mx-auto">
               {IDEAL_PARTNER.subheading}
             </p>
           </motion.div>
@@ -528,20 +515,19 @@ export default function AffiliatePage() {
                 variants={itemVariants}
               >
                 <Card 
-                  className="p-6 h-full border-[#E7FB10]/30 bg-gradient-to-br from-[#E7FB10]/5 to-transparent hover:shadow-[0_0_30px_rgba(231,251,16,0.1)] transition-all duration-300" 
+                  className="p-6 h-full bg-[#12121a] border-[#21d8ff]/20 hover:border-[#21d8ff]/40 hover:shadow-[0_0_30px_rgba(33,216,255,0.1)] transition-all duration-300" 
                   data-testid={`card-qual-${index + 1}`}
                 >
                   <div className="flex items-start gap-4">
                     <motion.div 
-                      className="w-12 h-12 rounded-xl bg-[#E7FB10]/10 flex items-center justify-center flex-shrink-0"
-                      whileHover={{ rotate: 360 }}
-                      transition={{ duration: 0.5 }}
+                      className="w-12 h-12 rounded-lg bg-[#21d8ff]/10 border border-[#21d8ff]/30 flex items-center justify-center flex-shrink-0"
+                      whileHover={{ rotate: 5 }}
                     >
-                      <item.icon className="h-6 w-6 text-[#E7FB10]" />
+                      <item.icon className="h-6 w-6 text-[#21d8ff]" />
                     </motion.div>
                     <div>
-                      <h3 className="font-display text-lg font-semibold mb-2">{item.title}</h3>
-                      <p className="text-sm text-muted-foreground">{item.description}</p>
+                      <h3 className="font-display text-lg font-semibold mb-2 text-white">{item.title}</h3>
+                      <p className="text-sm text-gray-500">{item.description}</p>
                     </div>
                   </div>
                 </Card>
@@ -554,16 +540,16 @@ export default function AffiliatePage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <Card className="p-6 md:p-8 border-muted-foreground/20 bg-muted/30" data-testid="card-not-for">
-              <h3 className="font-display text-lg font-semibold mb-4 flex items-center gap-3 text-muted-foreground">
-                <XCircle className="h-5 w-5" />
+            <Card className="p-6 md:p-8 bg-[#12121a] border-red-500/20" data-testid="card-not-for">
+              <h3 className="font-mono text-sm font-semibold mb-4 flex items-center gap-3 text-red-400">
+                <XCircle className="h-4 w-4" />
                 {NOT_FOR.heading}
               </h3>
               <div className="grid md:grid-cols-2 gap-3">
                 {NOT_FOR.items.map((item, index) => (
                   <div key={index} className="flex items-start gap-3">
-                    <XCircle className="h-4 w-4 text-muted-foreground/50 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-muted-foreground">{item}</span>
+                    <XCircle className="h-4 w-4 text-red-500/50 mt-0.5 flex-shrink-0" />
+                    <span className="text-sm text-gray-500">{item}</span>
                   </div>
                 ))}
               </div>
@@ -573,9 +559,12 @@ export default function AffiliatePage() {
       </section>
 
       {/* Application Form */}
-      <section id="apply" className="py-20 md:py-28 relative overflow-hidden">
-        {/* Background effects */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(157,78,221,0.08),transparent_70%)]" />
+      <section id="apply" className="py-20 md:py-28 relative overflow-hidden bg-[#0d0d12]">
+        <GridBackground />
+        
+        {/* Corner decorations */}
+        <div className="absolute top-0 left-0 w-32 h-32 border-l-2 border-t-2 border-[#21d8ff]/20 pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-32 h-32 border-r-2 border-b-2 border-[#21d8ff]/20 pointer-events-none" />
         
         <div className="container max-w-2xl mx-auto px-4 relative z-10">
           <motion.div
@@ -587,24 +576,24 @@ export default function AffiliatePage() {
             <motion.div
               animate={{ 
                 boxShadow: [
-                  "0 0 20px rgba(157,78,221,0.3)",
-                  "0 0 40px rgba(33,216,255,0.3)",
-                  "0 0 20px rgba(231,251,16,0.3)",
-                  "0 0 20px rgba(157,78,221,0.3)",
+                  "0 0 20px rgba(33,216,255,0.2)",
+                  "0 0 40px rgba(33,216,255,0.4)",
+                  "0 0 20px rgba(33,216,255,0.2)",
                 ],
               }}
-              transition={{ duration: 4, repeat: Infinity }}
-              className="inline-block rounded-full mb-6"
+              transition={{ duration: 2, repeat: Infinity }}
+              className="inline-block rounded mb-6"
             >
-              <Badge className="bg-gradient-to-r from-[#9d4edd] via-[#21d8ff] to-[#E7FB10] text-white border-0 px-4 py-1.5">
-                <Star className="h-3.5 w-3.5 mr-2" />
-                LIMITED SPOTS AVAILABLE
+              <Badge className="bg-[#21d8ff]/10 text-[#21d8ff] border border-[#21d8ff]/30 font-mono text-xs">
+                <Star className="h-3 w-3 mr-2" />
+                LIMITED_SLOTS
               </Badge>
             </motion.div>
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-              {APPLICATION_CONTENT.heading}
+            <p className="text-[#21d8ff] font-mono text-sm mb-4 tracking-widest">// {APPLICATION_CONTENT.heading}</p>
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 text-white">
+              Ready to Connect?
             </h2>
-            <p className="text-muted-foreground">
+            <p className="text-gray-500">
               {APPLICATION_CONTENT.subheading}
             </p>
           </motion.div>
@@ -616,10 +605,7 @@ export default function AffiliatePage() {
             transition={{ delay: 0.1 }}
           >
             <Card 
-              className="p-6 md:p-8 border-2 border-[#9d4edd]/30 bg-gradient-to-br from-[#9d4edd]/5 via-transparent to-[#21d8ff]/5"
-              style={{
-                boxShadow: "0 0 60px rgba(157,78,221,0.1)",
-              }}
+              className="p-6 md:p-8 bg-[#12121a] border-[#21d8ff]/20 shadow-[0_0_60px_rgba(33,216,255,0.05)]"
             >
               {submitted ? (
                 <motion.div 
@@ -628,20 +614,20 @@ export default function AffiliatePage() {
                   animate={{ opacity: 1, scale: 1 }}
                 >
                   <motion.div 
-                    className="w-20 h-20 rounded-full bg-gradient-to-br from-[#E7FB10]/20 to-[#21d8ff]/20 flex items-center justify-center mx-auto mb-6"
+                    className="w-20 h-20 rounded-lg bg-[#21d8ff]/10 border border-[#21d8ff]/30 flex items-center justify-center mx-auto mb-6"
                     animate={{ 
                       boxShadow: [
-                        "0 0 20px rgba(231,251,16,0.3)",
-                        "0 0 40px rgba(33,216,255,0.3)",
-                        "0 0 20px rgba(231,251,16,0.3)",
+                        "0 0 20px rgba(33,216,255,0.2)",
+                        "0 0 40px rgba(33,216,255,0.4)",
+                        "0 0 20px rgba(33,216,255,0.2)",
                       ],
                     }}
                     transition={{ duration: 2, repeat: Infinity }}
                   >
-                    <CheckCircle className="h-10 w-10 text-[#E7FB10]" />
+                    <CheckCircle className="h-10 w-10 text-[#21d8ff]" />
                   </motion.div>
-                  <h3 className="font-display text-2xl font-semibold mb-3">Application Submitted!</h3>
-                  <p className="text-muted-foreground max-w-md mx-auto">
+                  <h3 className="font-display text-2xl font-semibold mb-3 text-white">CONNECTION_ESTABLISHED</h3>
+                  <p className="text-gray-500 max-w-md mx-auto">
                     Thank you for your interest in partnering with Revive Research. 
                     We'll review your application and reach out if there's a fit.
                   </p>
@@ -655,11 +641,11 @@ export default function AffiliatePage() {
                         name="fullName"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Full Name *</FormLabel>
+                            <FormLabel className="text-gray-300">Full Name *</FormLabel>
                             <FormControl>
                               <Input
                                 placeholder="Your full name"
-                                className="border-muted-foreground/20 focus:border-[#9d4edd] transition-colors"
+                                className="bg-[#0a0a0f] border-[#21d8ff]/20 focus:border-[#21d8ff]/50 text-white placeholder:text-gray-600 transition-colors"
                                 {...field}
                                 data-testid="input-full-name"
                               />
@@ -674,12 +660,12 @@ export default function AffiliatePage() {
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Email *</FormLabel>
+                            <FormLabel className="text-gray-300">Email *</FormLabel>
                             <FormControl>
                               <Input
                                 type="email"
                                 placeholder="you@example.com"
-                                className="border-muted-foreground/20 focus:border-[#9d4edd] transition-colors"
+                                className="bg-[#0a0a0f] border-[#21d8ff]/20 focus:border-[#21d8ff]/50 text-white placeholder:text-gray-600 transition-colors"
                                 {...field}
                                 data-testid="input-email"
                               />
@@ -695,11 +681,11 @@ export default function AffiliatePage() {
                       name="socialUrl"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Your Platform / Website *</FormLabel>
+                          <FormLabel className="text-gray-300">Your Platform / Website *</FormLabel>
                           <FormControl>
                             <Input
                               placeholder="https://instagram.com/yourhandle or your website"
-                              className="border-muted-foreground/20 focus:border-[#9d4edd] transition-colors"
+                              className="bg-[#0a0a0f] border-[#21d8ff]/20 focus:border-[#21d8ff]/50 text-white placeholder:text-gray-600 transition-colors"
                               {...field}
                               data-testid="input-social-url"
                             />
@@ -714,11 +700,11 @@ export default function AffiliatePage() {
                       name="audienceSize"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Audience Size & Type *</FormLabel>
+                          <FormLabel className="text-gray-300">Audience Size & Type *</FormLabel>
                           <FormControl>
                             <Input
                               placeholder="e.g., 15K Instagram followers, mostly fitness enthusiasts"
-                              className="border-muted-foreground/20 focus:border-[#9d4edd] transition-colors"
+                              className="bg-[#0a0a0f] border-[#21d8ff]/20 focus:border-[#21d8ff]/50 text-white placeholder:text-gray-600 transition-colors"
                               {...field}
                               data-testid="input-audience-size"
                             />
@@ -733,11 +719,11 @@ export default function AffiliatePage() {
                       name="productExperience"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Your Experience with Peptide Research *</FormLabel>
+                          <FormLabel className="text-gray-300">Your Experience with Peptide Research *</FormLabel>
                           <FormControl>
                             <Input
                               placeholder="Describe your background or experience with peptides"
-                              className="border-muted-foreground/20 focus:border-[#9d4edd] transition-colors"
+                              className="bg-[#0a0a0f] border-[#21d8ff]/20 focus:border-[#21d8ff]/50 text-white placeholder:text-gray-600 transition-colors"
                               {...field}
                               data-testid="input-product-experience"
                             />
@@ -752,11 +738,11 @@ export default function AffiliatePage() {
                       name="whyPartner"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Why Do You Want to Partner With Us? *</FormLabel>
+                          <FormLabel className="text-gray-300">Why Do You Want to Partner With Us? *</FormLabel>
                           <FormControl>
                             <Textarea
                               placeholder="What makes you a good fit? How would you represent our brand?"
-                              className="min-h-[120px] border-muted-foreground/20 focus:border-[#9d4edd] transition-colors"
+                              className="min-h-[120px] bg-[#0a0a0f] border-[#21d8ff]/20 focus:border-[#21d8ff]/50 text-white placeholder:text-gray-600 transition-colors"
                               {...field}
                               data-testid="input-why-partner"
                             />
@@ -775,12 +761,12 @@ export default function AffiliatePage() {
                             <Checkbox
                               checked={field.value}
                               onCheckedChange={field.onChange}
-                              className="border-[#9d4edd]/50 data-[state=checked]:bg-[#9d4edd] data-[state=checked]:border-[#9d4edd]"
+                              className="border-[#21d8ff]/50 data-[state=checked]:bg-[#21d8ff] data-[state=checked]:border-[#21d8ff]"
                               data-testid="checkbox-terms"
                             />
                           </FormControl>
                           <div className="space-y-1 leading-none">
-                            <FormLabel className="font-normal cursor-pointer text-sm">
+                            <FormLabel className="font-normal cursor-pointer text-sm text-gray-400">
                               I understand this is a selective program and agree to follow Revive Research's brand guidelines and compliance standards *
                             </FormLabel>
                             <FormMessage />
@@ -792,7 +778,7 @@ export default function AffiliatePage() {
                     <Button
                       type="submit"
                       size="lg"
-                      className="w-full bg-gradient-to-r from-[#9d4edd] to-[#21d8ff] hover:opacity-90 text-white font-semibold shadow-[0_0_30px_rgba(157,78,221,0.3)] hover:shadow-[0_0_40px_rgba(157,78,221,0.5)] transition-all duration-300"
+                      className="w-full bg-[#21d8ff] hover:bg-[#21d8ff]/90 text-black font-bold shadow-[0_0_30px_rgba(33,216,255,0.3)] hover:shadow-[0_0_50px_rgba(33,216,255,0.5)] transition-all duration-300"
                       disabled={submitMutation.isPending}
                       data-testid="button-submit-application"
                     >
@@ -800,18 +786,19 @@ export default function AffiliatePage() {
                         <motion.span
                           animate={{ opacity: [1, 0.5, 1] }}
                           transition={{ duration: 1.5, repeat: Infinity }}
+                          className="font-mono"
                         >
-                          Submitting...
+                          PROCESSING...
                         </motion.span>
                       ) : (
                         <>
-                          Submit Application
-                          <ArrowRight className="h-4 w-4 ml-2" />
+                          <Terminal className="h-4 w-4 mr-2" />
+                          SUBMIT_APPLICATION
                         </>
                       )}
                     </Button>
 
-                    <p className="text-xs text-center text-muted-foreground">
+                    <p className="text-xs text-center text-gray-600 font-mono">
                       {APPLICATION_CONTENT.note}
                     </p>
                   </form>
@@ -823,23 +810,17 @@ export default function AffiliatePage() {
       </section>
 
       {/* Bottom CTA */}
-      <section className="py-16 relative overflow-hidden">
-        <motion.div 
-          className="absolute inset-0"
-          style={{
-            background: "linear-gradient(135deg, rgba(231,251,16,0.05) 0%, rgba(33,216,255,0.05) 50%, rgba(157,78,221,0.05) 100%)",
-          }}
-        />
+      <section className="py-12 relative overflow-hidden bg-[#0a0a0f] border-t border-[#21d8ff]/10">
         <div className="container max-w-4xl mx-auto px-4 text-center relative z-10">
           <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="text-muted-foreground"
+            className="text-gray-600 font-mono text-sm"
           >
-            Questions about the partner program?{" "}
+            Questions? Contact{" "}
             <a href="mailto:partners@reviveresearch.com" className="text-[#21d8ff] hover:underline">
-              Contact us
+              partners@reviveresearch.com
             </a>
           </motion.p>
         </div>
