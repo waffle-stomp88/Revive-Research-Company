@@ -147,13 +147,6 @@ export function Navigation() {
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                  ) : (
-                    <a href="/api/login">
-                      <Button variant="outline" size="sm" className="hidden md:inline-flex" data-testid="button-login">
-                        <LogIn className="h-4 w-4 mr-2" />
-                        Sign In
-                      </Button>
-                    </a>
                   )}
                 </>
               )}
