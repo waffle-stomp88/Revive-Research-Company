@@ -128,7 +128,7 @@ export default function ProductDetail() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen pt-20 pb-12">
+      <main className="min-h-screen pt-32 md:pt-40 pb-12">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="grid md:grid-cols-2 gap-8">
             <div className="aspect-square bg-muted rounded-lg animate-pulse" />
@@ -145,7 +145,7 @@ export default function ProductDetail() {
 
   if (error || !product) {
     return (
-      <main className="min-h-screen pt-20 pb-12 flex items-center justify-center">
+      <main className="min-h-screen pt-32 md:pt-40 pb-12 flex items-center justify-center">
         <Card className="p-12 text-center max-w-md">
           <FlaskConical className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
           <h2 className="font-display text-xl font-semibold mb-2">Product Not Found</h2>
@@ -163,7 +163,7 @@ export default function ProductDetail() {
   const benefits = product.benefits || [];
 
   return (
-    <main className="min-h-screen pt-20 pb-12">
+    <main className="min-h-screen pt-32 md:pt-40 pb-12">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, x: -20 }}

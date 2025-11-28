@@ -5,7 +5,7 @@ import { Home } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <main className="min-h-screen pt-24 md:pt-32 pb-24 flex items-center justify-center">
+    <main className="min-h-screen pt-32 md:pt-40 pb-24 flex items-center justify-center">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

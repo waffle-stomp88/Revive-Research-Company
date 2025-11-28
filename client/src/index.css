@@ -4,6 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Banner height CSS variable - controlled by FreeShippingBanner component */
+:root {
+  --banner-height: 40px;
+}
+
 /* LIGHT MODE */
 :root {
   --button-outline: rgba(0,0,0, .10);

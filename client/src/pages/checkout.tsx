@@ -86,7 +86,7 @@ export default function Checkout() {
 
   if (!productId) {
     return (
-      <main className="min-h-screen pt-24 md:pt-32 pb-24 flex items-center justify-center">
+      <main className="min-h-screen pt-32 md:pt-40 pb-24 flex items-center justify-center">
         <Card className="p-12 text-center max-w-md">
           <FlaskConical className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
           <h2 className="font-display text-xl font-semibold mb-2">No Product Selected</h2>
@@ -103,7 +103,7 @@ export default function Checkout() {
 
   if (productLoading) {
     return (
-      <main className="min-h-screen pt-24 md:pt-32 pb-24">
+      <main className="min-h-screen pt-32 md:pt-40 pb-24">
         <div className="max-w-4xl mx-auto px-4 md:px-8">
           <div className="grid md:grid-cols-2 gap-12">
             <div className="space-y-4">
@@ -122,7 +122,7 @@ export default function Checkout() {
 
   if (!product) {
     return (
-      <main className="min-h-screen pt-24 md:pt-32 pb-24 flex items-center justify-center">
+      <main className="min-h-screen pt-32 md:pt-40 pb-24 flex items-center justify-center">
         <Card className="p-12 text-center max-w-md">
           <FlaskConical className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
           <h2 className="font-display text-xl font-semibold mb-2">Product Not Found</h2>
@@ -145,7 +145,7 @@ export default function Checkout() {
   const total = subtotal + shipping;
 
   return (
-    <main className="min-h-screen pt-24 md:pt-32 pb-24">
+    <main className="min-h-screen pt-32 md:pt-40 pb-24">
       <div className="max-w-4xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, x: -20 }}

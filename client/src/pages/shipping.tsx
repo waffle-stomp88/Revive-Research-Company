@@ -27,7 +27,7 @@ const SHIPPING_INFO = {
 
 export default function Shipping() {
   return (
-    <main className="min-h-screen pt-24 md:pt-32 pb-24">
+    <main className="min-h-screen pt-32 md:pt-40 pb-24">
       <div className="max-w-4xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

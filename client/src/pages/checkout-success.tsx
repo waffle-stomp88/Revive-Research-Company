@@ -20,7 +20,7 @@ export default function CheckoutSuccess() {
 
   if (!sessionId) {
     return (
-      <main className="min-h-screen pt-24 md:pt-32 pb-24 flex items-center justify-center">
+      <main className="min-h-screen pt-32 md:pt-40 pb-24 flex items-center justify-center">
         <Card className="p-12 text-center max-w-md">
           <FlaskConical className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
           <h2 className="font-display text-xl font-semibold mb-2">Invalid Session</h2>
@@ -37,7 +37,7 @@ export default function CheckoutSuccess() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen pt-24 md:pt-32 pb-24 flex items-center justify-center">
+      <main className="min-h-screen pt-32 md:pt-40 pb-24 flex items-center justify-center">
         <Card className="p-12 text-center max-w-lg">
           <Skeleton className="h-20 w-20 rounded-full mx-auto mb-6" />
           <Skeleton className="h-8 w-48 mx-auto mb-4" />
@@ -50,7 +50,7 @@ export default function CheckoutSuccess() {
 
   if (error || !data?.order) {
     return (
-      <main className="min-h-screen pt-24 md:pt-32 pb-24 flex items-center justify-center">
+      <main className="min-h-screen pt-32 md:pt-40 pb-24 flex items-center justify-center">
         <Card className="p-12 text-center max-w-md">
           <FlaskConical className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
           <h2 className="font-display text-xl font-semibold mb-2">Error Processing Order</h2>
@@ -68,7 +68,7 @@ export default function CheckoutSuccess() {
   const order = data.order;
 
   return (
-    <main className="min-h-screen pt-24 md:pt-32 pb-24 flex items-center justify-center">
+    <main className="min-h-screen pt-32 md:pt-40 pb-24 flex items-center justify-center">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}

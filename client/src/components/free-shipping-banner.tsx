@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Truck } from "lucide-react";
 import { Link } from "wouter";
 
@@ -7,10 +7,21 @@ const FREE_SHIPPING_THRESHOLD = 150;
 export function FreeShippingBanner() {
   const [dismissed, setDismissed] = useState(false);
 
+  useEffect(() => {
+    if (!dismissed) {
+      document.documentElement.style.setProperty('--banner-height', '40px');
+    } else {
+      document.documentElement.style.setProperty('--banner-height', '0px');
+    }
+  }, [dismissed]);
+
   if (dismissed) return null;
 
   return (
-    <div className="bg-primary text-primary-foreground py-2 px-4 relative" data-testid="banner-free-shipping">
+    <div 
+      className="fixed top-0 left-0 right-0 z-[60] bg-[#E7FB10] text-black py-2.5 px-4" 
+      data-testid="banner-free-shipping"
+    >
       <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 text-sm font-medium">
         <Truck className="h-4 w-4" />
         <span>
@@ -23,7 +34,7 @@ export function FreeShippingBanner() {
       </div>
       <button
         onClick={() => setDismissed(true)}
-        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-primary-foreground/10 rounded transition-colors"
+        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-black/10 rounded transition-colors"
         aria-label="Dismiss banner"
         data-testid="button-dismiss-banner"
       >

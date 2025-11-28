@@ -169,7 +169,7 @@ export default function Products() {
   const hasActiveFilters = searchQuery !== "" || sortBy !== "featured" || stockFilter !== "all";
 
   return (
-    <main className="min-h-screen pt-24 md:pt-32 pb-24">
+    <main className="min-h-screen pt-32 md:pt-40 pb-24">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         {saleProduct && (
           <motion.section
@@ -398,14 +398,13 @@ export default function Products() {
         </motion.div>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Card key={i} className="p-6 animate-pulse">
-                <div className="aspect-square bg-muted rounded-md mb-6" />
-                <div className="h-6 bg-muted rounded w-3/4 mb-3" />
-                <div className="h-4 bg-muted rounded w-full mb-2" />
-                <div className="h-4 bg-muted rounded w-2/3 mb-4" />
-                <div className="h-8 bg-muted rounded w-1/3" />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <Card key={i} className="p-3 animate-pulse">
+                <div className="aspect-[4/3] bg-muted rounded-md mb-3" />
+                <div className="h-4 bg-muted rounded w-3/4 mb-2" />
+                <div className="h-3 bg-muted rounded w-full mb-2" />
+                <div className="h-6 bg-muted rounded w-1/3" />
               </Card>
             ))}
           </div>
@@ -419,7 +418,7 @@ export default function Products() {
             initial="initial"
             animate="animate"
             variants={staggerContainer}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
           >
             {filteredAndSortedProducts.map((product) => (
               <motion.div
@@ -428,67 +427,58 @@ export default function Products() {
               >
                 <Link href={`/products/${product.id}`}>
                   <Card 
-                    className={`group p-6 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 hover:scale-105 ${
+                    className={`group p-3 cursor-pointer transition-all duration-300 h-full flex flex-col border hover:scale-[1.02] ${
                       !product.inStock
-                        ? "border-red-500/50 shadow-glow-red-sm hover:border-red-500 hover:shadow-glow-red-lg hover:animate-product-glow-red backlit-red"
-                        : "border-cyan-400/60 shadow-glow-blue-sm hover:border-cyan-400 hover:shadow-glow-blue-lg hover:animate-product-glow-blue backlit-blue"
+                        ? "border-red-500/40 hover:border-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.3)]"
+                        : "border-cyan-400/40 hover:border-cyan-400 hover:shadow-[0_0_15px_rgba(33,216,255,0.3)]"
                     }`}
                     data-testid={`card-product-${product.id}`}
                   >
-                    <div className="relative aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-md mb-6 overflow-hidden">
+                    <div className="relative aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 rounded-md mb-3 overflow-hidden">
                       <img 
                         src={productImage} 
                         alt={product.name}
-                        className="w-full h-full object-contain transition-transform duration-300 p-6"
+                        className="w-full h-full object-contain transition-transform duration-300 p-3 group-hover:scale-105"
                       />
                       {product.originalPrice && (
-                        <span 
-                          className="absolute top-3 left-3 z-20 px-2.5 py-0.5 text-xs font-bold rounded-md bg-red-600 text-white shadow-glow-red-sm"
-                        >
-                          SALE!
+                        <span className="absolute top-2 left-2 z-20 px-1.5 py-0.5 text-[10px] font-bold rounded bg-red-600 text-white">
+                          SALE
                         </span>
                       )}
                       {product.featured && (
-                        <span 
-                          className="absolute top-3 right-3 z-20 px-2.5 py-0.5 text-xs font-semibold rounded-md bg-[#21d8ff] text-black"
-                        >
+                        <span className="absolute top-2 right-2 z-20 px-1.5 py-0.5 text-[10px] font-semibold rounded bg-[#21d8ff] text-black">
                           Featured
                         </span>
                       )}
                       {!product.inStock && (
-                        <span 
-                          className="absolute bottom-3 left-3 z-20 px-2.5 py-0.5 text-xs font-semibold rounded-md bg-destructive text-destructive-foreground"
-                        >
+                        <span className="absolute bottom-2 left-2 z-20 px-1.5 py-0.5 text-[10px] font-semibold rounded bg-destructive text-destructive-foreground">
                           Out of Stock
                         </span>
                       )}
                     </div>
                     
-                    <div className="flex-1 flex flex-col">
-                      <div className="text-xs text-muted-foreground uppercase tracking-wider mb-2">
+                    <div className="flex-1 flex flex-col min-h-0">
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
                         {product.category}
                       </div>
-                      <h3 className="font-display text-xl font-semibold mb-2 group-hover:text-primary transition-colors text-[#E7FB10]">
+                      <h3 className="font-display text-sm font-semibold mb-1 group-hover:text-[#E7FB10] transition-colors line-clamp-1">
                         {product.name}
                       </h3>
-                      <p className="text-sm text-muted-foreground mb-4 flex-1 line-clamp-2">
+                      <p className="text-xs text-muted-foreground mb-2 flex-1 line-clamp-2">
                         {product.shortDescription}
                       </p>
-                      <div className="flex items-center justify-between mt-auto pt-4 border-t border-border">
-                        <div className="flex items-baseline gap-2">
-                          <span className="font-display text-2xl font-bold">
+                      <div className="flex items-center justify-between mt-auto pt-2 border-t border-border">
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="font-display text-lg font-bold text-[#E7FB10]">
                             ${Number(product.price).toFixed(2)}
                           </span>
                           {product.originalPrice && (
-                            <span className="text-sm text-muted-foreground line-through">
+                            <span className="text-[10px] text-muted-foreground line-through">
                               ${Number(product.originalPrice).toFixed(2)}
                             </span>
                           )}
                         </div>
-                        <span className="text-sm text-muted-foreground flex items-center gap-1 group-hover:text-foreground transition-colors">
-                          View
-                          <ArrowRight className="h-4 w-4" />
-                        </span>
+                        <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-[#E7FB10] transition-colors" />
                       </div>
                     </div>
                   </Card>

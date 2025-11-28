@@ -107,7 +107,7 @@ export default function Dashboard() {
 
   if (authLoading) {
     return (
-      <main className="min-h-screen pt-24 md:pt-32 pb-24">
+      <main className="min-h-screen pt-32 md:pt-40 pb-24">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="flex items-center gap-4 mb-8">
             <Skeleton className="h-16 w-16 rounded-full" />
@@ -141,7 +141,7 @@ export default function Dashboard() {
   };
 
   return (
-    <main className="min-h-screen pt-24 md:pt-32 pb-24">
+    <main className="min-h-screen pt-32 md:pt-40 pb-24">
       <div className="container mx-auto px-4 max-w-6xl">
         <motion.div
           variants={containerVariants}
