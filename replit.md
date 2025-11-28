@@ -6,9 +6,86 @@ Revive Research is a modern e-commerce platform specializing in premium peptide 
 
 The platform emphasizes transparency through third-party lab verification, providing Certificate of Authenticity (COA) verification for all products. It targets researchers and professionals seeking high-quality peptide compounds with verifiable testing results.
 
+## Current State: Coming Soon Mode
+
+The site is currently showing a "Coming Soon" landing page. The full e-commerce site is saved and can be restored.
+
+### To Restore Full Site:
+1. Replace `client/src/App.tsx` with the contents of `client/src/App.full.tsx`
+2. Restart the application
+
+### Coming Soon Page Features:
+- Animated particle background with floating neon orbs
+- DNA helix animation
+- Pulsing ring effects
+- Email signup form with success animation
+- Same neon yellow (#E7FB10) and cyan (#21d8ff) color scheme
+- Framer Motion animations throughout
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+
+## Design System
+
+### Color Palette
+- **Primary Background**: #1a1a1f (dark charcoal)
+- **Neon Yellow (Primary Accent)**: #E7FB10
+- **Neon Cyan (Secondary Accent)**: #21d8ff
+- **Card Background**: Dark elevated surfaces with subtle gradients
+- **Text**: White primary, gray-400/500 for secondary
+
+### Visual Effects
+- Glowing borders on product cards (cyan for in-stock, red for out-of-stock)
+- Neon shadows using `shadow-glow-*` utilities
+- Animated pulse effects on icons and badges
+- Scale-up hover effect on product cards (hover:scale-105)
+
+### Typography
+- Font family: DM Sans (body), Bebas Neue (display)
+- Bold headlines with tight tracking
+- Research-focused, professional tone
+
+## Product Catalog (16 Products)
+
+All products use research-specific benefits (not generic quality statements):
+
+1. **BPC-157** - $49.99 (was $59.99) - Tissue repair, gastric research
+2. **TB-500** - $54.99 (was $64.99) - Thymosin Beta-4, cell migration
+3. **GHK-Cu** - $39.99 - Copper peptide, collagen synthesis
+4. **Epithalon** - $44.99 (was $54.99) - Telomerase activation
+5. **Ipamorelin** - $59.99 - Selective GH secretagogue
+6. **Semax** - $64.99 (was $74.99) - ACTH neuroresearch (Out of Stock)
+7. **Tesamorelin** - $189.99 (was $219.99) - GHRH analog
+8. **Retatrutide** - $249.99 (was $299.99) - Triple receptor agonist
+9. **Tirzepatide** - $224.99 (was $274.99) - Dual GIP/GLP-1
+10. **Semaglutide** - $199.99 (was $249.99) - Long-acting GLP-1
+11. **GLOW Peptide Complex** - $159.99 (was $189.99) - Multi-peptide blend
+12. **NAD+ Precursor** - $134.99 (was $164.99) - Cellular energy
+13. **CJC-1295** - $174.99 (was $209.99) - GHRH with DAC
+14. **MOTS-c** - $89.99 (was $109.99) - Mitochondrial peptide
+15. **IGF-1 LR3** - $149.99 (was $179.99) - Extended IGF-1
+16. **HCG** - $79.99 - Gonadotropin signaling
+
+### Product Badges
+- **SALE!** badge (red, top-left) for products with originalPrice
+- **Featured** badge (cyan, top-right) for featured products
+- **Out of Stock** badge (red, bottom-left) for unavailable products
+
+## Subscription System
+
+Three subscription intervals with discounts:
+- Weekly: 15% off
+- Bi-weekly: 12% off
+- Monthly: 10% off
+
+## Legal Compliance
+
+Footer contains two consolidated compliance sections:
+1. **FDA & Regulatory Compliance** (red border) - 503A/503B notices, FDA disclaimers
+2. **Researcher Responsibility** (yellow border) - Educational use, user responsibility
+
+All pages display "Research Use Only" messaging with comprehensive disclaimers.
 
 ## System Architecture
 
@@ -24,8 +101,7 @@ Preferred communication style: Simple, everyday language.
 - Radix UI primitives for accessible, unstyled components (@radix-ui/*)
 - shadcn/ui component architecture using the "new-york" style variant
 - Tailwind CSS for utility-first styling with custom design tokens
-- Typography system using Inter (body) and Space Grotesk (headlines) from Google Fonts
-- Design philosophy inspired by Apple HIG, Linear, and Stripe—emphasizing minimalism, bold typography, and generous whitespace
+- Typography system using DM Sans (body) and Bebas Neue (headlines)
 
 **State Management & Data Fetching**
 - TanStack Query (React Query) for server state management, caching, and API requests
@@ -83,11 +159,6 @@ Preferred communication style: Simple, everyday language.
 - **orders**: Customer orders with shipping details and order items
 - **contacts**: Contact form submissions
 
-**Development Storage**
-- In-memory storage implementation (`MemStorage`) for development/testing
-- Seed data for sample products including BPC-157 and other research peptides
-- Interface-based storage abstraction (`IStorage`) for easy swapping between implementations
-
 **Migrations**
 - Drizzle Kit for schema migrations in `migrations/` directory
 - `npm run db:push` script for pushing schema changes
@@ -112,16 +183,38 @@ Preferred communication style: Simple, everyday language.
 - `client/src/pages/checkout.tsx` - Checkout page with Stripe redirect
 - `client/src/pages/checkout-success.tsx` - Order confirmation page
 
+### Key Files
+
+**Coming Soon**
+- `client/src/pages/coming-soon.tsx` - Current landing page
+- `client/src/App.tsx` - Shows coming soon page only
+- `client/src/App.full.tsx` - BACKUP of full site App.tsx
+
+**Full Site Pages**
+- `client/src/pages/home.tsx` - Main landing page
+- `client/src/pages/products.tsx` - Product catalog with search/filter
+- `client/src/pages/product-detail.tsx` - Individual product pages
+- `client/src/pages/checkout.tsx` - Stripe checkout integration
+- `client/src/pages/checkout-success.tsx` - Order confirmation
+- `client/src/pages/coa.tsx` - COA verification
+- `client/src/pages/dashboard.tsx` - Customer dashboard
+- `client/src/pages/admin.tsx` - Admin panel
+- `client/src/pages/affiliate.tsx` - Affiliate program
+
+**Components**
+- `client/src/components/navigation.tsx` - Header navigation
+- `client/src/components/footer.tsx` - Legal compliance footer
+
+**Assets**
+- `attached_assets/reta bottle_1764310671562.jpg` - Product placeholder image
+
 ### External Dependencies
 
 **Third-Party Services**
 - Neon Database: Serverless PostgreSQL hosting
 - Stripe: Payment processing (sandbox/live modes)
-- Google Fonts CDN: Inter and Space Grotesk typography
-- Replit-specific integrations:
-  - `@replit/vite-plugin-runtime-error-modal`: Development error overlay
-  - `@replit/vite-plugin-cartographer`: Code mapping
-  - `@replit/vite-plugin-dev-banner`: Development environment banner
+- Google Fonts CDN: DM Sans and Bebas Neue typography
+- Replit-specific integrations for development
 
 **UI Component Libraries**
 - Radix UI: 20+ primitive components for accessibility
