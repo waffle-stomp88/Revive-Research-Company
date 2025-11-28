@@ -238,7 +238,7 @@ function ProductShowcase() {
                     <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-md mb-6 flex items-center justify-center overflow-hidden">
                       <FlaskConical className="h-16 w-16 text-muted-foreground/30 group-hover:scale-110 transition-transform duration-300" />
                     </div>
-                    <h3 className="font-display text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
+                    <h3 className="font-display text-xl font-semibold mb-2 group-hover:text-primary transition-colors text-[#e7fb10]">
                       {product.name}
                     </h3>
                     <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
