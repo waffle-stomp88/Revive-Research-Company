@@ -208,7 +208,7 @@ export default function Products() {
               >
                 <Link href={`/products/${product.id}`}>
                   <Card 
-                    className="group p-6 hover-elevate cursor-pointer transition-all duration-300 h-full flex flex-col" 
+                    className="group p-6 hover-elevate cursor-pointer transition-all duration-300 h-full flex flex-col hover:shadow-glow-md hover:animate-product-glow" 
                     data-testid={`card-product-${product.id}`}
                   >
                     <div className="relative aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-md mb-6 flex items-center justify-center overflow-hidden">
