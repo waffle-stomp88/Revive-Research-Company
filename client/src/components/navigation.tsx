@@ -74,7 +74,7 @@ export function Navigation() {
                 <img
                   src={logoImage}
                   alt="Revive Research"
-                  className="h-12 md:h-14 w-auto"
+                  className="h-12 md:h-30 w-auto"
                 />
               </motion.div>
             </Link>
