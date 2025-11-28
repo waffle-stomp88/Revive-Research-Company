@@ -11,7 +11,7 @@
   --opaque-button-border-intensity: -8;
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
-  --neon-yellow: #FFEB3B;
+  --neon-yellow: #E7FB10;
   --background: 0 0% 100%;
   --foreground: 0 0% 9%;
   --border: 0 0% 89%;
@@ -94,8 +94,8 @@
   --button-outline: rgba(255,255,255, .10);
   --badge-outline: rgba(255,255,255, .05);
   --opaque-button-border-intensity: 9;
-  --elevate-1: rgba(255, 235, 59, .08);
-  --elevate-2: rgba(255, 235, 59, .15);
+  --elevate-1: rgba(231, 251, 16, .08);
+  --elevate-2: rgba(231, 251, 16, .15);
   --background: 220 13% 13%;
   --foreground: 0 0% 98%;
   --border: 220 10% 25%;
@@ -130,14 +130,14 @@
   --chart-3: 220 10% 40%;
   --chart-4: 210 20% 70%;
   --chart-5: 240 20% 75%;
-  --shadow-2xs: 0px 0px 15px 0px rgba(255, 235, 59, 0.20);
-  --shadow-xs: 0px 0px 20px 0px rgba(255, 235, 59, 0.25);
-  --shadow-sm: 0px 0px 20px 0px rgba(255, 235, 59, 0.25), 0px 1px 2px -1px rgba(0 0% 0% / 0.10);
-  --shadow: 0px 0px 25px 0px rgba(255, 235, 59, 0.30), 0px 1px 2px -1px rgba(0 0% 0% / 0.10);
-  --shadow-md: 0px 0px 30px 0px rgba(255, 235, 59, 0.35), 0px 2px 4px -1px rgba(0 0% 0% / 0.10);
-  --shadow-lg: 0px 0px 40px 0px rgba(255, 235, 59, 0.40), 0px 4px 6px -1px rgba(0 0% 0% / 0.15);
-  --shadow-xl: 0px 0px 50px 0px rgba(255, 235, 59, 0.45), 0px 8px 10px -1px rgba(0 0% 0% / 0.20);
-  --shadow-2xl: 0px 0px 60px 0px rgba(255, 235, 59, 0.50);
+  --shadow-2xs: 0px 0px 15px 0px rgba(231, 251, 16, 0.20);
+  --shadow-xs: 0px 0px 20px 0px rgba(231, 251, 16, 0.25);
+  --shadow-sm: 0px 0px 20px 0px rgba(231, 251, 16, 0.25), 0px 1px 2px -1px rgba(0 0% 0% / 0.10);
+  --shadow: 0px 0px 25px 0px rgba(231, 251, 16, 0.30), 0px 1px 2px -1px rgba(0 0% 0% / 0.10);
+  --shadow-md: 0px 0px 30px 0px rgba(231, 251, 16, 0.35), 0px 2px 4px -1px rgba(0 0% 0% / 0.10);
+  --shadow-lg: 0px 0px 40px 0px rgba(231, 251, 16, 0.40), 0px 4px 6px -1px rgba(0 0% 0% / 0.15);
+  --shadow-xl: 0px 0px 50px 0px rgba(231, 251, 16, 0.45), 0px 8px 10px -1px rgba(0 0% 0% / 0.20);
+  --shadow-2xl: 0px 0px 60px 0px rgba(231, 251, 16, 0.50);
 
 /* Fallback for older browsers */
   --sidebar-primary-border: hsl(var(--sidebar-primary));
@@ -179,29 +179,29 @@
   
   @keyframes glow-pulse {
     0%, 100% {
-      box-shadow: 0px 0px 15px 0px rgba(255, 235, 59, 0.40);
+      box-shadow: 0px 0px 15px 0px rgba(231, 251, 16, 0.40);
     }
     50% {
-      box-shadow: 0px 0px 30px 0px rgba(255, 235, 59, 0.70);
+      box-shadow: 0px 0px 30px 0px rgba(231, 251, 16, 0.70);
     }
   }
   
   @keyframes product-glow {
     0% {
-      box-shadow: 0px 0px 20px 0px rgba(255, 235, 59, 0.30), 0px 2px 8px 0px rgba(0, 0, 0, 0.3);
+      box-shadow: 0px 0px 20px 0px rgba(231, 251, 16, 0.30), 0px 2px 8px 0px rgba(0, 0, 0, 0.3);
     }
     100% {
-      box-shadow: 0px 0px 40px 0px rgba(255, 235, 59, 0.60), 0px 2px 8px 0px rgba(0, 0, 0, 0.3);
+      box-shadow: 0px 0px 40px 0px rgba(231, 251, 16, 0.60), 0px 2px 8px 0px rgba(0, 0, 0, 0.3);
     }
   }
   
   .glow-border {
-    border: 2px solid rgba(255, 235, 59, 0.3);
+    border: 2px solid rgba(231, 251, 16, 0.3);
   }
   
   .glow-border:hover {
-    border-color: rgba(255, 235, 59, 1);
-    box-shadow: 0px 0px 30px 0px rgba(255, 235, 59, 0.60), inset 0px 0px 15px 0px rgba(255, 235, 59, 0.10);
+    border-color: rgba(231, 251, 16, 1);
+    box-shadow: 0px 0px 30px 0px rgba(231, 251, 16, 0.60), inset 0px 0px 15px 0px rgba(231, 251, 16, 0.10);
   }
 }
 

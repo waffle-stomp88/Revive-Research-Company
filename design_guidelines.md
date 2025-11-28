@@ -14,17 +14,17 @@ Core principle: Premium peptide research with high-energy engagement—dark yet 
 ## Color System
 
 **Primary Colors**:
-- Primary Blue: #3C82F6 (vibrant cyan-blue with glow effects)
+- Primary Neon Yellow: #E7FB10 (bright, energetic, glowing)
 - Dark Background: #222222 (deep charcoal)
 - Accent Dark: #0A0F1A (very dark navy for contrast)
 
 **Dark Mode (Active)**:
-- Background: Deep dark with neon accents
+- Background: Deep dark with neon yellow accents
 - Foreground: Bright white/light gray for contrast against dark
 - Cards: Slightly elevated dark surfaces with subtle glow
 
 **Neon Glow Effects**:
-- Primary elements glow with cyan/blue light (box-shadow with blue)
+- Primary elements glow with neon yellow light (box-shadow with #E7FB10)
 - Hover states intensify the glow
 - Active states create dramatic neon lighting effect
 - Icons and buttons have subtle backlit appearance
@@ -74,20 +74,20 @@ Core principle: Premium peptide research with high-energy engagement—dark yet 
 - Mobile: Full-screen overlay with neon-lit menu
 
 ### Buttons & CTAs
-- Primary: Vibrant blue (#3C82F6) with glowing box-shadow
+- Primary: Vibrant neon yellow (#E7FB10) with glowing box-shadow
 - Hover: Intensified glow effect
 - Active: Dramatic neon lighting
 - All interactive elements have subtle glow
 
 ### Cards & Surfaces
-- Dark backgrounds with minimal visible borders
-- Subtle glow on hover (hover-elevate with blue tint)
+- Dark backgrounds with neon yellow borders (30% opacity, full on hover)
+- Glow on hover (hover-elevate with yellow tint)
 - Content elevated slightly from background
 - Icons with neon glow effects
 
 ### Forms & Inputs
 - Dark inputs with light text
-- Blue focus states with glow
+- Yellow focus states with glow
 - Validation states with color-coded glow (green for success, red for error)
 - Labels clearly visible on dark backgrounds
 
@@ -95,7 +95,7 @@ Core principle: Premium peptide research with high-energy engagement—dark yet 
 - Full-width dark background
 - Neon-lit headline text (Bebas Neue, glowing)
 - Subheading with good contrast
-- Primary CTA button with prominent glow
+- Primary CTA button with prominent neon glow
 - Ambient lighting through glow effects
 
 ---
@@ -103,13 +103,13 @@ Core principle: Premium peptide research with high-energy engagement—dark yet 
 ## Glow & Shadow Effects
 
 **Neon Glow Utilities**:
-- `.glow-primary`: Blue neon glow around element
+- `.glow-primary`: Yellow neon glow around element
 - `.glow-hover`: Intensified glow on hover state
 - `.glow-text`: Text with subtle glow effect
 
 **Implementation**:
-- Use box-shadow with blue (#3C82F6) at various blur radii
-- Color: rgba(60, 130, 246, 0.5) to rgba(60, 130, 246, 0.8)
+- Use box-shadow with neon yellow (#E7FB10) at various blur radii
+- Color: rgba(231, 251, 16, 0.4) to rgba(231, 251, 16, 0.8)
 - Blur: 10px to 30px depending on intensity
 - Multiple layers for depth effect
 
@@ -135,20 +135,20 @@ Use Framer Motion for:
 
 **Hero Images**:
 - Dark, sophisticated backgrounds
-- Neon accent lighting/elements
+- Neon yellow accent lighting/elements
 - High contrast for text readability
 - Subtle parallax or ambient movement
 
 **Product Images**:
 - Clean, professional
 - Lit against dark backgrounds
-- Supporting neon accent lighting where applicable
+- Supporting neon yellow accent lighting where applicable
 
 **Icons**:
 - Lucide React icons
 - Enhanced with glow effects on key elements
 - Outlined style for clean aesthetic
-- Neon-blue color for primary icons
+- Neon yellow color for primary icons
 
 ---
 
@@ -166,7 +166,7 @@ Use Framer Motion for:
 ## Overall Feel
 
 - **Modern**: Cutting-edge design with contemporary aesthetics
-- **Energetic**: Vibrant neon accents create excitement and engagement
+- **Energetic**: Vibrant neon yellow accents create excitement and engagement
 - **Premium**: Dark backgrounds convey sophistication and quality
 - **Inviting**: High contrast and glow effects draw users in
 - **Trustworthy**: Clear information hierarchy and professional presentation
