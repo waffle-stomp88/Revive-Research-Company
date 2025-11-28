@@ -150,17 +150,17 @@ export function Footer() {
 
         {/* Compliance Icons */}
         <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 border border-border">
-            <Scale className="h-4 w-4 text-[#21d8ff]" />
-            <span className="text-xs text-muted-foreground">Federal & state law compliant</span>
+          <div className="flex items-center gap-3 p-4 rounded-lg bg-[#21d8ff]/5 border border-[#21d8ff]/40 shadow-glow-blue-sm">
+            <Scale className="h-5 w-5 text-[#21d8ff]" />
+            <span className="text-sm text-muted-foreground">Federal & state law compliant</span>
           </div>
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 border border-border">
-            <FileCheck className="h-4 w-4 text-[#21d8ff]" />
-            <span className="text-xs text-muted-foreground">Third-party tested & verified</span>
+          <div className="flex items-center gap-3 p-4 rounded-lg bg-[#21d8ff]/5 border border-[#21d8ff]/40 shadow-glow-blue-sm">
+            <FileCheck className="h-5 w-5 text-[#21d8ff]" />
+            <span className="text-sm text-muted-foreground">Third-party tested & verified</span>
           </div>
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 border border-border">
-            <Shield className="h-4 w-4 text-[#21d8ff]" />
-            <span className="text-xs text-muted-foreground">Qualified researchers only</span>
+          <div className="flex items-center gap-3 p-4 rounded-lg bg-[#21d8ff]/5 border border-[#21d8ff]/40 shadow-glow-blue-sm">
+            <Shield className="h-5 w-5 text-[#21d8ff]" />
+            <span className="text-sm text-muted-foreground">Qualified researchers only</span>
           </div>
         </div>
 
