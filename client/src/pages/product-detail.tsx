@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useCart } from "@/contexts/CartContext";
 import {
   ArrowLeft,
   FlaskConical,
@@ -23,6 +24,7 @@ import {
   Minus,
   Plus,
   ShoppingCart,
+  ShoppingBag,
   FileCheck,
   Truck,
   RefreshCw,
@@ -52,6 +54,7 @@ export default function ProductDetail() {
   const params = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [selectedDosage, setSelectedDosage] = useState<string>("10mg");
   const [purchaseType, setPurchaseType] = useState<PurchaseType>("one-time");
@@ -103,6 +106,23 @@ export default function ProductDetail() {
         url += `&subscription=true&interval=${subscriptionInterval}`;
       }
       setLocation(url);
+    }
+  };
+
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart({
+        productId: product.id,
+        name: product.name,
+        price: getBasePrice(),
+        originalPrice: product.originalPrice ? Number(product.originalPrice) * getDosageMultiplier() : undefined,
+        quantity,
+        dosage: selectedDosage,
+      });
+      toast({
+        title: "Added to cart",
+        description: `${quantity}x ${product.name} (${selectedDosage}) added to your cart.`,
+      });
     }
   };
 
@@ -354,29 +374,42 @@ export default function ProductDetail() {
               </div>
             </div>
 
-            <Button
-              size="lg"
-              className={`w-full font-display gap-2 shadow-glow-sm hover:shadow-glow-lg transition-shadow duration-300 text-black ${
-                purchaseType === "subscription" 
-                  ? "bg-[#21d8ff] border-[#21d8ff] hover:bg-[#21d8ff]/90" 
-                  : "bg-[#E7FB10] border-[#E7FB10] hover:bg-[#E7FB10]/90"
-              }`}
-              onClick={handleBuyNow}
-              disabled={!product.inStock}
-              data-testid="button-buy-now"
-            >
-              {purchaseType === "subscription" ? (
-                <>
-                  <Repeat className="h-5 w-5" />
-                  Subscribe - ${getTotalPrice().toFixed(2)}/{subscriptionInterval === "weekly" ? "wk" : subscriptionInterval === "biweekly" ? "2wks" : "mo"}
-                </>
-              ) : (
-                <>
-                  <ShoppingCart className="h-5 w-5" />
-                  BUY NOW - ${getTotalPrice().toFixed(2)}
-                </>
-              )}
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                size="lg"
+                variant="outline"
+                className="flex-1 font-display gap-2 border-2"
+                onClick={handleAddToCart}
+                disabled={!product.inStock}
+                data-testid="button-add-to-cart"
+              >
+                <ShoppingBag className="h-5 w-5" />
+                Add to Cart
+              </Button>
+              <Button
+                size="lg"
+                className={`flex-1 font-display gap-2 shadow-glow-sm hover:shadow-glow-lg transition-shadow duration-300 text-black ${
+                  purchaseType === "subscription" 
+                    ? "bg-[#21d8ff] border-[#21d8ff] hover:bg-[#21d8ff]/90" 
+                    : "bg-[#E7FB10] border-[#E7FB10] hover:bg-[#E7FB10]/90"
+                }`}
+                onClick={handleBuyNow}
+                disabled={!product.inStock}
+                data-testid="button-buy-now"
+              >
+                {purchaseType === "subscription" ? (
+                  <>
+                    <Repeat className="h-5 w-5" />
+                    Subscribe
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart className="h-5 w-5" />
+                    Buy Now
+                  </>
+                )}
+              </Button>
+            </div>
 
             {purchaseType === "subscription" && (
               <p className="text-[10px] text-center text-muted-foreground mt-2">
@@ -406,12 +439,12 @@ export default function ProductDetail() {
             </div>
 
             {benefits.length > 0 && (
-              <div className="mb-6">
-                <h3 className="font-display font-semibold text-sm mb-2">Key Benefits</h3>
-                <ul className="space-y-1.5">
+              <div className="mb-8">
+                <h3 className="font-display font-semibold text-lg mb-4">Key Benefits</h3>
+                <ul className="space-y-3">
                   {benefits.map((benefit, index) => (
-                    <li key={index} className="flex items-start gap-2 text-xs">
-                      <CheckCircle className="h-3.5 w-3.5 text-[#E7FB10] mt-0.5 flex-shrink-0" />
+                    <li key={index} className="flex items-start gap-3">
+                      <CheckCircle className="h-5 w-5 text-[#E7FB10] mt-0.5 flex-shrink-0" />
                       <span className="text-muted-foreground">{benefit}</span>
                     </li>
                   ))}
@@ -420,25 +453,28 @@ export default function ProductDetail() {
             )}
 
             {product.usage && (
-              <div className="mb-6">
-                <h3 className="font-display font-semibold text-sm mb-2">Usage Information</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
+              <div className="mb-8">
+                <h3 className="font-display font-semibold text-lg mb-4">Usage Information</h3>
+                <p className="text-muted-foreground leading-relaxed">
                   {product.usage}
                 </p>
               </div>
             )}
 
-            <Card className="p-4 bg-red-950/30 border border-red-500/50">
-              <div className="flex items-start gap-3">
-                <AlertTriangle className="h-5 w-5 text-red-400 flex-shrink-0" />
+            <Card className="p-6 bg-red-950/30 border-2 border-red-500/50 shadow-glow-red-sm">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-full bg-red-500/20 border border-red-500/30">
+                  <AlertTriangle className="h-6 w-6 text-red-400" />
+                </div>
                 <div>
-                  <h4 className="font-display font-bold text-red-400 uppercase tracking-wider text-xs mb-1">
+                  <h4 className="font-display font-bold text-red-400 uppercase tracking-wider text-lg mb-2">
                     Research Use Only
                   </h4>
-                  <p className="text-[10px] text-muted-foreground leading-relaxed">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     This product is sold for research purposes only and is not intended 
                     for human consumption. By purchasing, you confirm you are a qualified 
-                    researcher.
+                    researcher and will use this product in accordance with all applicable 
+                    federal and state laws and regulations.
                   </p>
                 </div>
               </div>

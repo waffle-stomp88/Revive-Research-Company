@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, User, LogIn, LogOut, Shield } from "lucide-react";
+import { Menu, X, User, LogIn, LogOut, Shield, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
+import { useCart } from "@/contexts/CartContext";
 import logoImage from "@assets/REVIVE-11_1764290805698.png";
 
 const navLinks = [
@@ -27,6 +29,8 @@ export function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [location] = useLocation();
   const { user, isAuthenticated, isLoading } = useAuth();
+  const { getItemCount } = useCart();
+  const cartItemCount = getItemCount();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -99,6 +103,17 @@ export function Navigation() {
 
             <div className="flex items-center gap-2 md:gap-4">
               <ThemeToggle />
+              
+              <Link href="/cart">
+                <Button variant="ghost" size="icon" className="relative" data-testid="button-cart">
+                  <ShoppingCart className="h-5 w-5" />
+                  {cartItemCount > 0 && (
+                    <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] bg-[#E7FB10] text-black">
+                      {cartItemCount > 9 ? "9+" : cartItemCount}
+                    </Badge>
+                  )}
+                </Button>
+              </Link>
               
               {!isLoading && isAuthenticated && (
                 <DropdownMenu>

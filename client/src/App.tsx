@@ -5,11 +5,13 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
+import { CartProvider } from "@/contexts/CartContext";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import Home from "@/pages/home";
 import Products from "@/pages/products";
 import ProductDetail from "@/pages/product-detail";
+import Cart from "@/pages/cart";
 import Checkout from "@/pages/checkout";
 import CheckoutSuccess from "@/pages/checkout-success";
 import CoaVerification from "@/pages/coa";
@@ -34,6 +36,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/products" component={Products} />
       <Route path="/products/:id" component={ProductDetail} />
+      <Route path="/cart" component={Cart} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/checkout/success" component={CheckoutSuccess} />
       <Route path="/coa" component={CoaVerification} />
@@ -49,17 +52,19 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="dark" storageKey="revive-theme">
-        <TooltipProvider>
-          <ScrollToTop />
-          <div className="min-h-screen flex flex-col bg-background text-foreground">
-            <Navigation />
-            <div className="flex-1">
-              <Router />
+        <CartProvider>
+          <TooltipProvider>
+            <ScrollToTop />
+            <div className="min-h-screen flex flex-col bg-background text-foreground">
+              <Navigation />
+              <div className="flex-1">
+                <Router />
+              </div>
+              <Footer />
             </div>
-            <Footer />
-          </div>
-          <Toaster />
-        </TooltipProvider>
+            <Toaster />
+          </TooltipProvider>
+        </CartProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
