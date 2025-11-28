@@ -254,14 +254,15 @@ export default function Products() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card 
-                  className={`p-6 h-full hover:scale-[1.02] transition-all cursor-pointer border-2 ${
-                    bundle.color === "cyan" 
-                      ? "border-cyan-500/30 hover:border-cyan-500/60 hover:shadow-glow-blue-lg" 
-                      : "border-[#E7FB10]/30 hover:border-[#E7FB10]/60 hover:shadow-glow-lg"
-                  }`}
-                  data-testid={`card-bundle-${bundle.id}`}
-                >
+                <Link href={`/bundles/${bundle.id}`}>
+                  <Card 
+                    className={`p-6 h-full hover:scale-[1.02] transition-all cursor-pointer border-2 ${
+                      bundle.color === "cyan" 
+                        ? "border-cyan-500/30 hover:border-cyan-500/60 hover:shadow-glow-blue-lg" 
+                        : "border-[#E7FB10]/30 hover:border-[#E7FB10]/60 hover:shadow-glow-lg"
+                    }`}
+                    data-testid={`card-bundle-${bundle.id}`}
+                  >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
@@ -306,6 +307,7 @@ export default function Products() {
                     </Button>
                   </div>
                 </Card>
+                </Link>
               </motion.div>
             ))}
           </div>
