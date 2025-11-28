@@ -7,7 +7,6 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -279,7 +278,6 @@ export default function ProductDetail() {
                   onClick={() => setPurchaseType("one-time")}
                   data-testid="option-one-time"
                 >
-                  <RadioGroupItem value="one-time" id="one-time" className="sr-only" />
                   <div className="flex-1">
                     <div className="flex items-center gap-1.5">
                       <ShoppingCart className="h-3.5 w-3.5" />
@@ -300,7 +298,6 @@ export default function ProductDetail() {
                   onClick={() => setPurchaseType("subscription")}
                   data-testid="option-subscription"
                 >
-                  <RadioGroupItem value="subscription" id="subscription" className="sr-only" />
                   <div className="flex-1">
                     <div className="flex items-center gap-1.5">
                       <Repeat className="h-3.5 w-3.5" />
