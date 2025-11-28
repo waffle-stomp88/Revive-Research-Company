@@ -209,18 +209,18 @@ export default function Products() {
               >
                 <Link href={`/products/${product.id}`}>
                   <Card 
-                    className={`group p-6 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 ${
+                    className={`group p-6 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 hover:scale-105 ${
                       !product.inStock
                         ? "border-red-500/50 shadow-glow-red-sm hover:border-red-500 hover:shadow-glow-red-lg hover:animate-product-glow-red backlit-red"
                         : "border-cyan-400/60 shadow-glow-blue-sm hover:border-cyan-400 hover:shadow-glow-blue-lg hover:animate-product-glow-blue backlit-blue"
                     }`}
                     data-testid={`card-product-${product.id}`}
                   >
-                    <div className="relative aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-md mb-6">
+                    <div className="relative aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-md mb-6 overflow-hidden">
                       <img 
                         src={productImage} 
                         alt={product.name}
-                        className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300 p-6"
+                        className="w-full h-full object-contain transition-transform duration-300 p-6"
                       />
                       {product.originalPrice && (
                         <span 
