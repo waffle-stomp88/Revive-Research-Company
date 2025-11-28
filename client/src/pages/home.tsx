@@ -427,7 +427,7 @@ function HowItWorksSection() {
 
 function CTASection() {
   return (
-    <section className="py-24 md:py-32 bg-primary text-primary-foreground">
+    <section className="py-24 md:py-32 text-primary-foreground bg-[#e7fb10]">
       <div className="max-w-4xl mx-auto px-4 md:px-8 text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
