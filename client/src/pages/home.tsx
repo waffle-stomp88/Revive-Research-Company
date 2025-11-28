@@ -265,8 +265,8 @@ function ProductShowcase() {
                 <Link href={`/products/${product.id}`}>
                   <Card className={`group p-8 cursor-pointer transition-all duration-300 border-2 ${
                     !product.inStock
-                      ? "border-red-500/50 shadow-glow-red-sm hover:border-red-500 hover:shadow-glow-red-lg hover:animate-product-glow-red hover:bg-red-500/5"
-                      : "border-cyan-400/60 shadow-glow-blue-sm hover:border-cyan-400 hover:shadow-glow-blue-lg hover:animate-product-glow-blue hover:bg-cyan-400/5"
+                      ? "border-red-500/50 shadow-glow-red-sm hover:border-red-500 hover:shadow-glow-red-lg hover:animate-product-glow-red backlit-red"
+                      : "border-cyan-400/60 shadow-glow-blue-sm hover:border-cyan-400 hover:shadow-glow-blue-lg hover:animate-product-glow-blue backlit-blue"
                   }`} data-testid={`card-product-${product.id}`}>
                     <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-md mb-6 flex items-center justify-center overflow-hidden">
                       <FlaskConical className="h-16 w-16 text-muted-foreground/30 group-hover:scale-110 transition-transform duration-300" />
