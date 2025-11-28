@@ -100,55 +100,51 @@ export function Navigation() {
             <div className="flex items-center gap-2 md:gap-4">
               <ThemeToggle />
               
-              {!isLoading && (
-                <>
-                  {isAuthenticated ? (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="rounded-full" data-testid="button-user-menu">
-                          <Avatar className="h-8 w-8">
-                            {user?.profileImageUrl && (
-                              <AvatarImage src={user.profileImageUrl} alt={user?.firstName || "User"} className="object-cover" />
-                            )}
-                            <AvatarFallback className="text-xs">
-                              {getInitials()}
-                            </AvatarFallback>
-                          </Avatar>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-48">
-                        <div className="px-2 py-1.5">
-                          <p className="text-sm font-medium">
-                            {user?.firstName ? `${user.firstName} ${user.lastName || ""}`.trim() : "Account"}
-                          </p>
-                          <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-                        </div>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild>
-                          <Link href="/dashboard" className="cursor-pointer" data-testid="link-dashboard">
-                            <User className="h-4 w-4 mr-2" />
-                            Dashboard
-                          </Link>
-                        </DropdownMenuItem>
-                        {user?.isAdmin && (
-                          <DropdownMenuItem asChild>
-                            <Link href="/admin" className="cursor-pointer" data-testid="link-admin">
-                              <Shield className="h-4 w-4 mr-2" />
-                              Admin Panel
-                            </Link>
-                          </DropdownMenuItem>
+              {!isLoading && isAuthenticated && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="rounded-full" data-testid="button-user-menu">
+                      <Avatar className="h-8 w-8">
+                        {user?.profileImageUrl && (
+                          <AvatarImage src={user.profileImageUrl} alt={user?.firstName || "User"} className="object-cover" />
                         )}
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild>
-                          <a href="/api/logout" className="cursor-pointer text-destructive" data-testid="button-logout">
-                            <LogOut className="h-4 w-4 mr-2" />
-                            Sign Out
-                          </a>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
-                </>
+                        <AvatarFallback className="text-xs">
+                          {getInitials()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <div className="px-2 py-1.5">
+                      <p className="text-sm font-medium">
+                        {user?.firstName ? `${user.firstName} ${user.lastName || ""}`.trim() : "Account"}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                    </div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard" className="cursor-pointer" data-testid="link-dashboard">
+                        <User className="h-4 w-4 mr-2" />
+                        Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                    {user?.isAdmin && (
+                      <DropdownMenuItem asChild>
+                        <Link href="/admin" className="cursor-pointer" data-testid="link-admin">
+                          <Shield className="h-4 w-4 mr-2" />
+                          Admin Panel
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <a href="/api/logout" className="cursor-pointer text-destructive" data-testid="button-logout">
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
+                      </a>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
               
               <Link href="/products">
@@ -264,24 +260,13 @@ export function Navigation() {
                   </Button>
                 </Link>
                 
-                {!isLoading && (
-                  <>
-                    {isAuthenticated ? (
-                      <a href="/api/logout">
-                        <Button variant="outline" size="lg" data-testid="button-mobile-logout">
-                          <LogOut className="h-4 w-4 mr-2" />
-                          Sign Out
-                        </Button>
-                      </a>
-                    ) : (
-                      <a href="/api/login">
-                        <Button variant="outline" size="lg" data-testid="button-mobile-login">
-                          <LogIn className="h-4 w-4 mr-2" />
-                          Sign In
-                        </Button>
-                      </a>
-                    )}
-                  </>
+                {!isLoading && isAuthenticated && (
+                  <a href="/api/logout">
+                    <Button variant="outline" size="lg" data-testid="button-mobile-logout">
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </Button>
+                  </a>
                 )}
               </motion.div>
             </nav>
