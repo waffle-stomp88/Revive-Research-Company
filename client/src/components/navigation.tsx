@@ -160,7 +160,7 @@ export function Navigation() {
               
               <Link href="/products">
                 <Button
-                  className="hidden md:inline-flex font-display bg-[#E7FB10] text-primary-foreground border border-[#E7FB10] shadow-glow-md hover:shadow-glow-xl transition-shadow duration-300"
+                  className="hidden md:inline-flex font-display bg-[#E7FB10] text-primary-foreground border-2 border-[#E7FB10] shadow-glow-sm hover:shadow-glow-lg transition-shadow duration-300"
                   data-testid="button-shop-products"
                 >
                   Shop Products
@@ -266,7 +266,7 @@ export function Navigation() {
                 className="flex flex-col items-center gap-4 mt-4"
               >
                 <Link href="/products">
-                  <Button size="lg" className="font-display bg-[#E7FB10] border border-[#E7FB10] shadow-glow-md hover:shadow-glow-xl transition-shadow duration-300" data-testid="button-mobile-shop">
+                  <Button size="lg" className="font-display bg-[#E7FB10] border-2 border-[#E7FB10] shadow-glow-sm hover:shadow-glow-lg transition-shadow duration-300" data-testid="button-mobile-shop">
                     Shop Products
                   </Button>
                 </Link>

@@ -177,7 +177,7 @@ export default function ProductDetail() {
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <Button
                 size="lg"
-                className="flex-1 font-display gap-2 bg-[#E7FB10] shadow-glow-md hover:shadow-glow-xl transition-shadow duration-300"
+                className="flex-1 font-display gap-2 bg-[#E7FB10] border-[#E7FB10] shadow-glow-sm hover:shadow-glow-lg transition-shadow duration-300"
                 onClick={handleBuyNow}
                 disabled={!product.inStock}
                 data-testid="button-buy-now"
