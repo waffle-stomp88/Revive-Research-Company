@@ -1,0 +1,111 @@
+{
+  "colorScheme": "dark",
+  "fonts": [
+    {
+      "family": "DM Sans",
+      "role": "body"
+    },
+    {
+      "family": "Bebas Neue",
+      "role": "display"
+    },
+    {
+      "family": "JetBrains Mono",
+      "role": "monospace"
+    }
+  ],
+  "colors": {
+    "primary": "#3C82F5",
+    "accent": "#0A0F1A",
+    "background": "#222222",
+    "textPrimary": "#0A0F1A",
+    "link": "#0A0F1A"
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "DM Sans",
+      "heading": "Bebas Neue"
+    },
+    "fontStacks": {
+      "heading": [
+        "Bebas Neue",
+        "sans-serif"
+      ],
+      "body": [
+        "DM Sans",
+        "sans-serif"
+      ],
+      "paragraph": [
+        "DM Sans",
+        "sans-serif"
+      ]
+    },
+    "fontSizes": {
+      "h1": "88px",
+      "h2": "56px",
+      "body": "17px"
+    }
+  },
+  "spacing": {
+    "baseUnit": 4,
+    "borderRadius": "5px"
+  },
+  "components": {
+    "input": {
+      "borderColor": "#CCCCCC",
+      "borderRadius": "5px"
+    },
+    "buttonPrimary": {
+      "background": "#3C82F5",
+      "textColor": "#FFFFFF",
+      "borderRadius": "6px",
+      "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px -7px"
+    },
+    "buttonSecondary": {
+      "background": "#0A0F1A",
+      "textColor": "#FFFFFF",
+      "borderRadius": "12px",
+      "shadow": "rgba(56, 189, 248, 0.5) 0px 8px 30px 0px"
+    }
+  },
+  "images": {
+    "logo": "https://yourpeptidebrand.com/wp-content/uploads/2025/08/cropped-cropped-YourPeptideBrand.com-LOGO-2.png",
+    "favicon": "https://yourpeptidebrand.com/wp-content/uploads/2025/08/cropped-YourPeptideBrand.com-LOGO-2-32x32.png",
+    "ogImage": "https://yourpeptidebrand.com/wp-content/uploads/2025/08/1-1024x1024.png"
+  },
+  "__framework_hints": [
+    "WordPress 6.8.3"
+  ],
+  "__llm_logo_reasoning": {
+    "selectedIndex": 0,
+    "reasoning": "Logo #0 visually represents the brand name 'YourPeptideBrand.com' and is located in the header, linking to the homepage, making it the most suitable choice for the brand logo.",
+    "confidence": 0.9
+  },
+  "__llm_button_reasoning": {
+    "primary": {
+      "index": 3,
+      "text": "Sign Up",
+      "reasoning": "Button #3 has a vibrant blue background (#3C82F5), which is a strong indicator for a primary CTA. It also has action-oriented text 'Sign Up', making it the most prominent call-to-action on the page."
+    },
+    "secondary": {
+      "index": 0,
+      "text": "🔥 CLAIM 1 OF 8 REMAINING SPOTS →",
+      "reasoning": "Button #0 has a dark background (#0A0F1A) and is less vibrant compared to the primary button. It serves as a secondary action with the text '🔥 CLAIM 1 OF 8 REMAINING SPOTS →', which is still action-oriented but not as prominent as the primary button."
+    },
+    "confidence": 0.95
+  },
+  "personality": {
+    "tone": "modern",
+    "energy": "high",
+    "targetAudience": "health and wellness enthusiasts, fitness professionals, and individuals interested in peptide supplements."
+  },
+  "designSystem": {
+    "framework": "unknown",
+    "componentLibrary": null
+  },
+  "confidence": {
+    "buttons": 0.95,
+    "colors": 0.9,
+    "overall": 0.925
+  }
+}

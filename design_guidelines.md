@@ -1,34 +1,57 @@
 # Revive Research - Design Guidelines
 
 ## Design Approach
-**Reference-Based Approach** drawing from:
-- **Apple HIG**: Minimal, content-focused aesthetic with generous whitespace
-- **Linear**: Bold typography with strong hierarchy and clean layouts
-- **Stripe**: Professional, trustworthy design for transactional experiences
+**High-Energy Neon Aesthetic** drawing from:
+- Dark, sophisticated backgrounds with vibrant neon accents
+- Backlit glow effects on key interactive elements
+- Bold, energetic typography
+- Modern, inviting feel with cutting-edge energy
 
-Core principle: Scientific credibility meets modern e-commerce—clean, minimal, professional with subtle sophistication.
+Core principle: Premium peptide research with high-energy engagement—dark yet vibrant, sophisticated yet accessible, energetic yet trustworthy.
+
+---
+
+## Color System
+
+**Primary Colors**:
+- Primary Blue: #3C82F6 (vibrant cyan-blue with glow effects)
+- Dark Background: #222222 (deep charcoal)
+- Accent Dark: #0A0F1A (very dark navy for contrast)
+
+**Dark Mode (Active)**:
+- Background: Deep dark with neon accents
+- Foreground: Bright white/light gray for contrast against dark
+- Cards: Slightly elevated dark surfaces with subtle glow
+
+**Neon Glow Effects**:
+- Primary elements glow with cyan/blue light (box-shadow with blue)
+- Hover states intensify the glow
+- Active states create dramatic neon lighting effect
+- Icons and buttons have subtle backlit appearance
 
 ---
 
 ## Typography System
 
-**Primary Font**: Inter (Google Fonts)
-**Secondary Font**: Space Grotesk (Google Fonts) for headlines/emphasis
+**Font Stack**:
+- Primary Font: DM Sans (body text)
+- Display Font: Bebas Neue (headlines - bold, energetic)
+- Monospace: JetBrains Mono (technical content, code)
 
 **Hierarchy**:
-- Hero Headlines: Space Grotesk, font-bold, text-5xl md:text-7xl lg:text-8xl
-- Section Headers: Space Grotesk, font-semibold, text-4xl md:text-5xl
-- Subheadings: Inter, font-medium, text-xl md:text-2xl
-- Body Text: Inter, font-normal, text-base md:text-lg, leading-relaxed
-- Labels/Captions: Inter, font-medium, text-sm uppercase tracking-wider
-- Product Names: Space Grotesk, font-semibold, text-2xl
-- Pricing: Space Grotesk, font-bold, text-4xl
+- Hero Headlines: Bebas Neue, text-6xl md:text-8xl, tracking-wide, glowing effect
+- Section Headers: Bebas Neue, text-3xl md:text-5xl, uppercase tracking
+- Subheadings: DM Sans, font-medium, text-xl md:text-2xl
+- Body Text: DM Sans, font-normal, text-base md:text-lg
+- Labels/Captions: DM Sans, font-medium, text-sm uppercase
+- Product Names: Bebas Neue, font-bold, text-2xl
+- Pricing: Bebas Neue, text-4xl, with glow effect
 
 ---
 
 ## Layout System
 
-**Spacing Primitives**: Use Tailwind units of 4, 8, 12, 16, 24, 32 for consistency
+**Spacing Primitives**: Use Tailwind units for consistency
 - Section padding: py-24 md:py-32 lg:py-40
 - Component spacing: gap-8 md:gap-12
 - Card padding: p-8 md:p-12
@@ -42,193 +65,108 @@ Core principle: Scientific credibility meets modern e-commerce—clean, minimal,
 
 ---
 
-## Component Library
+## Component Design
 
 ### Navigation
-- Fixed top navigation with backdrop blur (backdrop-blur-lg)
-- Logo left, menu items center/right alignment
-- Mobile: Hamburger menu with full-screen overlay slide animation
-- CTA button in navigation ("Shop Products" or "Get Started")
+- Fixed top navigation with dark backdrop blur
+- Logo prominent and eye-catching
+- Navigation items with hover glow effects
+- Mobile: Full-screen overlay with neon-lit menu
 
-### Landing Page Structure
+### Buttons & CTAs
+- Primary: Vibrant blue (#3C82F6) with glowing box-shadow
+- Hover: Intensified glow effect
+- Active: Dramatic neon lighting
+- All interactive elements have subtle glow
 
-**Hero Section** (100vh):
-- Large hero image background: Abstract scientific/molecular imagery or clean laboratory aesthetic
-- Centered content overlay
-- Headline: "Something New Is Forming"
-- Subheading: "Engineered with intention. Built for those who don't wait for permission."
-- Primary CTA button with blurred background (backdrop-blur-md bg-white/10 border border-white/20)
-- Scroll indicator at bottom
+### Cards & Surfaces
+- Dark backgrounds with minimal visible borders
+- Subtle glow on hover (hover-elevate with blue tint)
+- Content elevated slightly from background
+- Icons with neon glow effects
 
-**Trust Signals Section**:
-- Single row of 4 key metrics/badges
-- Icons from Heroicons
-- Layout: grid-cols-2 md:grid-cols-4 gap-12
-- Each metric: Large number + descriptive label below
+### Forms & Inputs
+- Dark inputs with light text
+- Blue focus states with glow
+- Validation states with color-coded glow (green for success, red for error)
+- Labels clearly visible on dark backgrounds
 
-**Product Showcase** (Featured Products):
-- Grid layout: grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8
-- Product cards with:
-  - Product image placeholder (square aspect ratio)
-  - Product name (Space Grotesk bold)
-  - Brief description (2 lines max)
-  - Price display (prominent)
-  - "View Details" CTA
-- Card hover: Subtle lift effect (transform translate-y-[-4px])
+### Hero Section
+- Full-width dark background
+- Neon-lit headline text (Bebas Neue, glowing)
+- Subheading with good contrast
+- Primary CTA button with prominent glow
+- Ambient lighting through glow effects
 
-**Science/Credibility Section**:
-- Two-column layout (md:grid-cols-2 gap-16)
-- Left: Image of laboratory/research setting
-- Right: Headline + body text about research standards, third-party testing
-- Include "COA Verification" link/CTA
+---
 
-**How It Works**:
-- Three-column grid (grid-cols-1 md:grid-cols-3 gap-12)
-- Step cards with:
-  - Large number indicator (01, 02, 03)
-  - Icon from Heroicons
-  - Step title
-  - Brief description
+## Glow & Shadow Effects
 
-**Footer**:
-- Three-column layout (Company Info | Quick Links | Support)
-- Newsletter signup form
-- Social media icons
-- Legal links (Privacy Policy, Terms, COA Verification)
-- Copyright notice
+**Neon Glow Utilities**:
+- `.glow-primary`: Blue neon glow around element
+- `.glow-hover`: Intensified glow on hover state
+- `.glow-text`: Text with subtle glow effect
 
-### Checkout/Sales Page Structure
-
-**Product Header**:
-- Breadcrumb navigation
-- Product name as h1
-- Price display (prominent, Space Grotesk)
-
-**Two-Column Layout** (md:grid-cols-2 gap-16):
-
-**Left Column - Product Details**:
-- Large product image gallery (main image + thumbnails)
-- Product description with expandable sections:
-  - Benefits (bulleted list)
-  - Usage Instructions
-  - Research & Testing
-  - COA Information with batch number display
-- Trust badges row (Third-Party Tested, GMP Certified, etc.)
-
-**Right Column - Purchase Panel** (sticky positioning):
-- Variant selector (if applicable)
-- Quantity selector
-- Price summary breakdown
-- "Add to Cart" primary button (large, prominent)
-- Secure checkout badges
-- Shipping information
-- Return policy link
-
-**Cart Sidebar/Modal**:
-- Slide-in from right
-- Line items with product image thumbnails
-- Quantity adjusters
-- Subtotal/Total
-- "Proceed to Checkout" CTA
-- "Continue Shopping" secondary action
-
-**Checkout Form**:
-- Single column, max-w-2xl
-- Progress indicator (Steps: Cart → Information → Payment → Confirmation)
-- Form sections with clear headers:
-  - Contact Information
-  - Shipping Address
-  - Payment Details (Stripe integration)
-- Order summary sidebar (sticky on desktop)
-- Security badges near payment section
-
-### COA Verification Page
-
-**Hero Section**:
-- Centered layout with max-w-3xl
-- Headline: "Certificate of Authenticity"
-- Subheading explaining the verification process
-- Large search input field for batch number
-- "Verify" button (prominent)
-
-**Search Results Section**:
-- Appears after verification
-- Card layout displaying:
-  - Product name and image
-  - Batch number (large, monospace font)
-  - Test date
-  - Expiration date
-  - Test results table (compound, specification, result, pass/fail)
-  - Lab certification logo
-  - "Download PDF" button
-- Status indicator (Verified badge with checkmark icon)
-
-**Information Section**:
-- Two-column grid explaining COA importance
-- Icons for key points
-- CTA to contact support if batch not found
+**Implementation**:
+- Use box-shadow with blue (#3C82F6) at various blur radii
+- Color: rgba(60, 130, 246, 0.5) to rgba(60, 130, 246, 0.8)
+- Blur: 10px to 30px depending on intensity
+- Multiple layers for depth effect
 
 ---
 
 ## Animations & Interactions
 
-Use Framer Motion sparingly for:
-- Page transitions: Fade in with slight upward motion (y: 20 to y: 0)
-- Scroll reveals: Elements fade in as they enter viewport (intersection observer)
-- Card hovers: Subtle elevation change (scale: 1.02, shadow increase)
-- Modal/sidebar: Slide animations with backdrop fade
-- Button clicks: Gentle scale feedback (scale: 0.98)
+Use Framer Motion for:
+- Page transitions: Fade in with upward motion
+- Scroll reveals: Elements glow in as they enter viewport
+- Card hovers: Glow intensifies, subtle lift
+- Button clicks: Brief glow pulse
+- Icon animations: Subtle floating or pulse effects
 
-**Performance**: Limit animations to 3-4 key moments per page—hero entrance, section reveals, interactive elements.
+**Performance**: 
+- Limit animations to key moments
+- Glow effects use CSS box-shadow (performant)
+- Combine animations with glow for energy
 
 ---
 
-## Images
+## Imagery
 
-**Hero Image** (Landing Page):
-- Full-viewport background image
-- Abstract molecular structure, peptide chains, or clean laboratory aesthetic
-- High contrast to support white text overlay
-- Subtle parallax scroll effect
+**Hero Images**:
+- Dark, sophisticated backgrounds
+- Neon accent lighting/elements
+- High contrast for text readability
+- Subtle parallax or ambient movement
 
 **Product Images**:
-- Clean white background product photography
-- Square format (1:1 aspect ratio)
-- Consistent lighting and styling
-
-**Credibility Images**:
-- Professional laboratory/research setting photos
-- Testing equipment close-ups
-- Scientific imagery that reinforces trust
+- Clean, professional
+- Lit against dark backgrounds
+- Supporting neon accent lighting where applicable
 
 **Icons**:
-- Use Heroicons throughout for consistency
-- Outlined style for cleaner aesthetic
-
----
-
-## Form Design
-
-**Input Fields**:
-- Generous padding (px-4 py-3)
-- Border styling with focus states
-- Floating labels or clear placeholder text
-- Error states with inline validation messages
-- Success states with checkmark icons
-
-**Buttons**:
-- Primary: Large, high-contrast, Space Grotesk font
-- Secondary: Outlined variant
-- Disabled state clearly differentiated
-- Min-width for consistency (min-w-[160px])
+- Lucide React icons
+- Enhanced with glow effects on key elements
+- Outlined style for clean aesthetic
+- Neon-blue color for primary icons
 
 ---
 
 ## Accessibility
 
-- ARIA labels for all interactive elements
-- Keyboard navigation support throughout
-- Focus indicators clearly visible
-- Form validation with descriptive error messages
-- Sufficient contrast ratios maintained
+- High contrast: Bright text on dark backgrounds (WCAG AAA)
+- Clear focus states with glowing outlines
+- Keyboard navigation fully supported
+- Glow effects don't obscure functionality
 - Alt text for all images
+- Form validation messages clear and color-coded
+
+---
+
+## Overall Feel
+
+- **Modern**: Cutting-edge design with contemporary aesthetics
+- **Energetic**: Vibrant neon accents create excitement and engagement
+- **Premium**: Dark backgrounds convey sophistication and quality
+- **Inviting**: High contrast and glow effects draw users in
+- **Trustworthy**: Clear information hierarchy and professional presentation

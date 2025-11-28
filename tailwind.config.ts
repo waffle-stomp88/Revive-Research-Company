@@ -82,10 +82,10 @@ export default {
         },
       },
       fontFamily: {
-        sans: ["Inter", "var(--font-sans)", "sans-serif"],
+        sans: ["DM Sans", "Inter", "var(--font-sans)", "sans-serif"],
         serif: ["var(--font-serif)", "Georgia", "serif"],
-        mono: ["var(--font-mono)", "Menlo", "monospace"],
-        display: ["Space Grotesk", "sans-serif"],
+        mono: ["JetBrains Mono", "var(--font-mono)", "Menlo", "monospace"],
+        display: ["Bebas Neue", "Space Grotesk", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {
@@ -135,6 +135,13 @@ export default {
         "scale-in": "scale-in 0.3s ease-out forwards",
         "pulse-subtle": "pulse-subtle 2s ease-in-out infinite",
         "float": "float 3s ease-in-out infinite",
+        "glow-pulse": "glow-pulse 2s ease-in-out infinite",
+      },
+      boxShadow: {
+        "glow-sm": "0px 0px 15px 0px rgba(60, 130, 246, 0.40)",
+        "glow-md": "0px 0px 25px 0px rgba(60, 130, 246, 0.50)",
+        "glow-lg": "0px 0px 40px 0px rgba(60, 130, 246, 0.60)",
+        "glow-xl": "0px 0px 60px 0px rgba(60, 130, 246, 0.70)",
       },
     },
   },
