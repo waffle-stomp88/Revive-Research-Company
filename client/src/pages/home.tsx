@@ -234,7 +234,7 @@ function ProductShowcase() {
                 variants={fadeInUp}
               >
                 <Link href={`/products/${product.id}`}>
-                  <Card className="group p-8 hover-elevate cursor-pointer transition-all duration-300" data-testid={`card-product-${product.id}`}>
+                  <Card className="group p-8 hover-elevate cursor-pointer transition-all duration-300 border-2 border-[#FFEB3B]/30 hover:border-[#FFEB3B] hover:shadow-glow-lg hover:animate-product-glow" data-testid={`card-product-${product.id}`}>
                     <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-md mb-6 flex items-center justify-center overflow-hidden">
                       <FlaskConical className="h-16 w-16 text-muted-foreground/30 group-hover:scale-110 transition-transform duration-300" />
                     </div>
