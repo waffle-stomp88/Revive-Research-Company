@@ -181,7 +181,7 @@ export default function Products() {
           >
             <div className="flex items-center gap-3 mb-6">
               <Flame className="h-6 w-6 text-red-500" />
-              <h2 className="font-display text-2xl font-bold">{SALE_OF_THE_WEEK.title}</h2>
+              <h2 className="font-display font-bold text-[40px]">{SALE_OF_THE_WEEK.title}</h2>
               <Badge variant="destructive" className="animate-pulse">
                 {SALE_OF_THE_WEEK.badge}
               </Badge>
