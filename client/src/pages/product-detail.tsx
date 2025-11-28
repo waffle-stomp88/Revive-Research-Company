@@ -121,7 +121,7 @@ export default function ProductDetail() {
                 {product.category}
               </Badge>
               {product.featured && (
-                <Badge>Featured</Badge>
+                <Badge className="bg-[#21d8ff]">Featured</Badge>
               )}
               {!product.inStock && (
                 <Badge variant="destructive">Out of Stock</Badge>
