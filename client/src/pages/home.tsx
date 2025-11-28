@@ -359,7 +359,7 @@ function ScienceSection() {
               ))}
             </ul>
             <Link href="/coa">
-              <Button className="font-display gap-2" data-testid="button-verify-coa">
+              <Button className="font-display gap-2 bg-[#E7FB10]" data-testid="button-verify-coa">
                 Verify Your COA
                 <ArrowRight className="h-4 w-4" />
               </Button>
