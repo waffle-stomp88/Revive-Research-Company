@@ -216,21 +216,25 @@ export default function Products() {
                     }`}
                     data-testid={`card-product-${product.id}`}
                   >
-                    <div className="relative aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-md mb-6 flex items-center justify-center overflow-hidden">
+                    <div className="relative aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-md mb-6">
                       <img 
                         src={productImage} 
                         alt={product.name}
-                        className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300 p-4"
+                        className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300 p-6"
                       />
                       {product.featured && (
-                        <Badge className="absolute top-3 left-3 bg-[#21d8ff] text-primary-foreground">
+                        <span 
+                          className="absolute top-3 right-3 z-20 px-2.5 py-0.5 text-xs font-semibold rounded-md bg-[#21d8ff] text-black"
+                        >
                           Featured
-                        </Badge>
+                        </span>
                       )}
                       {!product.inStock && (
-                        <Badge className="absolute top-3 right-3" variant="destructive">
+                        <span 
+                          className="absolute top-3 left-3 z-20 px-2.5 py-0.5 text-xs font-semibold rounded-md bg-destructive text-destructive-foreground"
+                        >
                           Out of Stock
-                        </Badge>
+                        </span>
                       )}
                     </div>
                     
