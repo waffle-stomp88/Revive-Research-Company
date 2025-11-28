@@ -20,6 +20,7 @@ import {
   Percent,
 } from "lucide-react";
 import type { Product } from "@shared/schema";
+import productImage from "@assets/reta bottle_1764310671562.jpg";
 
 const subscriptionDiscounts: { [key: string]: number } = {
   weekly: 15,
@@ -233,8 +234,12 @@ export default function Checkout() {
               )}
               
               <div className="flex gap-4 mb-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-muted to-muted/50 rounded-md flex items-center justify-center flex-shrink-0">
-                  <FlaskConical className="h-8 w-8 text-muted-foreground/30" />
+                <div className="w-20 h-20 bg-gradient-to-br from-muted to-muted/50 rounded-md flex items-center justify-center flex-shrink-0 overflow-hidden">
+                  <img 
+                    src={productImage} 
+                    alt={product.name}
+                    className="w-full h-full object-contain p-2"
+                  />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-display font-semibold truncate" data-testid="text-order-product-name">

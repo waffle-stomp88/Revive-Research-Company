@@ -28,6 +28,7 @@ import {
   AlertTriangle
 } from "lucide-react";
 import type { Product } from "@shared/schema";
+import productImage from "@assets/reta bottle_1764310671562.jpg";
 
 type PurchaseType = "one-time" | "subscription";
 type SubscriptionInterval = "weekly" | "biweekly" | "monthly";
@@ -142,8 +143,12 @@ export default function ProductDetail() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center sticky top-32">
-              <FlaskConical className="h-32 w-32 text-muted-foreground/30" />
+            <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center sticky top-32 overflow-hidden">
+              <img 
+                src={productImage} 
+                alt={product.name}
+                className="w-full h-full object-contain p-8"
+              />
             </div>
           </motion.div>
 

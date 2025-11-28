@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { ArrowRight, FlaskConical, Search, X, SlidersHorizontal } from "lucide-react";
 import type { Product } from "@shared/schema";
+import productImage from "@assets/reta bottle_1764310671562.jpg";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -216,7 +217,11 @@ export default function Products() {
                     data-testid={`card-product-${product.id}`}
                   >
                     <div className="relative aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-md mb-6 flex items-center justify-center overflow-hidden">
-                      <FlaskConical className="h-16 w-16 text-muted-foreground/30 group-hover:scale-110 transition-transform duration-300" />
+                      <img 
+                        src={productImage} 
+                        alt={product.name}
+                        className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300 p-4"
+                      />
                       {product.featured && (
                         <Badge className="absolute top-3 left-3 bg-[#21d8ff] text-primary-foreground">
                           Featured
