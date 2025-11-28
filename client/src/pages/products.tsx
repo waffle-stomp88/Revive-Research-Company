@@ -236,7 +236,7 @@ export default function Products() {
         >
           <div className="flex items-center gap-3 mb-6">
             <Package className="h-6 w-6 text-[#21d8ff]" />
-            <h2 className="font-display text-2xl font-bold">Research Stacks</h2>
+            <h2 className="font-display font-bold text-[40px]">Research Stacks</h2>
             <Badge variant="outline" className="border-primary/50 text-primary">
               <Sparkles className="h-3 w-3 mr-1" />
               Save More
