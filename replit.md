@@ -52,6 +52,10 @@ Preferred communication style: Simple, everyday language.
   - `GET /api/coa/:batchNumber` - Verify Certificate of Authenticity
   - `POST /api/orders` - Create new orders
   - `POST /api/contact` - Submit contact inquiries
+  - `GET /api/stripe/config` - Get Stripe publishable key
+  - `POST /api/stripe/create-checkout-session` - Create Stripe checkout session
+  - `GET /api/stripe/checkout-session/:sessionId` - Verify payment and create order
+  - Admin routes under `/api/admin/*` for product, COA, order, and contact management
 - Zod schema validation for request payloads
 
 **Static File Serving**
@@ -88,10 +92,31 @@ Preferred communication style: Simple, everyday language.
 - Drizzle Kit for schema migrations in `migrations/` directory
 - `npm run db:push` script for pushing schema changes
 
+### Payment Integration
+
+**Stripe Checkout**
+- Stripe SDK for payment processing (via `stripe` and `stripe-replit-sync` packages)
+- Hosted checkout sessions for secure payment collection
+- Webhook handling for payment confirmation
+- Order creation on successful payment
+
+**Payment Flow**
+1. Customer selects product → Creates Stripe Checkout Session
+2. Customer redirected to Stripe's hosted checkout
+3. On success, redirected to `/checkout/success?session_id=...`
+4. Backend verifies session and creates order with payment details
+
+**Files**
+- `server/stripeClient.ts` - Stripe client initialization and credentials
+- `server/webhookHandlers.ts` - Stripe webhook processing
+- `client/src/pages/checkout.tsx` - Checkout page with Stripe redirect
+- `client/src/pages/checkout-success.tsx` - Order confirmation page
+
 ### External Dependencies
 
 **Third-Party Services**
 - Neon Database: Serverless PostgreSQL hosting
+- Stripe: Payment processing (sandbox/live modes)
 - Google Fonts CDN: Inter and Space Grotesk typography
 - Replit-specific integrations:
   - `@replit/vite-plugin-runtime-error-modal`: Development error overlay

@@ -33,6 +33,7 @@ export interface IStorage {
   getOrdersByEmail(email: string): Promise<Order[]>;
   getAllOrders(): Promise<Order[]>;
   updateOrderStatus(id: string, status: string): Promise<Order | undefined>;
+  getOrderByStripeSessionId(sessionId: string): Promise<Order | undefined>;
   
   createContact(contact: InsertContact): Promise<Contact>;
   getAllContacts(): Promise<Contact[]>;
@@ -146,6 +147,11 @@ export class DatabaseStorage implements IStorage {
 
   async updateOrderStatus(id: string, status: string): Promise<Order | undefined> {
     const [order] = await db.update(orders).set({ status }).where(eq(orders.id, id)).returning();
+    return order || undefined;
+  }
+
+  async getOrderByStripeSessionId(sessionId: string): Promise<Order | undefined> {
+    const [order] = await db.select().from(orders).where(eq(orders.stripeSessionId, sessionId));
     return order || undefined;
   }
 

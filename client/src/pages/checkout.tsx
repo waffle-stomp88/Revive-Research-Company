@@ -1,32 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { useLocation, Link } from "wouter";
+import { Link } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { queryClient, apiRequest } from "@/lib/queryClient";
+import { apiRequest } from "@/lib/queryClient";
 import {
   ArrowLeft,
   FlaskConical,
@@ -34,39 +14,12 @@ import {
   Lock,
   CreditCard,
   Truck,
-  CheckCircle,
+  Loader2,
 } from "lucide-react";
-import type { Product, InsertOrder } from "@shared/schema";
-
-const checkoutSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  address: z.string().min(5, "Please enter a valid address"),
-  city: z.string().min(2, "City is required"),
-  state: z.string().min(2, "State is required"),
-  zipCode: z.string().min(5, "Please enter a valid ZIP code"),
-  country: z.string().min(2, "Country is required"),
-});
-
-type CheckoutFormData = z.infer<typeof checkoutSchema>;
-
-const US_STATES = [
-  "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
-  "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
-  "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan",
-  "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire",
-  "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio",
-  "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
-  "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia",
-  "Wisconsin", "Wyoming"
-];
+import type { Product } from "@shared/schema";
 
 export default function Checkout() {
-  const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [orderComplete, setOrderComplete] = useState(false);
-  const [orderId, setOrderId] = useState<string>("");
 
   const searchParams = new URLSearchParams(window.location.search);
   const productId = searchParams.get("productId");
@@ -77,54 +30,33 @@ export default function Checkout() {
     enabled: !!productId,
   });
 
-  const form = useForm<CheckoutFormData>({
-    resolver: zodResolver(checkoutSchema),
-    defaultValues: {
-      email: "",
-      firstName: "",
-      lastName: "",
-      address: "",
-      city: "",
-      state: "",
-      zipCode: "",
-      country: "United States",
-    },
-  });
-
-  const orderMutation = useMutation({
-    mutationFn: async (data: CheckoutFormData) => {
+  const checkoutMutation = useMutation({
+    mutationFn: async () => {
       if (!product) throw new Error("No product selected");
       
-      const orderData: InsertOrder = {
-        ...data,
+      const response = await apiRequest("POST", "/api/stripe/create-checkout-session", {
         productId: product.id,
         quantity,
-        totalAmount: (Number(product.price) * quantity).toFixed(2),
-      };
-      
-      const response = await apiRequest("POST", "/api/orders", orderData);
-      const order = await response.json();
-      return order;
-    },
-    onSuccess: (data: { id: string }) => {
-      setOrderId(data.id || "");
-      setOrderComplete(true);
-      toast({
-        title: "Order Placed Successfully!",
-        description: "You will receive a confirmation email shortly.",
       });
+      const data = await response.json();
+      return data;
+    },
+    onSuccess: (data: { url: string; sessionId: string }) => {
+      if (data.url) {
+        window.location.href = data.url;
+      }
     },
     onError: (error: Error) => {
       toast({
-        title: "Order Failed",
-        description: error.message || "There was an error processing your order. Please try again.",
+        title: "Checkout Failed",
+        description: error.message || "There was an error initiating checkout. Please try again.",
         variant: "destructive",
       });
     },
   });
 
-  const onSubmit = (data: CheckoutFormData) => {
-    orderMutation.mutate(data);
+  const handleCheckout = () => {
+    checkoutMutation.mutate();
   };
 
   if (!productId) {
@@ -137,53 +69,9 @@ export default function Checkout() {
             Please select a product to purchase.
           </p>
           <Link href="/products">
-            <Button>Browse Products</Button>
+            <Button data-testid="button-browse-products">Browse Products</Button>
           </Link>
         </Card>
-      </main>
-    );
-  }
-
-  if (orderComplete) {
-    return (
-      <main className="min-h-screen pt-24 md:pt-32 pb-24 flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Card className="p-12 text-center max-w-lg">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-            >
-              <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-                <CheckCircle className="h-10 w-10 text-foreground" />
-              </div>
-            </motion.div>
-            <h2 className="font-display text-2xl font-bold mb-2" data-testid="text-order-success">
-              Order Confirmed!
-            </h2>
-            <p className="text-muted-foreground mb-2">
-              Thank you for your order. Your order ID is:
-            </p>
-            <p className="font-mono text-lg font-semibold mb-6" data-testid="text-order-id">
-              {orderId.slice(0, 8).toUpperCase()}
-            </p>
-            <p className="text-sm text-muted-foreground mb-8">
-              A confirmation email has been sent to your email address with order details and tracking information.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/products">
-                <Button variant="outline">Continue Shopping</Button>
-              </Link>
-              <Link href="/coa">
-                <Button>Verify COA</Button>
-              </Link>
-            </div>
-          </Card>
-        </motion.div>
       </main>
     );
   }
@@ -191,14 +79,14 @@ export default function Checkout() {
   if (productLoading) {
     return (
       <main className="min-h-screen pt-24 md:pt-32 pb-24">
-        <div className="max-w-6xl mx-auto px-4 md:px-8">
-          <div className="grid lg:grid-cols-5 gap-12">
-            <div className="lg:col-span-3 space-y-4">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
+        <div className="max-w-4xl mx-auto px-4 md:px-8">
+          <div className="grid md:grid-cols-2 gap-12">
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
                 <div key={i} className="h-12 bg-muted rounded animate-pulse" />
               ))}
             </div>
-            <div className="lg:col-span-2">
+            <div>
               <div className="h-64 bg-muted rounded animate-pulse" />
             </div>
           </div>
@@ -217,7 +105,7 @@ export default function Checkout() {
             The product you're trying to purchase doesn't exist.
           </p>
           <Link href="/products">
-            <Button>Browse Products</Button>
+            <Button data-testid="button-browse-products">Browse Products</Button>
           </Link>
         </Card>
       </main>
@@ -230,7 +118,7 @@ export default function Checkout() {
 
   return (
     <main className="min-h-screen pt-24 md:pt-32 pb-24">
-      <div className="max-w-6xl mx-auto px-4 md:px-8">
+      <div className="max-w-4xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -253,216 +141,51 @@ export default function Checkout() {
           Checkout
         </motion.h1>
 
-        <div className="grid lg:grid-cols-5 gap-12">
+        <div className="grid md:grid-cols-2 gap-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="lg:col-span-3"
           >
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <Card className="p-6">
-                  <h2 className="font-display text-xl font-semibold mb-6">
-                    Contact Information
-                  </h2>
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email Address</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="your@email.com"
-                            {...field}
-                            data-testid="input-email"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </Card>
+            <Card className="p-6 mb-6">
+              <h2 className="font-display text-xl font-semibold mb-6 flex items-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                Secure Payment
+              </h2>
+              <div className="bg-muted/50 rounded-lg p-6 text-center">
+                <Lock className="h-10 w-10 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground mb-2">
+                  You'll be redirected to Stripe's secure checkout
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Your payment information is encrypted and secure. We never store your card details.
+                </p>
+              </div>
+            </Card>
 
-                <Card className="p-6">
-                  <h2 className="font-display text-xl font-semibold mb-6">
-                    Shipping Address
-                  </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="firstName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>First Name</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="John"
-                              {...field}
-                              data-testid="input-first-name"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="lastName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Last Name</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Doe"
-                              {...field}
-                              data-testid="input-last-name"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="address"
-                      render={({ field }) => (
-                        <FormItem className="md:col-span-2">
-                          <FormLabel>Address</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="123 Research Lane"
-                              {...field}
-                              data-testid="input-address"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="city"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>City</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="San Francisco"
-                              {...field}
-                              data-testid="input-city"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="state"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>State</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger data-testid="select-state">
-                                <SelectValue placeholder="Select state" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {US_STATES.map((state) => (
-                                <SelectItem key={state} value={state}>
-                                  {state}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="zipCode"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>ZIP Code</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="94102"
-                              {...field}
-                              data-testid="input-zip"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="country"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Country</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger data-testid="select-country">
-                                <SelectValue placeholder="Select country" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="United States">United States</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </Card>
-
-                <Card className="p-6">
-                  <h2 className="font-display text-xl font-semibold mb-6 flex items-center gap-2">
-                    <CreditCard className="h-5 w-5" />
-                    Payment
-                  </h2>
-                  <div className="bg-muted/50 rounded-lg p-6 text-center">
-                    <Lock className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-muted-foreground text-sm mb-2">
-                      Secure payment processing
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Payment will be collected securely upon order submission.
-                    </p>
-                  </div>
-                </Card>
-
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="w-full font-display text-lg gap-2"
-                  disabled={orderMutation.isPending}
-                  data-testid="button-place-order"
-                >
-                  {orderMutation.isPending ? (
-                    <>Processing...</>
-                  ) : (
-                    <>
-                      <ShieldCheck className="h-5 w-5" />
-                      Place Order - ${total.toFixed(2)}
-                    </>
-                  )}
-                </Button>
-              </form>
-            </Form>
+            <Card className="p-6">
+              <h2 className="font-display text-lg font-semibold mb-4">What to expect:</h2>
+              <ul className="space-y-3 text-sm text-muted-foreground">
+                <li className="flex items-start gap-3">
+                  <ShieldCheck className="h-5 w-5 text-foreground flex-shrink-0 mt-0.5" />
+                  <span>Secure payment processing by Stripe</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Truck className="h-5 w-5 text-foreground flex-shrink-0 mt-0.5" />
+                  <span>Enter your shipping address at checkout</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <FlaskConical className="h-5 w-5 text-foreground flex-shrink-0 mt-0.5" />
+                  <span>Certificate of Authenticity included with shipment</span>
+                </li>
+              </ul>
+            </Card>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="lg:col-span-2"
           >
             <Card className="p-6 sticky top-32">
               <h2 className="font-display text-xl font-semibold mb-6">
@@ -504,20 +227,29 @@ export default function Checkout() {
                 </span>
               </div>
 
-              <div className="space-y-3 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <Truck className="h-4 w-4" />
-                  <span>Free shipping on all orders</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4" />
-                  <span>COA included with shipment</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Lock className="h-4 w-4" />
-                  <span>Secure checkout</span>
-                </div>
-              </div>
+              <Button
+                size="lg"
+                className="w-full font-display text-lg gap-2"
+                onClick={handleCheckout}
+                disabled={checkoutMutation.isPending}
+                data-testid="button-checkout"
+              >
+                {checkoutMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    Redirecting...
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck className="h-5 w-5" />
+                    Proceed to Payment
+                  </>
+                )}
+              </Button>
+
+              <p className="text-xs text-muted-foreground text-center mt-4">
+                By proceeding, you agree to our terms of service and privacy policy.
+              </p>
             </Card>
           </motion.div>
         </div>
