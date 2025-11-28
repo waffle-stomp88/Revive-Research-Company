@@ -211,7 +211,7 @@ export default function Products() {
                     className={`group p-6 hover-elevate cursor-pointer transition-all duration-300 h-full flex flex-col border-2 ${
                       !product.inStock
                         ? "border-red-500/30 hover:border-red-500 hover:shadow-glow-red-lg hover:animate-product-glow-red"
-                        : "border-[#E7FB10]/30 hover:border-[#E7FB10] hover:shadow-glow-lg hover:animate-product-glow"
+                        : "border-cyan-400/30 hover:border-cyan-400 hover:shadow-glow-blue-lg hover:animate-product-glow-blue"
                     }`}
                     data-testid={`card-product-${product.id}`}
                   >

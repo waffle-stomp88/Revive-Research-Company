@@ -138,6 +138,7 @@ export default {
         "glow-pulse": "glow-pulse 2s ease-in-out infinite",
         "product-glow": "product-glow 0.4s ease-in-out forwards",
         "product-glow-red": "product-glow-red 0.4s ease-in-out forwards",
+        "product-glow-blue": "product-glow-blue 0.4s ease-in-out forwards",
       },
       boxShadow: {
         "glow-sm": "0px 0px 15px 0px rgba(231, 251, 16, 0.40)",
@@ -148,6 +149,10 @@ export default {
         "glow-red-md": "0px 0px 25px 0px rgba(239, 68, 68, 0.50)",
         "glow-red-lg": "0px 0px 40px 0px rgba(239, 68, 68, 0.60)",
         "glow-red-xl": "0px 0px 60px 0px rgba(239, 68, 68, 0.70)",
+        "glow-blue-sm": "0px 0px 15px 0px rgba(0, 212, 255, 0.40)",
+        "glow-blue-md": "0px 0px 25px 0px rgba(0, 212, 255, 0.50)",
+        "glow-blue-lg": "0px 0px 40px 0px rgba(0, 212, 255, 0.60)",
+        "glow-blue-xl": "0px 0px 60px 0px rgba(0, 212, 255, 0.70)",
       },
     },
   },
