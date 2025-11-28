@@ -16,8 +16,12 @@ import {
   Minus,
   Plus,
   ShoppingCart,
+  ShoppingBag,
   Truck,
   Repeat,
+  FileCheck,
+  RefreshCw,
+  AlertTriangle,
   Zap,
   Timer,
   Heart,
@@ -39,7 +43,7 @@ const BUNDLES = [
     name: "The Wolverine Stack",
     tagline: "Legendary Recovery",
     icon: Zap,
-    description: "BPC-157 + TB-500 combination for accelerated tissue repair and healing research.",
+    description: "BPC-157 + TB-500 combination for accelerated tissue repair and healing research. The most popular peptide stack worldwide.",
     products: ["BPC-157", "TB-500"],
     originalPrice: 104.98,
     bundlePrice: 89.99,
@@ -58,7 +62,7 @@ const BUNDLES = [
     name: "Longevity Stack",
     tagline: "Age Optimization",
     icon: Timer,
-    description: "Epithalon + GHK-Cu + NAD+ for comprehensive cellular rejuvenation and longevity research.",
+    description: "Epithalon + GHK-Cu + NAD+ for comprehensive cellular rejuvenation and longevity research applications.",
     products: ["Epithalon", "GHK-Cu", "NAD+ Precursor"],
     originalPrice: 219.97,
     bundlePrice: 189.99,
@@ -77,7 +81,7 @@ const BUNDLES = [
     name: "Performance Stack",
     tagline: "Peak Output",
     icon: Zap,
-    description: "CJC-1295 + Ipamorelin for natural growth hormone optimization research.",
+    description: "CJC-1295 + Ipamorelin for natural growth hormone optimization research. Ideal for athletic performance studies.",
     products: ["CJC-1295", "Ipamorelin"],
     originalPrice: 234.98,
     bundlePrice: 199.99,
@@ -191,9 +195,12 @@ export default function BundleDetail() {
     );
   }
 
+  const BundleIcon = bundle.icon;
+  const benefits = bundle.benefits || [];
+
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-12">
-      <div className="max-w-6xl mx-auto px-4 md:px-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -207,18 +214,18 @@ export default function BundleDetail() {
           </Link>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center sticky top-24">
+            <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center sticky top-24 overflow-hidden">
               <div className="flex flex-col items-center justify-center gap-4 p-8">
-                <div className={`w-20 h-20 rounded-full flex items-center justify-center ${
+                <div className={`w-24 h-24 rounded-full flex items-center justify-center ${
                   bundle.color === "cyan" ? "bg-cyan-500/10" : "bg-[#E7FB10]/10"
                 }`}>
-                  <bundle.icon className={`h-10 w-10 ${
+                  <BundleIcon className={`h-12 w-12 ${
                     bundle.color === "cyan" ? "text-cyan-400" : "text-[#E7FB10]"
                   }`} />
                 </div>
@@ -240,15 +247,15 @@ export default function BundleDetail() {
               </Badge>
             </div>
 
-            <h1 className="font-display text-3xl md:text-4xl font-bold mb-1" data-testid="text-bundle-name">
+            <h1 className="font-display text-2xl md:text-3xl font-bold mb-2" data-testid="text-bundle-name">
               {bundle.name}
             </h1>
             
-            <p className="text-sm text-muted-foreground mb-4 font-medium">
+            <p className="text-sm text-muted-foreground mb-3 font-medium">
               {bundle.tagline}
             </p>
 
-            <div className="flex items-baseline gap-3 mb-6">
+            <div className="flex items-baseline gap-3 mb-3">
               <span className="font-display text-3xl font-bold text-[#E7FB10]" data-testid="text-bundle-price">
                 ${getDiscountedPrice().toFixed(2)}
               </span>
@@ -267,12 +274,8 @@ export default function BundleDetail() {
             </p>
 
             <div className="mb-4">
-              <div className="text-xs font-medium mb-2 text-muted-foreground">Included: {bundle.products.join(", ")}</div>
-            </div>
-
-            <div className="mb-4">
-              <Label className="text-xs font-medium mb-2 block text-muted-foreground">Quantity</Label>
-              <div className="flex items-center border border-border rounded-md w-fit">
+              <Label className="text-xs font-medium mb-1.5 block text-muted-foreground">Quantity</Label>
+              <div className="flex items-center border border-border rounded-md h-9">
                 <Button
                   variant="ghost"
                   size="icon"
@@ -283,7 +286,7 @@ export default function BundleDetail() {
                 >
                   <Minus className="h-3 w-3" />
                 </Button>
-                <span className="w-12 text-center font-medium text-sm" data-testid="text-quantity">
+                <span className="flex-1 text-center font-medium text-sm" data-testid="text-quantity">
                   {quantity}
                 </span>
                 <Button
@@ -300,10 +303,10 @@ export default function BundleDetail() {
             </div>
 
             <div className="mb-4">
-              <Label className="text-xs font-medium mb-2 block text-muted-foreground">Purchase Option</Label>
+              <Label className="text-xs font-medium mb-1.5 block text-muted-foreground">Purchase Option</Label>
               <div className="grid grid-cols-2 gap-2">
                 <div 
-                  className={`relative flex items-center p-2.5 rounded-lg border-2 cursor-pointer transition-all ${
+                  className={`relative flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
                     purchaseType === "one-time" 
                       ? "border-[#E7FB10] bg-[#E7FB10]/5" 
                       : "border-border hover:border-border/80"
@@ -323,7 +326,7 @@ export default function BundleDetail() {
                 </div>
                 
                 <div 
-                  className={`relative flex items-center p-2.5 rounded-lg border-2 cursor-pointer transition-all ${
+                  className={`relative flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
                     purchaseType === "subscription" 
                       ? "border-[#21d8ff] bg-[#21d8ff]/5" 
                       : "border-border hover:border-border/80"
@@ -376,26 +379,7 @@ export default function BundleDetail() {
               </motion.div>
             )}
 
-            <div className="flex gap-3 mb-4">
-              <Button 
-                onClick={handleBuyNow}
-                className="flex-1 gap-2"
-                data-testid="button-buy-now"
-              >
-                <ShoppingCart className="h-4 w-4" />
-                Buy Now
-              </Button>
-              <Button 
-                onClick={handleAddToCart}
-                variant="outline"
-                className="flex-1 gap-2"
-                data-testid="button-add-to-cart"
-              >
-                Add to Cart
-              </Button>
-            </div>
-
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">
               <span className="flex items-center gap-1">
                 <CheckCircle className="h-3 w-3 text-green-500" />
                 In Stock
@@ -405,6 +389,101 @@ export default function BundleDetail() {
                 <span className="flex items-center gap-1"><Truck className="h-3 w-3" /> Fast Ship</span>
               </div>
             </div>
+
+            <div className="flex gap-3">
+              <Button
+                size="lg"
+                variant="outline"
+                className="flex-1 font-display gap-2 border-2"
+                onClick={handleAddToCart}
+                data-testid="button-add-to-cart"
+              >
+                <ShoppingBag className="h-5 w-5" />
+                Add to Cart
+              </Button>
+              <Button
+                size="lg"
+                className={`flex-1 font-display gap-2 shadow-glow-sm hover:shadow-glow-lg transition-shadow duration-300 text-black ${
+                  purchaseType === "subscription" 
+                    ? "bg-[#21d8ff] border-[#21d8ff] hover:bg-[#21d8ff]/90" 
+                    : "bg-[#E7FB10] border-[#E7FB10] hover:bg-[#E7FB10]/90"
+                }`}
+                onClick={handleBuyNow}
+                data-testid="button-buy-now"
+              >
+                {purchaseType === "subscription" ? (
+                  <>
+                    <Repeat className="h-5 w-5" />
+                    Subscribe
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart className="h-5 w-5" />
+                    Buy Now
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {purchaseType === "subscription" && (
+              <p className="text-[10px] text-center text-muted-foreground mt-2">
+                Save ${((getBasePrice() - getDiscountedPrice()) * quantity).toFixed(2)} per order • Cancel anytime
+              </p>
+            )}
+
+            <Separator className="my-6" />
+
+            <div className="grid grid-cols-4 gap-2 text-center mb-6">
+              <div className="flex flex-col items-center gap-1">
+                <Shield className="h-4 w-4 text-[#21d8ff]" />
+                <span className="text-[10px] text-muted-foreground">3rd Party Tested</span>
+              </div>
+              <div className="flex flex-col items-center gap-1">
+                <FileCheck className="h-4 w-4 text-[#21d8ff]" />
+                <span className="text-[10px] text-muted-foreground">COA Included</span>
+              </div>
+              <div className="flex flex-col items-center gap-1">
+                <Truck className="h-4 w-4 text-[#21d8ff]" />
+                <span className="text-[10px] text-muted-foreground">Fast Shipping</span>
+              </div>
+              <div className="flex flex-col items-center gap-1">
+                <RefreshCw className="h-4 w-4 text-[#21d8ff]" />
+                <span className="text-[10px] text-muted-foreground">Guaranteed</span>
+              </div>
+            </div>
+
+            {benefits.length > 0 && (
+              <div className="mb-8">
+                <h3 className="font-display font-semibold text-lg mb-4">Key Benefits</h3>
+                <ul className="space-y-3">
+                  {benefits.map((benefit, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <CheckCircle className="h-5 w-5 text-[#E7FB10] mt-0.5 flex-shrink-0" />
+                      <span className="text-muted-foreground">{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <Card className="p-6 bg-red-950/30 border-2 border-red-500/50 shadow-glow-red-sm">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-full bg-red-500/20 border border-red-500/30">
+                  <AlertTriangle className="h-6 w-6 text-red-400" />
+                </div>
+                <div>
+                  <h4 className="font-display font-bold text-red-400 uppercase tracking-wider text-lg mb-2">
+                    Research Use Only
+                  </h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    This product is sold for research purposes only and is not intended 
+                    for human consumption. By purchasing, you confirm you are a qualified 
+                    researcher and will use this product in accordance with all applicable 
+                    federal and state laws and regulations.
+                  </p>
+                </div>
+              </div>
+            </Card>
           </motion.div>
         </div>
       </div>
