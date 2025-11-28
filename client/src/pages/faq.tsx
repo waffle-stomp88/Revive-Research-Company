@@ -179,8 +179,8 @@ export default function FAQ() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-            <HelpCircle className="h-8 w-8 text-primary" />
+          <div className="w-16 h-16 rounded-full bg-[#9d4edd]/10 flex items-center justify-center mx-auto mb-6">
+            <HelpCircle className="h-8 w-8 text-[#9d4edd]" />
           </div>
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-4" data-testid="text-faq-title">
             Frequently Asked Questions
@@ -221,12 +221,12 @@ export default function FAQ() {
               transition={{ duration: 0.5, delay: 0.1 + categoryIndex * 0.05 }}
             >
               <Card className="overflow-hidden" data-testid={`faq-category-${categoryIndex + 1}`}>
-                <div className="p-6 border-b border-border bg-muted/30">
+                <div className="p-6 border-b border-border bg-[#9d4edd]/5">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <category.icon className="h-5 w-5 text-primary" />
+                    <div className="w-10 h-10 rounded-full bg-[#9d4edd]/10 flex items-center justify-center">
+                      <category.icon className="h-5 w-5 text-[#9d4edd]" />
                     </div>
-                    <h2 className="font-display text-xl font-bold">{category.title}</h2>
+                    <h2 className="font-display text-xl font-bold text-[#9d4edd]">{category.title}</h2>
                   </div>
                 </div>
                 <Accordion type="single" collapsible className="w-full">

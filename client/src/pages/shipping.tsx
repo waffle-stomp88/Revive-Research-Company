@@ -35,8 +35,8 @@ export default function Shipping() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-            <Truck className="h-8 w-8 text-primary" />
+          <div className="w-16 h-16 rounded-full bg-[#9d4edd]/10 flex items-center justify-center mx-auto mb-6">
+            <Truck className="h-8 w-8 text-[#9d4edd]" />
           </div>
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-4" data-testid="text-shipping-title">
             Shipping Information
@@ -53,13 +53,13 @@ export default function Shipping() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="grid md:grid-cols-2 gap-6 mb-12"
         >
-          <Card className="p-6 border-primary/50 bg-primary/5">
+          <Card className="p-6 border-[#9d4edd]/50 bg-[#9d4edd]/5">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                <DollarSign className="h-6 w-6 text-primary" />
+              <div className="w-12 h-12 rounded-full bg-[#9d4edd]/20 flex items-center justify-center flex-shrink-0">
+                <DollarSign className="h-6 w-6 text-[#9d4edd]" />
               </div>
               <div>
-                <Badge className="mb-2">FREE SHIPPING</Badge>
+                <Badge className="mb-2 bg-[#9d4edd] text-white">FREE SHIPPING</Badge>
                 <h3 className="font-display text-xl font-bold mb-2">
                   Orders Over ${SHIPPING_INFO.freeShippingThreshold}
                 </h3>
@@ -96,15 +96,15 @@ export default function Shipping() {
         >
           <Card className="p-6 md:p-8 mb-12" data-testid="card-shipping-details">
             <h2 className="font-display text-2xl font-bold mb-6 flex items-center gap-3">
-              <Clock className="h-6 w-6 text-primary" />
+              <Clock className="h-6 w-6 text-[#9d4edd]" />
               Processing & Delivery Times
             </h2>
 
             <div className="space-y-6">
-              <div className="bg-primary/10 rounded-lg p-6 border border-primary/20">
+              <div className="bg-[#9d4edd]/10 rounded-lg p-6 border border-[#9d4edd]/20">
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-                    <Clock className="h-5 w-5 text-primary-foreground" />
+                  <div className="w-10 h-10 rounded-full bg-[#9d4edd] flex items-center justify-center flex-shrink-0">
+                    <Clock className="h-5 w-5 text-white" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg mb-1">Same Day Shipping</h3>
@@ -119,7 +119,7 @@ export default function Shipping() {
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="bg-muted/30 rounded-lg p-5">
                   <div className="flex items-center gap-3 mb-3">
-                    <Package className="h-5 w-5 text-primary" />
+                    <Package className="h-5 w-5 text-[#9d4edd]" />
                     <span className="font-semibold">Standard Processing</span>
                   </div>
                   <p className="text-muted-foreground text-sm">
@@ -130,7 +130,7 @@ export default function Shipping() {
 
                 <div className="bg-muted/30 rounded-lg p-5">
                   <div className="flex items-center gap-3 mb-3">
-                    <Calendar className="h-5 w-5 text-primary" />
+                    <Calendar className="h-5 w-5 text-[#9d4edd]" />
                     <span className="font-semibold">Estimated Transit</span>
                   </div>
                   <p className="text-muted-foreground text-sm">
@@ -150,7 +150,7 @@ export default function Shipping() {
         >
           <Card className="p-6 md:p-8 mb-12" data-testid="card-shipping-policies">
             <h2 className="font-display text-2xl font-bold mb-6 flex items-center gap-3">
-              <ShieldCheck className="h-6 w-6 text-primary" />
+              <ShieldCheck className="h-6 w-6 text-[#9d4edd]" />
               Shipping Policies
             </h2>
 
@@ -189,7 +189,7 @@ export default function Shipping() {
               </div>
 
               <div className="flex items-start gap-4 pb-4 border-b border-border">
-                <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                <MapPin className="h-5 w-5 text-[#9d4edd] mt-0.5 flex-shrink-0" />
                 <div>
                   <h4 className="font-semibold mb-1">Shipping Zones</h4>
                   <p className="text-sm text-muted-foreground">
@@ -236,7 +236,7 @@ export default function Shipping() {
                 </ul>
                 <p className="text-sm text-muted-foreground mt-4 font-medium">
                   Note: Due to the nature of our products, all sales are final. See our 
-                  <Link href="/faq" className="text-primary hover:underline ml-1">FAQ</Link> for 
+                  <Link href="/faq" className="text-[#9d4edd] hover:underline ml-1">FAQ</Link> for 
                   details on our refund policy.
                 </p>
               </div>
