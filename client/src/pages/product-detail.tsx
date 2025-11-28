@@ -416,7 +416,7 @@ export default function ProductDetail() {
                   <h4 className="font-display font-bold mb-2 text-red-400 uppercase tracking-wider text-sm">
                     Research Use Only
                   </h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-sm text-muted-foreground leading-relaxed font-bold">
                     This product is sold for research purposes only and is not intended 
                     for human consumption. By purchasing, you confirm you are a qualified 
                     researcher and will use this product in accordance with all applicable 
