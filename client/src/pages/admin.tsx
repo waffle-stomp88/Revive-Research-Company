@@ -404,7 +404,7 @@ function ProductsTab() {
                     ) : (
                       <Badge variant="destructive">Out of Stock</Badge>
                     )}
-                    {product.featured && <Badge>Featured</Badge>}
+                    {product.featured && <Badge className="bg-[#21d8ff]">Featured</Badge>}
                   </div>
                 </TableCell>
                 <TableCell className="text-right">

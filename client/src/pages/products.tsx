@@ -218,7 +218,7 @@ export default function Products() {
                     <div className="relative aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-md mb-6 flex items-center justify-center overflow-hidden">
                       <FlaskConical className="h-16 w-16 text-muted-foreground/30 group-hover:scale-110 transition-transform duration-300" />
                       {product.featured && (
-                        <Badge className="absolute top-3 left-3" variant="secondary">
+                        <Badge className="absolute top-3 left-3 bg-[#21d8ff] text-primary-foreground">
                           Featured
                         </Badge>
                       )}
