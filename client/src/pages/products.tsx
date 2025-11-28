@@ -461,7 +461,7 @@ export default function Products() {
                       <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
                         {product.category}
                       </div>
-                      <h3 className="font-display text-base md:text-lg font-bold mb-1 group-hover:text-[#E7FB10] transition-colors line-clamp-1">
+                      <h3 className="font-display text-base md:text-lg font-bold mb-1 group-hover:text-[#E7FB10] transition-colors line-clamp-1 text-center">
                         {product.name}
                       </h3>
                       <p className="text-xs text-muted-foreground mb-2 flex-1 line-clamp-2">
