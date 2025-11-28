@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, User, LogIn, LogOut } from "lucide-react";
+import { Menu, X, User, LogIn, LogOut, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -129,6 +129,14 @@ export function Navigation() {
                             Dashboard
                           </Link>
                         </DropdownMenuItem>
+                        {user?.isAdmin && (
+                          <DropdownMenuItem asChild>
+                            <Link href="/admin" className="cursor-pointer" data-testid="link-admin">
+                              <Shield className="h-4 w-4 mr-2" />
+                              Admin Panel
+                            </Link>
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem asChild>
                           <a href="/api/logout" className="cursor-pointer text-destructive" data-testid="button-logout">
@@ -208,24 +216,46 @@ export function Navigation() {
               ))}
               
               {isAuthenticated && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <Link href="/dashboard">
-                    <span
-                      className={`text-2xl font-display font-medium tracking-wide cursor-pointer ${
-                        location === "/dashboard"
-                          ? "text-foreground"
-                          : "text-muted-foreground"
-                      }`}
-                      data-testid="link-mobile-dashboard"
+                <>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <Link href="/dashboard">
+                      <span
+                        className={`text-2xl font-display font-medium tracking-wide cursor-pointer ${
+                          location === "/dashboard"
+                            ? "text-foreground"
+                            : "text-muted-foreground"
+                        }`}
+                        data-testid="link-mobile-dashboard"
+                      >
+                        Dashboard
+                      </span>
+                    </Link>
+                  </motion.div>
+                  {user?.isAdmin && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.35 }}
                     >
-                      Dashboard
-                    </span>
-                  </Link>
-                </motion.div>
+                      <Link href="/admin">
+                        <span
+                          className={`text-2xl font-display font-medium tracking-wide cursor-pointer ${
+                            location === "/admin"
+                              ? "text-foreground"
+                              : "text-muted-foreground"
+                          }`}
+                          data-testid="link-mobile-admin"
+                        >
+                          Admin Panel
+                        </span>
+                      </Link>
+                    </motion.div>
+                  )}
+                </>
               )}
               
               <motion.div
