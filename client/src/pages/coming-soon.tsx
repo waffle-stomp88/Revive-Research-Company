@@ -188,12 +188,31 @@ export default function ComingSoon() {
       <VialGlow />
       <RollingSmoke />
       
-      <div className="absolute top-0 left-0 right-0 z-20 pt-10 md:pt-16 px-6 text-center">
+      <div className="absolute top-0 left-0 right-0 z-20 pt-8 md:pt-12 px-6 text-center">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
+          <motion.h2
+            className="text-3xl md:text-4xl font-bold mb-6 tracking-wider"
+            style={{
+              color: '#21d8ff',
+              textShadow: '0 0 10px rgba(33, 216, 255, 0.5), 0 0 20px rgba(33, 216, 255, 0.3), 0 0 30px rgba(33, 216, 255, 0.2)',
+              filter: 'drop-shadow(0 0 8px rgba(33, 216, 255, 0.4))',
+            }}
+            animate={{
+              textShadow: [
+                '0 0 10px rgba(33, 216, 255, 0.5), 0 0 20px rgba(33, 216, 255, 0.3), 0 0 30px rgba(33, 216, 255, 0.2)',
+                '0 0 15px rgba(33, 216, 255, 0.7), 0 0 30px rgba(33, 216, 255, 0.5), 0 0 45px rgba(33, 216, 255, 0.3)',
+                '0 0 10px rgba(33, 216, 255, 0.5), 0 0 20px rgba(33, 216, 255, 0.3), 0 0 30px rgba(33, 216, 255, 0.2)',
+              ],
+            }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          >
+            REVIVE
+          </motion.h2>
+
           <motion.div
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/50 backdrop-blur-sm border border-[#21d8ff]/30 mb-4"
             animate={{
