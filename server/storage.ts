@@ -1,19 +1,17 @@
 import { 
   users, products, coas, orders, contacts,
-  type User, type InsertUser,
+  type User, type UpsertUser,
   type Product, type InsertProduct,
   type Coa, type InsertCoa,
   type Order, type InsertOrder,
   type Contact, type InsertContact
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, ilike, or } from "drizzle-orm";
+import { eq, ilike, or, desc } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  getUserByEmail(email: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  upsertUser(user: UpsertUser): Promise<User>;
   
   getAllProducts(): Promise<Product[]>;
   getProduct(id: string): Promise<Product | undefined>;
@@ -31,6 +29,7 @@ export interface IStorage {
   
   createOrder(order: InsertOrder): Promise<Order>;
   getOrder(id: string): Promise<Order | undefined>;
+  getOrdersByUserId(userId: string): Promise<Order[]>;
   getOrdersByEmail(email: string): Promise<Order[]>;
   getAllOrders(): Promise<Order[]>;
   updateOrderStatus(id: string, status: string): Promise<Order | undefined>;
@@ -45,18 +44,18 @@ export class DatabaseStorage implements IStorage {
     return user || undefined;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user || undefined;
-  }
-
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user || undefined;
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db.insert(users).values(insertUser).returning();
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
     return user;
   }
 
@@ -133,12 +132,16 @@ export class DatabaseStorage implements IStorage {
     return order || undefined;
   }
 
+  async getOrdersByUserId(userId: string): Promise<Order[]> {
+    return db.select().from(orders).where(eq(orders.userId, userId)).orderBy(desc(orders.createdAt));
+  }
+
   async getOrdersByEmail(email: string): Promise<Order[]> {
-    return db.select().from(orders).where(eq(orders.email, email));
+    return db.select().from(orders).where(eq(orders.email, email)).orderBy(desc(orders.createdAt));
   }
 
   async getAllOrders(): Promise<Order[]> {
-    return db.select().from(orders);
+    return db.select().from(orders).orderBy(desc(orders.createdAt));
   }
 
   async updateOrderStatus(id: string, status: string): Promise<Order | undefined> {

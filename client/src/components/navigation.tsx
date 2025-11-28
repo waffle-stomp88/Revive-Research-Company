@@ -1,9 +1,18 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, ShoppingCart } from "lucide-react";
+import { Menu, X, User, LogIn, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/hooks/useAuth";
 import logoImage from "@assets/REVIVE-11_1764290805698.png";
 
 const navLinks = [
@@ -16,6 +25,7 @@ export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [location] = useLocation();
+  const { user, isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,6 +39,16 @@ export function Navigation() {
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [location]);
+
+  const getInitials = () => {
+    if (user?.firstName && user?.lastName) {
+      return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+    }
+    if (user?.email) {
+      return user.email[0].toUpperCase();
+    }
+    return "U";
+  };
 
   return (
     <>
@@ -78,6 +98,57 @@ export function Navigation() {
 
             <div className="flex items-center gap-2 md:gap-4">
               <ThemeToggle />
+              
+              {!isLoading && (
+                <>
+                  {isAuthenticated ? (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="rounded-full" data-testid="button-user-menu">
+                          <Avatar className="h-8 w-8">
+                            {user?.profileImageUrl && (
+                              <AvatarImage src={user.profileImageUrl} alt={user?.firstName || "User"} className="object-cover" />
+                            )}
+                            <AvatarFallback className="text-xs">
+                              {getInitials()}
+                            </AvatarFallback>
+                          </Avatar>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        <div className="px-2 py-1.5">
+                          <p className="text-sm font-medium">
+                            {user?.firstName ? `${user.firstName} ${user.lastName || ""}`.trim() : "Account"}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                        </div>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                          <Link href="/dashboard" className="cursor-pointer" data-testid="link-dashboard">
+                            <User className="h-4 w-4 mr-2" />
+                            Dashboard
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                          <a href="/api/logout" className="cursor-pointer text-destructive" data-testid="button-logout">
+                            <LogOut className="h-4 w-4 mr-2" />
+                            Sign Out
+                          </a>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  ) : (
+                    <a href="/api/login">
+                      <Button variant="outline" size="sm" className="hidden md:inline-flex" data-testid="button-login">
+                        <LogIn className="h-4 w-4 mr-2" />
+                        Sign In
+                      </Button>
+                    </a>
+                  )}
+                </>
+              )}
+              
               <Link href="/products">
                 <Button
                   className="hidden md:inline-flex font-display"
@@ -135,16 +206,59 @@ export function Navigation() {
                   </Link>
                 </motion.div>
               ))}
+              
+              {isAuthenticated && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <Link href="/dashboard">
+                    <span
+                      className={`text-2xl font-display font-medium tracking-wide cursor-pointer ${
+                        location === "/dashboard"
+                          ? "text-foreground"
+                          : "text-muted-foreground"
+                      }`}
+                      data-testid="link-mobile-dashboard"
+                    >
+                      Dashboard
+                    </span>
+                  </Link>
+                </motion.div>
+              )}
+              
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
+                transition={{ delay: 0.4 }}
+                className="flex flex-col items-center gap-4 mt-4"
               >
                 <Link href="/products">
-                  <Button size="lg" className="font-display mt-4" data-testid="button-mobile-shop">
+                  <Button size="lg" className="font-display" data-testid="button-mobile-shop">
                     Shop Products
                   </Button>
                 </Link>
+                
+                {!isLoading && (
+                  <>
+                    {isAuthenticated ? (
+                      <a href="/api/logout">
+                        <Button variant="outline" size="lg" data-testid="button-mobile-logout">
+                          <LogOut className="h-4 w-4 mr-2" />
+                          Sign Out
+                        </Button>
+                      </a>
+                    ) : (
+                      <a href="/api/login">
+                        <Button variant="outline" size="lg" data-testid="button-mobile-login">
+                          <LogIn className="h-4 w-4 mr-2" />
+                          Sign In
+                        </Button>
+                      </a>
+                    )}
+                  </>
+                )}
               </motion.div>
             </nav>
           </motion.div>

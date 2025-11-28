@@ -1,10 +1,19 @@
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, FlaskConical, Filter } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ArrowRight, FlaskConical, Search, X, SlidersHorizontal } from "lucide-react";
 import type { Product } from "@shared/schema";
 
 const fadeInUp = {
@@ -21,10 +30,63 @@ const staggerContainer = {
   }
 };
 
+type SortOption = "name-asc" | "name-desc" | "price-asc" | "price-desc" | "featured";
+
 export default function Products() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<SortOption>("featured");
+  const [stockFilter, setStockFilter] = useState<"all" | "in-stock" | "out-of-stock">("all");
+
   const { data: products, isLoading, error } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
+
+  const filteredAndSortedProducts = useMemo(() => {
+    if (!products) return [];
+
+    let filtered = products.filter((product) => {
+      const matchesSearch =
+        searchQuery === "" ||
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.category.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesStock =
+        stockFilter === "all" ||
+        (stockFilter === "in-stock" && product.inStock) ||
+        (stockFilter === "out-of-stock" && !product.inStock);
+
+      return matchesSearch && matchesStock;
+    });
+
+    switch (sortBy) {
+      case "name-asc":
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case "name-desc":
+        filtered.sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      case "price-asc":
+        filtered.sort((a, b) => Number(a.price) - Number(b.price));
+        break;
+      case "price-desc":
+        filtered.sort((a, b) => Number(b.price) - Number(a.price));
+        break;
+      case "featured":
+        filtered.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+        break;
+    }
+
+    return filtered;
+  }, [products, searchQuery, sortBy, stockFilter]);
+
+  const clearFilters = () => {
+    setSearchQuery("");
+    setSortBy("featured");
+    setStockFilter("all");
+  };
+
+  const hasActiveFilters = searchQuery !== "" || sortBy !== "featured" || stockFilter !== "all";
 
   return (
     <main className="min-h-screen pt-24 md:pt-32 pb-24">
@@ -33,7 +95,7 @@ export default function Products() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-12 md:mb-16"
+          className="mb-8 md:mb-12"
         >
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-4" data-testid="text-products-title">
             All Products
@@ -42,6 +104,77 @@ export default function Products() {
             Premium research compounds, rigorously tested and verified. Each product 
             includes a Certificate of Authenticity for complete transparency.
           </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="mb-8"
+        >
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+                data-testid="input-search-products"
+              />
+              {searchQuery && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                  onClick={() => setSearchQuery("")}
+                  data-testid="button-clear-search"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+
+            <div className="flex gap-3 flex-wrap">
+              <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
+                <SelectTrigger className="w-[180px]" data-testid="select-sort">
+                  <SlidersHorizontal className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="featured">Featured</SelectItem>
+                  <SelectItem value="name-asc">Name (A-Z)</SelectItem>
+                  <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+                  <SelectItem value="price-asc">Price (Low-High)</SelectItem>
+                  <SelectItem value="price-desc">Price (High-Low)</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={stockFilter} onValueChange={(value) => setStockFilter(value as "all" | "in-stock" | "out-of-stock")}>
+                <SelectTrigger className="w-[160px]" data-testid="select-stock-filter">
+                  <SelectValue placeholder="Availability" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Products</SelectItem>
+                  <SelectItem value="in-stock">In Stock</SelectItem>
+                  <SelectItem value="out-of-stock">Out of Stock</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {hasActiveFilters && (
+                <Button variant="outline" onClick={clearFilters} data-testid="button-clear-filters">
+                  <X className="h-4 w-4 mr-2" />
+                  Clear Filters
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {searchQuery && (
+            <p className="text-sm text-muted-foreground mt-4">
+              Showing {filteredAndSortedProducts.length} result{filteredAndSortedProducts.length !== 1 ? "s" : ""} for "{searchQuery}"
+            </p>
+          )}
         </motion.div>
 
         {isLoading ? (
@@ -61,14 +194,14 @@ export default function Products() {
             <p className="text-muted-foreground mb-4">Unable to load products. Please try again.</p>
             <Button onClick={() => window.location.reload()}>Retry</Button>
           </Card>
-        ) : (
+        ) : filteredAndSortedProducts.length > 0 ? (
           <motion.div
             initial="initial"
             animate="animate"
             variants={staggerContainer}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
-            {products?.map((product) => (
+            {filteredAndSortedProducts.map((product) => (
               <motion.div
                 key={product.id}
                 variants={fadeInUp}
@@ -124,13 +257,20 @@ export default function Products() {
               </motion.div>
             ))}
           </motion.div>
-        )}
-
-        {products && products.length === 0 && (
+        ) : (
           <Card className="p-12 text-center">
             <FlaskConical className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-            <h3 className="font-display text-xl font-semibold mb-2">No Products Available</h3>
-            <p className="text-muted-foreground">Check back soon for new research compounds.</p>
+            <h3 className="font-display text-xl font-semibold mb-2">No Products Found</h3>
+            <p className="text-muted-foreground mb-4">
+              {searchQuery
+                ? `No products match "${searchQuery}". Try a different search term.`
+                : "No products match your current filters."}
+            </p>
+            {hasActiveFilters && (
+              <Button variant="outline" onClick={clearFilters}>
+                Clear Filters
+              </Button>
+            )}
           </Card>
         )}
       </div>
