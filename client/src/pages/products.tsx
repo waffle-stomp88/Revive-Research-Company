@@ -446,7 +446,7 @@ export default function Products() {
                         </span>
                       )}
                       {product.featured && (
-                        <span className="absolute top-2 right-2 z-20 px-1.5 py-0.5 text-[10px] font-semibold rounded bg-[#21d8ff] text-black">
+                        <span className="absolute top-2 right-2 z-20 px-1.5 py-0.5 font-semibold rounded bg-[#21d8ff] text-black text-[13px]">
                           Featured
                         </span>
                       )}
