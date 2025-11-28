@@ -177,7 +177,7 @@ export default function ProductDetail() {
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <Button
                 size="lg"
-                className="flex-1 font-display gap-2"
+                className="flex-1 font-display gap-2 bg-[#e7fb10]"
                 onClick={handleBuyNow}
                 disabled={!product.inStock}
                 data-testid="button-buy-now"
