@@ -413,7 +413,7 @@ export default function ProductDetail() {
                   <AlertTriangle className="h-6 w-6 text-red-400" />
                 </div>
                 <div>
-                  <h4 className="font-display font-bold mb-2 text-red-400 uppercase tracking-wider text-sm">
+                  <h4 className="font-display font-bold mb-2 text-red-400 uppercase tracking-wider text-[20px]">
                     Research Use Only
                   </h4>
                   <p className="text-sm text-muted-foreground leading-relaxed font-bold">
