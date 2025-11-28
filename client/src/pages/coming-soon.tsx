@@ -182,9 +182,12 @@ export default function ComingSoon() {
           backgroundImage: `url(${heroBackground})`,
         }}
       />
+      
       <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
+      
       <VialGlow />
       <RollingSmoke />
+      
       <div className="absolute top-0 left-0 right-0 z-20 pt-8 md:pt-12 px-6 text-center">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -218,7 +221,7 @@ export default function ComingSoon() {
               The Future of
             </motion.span>
             <motion.span
-              className="block bg-gradient-to-r from-[#21d8ff] via-[#E7FB10] to-[#21d8ff] bg-clip-text text-[#21d8ff]"
+              className="block bg-gradient-to-r from-[#21d8ff] via-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent"
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
@@ -228,6 +231,7 @@ export default function ComingSoon() {
           </h1>
         </motion.div>
       </div>
+      
       <div className="absolute bottom-0 left-0 right-0 z-20 pb-10 md:pb-16 px-6">
         <div className="max-w-md mx-auto text-center">
           <motion.p
