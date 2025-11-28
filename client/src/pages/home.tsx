@@ -167,13 +167,42 @@ function TrustSection() {
               variants={fadeInUp}
               className="text-center"
             >
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 mb-4">
-                <metric.icon className="h-6 w-6 text-foreground" />
-              </div>
-              <div className="font-display text-3xl md:text-4xl font-bold mb-2" data-testid={`text-metric-${index}`}>
+              <motion.div 
+                className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#E7FB10]/10 border-2 border-[#E7FB10]/30 mb-6 shadow-glow-sm"
+                whileHover={{ scale: 1.1, boxShadow: "0px 0px 40px 0px rgba(231, 251, 16, 0.60)" }}
+                animate={{ 
+                  boxShadow: [
+                    "0px 0px 15px 0px rgba(231, 251, 16, 0.20)",
+                    "0px 0px 25px 0px rgba(231, 251, 16, 0.40)",
+                    "0px 0px 15px 0px rgba(231, 251, 16, 0.20)"
+                  ]
+                }}
+                transition={{ 
+                  duration: 2, 
+                  repeat: Infinity, 
+                  ease: "easeInOut",
+                  delay: index * 0.3
+                }}
+              >
+                <motion.div
+                  animate={{ 
+                    y: [0, -3, 0],
+                    rotate: [0, 5, 0, -5, 0]
+                  }}
+                  transition={{ 
+                    duration: 3, 
+                    repeat: Infinity, 
+                    ease: "easeInOut",
+                    delay: index * 0.2
+                  }}
+                >
+                  <metric.icon className="h-8 w-8 text-[#E7FB10]" />
+                </motion.div>
+              </motion.div>
+              <div className="font-display text-4xl md:text-5xl font-bold mb-3 text-[#E7FB10]" data-testid={`text-metric-${index}`}>
                 {metric.value}
               </div>
-              <div className="text-sm text-muted-foreground uppercase tracking-wider">
+              <div className="text-base md:text-lg text-muted-foreground uppercase tracking-wider font-medium">
                 {metric.label}
               </div>
             </motion.div>
