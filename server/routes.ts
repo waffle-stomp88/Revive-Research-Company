@@ -170,11 +170,34 @@ export async function registerRoutes(
 
   // === STRIPE PAYMENT ROUTES ===
 
-  // Get Stripe publishable key
+  // Subscription discount configuration - shared source of truth
+  const SUBSCRIPTION_DISCOUNTS: { [key: string]: number } = {
+    weekly: 15,
+    biweekly: 12,
+    monthly: 10,
+  };
+
+  const SUBSCRIPTION_LABELS: { [key: string]: string } = {
+    weekly: "Weekly",
+    biweekly: "Every 2 Weeks", 
+    monthly: "Monthly",
+  };
+
+  const VALID_INTERVALS = ['weekly', 'biweekly', 'monthly'] as const;
+  type SubscriptionInterval = typeof VALID_INTERVALS[number];
+
+  // Get Stripe publishable key and subscription config
   app.get("/api/stripe/config", async (req, res) => {
     try {
       const publishableKey = await getStripePublishableKey();
-      res.json({ publishableKey });
+      res.json({ 
+        publishableKey,
+        subscriptionConfig: {
+          discounts: SUBSCRIPTION_DISCOUNTS,
+          labels: SUBSCRIPTION_LABELS,
+          intervals: VALID_INTERVALS,
+        }
+      });
     } catch (error) {
       console.error("Error getting Stripe config:", error);
       res.status(500).json({ error: "Failed to get Stripe configuration" });
@@ -184,7 +207,7 @@ export async function registerRoutes(
   // Create Stripe checkout session
   app.post("/api/stripe/create-checkout-session", async (req: any, res) => {
     try {
-      const { productId, quantity = 1, customerInfo } = req.body;
+      const { productId, quantity = 1, customerInfo, subscription = false, interval = 'monthly' } = req.body;
 
       if (!productId) {
         return res.status(400).json({ error: "Product ID is required" });
@@ -199,27 +222,32 @@ export async function registerRoutes(
         return res.status(400).json({ error: "Product is out of stock" });
       }
 
+      // Validate subscription parameters
+      if (subscription) {
+        if (!VALID_INTERVALS.includes(interval as SubscriptionInterval)) {
+          return res.status(400).json({ 
+            error: `Invalid subscription interval. Must be one of: ${VALID_INTERVALS.join(', ')}` 
+          });
+        }
+      }
+
       const stripe = await getUncachableStripeClient();
       const baseUrl = `${req.protocol}://${req.get('host')}`;
 
-      // Create checkout session with line items
-      const session = await stripe.checkout.sessions.create({
+      // Calculate discount for subscriptions using validated interval
+      const discountPercent = subscription ? SUBSCRIPTION_DISCOUNTS[interval] : 0;
+      const discountedPrice = Number(product.price) * (1 - discountPercent / 100);
+      const unitAmount = Math.round(discountedPrice * 100); // Convert to cents
+
+      // Map interval to Stripe recurring interval
+      const stripeIntervalMap: { [key: string]: { interval: 'day' | 'week' | 'month' | 'year'; interval_count: number } } = {
+        weekly: { interval: 'week', interval_count: 1 },
+        biweekly: { interval: 'week', interval_count: 2 },
+        monthly: { interval: 'month', interval_count: 1 },
+      };
+
+      let sessionConfig: any = {
         payment_method_types: ['card'],
-        line_items: [
-          {
-            price_data: {
-              currency: 'usd',
-              product_data: {
-                name: product.name,
-                description: product.shortDescription,
-                images: product.imageUrl ? [product.imageUrl] : [],
-              },
-              unit_amount: Math.round(Number(product.price) * 100), // Convert to cents
-            },
-            quantity: quantity,
-          },
-        ],
-        mode: 'payment',
         success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${baseUrl}/checkout?productId=${productId}&quantity=${quantity}`,
         customer_email: customerInfo?.email,
@@ -228,11 +256,61 @@ export async function registerRoutes(
           productName: product.name,
           quantity: quantity.toString(),
           userId: req.isAuthenticated?.() ? req.user?.claims?.sub : '',
+          isSubscription: subscription ? 'true' : 'false',
+          subscriptionInterval: interval,
+          discountPercent: discountPercent.toString(),
         },
-        shipping_address_collection: {
+      };
+
+      if (subscription) {
+        // Subscription mode
+        const stripeInterval = stripeIntervalMap[interval] || stripeIntervalMap.monthly;
+        sessionConfig.mode = 'subscription';
+        sessionConfig.line_items = [
+          {
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: `${product.name} - Subscription`,
+                description: `${product.shortDescription} (${discountPercent}% discount, auto-renewal)`,
+                images: product.imageUrl ? [product.imageUrl] : [],
+              },
+              unit_amount: unitAmount,
+              recurring: stripeInterval,
+            },
+            quantity: quantity,
+          },
+        ];
+        // Add subscription description
+        sessionConfig.subscription_data = {
+          description: `${product.name} subscription - Delivered ${interval}`,
+          metadata: {
+            productId: product.id,
+            productName: product.name,
+            interval: interval,
+          },
+        };
+      } else {
+        // One-time payment mode
+        sessionConfig.mode = 'payment';
+        sessionConfig.line_items = [
+          {
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: product.name,
+                description: product.shortDescription,
+                images: product.imageUrl ? [product.imageUrl] : [],
+              },
+              unit_amount: Math.round(Number(product.price) * 100),
+            },
+            quantity: quantity,
+          },
+        ];
+        sessionConfig.shipping_address_collection = {
           allowed_countries: ['US'],
-        },
-        shipping_options: [
+        };
+        sessionConfig.shipping_options = [
           {
             shipping_rate_data: {
               type: 'fixed_amount',
@@ -253,8 +331,10 @@ export async function registerRoutes(
               },
             },
           },
-        ],
-      });
+        ];
+      }
+
+      const session = await stripe.checkout.sessions.create(sessionConfig);
 
       res.json({ sessionId: session.id, url: session.url });
     } catch (error: any) {

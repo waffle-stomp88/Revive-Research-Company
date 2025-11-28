@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -15,8 +16,22 @@ import {
   CreditCard,
   Truck,
   Loader2,
+  Repeat,
+  Percent,
 } from "lucide-react";
 import type { Product } from "@shared/schema";
+
+const subscriptionDiscounts: { [key: string]: number } = {
+  weekly: 15,
+  biweekly: 12,
+  monthly: 10,
+};
+
+const intervalLabels: { [key: string]: string } = {
+  weekly: "Weekly",
+  biweekly: "Every 2 Weeks",
+  monthly: "Monthly",
+};
 
 export default function Checkout() {
   const { toast } = useToast();
@@ -24,6 +39,8 @@ export default function Checkout() {
   const searchParams = new URLSearchParams(window.location.search);
   const productId = searchParams.get("productId");
   const quantity = parseInt(searchParams.get("quantity") || "1", 10);
+  const isSubscription = searchParams.get("subscription") === "true";
+  const interval = searchParams.get("interval") || "monthly";
 
   const { data: product, isLoading: productLoading } = useQuery<Product>({
     queryKey: ["/api/products", productId],
@@ -37,6 +54,8 @@ export default function Checkout() {
       const response = await apiRequest("POST", "/api/stripe/create-checkout-session", {
         productId: product.id,
         quantity,
+        subscription: isSubscription,
+        interval: interval,
       });
       const data = await response.json();
       return data;
@@ -54,6 +73,11 @@ export default function Checkout() {
       });
     },
   });
+
+  const discountPercent = isSubscription ? (subscriptionDiscounts[interval] || 10) : 0;
+  const getDiscountedPrice = (price: number) => {
+    return price * (1 - discountPercent / 100);
+  };
 
   const handleCheckout = () => {
     checkoutMutation.mutate();
@@ -112,7 +136,10 @@ export default function Checkout() {
     );
   }
 
-  const subtotal = Number(product.price) * quantity;
+  const basePrice = Number(product.price);
+  const unitPrice = isSubscription ? getDiscountedPrice(basePrice) : basePrice;
+  const subtotal = unitPrice * quantity;
+  const savings = isSubscription ? (basePrice - unitPrice) * quantity : 0;
   const shipping = 0;
   const total = subtotal + shipping;
 
@@ -191,6 +218,19 @@ export default function Checkout() {
               <h2 className="font-display text-xl font-semibold mb-6">
                 Order Summary
               </h2>
+
+              {isSubscription && (
+                <div className="flex items-center gap-2 mb-4 p-3 rounded-lg bg-[#21d8ff]/10 border border-[#21d8ff]/20">
+                  <Repeat className="h-4 w-4 text-[#21d8ff]" />
+                  <span className="text-sm font-medium">
+                    {intervalLabels[interval]} Subscription
+                  </span>
+                  <Badge className="bg-[#21d8ff] text-xs ml-auto">
+                    <Percent className="h-3 w-3 mr-1" />
+                    {discountPercent}% off
+                  </Badge>
+                </div>
+              )}
               
               <div className="flex gap-4 mb-6">
                 <div className="w-20 h-20 bg-gradient-to-br from-muted to-muted/50 rounded-md flex items-center justify-center flex-shrink-0">
@@ -199,9 +239,19 @@ export default function Checkout() {
                 <div className="flex-1 min-w-0">
                   <h3 className="font-display font-semibold truncate" data-testid="text-order-product-name">
                     {product.name}
+                    {isSubscription && <span className="text-[#21d8ff] text-sm ml-2">Subscription</span>}
                   </h3>
                   <p className="text-sm text-muted-foreground">Qty: {quantity}</p>
-                  <p className="font-semibold mt-1">${Number(product.price).toFixed(2)}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    {isSubscription ? (
+                      <>
+                        <span className="font-semibold text-[#21d8ff]">${unitPrice.toFixed(2)}</span>
+                        <span className="text-sm text-muted-foreground line-through">${basePrice.toFixed(2)}</span>
+                      </>
+                    ) : (
+                      <span className="font-semibold">${basePrice.toFixed(2)}</span>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -212,6 +262,12 @@ export default function Checkout() {
                   <span className="text-muted-foreground">Subtotal</span>
                   <span>${subtotal.toFixed(2)}</span>
                 </div>
+                {isSubscription && savings > 0 && (
+                  <div className="flex justify-between text-green-500">
+                    <span>Subscription Savings</span>
+                    <span>-${savings.toFixed(2)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Shipping</span>
                   <span className="text-foreground">Free</span>
@@ -221,7 +277,9 @@ export default function Checkout() {
               <Separator className="my-6" />
 
               <div className="flex justify-between items-center mb-6">
-                <span className="font-display text-lg font-semibold">Total</span>
+                <span className="font-display text-lg font-semibold">
+                  {isSubscription ? `Total per ${interval === 'weekly' ? 'week' : interval === 'biweekly' ? '2 weeks' : 'month'}` : 'Total'}
+                </span>
                 <span className="font-display text-2xl font-bold" data-testid="text-order-total">
                   ${total.toFixed(2)}
                 </span>
@@ -229,7 +287,11 @@ export default function Checkout() {
 
               <Button
                 size="lg"
-                className="w-full font-display text-lg gap-2"
+                className={`w-full font-display text-lg gap-2 ${
+                  isSubscription 
+                    ? "bg-[#21d8ff] hover:bg-[#21d8ff]/90" 
+                    : "bg-[#E7FB10] hover:bg-[#E7FB10]/90"
+                }`}
                 onClick={handleCheckout}
                 disabled={checkoutMutation.isPending}
                 data-testid="button-checkout"
@@ -239,6 +301,11 @@ export default function Checkout() {
                     <Loader2 className="h-5 w-5 animate-spin" />
                     Redirecting...
                   </>
+                ) : isSubscription ? (
+                  <>
+                    <Repeat className="h-5 w-5" />
+                    Start Subscription
+                  </>
                 ) : (
                   <>
                     <ShieldCheck className="h-5 w-5" />
@@ -246,6 +313,13 @@ export default function Checkout() {
                   </>
                 )}
               </Button>
+
+              {isSubscription && (
+                <p className="text-xs text-muted-foreground text-center mt-4 flex items-center justify-center gap-1">
+                  <ShieldCheck className="h-3 w-3" />
+                  Cancel anytime. No commitment required.
+                </p>
+              )}
 
               <p className="text-xs text-muted-foreground text-center mt-4">
                 By proceeding, you agree to our terms of service and privacy policy.
