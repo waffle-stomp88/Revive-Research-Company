@@ -160,7 +160,7 @@ export function Navigation() {
               
               <Link href="/products">
                 <Button
-                  className="hidden md:inline-flex font-display"
+                  className="hidden md:inline-flex font-display bg-[#E7FB10] text-primary-foreground border border-primary-border hover:shadow-glow-md hover:animate-product-glow"
                   data-testid="button-shop-products"
                 >
                   Shop Products
