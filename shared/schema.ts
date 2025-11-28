@@ -5,15 +5,15 @@ import { z } from "zod";
 
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: text("email").notNull().unique(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  isAdmin: boolean("is_admin").default(false),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
-});
-
+export const insertUserSchema = createInsertSchema(users).omit({ id: true, isAdmin: true });
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 
@@ -58,6 +58,7 @@ export type Coa = typeof coas.$inferSelect;
 // Orders table
 export const orders = pgTable("orders", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id"),
   email: text("email").notNull(),
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
@@ -70,9 +71,10 @@ export const orders = pgTable("orders", {
   quantity: integer("quantity").notNull().default(1),
   totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
   status: text("status").default("pending"),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertOrderSchema = createInsertSchema(orders).omit({ id: true, status: true });
+export const insertOrderSchema = createInsertSchema(orders).omit({ id: true, status: true, createdAt: true });
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type Order = typeof orders.$inferSelect;
 
