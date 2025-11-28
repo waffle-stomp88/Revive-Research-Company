@@ -441,7 +441,7 @@ export default function Products() {
                         className="w-full h-full object-contain transition-transform duration-300 p-3 group-hover:scale-105"
                       />
                       {product.originalPrice && (
-                        <span className="absolute top-2 left-2 z-20 px-1.5 py-0.5 text-[10px] font-bold rounded bg-red-600 text-white">
+                        <span className="absolute top-2 left-2 z-20 px-1.5 py-0.5 font-bold rounded bg-red-600 text-white text-[13px]">
                           SALE
                         </span>
                       )}
