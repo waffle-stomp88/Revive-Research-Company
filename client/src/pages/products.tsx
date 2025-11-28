@@ -222,6 +222,13 @@ export default function Products() {
                         alt={product.name}
                         className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300 p-6"
                       />
+                      {product.originalPrice && (
+                        <span 
+                          className="absolute top-3 left-3 z-20 px-2.5 py-0.5 text-xs font-bold rounded-md bg-red-600 text-white shadow-glow-red-sm"
+                        >
+                          SALE!
+                        </span>
+                      )}
                       {product.featured && (
                         <span 
                           className="absolute top-3 right-3 z-20 px-2.5 py-0.5 text-xs font-semibold rounded-md bg-[#21d8ff] text-black"
@@ -231,7 +238,7 @@ export default function Products() {
                       )}
                       {!product.inStock && (
                         <span 
-                          className="absolute top-3 left-3 z-20 px-2.5 py-0.5 text-xs font-semibold rounded-md bg-destructive text-destructive-foreground"
+                          className="absolute bottom-3 left-3 z-20 px-2.5 py-0.5 text-xs font-semibold rounded-md bg-destructive text-destructive-foreground"
                         >
                           Out of Stock
                         </span>

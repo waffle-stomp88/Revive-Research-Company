@@ -157,12 +157,15 @@ export default function ProductDetail() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-3 mb-4 flex-wrap">
               <Badge variant="secondary" className="text-xs uppercase tracking-wider">
                 {product.category}
               </Badge>
+              {product.originalPrice && (
+                <Badge className="bg-red-600 text-white font-bold shadow-glow-red-sm">SALE!</Badge>
+              )}
               {product.featured && (
-                <Badge className="bg-[#21d8ff]">Featured</Badge>
+                <Badge className="bg-[#21d8ff] text-black">Featured</Badge>
               )}
               {!product.inStock && (
                 <Badge variant="destructive">Out of Stock</Badge>
