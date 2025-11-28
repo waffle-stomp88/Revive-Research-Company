@@ -70,12 +70,10 @@ function HeroSection() {
         style={{ y }}
         className="absolute inset-0 bg-gradient-to-b from-background via-background to-card"
       />
-      
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
       </div>
-
       <motion.div
         style={{ opacity }}
         className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 text-center"
@@ -86,7 +84,7 @@ function HeroSection() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="mb-6"
         >
-          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium tracking-wide">
+          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-sm font-medium tracking-wide text-[#e7fb10]">
             <FlaskConical className="h-4 w-4" />
             Research Grade Compounds
           </span>
@@ -135,7 +133,6 @@ function HeroSection() {
           </Link>
         </motion.div>
       </motion.div>
-
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
