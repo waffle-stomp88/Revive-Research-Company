@@ -13,62 +13,45 @@ import heroBackground from "@assets/69bf34cc-d177-46c6-af24-c51da5ee10fa_1764314
 function RollingSmoke() {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      <div className="absolute bottom-0 left-0 right-0 h-[60%]"
+      <div className="absolute bottom-0 left-0 right-0 h-[70%]"
         style={{
-          background: 'linear-gradient(to top, rgba(15, 20, 25, 0.9) 0%, rgba(25, 35, 45, 0.5) 50%, transparent 100%)',
+          background: 'linear-gradient(to top, rgba(10, 15, 20, 0.95) 0%, rgba(20, 30, 40, 0.7) 40%, rgba(30, 40, 50, 0.3) 70%, transparent 100%)',
         }}
       />
       
       <motion.div
-        className="absolute bottom-[-5%] left-[-20%] w-[70%] h-[45%] rounded-full"
+        className="absolute top-[30%] left-[-30%] w-[100%] h-[60%] rounded-full"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(60, 75, 90, 0.6) 0%, rgba(40, 55, 70, 0.3) 40%, transparent 70%)',
-          filter: 'blur(50px)',
+          background: 'radial-gradient(ellipse at center, rgba(70, 85, 100, 0.8) 0%, rgba(50, 65, 80, 0.5) 30%, transparent 70%)',
+          filter: 'blur(70px)',
         }}
         animate={{
-          x: [0, 80, 40, 100, 0],
-          y: [0, -20, -10, -30, 0],
-          scale: [1, 1.1, 1.05, 1.15, 1],
-        }}
-        transition={{
-          duration: 20,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-      
-      <motion.div
-        className="absolute bottom-[-5%] right-[-20%] w-[70%] h-[45%] rounded-full"
-        style={{
-          background: 'radial-gradient(ellipse at center, rgba(55, 70, 85, 0.6) 0%, rgba(35, 50, 65, 0.3) 40%, transparent 70%)',
-          filter: 'blur(50px)',
-        }}
-        animate={{
-          x: [0, -80, -40, -100, 0],
-          y: [0, -25, -15, -35, 0],
-          scale: [1, 1.15, 1.05, 1.1, 1],
+          x: [0, 100, 50, 120, 0],
+          y: [0, -40, -20, -60, 0],
+          scale: [1, 1.2, 1.1, 1.25, 1],
+          opacity: [0.6, 0.8, 0.7, 0.85, 0.6],
         }}
         transition={{
           duration: 22,
           repeat: Infinity,
           ease: "easeInOut",
-          delay: 2,
         }}
       />
       
       <motion.div
-        className="absolute bottom-[5%] left-[10%] w-[40%] h-[30%] rounded-full"
+        className="absolute top-[35%] right-[-30%] w-[100%] h-[60%] rounded-full"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(70, 85, 100, 0.5) 0%, transparent 70%)',
-          filter: 'blur(40px)',
+          background: 'radial-gradient(ellipse at center, rgba(65, 80, 95, 0.8) 0%, rgba(45, 60, 75, 0.5) 30%, transparent 70%)',
+          filter: 'blur(70px)',
         }}
         animate={{
-          x: [0, 60, 30, 80, 0],
-          y: [0, -40, -20, -50, 0],
-          opacity: [0.5, 0.7, 0.6, 0.8, 0.5],
+          x: [0, -100, -50, -120, 0],
+          y: [0, -45, -25, -65, 0],
+          scale: [1, 1.25, 1.1, 1.2, 1],
+          opacity: [0.6, 0.85, 0.7, 0.8, 0.6],
         }}
         transition={{
-          duration: 18,
+          duration: 24,
           repeat: Infinity,
           ease: "easeInOut",
           delay: 1,
@@ -76,18 +59,39 @@ function RollingSmoke() {
       />
       
       <motion.div
-        className="absolute bottom-[5%] right-[10%] w-[40%] h-[30%] rounded-full"
+        className="absolute top-[40%] left-[15%] w-[70%] h-[50%] rounded-full"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(65, 80, 95, 0.5) 0%, transparent 70%)',
-          filter: 'blur(40px)',
+          background: 'radial-gradient(ellipse at center, rgba(80, 95, 110, 0.7) 0%, rgba(60, 75, 90, 0.4) 35%, transparent 70%)',
+          filter: 'blur(60px)',
         }}
         animate={{
-          x: [0, -60, -30, -80, 0],
-          y: [0, -35, -25, -45, 0],
-          opacity: [0.5, 0.8, 0.6, 0.7, 0.5],
+          x: [0, 60, 30, 70, 0],
+          y: [0, -50, -30, -60, 0],
+          scale: [1, 1.15, 1.05, 1.2, 1],
+          opacity: [0.5, 0.75, 0.65, 0.8, 0.5],
         }}
         transition={{
-          duration: 16,
+          duration: 20,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 2,
+        }}
+      />
+      
+      <motion.div
+        className="absolute top-[42%] right-[15%] w-[70%] h-[50%] rounded-full"
+        style={{
+          background: 'radial-gradient(ellipse at center, rgba(75, 90, 105, 0.7) 0%, rgba(55, 70, 85, 0.4) 35%, transparent 70%)',
+          filter: 'blur(60px)',
+        }}
+        animate={{
+          x: [0, -60, -30, -70, 0],
+          y: [0, -48, -32, -58, 0],
+          scale: [1, 1.2, 1.05, 1.15, 1],
+          opacity: [0.5, 0.8, 0.65, 0.75, 0.5],
+        }}
+        transition={{
+          duration: 18,
           repeat: Infinity,
           ease: "easeInOut",
           delay: 3,
@@ -95,40 +99,40 @@ function RollingSmoke() {
       />
       
       <motion.div
-        className="absolute bottom-[15%] left-[25%] w-[50%] h-[25%] rounded-full"
+        className="absolute bottom-[-10%] left-[20%] w-[60%] h-[70%] rounded-full"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(75, 90, 105, 0.4) 0%, transparent 70%)',
-          filter: 'blur(45px)',
+          background: 'radial-gradient(ellipse at center, rgba(85, 100, 115, 0.9) 0%, rgba(65, 80, 95, 0.6) 25%, transparent 65%)',
+          filter: 'blur(80px)',
         }}
         animate={{
           x: [0, 40, -20, 30, 0],
-          y: [0, -30, -15, -40, 0],
-          scale: [1, 1.2, 1.1, 1.25, 1],
-        }}
-        transition={{
-          duration: 24,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 4,
-        }}
-      />
-      
-      <motion.div
-        className="absolute bottom-[0%] left-[30%] w-[40%] h-[35%] rounded-full"
-        style={{
-          background: 'radial-gradient(ellipse at center, rgba(50, 65, 80, 0.5) 0%, transparent 60%)',
-          filter: 'blur(55px)',
-        }}
-        animate={{
-          y: [0, -60, -30, -80, 0],
-          scale: [1, 1.3, 1.15, 1.4, 1],
-          opacity: [0.4, 0.6, 0.5, 0.7, 0.4],
+          y: [0, -80, -40, -100, 0],
+          scale: [1, 1.3, 1.15, 1.35, 1],
+          opacity: [0.7, 0.9, 0.8, 0.95, 0.7],
         }}
         transition={{
           duration: 26,
           repeat: Infinity,
           ease: "easeInOut",
-          delay: 5,
+          delay: 0,
+        }}
+      />
+      
+      <motion.div
+        className="absolute top-[45%] left-[35%] w-[30%] h-[40%] rounded-full"
+        style={{
+          background: 'radial-gradient(ellipse at center, rgba(90, 105, 120, 0.6) 0%, transparent 60%)',
+          filter: 'blur(50px)',
+        }}
+        animate={{
+          scale: [1, 1.2, 1.1, 1.25, 1],
+          opacity: [0.6, 0.8, 0.7, 0.85, 0.6],
+        }}
+        transition={{
+          duration: 14,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 4,
         }}
       />
     </div>
