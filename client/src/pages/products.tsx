@@ -210,8 +210,8 @@ export default function Products() {
                   <Card 
                     className={`group p-6 hover-elevate cursor-pointer transition-all duration-300 h-full flex flex-col border-2 ${
                       !product.inStock
-                        ? "border-red-500/30 hover:border-red-500 hover:shadow-glow-red-lg hover:animate-product-glow-red"
-                        : "border-cyan-400/30 hover:border-cyan-400 hover:shadow-glow-blue-lg hover:animate-product-glow-blue"
+                        ? "border-red-500/50 shadow-glow-red-sm hover:border-red-500 hover:shadow-glow-red-lg hover:animate-product-glow-red"
+                        : "border-cyan-400/60 shadow-glow-blue-sm hover:border-cyan-400 hover:shadow-glow-blue-lg hover:animate-product-glow-blue"
                     }`}
                     data-testid={`card-product-${product.id}`}
                   >
