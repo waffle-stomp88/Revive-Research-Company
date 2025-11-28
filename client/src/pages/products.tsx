@@ -280,7 +280,7 @@ export default function Products() {
                         <p className="text-sm text-muted-foreground">{bundle.tagline}</p>
                       </div>
                     </div>
-                    <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-green-500/30">
+                    <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-green-500/30 text-[15px]">
                       Save {bundle.savings}%
                     </Badge>
                   </div>
