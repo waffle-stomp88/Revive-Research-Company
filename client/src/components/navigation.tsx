@@ -19,6 +19,7 @@ const navLinks = [
   { href: "/", label: "Home" },
   { href: "/products", label: "Products" },
   { href: "/coa", label: "COA Verification" },
+  { href: "/affiliate", label: "Affiliates" },
 ];
 
 export function Navigation() {

@@ -1,10 +1,11 @@
 import { 
-  users, products, coas, orders, contacts,
+  users, products, coas, orders, contacts, affiliateApplications,
   type User, type UpsertUser,
   type Product, type InsertProduct,
   type Coa, type InsertCoa,
   type Order, type InsertOrder,
-  type Contact, type InsertContact
+  type Contact, type InsertContact,
+  type AffiliateApplication, type InsertAffiliateApplication
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, ilike, or, desc } from "drizzle-orm";
@@ -37,6 +38,10 @@ export interface IStorage {
   
   createContact(contact: InsertContact): Promise<Contact>;
   getAllContacts(): Promise<Contact[]>;
+  
+  createAffiliateApplication(application: InsertAffiliateApplication): Promise<AffiliateApplication>;
+  getAllAffiliateApplications(): Promise<AffiliateApplication[]>;
+  updateAffiliateApplicationStatus(id: string, status: string): Promise<AffiliateApplication | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -162,6 +167,20 @@ export class DatabaseStorage implements IStorage {
 
   async getAllContacts(): Promise<Contact[]> {
     return db.select().from(contacts);
+  }
+
+  async createAffiliateApplication(insertApplication: InsertAffiliateApplication): Promise<AffiliateApplication> {
+    const [application] = await db.insert(affiliateApplications).values(insertApplication).returning();
+    return application;
+  }
+
+  async getAllAffiliateApplications(): Promise<AffiliateApplication[]> {
+    return db.select().from(affiliateApplications).orderBy(desc(affiliateApplications.createdAt));
+  }
+
+  async updateAffiliateApplicationStatus(id: string, status: string): Promise<AffiliateApplication | undefined> {
+    const [application] = await db.update(affiliateApplications).set({ status }).where(eq(affiliateApplications.id, id)).returning();
+    return application || undefined;
   }
 }
 

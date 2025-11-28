@@ -104,3 +104,18 @@ export const contacts = pgTable("contacts", {
 export const insertContactSchema = createInsertSchema(contacts).omit({ id: true, createdAt: true });
 export type InsertContact = z.infer<typeof insertContactSchema>;
 export type Contact = typeof contacts.$inferSelect;
+
+// Affiliate applications table
+export const affiliateApplications = pgTable("affiliate_applications", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  fullName: text("full_name").notNull(),
+  email: text("email").notNull(),
+  socialUrl: text("social_url"),
+  promotionPlan: text("promotion_plan").notNull(),
+  status: text("status").default("pending"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertAffiliateApplicationSchema = createInsertSchema(affiliateApplications).omit({ id: true, status: true, createdAt: true });
+export type InsertAffiliateApplication = z.infer<typeof insertAffiliateApplicationSchema>;
+export type AffiliateApplication = typeof affiliateApplications.$inferSelect;

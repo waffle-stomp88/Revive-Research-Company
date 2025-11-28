@@ -1,0 +1,78 @@
+Structure of the page:
+
+1. Hero Section
+- Full-width section with centered content.
+- Headline: "Earn More by Helping People Feel Better."
+- Subheadline: "Join the Revive Research affiliate program and earn commission on every order you refer."
+- Two buttons:
+  - Primary: "Apply Now" (scrolls to application form)
+  - Secondary text link: "View Program Details" (scrolls to How It Works section)
+
+2. "How It Works" Section
+- ID: how-it-works
+- 3 or 4 horizontal cards explaining the process:
+  1) Apply → "Tell us who you are and how you promote."
+  2) Get Your Link → "Receive your unique referral link and discount code."
+  3) Share → "Share with your audience via content, email, or personal network."
+  4) Get Paid → "Earn X% commission on every qualified order."
+- Each card has an icon, title, and 1–2 line description.
+
+3. Commission & Program Details Section
+- ID: program-details
+- Left side: short paragraph describing the program for creators, coaches, and health professionals.
+- Right side: a bordered stats panel with:
+  - "Commission: 20% per sale" (make this a clear number so I can edit later)
+  - "Cookie window: 30 days"
+  - "Payouts: Monthly via PayPal (after 30-day refund window)"
+  - "Minimum payout: $100"
+- Below the stats panel, add a small disclaimer text about terms being subject to change.
+
+4. "Who This Is For" Section
+- Three cards for:
+  - "Coaches & Trainers"
+  - "Content Creators & Influencers"
+  - "Clinics & Wellness Practices"
+- Each card has a 1–2 line description about why Revive Research is a good fit.
+
+5. Benefits Section
+- A two-column layout:
+  - Left: short heading and paragraph.
+  - Right: bullet list of benefits, for example:
+    - High-quality research products with COAs.
+    - Strong average order values and repeat customers.
+    - Ready-to-use product imagery and mockups.
+    - Dedicated support for top performers.
+
+6. FAQ Section
+- ID: faq
+- Use simple accordion or collapsible items.
+- Include at least these questions with placeholder answers that I can edit:
+  - "How do I get paid?"
+  - "When are payouts processed?"
+  - "Can I use paid ads with my affiliate link?"
+  - "Can I promote offline?"
+  - "What happens if a customer refunds?"
+
+7. Application Form Section
+- ID: apply
+- Title: "Apply to Become an Affiliate"
+- Short subtext: "We review every application to keep the program high quality."
+- Form fields:
+  - Full Name (required)
+  - Email (required)
+  - Instagram / TikTok / Website URL (optional but recommended)
+  - "Tell us how you plan to promote Revive Research" (textarea, required)
+  - Checkbox: "I agree to the Affiliate Terms and Conditions" (required)
+- Submit button text: "Submit Application"
+- For now, implement the form to POST to an /api/affiliate-apply endpoint that:
+  - Logs the payload to the server console.
+  - Returns a JSON success message.
+- On success, show a toast or inline success message: "Thanks! Your application has been received."
+
+General requirements:
+- Use semantic HTML and Tailwind utility classes.
+- Put all text content in a way that is easy for me to edit later (no hard-coded magic strings buried in multiple places).
+- Add smooth scrolling for internal links in the hero buttons.
+- Make sure spacing is consistent across sections.
+
+Generate the full Next.js page component code, the Tailwind-friendly markup, and the minimal API route for handling the application form.

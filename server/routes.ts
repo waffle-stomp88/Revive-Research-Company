@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema } from "@shared/schema";
+import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema } from "@shared/schema";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 
@@ -152,6 +152,22 @@ export async function registerRoutes(
     }
   });
 
+  // Create affiliate application
+  app.post("/api/affiliate-apply", async (req, res) => {
+    try {
+      const validatedData = insertAffiliateApplicationSchema.parse(req.body);
+      console.log("New affiliate application received:", validatedData);
+      const application = await storage.createAffiliateApplication(validatedData);
+      res.status(201).json({ success: true, message: "Application received successfully", application });
+    } catch (error) {
+      console.error("Error creating affiliate application:", error);
+      if (error instanceof Error && error.name === "ZodError") {
+        return res.status(400).json({ error: "Invalid application data" });
+      }
+      res.status(500).json({ error: "Failed to submit application" });
+    }
+  });
+
   // === STRIPE PAYMENT ROUTES ===
 
   // Get Stripe publishable key
@@ -269,17 +285,17 @@ export async function registerRoutes(
 
       // Create order from session data
       const metadata = session.metadata || {};
-      const shippingDetails = session.shipping_details;
+      const customerDetails = session.customer_details;
 
       const orderData = {
-        email: session.customer_email || session.customer_details?.email || '',
-        firstName: shippingDetails?.name?.split(' ')[0] || '',
-        lastName: shippingDetails?.name?.split(' ').slice(1).join(' ') || '',
-        address: shippingDetails?.address?.line1 || '',
-        city: shippingDetails?.address?.city || '',
-        state: shippingDetails?.address?.state || '',
-        zipCode: shippingDetails?.address?.postal_code || '',
-        country: shippingDetails?.address?.country || 'US',
+        email: session.customer_email || customerDetails?.email || '',
+        firstName: customerDetails?.name?.split(' ')[0] || '',
+        lastName: customerDetails?.name?.split(' ').slice(1).join(' ') || '',
+        address: customerDetails?.address?.line1 || '',
+        city: customerDetails?.address?.city || '',
+        state: customerDetails?.address?.state || '',
+        zipCode: customerDetails?.address?.postal_code || '',
+        country: customerDetails?.address?.country || 'US',
         productId: metadata.productId || '',
         quantity: parseInt(metadata.quantity || '1', 10),
         totalAmount: (session.amount_total ? session.amount_total / 100 : 0).toFixed(2),

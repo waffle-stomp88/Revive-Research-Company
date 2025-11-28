@@ -14,6 +14,7 @@ import CheckoutSuccess from "@/pages/checkout-success";
 import CoaVerification from "@/pages/coa";
 import Dashboard from "@/pages/dashboard";
 import Admin from "@/pages/admin";
+import Affiliate from "@/pages/affiliate";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -27,6 +28,7 @@ function Router() {
       <Route path="/coa" component={CoaVerification} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/admin" component={Admin} />
+      <Route path="/affiliate" component={Affiliate} />
       <Route component={NotFound} />
     </Switch>
   );
