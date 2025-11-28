@@ -10,56 +10,125 @@ import {
 } from "lucide-react";
 import heroBackground from "@assets/69bf34cc-d177-46c6-af24-c51da5ee10fa_1764314422747.png";
 
-function SubtleSmoke() {
+function RollingSmoke() {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      <motion.div
-        className="absolute bottom-0 left-0 right-0 h-[50%]"
+      <div className="absolute bottom-0 left-0 right-0 h-[60%]"
         style={{
-          background: 'linear-gradient(to top, rgba(20, 25, 30, 0.8) 0%, rgba(30, 40, 50, 0.4) 40%, transparent 100%)',
+          background: 'linear-gradient(to top, rgba(15, 20, 25, 0.9) 0%, rgba(25, 35, 45, 0.5) 50%, transparent 100%)',
+        }}
+      />
+      
+      <motion.div
+        className="absolute bottom-[-5%] left-[-20%] w-[70%] h-[45%] rounded-full"
+        style={{
+          background: 'radial-gradient(ellipse at center, rgba(60, 75, 90, 0.6) 0%, rgba(40, 55, 70, 0.3) 40%, transparent 70%)',
+          filter: 'blur(50px)',
         }}
         animate={{
-          opacity: [0.8, 0.9, 0.8],
+          x: [0, 80, 40, 100, 0],
+          y: [0, -20, -10, -30, 0],
+          scale: [1, 1.1, 1.05, 1.15, 1],
         }}
         transition={{
-          duration: 6,
+          duration: 20,
           repeat: Infinity,
           ease: "easeInOut",
         }}
       />
       
       <motion.div
-        className="absolute bottom-0 left-[-10%] w-[60%] h-[40%] rounded-full"
+        className="absolute bottom-[-5%] right-[-20%] w-[70%] h-[45%] rounded-full"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(50, 60, 70, 0.5) 0%, transparent 70%)',
-          filter: 'blur(60px)',
+          background: 'radial-gradient(ellipse at center, rgba(55, 70, 85, 0.6) 0%, rgba(35, 50, 65, 0.3) 40%, transparent 70%)',
+          filter: 'blur(50px)',
         }}
         animate={{
-          x: [0, 30, 0],
-          opacity: [0.4, 0.6, 0.4],
+          x: [0, -80, -40, -100, 0],
+          y: [0, -25, -15, -35, 0],
+          scale: [1, 1.15, 1.05, 1.1, 1],
         }}
         transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-      
-      <motion.div
-        className="absolute bottom-0 right-[-10%] w-[60%] h-[40%] rounded-full"
-        style={{
-          background: 'radial-gradient(ellipse at center, rgba(50, 60, 70, 0.5) 0%, transparent 70%)',
-          filter: 'blur(60px)',
-        }}
-        animate={{
-          x: [0, -30, 0],
-          opacity: [0.4, 0.6, 0.4],
-        }}
-        transition={{
-          duration: 12,
+          duration: 22,
           repeat: Infinity,
           ease: "easeInOut",
           delay: 2,
+        }}
+      />
+      
+      <motion.div
+        className="absolute bottom-[5%] left-[10%] w-[40%] h-[30%] rounded-full"
+        style={{
+          background: 'radial-gradient(ellipse at center, rgba(70, 85, 100, 0.5) 0%, transparent 70%)',
+          filter: 'blur(40px)',
+        }}
+        animate={{
+          x: [0, 60, 30, 80, 0],
+          y: [0, -40, -20, -50, 0],
+          opacity: [0.5, 0.7, 0.6, 0.8, 0.5],
+        }}
+        transition={{
+          duration: 18,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 1,
+        }}
+      />
+      
+      <motion.div
+        className="absolute bottom-[5%] right-[10%] w-[40%] h-[30%] rounded-full"
+        style={{
+          background: 'radial-gradient(ellipse at center, rgba(65, 80, 95, 0.5) 0%, transparent 70%)',
+          filter: 'blur(40px)',
+        }}
+        animate={{
+          x: [0, -60, -30, -80, 0],
+          y: [0, -35, -25, -45, 0],
+          opacity: [0.5, 0.8, 0.6, 0.7, 0.5],
+        }}
+        transition={{
+          duration: 16,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 3,
+        }}
+      />
+      
+      <motion.div
+        className="absolute bottom-[15%] left-[25%] w-[50%] h-[25%] rounded-full"
+        style={{
+          background: 'radial-gradient(ellipse at center, rgba(75, 90, 105, 0.4) 0%, transparent 70%)',
+          filter: 'blur(45px)',
+        }}
+        animate={{
+          x: [0, 40, -20, 30, 0],
+          y: [0, -30, -15, -40, 0],
+          scale: [1, 1.2, 1.1, 1.25, 1],
+        }}
+        transition={{
+          duration: 24,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 4,
+        }}
+      />
+      
+      <motion.div
+        className="absolute bottom-[0%] left-[30%] w-[40%] h-[35%] rounded-full"
+        style={{
+          background: 'radial-gradient(ellipse at center, rgba(50, 65, 80, 0.5) 0%, transparent 60%)',
+          filter: 'blur(55px)',
+        }}
+        animate={{
+          y: [0, -60, -30, -80, 0],
+          scale: [1, 1.3, 1.15, 1.4, 1],
+          opacity: [0.4, 0.6, 0.5, 0.7, 0.4],
+        }}
+        transition={{
+          duration: 26,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 5,
         }}
       />
     </div>
@@ -73,14 +142,15 @@ function VialGlow() {
         className="absolute w-[180px] h-[30px] md:w-[220px] md:h-[35px]"
         style={{
           top: '42%',
-          background: 'radial-gradient(ellipse at center, rgba(33, 216, 255, 0.3) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse at center, rgba(33, 216, 255, 0.35) 0%, transparent 70%)',
           filter: 'blur(20px)',
         }}
         animate={{
-          opacity: [0.3, 0.6, 0.3],
+          opacity: [0.4, 0.7, 0.4],
+          scale: [1, 1.05, 1],
         }}
         transition={{
-          duration: 3,
+          duration: 4,
           repeat: Infinity,
           ease: "easeInOut",
         }}
@@ -113,10 +183,10 @@ export default function ComingSoon() {
         }}
       />
       
-      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/80" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
       
       <VialGlow />
-      <SubtleSmoke />
+      <RollingSmoke />
       
       <div className="absolute top-0 left-0 right-0 z-20 pt-10 md:pt-16 px-6 text-center">
         <motion.div
