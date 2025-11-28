@@ -208,7 +208,11 @@ export default function Products() {
               >
                 <Link href={`/products/${product.id}`}>
                   <Card 
-                    className="group p-6 hover-elevate cursor-pointer transition-all duration-300 h-full flex flex-col border-2 border-[#E7FB10]/30 hover:border-[#E7FB10] hover:shadow-glow-lg hover:animate-product-glow" 
+                    className={`group p-6 hover-elevate cursor-pointer transition-all duration-300 h-full flex flex-col border-2 ${
+                      !product.inStock
+                        ? "border-red-500/30 hover:border-red-500 hover:shadow-glow-red-lg hover:animate-product-glow-red"
+                        : "border-[#E7FB10]/30 hover:border-[#E7FB10] hover:shadow-glow-lg hover:animate-product-glow"
+                    }`}
                     data-testid={`card-product-${product.id}`}
                   >
                     <div className="relative aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-md mb-6 flex items-center justify-center overflow-hidden">
