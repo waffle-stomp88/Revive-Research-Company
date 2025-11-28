@@ -6,23 +6,18 @@ import { Button } from "@/components/ui/button";
 import logoImage from "@assets/REVIVE-11_1764290805698.png";
 
 const footerLinks = {
-  company: [
-    { label: "About Us", href: "/about" },
-    { label: "Our Research", href: "/research" },
-    { label: "Careers", href: "/careers" },
-    { label: "Press", href: "/press" },
+  shop: [
+    { label: "All Products", href: "/products" },
+    { label: "COA Verification", href: "/coa" },
+    { label: "Affiliate Program", href: "/affiliate" },
   ],
   support: [
-    { label: "Contact", href: "/contact" },
-    { label: "FAQs", href: "/faqs" },
-    { label: "Shipping", href: "/shipping" },
-    { label: "Returns", href: "/returns" },
+    { label: "FAQ", href: "/faq" },
+    { label: "Shipping Details", href: "/shipping" },
   ],
   legal: [
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Service", href: "/terms" },
-    { label: "COA Verification", href: "/coa" },
-    { label: "Disclaimer", href: "/disclaimer" },
   ],
 };
 
@@ -58,10 +53,10 @@ export function Footer() {
 
           <div>
             <h4 className="font-display font-semibold text-sm uppercase tracking-wider mb-6">
-              Company
+              Shop
             </h4>
             <ul className="space-y-3">
-              {footerLinks.company.map((link) => (
+              {footerLinks.shop.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href}>
                     <span className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">

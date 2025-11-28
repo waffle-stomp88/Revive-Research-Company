@@ -6,25 +6,58 @@ Revive Research is a modern e-commerce platform specializing in premium peptide 
 
 The platform emphasizes transparency through third-party lab verification, providing Certificate of Authenticity (COA) verification for all products. It targets researchers and professionals seeking high-quality peptide compounds with verifiable testing results.
 
-## Current State: Coming Soon Mode
+## Current State: Full E-commerce Site
 
-The site is currently showing a "Coming Soon" landing page. The full e-commerce site is saved and can be restored.
-
-### To Restore Full Site:
-1. Replace `client/src/App.tsx` with the contents of `client/src/App.full.tsx`
-2. Restart the application
-
-### Coming Soon Page Features:
-- Animated particle background with floating neon orbs
-- DNA helix animation
-- Pulsing ring effects
-- Email signup form with success animation
-- Same neon yellow (#E7FB10) and cyan (#21d8ff) color scheme
-- Framer Motion animations throughout
+The full e-commerce site is now active with all features including:
+- Age verification modal (21+ requirement)
+- Free shipping banner ($150 threshold)
+- Sale of the Week promotions
+- Research Stack bundles
+- Comprehensive legal compliance pages
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+
+## Key Features
+
+### Age Verification
+- Modal appears on first visit requiring age confirmation (21+)
+- Required for legal compliance before accessing the site
+- Stores verification status in localStorage
+
+### Free Shipping Banner
+- Displays at top of site
+- Free shipping on orders over $150
+- Flat rate $15 shipping under $150
+
+### Shipping Policy
+- **24hr standard shipping** on all orders
+- **Same-day shipping** if ordered before 12:00 CT on business days
+- Flat rate: $15 (free over $150)
+
+### NO REFUNDS Policy
+- Due to the nature of research compounds, all sales are final
+- Prominently displayed on FAQ page
+
+### Affiliate Program
+- Exclusivity-focused messaging ("We Don't Need Partners. We Choose Them.")
+- Selective partner program, not desperate for affiliates
+- 20% commission rate
+- 30-day cookie window
+- $100 minimum payout
+- Application form with qualification questions
+
+### Product Bundles (Research Stacks)
+1. **The Wolverine Stack** - BPC-157 + TB-500 ($89.99, saves 15%)
+2. **Longevity Stack** - Epithalon + GHK-Cu + NAD+ ($189.99, saves 14%)
+3. **Performance Stack** - CJC-1295 + Ipamorelin ($199.99, saves 15%)
+4. **Complete Healing Protocol** - BPC-157 + TB-500 + GHK-Cu ($119.99, saves 17%)
+
+### Sale of the Week
+- Featured prominently on products page
+- Currently: Retatrutide at 17% off
+- HOT DEAL badge with countdown
 
 ## Design System
 
@@ -57,7 +90,7 @@ All products use research-specific benefits (not generic quality statements):
 5. **Ipamorelin** - $59.99 - Selective GH secretagogue
 6. **Semax** - $64.99 (was $74.99) - ACTH neuroresearch (Out of Stock)
 7. **Tesamorelin** - $189.99 (was $219.99) - GHRH analog
-8. **Retatrutide** - $249.99 (was $299.99) - Triple receptor agonist
+8. **Retatrutide** - $249.99 (was $299.99) - Triple receptor agonist (SALE OF THE WEEK)
 9. **Tirzepatide** - $224.99 (was $274.99) - Dual GIP/GLP-1
 10. **Semaglutide** - $199.99 (was $249.99) - Long-acting GLP-1
 11. **GLOW Peptide Complex** - $159.99 (was $189.99) - Multi-peptide blend
@@ -87,6 +120,12 @@ Footer contains two consolidated compliance sections:
 
 All pages display "Research Use Only" messaging with comprehensive disclaimers.
 
+### Legal Pages
+- `/terms` - Terms of Service
+- `/privacy` - Privacy Policy
+- `/faq` - Frequently Asked Questions (includes NO REFUNDS policy)
+- `/shipping` - Shipping Details (24hr standard, same-day before 12:00 CT)
+
 ## System Architecture
 
 ### Frontend Architecture
@@ -107,6 +146,7 @@ All pages display "Research Use Only" messaging with comprehensive disclaimers.
 - TanStack Query (React Query) for server state management, caching, and API requests
 - Custom query client with automatic error handling and credential inclusion
 - React Hook Form with Zod validation for form state and validation
+- Cart context for shopping cart state management
 
 **Theming**
 - Custom theme provider supporting light/dark modes with system preference detection
@@ -128,6 +168,7 @@ All pages display "Research Use Only" messaging with comprehensive disclaimers.
   - `GET /api/coa/:batchNumber` - Verify Certificate of Authenticity
   - `POST /api/orders` - Create new orders
   - `POST /api/contact` - Submit contact inquiries
+  - `POST /api/affiliate-apply` - Submit affiliate application
   - `GET /api/stripe/config` - Get Stripe publishable key
   - `POST /api/stripe/create-checkout-session` - Create Stripe checkout session
   - `GET /api/stripe/checkout-session/:sessionId` - Verify payment and create order
@@ -185,25 +226,27 @@ All pages display "Research Use Only" messaging with comprehensive disclaimers.
 
 ### Key Files
 
-**Coming Soon**
-- `client/src/pages/coming-soon.tsx` - Current landing page
-- `client/src/App.tsx` - Shows coming soon page only
-- `client/src/App.full.tsx` - BACKUP of full site App.tsx
-
-**Full Site Pages**
-- `client/src/pages/home.tsx` - Main landing page
-- `client/src/pages/products.tsx` - Product catalog with search/filter
+**Pages**
+- `client/src/pages/home.tsx` - Main landing page (24hr shipping in trust metrics)
+- `client/src/pages/products.tsx` - Product catalog with Sale of the Week & Research Stacks
 - `client/src/pages/product-detail.tsx` - Individual product pages
 - `client/src/pages/checkout.tsx` - Stripe checkout integration
 - `client/src/pages/checkout-success.tsx` - Order confirmation
+- `client/src/pages/cart.tsx` - Shopping cart page
 - `client/src/pages/coa.tsx` - COA verification
 - `client/src/pages/dashboard.tsx` - Customer dashboard
 - `client/src/pages/admin.tsx` - Admin panel
-- `client/src/pages/affiliate.tsx` - Affiliate program
+- `client/src/pages/affiliate.tsx` - Affiliate program (exclusivity-focused)
+- `client/src/pages/faq.tsx` - FAQ with NO REFUNDS policy
+- `client/src/pages/shipping.tsx` - Shipping details
+- `client/src/pages/terms-of-service.tsx` - Terms of Service
+- `client/src/pages/privacy-policy.tsx` - Privacy Policy
 
 **Components**
 - `client/src/components/navigation.tsx` - Header navigation
 - `client/src/components/footer.tsx` - Legal compliance footer
+- `client/src/components/age-verification-modal.tsx` - 21+ age gate
+- `client/src/components/free-shipping-banner.tsx` - Free shipping banner
 
 **Assets**
 - `attached_assets/reta bottle_1764310671562.jpg` - Product placeholder image

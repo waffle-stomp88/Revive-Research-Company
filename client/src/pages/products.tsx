@@ -13,7 +13,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowRight, FlaskConical, Search, X, SlidersHorizontal } from "lucide-react";
+import { 
+  ArrowRight, 
+  FlaskConical, 
+  Search, 
+  X, 
+  SlidersHorizontal,
+  Flame,
+  Package,
+  Zap,
+  Shield,
+  Heart,
+  Timer,
+  Sparkles
+} from "lucide-react";
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 
@@ -33,6 +46,67 @@ const staggerContainer = {
 
 type SortOption = "name-asc" | "name-desc" | "price-asc" | "price-desc" | "featured";
 
+const SALE_OF_THE_WEEK = {
+  title: "Sale of the Week",
+  subtitle: "Limited time offer - Don't miss out!",
+  productName: "Retatrutide",
+  discount: "17% OFF",
+  badge: "HOT DEAL",
+  description: "Triple receptor agonist for advanced metabolic research. Our most sought-after compound at an unbeatable price.",
+  endDate: "Ends Sunday",
+};
+
+const BUNDLES = [
+  {
+    id: "wolverine-stack",
+    name: "The Wolverine Stack",
+    tagline: "Legendary Recovery",
+    icon: Zap,
+    description: "BPC-157 + TB-500 combination for accelerated tissue repair and healing research. The most popular peptide stack worldwide.",
+    products: ["BPC-157", "TB-500"],
+    originalPrice: 104.98,
+    bundlePrice: 89.99,
+    savings: 15,
+    color: "cyan",
+  },
+  {
+    id: "longevity-stack",
+    name: "Longevity Stack",
+    tagline: "Age Optimization",
+    icon: Timer,
+    description: "Epithalon + GHK-Cu + NAD+ for comprehensive cellular rejuvenation and longevity research applications.",
+    products: ["Epithalon", "GHK-Cu", "NAD+ Precursor"],
+    originalPrice: 219.97,
+    bundlePrice: 189.99,
+    savings: 14,
+    color: "yellow",
+  },
+  {
+    id: "performance-stack",
+    name: "Performance Stack",
+    tagline: "Peak Output",
+    icon: Flame,
+    description: "CJC-1295 + Ipamorelin for natural growth hormone optimization research. Ideal for athletic performance studies.",
+    products: ["CJC-1295", "Ipamorelin"],
+    originalPrice: 234.98,
+    bundlePrice: 199.99,
+    savings: 15,
+    color: "cyan",
+  },
+  {
+    id: "healing-protocol",
+    name: "Complete Healing Protocol",
+    tagline: "Full Spectrum Repair",
+    icon: Heart,
+    description: "BPC-157 + TB-500 + GHK-Cu for comprehensive tissue regeneration and wound healing research.",
+    products: ["BPC-157", "TB-500", "GHK-Cu"],
+    originalPrice: 144.97,
+    bundlePrice: 119.99,
+    savings: 17,
+    color: "yellow",
+  },
+];
+
 export default function Products() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("featured");
@@ -41,6 +115,11 @@ export default function Products() {
   const { data: products, isLoading, error } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
+
+  const saleProduct = useMemo(() => {
+    if (!products) return null;
+    return products.find(p => p.name.toLowerCase().includes("retatrutide"));
+  }, [products]);
 
   const filteredAndSortedProducts = useMemo(() => {
     if (!products) return [];
@@ -92,15 +171,155 @@ export default function Products() {
   return (
     <main className="min-h-screen pt-24 md:pt-32 pb-24">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
+        {saleProduct && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mb-12"
+            data-testid="section-sale-of-week"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <Flame className="h-6 w-6 text-red-500" />
+              <h2 className="font-display text-2xl font-bold">{SALE_OF_THE_WEEK.title}</h2>
+              <Badge variant="destructive" className="animate-pulse">
+                {SALE_OF_THE_WEEK.badge}
+              </Badge>
+            </div>
+            <Link href={`/products/${saleProduct.id}`}>
+              <Card className="p-6 md:p-8 border-2 border-red-500/50 bg-gradient-to-r from-red-950/30 to-background hover:border-red-500 transition-all cursor-pointer group">
+                <div className="flex flex-col md:flex-row gap-6 items-center">
+                  <div className="w-32 h-32 md:w-40 md:h-40 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+                    <img 
+                      src={productImage} 
+                      alt={saleProduct.name}
+                      className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform"
+                    />
+                  </div>
+                  <div className="flex-1 text-center md:text-left">
+                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2">
+                      <Badge variant="destructive" className="text-lg px-3 py-1">
+                        {SALE_OF_THE_WEEK.discount}
+                      </Badge>
+                      <span className="text-sm text-muted-foreground">{SALE_OF_THE_WEEK.endDate}</span>
+                    </div>
+                    <h3 className="font-display text-3xl font-bold text-[#E7FB10] mb-2">
+                      {saleProduct.name}
+                    </h3>
+                    <p className="text-muted-foreground mb-4 max-w-xl">
+                      {SALE_OF_THE_WEEK.description}
+                    </p>
+                    <div className="flex items-center justify-center md:justify-start gap-4">
+                      <span className="font-display text-3xl font-bold">${Number(saleProduct.price).toFixed(2)}</span>
+                      {saleProduct.originalPrice && (
+                        <span className="text-xl text-muted-foreground line-through">
+                          ${Number(saleProduct.originalPrice).toFixed(2)}
+                        </span>
+                      )}
+                      <Button className="ml-4 gap-2">
+                        Shop Now <ArrowRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+          </motion.section>
+        )}
+
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="mb-16"
+          data-testid="section-bundles"
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <Package className="h-6 w-6 text-[#21d8ff]" />
+            <h2 className="font-display text-2xl font-bold">Research Stacks</h2>
+            <Badge variant="outline" className="border-primary/50 text-primary">
+              <Sparkles className="h-3 w-3 mr-1" />
+              Save More
+            </Badge>
+          </div>
+          <p className="text-muted-foreground mb-8 max-w-2xl">
+            Expertly curated peptide combinations based on research protocols. 
+            Bundle and save on the most popular stacks in the research community.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {BUNDLES.map((bundle, index) => (
+              <motion.div
+                key={bundle.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Card 
+                  className={`p-6 h-full hover:scale-[1.02] transition-all cursor-pointer border-2 ${
+                    bundle.color === "cyan" 
+                      ? "border-cyan-500/30 hover:border-cyan-500/60 hover:shadow-glow-blue-lg" 
+                      : "border-[#E7FB10]/30 hover:border-[#E7FB10]/60 hover:shadow-glow-lg"
+                  }`}
+                  data-testid={`card-bundle-${bundle.id}`}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                        bundle.color === "cyan" ? "bg-cyan-500/10" : "bg-[#E7FB10]/10"
+                      }`}>
+                        <bundle.icon className={`h-6 w-6 ${
+                          bundle.color === "cyan" ? "text-cyan-400" : "text-[#E7FB10]"
+                        }`} />
+                      </div>
+                      <div>
+                        <h3 className={`font-display text-xl font-bold ${
+                          bundle.color === "cyan" ? "text-cyan-400" : "text-[#E7FB10]"
+                        }`}>
+                          {bundle.name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">{bundle.tagline}</p>
+                      </div>
+                    </div>
+                    <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-green-500/30">
+                      Save {bundle.savings}%
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {bundle.description}
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {bundle.products.map((product) => (
+                      <Badge key={product} variant="outline" className="text-xs">
+                        {product}
+                      </Badge>
+                    ))}
+                  </div>
+                  <div className="flex items-center justify-between pt-4 border-t border-border">
+                    <div className="flex items-baseline gap-2">
+                      <span className="font-display text-2xl font-bold">${bundle.bundlePrice.toFixed(2)}</span>
+                      <span className="text-sm text-muted-foreground line-through">
+                        ${bundle.originalPrice.toFixed(2)}
+                      </span>
+                    </div>
+                    <Button size="sm" className="gap-2">
+                      View Bundle <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </motion.section>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
           className="mb-8 md:mb-12"
         >
-          <h1 className="font-display text-4xl md:text-5xl font-bold mb-4" data-testid="text-products-title">
+          <h2 className="font-display text-4xl md:text-5xl font-bold mb-4" data-testid="text-products-title">
             All Products
-          </h1>
+          </h2>
           <p className="text-lg text-muted-foreground max-w-2xl">
             Premium research compounds, rigorously tested and verified. Each product 
             includes a Certificate of Authenticity for complete transparency.
@@ -110,7 +329,7 @@ export default function Products() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
           className="mb-8"
         >
           <div className="flex flex-col md:flex-row gap-4">

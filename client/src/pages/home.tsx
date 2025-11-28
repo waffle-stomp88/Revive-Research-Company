@@ -35,7 +35,7 @@ const trustMetrics = [
   { icon: Shield, value: "99.9%", label: "Purity Verified" },
   { icon: Beaker, value: "3rd Party", label: "Lab Tested" },
   { icon: Award, value: "GMP", label: "Certified" },
-  { icon: Truck, value: "48hr", label: "Shipping" },
+  { icon: Truck, value: "24hr", label: "Shipping" },
 ];
 
 const howItWorks = [

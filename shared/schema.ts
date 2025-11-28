@@ -112,8 +112,10 @@ export const affiliateApplications = pgTable("affiliate_applications", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   fullName: text("full_name").notNull(),
   email: text("email").notNull(),
-  socialUrl: text("social_url"),
-  promotionPlan: text("promotion_plan").notNull(),
+  socialUrl: text("social_url").notNull(),
+  audienceSize: text("audience_size").notNull(),
+  whyPartner: text("why_partner").notNull(),
+  productExperience: text("product_experience").notNull(),
   status: text("status").default("pending"),
   createdAt: timestamp("created_at").defaultNow(),
 });

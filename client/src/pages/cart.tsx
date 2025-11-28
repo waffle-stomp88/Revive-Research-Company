@@ -37,8 +37,11 @@ export default function CartPage() {
   };
 
   const subtotal = getSubtotal();
-  const shipping = subtotal >= 100 ? 0 : 9.99;
+  const FREE_SHIPPING_THRESHOLD = 150;
+  const FLAT_RATE_SHIPPING = 15;
+  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING;
   const total = subtotal + shipping;
+  const amountToFreeShipping = FREE_SHIPPING_THRESHOLD - subtotal;
 
   if (items.length === 0) {
     return (
@@ -206,9 +209,9 @@ export default function CartPage() {
                       {shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}
                     </span>
                   </div>
-                  {shipping > 0 && (
+                  {shipping > 0 && amountToFreeShipping > 0 && (
                     <p className="text-xs text-muted-foreground">
-                      Free shipping on orders over $100
+                      Add ${amountToFreeShipping.toFixed(2)} more for free shipping!
                     </p>
                   )}
                 </div>
