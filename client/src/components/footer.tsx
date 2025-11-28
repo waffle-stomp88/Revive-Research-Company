@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin, AlertTriangle, Shield, Scale, FileCheck } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import logoImage from "@assets/REVIVE-11_1764290805698.png";
@@ -108,7 +108,45 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-border mt-16 pt-8">
+        {/* RUO Compliance Section */}
+        <div className="mt-16 p-6 rounded-lg bg-red-950/30 border-2 border-red-500/50 shadow-glow-red-sm" data-testid="section-ruo-compliance">
+          <div className="flex items-start gap-4">
+            <div className="p-3 rounded-full bg-red-500/20 border border-red-500/30 flex-shrink-0">
+              <AlertTriangle className="h-6 w-6 text-red-400" />
+            </div>
+            <div className="flex-1">
+              <h4 className="font-display font-bold text-red-400 uppercase tracking-wider text-sm mb-3">
+                Research Use Only - Legal Compliance Notice
+              </h4>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                All products sold by Revive Research are intended strictly for laboratory research and scientific 
+                investigation purposes. These products are <span className="text-red-400 font-semibold">NOT intended for human consumption</span>, 
+                veterinary use, or any other purpose not specifically authorized for research.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Scale className="h-4 w-4 text-red-400/70" />
+                  <span>Compliant with federal and state laws</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <FileCheck className="h-4 w-4 text-red-400/70" />
+                  <span>Third-party tested & verified</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Shield className="h-4 w-4 text-red-400/70" />
+                  <span>Qualified researchers only</span>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground/70 mt-4 leading-relaxed">
+                By purchasing from Revive Research, you confirm that you are a qualified researcher and agree to use 
+                all products in accordance with applicable federal, state, and local laws and regulations. Revive Research 
+                assumes no liability for any misuse of products purchased from our platform.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t border-border mt-8 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
               {new Date().getFullYear()} Revive Research. All rights reserved.

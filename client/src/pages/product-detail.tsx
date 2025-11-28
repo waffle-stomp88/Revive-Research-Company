@@ -24,7 +24,8 @@ import {
   Truck,
   RefreshCw,
   Repeat,
-  Percent
+  Percent,
+  AlertTriangle
 } from "lucide-react";
 import type { Product } from "@shared/schema";
 
@@ -401,18 +402,20 @@ export default function ProductDetail() {
               </div>
             )}
 
-            <Card className="p-6 bg-muted/50">
+            <Card className="p-6 bg-red-950/30 border-2 border-red-500/50 shadow-glow-red-sm hover:shadow-glow-red-md transition-shadow duration-300">
               <div className="flex items-start gap-4">
-                <div className="p-3 rounded-full bg-primary/10">
-                  <Beaker className="h-6 w-6 text-foreground" />
+                <div className="p-3 rounded-full bg-red-500/20 border border-red-500/30">
+                  <AlertTriangle className="h-6 w-6 text-red-400" />
                 </div>
                 <div>
-                  <h4 className="font-display font-semibold mb-2">Research Use Only</h4>
-                  <p className="text-sm text-muted-foreground">
+                  <h4 className="font-display font-bold mb-2 text-red-400 uppercase tracking-wider text-sm">
+                    Research Use Only
+                  </h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     This product is sold for research purposes only and is not intended 
                     for human consumption. By purchasing, you confirm you are a qualified 
                     researcher and will use this product in accordance with all applicable 
-                    laws and regulations.
+                    federal and state laws and regulations.
                   </p>
                 </div>
               </div>
