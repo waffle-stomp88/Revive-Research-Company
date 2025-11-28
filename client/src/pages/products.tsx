@@ -427,10 +427,10 @@ export default function Products() {
               >
                 <Link href={`/products/${product.id}`}>
                   <Card 
-                    className={`group p-3 cursor-pointer transition-all duration-300 h-full flex flex-col border hover:scale-[1.02] ${
+                    className={`group p-3 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 hover:scale-[1.03] ${
                       !product.inStock
-                        ? "border-red-500/40 hover:border-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.3)]"
-                        : "border-cyan-400/40 hover:border-cyan-400 hover:shadow-[0_0_15px_rgba(33,216,255,0.3)]"
+                        ? "border-red-500/40 hover:border-red-500 hover:shadow-[0_0_30px_rgba(239,68,68,0.5),0_0_60px_rgba(239,68,68,0.2)]"
+                        : "border-cyan-400/40 hover:border-cyan-400 hover:shadow-[0_0_30px_rgba(33,216,255,0.5),0_0_60px_rgba(33,216,255,0.2)]"
                     }`}
                     data-testid={`card-product-${product.id}`}
                   >
@@ -461,7 +461,7 @@ export default function Products() {
                       <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
                         {product.category}
                       </div>
-                      <h3 className="font-display text-sm font-semibold mb-1 group-hover:text-[#E7FB10] transition-colors line-clamp-1">
+                      <h3 className="font-display text-base md:text-lg font-bold mb-1 group-hover:text-[#E7FB10] transition-colors line-clamp-1">
                         {product.name}
                       </h3>
                       <p className="text-xs text-muted-foreground mb-2 flex-1 line-clamp-2">
