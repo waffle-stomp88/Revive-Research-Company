@@ -1,169 +1,237 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
-  FlaskConical, 
   Sparkles, 
   Zap, 
   ArrowRight,
-  CheckCircle,
-  Dna,
-  Atom,
-  Activity
+  CheckCircle
 } from "lucide-react";
+import heroBackground from "@assets/69bf34cc-d177-46c6-af24-c51da5ee10fa_1764314422747.png";
 
-const floatingParticles = Array.from({ length: 20 }, (_, i) => ({
-  id: i,
-  x: Math.random() * 100,
-  y: Math.random() * 100,
-  size: Math.random() * 4 + 2,
-  duration: Math.random() * 10 + 15,
-  delay: Math.random() * 5,
-}));
+function SmokeEffect({ position, delay = 0 }: { position: 'left' | 'right' | 'bottom'; delay?: number }) {
+  const baseStyles = {
+    left: { left: '-10%', bottom: '0%', width: '60%', height: '80%' },
+    right: { right: '-10%', bottom: '0%', width: '60%', height: '80%' },
+    bottom: { left: '20%', bottom: '-20%', width: '60%', height: '60%' },
+  };
 
-const glowingOrbs = [
-  { x: "20%", y: "30%", size: "600px", color: "rgba(231, 251, 16, 0.08)", delay: 0 },
-  { x: "70%", y: "60%", size: "500px", color: "rgba(33, 216, 255, 0.06)", delay: 2 },
-  { x: "50%", y: "80%", size: "400px", color: "rgba(231, 251, 16, 0.05)", delay: 4 },
-];
-
-function AnimatedBackground() {
-  return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none">
-      {glowingOrbs.map((orb, index) => (
-        <motion.div
-          key={index}
-          className="absolute rounded-full blur-3xl"
-          style={{
-            left: orb.x,
-            top: orb.y,
-            width: orb.size,
-            height: orb.size,
-            background: orb.color,
-            transform: "translate(-50%, -50%)",
-          }}
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.5, 0.8, 0.5],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: orb.delay,
-          }}
-        />
-      ))}
-      
-      {floatingParticles.map((particle) => (
-        <motion.div
-          key={particle.id}
-          className="absolute rounded-full bg-[#E7FB10]"
-          style={{
-            left: `${particle.x}%`,
-            width: particle.size,
-            height: particle.size,
-          }}
-          initial={{ y: "100vh", opacity: 0 }}
-          animate={{
-            y: "-100vh",
-            opacity: [0, 1, 1, 0],
-          }}
-          transition={{
-            duration: particle.duration,
-            repeat: Infinity,
-            ease: "linear",
-            delay: particle.delay,
-          }}
-        />
-      ))}
-      
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_0%,_hsl(220,13%,13%)_70%)]" />
-    </div>
-  );
-}
-
-function GlowingIcon({ icon: Icon, delay = 0 }: { icon: any; delay?: number }) {
   return (
     <motion.div
-      className="relative"
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay, duration: 0.5, type: "spring" }}
+      className="absolute pointer-events-none"
+      style={baseStyles[position]}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: delay + 0.5, duration: 2 }}
     >
-      <motion.div
-        className="absolute inset-0 bg-[#E7FB10] rounded-full blur-xl"
-        animate={{
-          scale: [1, 1.5, 1],
-          opacity: [0.3, 0.6, 0.3],
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-      <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full bg-[#E7FB10]/20 border-2 border-[#E7FB10]/50 flex items-center justify-center">
-        <Icon className="w-8 h-8 md:w-10 md:h-10 text-[#E7FB10]" />
-      </div>
+      {[...Array(4)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute inset-0 rounded-full"
+          style={{
+            background: `radial-gradient(ellipse at center, rgba(100, 120, 140, ${0.15 - i * 0.03}) 0%, transparent 70%)`,
+            filter: 'blur(40px)',
+          }}
+          animate={{
+            x: position === 'left' ? [0, 30, -20, 10, 0] : position === 'right' ? [0, -30, 20, -10, 0] : [0, 20, -20, 0],
+            y: [-20, -60, -40, -80, -20],
+            scale: [1, 1.2, 0.9, 1.1, 1],
+            opacity: [0.4, 0.6, 0.3, 0.5, 0.4],
+          }}
+          transition={{
+            duration: 8 + i * 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: delay + i * 0.8,
+          }}
+        />
+      ))}
     </motion.div>
   );
 }
 
-function DNAHelix() {
+function FloatingSmoke() {
   return (
-    <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-20 hidden lg:block">
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {[...Array(8)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full"
+          style={{
+            left: `${10 + i * 12}%`,
+            bottom: '-10%',
+            width: `${150 + Math.random() * 100}px`,
+            height: `${150 + Math.random() * 100}px`,
+            background: 'radial-gradient(ellipse at center, rgba(80, 100, 120, 0.3) 0%, transparent 70%)',
+            filter: 'blur(30px)',
+          }}
+          animate={{
+            y: [0, -400 - Math.random() * 200],
+            x: [0, (Math.random() - 0.5) * 100],
+            opacity: [0, 0.5, 0.3, 0],
+            scale: [0.8, 1.5, 2],
+          }}
+          transition={{
+            duration: 12 + Math.random() * 8,
+            repeat: Infinity,
+            ease: "easeOut",
+            delay: i * 1.5,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function NeonGlowLines() {
+  return (
+    <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
       <motion.div
-        animate={{ rotateY: 360 }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        className="w-32"
+        className="absolute w-[300px] h-[400px] md:w-[400px] md:h-[500px]"
+        style={{
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+        }}
       >
-        {Array.from({ length: 12 }).map((_, i) => (
-          <motion.div
-            key={i}
-            className="flex justify-between items-center h-8"
-            style={{ transform: `rotateY(${i * 30}deg)` }}
-          >
-            <motion.div
-              className="w-3 h-3 rounded-full bg-[#E7FB10]"
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ delay: i * 0.1, duration: 2, repeat: Infinity }}
-            />
-            <div className="flex-1 h-0.5 bg-gradient-to-r from-[#E7FB10]/50 via-[#21d8ff]/30 to-[#E7FB10]/50 mx-2" />
-            <motion.div
-              className="w-3 h-3 rounded-full bg-[#21d8ff]"
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ delay: i * 0.1 + 0.5, duration: 2, repeat: Infinity }}
-            />
-          </motion.div>
-        ))}
+        <motion.div
+          className="absolute"
+          style={{
+            top: '28%',
+            left: '25%',
+            width: '50%',
+            height: '8%',
+          }}
+          animate={{
+            boxShadow: [
+              '0 0 10px 2px rgba(33, 216, 255, 0.3), 0 0 20px 4px rgba(33, 216, 255, 0.2), 0 0 40px 8px rgba(33, 216, 255, 0.1)',
+              '0 0 20px 4px rgba(33, 216, 255, 0.5), 0 0 40px 8px rgba(33, 216, 255, 0.3), 0 0 60px 12px rgba(33, 216, 255, 0.2)',
+              '0 0 15px 3px rgba(231, 251, 16, 0.4), 0 0 30px 6px rgba(231, 251, 16, 0.2), 0 0 50px 10px rgba(231, 251, 16, 0.1)',
+              '0 0 10px 2px rgba(33, 216, 255, 0.3), 0 0 20px 4px rgba(33, 216, 255, 0.2), 0 0 40px 8px rgba(33, 216, 255, 0.1)',
+            ],
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        
+        <svg
+          className="absolute inset-0 w-full h-full"
+          viewBox="0 0 200 250"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+            <linearGradient id="neonGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <motion.stop
+                offset="0%"
+                animate={{
+                  stopColor: ['#21d8ff', '#E7FB10', '#21d8ff'],
+                }}
+                transition={{ duration: 4, repeat: Infinity }}
+              />
+              <motion.stop
+                offset="50%"
+                animate={{
+                  stopColor: ['#E7FB10', '#21d8ff', '#E7FB10'],
+                }}
+                transition={{ duration: 4, repeat: Infinity }}
+              />
+              <motion.stop
+                offset="100%"
+                animate={{
+                  stopColor: ['#21d8ff', '#E7FB10', '#21d8ff'],
+                }}
+                transition={{ duration: 4, repeat: Infinity }}
+              />
+            </linearGradient>
+          </defs>
+          
+          <motion.path
+            d="M 60 65 L 75 65 L 85 80 L 75 95 L 60 95 L 60 80 L 70 80 L 75 85 L 70 90 L 65 90 L 65 70 L 70 70"
+            stroke="url(#neonGradient)"
+            strokeWidth="1.5"
+            fill="none"
+            filter="url(#glow)"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: [0.5, 1, 0.5] }}
+            transition={{
+              pathLength: { duration: 3, ease: "easeInOut" },
+              opacity: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+            }}
+          />
+          
+          <motion.rect
+            x="55"
+            y="60"
+            width="90"
+            height="40"
+            rx="3"
+            stroke="url(#neonGradient)"
+            strokeWidth="0.5"
+            fill="none"
+            filter="url(#glow)"
+            animate={{
+              opacity: [0.3, 0.7, 0.3],
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+        </svg>
       </motion.div>
     </div>
   );
 }
 
-function PulsingRing() {
+function VialGlow() {
   return (
-    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-      {[1, 2, 3].map((ring) => (
-        <motion.div
-          key={ring}
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#E7FB10]/20"
-          initial={{ width: 100, height: 100, opacity: 0 }}
-          animate={{
-            width: [100, 600 + ring * 100],
-            height: [100, 600 + ring * 100],
-            opacity: [0.5, 0],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            delay: ring * 1.2,
-            ease: "easeOut",
-          }}
-        />
-      ))}
+    <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+      <motion.div
+        className="absolute w-[200px] h-[350px] md:w-[280px] md:h-[450px]"
+        style={{
+          background: 'linear-gradient(180deg, transparent 0%, rgba(33, 216, 255, 0.05) 40%, rgba(33, 216, 255, 0.1) 60%, rgba(33, 216, 255, 0.05) 80%, transparent 100%)',
+          borderRadius: '20px',
+        }}
+        animate={{
+          opacity: [0.5, 0.8, 0.5],
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+      
+      <motion.div
+        className="absolute w-[180px] h-[30px] md:w-[250px] md:h-[40px]"
+        style={{
+          top: '58%',
+          background: 'radial-gradient(ellipse at center, rgba(33, 216, 255, 0.4) 0%, transparent 70%)',
+          filter: 'blur(15px)',
+        }}
+        animate={{
+          opacity: [0.4, 0.8, 0.4],
+          scale: [1, 1.1, 1],
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
     </div>
   );
 }
@@ -184,108 +252,106 @@ export default function ComingSoon() {
   };
 
   return (
-    <div className="min-h-screen bg-[#1a1a1f] relative overflow-hidden flex items-center justify-center">
-      <AnimatedBackground />
-      <PulsingRing />
-      <DNAHelix />
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center">
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ 
+          backgroundImage: `url(${heroBackground})`,
+        }}
+      />
       
-      <div className="relative z-10 max-w-4xl mx-auto px-6 py-12 text-center">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/60" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/90" />
+      
+      <VialGlow />
+      <NeonGlowLines />
+      
+      <SmokeEffect position="left" delay={0} />
+      <SmokeEffect position="right" delay={1} />
+      <SmokeEffect position="bottom" delay={0.5} />
+      <FloatingSmoke />
+      
+      <div className="absolute inset-0 pointer-events-none">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 rounded-full bg-[#21d8ff]"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              opacity: [0, 1, 0],
+              scale: [0, 1, 0],
+            }}
+            transition={{
+              duration: 3 + Math.random() * 2,
+              repeat: Infinity,
+              delay: Math.random() * 5,
+            }}
+          />
+        ))}
+      </div>
+      
+      <div className="relative z-10 max-w-4xl mx-auto px-6 py-12 text-center mt-[40vh] md:mt-[35vh]">
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="mb-8"
-        >
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <motion.div
-              animate={{ rotate: [0, 360] }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            >
-              <FlaskConical className="w-10 h-10 md:w-12 md:h-12 text-[#E7FB10]" />
-            </motion.div>
-            <span className="font-display text-2xl md:text-3xl font-bold tracking-tight text-white">
-              REVIVE<span className="text-[#E7FB10]">RESEARCH</span>
-            </span>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2, duration: 0.8 }}
-          className="mb-8"
+          transition={{ duration: 1, delay: 0.5 }}
         >
           <motion.div
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#E7FB10]/10 border border-[#E7FB10]/30 mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/50 backdrop-blur-sm border border-[#21d8ff]/30 mb-6"
             animate={{
               boxShadow: [
-                "0 0 20px rgba(231, 251, 16, 0.2)",
-                "0 0 40px rgba(231, 251, 16, 0.4)",
-                "0 0 20px rgba(231, 251, 16, 0.2)",
+                "0 0 20px rgba(33, 216, 255, 0.2)",
+                "0 0 40px rgba(33, 216, 255, 0.4)",
+                "0 0 20px rgba(33, 216, 255, 0.2)",
               ],
             }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <Sparkles className="w-4 h-4 text-[#E7FB10]" />
-            <span className="text-sm font-medium text-[#E7FB10] uppercase tracking-wider">
+            <Sparkles className="w-4 h-4 text-[#21d8ff]" />
+            <span className="text-sm font-medium text-[#21d8ff] uppercase tracking-wider">
               Something Big Is Coming
             </span>
           </motion.div>
 
-          <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight">
+          <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold mb-4 leading-tight">
             <motion.span
-              className="block text-white"
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4 }}
+              className="block text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.3)]"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
             >
               The Future of
             </motion.span>
             <motion.span
-              className="block bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#E7FB10] bg-clip-text text-transparent"
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.6 }}
-              style={{ backgroundSize: "200% 100%" }}
+              className="block"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1 }}
             >
-              <motion.span
-                animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
-                transition={{ duration: 5, repeat: Infinity }}
-                className="inline-block bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#E7FB10] bg-clip-text text-transparent"
-                style={{ backgroundSize: "200% 100%" }}
-              >
+              <span className="bg-gradient-to-r from-[#21d8ff] via-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(33,216,255,0.5)]">
                 Research
-              </motion.span>
+              </span>
             </motion.span>
           </h1>
 
           <motion.p
-            className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12 leading-relaxed"
+            className="text-base md:text-lg text-gray-300 max-w-xl mx-auto mb-8 leading-relaxed"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
+            transition={{ delay: 1.2 }}
           >
-            We're building something revolutionary. Premium research compounds, 
-            rigorously tested, with complete transparency. 
-            <span className="text-[#E7FB10]"> Be the first to know.</span>
+            Premium research compounds, rigorously tested, with complete transparency.
+            <span className="text-[#21d8ff]"> Be the first to know.</span>
           </motion.p>
-        </motion.div>
-
-        <motion.div
-          className="flex justify-center gap-6 md:gap-10 mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1 }}
-        >
-          <GlowingIcon icon={Dna} delay={1.1} />
-          <GlowingIcon icon={Atom} delay={1.3} />
-          <GlowingIcon icon={Activity} delay={1.5} />
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2 }}
+          transition={{ delay: 1.4 }}
           className="max-w-md mx-auto"
         >
           <AnimatePresence mode="wait">
@@ -303,25 +369,14 @@ export default function ComingSoon() {
                       placeholder="Enter your email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="h-14 bg-white/5 border-[#E7FB10]/30 text-white placeholder:text-gray-500 focus:border-[#E7FB10] focus:ring-[#E7FB10]/20 pr-4 text-base"
+                      className="h-12 bg-black/50 backdrop-blur-sm border-[#21d8ff]/40 text-white placeholder:text-gray-500 focus:border-[#21d8ff] focus:ring-[#21d8ff]/20 text-base"
                       data-testid="input-email"
-                    />
-                    <motion.div
-                      className="absolute inset-0 rounded-md pointer-events-none"
-                      animate={{
-                        boxShadow: [
-                          "0 0 0px rgba(231, 251, 16, 0)",
-                          "0 0 20px rgba(231, 251, 16, 0.3)",
-                          "0 0 0px rgba(231, 251, 16, 0)",
-                        ],
-                      }}
-                      transition={{ duration: 2, repeat: Infinity, delay: 1 }}
                     />
                   </div>
                   <Button
                     type="submit"
                     disabled={isSubmitting || !email}
-                    className="h-14 px-8 bg-[#E7FB10] text-black font-bold hover:bg-[#d4e50e] border-2 border-[#E7FB10] shadow-[0_0_30px_rgba(231,251,16,0.4)] hover:shadow-[0_0_50px_rgba(231,251,16,0.6)] transition-all duration-300"
+                    className="h-12 px-6 bg-[#21d8ff] text-black font-bold hover:bg-[#4de4ff] border-0 shadow-[0_0_30px_rgba(33,216,255,0.5)] hover:shadow-[0_0_50px_rgba(33,216,255,0.7)] transition-all duration-300"
                     data-testid="button-notify"
                   >
                     {isSubmitting ? (
@@ -334,7 +389,7 @@ export default function ComingSoon() {
                     ) : (
                       <>
                         Notify Me
-                        <ArrowRight className="w-5 h-5 ml-2" />
+                        <ArrowRight className="w-4 h-4 ml-2" />
                       </>
                     )}
                   </Button>
@@ -348,50 +403,60 @@ export default function ComingSoon() {
                 key="success"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="text-center"
+                className="text-center bg-black/50 backdrop-blur-sm rounded-lg p-6 border border-[#21d8ff]/30"
               >
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", delay: 0.2 }}
-                  className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#E7FB10]/20 border-2 border-[#E7FB10] mb-4"
+                  className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#21d8ff]/20 border-2 border-[#21d8ff] mb-4"
                 >
-                  <CheckCircle className="w-8 h-8 text-[#E7FB10]" />
+                  <CheckCircle className="w-7 h-7 text-[#21d8ff]" />
                 </motion.div>
-                <h3 className="text-xl font-bold text-white mb-2">You're on the list!</h3>
-                <p className="text-gray-400">We'll notify you when we launch.</p>
+                <h3 className="text-lg font-bold text-white mb-2">You're on the list!</h3>
+                <p className="text-gray-400 text-sm">We'll notify you when we launch.</p>
               </motion.div>
             )}
           </AnimatePresence>
         </motion.div>
 
         <motion.div
-          className="mt-16 pt-8 border-t border-white/10"
+          className="mt-12 flex flex-wrap justify-center gap-6 text-xs text-gray-500"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
+          transition={{ delay: 1.8 }}
         >
-          <div className="flex flex-wrap justify-center gap-8 text-sm text-gray-500">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-[#E7FB10] animate-pulse" />
-              <span>99.9% Purity Verified</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-[#21d8ff] animate-pulse" />
-              <span>3rd Party Lab Tested</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-[#E7FB10] animate-pulse" />
-              <span>COA Verified</span>
-            </div>
+          <div className="flex items-center gap-2">
+            <motion.div 
+              className="w-2 h-2 rounded-full bg-[#21d8ff]"
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            <span>99.9% Purity</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <motion.div 
+              className="w-2 h-2 rounded-full bg-[#E7FB10]"
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+            />
+            <span>Lab Tested</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <motion.div 
+              className="w-2 h-2 rounded-full bg-[#21d8ff]"
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+            />
+            <span>COA Verified</span>
           </div>
         </motion.div>
 
         <motion.p
-          className="mt-12 text-xs text-gray-600 max-w-lg mx-auto"
+          className="mt-8 text-[10px] text-gray-600 max-w-md mx-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.8 }}
+          transition={{ delay: 2 }}
         >
           For Research Use Only. Not for human consumption. 
           All products are strictly intended for laboratory and research purposes.
