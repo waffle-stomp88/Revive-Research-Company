@@ -377,9 +377,8 @@ export class DatabaseStorage implements IStorage {
       .map(p => ({ id: p.id, name: p.name }));
 
     const allContacts = await db.select().from(contacts).orderBy(desc(contacts.createdAt));
-    const recentContacts = allContacts.filter(c => 
-      c.createdAt && new Date(c.createdAt) >= startDate
-    ).length;
+    // Count unread contacts instead of just recent ones
+    const recentContacts = allContacts.filter(c => c.isRead === false).length;
 
     const pendingApplications = await db.select().from(affiliateApplications)
       .where(eq(affiliateApplications.status, 'pending'));
