@@ -17,6 +17,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import type { Product } from "@shared/schema";
 import heroBackground from "@assets/69bf34cc-d177-46c6-af24-c51da5ee10fa_1764382400961.png";
+import researchLabImage from "@assets/generated_images/neon_peptide_research_lab.png";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 40 },
@@ -483,9 +484,18 @@ function ScienceSection() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6 }}
+            className="relative group"
           >
-            <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center">
-              <Microscope className="h-32 w-32 text-muted-foreground/30" />
+            <div className="aspect-square rounded-lg overflow-hidden relative">
+              <img 
+                src={researchLabImage} 
+                alt="Advanced peptide research laboratory" 
+                className="w-full h-full object-cover"
+              />
+              {/* Neon glow overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#21d8ff]/20 via-transparent to-[#E7FB10]/10 opacity-60" />
+              {/* Border glow effect */}
+              <div className="absolute inset-0 rounded-lg border border-[#21d8ff]/30 shadow-[0_0_30px_rgba(33,216,255,0.2)]" />
             </div>
           </motion.div>
 
