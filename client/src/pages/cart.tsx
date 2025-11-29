@@ -211,7 +211,7 @@ export default function CartPage() {
                   </div>
                   {shipping > 0 && amountToFreeShipping > 0 && (
                     <p className="text-xs text-muted-foreground">
-                      Add ${amountToFreeShipping.toFixed(2)} more for free shipping!
+                      Add <span className="text-[#21d8ff] font-semibold">${amountToFreeShipping.toFixed(2)}</span> more for free shipping!
                     </p>
                   )}
                 </div>
