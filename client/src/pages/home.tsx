@@ -198,9 +198,9 @@ function HeroSection() {
         />
       </div>
       
-      {/* Dark overlay gradient */}
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent z-[2]" />
-      <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background z-[2]" />
+      {/* Dark overlay gradient - subtle to preserve vial logo */}
+      <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-[2]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-background z-[2]" />
       
       {/* Neon glow effects */}
       <div className="absolute inset-0 overflow-hidden z-[3] pointer-events-none">
@@ -222,16 +222,17 @@ function HeroSection() {
         />
       </div>
 
-      {/* Content */}
+      {/* Content - Positioned below vial */}
       <motion.div
         style={{ opacity }}
-        className="relative z-[10] max-w-7xl mx-auto px-4 md:px-8 text-center"
+        className="relative z-[10] max-w-6xl mx-auto px-4 md:px-8 text-center flex flex-col items-center justify-center h-full"
       >
+        {/* Badge at top */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="mb-6"
+          initial={{ opacity: 0, y: 20, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.1 }}
+          className="mb-16 md:mb-20"
         >
           <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/50 backdrop-blur-sm border border-[#E7FB10]/30 text-sm font-medium tracking-wide text-[#e7fb10]">
             <FlaskConical className="h-4 w-4" />
@@ -239,21 +240,30 @@ function HeroSection() {
           </span>
         </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
+        {/* Main Headline with premium entrance */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="font-display text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8 text-white drop-shadow-2xl"
-          data-testid="text-hero-headline"
+          transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
         >
-          The Future of Supplementation
-        </motion.h1>
+          <h1 
+            className="font-display text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 text-white drop-shadow-2xl leading-tight"
+            data-testid="text-hero-headline"
+          >
+            The Future of
+            <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E7FB10] via-white to-[#21d8ff] animate-pulse">
+              Supplementation
+            </span>
+          </h1>
+        </motion.div>
 
+        {/* Subheadline with staggered animation */}
         <motion.p
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-12 leading-relaxed drop-shadow-lg"
+          transition={{ duration: 0.8, delay: 0.5 }}
+          className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-10 leading-relaxed drop-shadow-lg"
           data-testid="text-hero-subheadline"
         >
           Engineered with intention.
@@ -261,20 +271,21 @@ function HeroSection() {
           Built for those who don't wait for permission.
         </motion.p>
 
+        {/* CTA Buttons with premium animation */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
+          transition={{ duration: 0.8, delay: 0.7 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <Link href="/products">
-            <Button size="lg" className="font-display text-base px-8 gap-2 bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 border-2 border-[#E7FB10] shadow-[0_0_30px_rgba(231,251,16,0.4)] hover:shadow-[0_0_50px_rgba(231,251,16,0.6)] transition-all duration-300" data-testid="button-hero-shop">
+            <Button size="lg" className="font-display text-base px-8 gap-2 bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 border-2 border-[#E7FB10] shadow-[0_0_30px_rgba(231,251,16,0.4)] hover:shadow-[0_0_50px_rgba(231,251,16,0.6)] transition-all duration-300 hover:scale-105" data-testid="button-hero-shop">
               Shop Products
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
           <Link href="/coa">
-            <Button size="lg" variant="outline" className="font-display text-base px-8 bg-black/30 backdrop-blur-sm border-white/30 text-white hover:bg-white/10 hover:border-white/50" data-testid="button-hero-coa">
+            <Button size="lg" variant="outline" className="font-display text-base px-8 bg-black/30 backdrop-blur-sm border-white/30 text-white hover:bg-white/10 hover:border-white/50 transition-all duration-300 hover:scale-105" data-testid="button-hero-coa">
               Verify COA
             </Button>
           </Link>
