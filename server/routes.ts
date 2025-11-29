@@ -81,6 +81,19 @@ export async function registerRoutes(
     }
   });
 
+  // Get selling fast products (products with 3+ orders in last 7 days)
+  app.get("/api/products/selling-fast", async (req, res) => {
+    try {
+      const daysBack = parseInt(req.query.days as string) || 7;
+      const minOrders = parseInt(req.query.minOrders as string) || 3;
+      const sellingFastIds = await storage.getSellingFastProducts(daysBack, minOrders);
+      res.json(sellingFastIds);
+    } catch (error) {
+      console.error("Error fetching selling fast products:", error);
+      res.status(500).json({ error: "Failed to fetch selling fast products" });
+    }
+  });
+
   // Get single product by ID
   app.get("/api/products/:id", async (req, res) => {
     try {

@@ -96,6 +96,9 @@ export interface IStorage {
   
   // Dashboard
   getDashboardMetrics(daysBack: number): Promise<DashboardMetrics>;
+  
+  // Product Sales Velocity
+  getSellingFastProducts(daysBack: number, minOrders: number): Promise<string[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -476,6 +479,31 @@ export class DatabaseStorage implements IStorage {
       recentOrders,
       revenueTrend
     };
+  }
+
+  async getSellingFastProducts(daysBack: number = 7, minOrders: number = 3): Promise<string[]> {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - daysBack);
+    startDate.setHours(0, 0, 0, 0);
+
+    const recentOrders = await db.select().from(orders).orderBy(desc(orders.createdAt));
+    const filteredOrders = recentOrders.filter(order => 
+      order.createdAt && new Date(order.createdAt) >= startDate && 
+      (order.status === 'completed' || order.status === 'shipped' || order.status === 'processing' || order.status === 'pending')
+    );
+
+    // Count orders per product
+    const productOrderCounts: Record<string, number> = {};
+    for (const order of filteredOrders) {
+      productOrderCounts[order.productId] = (productOrderCounts[order.productId] || 0) + (order.quantity || 1);
+    }
+
+    // Return product IDs that have >= minOrders in the time period
+    const sellingFastIds = Object.entries(productOrderCounts)
+      .filter(([_, count]) => count >= minOrders)
+      .map(([productId]) => productId);
+
+    return sellingFastIds;
   }
 }
 

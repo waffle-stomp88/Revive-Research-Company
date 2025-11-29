@@ -34,11 +34,83 @@ import {
   ChevronRight,
   Filter,
   PanelLeftClose,
-  PanelLeft
+  PanelLeft,
+  TrendingUp,
+  AlertTriangle
 } from "lucide-react";
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { BUNDLES } from "@/lib/bundles";
+
+// Badge priority system - max 2 badges per product
+// Priority: Out of Stock > Low Stock > Sale > Selling Fast > Featured
+type BadgeType = "out-of-stock" | "low-stock" | "sale" | "selling-fast" | "featured";
+
+interface ProductBadge {
+  type: BadgeType;
+  label: string;
+  className: string;
+  icon?: typeof Flame;
+}
+
+const LOW_STOCK_THRESHOLD = 20;
+
+function getProductBadges(
+  product: Product, 
+  sellingFastIds: string[]
+): ProductBadge[] {
+  const badges: ProductBadge[] = [];
+  
+  // Priority 1: Out of Stock (highest priority)
+  if (!product.inStock || (product.stockAmount !== null && product.stockAmount <= 0)) {
+    badges.push({
+      type: "out-of-stock",
+      label: "Out of Stock",
+      className: "bg-destructive text-destructive-foreground"
+    });
+  }
+  
+  // Priority 2: Low Stock
+  if (product.inStock && product.stockAmount !== null && product.stockAmount > 0 && product.stockAmount <= LOW_STOCK_THRESHOLD) {
+    badges.push({
+      type: "low-stock",
+      label: `Only ${product.stockAmount} left`,
+      className: "bg-orange-500 text-white",
+      icon: AlertTriangle
+    });
+  }
+  
+  // Priority 3: Sale
+  if (product.originalPrice) {
+    badges.push({
+      type: "sale",
+      label: "SALE",
+      className: "bg-red-600 text-white font-bold"
+    });
+  }
+  
+  // Priority 4: Selling Fast
+  if (sellingFastIds.includes(product.id) && product.inStock) {
+    badges.push({
+      type: "selling-fast",
+      label: "Selling Fast",
+      className: "bg-[#E7FB10] text-black font-semibold",
+      icon: TrendingUp
+    });
+  }
+  
+  // Priority 5: Featured (lowest priority)
+  if (product.featured) {
+    badges.push({
+      type: "featured",
+      label: "Featured",
+      className: "bg-[#21d8ff] text-black font-semibold"
+    });
+  }
+  
+  // Return max 2 badges based on priority order
+  return badges.slice(0, 2);
+}
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -91,6 +163,11 @@ export default function Products() {
 
   const { data: products, isLoading, error } = useQuery<Product[]>({
     queryKey: ["/api/products"],
+  });
+
+  // Query for selling fast products (3+ orders in last 7 days)
+  const { data: sellingFastIds = [] } = useQuery<string[]>({
+    queryKey: ["/api/products/selling-fast"],
   });
 
   const scrollToSection = (section: ShopSection) => {
@@ -746,21 +823,23 @@ export default function Products() {
                               alt={product.name}
                               className="w-full h-full object-contain transition-transform duration-300 p-3 group-hover:scale-105"
                             />
-                            {product.originalPrice && (
-                              <span className="absolute top-2 left-2 z-20 px-1.5 py-0.5 font-bold rounded bg-red-600 text-white text-[13px]">
-                                SALE
-                              </span>
-                            )}
-                            {product.featured && (
-                              <span className="absolute top-2 right-2 z-20 px-1.5 py-0.5 font-semibold rounded bg-[#21d8ff] text-black text-[13px]">
-                                Featured
-                              </span>
-                            )}
-                            {!product.inStock && (
-                              <span className="absolute bottom-2 left-2 z-20 px-1.5 py-0.5 text-[10px] font-semibold rounded bg-destructive text-destructive-foreground">
-                                Out of Stock
-                              </span>
-                            )}
+                            {/* Smart badge system - max 2 badges, positioned top-left */}
+                            {(() => {
+                              const badges = getProductBadges(product, sellingFastIds);
+                              return (
+                                <div className="absolute top-2 left-2 z-20 flex flex-col gap-1">
+                                  {badges.map((badge, index) => (
+                                    <span 
+                                      key={badge.type}
+                                      className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[11px] rounded ${badge.className}`}
+                                    >
+                                      {badge.icon && <badge.icon className="h-3 w-3" />}
+                                      {badge.label}
+                                    </span>
+                                  ))}
+                                </div>
+                              );
+                            })()}
                           </div>
                           
                           <div className="flex-1 flex flex-col min-h-0">

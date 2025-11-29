@@ -30,10 +30,81 @@ import {
   RefreshCw,
   Repeat,
   Percent,
-  AlertTriangle
+  AlertTriangle,
+  TrendingUp
 } from "lucide-react";
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
+
+// Badge priority system - max 2 badges per product
+// Priority: Out of Stock > Low Stock > Sale > Selling Fast > Featured
+type BadgeType = "out-of-stock" | "low-stock" | "sale" | "selling-fast" | "featured";
+
+interface ProductBadge {
+  type: BadgeType;
+  label: string;
+  className: string;
+  icon?: typeof TrendingUp;
+}
+
+const LOW_STOCK_THRESHOLD = 20;
+
+function getProductBadges(
+  product: Product, 
+  sellingFastIds: string[]
+): ProductBadge[] {
+  const badges: ProductBadge[] = [];
+  
+  // Priority 1: Out of Stock (highest priority)
+  if (!product.inStock || (product.stockAmount !== null && product.stockAmount <= 0)) {
+    badges.push({
+      type: "out-of-stock",
+      label: "Out of Stock",
+      className: "bg-destructive text-destructive-foreground"
+    });
+  }
+  
+  // Priority 2: Low Stock
+  if (product.inStock && product.stockAmount !== null && product.stockAmount > 0 && product.stockAmount <= LOW_STOCK_THRESHOLD) {
+    badges.push({
+      type: "low-stock",
+      label: `Only ${product.stockAmount} left`,
+      className: "bg-orange-500 text-white",
+      icon: AlertTriangle
+    });
+  }
+  
+  // Priority 3: Sale
+  if (product.originalPrice) {
+    badges.push({
+      type: "sale",
+      label: "SALE!",
+      className: "bg-red-600 text-white font-bold shadow-glow-red-sm"
+    });
+  }
+  
+  // Priority 4: Selling Fast
+  if (sellingFastIds.includes(product.id) && product.inStock) {
+    badges.push({
+      type: "selling-fast",
+      label: "Selling Fast",
+      className: "bg-[#E7FB10] text-black font-semibold",
+      icon: TrendingUp
+    });
+  }
+  
+  // Priority 5: Featured (lowest priority)
+  if (product.featured) {
+    badges.push({
+      type: "featured",
+      label: "Featured",
+      className: "bg-[#21d8ff] text-black"
+    });
+  }
+  
+  // Return max 2 badges based on priority order
+  return badges.slice(0, 2);
+}
 
 type PurchaseType = "one-time" | "subscription";
 type SubscriptionInterval = "weekly" | "biweekly" | "monthly";
@@ -62,6 +133,11 @@ export default function ProductDetail() {
 
   const { data: product, isLoading, error } = useQuery<Product>({
     queryKey: ["/api/products", params.id],
+  });
+
+  // Query for selling fast products
+  const { data: sellingFastIds = [] } = useQuery<string[]>({
+    queryKey: ["/api/products/selling-fast"],
   });
 
   useEffect(() => {
@@ -202,15 +278,13 @@ export default function ProductDetail() {
               <Badge variant="secondary" className="text-xs uppercase tracking-wider">
                 {product.category}
               </Badge>
-              {product.originalPrice && (
-                <Badge className="bg-red-600 text-white font-bold shadow-glow-red-sm">SALE!</Badge>
-              )}
-              {product.featured && (
-                <Badge className="bg-[#21d8ff] text-black">Featured</Badge>
-              )}
-              {!product.inStock && (
-                <Badge variant="destructive">Out of Stock</Badge>
-              )}
+              {/* Smart badge system - max 2 badges based on priority */}
+              {getProductBadges(product, sellingFastIds).map((badge) => (
+                <Badge key={badge.type} className={`inline-flex items-center gap-1 ${badge.className}`}>
+                  {badge.icon && <badge.icon className="h-3 w-3" />}
+                  {badge.label}
+                </Badge>
+              ))}
             </div>
 
             <h1 className="font-display text-2xl md:text-3xl font-bold mb-2" data-testid="text-product-name">
