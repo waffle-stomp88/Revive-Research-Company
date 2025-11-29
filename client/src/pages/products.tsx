@@ -380,13 +380,22 @@ export default function Products() {
               >
                 <Link href={`/products/${product.id}`} className="h-full block">
                   <Card 
-                    className={`group p-3 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 hover:scale-[1.03] ${
+                    className={`group p-3 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 hover:scale-[1.03] relative overflow-hidden ${
                       !product.inStock
                         ? "border-red-500/40 hover:border-red-500 hover:shadow-[0_0_30px_rgba(239,68,68,0.5),0_0_60px_rgba(239,68,68,0.2)]"
                         : "border-cyan-400/40 hover:border-cyan-400 hover:shadow-[0_0_30px_rgba(33,216,255,0.5),0_0_60px_rgba(33,216,255,0.2)]"
                     }`}
                     data-testid={`card-product-${product.id}`}
                   >
+                    {/* Diagonal red line for out of stock */}
+                    {!product.inStock && (
+                      <div 
+                        className="absolute inset-0 pointer-events-none z-10"
+                        style={{
+                          background: "linear-gradient(to bottom right, transparent calc(50% - 2px), rgba(239, 68, 68, 0.7) calc(50% - 1px), rgba(239, 68, 68, 0.9) 50%, rgba(239, 68, 68, 0.7) calc(50% + 1px), transparent calc(50% + 2px))",
+                        }}
+                      />
+                    )}
                     <div className="relative aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 rounded-md mb-3 overflow-hidden">
                       <img 
                         src={productImage} 
