@@ -461,7 +461,7 @@ export default function AffiliatePage() {
               transition={{ delay: 0.4 }}
             >
               <Card className="p-4 border-[#9d4edd]/20 h-full">
-                <h4 className="font-semibold text-lg md:text-xl mb-3 flex items-center gap-2">
+                <h4 className="font-semibold text-xl md:text-2xl mb-3 flex items-center gap-2">
                   <Star className="h-4 w-4 text-[#9d4edd]" />
                   Partner Benefits
                 </h4>
@@ -472,7 +472,7 @@ export default function AffiliatePage() {
                     { icon: Zap, text: "Priority Support" },
                     { icon: Gift, text: "Marketing Assets" },
                   ].map((item) => (
-                    <div key={item.text} className="flex items-center gap-2 text-xs">
+                    <div key={item.text} className="flex items-center gap-2 text-sm">
                       <item.icon className="h-3 w-3 text-[#9d4edd]" />
                       <span className="text-muted-foreground">{item.text}</span>
                     </div>
@@ -601,8 +601,8 @@ export default function AffiliatePage() {
                       <item.icon className="h-5 w-5 text-[#9d4edd]" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-sm mb-1">{item.title}</h3>
-                      <p className="text-xs text-muted-foreground">{item.desc}</p>
+                      <h3 className="font-semibold text-base md:text-lg mb-1">{item.title}</h3>
+                      <p className="text-sm text-muted-foreground">{item.desc}</p>
                     </div>
                   </div>
                 </Card>
@@ -846,8 +846,8 @@ export default function AffiliatePage() {
                   <Shield className="h-4 w-4 text-[#9d4edd]" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-sm mb-1">Official Non-MLM Disclaimer</h4>
-                  <p className="text-xs text-muted-foreground">
+                  <h4 className="font-semibold text-lg md:text-xl mb-1">Official Non-MLM Disclaimer</h4>
+                  <p className="text-sm text-muted-foreground">
                     Revive's Affiliate Program is <span className="font-semibold text-foreground">not</span> an MLM or network marketing structure.
                   </p>
                 </div>
@@ -855,21 +855,21 @@ export default function AffiliatePage() {
               
               <div className="grid md:grid-cols-2 gap-4 mb-4">
                 <div>
-                  <p className="text-xs font-medium mb-2">Affiliates earn commissions only on:</p>
+                  <p className="text-sm font-medium mb-2">Affiliates earn commissions only on:</p>
                   <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <CheckCircle className="h-3 w-3 text-[#9d4edd]" />
                       <span>Their own direct referral sales (10%)</span>
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <CheckCircle className="h-3 w-3 text-[#9d4edd]" />
                       <span>Sales made by affiliates they personally refer (10%)</span>
                     </div>
                   </div>
                 </div>
                 <div>
-                  <p className="text-xs font-medium mb-2">Commission payouts stop at one level. There are:</p>
-                  <div className="space-y-1 text-xs text-muted-foreground">
+                  <p className="text-sm font-medium mb-2">Commission payouts stop at one level. There are:</p>
+                  <div className="space-y-1 text-sm text-muted-foreground">
                     {["No ranks", "No forced monthly purchases", "No recruitment requirements", "No autoship commitments", "No bonuses for signing people up"].map((item) => (
                       <div key={item} className="flex items-center gap-2">
                         <XCircle className="h-3 w-3 text-red-400" />
@@ -880,7 +880,7 @@ export default function AffiliatePage() {
                 </div>
               </div>
               
-              <p className="text-xs text-muted-foreground border-t border-muted/20 pt-3">
+              <p className="text-sm text-muted-foreground border-t border-muted/20 pt-3">
                 All income is generated solely from product sales, not from recruiting participants. Affiliates can earn without referring anyone to the program. Revive operates strictly as a two-tier affiliate program, similar to standard e-commerce partner programs used by reputable brands worldwide.
               </p>
             </Card>
