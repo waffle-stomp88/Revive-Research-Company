@@ -495,6 +495,42 @@ export async function registerRoutes(
     }
   });
 
+  // Get affiliate earnings over time (for chart)
+  app.get("/api/affiliate/earnings-chart", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const userEmail = req.user.claims.email;
+      
+      let affiliate = await storage.getAffiliateByUserId(userId);
+      if (!affiliate && userEmail) {
+        affiliate = await storage.getAffiliateByEmail(userEmail);
+      }
+      
+      if (!affiliate) {
+        return res.status(404).json({ error: "Not an affiliate" });
+      }
+
+      const weeks = parseInt(req.query.weeks as string) || 12;
+      const earnings = await storage.getAffiliateEarningsOverTime(affiliate.id, weeks);
+      res.json(earnings);
+    } catch (error) {
+      console.error("Error fetching affiliate earnings chart:", error);
+      res.status(500).json({ error: "Failed to fetch earnings data" });
+    }
+  });
+
+  // Get affiliate leaderboard (public for gamification)
+  app.get("/api/affiliate/leaderboard", async (req, res) => {
+    try {
+      const period = (req.query.period as string) === 'weekly' ? 'weekly' : 'monthly';
+      const leaderboard = await storage.getAffiliateLeaderboard(period);
+      res.json(leaderboard);
+    } catch (error) {
+      console.error("Error fetching affiliate leaderboard:", error);
+      res.status(500).json({ error: "Failed to fetch leaderboard" });
+    }
+  });
+
   // Update affiliate payout settings
   app.patch("/api/affiliate/settings", isAuthenticated, async (req: any, res) => {
     try {

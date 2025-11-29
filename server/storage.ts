@@ -115,6 +115,10 @@ export interface IStorage {
   hasUserReviewedOrder(userId: string, orderId: string): Promise<boolean>;
   canUserReviewOrder(userId: string, orderId: string): Promise<{ canReview: boolean; reason?: string }>;
   getReviewByOrderId(orderId: string): Promise<Review | undefined>;
+  
+  // Affiliate earnings and leaderboard
+  getAffiliateEarningsOverTime(affiliateId: string, weeks: number): Promise<Array<{ weekStart: string; weekEnd: string; tier1: number; tier2: number; total: number }>>;
+  getAffiliateLeaderboard(period: 'weekly' | 'monthly'): Promise<Array<{ rank: number; affiliateId: string; displayName: string; salesCount: number; totalRevenue: number; tier1Earnings: number; tier2Earnings: number }>>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -659,6 +663,138 @@ export class DatabaseStorage implements IStorage {
     const [review] = await db.select().from(reviews)
       .where(eq(reviews.orderId, orderId));
     return review || undefined;
+  }
+
+  async getAffiliateEarningsOverTime(affiliateId: string, weeks: number = 12): Promise<Array<{ weekStart: string; weekEnd: string; tier1: number; tier2: number; total: number }>> {
+    const result: Array<{ weekStart: string; weekEnd: string; tier1: number; tier2: number; total: number }> = [];
+    
+    // Get all sales for this affiliate
+    const allSales = await db.select().from(affiliateSales)
+      .where(eq(affiliateSales.affiliateId, affiliateId))
+      .orderBy(affiliateSales.createdAt);
+    
+    // Get tier 2 earnings (where this affiliate is the upline)
+    const tier2Sales = await db.select().from(affiliateSales)
+      .where(eq(affiliateSales.uplineId, affiliateId))
+      .orderBy(affiliateSales.createdAt);
+    
+    // Generate weeks going back from today
+    const now = new Date();
+    for (let i = weeks - 1; i >= 0; i--) {
+      const weekEnd = new Date(now);
+      weekEnd.setDate(weekEnd.getDate() - (i * 7));
+      weekEnd.setHours(23, 59, 59, 999);
+      
+      const weekStart = new Date(weekEnd);
+      weekStart.setDate(weekStart.getDate() - 6);
+      weekStart.setHours(0, 0, 0, 0);
+      
+      // Calculate tier 1 earnings for this week
+      const tier1 = allSales
+        .filter(sale => {
+          if (!sale.createdAt) return false;
+          const saleDate = new Date(sale.createdAt);
+          return saleDate >= weekStart && saleDate <= weekEnd;
+        })
+        .reduce((sum, sale) => sum + parseFloat(sale.commissionTier1 || '0'), 0);
+      
+      // Calculate tier 2 earnings for this week
+      const tier2 = tier2Sales
+        .filter(sale => {
+          if (!sale.createdAt) return false;
+          const saleDate = new Date(sale.createdAt);
+          return saleDate >= weekStart && saleDate <= weekEnd;
+        })
+        .reduce((sum, sale) => sum + parseFloat(sale.commissionTier2 || '0'), 0);
+      
+      result.push({
+        weekStart: weekStart.toISOString().split('T')[0],
+        weekEnd: weekEnd.toISOString().split('T')[0],
+        tier1,
+        tier2,
+        total: tier1 + tier2
+      });
+    }
+    
+    return result;
+  }
+
+  async getAffiliateLeaderboard(period: 'weekly' | 'monthly'): Promise<Array<{ rank: number; affiliateId: string; displayName: string; salesCount: number; totalRevenue: number; tier1Earnings: number; tier2Earnings: number }>> {
+    // Calculate date range
+    const now = new Date();
+    const startDate = new Date(now);
+    if (period === 'weekly') {
+      startDate.setDate(startDate.getDate() - 7);
+    } else {
+      startDate.setDate(startDate.getDate() - 30);
+    }
+    startDate.setHours(0, 0, 0, 0);
+    
+    // Get all affiliates
+    const allAffiliates = await db.select().from(affiliates).where(eq(affiliates.isActive, true));
+    
+    // Get all sales within the period
+    const allSales = await db.select().from(affiliateSales)
+      .orderBy(affiliateSales.createdAt);
+    
+    const filteredSales = allSales.filter(sale => {
+      if (!sale.createdAt) return false;
+      return new Date(sale.createdAt) >= startDate;
+    });
+    
+    // Aggregate by affiliate
+    const affiliateStats: Map<string, { salesCount: number; totalRevenue: number; tier1Earnings: number; tier2Earnings: number }> = new Map();
+    
+    for (const affiliate of allAffiliates) {
+      affiliateStats.set(affiliate.id, { salesCount: 0, totalRevenue: 0, tier1Earnings: 0, tier2Earnings: 0 });
+    }
+    
+    for (const sale of filteredSales) {
+      const stats = affiliateStats.get(sale.affiliateId);
+      if (stats) {
+        stats.salesCount++;
+        stats.totalRevenue += parseFloat(sale.orderTotal || '0');
+        stats.tier1Earnings += parseFloat(sale.commissionTier1 || '0');
+      }
+      
+      // Also add tier 2 earnings to upline
+      if (sale.uplineId) {
+        const uplineStats = affiliateStats.get(sale.uplineId);
+        if (uplineStats) {
+          uplineStats.tier2Earnings += parseFloat(sale.commissionTier2 || '0');
+        }
+      }
+    }
+    
+    // Convert to array and sort by total earnings
+    const leaderboard = allAffiliates
+      .map(affiliate => {
+        const stats = affiliateStats.get(affiliate.id) || { salesCount: 0, totalRevenue: 0, tier1Earnings: 0, tier2Earnings: 0 };
+        const nameParts = affiliate.fullName.split(' ');
+        const displayName = nameParts.length > 1 
+          ? `${nameParts[0]} ${nameParts[nameParts.length - 1][0]}.`
+          : nameParts[0];
+        
+        return {
+          affiliateId: affiliate.id,
+          displayName,
+          ...stats,
+          totalEarnings: stats.tier1Earnings + stats.tier2Earnings
+        };
+      })
+      .sort((a, b) => b.totalEarnings - a.totalEarnings)
+      .slice(0, 50) // Top 50
+      .map((item, index) => ({
+        rank: index + 1,
+        affiliateId: item.affiliateId,
+        displayName: item.displayName,
+        salesCount: item.salesCount,
+        totalRevenue: item.totalRevenue,
+        tier1Earnings: item.tier1Earnings,
+        tier2Earnings: item.tier2Earnings
+      }));
+    
+    return leaderboard;
   }
 }
 
