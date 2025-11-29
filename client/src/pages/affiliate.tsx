@@ -205,7 +205,7 @@ export default function AffiliatePage() {
             <Button
               size="lg"
               onClick={() => scrollToSection("apply")}
-              className="gap-2 bg-[#9d4edd] text-white font-semibold hover:bg-[#9d4edd]/90 shadow-[0_0_20px_rgba(157,78,221,0.3)]"
+              className="gap-2 bg-[#9d4edd] text-white font-semibold hover:bg-[#9d4edd]/90 border-2 border-[#9d4edd] shadow-[0_0_20px_rgba(157,78,221,0.3)]"
               data-testid="button-apply-now"
             >
               Apply Now
@@ -700,7 +700,7 @@ export default function AffiliatePage() {
 
                     <Button
                       type="submit"
-                      className="w-full bg-[#9d4edd] hover:bg-[#9d4edd]/90 text-white font-semibold animate-pulse-glow-purple"
+                      className="w-full bg-[#9d4edd] hover:bg-[#9d4edd]/90 text-white font-semibold border-2 border-[#9d4edd] animate-pulse-glow-purple"
                       disabled={submitMutation.isPending}
                       data-testid="button-submit-application"
                     >
