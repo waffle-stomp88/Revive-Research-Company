@@ -165,7 +165,7 @@ export default function Products() {
     queryKey: ["/api/products"],
   });
 
-  // Query for selling fast products (3+ orders in last 7 days)
+  // Query for selling fast products (5+ orders in last 7 days)
   const { data: sellingFastIds = [] } = useQuery<string[]>({
     queryKey: ["/api/products/selling-fast"],
   });

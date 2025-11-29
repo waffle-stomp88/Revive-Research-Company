@@ -81,11 +81,11 @@ export async function registerRoutes(
     }
   });
 
-  // Get selling fast products (products with 3+ orders in last 7 days)
+  // Get selling fast products (products with 5+ orders in last 7 days)
   app.get("/api/products/selling-fast", async (req, res) => {
     try {
       const daysBack = parseInt(req.query.days as string) || 7;
-      const minOrders = parseInt(req.query.minOrders as string) || 3;
+      const minOrders = parseInt(req.query.minOrders as string) || 5;
       const sellingFastIds = await storage.getSellingFastProducts(daysBack, minOrders);
       res.json(sellingFastIds);
     } catch (error) {
