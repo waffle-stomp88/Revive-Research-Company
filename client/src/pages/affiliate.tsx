@@ -85,7 +85,7 @@ const IDEAL_PARTNER = {
 };
 
 const NOT_FOR = {
-  heading: "Please Note",
+  heading: "Not a Fit For",
   items: [
     "Coupon sites focused only on discounts",
     "Anyone making unapproved health claims",
@@ -473,16 +473,19 @@ export default function AffiliatePage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <Card className="p-6 md:p-8 border-muted-foreground/20 bg-muted/30" data-testid="card-not-for">
-              <h3 className="font-display text-lg font-semibold mb-4 flex items-center gap-3 text-muted-foreground">
+            <Card 
+              className="p-6 md:p-8 border-2 border-red-500/40 bg-red-950/20 shadow-[0_0_30px_rgba(239,68,68,0.15)]" 
+              data-testid="card-not-for"
+            >
+              <h3 className="font-display text-lg font-semibold mb-4 flex items-center gap-3 text-red-400">
                 <XCircle className="h-5 w-5" />
                 {NOT_FOR.heading}
               </h3>
               <div className="grid md:grid-cols-2 gap-3">
                 {NOT_FOR.items.map((item, index) => (
                   <div key={index} className="flex items-start gap-3">
-                    <XCircle className="h-4 w-4 text-muted-foreground/50 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-muted-foreground">{item}</span>
+                    <XCircle className="h-4 w-4 text-red-400/70 mt-0.5 flex-shrink-0" />
+                    <span className="text-sm text-red-200/80">{item}</span>
                   </div>
                 ))}
               </div>
