@@ -1844,6 +1844,9 @@ function OrdersTab() {
 }
 
 function ContactsTab() {
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  
   const { data: contacts, isLoading } = useQuery<Contact[]>({
     queryKey: ["/api/admin/contacts"],
   });
@@ -1851,46 +1854,194 @@ function ContactsTab() {
   const formatDate = (date: Date | string | null) => {
     if (!date) return "N/A";
     return new Date(date).toLocaleDateString("en-US", {
-      year: "numeric",
       month: "short",
+      day: "numeric",
+    });
+  };
+
+  const formatFullDate = (date: Date | string | null) => {
+    if (!date) return "N/A";
+    return new Date(date).toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
     });
   };
 
+  const getTimeAgo = (date: Date | string | null) => {
+    if (!date) return "";
+    const now = new Date();
+    const then = new Date(date);
+    const diffMs = now.getTime() - then.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return formatDate(date);
+  };
+
+  const filteredContacts = contacts?.filter(contact => 
+    contact.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    contact.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    contact.message.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
+
   if (isLoading) {
     return (
-      <div className="space-y-4">
-        {[1, 2, 3].map((i) => (
-          <Skeleton key={i} className="h-24 w-full" />
-        ))}
+      <div className="flex h-[600px] gap-4">
+        <div className="w-1/3 space-y-2">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <Skeleton key={i} className="h-20 w-full" />
+          ))}
+        </div>
+        <div className="flex-1">
+          <Skeleton className="h-full w-full" />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-xl font-semibold">Contact Submissions ({contacts?.length || 0})</h2>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-4">
+        <h2 className="text-xl font-semibold flex items-center gap-2">
+          <Inbox className="h-5 w-5 text-[#21d8ff]" />
+          Contact Submissions ({contacts?.length || 0})
+        </h2>
+        <div className="relative w-64">
+          <Input
+            placeholder="Search messages..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9"
+            data-testid="input-search-contacts"
+          />
+          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        </div>
+      </div>
 
       {contacts && contacts.length > 0 ? (
-        <div className="space-y-4">
-          {contacts.map((contact) => (
-            <Card key={contact.id} data-testid={`card-contact-${contact.id}`}>
-              <CardHeader className="pb-2">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <CardTitle className="text-lg">{contact.name}</CardTitle>
-                    <CardDescription>{contact.email}</CardDescription>
+        <div className="flex h-[600px] border rounded-lg overflow-hidden">
+          <div className="w-1/3 border-r bg-background/50 overflow-y-auto">
+            {filteredContacts.length > 0 ? (
+              filteredContacts.map((contact) => (
+                <button
+                  key={contact.id}
+                  onClick={() => setSelectedContact(contact)}
+                  className={`w-full text-left p-4 border-b transition-colors ${
+                    selectedContact?.id === contact.id
+                      ? "bg-[#21d8ff]/10 border-l-2 border-l-[#21d8ff]"
+                      : "hover:bg-muted/50 border-l-2 border-l-transparent"
+                  }`}
+                  data-testid={`contact-item-${contact.id}`}
+                >
+                  <div className="flex items-start justify-between gap-2 mb-1">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="h-8 w-8 rounded-full bg-[#9d4edd]/20 flex items-center justify-center shrink-0">
+                        <span className="text-sm font-bold text-[#9d4edd]">
+                          {contact.name.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <span className="font-medium truncate">{contact.name}</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground shrink-0">
+                      {getTimeAgo(contact.createdAt)}
+                    </span>
                   </div>
-                  <span className="text-sm text-muted-foreground">{formatDate(contact.createdAt)}</span>
+                  <p className="text-xs text-muted-foreground truncate pl-10">
+                    {contact.email}
+                  </p>
+                  <p className="text-sm text-muted-foreground truncate mt-1 pl-10">
+                    {contact.message}
+                  </p>
+                </button>
+              ))
+            ) : (
+              <div className="p-8 text-center text-muted-foreground">
+                <p>No messages match your search</p>
+              </div>
+            )}
+          </div>
+
+          <div className="flex-1 flex flex-col bg-background">
+            {selectedContact ? (
+              <>
+                <div className="p-6 border-b">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="h-12 w-12 rounded-full bg-[#9d4edd]/20 flex items-center justify-center">
+                        <span className="text-lg font-bold text-[#9d4edd]">
+                          {selectedContact.name.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg" data-testid="text-selected-contact-name">
+                          {selectedContact.name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">{selectedContact.email}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-muted-foreground">
+                        {formatFullDate(selectedContact.createdAt)}
+                      </p>
+                      <a
+                        href={`mailto:${selectedContact.email}?subject=Re: Your inquiry to Revive Research`}
+                        className="inline-flex items-center gap-1 text-sm text-[#21d8ff] hover:underline mt-1"
+                        data-testid="link-reply-email"
+                      >
+                        <Mail className="h-3 w-3" />
+                        Reply via Email
+                      </a>
+                    </div>
+                  </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm">{contact.message}</p>
-              </CardContent>
-            </Card>
-          ))}
+
+                <div className="flex-1 p-6 overflow-y-auto">
+                  <div className="bg-muted/30 rounded-lg p-6 border">
+                    <p className="whitespace-pre-wrap leading-relaxed" data-testid="text-selected-contact-message">
+                      {selectedContact.message}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="p-4 border-t bg-muted/20">
+                  <div className="flex items-center gap-3">
+                    <a
+                      href={`mailto:${selectedContact.email}?subject=Re: Your inquiry to Revive Research`}
+                      className="flex-1"
+                    >
+                      <Button className="w-full bg-[#21d8ff] hover:bg-[#21d8ff]/90 text-black" data-testid="btn-reply-contact">
+                        <Mail className="h-4 w-4 mr-2" />
+                        Reply to {selectedContact.name.split(' ')[0]}
+                      </Button>
+                    </a>
+                    <Button
+                      variant="outline"
+                      onClick={() => setSelectedContact(null)}
+                      data-testid="btn-close-contact"
+                    >
+                      Close
+                    </Button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground">
+                <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
+                  <Mail className="h-8 w-8" />
+                </div>
+                <p className="font-medium mb-1">Select a message</p>
+                <p className="text-sm">Click on a contact to view their full message</p>
+              </div>
+            )}
+          </div>
         </div>
       ) : (
         <Card className="p-12 text-center">
