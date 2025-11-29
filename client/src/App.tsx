@@ -26,6 +26,7 @@ import FAQ from "@/pages/faq";
 import Shipping from "@/pages/shipping";
 import TermsOfService from "@/pages/terms-of-service";
 import PrivacyPolicy from "@/pages/privacy-policy";
+import Contact from "@/pages/contact";
 import NotFound from "@/pages/not-found";
 
 function ScrollToTop() {
@@ -70,6 +71,7 @@ function Router() {
       <Route path="/shipping" component={Shipping} />
       <Route path="/terms" component={TermsOfService} />
       <Route path="/privacy" component={PrivacyPolicy} />
+      <Route path="/contact" component={Contact} />
       <Route component={NotFound} />
     </Switch>
   );
