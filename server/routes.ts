@@ -196,30 +196,94 @@ export async function registerRoutes(
 
   // === REVIEWS ROUTES ===
 
-  // Get reviews for a product
+  // Get reviews for a product (public - includes user info for display)
   app.get("/api/products/:id/reviews", async (req, res) => {
     try {
       const reviews = await storage.getProductReviews(req.params.id);
       const ratingData = await storage.getProductAverageRating(req.params.id);
-      res.json({ reviews, ...ratingData });
+      
+      // Enrich reviews with user info (name from users table)
+      const enrichedReviews = await Promise.all(reviews.map(async (review) => {
+        const user = await storage.getUser(review.userId);
+        return {
+          ...review,
+          reviewerName: user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Verified Customer' : 'Verified Customer',
+          isVerifiedPurchase: true // All reviews are now verified purchases
+        };
+      }));
+      
+      res.json({ reviews: enrichedReviews, ...ratingData });
     } catch (error) {
       console.error("Error fetching reviews:", error);
       res.status(500).json({ error: "Failed to fetch reviews" });
     }
   });
 
-  // Submit a review
-  app.post("/api/products/:id/reviews", async (req, res) => {
+  // Get reviewable orders for authenticated user (orders eligible for reviews)
+  app.get("/api/reviews/my-reviewable-orders", isAuthenticated, async (req: any, res) => {
     try {
-      const productId = req.params.id;
-      const product = await storage.getProduct(productId);
-      if (!product) {
-        return res.status(404).json({ error: "Product not found" });
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+      
+      const reviewableOrders = await storage.getReviewableOrdersForUser(userId);
+      res.json(reviewableOrders);
+    } catch (error) {
+      console.error("Error fetching reviewable orders:", error);
+      res.status(500).json({ error: "Failed to fetch reviewable orders" });
+    }
+  });
+
+  // Check if user can review a specific order
+  app.get("/api/reviews/can-review/:orderId", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+      
+      const result = await storage.canUserReviewOrder(userId, req.params.orderId);
+      res.json(result);
+    } catch (error) {
+      console.error("Error checking review eligibility:", error);
+      res.status(500).json({ error: "Failed to check review eligibility" });
+    }
+  });
+
+  // Submit a review (requires authentication and verified purchase)
+  app.post("/api/reviews", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const { orderId, rating, title, comment } = req.body;
+      
+      if (!orderId) {
+        return res.status(400).json({ error: "Order ID is required" });
+      }
+
+      // Verify the user can review this order
+      const eligibility = await storage.canUserReviewOrder(userId, orderId);
+      if (!eligibility.canReview) {
+        return res.status(403).json({ error: eligibility.reason });
+      }
+
+      // Get the order to find the product ID
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(404).json({ error: "Order not found" });
       }
 
       const validatedData = insertReviewSchema.parse({
-        ...req.body,
-        productId
+        productId: order.productId,
+        userId,
+        orderId,
+        rating,
+        title,
+        comment
       });
       
       const review = await storage.createReview(validatedData);

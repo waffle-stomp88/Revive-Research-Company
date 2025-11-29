@@ -1,25 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link, useParams, useLocation } from "wouter";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
@@ -27,9 +14,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/hooks/useAuth";
 import {
   ArrowLeft,
   FlaskConical,
@@ -138,26 +126,16 @@ const dosageMultipliers: Record<string, number> = {
   "20mg": 1.50,
 };
 
-const reviewFormSchema = z.object({
-  reviewerName: z.string().min(2, "Name must be at least 2 characters"),
-  rating: z.number().min(1, "Please select a rating").max(5),
-  title: z.string().optional(),
-  comment: z.string().min(10, "Review must be at least 10 characters"),
-});
-
-type ReviewFormData = z.infer<typeof reviewFormSchema>;
-
 export default function ProductDetail() {
   const params = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const { addToCart } = useCart();
+  const { isAuthenticated } = useAuth();
   const [quantity, setQuantity] = useState(1);
   const [selectedDosage, setSelectedDosage] = useState<string>("10mg");
   const [purchaseType, setPurchaseType] = useState<PurchaseType>("one-time");
   const [subscriptionInterval, setSubscriptionInterval] = useState<SubscriptionInterval>("monthly");
-  const [showReviewForm, setShowReviewForm] = useState(false);
-  const [hoverRating, setHoverRating] = useState(0);
 
   const { data: product, isLoading, error } = useQuery<Product>({
     queryKey: ["/api/products", params.id],
@@ -169,48 +147,10 @@ export default function ProductDetail() {
   });
 
   // Query for product reviews
-  const { data: reviewsData } = useQuery<{ reviews: Review[]; average: number; count: number }>({
+  const { data: reviewsData } = useQuery<{ reviews: (Review & { reviewerName: string; isVerifiedPurchase: boolean })[]; average: number; count: number }>({
     queryKey: ["/api/products", params.id, "reviews"],
     enabled: !!params.id,
   });
-
-  // Review form
-  const reviewForm = useForm<ReviewFormData>({
-    resolver: zodResolver(reviewFormSchema),
-    defaultValues: {
-      reviewerName: "",
-      rating: 0,
-      title: "",
-      comment: "",
-    },
-  });
-
-  // Review submission mutation
-  const submitReviewMutation = useMutation({
-    mutationFn: async (data: ReviewFormData) => {
-      return apiRequest("POST", `/api/products/${params.id}/reviews`, data);
-    },
-    onSuccess: () => {
-      toast({
-        title: "Review submitted",
-        description: "Thank you for sharing your experience!",
-      });
-      reviewForm.reset();
-      setShowReviewForm(false);
-      queryClient.invalidateQueries({ queryKey: ["/api/products", params.id, "reviews"] });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to submit review. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const onSubmitReview = (data: ReviewFormData) => {
-    submitReviewMutation.mutate(data);
-  };
 
   useEffect(() => {
     if (product?.dosageOptions && product.dosageOptions.length > 0) {
@@ -676,137 +616,23 @@ export default function ProductDetail() {
             </div>
           </div>
 
-          {/* Write a Review Button */}
-          {!showReviewForm && (
-            <div className="mb-6">
-              <Button
-                onClick={() => setShowReviewForm(true)}
-                className="gap-2 bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
-                data-testid="button-write-review"
-              >
-                <Star className="h-4 w-4" />
-                Write a Review
-              </Button>
+          {/* Verified Purchase Notice */}
+          <Card className="p-4 mb-6 border border-muted bg-muted/30">
+            <div className="flex items-start gap-3">
+              <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+              <div>
+                <p className="font-medium text-sm">Verified Purchase Reviews Only</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Only customers who have purchased this product can leave a review. 
+                  {isAuthenticated ? (
+                    <> Reviews can be submitted 30 days after your order from your <Link href="/dashboard" className="text-primary hover:underline">dashboard</Link>.</>
+                  ) : (
+                    <> <Link href="/api/login" className="text-primary hover:underline">Sign in</Link> and make a purchase to leave a verified review.</>
+                  )}
+                </p>
+              </div>
             </div>
-          )}
-
-          {/* Review Form */}
-          {showReviewForm && (
-            <Card className="p-6 mb-6 border-2 border-[#E7FB10]/40" data-testid="form-review">
-              <h3 className="font-display font-semibold text-lg mb-4">Write Your Review</h3>
-              <Form {...reviewForm}>
-                <form onSubmit={reviewForm.handleSubmit(onSubmitReview)} className="space-y-4">
-                  <FormField
-                    control={reviewForm.control}
-                    name="reviewerName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Your Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter your name" {...field} data-testid="input-reviewer-name" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={reviewForm.control}
-                    name="rating"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Rating</FormLabel>
-                        <FormControl>
-                          <div className="flex items-center gap-1">
-                            {[1, 2, 3, 4, 5].map((star) => (
-                              <button
-                                key={star}
-                                type="button"
-                                className="p-1 hover:scale-110 transition-transform"
-                                onMouseEnter={() => setHoverRating(star)}
-                                onMouseLeave={() => setHoverRating(0)}
-                                onClick={() => field.onChange(star)}
-                                data-testid={`button-star-${star}`}
-                              >
-                                <Star
-                                  className={`h-7 w-7 transition-colors ${
-                                    star <= (hoverRating || field.value)
-                                      ? "text-[#E7FB10] fill-[#E7FB10]"
-                                      : "text-muted-foreground"
-                                  }`}
-                                />
-                              </button>
-                            ))}
-                            {field.value > 0 && (
-                              <span className="ml-2 text-sm text-muted-foreground">
-                                {field.value} star{field.value !== 1 ? "s" : ""}
-                              </span>
-                            )}
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={reviewForm.control}
-                    name="title"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Review Title (Optional)</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Summarize your experience" {...field} data-testid="input-review-title" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={reviewForm.control}
-                    name="comment"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Your Review</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Share your research experience with this product..."
-                            className="min-h-[120px]"
-                            {...field}
-                            data-testid="textarea-review-comment"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="flex gap-3 pt-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        setShowReviewForm(false);
-                        reviewForm.reset();
-                      }}
-                      data-testid="button-cancel-review"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
-                      disabled={submitReviewMutation.isPending}
-                      data-testid="button-submit-review"
-                    >
-                      {submitReviewMutation.isPending ? "Submitting..." : "Submit Review"}
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            </Card>
-          )}
+          </Card>
 
           {reviewsData && reviewsData.reviews.length > 0 ? (
             <div className="space-y-4">
@@ -865,7 +691,7 @@ export default function ProductDetail() {
               <Star className="h-10 w-10 text-muted-foreground/50 mx-auto mb-3" />
               <h3 className="font-semibold mb-1">No reviews yet</h3>
               <p className="text-sm text-muted-foreground">
-                Be the first to share your research experience with this product.
+                Reviews from verified purchasers will appear here.
               </p>
             </Card>
           )}

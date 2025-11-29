@@ -1,7 +1,7 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -10,6 +10,10 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Package,
   FileCheck,
@@ -22,8 +26,11 @@ import {
   CheckCircle,
   Clock,
   Truck,
+  Star,
+  MessageSquare,
 } from "lucide-react";
-import type { Order, Product } from "@shared/schema";
+import type { Order, Product, ReviewableOrder } from "@shared/schema";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -67,6 +74,11 @@ function getStatusColor(status: string | null): "default" | "secondary" | "outli
 export default function Dashboard() {
   const { user, isLoading: authLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<ReviewableOrder | null>(null);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewTitle, setReviewTitle] = useState("");
+  const [reviewComment, setReviewComment] = useState("");
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -90,6 +102,67 @@ export default function Dashboard() {
     queryKey: ["/api/products"],
     enabled: isAuthenticated,
   });
+
+  const { data: reviewableOrders, isLoading: reviewableLoading } = useQuery<ReviewableOrder[]>({
+    queryKey: ["/api/reviews/my-reviewable-orders"],
+    enabled: isAuthenticated,
+  });
+
+  const submitReviewMutation = useMutation({
+    mutationFn: async (data: { orderId: string; rating: number; title: string; comment: string }) => {
+      return apiRequest("POST", "/api/reviews", data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Review Submitted",
+        description: "Thank you for your feedback!",
+      });
+      setReviewDialogOpen(false);
+      setSelectedOrder(null);
+      setReviewRating(5);
+      setReviewTitle("");
+      setReviewComment("");
+      queryClient.invalidateQueries({ queryKey: ["/api/reviews/my-reviewable-orders"] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to submit review",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleWriteReview = (order: ReviewableOrder) => {
+    setSelectedOrder(order);
+    setReviewDialogOpen(true);
+  };
+
+  const handleSubmitReview = () => {
+    if (!selectedOrder) return;
+    if (reviewComment.length < 10) {
+      toast({
+        title: "Review too short",
+        description: "Please write at least 10 characters in your review.",
+        variant: "destructive",
+      });
+      return;
+    }
+    submitReviewMutation.mutate({
+      orderId: selectedOrder.orderId,
+      rating: reviewRating,
+      title: reviewTitle,
+      comment: reviewComment,
+    });
+  };
+
+  const eligibleForReview = reviewableOrders?.filter(
+    (o) => !o.hasReviewed && new Date() >= new Date(o.eligibleDate)
+  ) || [];
+
+  const pendingReviews = reviewableOrders?.filter(
+    (o) => !o.hasReviewed && new Date() < new Date(o.eligibleDate)
+  ) || [];
 
   const getProductName = (productId: string) => {
     const product = products?.find((p) => p.id === productId);
@@ -308,6 +381,96 @@ export default function Dashboard() {
                   )}
                 </CardContent>
               </Card>
+
+              <Card className="mt-6">
+                <CardHeader>
+                  <div className="flex items-center justify-between gap-2">
+                    <div>
+                      <CardTitle className="flex items-center gap-2">
+                        <MessageSquare className="h-5 w-5" />
+                        Product Reviews
+                      </CardTitle>
+                      <CardDescription>Share your experience with our products</CardDescription>
+                    </div>
+                    {eligibleForReview.length > 0 && (
+                      <Badge variant="secondary" className="bg-primary/10 text-primary">
+                        {eligibleForReview.length} to review
+                      </Badge>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {reviewableLoading ? (
+                    <div className="space-y-4">
+                      {[...Array(2)].map((_, i) => (
+                        <div key={i} className="flex items-center gap-4">
+                          <Skeleton className="h-12 w-12 rounded" />
+                          <div className="flex-1">
+                            <Skeleton className="h-4 w-32 mb-2" />
+                            <Skeleton className="h-3 w-24" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : eligibleForReview.length > 0 ? (
+                    <div className="space-y-4">
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Only verified purchasers can leave reviews. You can review products 30 days after your order.
+                      </p>
+                      {eligibleForReview.map((order) => (
+                        <div
+                          key={order.orderId}
+                          className="flex items-center gap-4 p-4 rounded-lg border hover-elevate transition-colors"
+                          data-testid={`reviewable-order-${order.orderId}`}
+                        >
+                          <div className="h-12 w-12 rounded bg-muted flex items-center justify-center overflow-hidden">
+                            {order.productImageUrl ? (
+                              <img 
+                                src={order.productImageUrl} 
+                                alt={order.productName}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <Package className="h-6 w-6 text-muted-foreground" />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium truncate">{order.productName}</p>
+                            <p className="text-sm text-muted-foreground">
+                              Ordered {formatDate(order.orderDate)}
+                            </p>
+                          </div>
+                          <Button
+                            size="sm"
+                            onClick={() => handleWriteReview(order)}
+                            data-testid={`button-write-review-${order.orderId}`}
+                          >
+                            <Star className="h-4 w-4 mr-2" />
+                            Write Review
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : pendingReviews.length > 0 ? (
+                    <div className="text-center py-8">
+                      <Clock className="h-10 w-10 mx-auto text-muted-foreground/50 mb-4" />
+                      <h3 className="font-medium mb-2">Reviews Coming Soon</h3>
+                      <p className="text-sm text-muted-foreground">
+                        You can leave reviews 30 days after your order. Check back on{" "}
+                        {formatDate(pendingReviews[0]?.eligibleDate)}.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <Star className="h-10 w-10 mx-auto text-muted-foreground/50 mb-4" />
+                      <h3 className="font-medium mb-2">No Reviews Available</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Complete an order to leave a verified review 30 days later.
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </div>
 
             <div className="space-y-6">
@@ -366,6 +529,81 @@ export default function Dashboard() {
           </motion.div>
         </motion.div>
       </div>
+
+      <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Write a Review</DialogTitle>
+            <DialogDescription>
+              Share your experience with {selectedOrder?.productName}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Rating</Label>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setReviewRating(star)}
+                    className="p-1 hover:scale-110 transition-transform"
+                    data-testid={`button-star-${star}`}
+                  >
+                    <Star
+                      className={`h-8 w-8 ${
+                        star <= reviewRating
+                          ? "fill-primary text-primary"
+                          : "text-muted-foreground"
+                      }`}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="review-title">Title (optional)</Label>
+              <Input
+                id="review-title"
+                placeholder="Summarize your experience"
+                value={reviewTitle}
+                onChange={(e) => setReviewTitle(e.target.value)}
+                data-testid="input-review-title"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="review-comment">Your Review</Label>
+              <Textarea
+                id="review-comment"
+                placeholder="Tell us about your experience with this product..."
+                value={reviewComment}
+                onChange={(e) => setReviewComment(e.target.value)}
+                rows={4}
+                data-testid="input-review-comment"
+              />
+              <p className="text-xs text-muted-foreground">
+                Minimum 10 characters ({reviewComment.length}/10)
+              </p>
+            </div>
+          </div>
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setReviewDialogOpen(false)}
+              data-testid="button-cancel-review"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSubmitReview}
+              disabled={submitReviewMutation.isPending || reviewComment.length < 10}
+              data-testid="button-submit-review"
+            >
+              {submitReviewMutation.isPending ? "Submitting..." : "Submit Review"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }
