@@ -287,7 +287,7 @@ export default function AffiliatePage() {
             viewport={{ once: true }}
             className="text-center mb-8"
           >
-            <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
+            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-2">
               Two-Tier <span className="text-[#9d4edd]">Commission Structure</span>
             </h2>
             <p className="text-sm text-muted-foreground max-w-xl mx-auto">
@@ -406,7 +406,7 @@ export default function AffiliatePage() {
               transition={{ delay: 0.3 }}
             >
               <Card className="p-4 border-[#9d4edd]/20 h-full">
-                <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                <h4 className="font-semibold text-lg md:text-xl mb-3 flex items-center gap-2">
                   <DollarSign className="h-4 w-4 text-[#9d4edd]" />
                   Example Monthly Earnings
                 </h4>
@@ -436,7 +436,7 @@ export default function AffiliatePage() {
               transition={{ delay: 0.4 }}
             >
               <Card className="p-4 border-[#9d4edd]/20 h-full">
-                <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                <h4 className="font-semibold text-lg md:text-xl mb-3 flex items-center gap-2">
                   <Star className="h-4 w-4 text-[#9d4edd]" />
                   Partner Benefits
                 </h4>
@@ -470,7 +470,7 @@ export default function AffiliatePage() {
             viewport={{ once: true }}
             className="text-center mb-6"
           >
-            <h2 className="font-display text-2xl font-bold">
+            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold">
               Who We're <span className="text-[#9d4edd]">Looking For</span>
             </h2>
           </motion.div>
@@ -546,7 +546,7 @@ export default function AffiliatePage() {
               <Star className="h-3 w-3 mr-1.5" />
               LIMITED SPOTS
             </Badge>
-            <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
+            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-2">
               Ready to Partner?
             </h2>
             <p className="text-sm text-muted-foreground">
