@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { Product } from "@shared/schema";
-import heroBackground from "@assets/image_1764383585613.png";
+import heroBackground from "@assets/69bf34cc-d177-46c6-af24-c51da5ee10fa_1764382400961.png";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 40 },
@@ -198,7 +198,7 @@ function HeroSection() {
         />
       </div>
       
-      {/* Dark overlay gradient - subtle to preserve research imagery */}
+      {/* Dark overlay gradient - subtle to preserve vial logo */}
       <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-[2]" />
       <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-background z-[2]" />
       
