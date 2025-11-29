@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema } from "@shared/schema";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
+import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 
 function generateReferralCode(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -742,6 +743,91 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error deleting COA:", error);
       res.status(500).json({ error: "Failed to delete COA" });
+    }
+  });
+
+  // Object Storage: Get upload URL (admin only)
+  app.post("/api/objects/upload", isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const objectStorageService = new ObjectStorageService();
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      res.json({ uploadURL });
+    } catch (error) {
+      console.error("Error getting upload URL:", error);
+      res.status(500).json({ error: "Failed to get upload URL" });
+    }
+  });
+
+  // Object Storage: Set image URL and ACL after upload (admin only)
+  app.put("/api/objects/finalize", isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const { uploadURL } = req.body;
+      if (!uploadURL) {
+        return res.status(400).json({ error: "uploadURL is required" });
+      }
+
+      const userId = req.user?.claims?.sub || "admin";
+      const objectStorageService = new ObjectStorageService();
+      const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
+        uploadURL,
+        {
+          owner: userId,
+          visibility: "public",
+        }
+      );
+
+      res.status(200).json({ objectPath });
+    } catch (error) {
+      console.error("Error finalizing upload:", error);
+      res.status(500).json({ error: "Failed to finalize upload" });
+    }
+  });
+
+  // Object Storage: Delete image (admin only)
+  app.delete("/api/objects/delete", isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const { objectPath } = req.body;
+      if (!objectPath) {
+        return res.status(400).json({ error: "objectPath is required" });
+      }
+
+      const objectStorageService = new ObjectStorageService();
+      const deleted = await objectStorageService.deleteObject(objectPath);
+      res.json({ success: deleted });
+    } catch (error) {
+      console.error("Error deleting object:", error);
+      res.status(500).json({ error: "Failed to delete object" });
+    }
+  });
+
+  // Object Storage: Serve objects (public)
+  app.get("/objects/:objectPath(*)", async (req, res) => {
+    try {
+      const objectStorageService = new ObjectStorageService();
+      const objectFile = await objectStorageService.getObjectEntityFile(req.path);
+      objectStorageService.downloadObject(objectFile, res);
+    } catch (error) {
+      console.error("Error serving object:", error);
+      if (error instanceof ObjectNotFoundError) {
+        return res.sendStatus(404);
+      }
+      return res.sendStatus(500);
+    }
+  });
+
+  // Object Storage: Serve public objects
+  app.get("/public-objects/:filePath(*)", async (req, res) => {
+    try {
+      const filePath = req.params.filePath;
+      const objectStorageService = new ObjectStorageService();
+      const file = await objectStorageService.searchPublicObject(filePath);
+      if (!file) {
+        return res.status(404).json({ error: "File not found" });
+      }
+      objectStorageService.downloadObject(file, res);
+    } catch (error) {
+      console.error("Error searching for public object:", error);
+      return res.status(500).json({ error: "Internal server error" });
     }
   });
 
