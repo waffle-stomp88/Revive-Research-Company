@@ -84,6 +84,10 @@ interface Affiliate {
   referralCode: string;
   payoutMethod: string;
   payoutEmail: string;
+  bankAccountHolder: string | null;
+  bankRoutingNumber: string | null;
+  bankAccountNumber: string | null;
+  venmoUsername: string | null;
   pendingBalance: string;
 }
 
@@ -92,6 +96,10 @@ export default function AffiliateDashboard() {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [payoutMethod, setPayoutMethod] = useState("");
   const [payoutEmail, setPayoutEmail] = useState("");
+  const [venmoUsername, setVenmoUsername] = useState("");
+  const [bankAccountHolder, setBankAccountHolder] = useState("");
+  const [bankRoutingNumber, setBankRoutingNumber] = useState("");
+  const [bankAccountNumber, setBankAccountNumber] = useState("");
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -132,7 +140,14 @@ export default function AffiliateDashboard() {
   });
 
   const updateSettingsMutation = useMutation({
-    mutationFn: async (data: { payoutMethod: string; payoutEmail: string }) => {
+    mutationFn: async (data: { 
+      payoutMethod: string; 
+      payoutEmail?: string;
+      venmoUsername?: string;
+      bankAccountHolder?: string;
+      bankRoutingNumber?: string;
+      bankAccountNumber?: string;
+    }) => {
       const response = await apiRequest("PATCH", "/api/affiliate/settings", data);
       return response.json();
     },
@@ -582,29 +597,107 @@ export default function AffiliateDashboard() {
                       <SelectContent>
                         <SelectItem value="paypal">PayPal</SelectItem>
                         <SelectItem value="venmo">Venmo</SelectItem>
-                        <SelectItem value="bank">Bank Transfer</SelectItem>
+                        <SelectItem value="bank">Bank Transfer (ACH)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="payoutEmail">Payout Email/Username</Label>
-                    <Input
-                      id="payoutEmail"
-                      placeholder="your@email.com or @username"
-                      value={payoutEmail || affiliate.payoutEmail || ""}
-                      onChange={(e) => setPayoutEmail(e.target.value)}
-                      data-testid="input-payout-email"
-                    />
-                  </div>
+                  {(payoutMethod || affiliate.payoutMethod || "paypal") === "paypal" && (
+                    <div className="space-y-2">
+                      <Label htmlFor="payoutEmail">PayPal Email</Label>
+                      <Input
+                        id="payoutEmail"
+                        type="email"
+                        placeholder="your-paypal@email.com"
+                        value={payoutEmail || affiliate.payoutEmail || ""}
+                        onChange={(e) => setPayoutEmail(e.target.value)}
+                        data-testid="input-payout-email"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Enter the email address associated with your PayPal account
+                      </p>
+                    </div>
+                  )}
+
+                  {(payoutMethod || affiliate.payoutMethod) === "venmo" && (
+                    <div className="space-y-2">
+                      <Label htmlFor="venmoUsername">Venmo Username</Label>
+                      <Input
+                        id="venmoUsername"
+                        placeholder="@YourVenmoUsername"
+                        value={venmoUsername || affiliate.venmoUsername || ""}
+                        onChange={(e) => setVenmoUsername(e.target.value)}
+                        data-testid="input-venmo-username"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Enter your Venmo username (include the @ symbol)
+                      </p>
+                    </div>
+                  )}
+
+                  {(payoutMethod || affiliate.payoutMethod) === "bank" && (
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="bankAccountHolder">Account Holder Name</Label>
+                        <Input
+                          id="bankAccountHolder"
+                          placeholder="Full name as it appears on your account"
+                          value={bankAccountHolder || affiliate.bankAccountHolder || ""}
+                          onChange={(e) => setBankAccountHolder(e.target.value)}
+                          data-testid="input-bank-account-holder"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="bankRoutingNumber">Routing Number (ABA)</Label>
+                        <Input
+                          id="bankRoutingNumber"
+                          placeholder="9-digit routing number"
+                          maxLength={9}
+                          value={bankRoutingNumber || affiliate.bankRoutingNumber || ""}
+                          onChange={(e) => setBankRoutingNumber(e.target.value.replace(/\D/g, ""))}
+                          data-testid="input-bank-routing-number"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="bankAccountNumber">Account Number</Label>
+                        <Input
+                          id="bankAccountNumber"
+                          placeholder="Your bank account number"
+                          value={bankAccountNumber || affiliate.bankAccountNumber || ""}
+                          onChange={(e) => setBankAccountNumber(e.target.value.replace(/\D/g, ""))}
+                          data-testid="input-bank-account-number"
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Your bank details are securely stored and used only for commission payouts
+                      </p>
+                    </div>
+                  )}
 
                   <Button
-                    onClick={() =>
-                      updateSettingsMutation.mutate({
-                        payoutMethod: payoutMethod || affiliate.payoutMethod || "paypal",
-                        payoutEmail: payoutEmail || affiliate.payoutEmail || "",
-                      })
-                    }
+                    onClick={() => {
+                      const selectedMethod = payoutMethod || affiliate.payoutMethod || "paypal";
+                      const data: {
+                        payoutMethod: string;
+                        payoutEmail?: string;
+                        venmoUsername?: string;
+                        bankAccountHolder?: string;
+                        bankRoutingNumber?: string;
+                        bankAccountNumber?: string;
+                      } = { payoutMethod: selectedMethod };
+                      
+                      if (selectedMethod === "paypal") {
+                        data.payoutEmail = payoutEmail || affiliate.payoutEmail || "";
+                      } else if (selectedMethod === "venmo") {
+                        data.venmoUsername = venmoUsername || affiliate.venmoUsername || "";
+                      } else if (selectedMethod === "bank") {
+                        data.bankAccountHolder = bankAccountHolder || affiliate.bankAccountHolder || "";
+                        data.bankRoutingNumber = bankRoutingNumber || affiliate.bankRoutingNumber || "";
+                        data.bankAccountNumber = bankAccountNumber || affiliate.bankAccountNumber || "";
+                      }
+                      
+                      updateSettingsMutation.mutate(data);
+                    }}
                     disabled={updateSettingsMutation.isPending}
                     data-testid="button-save-settings"
                   >

@@ -510,8 +510,28 @@ export async function registerRoutes(
         return res.status(404).json({ error: "Not an affiliate" });
       }
 
-      const { payoutMethod, payoutEmail } = req.body;
-      const updated = await storage.updateAffiliate(affiliate.id, { payoutMethod, payoutEmail });
+      const { 
+        payoutMethod, 
+        payoutEmail, 
+        venmoUsername, 
+        bankAccountHolder, 
+        bankRoutingNumber, 
+        bankAccountNumber 
+      } = req.body;
+      
+      const updateData: Record<string, string | undefined> = { payoutMethod };
+      
+      if (payoutMethod === "paypal") {
+        updateData.payoutEmail = payoutEmail;
+      } else if (payoutMethod === "venmo") {
+        updateData.venmoUsername = venmoUsername;
+      } else if (payoutMethod === "bank") {
+        updateData.bankAccountHolder = bankAccountHolder;
+        updateData.bankRoutingNumber = bankRoutingNumber;
+        updateData.bankAccountNumber = bankAccountNumber;
+      }
+      
+      const updated = await storage.updateAffiliate(affiliate.id, updateData);
       res.json(updated);
     } catch (error) {
       console.error("Error updating affiliate settings:", error);
@@ -541,15 +561,31 @@ export async function registerRoutes(
         return res.status(400).json({ error: `Minimum payout is $${minimumPayout}. Your current balance is $${pendingBalance.toFixed(2)}` });
       }
 
-      if (!affiliate.payoutEmail) {
-        return res.status(400).json({ error: "Please set your payout email first" });
+      const payoutMethod = affiliate.payoutMethod || "paypal";
+      let payoutInfo = "";
+      
+      if (payoutMethod === "paypal") {
+        if (!affiliate.payoutEmail) {
+          return res.status(400).json({ error: "Please set your PayPal email first" });
+        }
+        payoutInfo = affiliate.payoutEmail;
+      } else if (payoutMethod === "venmo") {
+        if (!affiliate.venmoUsername) {
+          return res.status(400).json({ error: "Please set your Venmo username first" });
+        }
+        payoutInfo = affiliate.venmoUsername;
+      } else if (payoutMethod === "bank") {
+        if (!affiliate.bankAccountHolder || !affiliate.bankRoutingNumber || !affiliate.bankAccountNumber) {
+          return res.status(400).json({ error: "Please complete your bank account details first" });
+        }
+        payoutInfo = `ACH - ${affiliate.bankAccountHolder}`;
       }
 
       const payout = await storage.createAffiliatePayout({
         affiliateId: affiliate.id,
         amount: pendingBalance.toString(),
-        payoutMethod: affiliate.payoutMethod || "paypal",
-        payoutEmail: affiliate.payoutEmail,
+        payoutMethod: payoutMethod,
+        payoutEmail: payoutInfo,
         status: "pending",
       });
 
