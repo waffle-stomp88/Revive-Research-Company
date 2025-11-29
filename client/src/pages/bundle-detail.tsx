@@ -22,11 +22,9 @@ import {
   FileCheck,
   RefreshCw,
   AlertTriangle,
-  Zap,
-  Timer,
-  Heart,
 } from "lucide-react";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
+import { BUNDLES } from "@/lib/bundles";
 
 type PurchaseType = "one-time" | "subscription";
 type SubscriptionInterval = "weekly" | "biweekly" | "monthly";
@@ -35,85 +33,6 @@ const subscriptionOptions: { value: SubscriptionInterval; label: string; discoun
   { value: "weekly", label: "Weekly", discount: 15 },
   { value: "biweekly", label: "Every 2 Weeks", discount: 12 },
   { value: "monthly", label: "Monthly", discount: 10 },
-];
-
-const BUNDLES = [
-  {
-    id: "wolverine-stack",
-    name: "The Wolverine Stack",
-    tagline: "Legendary Recovery",
-    icon: Zap,
-    description: "BPC-157 + TB-500 combination for accelerated tissue repair and healing research. The most popular peptide stack worldwide.",
-    products: ["BPC-157", "TB-500"],
-    originalPrice: 104.98,
-    bundlePrice: 89.99,
-    savings: 15,
-    color: "cyan",
-    benefits: [
-      "Accelerated tissue repair mechanisms",
-      "Synergistic peptide combination",
-      "Ideal for healing research protocols",
-      "Most popular stack worldwide",
-      "Proven results in research settings"
-    ]
-  },
-  {
-    id: "longevity-stack",
-    name: "Longevity Stack",
-    tagline: "Age Optimization",
-    icon: Timer,
-    description: "Epithalon + GHK-Cu + NAD+ for comprehensive cellular rejuvenation and longevity research applications.",
-    products: ["Epithalon", "GHK-Cu", "NAD+ Precursor"],
-    originalPrice: 219.97,
-    bundlePrice: 189.99,
-    savings: 14,
-    color: "yellow",
-    benefits: [
-      "Comprehensive cellular rejuvenation",
-      "Multi-pathway longevity research",
-      "Telomerase activation support",
-      "Collagen and elastin synthesis",
-      "Cellular energy optimization"
-    ]
-  },
-  {
-    id: "performance-stack",
-    name: "Performance Stack",
-    tagline: "Peak Output",
-    icon: Zap,
-    description: "CJC-1295 + Ipamorelin for natural growth hormone optimization research. Ideal for athletic performance studies.",
-    products: ["CJC-1295", "Ipamorelin"],
-    originalPrice: 234.98,
-    bundlePrice: 199.99,
-    savings: 15,
-    color: "cyan",
-    benefits: [
-      "Natural GH optimization",
-      "Sustained hormone release",
-      "Minimal side effect profile",
-      "Performance enhancement research",
-      "Proven athletic research model"
-    ]
-  },
-  {
-    id: "healing-protocol",
-    name: "Complete Healing Protocol",
-    tagline: "Full Spectrum Repair",
-    icon: Heart,
-    description: "BPC-157 + TB-500 + GHK-Cu for comprehensive tissue regeneration and wound healing research.",
-    products: ["BPC-157", "TB-500", "GHK-Cu"],
-    originalPrice: 144.97,
-    bundlePrice: 119.99,
-    savings: 17,
-    color: "cyan",
-    benefits: [
-      "Full spectrum tissue repair",
-      "Multiple biological pathways",
-      "Comprehensive healing protocol",
-      "Enhanced synergistic effects",
-      "Maximum regeneration potential"
-    ]
-  },
 ];
 
 export default function BundleDetail() {
@@ -165,11 +84,14 @@ export default function BundleDetail() {
   const handleAddToCart = () => {
     if (bundle) {
       addToCart({
+        productId: `bundle-${bundle.id}`,
         bundleId: bundle.id,
         name: bundle.name,
         price: getDiscountedPrice(),
         originalPrice: bundle.originalPrice,
         quantity,
+        dosage: "Bundle",
+        isBundle: true,
       });
       toast({
         title: "Added to cart",

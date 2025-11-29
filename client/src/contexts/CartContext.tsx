@@ -2,12 +2,14 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 
 export interface CartItem {
   productId: string;
+  bundleId?: string;
   name: string;
   price: number;
   originalPrice?: number;
   quantity: number;
   dosage: string;
   image?: string;
+  isBundle?: boolean;
 }
 
 interface CartContextType {
@@ -40,7 +42,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const addToCart = (item: CartItem) => {
     setItems((prev) => {
       const existingIndex = prev.findIndex(
-        (i) => i.productId === item.productId && i.dosage === item.dosage
+        (i) => {
+          if (item.bundleId) {
+            return i.bundleId === item.bundleId && i.dosage === item.dosage;
+          }
+          return i.productId === item.productId && i.dosage === item.dosage;
+        }
       );
 
       if (existingIndex >= 0) {

@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
+import { BUNDLES } from "@/lib/bundles";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -55,57 +56,6 @@ const SALE_OF_THE_WEEK = {
   description: "Triple receptor agonist for advanced metabolic research. Our most sought-after compound at an unbeatable price.",
   endDate: "Ends Sunday",
 };
-
-const BUNDLES = [
-  {
-    id: "wolverine-stack",
-    name: "The Wolverine Stack",
-    tagline: "Legendary Recovery",
-    icon: Zap,
-    description: "BPC-157 + TB-500 combination for accelerated tissue repair and healing research. The most popular peptide stack worldwide.",
-    products: ["BPC-157", "TB-500"],
-    originalPrice: 104.98,
-    bundlePrice: 89.99,
-    savings: 15,
-    color: "cyan",
-  },
-  {
-    id: "longevity-stack",
-    name: "Longevity Stack",
-    tagline: "Age Optimization",
-    icon: Timer,
-    description: "Epithalon + GHK-Cu + NAD+ for comprehensive cellular rejuvenation and longevity research applications.",
-    products: ["Epithalon", "GHK-Cu", "NAD+ Precursor"],
-    originalPrice: 219.97,
-    bundlePrice: 189.99,
-    savings: 14,
-    color: "yellow",
-  },
-  {
-    id: "performance-stack",
-    name: "Performance Stack",
-    tagline: "Peak Output",
-    icon: Flame,
-    description: "CJC-1295 + Ipamorelin for natural growth hormone optimization research. Ideal for athletic performance studies.",
-    products: ["CJC-1295", "Ipamorelin"],
-    originalPrice: 234.98,
-    bundlePrice: 199.99,
-    savings: 15,
-    color: "cyan",
-  },
-  {
-    id: "healing-protocol",
-    name: "Complete Healing Protocol",
-    tagline: "Full Spectrum Repair",
-    icon: Heart,
-    description: "BPC-157 + TB-500 + GHK-Cu for comprehensive tissue regeneration and wound healing research.",
-    products: ["BPC-157", "TB-500", "GHK-Cu"],
-    originalPrice: 144.97,
-    bundlePrice: 119.99,
-    savings: 17,
-    color: "yellow",
-  },
-];
 
 export default function Products() {
   const [searchQuery, setSearchQuery] = useState("");
