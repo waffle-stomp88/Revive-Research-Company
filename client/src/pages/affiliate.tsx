@@ -194,7 +194,15 @@ export default function AffiliatePage() {
   const submitMutation = useMutation({
     mutationFn: async (data: AffiliateFormData) => {
       const { agreeToTerms, ...applicationData } = data;
-      const res = await apiRequest("POST", "/api/affiliate-apply", applicationData);
+      const urlParams = new URLSearchParams(window.location.search);
+      const referrerCode = urlParams.get('ref') || localStorage.getItem('affiliateCode');
+      
+      const payload = {
+        ...applicationData,
+        referrerCode: referrerCode || undefined,
+      };
+      
+      const res = await apiRequest("POST", "/api/affiliate-apply", payload);
       return res.json();
     },
     onSuccess: () => {

@@ -21,6 +21,7 @@ import CoaVerification from "@/pages/coa";
 import Dashboard from "@/pages/dashboard";
 import Admin from "@/pages/admin";
 import Affiliate from "@/pages/affiliate";
+import AffiliateDashboard from "@/pages/affiliate-dashboard";
 import FAQ from "@/pages/faq";
 import Shipping from "@/pages/shipping";
 import TermsOfService from "@/pages/terms-of-service";
@@ -33,6 +34,19 @@ function ScrollToTop() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location]);
+  
+  return null;
+}
+
+function AffiliateTracker() {
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const refCode = params.get('ref');
+    if (refCode) {
+      localStorage.setItem('affiliateCode', refCode);
+      localStorage.setItem('affiliateCodeTimestamp', Date.now().toString());
+    }
+  }, []);
   
   return null;
 }
@@ -51,6 +65,7 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/admin" component={Admin} />
       <Route path="/affiliate" component={Affiliate} />
+      <Route path="/affiliate/dashboard" component={AffiliateDashboard} />
       <Route path="/faq" component={FAQ} />
       <Route path="/shipping" component={Shipping} />
       <Route path="/terms" component={TermsOfService} />
@@ -67,6 +82,7 @@ function App() {
         <CartProvider>
           <TooltipProvider>
             <AgeVerificationModal />
+            <AffiliateTracker />
             <ScrollToTop />
             <div className="min-h-screen flex flex-col bg-background text-foreground">
               <FreeShippingBanner />

@@ -1,8 +1,21 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema } from "@shared/schema";
+import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema } from "@shared/schema";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
+
+function generateReferralCode(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let code = '';
+  for (let i = 0; i < 8; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+}
+
+const TIER1_COMMISSION_RATE = 0.20;
+const TIER2_COMMISSION_RATE = 0.10;
 
 export async function registerRoutes(
   httpServer: Server,
@@ -154,9 +167,25 @@ export async function registerRoutes(
   // Create affiliate application
   app.post("/api/affiliate-apply", async (req, res) => {
     try {
-      const validatedData = insertAffiliateApplicationSchema.parse(req.body);
+      const { referrerCode, ...applicationData } = req.body;
+      
+      let referredByAffiliateId: string | undefined;
+      if (referrerCode) {
+        const referrer = await storage.getAffiliateByReferralCode(referrerCode);
+        if (referrer && referrer.isActive) {
+          referredByAffiliateId = referrer.id;
+          console.log(`Application has upline referrer: ${referrer.fullName} (${referrerCode})`);
+        }
+      }
+      
+      const validatedData = insertAffiliateApplicationSchema.parse({
+        ...applicationData,
+        referredByAffiliateId,
+      });
       console.log("New affiliate application received:", validatedData);
+      
       const application = await storage.createAffiliateApplication(validatedData);
+      
       res.status(201).json({ success: true, message: "Application received successfully", application });
     } catch (error) {
       console.error("Error creating affiliate application:", error);
@@ -164,6 +193,411 @@ export async function registerRoutes(
         return res.status(400).json({ error: "Invalid application data" });
       }
       res.status(500).json({ error: "Failed to submit application" });
+    }
+  });
+
+  // === AFFILIATE ROUTES ===
+
+  // Get affiliate by referral code (public - for tracking)
+  app.get("/api/affiliates/by-code/:code", async (req, res) => {
+    try {
+      const affiliate = await storage.getAffiliateByReferralCode(req.params.code);
+      if (!affiliate || !affiliate.isActive) {
+        return res.status(404).json({ error: "Affiliate not found" });
+      }
+      res.json({ id: affiliate.id, referralCode: affiliate.referralCode });
+    } catch (error) {
+      console.error("Error fetching affiliate by code:", error);
+      res.status(500).json({ error: "Failed to fetch affiliate" });
+    }
+  });
+
+  // Get current user's affiliate profile
+  app.get("/api/affiliate/me", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const userEmail = req.user.claims.email;
+      
+      let affiliate = await storage.getAffiliateByUserId(userId);
+      if (!affiliate && userEmail) {
+        affiliate = await storage.getAffiliateByEmail(userEmail);
+        if (affiliate && !affiliate.userId) {
+          await storage.updateAffiliate(affiliate.id, { userId });
+        }
+      }
+      
+      if (!affiliate) {
+        return res.status(404).json({ error: "Not an affiliate" });
+      }
+      
+      res.json(affiliate);
+    } catch (error) {
+      console.error("Error fetching affiliate profile:", error);
+      res.status(500).json({ error: "Failed to fetch affiliate profile" });
+    }
+  });
+
+  // Get affiliate dashboard stats
+  app.get("/api/affiliate/stats", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const userEmail = req.user.claims.email;
+      
+      let affiliate = await storage.getAffiliateByUserId(userId);
+      if (!affiliate && userEmail) {
+        affiliate = await storage.getAffiliateByEmail(userEmail);
+      }
+      
+      if (!affiliate) {
+        return res.status(404).json({ error: "Not an affiliate" });
+      }
+
+      const directSales = await storage.getAffiliateSalesByAffiliateId(affiliate.id);
+      const teamSales = await storage.getAffiliateSalesByUplineId(affiliate.id);
+      const team = await storage.getAffiliateTeam(affiliate.id);
+      const payouts = await storage.getAffiliatePayoutsByAffiliateId(affiliate.id);
+
+      const stats = {
+        directSalesCount: directSales.length,
+        directSalesTotal: directSales.reduce((sum, s) => sum + parseFloat(s.orderTotal), 0),
+        tier1Earnings: parseFloat(affiliate.totalEarnedTier1 || "0"),
+        tier2Earnings: parseFloat(affiliate.totalEarnedTier2 || "0"),
+        pendingBalance: parseFloat(affiliate.pendingBalance || "0"),
+        teamSize: team.length,
+        teamSalesCount: teamSales.length,
+        teamSalesTotal: teamSales.reduce((sum, s) => sum + parseFloat(s.orderTotal), 0),
+        totalPaidOut: payouts.filter(p => p.status === 'processed').reduce((sum, p) => sum + parseFloat(p.amount), 0),
+        referralCode: affiliate.referralCode,
+        commissionRate: parseFloat(affiliate.commissionRate || "20"),
+      };
+
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching affiliate stats:", error);
+      res.status(500).json({ error: "Failed to fetch affiliate stats" });
+    }
+  });
+
+  // Get affiliate's direct sales
+  app.get("/api/affiliate/sales", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const userEmail = req.user.claims.email;
+      
+      let affiliate = await storage.getAffiliateByUserId(userId);
+      if (!affiliate && userEmail) {
+        affiliate = await storage.getAffiliateByEmail(userEmail);
+      }
+      
+      if (!affiliate) {
+        return res.status(404).json({ error: "Not an affiliate" });
+      }
+
+      const sales = await storage.getAffiliateSalesByAffiliateId(affiliate.id);
+      res.json(sales);
+    } catch (error) {
+      console.error("Error fetching affiliate sales:", error);
+      res.status(500).json({ error: "Failed to fetch affiliate sales" });
+    }
+  });
+
+  // Get affiliate's team and their sales
+  app.get("/api/affiliate/team", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const userEmail = req.user.claims.email;
+      
+      let affiliate = await storage.getAffiliateByUserId(userId);
+      if (!affiliate && userEmail) {
+        affiliate = await storage.getAffiliateByEmail(userEmail);
+      }
+      
+      if (!affiliate) {
+        return res.status(404).json({ error: "Not an affiliate" });
+      }
+
+      const team = await storage.getAffiliateTeam(affiliate.id);
+      const teamWithStats = await Promise.all(team.map(async (member) => {
+        const memberSales = await storage.getAffiliateSalesByAffiliateId(member.id);
+        return {
+          id: member.id,
+          fullName: member.fullName,
+          email: member.email,
+          referralCode: member.referralCode,
+          isActive: member.isActive,
+          createdAt: member.createdAt,
+          salesCount: memberSales.length,
+          salesTotal: memberSales.reduce((sum, s) => sum + parseFloat(s.orderTotal), 0),
+          tier2EarningsFromMember: memberSales.reduce((sum, s) => sum + parseFloat(s.commissionTier2 || "0"), 0),
+        };
+      }));
+
+      res.json(teamWithStats);
+    } catch (error) {
+      console.error("Error fetching affiliate team:", error);
+      res.status(500).json({ error: "Failed to fetch affiliate team" });
+    }
+  });
+
+  // Get affiliate's payout history
+  app.get("/api/affiliate/payouts", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const userEmail = req.user.claims.email;
+      
+      let affiliate = await storage.getAffiliateByUserId(userId);
+      if (!affiliate && userEmail) {
+        affiliate = await storage.getAffiliateByEmail(userEmail);
+      }
+      
+      if (!affiliate) {
+        return res.status(404).json({ error: "Not an affiliate" });
+      }
+
+      const payouts = await storage.getAffiliatePayoutsByAffiliateId(affiliate.id);
+      res.json(payouts);
+    } catch (error) {
+      console.error("Error fetching affiliate payouts:", error);
+      res.status(500).json({ error: "Failed to fetch affiliate payouts" });
+    }
+  });
+
+  // Update affiliate payout settings
+  app.patch("/api/affiliate/settings", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const userEmail = req.user.claims.email;
+      
+      let affiliate = await storage.getAffiliateByUserId(userId);
+      if (!affiliate && userEmail) {
+        affiliate = await storage.getAffiliateByEmail(userEmail);
+      }
+      
+      if (!affiliate) {
+        return res.status(404).json({ error: "Not an affiliate" });
+      }
+
+      const { payoutMethod, payoutEmail } = req.body;
+      const updated = await storage.updateAffiliate(affiliate.id, { payoutMethod, payoutEmail });
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating affiliate settings:", error);
+      res.status(500).json({ error: "Failed to update affiliate settings" });
+    }
+  });
+
+  // Request payout (affiliate requests their pending balance)
+  app.post("/api/affiliate/request-payout", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const userEmail = req.user.claims.email;
+      
+      let affiliate = await storage.getAffiliateByUserId(userId);
+      if (!affiliate && userEmail) {
+        affiliate = await storage.getAffiliateByEmail(userEmail);
+      }
+      
+      if (!affiliate) {
+        return res.status(404).json({ error: "Not an affiliate" });
+      }
+
+      const pendingBalance = parseFloat(affiliate.pendingBalance || "0");
+      const minimumPayout = 50;
+
+      if (pendingBalance < minimumPayout) {
+        return res.status(400).json({ error: `Minimum payout is $${minimumPayout}. Your current balance is $${pendingBalance.toFixed(2)}` });
+      }
+
+      if (!affiliate.payoutEmail) {
+        return res.status(400).json({ error: "Please set your payout email first" });
+      }
+
+      const payout = await storage.createAffiliatePayout({
+        affiliateId: affiliate.id,
+        amount: pendingBalance.toString(),
+        payoutMethod: affiliate.payoutMethod || "paypal",
+        payoutEmail: affiliate.payoutEmail,
+        status: "pending",
+      });
+
+      await storage.updateAffiliate(affiliate.id, { pendingBalance: "0.00" });
+
+      res.status(201).json({ success: true, payout });
+    } catch (error) {
+      console.error("Error requesting payout:", error);
+      res.status(500).json({ error: "Failed to request payout" });
+    }
+  });
+
+  // === STRIPE ROUTES ===
+
+  // Get Stripe config
+  app.get("/api/stripe/config", async (req, res) => {
+    try {
+      const publishableKey = await getStripePublishableKey();
+      res.json({ publishableKey });
+    } catch (error) {
+      console.error("Error getting Stripe config:", error);
+      res.status(500).json({ error: "Failed to get Stripe configuration" });
+    }
+  });
+
+  // Create Stripe checkout session
+  app.post("/api/stripe/create-checkout-session", async (req, res) => {
+    try {
+      const { productId, quantity, subscription, interval, affiliateCode } = req.body;
+
+      const product = await storage.getProduct(productId);
+      if (!product) {
+        return res.status(404).json({ error: "Product not found" });
+      }
+
+      const stripe = await getUncachableStripeClient();
+      const baseUrl = process.env.REPLIT_DEV_DOMAIN 
+        ? `https://${process.env.REPLIT_DEV_DOMAIN}` 
+        : `http://localhost:${process.env.PORT || 5000}`;
+
+      let unitAmount = Math.round(parseFloat(product.price) * 100);
+      
+      if (subscription) {
+        const discounts: { [key: string]: number } = {
+          weekly: 15,
+          biweekly: 12,
+          monthly: 10,
+        };
+        const discountPercent = discounts[interval] || 10;
+        unitAmount = Math.round(unitAmount * (1 - discountPercent / 100));
+      }
+
+      const metadata: any = {
+        productId: product.id,
+        productName: product.name,
+        quantity: quantity.toString(),
+      };
+
+      if (affiliateCode) {
+        const affiliate = await storage.getAffiliateByReferralCode(affiliateCode);
+        if (affiliate && affiliate.isActive) {
+          metadata.affiliateId = affiliate.id;
+          metadata.affiliateCode = affiliateCode;
+          if (affiliate.uplineId) {
+            metadata.uplineId = affiliate.uplineId;
+          }
+        }
+      }
+
+      const sessionParams: any = {
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: product.name,
+                description: product.shortDescription || product.description.slice(0, 100),
+              },
+              unit_amount: unitAmount,
+            },
+            quantity,
+          },
+        ],
+        mode: 'payment',
+        success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${baseUrl}/checkout?productId=${productId}&quantity=${quantity}`,
+        metadata,
+        shipping_address_collection: {
+          allowed_countries: ['US', 'CA', 'GB', 'AU'],
+        },
+      };
+
+      const session = await stripe.checkout.sessions.create(sessionParams);
+
+      res.json({ url: session.url, sessionId: session.id });
+    } catch (error) {
+      console.error("Error creating checkout session:", error);
+      res.status(500).json({ error: "Failed to create checkout session" });
+    }
+  });
+
+  // Verify checkout session and create order
+  app.get("/api/stripe/checkout-session/:sessionId", async (req, res) => {
+    try {
+      const { sessionId } = req.params;
+      const stripe = await getUncachableStripeClient();
+
+      const existingOrder = await storage.getOrderByStripeSessionId(sessionId);
+      if (existingOrder) {
+        return res.json({ order: existingOrder, alreadyProcessed: true });
+      }
+
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+      if (session.payment_status !== 'paid') {
+        return res.status(400).json({ error: "Payment not completed" });
+      }
+
+      const shippingDetails = session.shipping_details;
+      const customerDetails = session.customer_details;
+      const metadata = session.metadata || {};
+
+      const order = await storage.createOrder({
+        email: customerDetails?.email || '',
+        firstName: shippingDetails?.name?.split(' ')[0] || '',
+        lastName: shippingDetails?.name?.split(' ').slice(1).join(' ') || '',
+        address: shippingDetails?.address?.line1 || '',
+        city: shippingDetails?.address?.city || '',
+        state: shippingDetails?.address?.state || '',
+        zipCode: shippingDetails?.address?.postal_code || '',
+        country: shippingDetails?.address?.country || 'US',
+        productId: metadata.productId || '',
+        quantity: parseInt(metadata.quantity || '1'),
+        totalAmount: ((session.amount_total || 0) / 100).toFixed(2),
+        status: 'paid',
+        stripeSessionId: sessionId,
+        stripePaymentIntentId: session.payment_intent as string || null,
+      });
+
+      if (metadata.affiliateId) {
+        const orderTotal = parseFloat(order.totalAmount);
+        const tier1Commission = orderTotal * TIER1_COMMISSION_RATE;
+        let tier2Commission = 0;
+
+        if (metadata.uplineId) {
+          tier2Commission = orderTotal * TIER2_COMMISSION_RATE;
+        }
+
+        await storage.createAffiliateSale({
+          affiliateId: metadata.affiliateId,
+          uplineId: metadata.uplineId || null,
+          orderId: order.id,
+          orderTotal: orderTotal.toFixed(2),
+          commissionTier1: tier1Commission.toFixed(2),
+          commissionTier2: tier2Commission.toFixed(2),
+          tier1Status: 'pending',
+          tier2Status: metadata.uplineId ? 'pending' : 'pending',
+        });
+
+        await storage.updateAffiliateEarnings(
+          metadata.affiliateId,
+          tier1Commission,
+          0,
+          tier1Commission
+        );
+
+        if (metadata.uplineId) {
+          await storage.updateAffiliateEarnings(
+            metadata.uplineId,
+            0,
+            tier2Commission,
+            tier2Commission
+          );
+        }
+      }
+
+      res.json({ order, alreadyProcessed: false });
+    } catch (error) {
+      console.error("Error verifying checkout session:", error);
+      res.status(500).json({ error: "Failed to verify checkout session" });
     }
   });
 
@@ -319,6 +753,201 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error fetching contacts:", error);
       res.status(500).json({ error: "Failed to fetch contacts" });
+    }
+  });
+
+  // === ADMIN AFFILIATE ROUTES ===
+
+  // Admin: Get all affiliate applications
+  app.get("/api/admin/affiliate-applications", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const applications = await storage.getAllAffiliateApplications();
+      res.json(applications);
+    } catch (error) {
+      console.error("Error fetching affiliate applications:", error);
+      res.status(500).json({ error: "Failed to fetch affiliate applications" });
+    }
+  });
+
+  // Admin: Approve affiliate application
+  app.post("/api/admin/affiliate-applications/:id/approve", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const application = await storage.getAffiliateApplication(req.params.id);
+      if (!application) {
+        return res.status(404).json({ error: "Application not found" });
+      }
+
+      const existingAffiliate = await storage.getAffiliateByEmail(application.email);
+      if (existingAffiliate) {
+        return res.status(400).json({ error: "Affiliate with this email already exists" });
+      }
+
+      let referralCode = generateReferralCode();
+      let attempts = 0;
+      while (await storage.getAffiliateByReferralCode(referralCode) && attempts < 10) {
+        referralCode = generateReferralCode();
+        attempts++;
+      }
+
+      const { uplineReferralCode, commissionRate } = req.body;
+      let uplineId: string | undefined;
+
+      if (uplineReferralCode) {
+        const upline = await storage.getAffiliateByReferralCode(uplineReferralCode);
+        if (upline) {
+          uplineId = upline.id;
+        }
+      } else if (application.referredByAffiliateId) {
+        uplineId = application.referredByAffiliateId;
+        console.log(`Using application referrer as upline: ${uplineId}`);
+      }
+
+      const affiliate = await storage.createAffiliate({
+        email: application.email,
+        fullName: application.fullName,
+        referralCode,
+        uplineId,
+        commissionRate: commissionRate || "20.00",
+        payoutMethod: "paypal",
+        payoutEmail: application.email,
+        isActive: true,
+        applicationId: application.id,
+      });
+
+      await storage.updateAffiliateApplicationStatus(req.params.id, "approved");
+
+      res.status(201).json({ success: true, affiliate });
+    } catch (error) {
+      console.error("Error approving affiliate application:", error);
+      res.status(500).json({ error: "Failed to approve application" });
+    }
+  });
+
+  // Admin: Reject affiliate application
+  app.post("/api/admin/affiliate-applications/:id/reject", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const updated = await storage.updateAffiliateApplicationStatus(req.params.id, "rejected");
+      if (!updated) {
+        return res.status(404).json({ error: "Application not found" });
+      }
+      res.json({ success: true, application: updated });
+    } catch (error) {
+      console.error("Error rejecting affiliate application:", error);
+      res.status(500).json({ error: "Failed to reject application" });
+    }
+  });
+
+  // Admin: Get all affiliates
+  app.get("/api/admin/affiliates", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const allAffiliates = await storage.getAllAffiliates();
+      res.json(allAffiliates);
+    } catch (error) {
+      console.error("Error fetching affiliates:", error);
+      res.status(500).json({ error: "Failed to fetch affiliates" });
+    }
+  });
+
+  // Admin: Get affiliate details with stats
+  app.get("/api/admin/affiliates/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const affiliate = await storage.getAffiliate(req.params.id);
+      if (!affiliate) {
+        return res.status(404).json({ error: "Affiliate not found" });
+      }
+
+      const directSales = await storage.getAffiliateSalesByAffiliateId(affiliate.id);
+      const teamSales = await storage.getAffiliateSalesByUplineId(affiliate.id);
+      const team = await storage.getAffiliateTeam(affiliate.id);
+      const payouts = await storage.getAffiliatePayoutsByAffiliateId(affiliate.id);
+
+      res.json({
+        ...affiliate,
+        directSalesCount: directSales.length,
+        directSalesTotal: directSales.reduce((sum, s) => sum + parseFloat(s.orderTotal), 0),
+        teamSize: team.length,
+        teamSalesCount: teamSales.length,
+        payoutsCount: payouts.length,
+        totalPaidOut: payouts.filter(p => p.status === 'processed').reduce((sum, p) => sum + parseFloat(p.amount), 0),
+      });
+    } catch (error) {
+      console.error("Error fetching affiliate details:", error);
+      res.status(500).json({ error: "Failed to fetch affiliate details" });
+    }
+  });
+
+  // Admin: Update affiliate
+  app.patch("/api/admin/affiliates/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const affiliate = await storage.updateAffiliate(req.params.id, req.body);
+      if (!affiliate) {
+        return res.status(404).json({ error: "Affiliate not found" });
+      }
+      res.json(affiliate);
+    } catch (error) {
+      console.error("Error updating affiliate:", error);
+      res.status(500).json({ error: "Failed to update affiliate" });
+    }
+  });
+
+  // Admin: Get all affiliate sales
+  app.get("/api/admin/affiliate-sales", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const sales = await storage.getAllAffiliateSales();
+      res.json(sales);
+    } catch (error) {
+      console.error("Error fetching affiliate sales:", error);
+      res.status(500).json({ error: "Failed to fetch affiliate sales" });
+    }
+  });
+
+  // Admin: Get all affiliate payouts
+  app.get("/api/admin/affiliate-payouts", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const payouts = await storage.getAllAffiliatePayouts();
+      res.json(payouts);
+    } catch (error) {
+      console.error("Error fetching affiliate payouts:", error);
+      res.status(500).json({ error: "Failed to fetch affiliate payouts" });
+    }
+  });
+
+  // Admin: Process affiliate payout
+  app.post("/api/admin/affiliate-payouts/:id/process", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { transactionId } = req.body;
+      const payout = await storage.updateAffiliatePayoutStatus(req.params.id, "processed", transactionId);
+      if (!payout) {
+        return res.status(404).json({ error: "Payout not found" });
+      }
+      res.json({ success: true, payout });
+    } catch (error) {
+      console.error("Error processing payout:", error);
+      res.status(500).json({ error: "Failed to process payout" });
+    }
+  });
+
+  // Admin: Reject affiliate payout
+  app.post("/api/admin/affiliate-payouts/:id/reject", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const payout = await storage.updateAffiliatePayoutStatus(req.params.id, "rejected");
+      if (!payout) {
+        return res.status(404).json({ error: "Payout not found" });
+      }
+
+      const affiliate = await storage.getAffiliate(payout.affiliateId);
+      if (affiliate) {
+        const currentPending = parseFloat(affiliate.pendingBalance || "0");
+        const rejectedAmount = parseFloat(payout.amount);
+        await storage.updateAffiliate(affiliate.id, { 
+          pendingBalance: (currentPending + rejectedAmount).toFixed(2) 
+        });
+      }
+
+      res.json({ success: true, payout });
+    } catch (error) {
+      console.error("Error rejecting payout:", error);
+      res.status(500).json({ error: "Failed to reject payout" });
     }
   });
 

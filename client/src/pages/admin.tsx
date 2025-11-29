@@ -55,10 +55,15 @@ import {
   Trash2,
   Shield,
   AlertCircle,
+  Users,
+  Check,
+  X,
+  DollarSign,
+  Loader2,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertProductSchema, insertCoaSchema, type Product, type Coa, type Order, type Contact } from "@shared/schema";
+import { insertProductSchema, insertCoaSchema, type Product, type Coa, type Order, type Contact, type AffiliateApplication, type Affiliate, type AffiliatePayout } from "@shared/schema";
 import { z } from "zod";
 
 const containerVariants = {
@@ -990,6 +995,415 @@ function ContactsTab() {
   );
 }
 
+function AffiliatesTab() {
+  const { toast } = useToast();
+  const [activeSubTab, setActiveSubTab] = useState("applications");
+
+  const { data: applications, isLoading: applicationsLoading } = useQuery<AffiliateApplication[]>({
+    queryKey: ["/api/admin/affiliate-applications"],
+  });
+
+  const { data: affiliates, isLoading: affiliatesLoading } = useQuery<Affiliate[]>({
+    queryKey: ["/api/admin/affiliates"],
+  });
+
+  const { data: payouts, isLoading: payoutsLoading } = useQuery<AffiliatePayout[]>({
+    queryKey: ["/api/admin/affiliate-payouts"],
+  });
+
+  const approveMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest("POST", `/api/admin/affiliate-applications/${id}/approve`, {});
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/affiliate-applications"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/affiliates"] });
+      toast({ title: "Application approved", description: "Affiliate has been created successfully." });
+    },
+    onError: () => {
+      toast({ title: "Failed to approve application", variant: "destructive" });
+    },
+  });
+
+  const rejectMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest("POST", `/api/admin/affiliate-applications/${id}/reject`, {});
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/affiliate-applications"] });
+      toast({ title: "Application rejected" });
+    },
+    onError: () => {
+      toast({ title: "Failed to reject application", variant: "destructive" });
+    },
+  });
+
+  const processPayoutMutation = useMutation({
+    mutationFn: async ({ id, transactionId }: { id: string; transactionId: string }) => {
+      const response = await apiRequest("POST", `/api/admin/affiliate-payouts/${id}/process`, { transactionId });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/affiliate-payouts"] });
+      toast({ title: "Payout processed successfully" });
+    },
+    onError: () => {
+      toast({ title: "Failed to process payout", variant: "destructive" });
+    },
+  });
+
+  const rejectPayoutMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest("POST", `/api/admin/affiliate-payouts/${id}/reject`, {});
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/affiliate-payouts"] });
+      toast({ title: "Payout rejected" });
+    },
+    onError: () => {
+      toast({ title: "Failed to reject payout", variant: "destructive" });
+    },
+  });
+
+  const formatDate = (date: Date | string | null) => {
+    if (!date) return "N/A";
+    return new Date(date).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const pendingApplications = applications?.filter(a => a.status === "pending") || [];
+  const pendingPayouts = payouts?.filter(p => p.status === "pending") || [];
+
+  return (
+    <div className="space-y-6">
+      <div className="flex gap-2 border-b pb-4">
+        <Button
+          variant={activeSubTab === "applications" ? "default" : "ghost"}
+          onClick={() => setActiveSubTab("applications")}
+          className="relative"
+          data-testid="subtab-applications"
+        >
+          Applications
+          {pendingApplications.length > 0 && (
+            <Badge variant="destructive" className="ml-2 h-5 min-w-[20px] px-1.5">
+              {pendingApplications.length}
+            </Badge>
+          )}
+        </Button>
+        <Button
+          variant={activeSubTab === "affiliates" ? "default" : "ghost"}
+          onClick={() => setActiveSubTab("affiliates")}
+          data-testid="subtab-affiliates"
+        >
+          Affiliates ({affiliates?.length || 0})
+        </Button>
+        <Button
+          variant={activeSubTab === "payouts" ? "default" : "ghost"}
+          onClick={() => setActiveSubTab("payouts")}
+          className="relative"
+          data-testid="subtab-payouts"
+        >
+          Payouts
+          {pendingPayouts.length > 0 && (
+            <Badge variant="destructive" className="ml-2 h-5 min-w-[20px] px-1.5">
+              {pendingPayouts.length}
+            </Badge>
+          )}
+        </Button>
+      </div>
+
+      {activeSubTab === "applications" && (
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">Affiliate Applications</h2>
+          {applicationsLoading ? (
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-32 w-full" />
+              ))}
+            </div>
+          ) : applications && applications.length > 0 ? (
+            <div className="space-y-4">
+              {applications.map((application) => (
+                <Card key={application.id} data-testid={`card-application-${application.id}`}>
+                  <CardHeader className="pb-2">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <CardTitle className="text-lg">{application.fullName}</CardTitle>
+                        <CardDescription>{application.email}</CardDescription>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          variant={
+                            application.status === "approved"
+                              ? "default"
+                              : application.status === "rejected"
+                              ? "destructive"
+                              : "secondary"
+                          }
+                        >
+                          {application.status}
+                        </Badge>
+                        <span className="text-sm text-muted-foreground">
+                          {formatDate(application.createdAt)}
+                        </span>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-muted-foreground">Social URL</p>
+                        <a href={application.socialUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                          {application.socialUrl}
+                        </a>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">Audience Size</p>
+                        <p>{application.audienceSize}</p>
+                      </div>
+                    </div>
+                    <div className="text-sm">
+                      <p className="text-muted-foreground">Why They Want to Partner</p>
+                      <p>{application.whyPartner}</p>
+                    </div>
+                    <div className="text-sm">
+                      <p className="text-muted-foreground">Product Experience</p>
+                      <p>{application.productExperience}</p>
+                    </div>
+                    {application.status === "pending" && (
+                      <div className="flex gap-2 pt-2">
+                        <Button
+                          size="sm"
+                          onClick={() => approveMutation.mutate(application.id)}
+                          disabled={approveMutation.isPending}
+                          className="bg-green-600 hover:bg-green-700"
+                          data-testid={`button-approve-${application.id}`}
+                        >
+                          {approveMutation.isPending ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <><Check className="h-4 w-4 mr-1" /> Approve</>
+                          )}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => rejectMutation.mutate(application.id)}
+                          disabled={rejectMutation.isPending}
+                          data-testid={`button-reject-${application.id}`}
+                        >
+                          {rejectMutation.isPending ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <><X className="h-4 w-4 mr-1" /> Reject</>
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card className="p-12 text-center">
+              <Users className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+              <h3 className="font-medium mb-2">No Applications</h3>
+              <p className="text-sm text-muted-foreground">
+                Affiliate applications will appear here.
+              </p>
+            </Card>
+          )}
+        </div>
+      )}
+
+      {activeSubTab === "affiliates" && (
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">Active Affiliates</h2>
+          {affiliatesLoading ? (
+            <Skeleton className="h-64 w-full" />
+          ) : affiliates && affiliates.length > 0 ? (
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Referral Code</TableHead>
+                    <TableHead>Commission Rate</TableHead>
+                    <TableHead>Total Earned</TableHead>
+                    <TableHead>Pending Balance</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {affiliates.map((affiliate) => (
+                    <TableRow key={affiliate.id} data-testid={`row-affiliate-${affiliate.id}`}>
+                      <TableCell className="font-medium">{affiliate.fullName}</TableCell>
+                      <TableCell>{affiliate.email}</TableCell>
+                      <TableCell>
+                        <code className="bg-muted px-2 py-1 rounded text-sm">{affiliate.referralCode}</code>
+                      </TableCell>
+                      <TableCell>{affiliate.commissionRate}%</TableCell>
+                      <TableCell className="text-green-500">
+                        ${(parseFloat(affiliate.totalEarnedTier1 || "0") + parseFloat(affiliate.totalEarnedTier2 || "0")).toFixed(2)}
+                      </TableCell>
+                      <TableCell className="text-[#E7FB10]">
+                        ${parseFloat(affiliate.pendingBalance || "0").toFixed(2)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={affiliate.isActive ? "default" : "secondary"}>
+                          {affiliate.isActive ? "Active" : "Inactive"}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ) : (
+            <Card className="p-12 text-center">
+              <Users className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+              <h3 className="font-medium mb-2">No Affiliates</h3>
+              <p className="text-sm text-muted-foreground">
+                Approved affiliates will appear here.
+              </p>
+            </Card>
+          )}
+        </div>
+      )}
+
+      {activeSubTab === "payouts" && (
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">Payout Requests</h2>
+          {payoutsLoading ? (
+            <Skeleton className="h-64 w-full" />
+          ) : payouts && payouts.length > 0 ? (
+            <div className="space-y-4">
+              {payouts.map((payout) => (
+                <Card key={payout.id} data-testid={`card-payout-${payout.id}`}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="p-2 rounded-lg bg-[#E7FB10]/10">
+                          <DollarSign className="h-5 w-5 text-[#E7FB10]" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-lg">${parseFloat(payout.amount).toFixed(2)}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {payout.payoutMethod} - {payout.payoutEmail}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <p className="text-sm text-muted-foreground">
+                            Requested: {formatDate(payout.createdAt)}
+                          </p>
+                          {payout.processedAt && (
+                            <p className="text-sm text-muted-foreground">
+                              Processed: {formatDate(payout.processedAt)}
+                            </p>
+                          )}
+                        </div>
+                        <Badge
+                          variant={
+                            payout.status === "processed"
+                              ? "default"
+                              : payout.status === "rejected"
+                              ? "destructive"
+                              : "secondary"
+                          }
+                        >
+                          {payout.status}
+                        </Badge>
+                        {payout.status === "pending" && (
+                          <div className="flex gap-2">
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button size="sm" className="bg-green-600 hover:bg-green-700" data-testid={`button-process-payout-${payout.id}`}>
+                                  <Check className="h-4 w-4 mr-1" /> Process
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>Process Payout</DialogTitle>
+                                  <DialogDescription>
+                                    Enter the transaction ID after sending ${parseFloat(payout.amount).toFixed(2)} to {payout.payoutEmail}
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <form
+                                  onSubmit={(e) => {
+                                    e.preventDefault();
+                                    const formData = new FormData(e.currentTarget);
+                                    const transactionId = formData.get("transactionId") as string;
+                                    processPayoutMutation.mutate({ id: payout.id, transactionId });
+                                  }}
+                                >
+                                  <div className="space-y-4">
+                                    <div>
+                                      <Label htmlFor="transactionId">Transaction ID</Label>
+                                      <Input
+                                        id="transactionId"
+                                        name="transactionId"
+                                        placeholder="Enter transaction ID"
+                                        required
+                                      />
+                                    </div>
+                                    <DialogFooter>
+                                      <Button type="submit" disabled={processPayoutMutation.isPending}>
+                                        {processPayoutMutation.isPending ? (
+                                          <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                          "Confirm Payment"
+                                        )}
+                                      </Button>
+                                    </DialogFooter>
+                                  </div>
+                                </form>
+                              </DialogContent>
+                            </Dialog>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => rejectPayoutMutation.mutate(payout.id)}
+                              disabled={rejectPayoutMutation.isPending}
+                              data-testid={`button-reject-payout-${payout.id}`}
+                            >
+                              {rejectPayoutMutation.isPending ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <><X className="h-4 w-4 mr-1" /> Reject</>
+                              )}
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card className="p-12 text-center">
+              <DollarSign className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+              <h3 className="font-medium mb-2">No Payout Requests</h3>
+              <p className="text-sm text-muted-foreground">
+                Affiliate payout requests will appear here.
+              </p>
+            </Card>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Admin() {
   const { user, isLoading: authLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
@@ -1075,7 +1489,7 @@ export default function Admin() {
 
           <motion.div variants={itemVariants}>
             <Tabs defaultValue="products" className="space-y-6">
-              <TabsList className="grid w-full max-w-lg grid-cols-4">
+              <TabsList className="grid w-full max-w-2xl grid-cols-5">
                 <TabsTrigger value="products" className="flex items-center gap-2" data-testid="tab-products">
                   <Package className="h-4 w-4" />
                   <span className="hidden sm:inline">Products</span>
@@ -1091,6 +1505,10 @@ export default function Admin() {
                 <TabsTrigger value="contacts" className="flex items-center gap-2" data-testid="tab-contacts">
                   <Mail className="h-4 w-4" />
                   <span className="hidden sm:inline">Contacts</span>
+                </TabsTrigger>
+                <TabsTrigger value="affiliates" className="flex items-center gap-2" data-testid="tab-affiliates">
+                  <Users className="h-4 w-4" />
+                  <span className="hidden sm:inline">Affiliates</span>
                 </TabsTrigger>
               </TabsList>
 
@@ -1115,6 +1533,12 @@ export default function Admin() {
               <TabsContent value="contacts">
                 <Card className="p-6">
                   <ContactsTab />
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="affiliates">
+                <Card className="p-6">
+                  <AffiliatesTab />
                 </Card>
               </TabsContent>
             </Tabs>

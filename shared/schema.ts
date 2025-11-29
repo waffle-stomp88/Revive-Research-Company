@@ -116,6 +116,7 @@ export const affiliateApplications = pgTable("affiliate_applications", {
   audienceSize: text("audience_size").notNull(),
   whyPartner: text("why_partner").notNull(),
   productExperience: text("product_experience").notNull(),
+  referredByAffiliateId: varchar("referred_by_affiliate_id"),
   status: text("status").default("pending"),
   createdAt: timestamp("created_at").defaultNow(),
 });

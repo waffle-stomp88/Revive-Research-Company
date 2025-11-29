@@ -52,11 +52,14 @@ export default function Checkout() {
     mutationFn: async () => {
       if (!product) throw new Error("No product selected");
       
+      const affiliateCode = localStorage.getItem('affiliateCode');
+      
       const response = await apiRequest("POST", "/api/stripe/create-checkout-session", {
         productId: product.id,
         quantity,
         subscription: isSubscription,
         interval: interval,
+        affiliateCode: affiliateCode || undefined,
       });
       const data = await response.json();
       return data;
