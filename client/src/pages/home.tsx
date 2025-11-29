@@ -380,7 +380,7 @@ function ProductShowcase() {
     queryKey: ["/api/products"],
   });
 
-  const featuredProducts = products?.filter(p => p.showOnLandingPage).slice(0, 3) || [];
+  const featuredProducts = products?.filter(p => p.showOnLandingPage && p.inStock).slice(0, 3) || [];
 
   return (
     <section className="py-24 md:py-32" id="products">
