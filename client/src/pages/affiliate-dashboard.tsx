@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import {
   DollarSign,
@@ -88,11 +89,26 @@ interface Affiliate {
 
 export default function AffiliateDashboard() {
   const { toast } = useToast();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [payoutMethod, setPayoutMethod] = useState("");
   const [payoutEmail, setPayoutEmail] = useState("");
 
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      toast({
+        title: "Sign In Required",
+        description: "Please sign in to access your affiliate dashboard.",
+        variant: "destructive",
+      });
+      setTimeout(() => {
+        window.location.href = "/api/login";
+      }, 500);
+    }
+  }, [authLoading, isAuthenticated, toast]);
+
   const { data: affiliate, isLoading: affiliateLoading, error: affiliateError } = useQuery<Affiliate>({
     queryKey: ["/api/affiliate/me"],
+    enabled: isAuthenticated,
   });
 
   const { data: stats, isLoading: statsLoading } = useQuery<AffiliateStats>({
@@ -169,7 +185,15 @@ export default function AffiliateDashboard() {
     }
   };
 
-  if (affiliateLoading) {
+  if (authLoading || affiliateLoading) {
+    return (
+      <main className="min-h-screen pt-32 md:pt-40 pb-24 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </main>
+    );
+  }
+
+  if (!isAuthenticated) {
     return (
       <main className="min-h-screen pt-32 md:pt-40 pb-24 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />

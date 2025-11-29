@@ -142,6 +142,19 @@ export function Navigation() {
                   </Button>
                 </Link>
                 
+                {!isLoading && !isAuthenticated && (
+                  <a href="/api/login">
+                    <Button 
+                      variant="outline" 
+                      className="hidden md:inline-flex border-[#E7FB10]/50 text-[#E7FB10] hover:bg-[#E7FB10]/10 hover:border-[#E7FB10] transition-all duration-300"
+                      data-testid="button-sign-in"
+                    >
+                      <LogIn className="h-4 w-4 mr-2" />
+                      Sign In
+                    </Button>
+                  </a>
+                )}
+                
                 {!isLoading && isAuthenticated && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -321,6 +334,20 @@ export function Navigation() {
                     Shop Products
                   </Button>
                 </Link>
+                
+                {!isLoading && !isAuthenticated && (
+                  <a href="/api/login">
+                    <Button 
+                      variant="outline" 
+                      size="lg" 
+                      className="border-[#E7FB10]/50 text-[#E7FB10] hover:bg-[#E7FB10]/10 hover:border-[#E7FB10]"
+                      data-testid="button-mobile-sign-in"
+                    >
+                      <LogIn className="h-4 w-4 mr-2" />
+                      Sign In
+                    </Button>
+                  </a>
+                )}
                 
                 {!isLoading && isAuthenticated && (
                   <a href="/api/logout">
