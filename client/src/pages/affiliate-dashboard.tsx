@@ -173,12 +173,12 @@ export default function AffiliateDashboard() {
   });
 
   const { data: earningsChart, isLoading: earningsChartLoading } = useQuery<EarningsDataPoint[]>({
-    queryKey: ["/api/affiliate/earnings-chart", 12],
+    queryKey: ["/api/affiliate/earnings-chart", { weeks: "12" }],
     enabled: !!affiliate,
   });
 
   const { data: leaderboard, isLoading: leaderboardLoading } = useQuery<LeaderboardEntry[]>({
-    queryKey: ["/api/affiliate/leaderboard", leaderboardPeriod],
+    queryKey: ["/api/affiliate/leaderboard", { period: leaderboardPeriod }],
   });
 
   const updateSettingsMutation = useMutation({
