@@ -662,6 +662,8 @@ function ProductsTab() {
 function CoasTab() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCoa, setEditingCoa] = useState<Coa | null>(null);
+  const [coaImageUrl, setCoaImageUrl] = useState<string | null>(null);
+  const [isUploadingCoaImage, setIsUploadingCoaImage] = useState(false);
   const { toast } = useToast();
 
   const { data: allCoas, isLoading } = useQuery<Coa[]>({
@@ -737,6 +739,7 @@ function CoasTab() {
   const handleOpenDialog = (coa?: Coa) => {
     if (coa) {
       setEditingCoa(coa);
+      setCoaImageUrl(coa.imageUrl || null);
       form.reset({
         batchNumber: coa.batchNumber,
         productId: coa.productId,
@@ -750,15 +753,60 @@ function CoasTab() {
       });
     } else {
       setEditingCoa(null);
+      setCoaImageUrl(null);
       form.reset();
     }
     setIsDialogOpen(true);
+  };
+
+  const handleCoaImageUpload = async () => {
+    try {
+      const response = await apiRequest("POST", "/api/objects/upload");
+      const { uploadURL } = await response.json();
+      return { method: "PUT" as const, url: uploadURL };
+    } catch (error) {
+      console.error("Failed to get upload URL:", error);
+      throw error;
+    }
+  };
+
+  const handleCoaImageComplete = async (result: any) => {
+    try {
+      setIsUploadingCoaImage(true);
+      if (result.successful && result.successful.length > 0) {
+        const uploadedFile = result.successful[0];
+        const uploadURL = uploadedFile.uploadURL;
+        
+        const response = await apiRequest("PUT", "/api/objects/finalize", { uploadURL });
+        const { objectPath } = await response.json();
+        
+        setCoaImageUrl(objectPath);
+        toast({ title: "COA image uploaded successfully" });
+      }
+    } catch (error) {
+      console.error("Failed to finalize upload:", error);
+      toast({ title: "Failed to upload COA image", variant: "destructive" });
+    } finally {
+      setIsUploadingCoaImage(false);
+    }
+  };
+
+  const handleRemoveCoaImage = async () => {
+    if (coaImageUrl) {
+      try {
+        await apiRequest("DELETE", "/api/objects/delete", { objectPath: coaImageUrl });
+      } catch (error) {
+        console.error("Failed to delete COA image:", error);
+      }
+    }
+    setCoaImageUrl(null);
   };
 
   const onSubmit = (values: CoaFormValues) => {
     const data = {
       ...values,
       results: values.results ? values.results.split(",").map((r) => r.trim()).filter(Boolean) : [],
+      imageUrl: coaImageUrl || null,
     };
 
     if (editingCoa) {
@@ -941,6 +989,56 @@ function CoasTab() {
                     </FormItem>
                   )}
                 />
+                
+                <div className="space-y-2">
+                  <Label>COA Document Image</Label>
+                  <div className="flex items-center gap-4">
+                    {coaImageUrl ? (
+                      <div className="relative">
+                        <img
+                          src={coaImageUrl}
+                          alt="COA Document"
+                          className="w-24 h-24 object-cover rounded-md border"
+                          data-testid="img-coa-preview"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute -top-2 -right-2 h-6 w-6"
+                          onClick={handleRemoveCoaImage}
+                          data-testid="button-remove-coa-image"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="w-24 h-24 border-2 border-dashed rounded-md flex items-center justify-center bg-muted/50">
+                        <FileCheck className="h-8 w-8 text-muted-foreground" />
+                      </div>
+                    )}
+                    <ObjectUploader
+                      onGetUploadParameters={handleCoaImageUpload}
+                      onComplete={handleCoaImageComplete}
+                      buttonVariant="outline"
+                      buttonSize="sm"
+                      disabled={isUploadingCoaImage}
+                    >
+                      {isUploadingCoaImage ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="h-4 w-4 mr-2" />
+                          {coaImageUrl ? "Change Image" : "Upload Image"}
+                        </>
+                      )}
+                    </ObjectUploader>
+                  </div>
+                </div>
+                
                 <DialogFooter>
                   <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                     Cancel

@@ -159,20 +159,27 @@ export class ObjectStorageService {
   }
 
   normalizeObjectEntityPath(rawPath: string): string {
-    if (!rawPath.startsWith("https://storage.googleapis.com/")) {
+    if (rawPath.startsWith("/objects/")) {
       return rawPath;
+    }
+    
+    if (!rawPath.startsWith("https://storage.googleapis.com/")) {
+      throw new Error("Invalid upload URL: must be a valid GCS URL or /objects path");
     }
 
     const url = new URL(rawPath);
     const rawObjectPath = url.pathname;
 
     let objectEntityDir = this.getPrivateObjectDir();
+    if (!objectEntityDir.startsWith("/")) {
+      objectEntityDir = `/${objectEntityDir}`;
+    }
     if (!objectEntityDir.endsWith("/")) {
       objectEntityDir = `${objectEntityDir}/`;
     }
 
     if (!rawObjectPath.startsWith(objectEntityDir)) {
-      return rawObjectPath;
+      throw new Error("Invalid upload URL: file is not in the expected storage directory");
     }
 
     const entityId = rawObjectPath.slice(objectEntityDir.length);
@@ -184,8 +191,9 @@ export class ObjectStorageService {
     aclPolicy: ObjectAclPolicy
   ): Promise<string> {
     const normalizedPath = this.normalizeObjectEntityPath(rawPath);
-    if (!normalizedPath.startsWith("/")) {
-      return normalizedPath;
+    
+    if (!normalizedPath.startsWith("/objects/")) {
+      throw new Error("Invalid object path: must be a canonical /objects path");
     }
 
     const objectFile = await this.getObjectEntityFile(normalizedPath);

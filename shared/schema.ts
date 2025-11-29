@@ -63,6 +63,7 @@ export const coas = pgTable("coas", {
   labName: text("lab_name").notNull(),
   verified: boolean("verified").default(true),
   results: text("results").array(),
+  imageUrl: text("image_url"),
 });
 
 export const insertCoaSchema = createInsertSchema(coas).omit({ id: true });
