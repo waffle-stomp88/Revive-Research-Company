@@ -81,12 +81,129 @@ function HeroSection() {
         />
       </motion.div>
       
+      {/* Animated Smoke Effects */}
+      <div className="absolute inset-0 z-[1] overflow-hidden pointer-events-none">
+        {/* Smoke Layer 1 - Slow drift left to right */}
+        <motion.div
+          className="absolute -left-1/4 bottom-0 w-[150%] h-[60%] opacity-40"
+          style={{
+            background: "radial-gradient(ellipse at center, rgba(100,100,120,0.4) 0%, transparent 70%)",
+            filter: "blur(40px)",
+          }}
+          animate={{
+            x: ["-10%", "10%", "-10%"],
+            y: ["0%", "-5%", "0%"],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        
+        {/* Smoke Layer 2 - Slower drift right to left */}
+        <motion.div
+          className="absolute -right-1/4 bottom-0 w-[150%] h-[50%] opacity-30"
+          style={{
+            background: "radial-gradient(ellipse at center, rgba(80,90,110,0.5) 0%, transparent 65%)",
+            filter: "blur(50px)",
+          }}
+          animate={{
+            x: ["10%", "-15%", "10%"],
+            y: ["0%", "-8%", "0%"],
+          }}
+          transition={{
+            duration: 25,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2,
+          }}
+        />
+        
+        {/* Smoke Layer 3 - Rising wisps */}
+        <motion.div
+          className="absolute left-1/4 bottom-0 w-[80%] h-[70%] opacity-25"
+          style={{
+            background: "radial-gradient(ellipse 80% 50% at 50% 100%, rgba(60,70,90,0.6) 0%, transparent 60%)",
+            filter: "blur(60px)",
+          }}
+          animate={{
+            y: ["0%", "-15%", "0%"],
+            scale: [1, 1.1, 1],
+            opacity: [0.25, 0.35, 0.25],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1,
+          }}
+        />
+        
+        {/* Smoke Layer 4 - Subtle top haze */}
+        <motion.div
+          className="absolute top-0 left-0 w-full h-[40%] opacity-20"
+          style={{
+            background: "linear-gradient(to bottom, rgba(50,60,80,0.4) 0%, transparent 100%)",
+            filter: "blur(30px)",
+          }}
+          animate={{
+            opacity: [0.2, 0.3, 0.2],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        
+        {/* Smoke Layer 5 - Side wisps left */}
+        <motion.div
+          className="absolute -left-20 bottom-1/4 w-[400px] h-[400px] opacity-30"
+          style={{
+            background: "radial-gradient(ellipse at center, rgba(70,80,100,0.5) 0%, transparent 70%)",
+            filter: "blur(45px)",
+          }}
+          animate={{
+            x: ["-20%", "30%", "-20%"],
+            y: ["-10%", "10%", "-10%"],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 3,
+          }}
+        />
+        
+        {/* Smoke Layer 6 - Side wisps right */}
+        <motion.div
+          className="absolute -right-20 bottom-1/3 w-[350px] h-[350px] opacity-25"
+          style={{
+            background: "radial-gradient(ellipse at center, rgba(90,100,120,0.4) 0%, transparent 65%)",
+            filter: "blur(50px)",
+          }}
+          animate={{
+            x: ["20%", "-25%", "20%"],
+            y: ["5%", "-15%", "5%"],
+            scale: [1.1, 0.9, 1.1],
+          }}
+          transition={{
+            duration: 22,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 5,
+          }}
+        />
+      </div>
+      
       {/* Dark overlay gradient */}
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-transparent z-[1]" />
-      <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-transparent to-background z-[1]" />
+      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent z-[2]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background z-[2]" />
       
       {/* Neon glow effects */}
-      <div className="absolute inset-0 overflow-hidden z-[2] pointer-events-none">
+      <div className="absolute inset-0 overflow-hidden z-[3] pointer-events-none">
         <motion.div 
           className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-[#21d8ff]/10 rounded-full blur-[150px]"
           animate={{ 
@@ -108,7 +225,7 @@ function HeroSection() {
       {/* Content */}
       <motion.div
         style={{ opacity }}
-        className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 text-center"
+        className="relative z-[10] max-w-7xl mx-auto px-4 md:px-8 text-center"
       >
         <motion.div
           initial={{ opacity: 0, y: 30 }}
