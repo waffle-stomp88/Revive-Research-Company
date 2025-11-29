@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { Product } from "@shared/schema";
+import heroBackground from "@assets/69bf34cc-d177-46c6-af24-c51da5ee10fa_1764382400961.png";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 40 },
@@ -63,17 +64,48 @@ function HeroSection() {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 500], [0, 150]);
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+  const scale = useTransform(scrollY, [0, 500], [1, 1.1]);
+  const imageOpacity = useTransform(scrollY, [0, 400], [1, 0.3]);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Background Image with Parallax */}
       <motion.div 
-        style={{ y }}
-        className="absolute inset-0 bg-gradient-to-b from-background via-background to-card"
-      />
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        style={{ y, scale, opacity: imageOpacity }}
+        className="absolute inset-0 z-0"
+      >
+        <img 
+          src={heroBackground} 
+          alt=""
+          className="w-full h-full object-cover object-center"
+        />
+      </motion.div>
+      
+      {/* Dark overlay gradient */}
+      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-transparent z-[1]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-transparent to-background z-[1]" />
+      
+      {/* Neon glow effects */}
+      <div className="absolute inset-0 overflow-hidden z-[2] pointer-events-none">
+        <motion.div 
+          className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-[#21d8ff]/10 rounded-full blur-[150px]"
+          animate={{ 
+            opacity: [0.3, 0.5, 0.3],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div 
+          className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-[#E7FB10]/10 rounded-full blur-[120px]"
+          animate={{ 
+            opacity: [0.2, 0.4, 0.2],
+            scale: [1.1, 1, 1.1]
+          }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        />
       </div>
+
+      {/* Content */}
       <motion.div
         style={{ opacity }}
         className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 text-center"
@@ -84,7 +116,7 @@ function HeroSection() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="mb-6"
         >
-          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-sm font-medium tracking-wide text-[#e7fb10]">
+          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/50 backdrop-blur-sm border border-[#E7FB10]/30 text-sm font-medium tracking-wide text-[#e7fb10]">
             <FlaskConical className="h-4 w-4" />
             Research Grade Compounds
           </span>
@@ -94,19 +126,19 @@ function HeroSection() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="font-display text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8"
+          className="font-display text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8 text-white drop-shadow-2xl"
           data-testid="text-hero-headline"
         >
           Something New
           <br />
-          <span className="text-muted-foreground">Is Forming</span>
+          <span className="text-gray-300">Is Forming</span>
         </motion.h1>
 
         <motion.p
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed"
+          className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-12 leading-relaxed drop-shadow-lg"
           data-testid="text-hero-subheadline"
         >
           Engineered with intention.
@@ -121,29 +153,32 @@ function HeroSection() {
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <Link href="/products">
-            <Button size="lg" className="font-display text-base px-8 gap-2 bg-[#E7FB10] text-primary-foreground border-2 border-[#E7FB10] shadow-glow-sm hover:shadow-glow-lg transition-shadow duration-300" data-testid="button-hero-shop">
+            <Button size="lg" className="font-display text-base px-8 gap-2 bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 border-2 border-[#E7FB10] shadow-[0_0_30px_rgba(231,251,16,0.4)] hover:shadow-[0_0_50px_rgba(231,251,16,0.6)] transition-all duration-300" data-testid="button-hero-shop">
               Shop Products
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
           <Link href="/coa">
-            <Button size="lg" variant="outline" className="font-display text-base px-8" data-testid="button-hero-coa">
+            <Button size="lg" variant="outline" className="font-display text-base px-8 bg-black/30 backdrop-blur-sm border-white/30 text-white hover:bg-white/10 hover:border-white/50" data-testid="button-hero-coa">
               Verify COA
             </Button>
           </Link>
         </motion.div>
       </motion.div>
+      
+      {/* Scroll indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
       >
         <motion.div
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="p-2 rounded-full bg-black/30 backdrop-blur-sm border border-white/20"
         >
-          <ChevronDown className="h-6 w-6 text-muted-foreground" />
+          <ChevronDown className="h-6 w-6 text-white" />
         </motion.div>
       </motion.div>
     </section>
