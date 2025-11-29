@@ -65,6 +65,7 @@ import {
   ArrowDown,
   Upload,
   ImageIcon,
+  Star,
 } from "lucide-react";
 import { ObjectUploader } from "@/components/ObjectUploader";
 import { useForm } from "react-hook-form";
@@ -473,7 +474,7 @@ function ProductsTab() {
                     </FormItem>
                   )}
                 />
-                <div className="flex gap-6">
+                <div className="flex flex-col gap-4">
                   <FormField
                     control={form.control}
                     name="inStock"
@@ -494,15 +495,24 @@ function ProductsTab() {
                     control={form.control}
                     name="featured"
                     render={({ field }) => (
-                      <FormItem className="flex items-center gap-2">
+                      <FormItem className="flex items-start gap-3 p-3 rounded-lg border border-[#E7FB10]/30 bg-[#E7FB10]/5">
                         <FormControl>
                           <Checkbox
                             checked={field.value ?? false}
                             onCheckedChange={field.onChange}
+                            className="mt-0.5 border-[#E7FB10]/50 data-[state=checked]:bg-[#E7FB10] data-[state=checked]:border-[#E7FB10]"
                             data-testid="checkbox-featured"
                           />
                         </FormControl>
-                        <FormLabel className="!mt-0">Featured</FormLabel>
+                        <div className="flex flex-col gap-0.5">
+                          <FormLabel className="!mt-0 text-[#E7FB10] font-semibold flex items-center gap-2">
+                            <Star className="h-4 w-4" />
+                            Show on Landing Page
+                          </FormLabel>
+                          <p className="text-xs text-muted-foreground">
+                            Featured products appear in the homepage showcase (first 3 shown)
+                          </p>
+                        </div>
                       </FormItem>
                     )}
                   />
