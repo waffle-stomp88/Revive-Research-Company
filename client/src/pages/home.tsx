@@ -426,13 +426,27 @@ function ProductShowcase() {
                 className="h-full"
               >
                 <Link href={`/products/${product.id}`} className="h-full block">
-                  <Card className={`group p-8 cursor-pointer transition-all duration-300 border-2 h-full flex flex-col ${
+                  <Card className={`group p-8 cursor-pointer transition-all duration-300 border-2 h-full flex flex-col relative overflow-hidden ${
                     !product.inStock
                       ? "border-red-500/50 shadow-glow-red-sm hover:border-red-500 hover:shadow-glow-red-lg hover:animate-product-glow-red backlit-red"
                       : "border-cyan-400/60 shadow-glow-blue-sm hover:border-cyan-400 hover:shadow-glow-blue-lg hover:animate-product-glow-blue backlit-blue"
                   }`} data-testid={`card-product-${product.id}`}>
-                    <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-md mb-6 flex items-center justify-center overflow-hidden">
+                    {/* Diagonal red line for out of stock */}
+                    {!product.inStock && (
+                      <div 
+                        className="absolute inset-0 pointer-events-none z-10"
+                        style={{
+                          background: "linear-gradient(to bottom right, transparent calc(50% - 2px), rgba(239, 68, 68, 0.7) calc(50% - 1px), rgba(239, 68, 68, 0.9) 50%, rgba(239, 68, 68, 0.7) calc(50% + 1px), transparent calc(50% + 2px))",
+                        }}
+                      />
+                    )}
+                    <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-md mb-6 flex items-center justify-center overflow-hidden relative">
                       <FlaskConical className="h-16 w-16 text-muted-foreground/30 group-hover:scale-110 transition-transform duration-300" />
+                      {!product.inStock && (
+                        <span className="absolute bottom-2 left-2 z-20 px-1.5 py-0.5 text-[10px] font-semibold rounded bg-destructive text-destructive-foreground">
+                          Out of Stock
+                        </span>
+                      )}
                     </div>
                     <h3 className="font-display text-xl font-semibold mb-2 group-hover:text-primary transition-colors text-[#E7FB10]">
                       {product.name}
