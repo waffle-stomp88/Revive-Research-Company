@@ -14,6 +14,16 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
+import {
   DollarSign,
   TrendingUp,
   Users,
@@ -27,6 +37,10 @@ import {
   CheckCircle,
   Loader2,
   AlertCircle,
+  Trophy,
+  Medal,
+  Crown,
+  Flame,
 } from "lucide-react";
 
 interface AffiliateStats {
@@ -91,6 +105,24 @@ interface Affiliate {
   pendingBalance: string;
 }
 
+interface EarningsDataPoint {
+  weekStart: string;
+  weekEnd: string;
+  tier1: number;
+  tier2: number;
+  total: number;
+}
+
+interface LeaderboardEntry {
+  rank: number;
+  affiliateId: string;
+  displayName: string;
+  salesCount: number;
+  totalRevenue: number;
+  tier1Earnings: number;
+  tier2Earnings: number;
+}
+
 export default function AffiliateDashboard() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
@@ -100,6 +132,7 @@ export default function AffiliateDashboard() {
   const [bankAccountHolder, setBankAccountHolder] = useState("");
   const [bankRoutingNumber, setBankRoutingNumber] = useState("");
   const [bankAccountNumber, setBankAccountNumber] = useState("");
+  const [leaderboardPeriod, setLeaderboardPeriod] = useState<"weekly" | "monthly">("monthly");
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -137,6 +170,15 @@ export default function AffiliateDashboard() {
   const { data: payouts, isLoading: payoutsLoading } = useQuery<AffiliatePayout[]>({
     queryKey: ["/api/affiliate/payouts"],
     enabled: !!affiliate,
+  });
+
+  const { data: earningsChart, isLoading: earningsChartLoading } = useQuery<EarningsDataPoint[]>({
+    queryKey: ["/api/affiliate/earnings-chart", 12],
+    enabled: !!affiliate,
+  });
+
+  const { data: leaderboard, isLoading: leaderboardLoading } = useQuery<LeaderboardEntry[]>({
+    queryKey: ["/api/affiliate/leaderboard", leaderboardPeriod],
   });
 
   const updateSettingsMutation = useMutation({
@@ -357,8 +399,12 @@ export default function AffiliateDashboard() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <Tabs defaultValue="sales" className="w-full">
-            <TabsList className="w-full md:w-auto mb-6">
+          <Tabs defaultValue="analytics" className="w-full">
+            <TabsList className="w-full md:w-auto mb-6 flex-wrap">
+              <TabsTrigger value="analytics" className="gap-2" data-testid="tab-analytics">
+                <Trophy className="h-4 w-4" />
+                Analytics
+              </TabsTrigger>
               <TabsTrigger value="sales" className="gap-2" data-testid="tab-sales">
                 <ShoppingBag className="h-4 w-4" />
                 My Sales
@@ -376,6 +422,222 @@ export default function AffiliateDashboard() {
                 Settings
               </TabsTrigger>
             </TabsList>
+
+            <TabsContent value="analytics">
+              <div className="grid gap-6">
+                {/* Earnings Chart */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <TrendingUp className="h-5 w-5 text-[#E7FB10]" />
+                      Earnings Over Time
+                    </CardTitle>
+                    <CardDescription>
+                      Track your Tier 1 and Tier 2 earnings over the past 12 weeks
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {earningsChartLoading ? (
+                      <div className="flex justify-center py-12">
+                        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                      </div>
+                    ) : earningsChart && earningsChart.length > 0 ? (
+                      <div className="h-[300px]" data-testid="chart-earnings">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <AreaChart
+                            data={earningsChart}
+                            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                          >
+                            <defs>
+                              <linearGradient id="tier1Gradient" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#E7FB10" stopOpacity={0.3} />
+                                <stop offset="95%" stopColor="#E7FB10" stopOpacity={0} />
+                              </linearGradient>
+                              <linearGradient id="tier2Gradient" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#21d8ff" stopOpacity={0.3} />
+                                <stop offset="95%" stopColor="#21d8ff" stopOpacity={0} />
+                              </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                            <XAxis
+                              dataKey="weekEnd"
+                              tick={{ fill: '#888', fontSize: 12 }}
+                              tickFormatter={(value) => {
+                                const date = new Date(value);
+                                return `${date.getMonth() + 1}/${date.getDate()}`;
+                              }}
+                            />
+                            <YAxis
+                              tick={{ fill: '#888', fontSize: 12 }}
+                              tickFormatter={(value) => `$${value}`}
+                            />
+                            <Tooltip
+                              contentStyle={{
+                                backgroundColor: '#1a1a1f',
+                                border: '1px solid #333',
+                                borderRadius: '8px',
+                              }}
+                              formatter={(value: number) => [`$${value.toFixed(2)}`, '']}
+                              labelFormatter={(label) => {
+                                const date = new Date(label);
+                                return `Week ending ${date.toLocaleDateString()}`;
+                              }}
+                            />
+                            <Legend />
+                            <Area
+                              type="monotone"
+                              dataKey="tier1"
+                              name="Tier 1 (Direct)"
+                              stroke="#E7FB10"
+                              strokeWidth={2}
+                              fill="url(#tier1Gradient)"
+                            />
+                            <Area
+                              type="monotone"
+                              dataKey="tier2"
+                              name="Tier 2 (Team)"
+                              stroke="#21d8ff"
+                              strokeWidth={2}
+                              fill="url(#tier2Gradient)"
+                            />
+                          </AreaChart>
+                        </ResponsiveContainer>
+                      </div>
+                    ) : (
+                      <div className="text-center py-12 text-muted-foreground">
+                        <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No earnings data yet. Start making sales to see your progress!</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Leaderboard */}
+                <Card className="border-[#9d4edd]/30">
+                  <CardHeader>
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                      <div>
+                        <CardTitle className="flex items-center gap-2">
+                          <Trophy className="h-5 w-5 text-[#E7FB10]" />
+                          Affiliate Leaderboard
+                        </CardTitle>
+                        <CardDescription>
+                          See how you rank against other affiliates
+                        </CardDescription>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant={leaderboardPeriod === "weekly" ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setLeaderboardPeriod("weekly")}
+                          data-testid="button-leaderboard-weekly"
+                        >
+                          This Week
+                        </Button>
+                        <Button
+                          variant={leaderboardPeriod === "monthly" ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setLeaderboardPeriod("monthly")}
+                          data-testid="button-leaderboard-monthly"
+                        >
+                          This Month
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {leaderboardLoading ? (
+                      <div className="flex justify-center py-8">
+                        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                      </div>
+                    ) : leaderboard && leaderboard.length > 0 ? (
+                      <div className="space-y-3" data-testid="leaderboard-list">
+                        {leaderboard.map((entry) => {
+                          const isCurrentUser = entry.affiliateId === affiliate?.id;
+                          const totalEarnings = entry.tier1Earnings + entry.tier2Earnings;
+                          
+                          return (
+                            <div
+                              key={entry.affiliateId}
+                              className={`flex items-center justify-between p-4 rounded-lg transition-all ${
+                                isCurrentUser
+                                  ? "bg-[#E7FB10]/10 border border-[#E7FB10]/30"
+                                  : "bg-muted/50"
+                              }`}
+                              data-testid={`leaderboard-entry-${entry.rank}`}
+                            >
+                              <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-muted">
+                                  {entry.rank === 1 ? (
+                                    <Crown className="h-5 w-5 text-[#E7FB10]" />
+                                  ) : entry.rank === 2 ? (
+                                    <Medal className="h-5 w-5 text-gray-400" />
+                                  ) : entry.rank === 3 ? (
+                                    <Medal className="h-5 w-5 text-amber-700" />
+                                  ) : entry.rank <= 10 ? (
+                                    <Flame className="h-5 w-5 text-orange-500" />
+                                  ) : (
+                                    <span className="font-bold text-muted-foreground">
+                                      {entry.rank}
+                                    </span>
+                                  )}
+                                </div>
+                                <div>
+                                  <p className="font-medium flex items-center gap-2">
+                                    {entry.displayName}
+                                    {isCurrentUser && (
+                                      <Badge variant="secondary" className="text-xs">You</Badge>
+                                    )}
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">
+                                    {entry.salesCount} sales
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-semibold text-[#E7FB10]">
+                                  ${totalEarnings.toFixed(2)}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  ${entry.tier1Earnings.toFixed(2)} + ${entry.tier2Earnings.toFixed(2)}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                        
+                        {/* Show user's rank if not in top 50 */}
+                        {affiliate && !leaderboard.find(e => e.affiliateId === affiliate.id) && (
+                          <div className="pt-4 border-t border-muted">
+                            <p className="text-center text-muted-foreground mb-2">Your Position</p>
+                            <div className="flex items-center justify-between p-4 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30">
+                              <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-muted">
+                                  <span className="font-bold text-muted-foreground">-</span>
+                                </div>
+                                <div>
+                                  <p className="font-medium">
+                                    {affiliate.fullName.split(' ')[0]} {affiliate.fullName.split(' ').pop()?.[0]}.
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">
+                                    Make sales to appear on the leaderboard!
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <Trophy className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No leaderboard data yet. Be the first to make sales!</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
 
             <TabsContent value="sales">
               <Card>
