@@ -213,6 +213,36 @@ All pages display "Research Use Only" messaging with comprehensive disclaimers.
 - Drizzle Kit for schema migrations in `migrations/` directory
 - `npm run db:push` script for pushing schema changes
 
+### Object Storage Integration
+
+**Replit Object Storage**
+- Uses Google Cloud Storage via Replit's sidecar service
+- Presigned URLs for secure file uploads
+- Access control policies (ACL) for public/private objects
+- Canonical paths format: `/objects/{id}` for all stored files
+
+**Upload Flow**
+1. Client requests upload URL → `POST /api/objects/upload`
+2. Client uploads directly to presigned GCS URL
+3. Client finalizes upload with ACL → `POST /api/objects/finalize`
+4. Server normalizes path and applies ACL policy
+5. Canonical path `/objects/{id}` saved to database
+
+**Access Control**
+- `server/objectAcl.ts` - Defines policies (public/private, owner-based access)
+- `/objects/*` route - Authenticated access with ACL checks
+- `/public-objects/*` route - Public assets without auth
+
+**Files**
+- `server/objectStorage.ts` - Object storage service (upload URLs, path normalization, file serving)
+- `server/objectAcl.ts` - Access control policies and enforcement
+- `client/src/components/ObjectUploader.tsx` - Uppy-based file upload modal component
+
+**Environment Variables**
+- `DEFAULT_OBJECT_STORAGE_BUCKET_ID` - Bucket ID for storage
+- `PUBLIC_OBJECT_SEARCH_PATHS` - Comma-separated paths for public assets
+- `PRIVATE_OBJECT_DIR` - Directory for private/authenticated objects
+
 ### Payment Integration
 
 **Stripe Checkout**
