@@ -304,7 +304,7 @@ export default function AffiliatePage() {
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
             >
-              <Card className="p-5 h-full border-2 border-[#E7FB10]/40 bg-gradient-to-br from-[#E7FB10]/10 to-transparent relative overflow-hidden">
+              <Card className="p-5 h-full border-2 border-[#E7FB10]/60 bg-gradient-to-br from-[#E7FB10]/10 to-transparent relative overflow-hidden animate-[pulse-glow-yellow_3s_ease-in-out_infinite]" style={{ boxShadow: '0 0 20px rgba(231, 251, 16, 0.3), inset 0 0 20px rgba(231, 251, 16, 0.05)' }}>
                 <div className="absolute top-3 right-3">
                   <Badge className="bg-[#E7FB10] text-black font-bold text-xs">TIER 1</Badge>
                 </div>
@@ -353,7 +353,7 @@ export default function AffiliatePage() {
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
             >
-              <Card className="p-5 h-full border-2 border-[#21d8ff]/40 bg-gradient-to-br from-[#21d8ff]/10 to-transparent relative overflow-hidden">
+              <Card className="p-5 h-full border-2 border-[#21d8ff]/60 bg-gradient-to-br from-[#21d8ff]/10 to-transparent relative overflow-hidden animate-[pulse-glow-cyan_3s_ease-in-out_infinite]" style={{ boxShadow: '0 0 20px rgba(33, 216, 255, 0.3), inset 0 0 20px rgba(33, 216, 255, 0.05)' }}>
                 <div className="absolute top-3 right-3">
                   <Badge className="bg-[#21d8ff] text-black font-bold text-xs">TIER 2</Badge>
                 </div>
