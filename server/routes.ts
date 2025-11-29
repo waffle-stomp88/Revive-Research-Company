@@ -5,6 +5,22 @@ import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaS
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
+import OpenAI from "openai";
+import { z } from "zod";
+
+const chatMessageSchema = z.object({
+  role: z.enum(["user", "assistant"]),
+  content: z.string().min(1).max(2000)
+});
+
+const chatRequestSchema = z.object({
+  messages: z.array(chatMessageSchema).min(1).max(50)
+});
+
+const openaiClient = new OpenAI({
+  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+});
 
 function generateReferralCode(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -1046,6 +1062,60 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error rejecting payout:", error);
       res.status(500).json({ error: "Failed to reject payout" });
+    }
+  });
+
+  // Chatbot endpoint
+  app.post("/api/chat", async (req, res) => {
+    try {
+      const parseResult = chatRequestSchema.safeParse(req.body);
+      
+      if (!parseResult.success) {
+        return res.status(400).json({ error: "Invalid chat request format" });
+      }
+
+      const { messages } = parseResult.data;
+
+      // Get products for context
+      const products = await storage.getAllProducts();
+      const productInfo = products.map(p => 
+        `- ${p.name}: $${p.price} - ${p.shortDescription} (${p.inStock ? 'In Stock' : 'Out of Stock'})`
+      ).join('\n');
+
+      const systemPrompt = `You are a helpful customer support assistant for Revive Research, a premium peptide research compound company. You help customers with:
+
+1. Product information and recommendations
+2. Order questions and shipping (24hr standard shipping, same-day if ordered before 12:00 CT, flat rate $15 or free over $150)
+3. COA (Certificate of Authenticity) verification
+4. General questions about peptide research compounds
+
+Important policies:
+- All sales are FINAL - NO REFUNDS due to the nature of research compounds
+- Products are for RESEARCH USE ONLY
+- Age requirement: 21+
+- Free shipping on orders over $150
+
+Current product catalog:
+${productInfo}
+
+Be friendly, professional, and helpful. If you don't know something specific about an order, direct customers to contact support. Keep responses concise but informative.`;
+
+      const completion = await openaiClient.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...messages
+        ],
+        max_tokens: 500,
+        temperature: 0.7,
+      });
+
+      const reply = completion.choices[0]?.message?.content || "I'm sorry, I couldn't process your request. Please try again.";
+      
+      res.json({ reply });
+    } catch (error) {
+      console.error("Error in chat endpoint:", error);
+      res.status(500).json({ error: "Failed to process chat message" });
     }
   });
 

@@ -10,6 +10,7 @@ import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { AgeVerificationModal } from "@/components/age-verification-modal";
 import { FreeShippingBanner } from "@/components/free-shipping-banner";
+import { ChatBot } from "@/components/chatbot";
 import Home from "@/pages/home";
 import Products from "@/pages/products";
 import ProductDetail from "@/pages/product-detail";
@@ -94,6 +95,7 @@ function App() {
               </div>
               <Footer />
             </div>
+            <ChatBot />
             <Toaster />
           </TooltipProvider>
         </CartProvider>
