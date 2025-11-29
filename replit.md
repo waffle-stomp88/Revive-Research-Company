@@ -28,6 +28,7 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **AI Chatbot**: A floating chat button powered by OpenAI (gpt-4o-mini) provides customer support with product context and enforces platform policies.
 - **Subscription System**: Offers weekly (15% off), bi-weekly (12% off), and monthly (10% off) subscription options.
 - **Legal Compliance**: Footer contains consolidated sections for FDA & Regulatory Compliance and Researcher Responsibility, with "Research Use Only" disclaimers across all pages.
+- **Cart & Checkout UX**: Cart items (both products and bundles) are clickable and navigate back to their detail pages. Checkout page shows an account section with login option for unauthenticated users, displaying benefits like order tracking and verified reviews.
 
 ## External Dependencies
 
