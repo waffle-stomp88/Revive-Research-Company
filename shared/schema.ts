@@ -102,10 +102,11 @@ export const contacts = pgTable("contacts", {
   name: text("name").notNull(),
   email: text("email").notNull(),
   message: text("message").notNull(),
+  isRead: boolean("is_read").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertContactSchema = createInsertSchema(contacts).omit({ id: true, createdAt: true });
+export const insertContactSchema = createInsertSchema(contacts).omit({ id: true, isRead: true, createdAt: true });
 export type InsertContact = z.infer<typeof insertContactSchema>;
 export type Contact = typeof contacts.$inferSelect;
 
