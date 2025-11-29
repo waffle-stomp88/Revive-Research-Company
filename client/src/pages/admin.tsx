@@ -63,7 +63,10 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
+  Upload,
+  ImageIcon,
 } from "lucide-react";
+import { ObjectUploader } from "@/components/ObjectUploader";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProductSchema, insertCoaSchema, type Product, type Coa, type Order, type Contact, type AffiliateApplication, type Affiliate, type AffiliatePayout } from "@shared/schema";
@@ -103,6 +106,8 @@ function ProductsTab() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+  const [productImageUrl, setProductImageUrl] = useState<string | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const { toast } = useToast();
 
   const { data: products, isLoading } = useQuery<Product[]>({
@@ -219,6 +224,7 @@ function ProductsTab() {
   const handleOpenDialog = (product?: Product) => {
     if (product) {
       setEditingProduct(product);
+      setProductImageUrl(product.imageUrl || null);
       form.reset({
         name: product.name,
         description: product.description,
@@ -236,9 +242,55 @@ function ProductsTab() {
       });
     } else {
       setEditingProduct(null);
+      setProductImageUrl(null);
       form.reset();
     }
     setIsDialogOpen(true);
+  };
+
+  const handleProductImageUpload = async () => {
+    try {
+      const response = await apiRequest("POST", "/api/objects/upload");
+      const { uploadURL } = await response.json();
+      return { method: "PUT" as const, url: uploadURL };
+    } catch (error) {
+      console.error("Failed to get upload URL:", error);
+      throw error;
+    }
+  };
+
+  const handleProductImageComplete = async (result: any) => {
+    try {
+      setIsUploadingImage(true);
+      if (result.successful && result.successful.length > 0) {
+        const uploadedFile = result.successful[0];
+        const uploadURL = uploadedFile.uploadURL;
+        
+        const response = await apiRequest("PUT", "/api/objects/finalize", { uploadURL });
+        const { objectPath } = await response.json();
+        
+        setProductImageUrl(objectPath);
+        form.setValue("imageUrl", objectPath);
+        toast({ title: "Image uploaded successfully" });
+      }
+    } catch (error) {
+      console.error("Failed to finalize upload:", error);
+      toast({ title: "Failed to upload image", variant: "destructive" });
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
+  const handleRemoveProductImage = async () => {
+    if (productImageUrl) {
+      try {
+        await apiRequest("DELETE", "/api/objects/delete", { objectPath: productImageUrl });
+      } catch (error) {
+        console.error("Failed to delete image:", error);
+      }
+    }
+    setProductImageUrl(null);
+    form.setValue("imageUrl", "");
   };
 
   const onSubmit = (values: ProductFormValues) => {
@@ -455,6 +507,56 @@ function ProductsTab() {
                     )}
                   />
                 </div>
+                
+                <div className="space-y-2">
+                  <Label>Product Image</Label>
+                  <div className="flex items-center gap-4">
+                    {productImageUrl ? (
+                      <div className="relative">
+                        <img
+                          src={productImageUrl}
+                          alt="Product"
+                          className="w-24 h-24 object-cover rounded-md border"
+                          data-testid="img-product-preview"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute -top-2 -right-2 h-6 w-6"
+                          onClick={handleRemoveProductImage}
+                          data-testid="button-remove-product-image"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="w-24 h-24 border-2 border-dashed rounded-md flex items-center justify-center bg-muted/50">
+                        <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                      </div>
+                    )}
+                    <ObjectUploader
+                      onGetUploadParameters={handleProductImageUpload}
+                      onComplete={handleProductImageComplete}
+                      buttonVariant="outline"
+                      buttonSize="sm"
+                      disabled={isUploadingImage}
+                    >
+                      {isUploadingImage ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="h-4 w-4 mr-2" />
+                          {productImageUrl ? "Change Image" : "Upload Image"}
+                        </>
+                      )}
+                    </ObjectUploader>
+                  </div>
+                </div>
+                
                 <DialogFooter>
                   <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                     Cancel
