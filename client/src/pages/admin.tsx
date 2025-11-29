@@ -167,6 +167,7 @@ function ProductsTab() {
       category: "Peptides",
       inStock: true,
       featured: false,
+      showOnLandingPage: false,
       benefits: "",
       usage: "",
       imageUrl: "",
@@ -174,6 +175,10 @@ function ProductsTab() {
       dosageOptions: "",
     },
   });
+
+  // Count products currently shown on landing page
+  const landingPageProductCount = products?.filter(p => p.showOnLandingPage).length || 0;
+  const isLandingPageFull = landingPageProductCount >= 3;
 
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -235,6 +240,7 @@ function ProductsTab() {
         category: product.category,
         inStock: product.inStock ?? true,
         featured: product.featured ?? false,
+        showOnLandingPage: product.showOnLandingPage ?? false,
         benefits: product.benefits?.join(", ") || "",
         usage: product.usage || "",
         imageUrl: product.imageUrl || "",
@@ -475,46 +481,82 @@ function ProductsTab() {
                   )}
                 />
                 <div className="flex flex-col gap-4">
-                  <FormField
-                    control={form.control}
-                    name="inStock"
-                    render={({ field }) => (
-                      <FormItem className="flex items-center gap-2">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value ?? true}
-                            onCheckedChange={field.onChange}
-                            data-testid="checkbox-in-stock"
-                          />
-                        </FormControl>
-                        <FormLabel className="!mt-0">In Stock</FormLabel>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="featured"
-                    render={({ field }) => (
-                      <FormItem className="flex items-start gap-3 p-3 rounded-lg border border-[#E7FB10]/30 bg-[#E7FB10]/5">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value ?? false}
-                            onCheckedChange={field.onChange}
-                            className="mt-0.5 border-[#E7FB10]/50 data-[state=checked]:bg-[#E7FB10] data-[state=checked]:border-[#E7FB10]"
-                            data-testid="checkbox-featured"
-                          />
-                        </FormControl>
-                        <div className="flex flex-col gap-0.5">
-                          <FormLabel className="!mt-0 text-[#E7FB10] font-semibold flex items-center gap-2">
-                            <Star className="h-4 w-4" />
-                            Show on Landing Page
+                  <div className="flex gap-6">
+                    <FormField
+                      control={form.control}
+                      name="inStock"
+                      render={({ field }) => (
+                        <FormItem className="flex items-center gap-2">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value ?? true}
+                              onCheckedChange={field.onChange}
+                              data-testid="checkbox-in-stock"
+                            />
+                          </FormControl>
+                          <FormLabel className="!mt-0">In Stock</FormLabel>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="featured"
+                      render={({ field }) => (
+                        <FormItem className="flex items-center gap-2">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value ?? false}
+                              onCheckedChange={field.onChange}
+                              className="border-[#21d8ff]/50 data-[state=checked]:bg-[#21d8ff] data-[state=checked]:border-[#21d8ff]"
+                              data-testid="checkbox-featured"
+                            />
+                          </FormControl>
+                          <FormLabel className="!mt-0 flex items-center gap-1.5">
+                            <Star className="h-3.5 w-3.5 text-[#21d8ff]" />
+                            Featured Badge
                           </FormLabel>
-                          <p className="text-xs text-muted-foreground">
-                            Featured products appear in the homepage showcase (first 3 shown)
-                          </p>
-                        </div>
-                      </FormItem>
-                    )}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  <FormField
+                    control={form.control}
+                    name="showOnLandingPage"
+                    render={({ field }) => {
+                      const currentProductOnLandingPage = editingProduct?.showOnLandingPage ?? false;
+                      const isDisabled = isLandingPageFull && !currentProductOnLandingPage;
+                      
+                      return (
+                        <FormItem className={`flex items-start gap-3 p-3 rounded-lg border ${
+                          isDisabled 
+                            ? "border-muted-foreground/20 bg-muted/30 opacity-60" 
+                            : "border-[#E7FB10]/30 bg-[#E7FB10]/5"
+                        }`}>
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value ?? false}
+                              onCheckedChange={field.onChange}
+                              disabled={isDisabled}
+                              className="mt-0.5 border-[#E7FB10]/50 data-[state=checked]:bg-[#E7FB10] data-[state=checked]:border-[#E7FB10] disabled:opacity-50"
+                              data-testid="checkbox-landing-page"
+                            />
+                          </FormControl>
+                          <div className="flex flex-col gap-0.5">
+                            <FormLabel className={`!mt-0 font-semibold flex items-center gap-2 ${isDisabled ? "text-muted-foreground" : "text-[#E7FB10]"}`}>
+                              <Star className="h-4 w-4" />
+                              Show on Landing Page
+                            </FormLabel>
+                            <p className="text-xs text-muted-foreground">
+                              {isDisabled 
+                                ? `All 3 landing page slots are filled. Remove a product from landing page to add this one.`
+                                : `${landingPageProductCount}/3 slots used on homepage showcase`
+                              }
+                            </p>
+                          </div>
+                        </FormItem>
+                      );
+                    }}
                   />
                 </div>
                 
@@ -641,7 +683,8 @@ function ProductsTab() {
                     ) : (
                       <Badge variant="destructive">Out of Stock</Badge>
                     )}
-                    {product.featured && <Badge className="bg-[#21d8ff]">Featured</Badge>}
+                    {product.featured && <Badge className="bg-[#21d8ff] text-black">Featured</Badge>}
+                    {product.showOnLandingPage && <Badge className="bg-[#E7FB10] text-black">Landing Page</Badge>}
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
