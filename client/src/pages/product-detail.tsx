@@ -364,10 +364,26 @@ export default function ProductDetail() {
             )}
 
             <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">
-              <span className="flex items-center gap-1">
-                <CheckCircle className="h-3 w-3 text-green-500" />
-                {product.stockAmount || 0} in stock
-              </span>
+              {product.inStock ? (
+                <span className="flex items-center gap-1">
+                  {product.stockAmount && product.stockAmount <= 20 ? (
+                    <>
+                      <AlertTriangle className="h-3 w-3 text-orange-500" />
+                      <span className="text-orange-500 font-medium">Only {product.stockAmount} left</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="h-3 w-3 text-green-500" />
+                      {product.stockAmount || 0} in stock
+                    </>
+                  )}
+                </span>
+              ) : (
+                <span className="flex items-center gap-1 text-red-400">
+                  <AlertTriangle className="h-3 w-3" />
+                  Out of stock
+                </span>
+              )}
               <div className="flex items-center gap-3">
                 <span className="flex items-center gap-1"><Shield className="h-3 w-3" /> Lab Tested</span>
                 <span className="flex items-center gap-1"><Truck className="h-3 w-3" /> Fast Ship</span>

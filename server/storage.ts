@@ -138,7 +138,27 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateProduct(id: string, productData: Partial<InsertProduct>): Promise<Product | undefined> {
-    const [product] = await db.update(products).set(productData).where(eq(products.id, id)).returning();
+    // Auto-sync stock status and quantity
+    const normalizedData = { ...productData };
+    const stockAmount = normalizedData.stockAmount;
+    
+    // If stockAmount is being set to 0 or less, auto-mark as out of stock
+    if (stockAmount !== undefined && stockAmount !== null && stockAmount <= 0) {
+      normalizedData.inStock = false;
+      normalizedData.stockAmount = 0;
+    }
+    
+    // If marking as out of stock, set quantity to 0
+    if (normalizedData.inStock === false) {
+      normalizedData.stockAmount = 0;
+    }
+    
+    // If stockAmount is being set to > 0, auto-mark as in stock
+    if (stockAmount !== undefined && stockAmount !== null && stockAmount > 0) {
+      normalizedData.inStock = true;
+    }
+    
+    const [product] = await db.update(products).set(normalizedData).where(eq(products.id, id)).returning();
     return product || undefined;
   }
 
