@@ -220,7 +220,7 @@ export default function AffiliatePage() {
         <div className="absolute inset-0 bg-[#9d4edd]/5" />
         
         <div className="container max-w-4xl mx-auto px-4 relative z-10">
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-5 gap-3">
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -228,10 +228,10 @@ export default function AffiliatePage() {
               transition={{ delay: 0 }}
               className="text-center"
             >
-              <p className="font-display text-2xl md:text-3xl font-bold text-[#9d4edd]">
-                <AnimatedCounter value={20} suffix="%" duration={1.5} />
+              <p className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10]">
+                <AnimatedCounter value={10} suffix="%" duration={1.5} />
               </p>
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">Commission</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Tier 1</p>
             </motion.div>
             
             <motion.div
@@ -239,6 +239,32 @@ export default function AffiliatePage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
+              className="text-center"
+            >
+              <p className="font-display text-2xl md:text-3xl font-bold text-[#21d8ff]">
+                <AnimatedCounter value={10} suffix="%" duration={1.5} />
+              </p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Tier 2</p>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="text-center"
+            >
+              <p className="font-display text-2xl md:text-3xl font-bold text-[#9d4edd]">
+                <AnimatedCounter value={20} suffix="%" duration={1.5} />
+              </p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Personal</p>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
               className="text-center"
             >
               <p className="font-display text-2xl md:text-3xl font-bold text-[#9d4edd]">
@@ -251,26 +277,13 @@ export default function AffiliatePage() {
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: 0.4 }}
               className="text-center"
             >
               <p className="font-display text-2xl md:text-3xl font-bold text-[#9d4edd]">
                 <AnimatedCounter value={100} prefix="$" duration={1.5} />
               </p>
               <p className="text-xs text-muted-foreground uppercase tracking-wider">Min Payout</p>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-              className="text-center"
-            >
-              <p className="font-display text-2xl md:text-3xl font-bold text-[#9d4edd]">
-                <AnimatedCounter value={10} suffix="%" duration={1.5} />
-              </p>
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">Tier 2</p>
             </motion.div>
           </div>
         </div>
@@ -315,12 +328,17 @@ export default function AffiliatePage() {
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground uppercase tracking-wider">Direct Sales</p>
-                    <p className="font-display text-3xl font-bold text-[#E7FB10]">20%</p>
+                    <p className="font-display text-3xl font-bold text-[#E7FB10]">10%</p>
                   </div>
                 </div>
 
-                <p className="text-sm text-muted-foreground mb-4">
-                  Every time someone uses your unique referral link to make a purchase, you earn <span className="text-[#E7FB10] font-semibold">20% of the order total</span>.
+                <p className="text-sm text-muted-foreground mb-3">
+                  When someone uses your public affiliate link or discount code, they receive <span className="text-[#E7FB10] font-semibold">10% off</span> and you earn <span className="text-[#E7FB10] font-semibold">10% commission</span>.
+                </p>
+
+                <p className="text-xs text-muted-foreground mb-4 flex items-center gap-2">
+                  <CheckCircle className="h-3 w-3 text-[#E7FB10]" />
+                  No caps, no limits, no monthly sales requirement
                 </p>
 
                 {/* Visual Flow */}
@@ -330,6 +348,7 @@ export default function AffiliatePage() {
                       <Users className="h-5 w-5 text-[#9d4edd]" />
                     </div>
                     <p className="text-xs text-muted-foreground">Customer</p>
+                    <p className="text-[10px] text-[#E7FB10]">Gets 10% off</p>
                   </div>
                   <div className="flex-1 flex items-center justify-center gap-1">
                     <ArrowRight className="h-4 w-4 text-[#E7FB10]" />
@@ -340,7 +359,7 @@ export default function AffiliatePage() {
                     <div className="w-10 h-10 rounded-full bg-[#E7FB10]/20 flex items-center justify-center mx-auto mb-1">
                       <DollarSign className="h-5 w-5 text-[#E7FB10]" />
                     </div>
-                    <p className="text-xs text-muted-foreground">You Earn 20%</p>
+                    <p className="text-xs text-muted-foreground">You Earn 10%</p>
                   </div>
                 </div>
               </Card>
@@ -363,13 +382,18 @@ export default function AffiliatePage() {
                     <TrendingUp className="h-6 w-6 text-[#21d8ff]" />
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Team Sales</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Team Override</p>
                     <p className="font-display text-3xl font-bold text-[#21d8ff]">10%</p>
                   </div>
                 </div>
 
-                <p className="text-sm text-muted-foreground mb-4">
-                  When you refer someone to become an affiliate, you earn <span className="text-[#21d8ff] font-semibold">10% of every sale they make</span>.
+                <p className="text-sm text-muted-foreground mb-3">
+                  When you recruit someone to join as an affiliate, you earn a <span className="text-[#21d8ff] font-semibold">10% override</span> on all their sales — passive recurring income.
+                </p>
+
+                <p className="text-xs text-muted-foreground mb-4 flex items-center gap-2">
+                  <CheckCircle className="h-3 w-3 text-[#21d8ff]" />
+                  Total payout never exceeds 20% per order
                 </p>
 
                 {/* Visual Flow */}
@@ -379,6 +403,7 @@ export default function AffiliatePage() {
                       <Users className="h-5 w-5 text-[#9d4edd]" />
                     </div>
                     <p className="text-xs text-muted-foreground">Your Affiliate</p>
+                    <p className="text-[10px] text-[#21d8ff]">Earns 10%</p>
                   </div>
                   <div className="flex-1 flex items-center justify-center gap-1">
                     <ArrowRight className="h-4 w-4 text-[#21d8ff]" />
@@ -412,8 +437,8 @@ export default function AffiliatePage() {
                 </h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">10 sales × $150 × 20%</span>
-                    <span className="text-[#E7FB10] font-semibold">$300</span>
+                    <span className="text-muted-foreground">10 sales × $150 × 10%</span>
+                    <span className="text-[#E7FB10] font-semibold">$150</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Team: 15 sales × $120 × 10%</span>
@@ -422,7 +447,7 @@ export default function AffiliatePage() {
                   <div className="h-px bg-white/10" />
                   <div className="flex justify-between font-semibold">
                     <span>Monthly Total</span>
-                    <span className="text-[#9d4edd]">$480</span>
+                    <span className="text-[#9d4edd]">$330</span>
                   </div>
                 </div>
               </Card>
@@ -452,6 +477,88 @@ export default function AffiliatePage() {
                       <span className="text-muted-foreground">{item.text}</span>
                     </div>
                   ))}
+                </div>
+              </Card>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Personal Use Discount + Customer Discount */}
+      <section className="py-8 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[#9d4edd]/5" />
+        
+        <div className="container max-w-4xl mx-auto px-4 relative z-10">
+          <div className="grid md:grid-cols-2 gap-5">
+            {/* Personal Use Code */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <Card className="p-5 h-full border-2 border-[#9d4edd]/40 bg-gradient-to-br from-[#9d4edd]/10 to-transparent">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#9d4edd]/20 flex items-center justify-center">
+                    <Lock className="h-5 w-5 text-[#9d4edd]" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Private Code</p>
+                    <p className="font-display text-2xl font-bold text-[#9d4edd]">20% Off</p>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Every affiliate receives a <span className="text-[#9d4edd] font-semibold">private 20% personal-use discount</span> code for your own purchases.
+                </p>
+                <div className="space-y-1 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <XCircle className="h-3 w-3 text-red-400" />
+                    <span>Not shareable with others</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <XCircle className="h-3 w-3 text-red-400" />
+                    <span>Does not generate commissions</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-3 w-3 text-[#9d4edd]" />
+                    <span>For your personal use only</span>
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
+
+            {/* Customer Discount */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+            >
+              <Card className="p-5 h-full border-2 border-[#E7FB10]/40 bg-gradient-to-br from-[#E7FB10]/10 to-transparent">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#E7FB10]/20 flex items-center justify-center">
+                    <Gift className="h-5 w-5 text-[#E7FB10]" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Customer Gets</p>
+                    <p className="font-display text-2xl font-bold text-[#E7FB10]">10% Off</p>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground mb-3">
+                  When customers use your public affiliate link or discount code, they automatically receive <span className="text-[#E7FB10] font-semibold">10% off</span> their purchase.
+                </p>
+                <div className="space-y-1 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-3 w-3 text-[#E7FB10]" />
+                    <span>Ensures value for your audience</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-3 w-3 text-[#E7FB10]" />
+                    <span>Increases conversion rates</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-3 w-3 text-[#E7FB10]" />
+                    <span>You still earn 10% commission</span>
+                  </div>
                 </div>
               </Card>
             </motion.div>
@@ -720,6 +827,62 @@ export default function AffiliatePage() {
                   </form>
                 </Form>
               )}
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Non-MLM Disclaimer */}
+      <section className="py-8 relative overflow-hidden border-t border-muted/30">
+        <div className="container max-w-4xl mx-auto px-4 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <Card className="p-5 border border-muted/30 bg-muted/5">
+              <div className="flex items-start gap-3 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-[#9d4edd]/10 flex items-center justify-center shrink-0">
+                  <Shield className="h-4 w-4 text-[#9d4edd]" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm mb-1">Official Non-MLM Disclaimer</h4>
+                  <p className="text-xs text-muted-foreground">
+                    Revive's Affiliate Program is <span className="font-semibold text-foreground">not</span> an MLM or network marketing structure.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <p className="text-xs font-medium mb-2">Affiliates earn commissions only on:</p>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <CheckCircle className="h-3 w-3 text-[#9d4edd]" />
+                      <span>Their own direct referral sales (10%)</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <CheckCircle className="h-3 w-3 text-[#9d4edd]" />
+                      <span>Sales made by affiliates they personally refer (10%)</span>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs font-medium mb-2">Commission payouts stop at one level. There are:</p>
+                  <div className="space-y-1 text-xs text-muted-foreground">
+                    {["No ranks", "No forced monthly purchases", "No recruitment requirements", "No autoship commitments", "No bonuses for signing people up"].map((item) => (
+                      <div key={item} className="flex items-center gap-2">
+                        <XCircle className="h-3 w-3 text-red-400" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              
+              <p className="text-xs text-muted-foreground border-t border-muted/20 pt-3">
+                All income is generated solely from product sales, not from recruiting participants. Affiliates can earn without referring anyone to the program. Revive operates strictly as a two-tier affiliate program, similar to standard e-commerce partner programs used by reputable brands worldwide.
+              </p>
             </Card>
           </motion.div>
         </div>

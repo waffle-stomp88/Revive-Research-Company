@@ -655,7 +655,7 @@ export default function AffiliateDashboard() {
                     Direct Sales (Tier 1)
                   </CardTitle>
                   <CardDescription>
-                    You earn {stats?.commissionRate || 20}% commission on each sale you generate
+                    You earn {stats?.commissionRate || 10}% commission on each sale you generate
                   </CardDescription>
                 </CardHeader>
                 <CardContent>

@@ -31,7 +31,7 @@ function generateReferralCode(): string {
   return code;
 }
 
-const TIER1_COMMISSION_RATE = 0.20;
+const TIER1_COMMISSION_RATE = 0.10;
 const TIER2_COMMISSION_RATE = 0.10;
 
 export async function registerRoutes(
