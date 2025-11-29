@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
@@ -29,7 +29,9 @@ import {
   Boxes,
   TrendingDown,
   Mail,
-  CheckCircle2
+  CheckCircle2,
+  Grid3X3,
+  Tag
 } from "lucide-react";
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
@@ -61,14 +63,69 @@ const SALE_OF_THE_WEEK = {
   endDate: "Ends Sunday",
 };
 
+type ShopSection = "deals" | "bundles" | "bulk" | "products";
+
 export default function Products() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("featured");
   const [stockFilter, setStockFilter] = useState<"all" | "in-stock" | "out-of-stock">("all");
+  const [activeSection, setActiveSection] = useState<ShopSection>("deals");
+
+  const dealsRef = useRef<HTMLDivElement>(null);
+  const bundlesRef = useRef<HTMLDivElement>(null);
+  const bulkRef = useRef<HTMLDivElement>(null);
+  const productsRef = useRef<HTMLDivElement>(null);
 
   const { data: products, isLoading, error } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
+
+  const scrollToSection = (section: ShopSection) => {
+    setActiveSection(section);
+    const refs: Record<ShopSection, React.RefObject<HTMLDivElement>> = {
+      deals: dealsRef,
+      bundles: bundlesRef,
+      bulk: bulkRef,
+      products: productsRef,
+    };
+    refs[section].current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  useEffect(() => {
+    const sectionRefs: { section: ShopSection; ref: React.RefObject<HTMLDivElement> }[] = [
+      { section: "deals", ref: dealsRef },
+      { section: "bundles", ref: bundlesRef },
+      { section: "bulk", ref: bulkRef },
+      { section: "products", ref: productsRef },
+    ];
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const sectionData = sectionRefs.find(s => s.ref.current === entry.target);
+            if (sectionData) {
+              setActiveSection(sectionData.section);
+            }
+          }
+        });
+      },
+      {
+        rootMargin: "-40% 0px -55% 0px",
+        threshold: 0,
+      }
+    );
+
+    sectionRefs.forEach(({ ref }) => {
+      if (ref.current) {
+        observer.observe(ref.current);
+      }
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   const saleProduct = useMemo(() => {
     if (!products) return null;
@@ -125,79 +182,152 @@ export default function Products() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
-        {/* Sale of the Week Section */}
-        {saleProduct && (
+        {/* Page Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8"
+        >
+          <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">Shop</h1>
+          <p className="text-lg text-muted-foreground max-w-2xl">
+            Premium research compounds, curated bundles, and volume pricing for your laboratory needs.
+          </p>
+        </motion.div>
+
+        {/* Navigation Tabs */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="sticky top-20 z-40 -mx-4 px-4 md:-mx-8 md:px-8 py-3 bg-background/95 backdrop-blur-sm border-b border-border mb-8"
+        >
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant={activeSection === "deals" ? "default" : "outline"}
+              size="sm"
+              onClick={() => scrollToSection("deals")}
+              className="gap-2"
+              data-testid="nav-deals"
+            >
+              <Tag className="h-4 w-4" />
+              <span className="hidden sm:inline">Weekly</span> Deal
+              <Badge variant="destructive" className="ml-1 text-xs px-1.5 py-0">HOT</Badge>
+            </Button>
+            <Button
+              variant={activeSection === "bundles" ? "default" : "outline"}
+              size="sm"
+              onClick={() => scrollToSection("bundles")}
+              className="gap-2"
+              data-testid="nav-bundles"
+            >
+              <Package className="h-4 w-4" />
+              Research Stacks
+              <Badge variant="secondary" className="ml-1 text-xs px-1.5 py-0 bg-green-500/20 text-green-400">{BUNDLES.length}</Badge>
+            </Button>
+            <Button
+              variant={activeSection === "bulk" ? "default" : "outline"}
+              size="sm"
+              onClick={() => scrollToSection("bulk")}
+              className="gap-2"
+              data-testid="nav-bulk"
+            >
+              <Boxes className="h-4 w-4" />
+              Bulk Orders
+            </Button>
+            <Button
+              variant={activeSection === "products" ? "default" : "outline"}
+              size="sm"
+              onClick={() => scrollToSection("products")}
+              className="gap-2"
+              data-testid="nav-products"
+            >
+              <Grid3X3 className="h-4 w-4" />
+              All Products
+              {products && <Badge variant="secondary" className="ml-1 text-xs px-1.5 py-0">{products.length}</Badge>}
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* Deals Section */}
+        <div ref={dealsRef} className="scroll-mt-36">
+          {saleProduct && (
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="mb-12"
+              data-testid="section-sale-of-week"
+            >
+              <div className="flex items-center gap-3 mb-5">
+                <Flame className="h-6 w-6 text-red-500" />
+                <h2 className="font-display font-bold text-2xl md:text-3xl">Weekly Deal</h2>
+                <Badge variant="destructive" className="animate-pulse">
+                  {SALE_OF_THE_WEEK.badge}
+                </Badge>
+              </div>
+              <Link href={`/products/${saleProduct.id}`}>
+                <Card className="p-5 md:p-6 border-2 border-red-500/40 bg-gradient-to-br from-red-950/40 via-background to-background hover:border-red-500 hover:shadow-[0_0_30px_rgba(239,68,68,0.2)] transition-all cursor-pointer group">
+                  <div className="flex flex-col md:flex-row gap-5 items-center">
+                    <div className="w-28 h-28 md:w-36 md:h-36 bg-muted/50 rounded-lg overflow-hidden flex-shrink-0 border border-red-500/20">
+                      <img 
+                        src={productImage} 
+                        alt={saleProduct.name}
+                        className="w-full h-full object-contain p-3 group-hover:scale-110 transition-transform"
+                      />
+                    </div>
+                    <div className="flex-1 text-center md:text-left">
+                      <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2">
+                        <Badge variant="destructive" className="text-base px-2.5 py-0.5">
+                          {SALE_OF_THE_WEEK.discount}
+                        </Badge>
+                        <span className="text-sm text-muted-foreground">{SALE_OF_THE_WEEK.endDate}</span>
+                      </div>
+                      <h3 className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10] mb-2">
+                        {saleProduct.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-4 max-w-lg">
+                        {SALE_OF_THE_WEEK.description}
+                      </p>
+                      <div className="flex items-center justify-center md:justify-start gap-4">
+                        <span className="font-display text-2xl md:text-3xl font-bold">${Number(saleProduct.price).toFixed(2)}</span>
+                        {saleProduct.originalPrice && (
+                          <span className="text-lg text-muted-foreground line-through">
+                            ${Number(saleProduct.originalPrice).toFixed(2)}
+                          </span>
+                        )}
+                        <Button className="ml-2 gap-2">
+                          Shop Now <ArrowRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </Link>
+            </motion.section>
+          )}
+        </div>
+
+        {/* Research Stacks Section */}
+        <div ref={bundlesRef} className="scroll-mt-36">
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-10"
-            data-testid="section-sale-of-week"
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="mb-12"
+            data-testid="section-bundles"
           >
-            <Link href={`/products/${saleProduct.id}`}>
-              <Card className="p-5 md:p-6 border-2 border-red-500/40 bg-gradient-to-br from-red-950/40 via-background to-background hover:border-red-500 hover:shadow-[0_0_30px_rgba(239,68,68,0.2)] transition-all cursor-pointer group">
-                <div className="flex flex-col md:flex-row gap-5 items-center">
-                  <div className="w-28 h-28 md:w-32 md:h-32 bg-muted/50 rounded-lg overflow-hidden flex-shrink-0 border border-red-500/20">
-                    <img 
-                      src={productImage} 
-                      alt={saleProduct.name}
-                      className="w-full h-full object-contain p-3 group-hover:scale-110 transition-transform"
-                    />
-                  </div>
-                  <div className="flex-1 text-center md:text-left">
-                    <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                      <Flame className="h-5 w-5 text-red-500" />
-                      <span className="font-display text-sm font-bold text-red-400 uppercase tracking-wider">Sale of the Week</span>
-                      <Badge variant="destructive" className="animate-pulse text-xs">
-                        {SALE_OF_THE_WEEK.badge}
-                      </Badge>
-                    </div>
-                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2">
-                      <Badge variant="destructive" className="text-base px-2.5 py-0.5">
-                        {SALE_OF_THE_WEEK.discount}
-                      </Badge>
-                      <span className="text-sm text-muted-foreground">{SALE_OF_THE_WEEK.endDate}</span>
-                    </div>
-                    <h3 className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10] mb-2">
-                      {saleProduct.name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-4 max-w-lg">
-                      {SALE_OF_THE_WEEK.description}
-                    </p>
-                    <div className="flex items-center justify-center md:justify-start gap-4">
-                      <span className="font-display text-2xl md:text-3xl font-bold">${Number(saleProduct.price).toFixed(2)}</span>
-                      {saleProduct.originalPrice && (
-                        <span className="text-lg text-muted-foreground line-through">
-                          ${Number(saleProduct.originalPrice).toFixed(2)}
-                        </span>
-                      )}
-                      <Button className="ml-2 gap-2">
-                        Shop Now <ArrowRight className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </Link>
-          </motion.section>
-        )}
-
-        {/* Research Stacks Section */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="mb-10"
-          data-testid="section-bundles"
-        >
-          <div className="flex items-center gap-3 mb-5">
-            <Package className="h-6 w-6 text-[#21d8ff]" />
-            <h2 className="font-display font-bold text-2xl md:text-3xl">Research Stacks</h2>
-            <Badge variant="outline" className="border-primary/50 text-primary">
-              <Sparkles className="h-3 w-3 mr-1" />
-              Save More
-            </Badge>
-          </div>
+            <div className="flex items-center gap-3 mb-5">
+              <Package className="h-6 w-6 text-[#21d8ff]" />
+              <h2 className="font-display font-bold text-2xl md:text-3xl">Research Stacks</h2>
+              <Badge variant="outline" className="border-primary/50 text-primary">
+                <Sparkles className="h-3 w-3 mr-1" />
+                Save More
+              </Badge>
+            </div>
+            <p className="text-muted-foreground mb-6 max-w-2xl">
+              Expertly curated peptide combinations based on research protocols. Bundle and save on the most popular stacks.
+            </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {BUNDLES.map((bundle, index) => (
               <motion.div
@@ -261,33 +391,29 @@ export default function Products() {
               </motion.div>
             ))}
           </div>
-        </motion.section>
+          </motion.section>
+        </div>
 
         {/* Bulk Orders Section */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-16"
-          data-testid="section-bulk-orders"
-        >
-          <Card className="p-6 md:p-8 border-2 border-[#9d4edd]/40 bg-gradient-to-r from-purple-950/30 via-background to-purple-950/20">
-            <div className="flex flex-col md:flex-row gap-6 items-center">
-              <div className="flex-shrink-0">
-                <div className="w-16 h-16 rounded-2xl bg-[#9d4edd]/20 flex items-center justify-center">
-                  <Boxes className="h-8 w-8 text-[#9d4edd]" />
-                </div>
-              </div>
-              
-              <div className="flex-1 text-center md:text-left">
-                <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
-                  <h2 className="font-display text-2xl font-bold text-[#9d4edd]">Bulk Orders</h2>
-                  <Badge className="bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30">
-                    <TrendingDown className="h-3 w-3 mr-1" />
-                    Volume Pricing
-                  </Badge>
-                </div>
-                <p className="text-muted-foreground mb-4 max-w-xl">
+        <div ref={bulkRef} className="scroll-mt-36">
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mb-12"
+            data-testid="section-bulk-orders"
+          >
+            <div className="flex items-center gap-3 mb-5">
+              <Boxes className="h-6 w-6 text-[#9d4edd]" />
+              <h2 className="font-display font-bold text-2xl md:text-3xl">Bulk Orders</h2>
+              <Badge className="bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30">
+                <TrendingDown className="h-3 w-3 mr-1" />
+                Volume Pricing
+              </Badge>
+            </div>
+            <Card className="p-6 md:p-8 border-2 border-[#9d4edd]/40 bg-gradient-to-r from-purple-950/30 via-background to-purple-950/20">
+              <div className="flex flex-col md:flex-row gap-6 items-center">
+                <p className="text-muted-foreground flex-1 max-w-xl text-center md:text-left">
                   Need larger quantities for your research facility? Contact us for custom bulk pricing 
                   with discounts up to 30% on qualifying orders.
                 </p>
@@ -305,41 +431,43 @@ export default function Products() {
                     <span className="text-muted-foreground">50+ units: 30% off</span>
                   </div>
                 </div>
+                <div className="flex-shrink-0">
+                  <Link href="/contact">
+                    <Button className="gap-2 bg-[#9d4edd] text-white border-[#9d4edd]">
+                      <Mail className="h-4 w-4" />
+                      Request Quote
+                    </Button>
+                  </Link>
+                </div>
               </div>
-              
-              <div className="flex-shrink-0">
-                <Link href="/contact">
-                  <Button className="gap-2 bg-[#9d4edd] text-white border-[#9d4edd]">
-                    <Mail className="h-4 w-4" />
-                    Request Quote
-                  </Button>
-                </Link>
-              </div>
+            </Card>
+          </motion.section>
+        </div>
+
+        {/* All Products Section */}
+        <div ref={productsRef} className="scroll-mt-36">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mb-6"
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <Grid3X3 className="h-6 w-6 text-[#E7FB10]" />
+              <h2 className="font-display font-bold text-2xl md:text-3xl">All Products</h2>
+              {products && <Badge variant="secondary">{products.length} items</Badge>}
             </div>
-          </Card>
-        </motion.section>
+            <p className="text-muted-foreground max-w-2xl">
+              Premium research compounds, rigorously tested and verified. Each product includes a Certificate of Authenticity.
+            </p>
+          </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-8 md:mb-12"
-        >
-          <h2 className="font-display text-4xl md:text-5xl font-bold mb-4" data-testid="text-products-title">
-            All Products
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl">
-            Premium research compounds, rigorously tested and verified. Each product 
-            includes a Certificate of Authenticity for complete transparency.
-          </p>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mb-8"
-        >
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mb-8"
+          >
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -520,6 +648,7 @@ export default function Products() {
             )}
           </Card>
         )}
+        </div>
       </div>
     </main>
   );
