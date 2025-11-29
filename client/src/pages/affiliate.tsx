@@ -393,7 +393,7 @@ export default function AffiliatePage() {
 
                 <p className="text-xs text-muted-foreground mb-4 flex items-center gap-2">
                   <CheckCircle className="h-3 w-3 text-[#21d8ff]" />
-                  Total payout never exceeds 20% per order
+                  Your Total payout never exceeds 20% per order
                 </p>
 
                 {/* Visual Flow */}
