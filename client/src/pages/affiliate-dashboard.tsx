@@ -173,12 +173,26 @@ export default function AffiliateDashboard() {
   });
 
   const { data: earningsChart, isLoading: earningsChartLoading } = useQuery<EarningsDataPoint[]>({
-    queryKey: ["/api/affiliate/earnings-chart", { weeks: "12" }],
+    queryKey: ["/api/affiliate/earnings-chart", "12"],
+    queryFn: async () => {
+      const res = await fetch("/api/affiliate/earnings-chart?weeks=12", {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to fetch earnings chart");
+      return res.json();
+    },
     enabled: !!affiliate,
   });
 
   const { data: leaderboard, isLoading: leaderboardLoading } = useQuery<LeaderboardEntry[]>({
-    queryKey: ["/api/affiliate/leaderboard", { period: leaderboardPeriod }],
+    queryKey: ["/api/affiliate/leaderboard", leaderboardPeriod],
+    queryFn: async () => {
+      const res = await fetch(`/api/affiliate/leaderboard?period=${leaderboardPeriod}`, {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to fetch leaderboard");
+      return res.json();
+    },
   });
 
   const updateSettingsMutation = useMutation({
@@ -424,9 +438,9 @@ export default function AffiliateDashboard() {
             </TabsList>
 
             <TabsContent value="analytics">
-              <div className="grid gap-6">
-                {/* Earnings Chart */}
-                <Card>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Earnings Chart - Takes 2/3 width on large screens */}
+                <Card className="lg:col-span-2">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <TrendingUp className="h-5 w-5 text-[#E7FB10]" />
@@ -442,7 +456,7 @@ export default function AffiliateDashboard() {
                         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                       </div>
                     ) : earningsChart && earningsChart.length > 0 ? (
-                      <div className="h-[300px]" data-testid="chart-earnings">
+                      <div className="h-[400px]" data-testid="chart-earnings">
                         <ResponsiveContainer width="100%" height="100%">
                           <AreaChart
                             data={earningsChart}
@@ -512,46 +526,43 @@ export default function AffiliateDashboard() {
                   </CardContent>
                 </Card>
 
-                {/* Leaderboard */}
+                {/* Leaderboard - Takes 1/3 width on large screens */}
                 <Card className="border-[#9d4edd]/30">
-                  <CardHeader>
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                      <div>
-                        <CardTitle className="flex items-center gap-2">
-                          <Trophy className="h-5 w-5 text-[#E7FB10]" />
-                          Affiliate Leaderboard
-                        </CardTitle>
-                        <CardDescription>
-                          See how you rank against other affiliates
-                        </CardDescription>
-                      </div>
+                  <CardHeader className="pb-3">
+                    <div className="space-y-3">
+                      <CardTitle className="flex items-center gap-2">
+                        <Trophy className="h-5 w-5 text-[#E7FB10]" />
+                        Leaderboard
+                      </CardTitle>
                       <div className="flex gap-2">
                         <Button
                           variant={leaderboardPeriod === "weekly" ? "default" : "outline"}
                           size="sm"
                           onClick={() => setLeaderboardPeriod("weekly")}
+                          className="flex-1"
                           data-testid="button-leaderboard-weekly"
                         >
-                          This Week
+                          Weekly
                         </Button>
                         <Button
                           variant={leaderboardPeriod === "monthly" ? "default" : "outline"}
                           size="sm"
                           onClick={() => setLeaderboardPeriod("monthly")}
+                          className="flex-1"
                           data-testid="button-leaderboard-monthly"
                         >
-                          This Month
+                          Monthly
                         </Button>
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="pt-0">
                     {leaderboardLoading ? (
                       <div className="flex justify-center py-8">
                         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                       </div>
                     ) : leaderboard && leaderboard.length > 0 ? (
-                      <div className="space-y-3" data-testid="leaderboard-list">
+                      <div className="space-y-2 max-h-[380px] overflow-y-auto pr-1" data-testid="leaderboard-list">
                         {leaderboard.map((entry) => {
                           const isCurrentUser = entry.affiliateId === affiliate?.id;
                           const totalEarnings = entry.tier1Earnings + entry.tier2Earnings;
@@ -559,47 +570,44 @@ export default function AffiliateDashboard() {
                           return (
                             <div
                               key={entry.affiliateId}
-                              className={`flex items-center justify-between p-4 rounded-lg transition-all ${
+                              className={`flex items-center justify-between p-3 rounded-lg transition-all ${
                                 isCurrentUser
                                   ? "bg-[#E7FB10]/10 border border-[#E7FB10]/30"
                                   : "bg-muted/50"
                               }`}
                               data-testid={`leaderboard-entry-${entry.rank}`}
                             >
-                              <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-muted">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 flex items-center justify-center rounded-full bg-muted shrink-0">
                                   {entry.rank === 1 ? (
-                                    <Crown className="h-5 w-5 text-[#E7FB10]" />
+                                    <Crown className="h-4 w-4 text-[#E7FB10]" />
                                   ) : entry.rank === 2 ? (
-                                    <Medal className="h-5 w-5 text-gray-400" />
+                                    <Medal className="h-4 w-4 text-gray-400" />
                                   ) : entry.rank === 3 ? (
-                                    <Medal className="h-5 w-5 text-amber-700" />
+                                    <Medal className="h-4 w-4 text-amber-700" />
                                   ) : entry.rank <= 10 ? (
-                                    <Flame className="h-5 w-5 text-orange-500" />
+                                    <Flame className="h-4 w-4 text-orange-500" />
                                   ) : (
-                                    <span className="font-bold text-muted-foreground">
+                                    <span className="text-sm font-bold text-muted-foreground">
                                       {entry.rank}
                                     </span>
                                   )}
                                 </div>
-                                <div>
-                                  <p className="font-medium flex items-center gap-2">
+                                <div className="min-w-0">
+                                  <p className="font-medium text-sm truncate flex items-center gap-1">
                                     {entry.displayName}
                                     {isCurrentUser && (
-                                      <Badge variant="secondary" className="text-xs">You</Badge>
+                                      <Badge variant="secondary" className="text-[10px] px-1.5 py-0">You</Badge>
                                     )}
                                   </p>
-                                  <p className="text-sm text-muted-foreground">
+                                  <p className="text-xs text-muted-foreground">
                                     {entry.salesCount} sales
                                   </p>
                                 </div>
                               </div>
-                              <div className="text-right">
-                                <p className="font-semibold text-[#E7FB10]">
+                              <div className="text-right shrink-0">
+                                <p className="font-semibold text-sm text-[#E7FB10]">
                                   ${totalEarnings.toFixed(2)}
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  ${entry.tier1Earnings.toFixed(2)} + ${entry.tier2Earnings.toFixed(2)}
                                 </p>
                               </div>
                             </div>
@@ -608,19 +616,19 @@ export default function AffiliateDashboard() {
                         
                         {/* Show user's rank if not in top 50 */}
                         {affiliate && !leaderboard.find(e => e.affiliateId === affiliate.id) && (
-                          <div className="pt-4 border-t border-muted">
-                            <p className="text-center text-muted-foreground mb-2">Your Position</p>
-                            <div className="flex items-center justify-between p-4 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30">
-                              <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-muted">
-                                  <span className="font-bold text-muted-foreground">-</span>
+                          <div className="pt-3 border-t border-muted mt-2">
+                            <p className="text-center text-xs text-muted-foreground mb-2">Your Position</p>
+                            <div className="flex items-center justify-between p-3 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 flex items-center justify-center rounded-full bg-muted">
+                                  <span className="text-sm font-bold text-muted-foreground">-</span>
                                 </div>
                                 <div>
-                                  <p className="font-medium">
+                                  <p className="font-medium text-sm">
                                     {affiliate.fullName.split(' ')[0]} {affiliate.fullName.split(' ').pop()?.[0]}.
                                   </p>
-                                  <p className="text-sm text-muted-foreground">
-                                    Make sales to appear on the leaderboard!
+                                  <p className="text-xs text-muted-foreground">
+                                    No sales yet
                                   </p>
                                 </div>
                               </div>
@@ -630,8 +638,8 @@ export default function AffiliateDashboard() {
                       </div>
                     ) : (
                       <div className="text-center py-8 text-muted-foreground">
-                        <Trophy className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                        <p>No leaderboard data yet. Be the first to make sales!</p>
+                        <Trophy className="h-10 w-10 mx-auto mb-3 opacity-50" />
+                        <p className="text-sm">No leaderboard data yet</p>
                       </div>
                     )}
                   </CardContent>
