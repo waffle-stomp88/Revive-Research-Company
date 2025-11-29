@@ -85,7 +85,7 @@ function getProductBadges(
     badges.push({
       type: "sale",
       label: "SALE",
-      className: "bg-red-600 text-white font-bold"
+      className: "bg-red-600 text-white font-bold animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.6)]"
     });
   }
   
