@@ -304,7 +304,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAffiliateByEmail(email: string): Promise<Affiliate | undefined> {
-    const [affiliate] = await db.select().from(affiliates).where(eq(affiliates.email, email));
+    const [affiliate] = await db.select().from(affiliates).where(ilike(affiliates.email, email));
     return affiliate || undefined;
   }
 
