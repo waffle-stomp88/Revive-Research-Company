@@ -359,7 +359,7 @@ export default function Checkout() {
     const bundleUnitPrice = isSubscription ? getDiscountedPrice(bundleBasePrice) : bundleBasePrice;
     const bundleSubtotal = bundleUnitPrice * quantity;
     const bundleSavings = isSubscription ? (bundleBasePrice - bundleUnitPrice) * quantity : 0;
-    const bundleShipping = 0;
+    const bundleShipping = bundleSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING;
     const bundleTotal = bundleSubtotal + bundleShipping;
 
     return (
@@ -494,8 +494,15 @@ export default function Checkout() {
                   )}
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Shipping</span>
-                    <span className="text-green-500">FREE</span>
+                    <span className={bundleShipping === 0 ? "text-green-500" : ""}>
+                      {bundleShipping === 0 ? "FREE" : `$${bundleShipping.toFixed(2)}`}
+                    </span>
                   </div>
+                  {bundleShipping > 0 && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Free shipping on orders over $150
+                    </p>
+                  )}
                 </div>
 
                 <Separator className="my-6" />
