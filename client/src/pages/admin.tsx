@@ -60,6 +60,9 @@ import {
   X,
   DollarSign,
   Loader2,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -92,13 +95,59 @@ const coaFormSchema = insertCoaSchema.extend({
 
 type CoaFormValues = z.infer<typeof coaFormSchema>;
 
+type SortField = "name" | "category" | "price" | "status";
+type SortDirection = "asc" | "desc";
+
 function ProductsTab() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [sortField, setSortField] = useState<SortField>("name");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const { toast } = useToast();
 
   const { data: products, isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
+  });
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="ml-2 h-4 w-4 text-muted-foreground" />;
+    }
+    return sortDirection === "asc" 
+      ? <ArrowUp className="ml-2 h-4 w-4 text-[#E7FB10]" />
+      : <ArrowDown className="ml-2 h-4 w-4 text-[#E7FB10]" />;
+  };
+
+  const sortedProducts = products?.slice().sort((a, b) => {
+    let comparison = 0;
+    
+    switch (sortField) {
+      case "name":
+        comparison = a.name.localeCompare(b.name);
+        break;
+      case "category":
+        comparison = a.category.localeCompare(b.category);
+        break;
+      case "price":
+        comparison = Number(a.price) - Number(b.price);
+        break;
+      case "status":
+        const aStatus = a.inStock ? (a.featured ? 2 : 1) : 0;
+        const bStatus = b.inStock ? (b.featured ? 2 : 1) : 0;
+        comparison = aStatus - bStatus;
+        break;
+    }
+    
+    return sortDirection === "asc" ? comparison : -comparison;
   });
 
   const form = useForm<ProductFormValues>({
@@ -424,15 +473,51 @@ function ProductsTab() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>
+                <button
+                  onClick={() => handleSort("name")}
+                  className="flex items-center hover:text-foreground transition-colors"
+                  data-testid="sort-name"
+                >
+                  Name
+                  {getSortIcon("name")}
+                </button>
+              </TableHead>
+              <TableHead>
+                <button
+                  onClick={() => handleSort("category")}
+                  className="flex items-center hover:text-foreground transition-colors"
+                  data-testid="sort-category"
+                >
+                  Category
+                  {getSortIcon("category")}
+                </button>
+              </TableHead>
+              <TableHead>
+                <button
+                  onClick={() => handleSort("price")}
+                  className="flex items-center hover:text-foreground transition-colors"
+                  data-testid="sort-price"
+                >
+                  Price
+                  {getSortIcon("price")}
+                </button>
+              </TableHead>
+              <TableHead>
+                <button
+                  onClick={() => handleSort("status")}
+                  className="flex items-center hover:text-foreground transition-colors"
+                  data-testid="sort-status"
+                >
+                  Status
+                  {getSortIcon("status")}
+                </button>
+              </TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {products?.map((product) => (
+            {sortedProducts?.map((product) => (
               <TableRow key={product.id} data-testid={`row-product-${product.id}`}>
                 <TableCell className="font-medium">{product.name}</TableCell>
                 <TableCell>{product.category}</TableCell>
