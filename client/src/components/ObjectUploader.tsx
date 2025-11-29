@@ -9,17 +9,39 @@ import type { UploadResult } from "@uppy/core";
 import { Button } from "@/components/ui/button";
 
 const uppyModalStyles = `
+  .uppy-Dashboard--modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 9999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
   .uppy-Dashboard-inner {
     max-width: 400px !important;
     max-height: 350px !important;
     width: 90vw !important;
     height: auto !important;
+    position: relative !important;
+    top: auto !important;
+    transform: none !important;
   }
   .uppy-Dashboard-innerWrap {
     max-height: 300px !important;
   }
   .uppy-DashboardContent-bar {
     display: flex !important;
+  }
+  .uppy-Dashboard-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(0, 0, 0, 0.7) !important;
   }
 `;
 
