@@ -620,6 +620,18 @@ export async function registerRoutes(
     next();
   };
 
+  // Admin: Get dashboard metrics
+  app.get("/api/admin/dashboard", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const daysBack = parseInt(req.query.days as string) || 30;
+      const metrics = await storage.getDashboardMetrics(daysBack);
+      res.json(metrics);
+    } catch (error) {
+      console.error("Error fetching dashboard metrics:", error);
+      res.status(500).json({ error: "Failed to fetch dashboard metrics" });
+    }
+  });
+
   // Admin: Get all orders
   app.get("/api/admin/orders", isAuthenticated, isAdmin, async (req, res) => {
     try {

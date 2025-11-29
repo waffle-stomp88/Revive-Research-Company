@@ -11,7 +11,27 @@ import {
   type AffiliatePayout, type InsertAffiliatePayout
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, ilike, or, desc, sql } from "drizzle-orm";
+import { eq, ilike, or, desc, sql, gte, and, lt, count, sum } from "drizzle-orm";
+
+export interface DashboardMetrics {
+  totalRevenue: number;
+  totalOrders: number;
+  averageOrderValue: number;
+  totalProductsSold: number;
+  pendingOrders: number;
+  processingOrders: number;
+  completedOrders: number;
+  lowStockProducts: Array<{ id: string; name: string; stockAmount: number }>;
+  outOfStockProducts: Array<{ id: string; name: string }>;
+  recentContacts: number;
+  pendingAffiliateApplications: number;
+  activeAffiliates: number;
+  pendingPayouts: number;
+  totalAffiliateCommissions: number;
+  topProducts: Array<{ productId: string; productName: string; totalSold: number; revenue: number }>;
+  recentOrders: Order[];
+  revenueTrend: Array<{ date: string; revenue: number; orders: number }>;
+}
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -71,6 +91,9 @@ export interface IStorage {
   getAffiliatePayoutsByAffiliateId(affiliateId: string): Promise<AffiliatePayout[]>;
   getAllAffiliatePayouts(): Promise<AffiliatePayout[]>;
   updateAffiliatePayoutStatus(id: string, status: string, transactionId?: string): Promise<AffiliatePayout | undefined>;
+  
+  // Dashboard
+  getDashboardMetrics(daysBack: number): Promise<DashboardMetrics>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -312,6 +335,116 @@ export class DatabaseStorage implements IStorage {
     if (status === 'processed') updateData.processedAt = new Date();
     const [payout] = await db.update(affiliatePayouts).set(updateData).where(eq(affiliatePayouts.id, id)).returning();
     return payout || undefined;
+  }
+
+  async getDashboardMetrics(daysBack: number = 30): Promise<DashboardMetrics> {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - daysBack);
+    startDate.setHours(0, 0, 0, 0);
+
+    const allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt));
+    const filteredOrders = allOrders.filter(order => 
+      order.createdAt && new Date(order.createdAt) >= startDate
+    );
+
+    const totalRevenue = filteredOrders.reduce((sum, order) => sum + parseFloat(order.totalAmount || '0'), 0);
+    const totalOrders = filteredOrders.length;
+    const totalProductsSold = filteredOrders.reduce((sum, order) => sum + (order.quantity || 1), 0);
+    const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+
+    const pendingOrders = allOrders.filter(o => o.status === 'pending').length;
+    const processingOrders = allOrders.filter(o => o.status === 'processing').length;
+    const completedOrders = allOrders.filter(o => o.status === 'completed' || o.status === 'shipped').length;
+
+    const allProducts = await db.select().from(products);
+    const lowStockProducts = allProducts
+      .filter(p => p.inStock && p.stockAmount !== null && p.stockAmount > 0 && p.stockAmount <= 20)
+      .map(p => ({ id: p.id, name: p.name, stockAmount: p.stockAmount || 0 }));
+    const outOfStockProducts = allProducts
+      .filter(p => !p.inStock || p.stockAmount === 0)
+      .map(p => ({ id: p.id, name: p.name }));
+
+    const allContacts = await db.select().from(contacts).orderBy(desc(contacts.createdAt));
+    const recentContacts = allContacts.filter(c => 
+      c.createdAt && new Date(c.createdAt) >= startDate
+    ).length;
+
+    const pendingApplications = await db.select().from(affiliateApplications)
+      .where(eq(affiliateApplications.status, 'pending'));
+    const pendingAffiliateApplications = pendingApplications.length;
+
+    const allAffiliates = await db.select().from(affiliates);
+    const activeAffiliates = allAffiliates.filter(a => a.isActive).length;
+
+    const allPayouts = await db.select().from(affiliatePayouts);
+    const pendingPayouts = allPayouts.filter(p => p.status === 'pending').length;
+
+    const allAffiliateSales = await db.select().from(affiliateSales);
+    const totalAffiliateCommissions = allAffiliateSales.reduce((sum, sale) => 
+      sum + parseFloat(sale.commissionTier1 || '0') + parseFloat(sale.commissionTier2 || '0'), 0
+    );
+
+    const productSales: Record<string, { productId: string; productName: string; totalSold: number; revenue: number }> = {};
+    for (const order of filteredOrders) {
+      const product = allProducts.find(p => p.id === order.productId);
+      if (product) {
+        if (!productSales[order.productId]) {
+          productSales[order.productId] = {
+            productId: order.productId,
+            productName: product.name,
+            totalSold: 0,
+            revenue: 0
+          };
+        }
+        productSales[order.productId].totalSold += order.quantity || 1;
+        productSales[order.productId].revenue += parseFloat(order.totalAmount || '0');
+      }
+    }
+    const topProducts = Object.values(productSales)
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 5);
+
+    const recentOrders = allOrders.slice(0, 10);
+
+    const revenueTrendMap: Record<string, { revenue: number; orders: number }> = {};
+    for (let i = daysBack - 1; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      revenueTrendMap[dateStr] = { revenue: 0, orders: 0 };
+    }
+    for (const order of filteredOrders) {
+      if (order.createdAt) {
+        const dateStr = new Date(order.createdAt).toISOString().split('T')[0];
+        if (revenueTrendMap[dateStr]) {
+          revenueTrendMap[dateStr].revenue += parseFloat(order.totalAmount || '0');
+          revenueTrendMap[dateStr].orders += 1;
+        }
+      }
+    }
+    const revenueTrend = Object.entries(revenueTrendMap)
+      .map(([date, data]) => ({ date, ...data }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    return {
+      totalRevenue,
+      totalOrders,
+      averageOrderValue,
+      totalProductsSold,
+      pendingOrders,
+      processingOrders,
+      completedOrders,
+      lowStockProducts,
+      outOfStockProducts,
+      recentContacts,
+      pendingAffiliateApplications,
+      activeAffiliates,
+      pendingPayouts,
+      totalAffiliateCommissions,
+      topProducts,
+      recentOrders,
+      revenueTrend
+    };
   }
 }
 
