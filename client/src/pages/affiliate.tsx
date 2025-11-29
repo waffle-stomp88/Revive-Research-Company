@@ -560,7 +560,7 @@ export default function AffiliatePage() {
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
           >
-            <Card className="p-5 md:p-6 border-[#9d4edd]/30">
+            <Card className="p-5 md:p-6 border-[#9d4edd]/60">
               {submitted ? (
                 <motion.div 
                   className="text-center py-6"
@@ -700,7 +700,7 @@ export default function AffiliatePage() {
 
                     <Button
                       type="submit"
-                      className="w-full bg-[#9d4edd] hover:bg-[#9d4edd]/90 text-white font-semibold shadow-[0_0_20px_rgba(157,78,221,0.3)]"
+                      className="w-full bg-[#9d4edd] hover:bg-[#9d4edd]/90 text-white font-semibold animate-pulse-glow-purple"
                       disabled={submitMutation.isPending}
                       data-testid="button-submit-application"
                     >

@@ -139,6 +139,7 @@ export default {
         "product-glow": "product-glow 0.4s ease-in-out forwards",
         "product-glow-red": "product-glow-red 0.4s ease-in-out forwards",
         "product-glow-blue": "product-glow-blue 0.4s ease-in-out forwards",
+        "pulse-glow-purple": "pulse-glow-purple 3s ease-in-out infinite",
       },
       boxShadow: {
         "glow-sm": "0px 0px 20px 5px rgba(231, 251, 16, 0.45)",
