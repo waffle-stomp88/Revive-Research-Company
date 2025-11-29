@@ -199,60 +199,150 @@ export default function AffiliatePage() {
         </div>
       </section>
 
-      {/* Two-Column: Commission + Why Partner */}
-      <section className="py-10 md:py-14 relative">
-        <div className="container max-w-6xl mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-6">
-            {/* Commission Structure - Compact */}
+      {/* Two-Tier Commission Infographics */}
+      <section className="py-10 md:py-14 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-[#9d4edd]/5 to-background" />
+        
+        <div className="container max-w-6xl mx-auto px-4 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-8"
+          >
+            <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
+              Two-Tier <span className="text-[#9d4edd]">Commission Structure</span>
+            </h2>
+            <p className="text-sm text-muted-foreground max-w-xl mx-auto">
+              Earn from your own sales AND from partners you bring to the program.
+            </p>
+          </motion.div>
+
+          {/* Tier Infographic Cards */}
+          <div className="grid lg:grid-cols-2 gap-5 mb-8">
+            {/* Tier 1 Card */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
             >
-              <Card className="p-5 h-full border-[#9d4edd]/30">
-                <div className="flex items-center gap-2 mb-4">
-                  <DollarSign className="h-5 w-5 text-[#9d4edd]" />
-                  <h3 className="font-display text-lg font-bold">Two-Tier Commissions</h3>
+              <Card className="p-5 h-full border-2 border-[#E7FB10]/40 bg-gradient-to-br from-[#E7FB10]/10 to-transparent relative overflow-hidden">
+                <div className="absolute top-3 right-3">
+                  <Badge className="bg-[#E7FB10] text-black font-bold text-xs">TIER 1</Badge>
                 </div>
                 
-                <div className="space-y-4">
-                  {/* Tier 1 */}
-                  <div className="flex items-center gap-4 p-3 rounded-lg bg-[#E7FB10]/5 border border-[#E7FB10]/20">
-                    <div className="w-12 h-12 rounded-xl bg-[#E7FB10]/10 flex items-center justify-center shrink-0">
-                      <span className="font-display text-xl font-bold text-[#E7FB10]">20%</span>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm">Direct Sales</p>
-                      <p className="text-xs text-muted-foreground">Earn on every customer you refer</p>
-                    </div>
-                    <Badge className="ml-auto bg-[#E7FB10] text-black text-xs">TIER 1</Badge>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-[#E7FB10]/20 flex items-center justify-center">
+                    <Users className="h-6 w-6 text-[#E7FB10]" />
                   </div>
-                  
-                  {/* Tier 2 */}
-                  <div className="flex items-center gap-4 p-3 rounded-lg bg-[#21d8ff]/5 border border-[#21d8ff]/20">
-                    <div className="w-12 h-12 rounded-xl bg-[#21d8ff]/10 flex items-center justify-center shrink-0">
-                      <span className="font-display text-xl font-bold text-[#21d8ff]">10%</span>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm">Team Sales</p>
-                      <p className="text-xs text-muted-foreground">Earn when affiliates you recruit sell</p>
-                    </div>
-                    <Badge className="ml-auto bg-[#21d8ff] text-black text-xs">TIER 2</Badge>
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Direct Sales</p>
+                    <p className="font-display text-3xl font-bold text-[#E7FB10]">20%</p>
                   </div>
                 </div>
 
-                {/* Quick Example */}
-                <div className="mt-4 p-3 bg-black/20 rounded-lg">
-                  <p className="text-xs text-muted-foreground mb-2">Example Monthly Earnings:</p>
-                  <div className="flex justify-between text-sm">
-                    <span>10 sales × $150 × 20%</span>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Every time someone uses your unique referral link to make a purchase, you earn <span className="text-[#E7FB10] font-semibold">20% of the order total</span>.
+                </p>
+
+                {/* Visual Flow */}
+                <div className="flex items-center justify-between bg-black/30 rounded-lg p-3">
+                  <div className="text-center">
+                    <div className="w-10 h-10 rounded-full bg-[#9d4edd]/20 flex items-center justify-center mx-auto mb-1">
+                      <Users className="h-5 w-5 text-[#9d4edd]" />
+                    </div>
+                    <p className="text-xs text-muted-foreground">Customer</p>
+                  </div>
+                  <div className="flex-1 flex items-center justify-center gap-1">
+                    <ArrowRight className="h-4 w-4 text-[#E7FB10]" />
+                    <span className="text-xs text-muted-foreground hidden sm:inline">your link</span>
+                    <ArrowRight className="h-4 w-4 text-[#E7FB10]" />
+                  </div>
+                  <div className="text-center">
+                    <div className="w-10 h-10 rounded-full bg-[#E7FB10]/20 flex items-center justify-center mx-auto mb-1">
+                      <DollarSign className="h-5 w-5 text-[#E7FB10]" />
+                    </div>
+                    <p className="text-xs text-muted-foreground">You Earn 20%</p>
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
+
+            {/* Tier 2 Card */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+            >
+              <Card className="p-5 h-full border-2 border-[#21d8ff]/40 bg-gradient-to-br from-[#21d8ff]/10 to-transparent relative overflow-hidden">
+                <div className="absolute top-3 right-3">
+                  <Badge className="bg-[#21d8ff] text-black font-bold text-xs">TIER 2</Badge>
+                </div>
+                
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-[#21d8ff]/20 flex items-center justify-center">
+                    <TrendingUp className="h-6 w-6 text-[#21d8ff]" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Team Sales</p>
+                    <p className="font-display text-3xl font-bold text-[#21d8ff]">10%</p>
+                  </div>
+                </div>
+
+                <p className="text-sm text-muted-foreground mb-4">
+                  When you refer someone to become an affiliate, you earn <span className="text-[#21d8ff] font-semibold">10% of every sale they make</span>.
+                </p>
+
+                {/* Visual Flow */}
+                <div className="flex items-center justify-between bg-black/30 rounded-lg p-3">
+                  <div className="text-center">
+                    <div className="w-10 h-10 rounded-full bg-[#9d4edd]/20 flex items-center justify-center mx-auto mb-1">
+                      <Users className="h-5 w-5 text-[#9d4edd]" />
+                    </div>
+                    <p className="text-xs text-muted-foreground">Your Affiliate</p>
+                  </div>
+                  <div className="flex-1 flex items-center justify-center gap-1">
+                    <ArrowRight className="h-4 w-4 text-[#21d8ff]" />
+                    <span className="text-xs text-muted-foreground hidden sm:inline">makes a sale</span>
+                    <ArrowRight className="h-4 w-4 text-[#21d8ff]" />
+                  </div>
+                  <div className="text-center">
+                    <div className="w-10 h-10 rounded-full bg-[#21d8ff]/20 flex items-center justify-center mx-auto mb-1">
+                      <DollarSign className="h-5 w-5 text-[#21d8ff]" />
+                    </div>
+                    <p className="text-xs text-muted-foreground">You Earn 10%</p>
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
+          </div>
+
+          {/* Compact Earnings Example + Benefits Row */}
+          <div className="grid lg:grid-cols-2 gap-5">
+            {/* Earnings Example */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+            >
+              <Card className="p-4 border-[#9d4edd]/20 h-full">
+                <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                  <DollarSign className="h-4 w-4 text-[#9d4edd]" />
+                  Example Monthly Earnings
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">10 sales × $150 × 20%</span>
                     <span className="text-[#E7FB10] font-semibold">$300</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span>Team makes 15 sales × $120 × 10%</span>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Team: 15 sales × $120 × 10%</span>
                     <span className="text-[#21d8ff] font-semibold">$180</span>
                   </div>
-                  <div className="h-px bg-white/10 my-2" />
+                  <div className="h-px bg-white/10" />
                   <div className="flex justify-between font-semibold">
                     <span>Monthly Total</span>
                     <span className="text-[#9d4edd]">$480</span>
@@ -261,34 +351,28 @@ export default function AffiliatePage() {
               </Card>
             </motion.div>
 
-            {/* Why Partner - Compact */}
+            {/* Why Partner Benefits */}
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
             >
-              <Card className="p-5 h-full border-[#9d4edd]/30">
-                <div className="flex items-center gap-2 mb-4">
-                  <Star className="h-5 w-5 text-[#9d4edd]" />
-                  <h3 className="font-display text-lg font-bold">Why Partner With Us</h3>
-                </div>
-                
-                <div className="space-y-3">
+              <Card className="p-4 border-[#9d4edd]/20 h-full">
+                <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                  <Star className="h-4 w-4 text-[#9d4edd]" />
+                  Partner Benefits
+                </h4>
+                <div className="grid grid-cols-2 gap-2">
                   {[
-                    { icon: Crown, title: "Premium Products", desc: "Lab-verified compounds trusted by serious researchers" },
-                    { icon: Shield, title: "Your Reputation Matters", desc: "Transparent testing and ethical practices" },
-                    { icon: Zap, title: "Priority Support", desc: "Dedicated partner success team" },
-                    { icon: Gift, title: "Marketing Assets", desc: "Professional content library provided" },
-                    { icon: Lock, title: "Exclusive Access", desc: "Early products & partner promos" },
+                    { icon: Crown, text: "Premium Products" },
+                    { icon: Shield, text: "Your Reputation Protected" },
+                    { icon: Zap, text: "Priority Support" },
+                    { icon: Gift, text: "Marketing Assets" },
                   ].map((item) => (
-                    <div key={item.title} className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-[#9d4edd]/10 flex items-center justify-center shrink-0">
-                        <item.icon className="h-4 w-4 text-[#9d4edd]" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-sm">{item.title}</p>
-                        <p className="text-xs text-muted-foreground">{item.desc}</p>
-                      </div>
+                    <div key={item.text} className="flex items-center gap-2 text-xs">
+                      <item.icon className="h-3 w-3 text-[#9d4edd]" />
+                      <span className="text-muted-foreground">{item.text}</span>
                     </div>
                   ))}
                 </div>
