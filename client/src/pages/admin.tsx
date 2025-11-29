@@ -759,6 +759,7 @@ function ProductsTab() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
       toast({ title: "Product created successfully" });
       setIsDialogOpen(false);
       form.reset();
@@ -775,6 +776,7 @@ function ProductsTab() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
       toast({ title: "Product updated successfully" });
       setIsDialogOpen(false);
       setEditingProduct(null);
@@ -792,6 +794,7 @@ function ProductsTab() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
       toast({ title: "Product deleted successfully" });
     },
     onError: () => {
@@ -1751,6 +1754,7 @@ function OrdersTab() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
       toast({ title: "Order status updated" });
     },
     onError: () => {
@@ -1855,6 +1859,24 @@ function ContactsTab() {
     queryKey: ["/api/admin/contacts"],
   });
 
+  const markAsReadMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest("PATCH", `/api/admin/contacts/${id}/read`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/contacts"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
+    },
+  });
+
+  const handleSelectContact = (contact: Contact) => {
+    setSelectedContact(contact);
+    if (!contact.isRead) {
+      markAsReadMutation.mutate(contact.id);
+    }
+  };
+
   const formatDate = (date: Date | string | null) => {
     if (!date) return "N/A";
     return new Date(date).toLocaleDateString("en-US", {
@@ -1937,22 +1959,33 @@ function ContactsTab() {
               filteredContacts.map((contact) => (
                 <button
                   key={contact.id}
-                  onClick={() => setSelectedContact(contact)}
+                  onClick={() => handleSelectContact(contact)}
                   className={`w-full text-left p-4 border-b transition-colors ${
                     selectedContact?.id === contact.id
                       ? "bg-[#21d8ff]/10 border-l-2 border-l-[#21d8ff]"
-                      : "hover:bg-muted/50 border-l-2 border-l-transparent"
+                      : !contact.isRead 
+                        ? "bg-[#E7FB10]/5 hover:bg-[#E7FB10]/10 border-l-2 border-l-[#E7FB10]"
+                        : "hover:bg-muted/50 border-l-2 border-l-transparent"
                   }`}
                   data-testid={`contact-item-${contact.id}`}
                 >
                   <div className="flex items-start justify-between gap-2 mb-1">
                     <div className="flex items-center gap-2 min-w-0">
-                      <div className="h-8 w-8 rounded-full bg-[#9d4edd]/20 flex items-center justify-center shrink-0">
-                        <span className="text-sm font-bold text-[#9d4edd]">
+                      <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${
+                        !contact.isRead ? "bg-[#E7FB10]/20" : "bg-[#9d4edd]/20"
+                      }`}>
+                        <span className={`text-sm font-bold ${
+                          !contact.isRead ? "text-[#E7FB10]" : "text-[#9d4edd]"
+                        }`}>
                           {contact.name.charAt(0).toUpperCase()}
                         </span>
                       </div>
-                      <span className="font-medium truncate">{contact.name}</span>
+                      <div className="min-w-0 flex items-center gap-2">
+                        <span className={`font-medium truncate ${!contact.isRead ? "text-foreground" : ""}`}>{contact.name}</span>
+                        {!contact.isRead && (
+                          <Badge className="shrink-0 bg-[#E7FB10] text-black text-[10px] px-1.5 py-0">New</Badge>
+                        )}
+                      </div>
                     </div>
                     <span className="text-xs text-muted-foreground shrink-0">
                       {getTimeAgo(contact.createdAt)}
@@ -2084,6 +2117,7 @@ function AffiliatesTab() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/affiliate-applications"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/affiliates"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
       toast({ title: "Application approved", description: "Affiliate has been created successfully." });
     },
     onError: () => {
@@ -2098,6 +2132,7 @@ function AffiliatesTab() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/affiliate-applications"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
       toast({ title: "Application rejected" });
     },
     onError: () => {
@@ -2112,6 +2147,7 @@ function AffiliatesTab() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/affiliate-payouts"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
       toast({ title: "Payout processed successfully" });
     },
     onError: () => {
@@ -2126,6 +2162,7 @@ function AffiliatesTab() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/affiliate-payouts"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
       toast({ title: "Payout rejected" });
     },
     onError: () => {
