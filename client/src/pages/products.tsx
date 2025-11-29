@@ -25,7 +25,11 @@ import {
   Shield,
   Heart,
   Timer,
-  Sparkles
+  Sparkles,
+  Boxes,
+  TrendingDown,
+  Mail,
+  CheckCircle2
 } from "lucide-react";
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
@@ -121,52 +125,53 @@ export default function Products() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
+        {/* Sale of the Week Section */}
         {saleProduct && (
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="mb-12"
+            className="mb-10"
             data-testid="section-sale-of-week"
           >
-            <div className="flex items-center gap-3 mb-6">
-              <Flame className="h-6 w-6 text-red-500" />
-              <h2 className="font-display font-bold text-[40px]">{SALE_OF_THE_WEEK.title}</h2>
-              <Badge variant="destructive" className="animate-pulse">
-                {SALE_OF_THE_WEEK.badge}
-              </Badge>
-            </div>
             <Link href={`/products/${saleProduct.id}`}>
-              <Card className="p-6 md:p-8 border-2 border-red-500/50 bg-gradient-to-r from-red-950/30 to-background hover:border-red-500 transition-all cursor-pointer group">
-                <div className="flex flex-col md:flex-row gap-6 items-center">
-                  <div className="w-32 h-32 md:w-40 md:h-40 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+              <Card className="p-5 md:p-6 border-2 border-red-500/40 bg-gradient-to-br from-red-950/40 via-background to-background hover:border-red-500 hover:shadow-[0_0_30px_rgba(239,68,68,0.2)] transition-all cursor-pointer group">
+                <div className="flex flex-col md:flex-row gap-5 items-center">
+                  <div className="w-28 h-28 md:w-32 md:h-32 bg-muted/50 rounded-lg overflow-hidden flex-shrink-0 border border-red-500/20">
                     <img 
                       src={productImage} 
                       alt={saleProduct.name}
-                      className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform"
+                      className="w-full h-full object-contain p-3 group-hover:scale-110 transition-transform"
                     />
                   </div>
                   <div className="flex-1 text-center md:text-left">
+                    <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                      <Flame className="h-5 w-5 text-red-500" />
+                      <span className="font-display text-sm font-bold text-red-400 uppercase tracking-wider">Sale of the Week</span>
+                      <Badge variant="destructive" className="animate-pulse text-xs">
+                        {SALE_OF_THE_WEEK.badge}
+                      </Badge>
+                    </div>
                     <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2">
-                      <Badge variant="destructive" className="text-lg px-3 py-1">
+                      <Badge variant="destructive" className="text-base px-2.5 py-0.5">
                         {SALE_OF_THE_WEEK.discount}
                       </Badge>
                       <span className="text-sm text-muted-foreground">{SALE_OF_THE_WEEK.endDate}</span>
                     </div>
-                    <h3 className="font-display text-3xl font-bold text-[#E7FB10] mb-2">
+                    <h3 className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10] mb-2">
                       {saleProduct.name}
                     </h3>
-                    <p className="text-muted-foreground mb-4 max-w-xl">
+                    <p className="text-sm text-muted-foreground mb-4 max-w-lg">
                       {SALE_OF_THE_WEEK.description}
                     </p>
                     <div className="flex items-center justify-center md:justify-start gap-4">
-                      <span className="font-display text-3xl font-bold">${Number(saleProduct.price).toFixed(2)}</span>
+                      <span className="font-display text-2xl md:text-3xl font-bold">${Number(saleProduct.price).toFixed(2)}</span>
                       {saleProduct.originalPrice && (
-                        <span className="text-xl text-muted-foreground line-through">
+                        <span className="text-lg text-muted-foreground line-through">
                           ${Number(saleProduct.originalPrice).toFixed(2)}
                         </span>
                       )}
-                      <Button className="ml-4 gap-2">
+                      <Button className="ml-2 gap-2">
                         Shop Now <ArrowRight className="h-4 w-4" />
                       </Button>
                     </div>
@@ -177,90 +182,141 @@ export default function Products() {
           </motion.section>
         )}
 
+        {/* Research Stacks Section */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="mb-16"
+          className="mb-10"
           data-testid="section-bundles"
         >
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-3 mb-5">
             <Package className="h-6 w-6 text-[#21d8ff]" />
-            <h2 className="font-display font-bold text-[40px]">Research Stacks</h2>
+            <h2 className="font-display font-bold text-2xl md:text-3xl">Research Stacks</h2>
             <Badge variant="outline" className="border-primary/50 text-primary">
               <Sparkles className="h-3 w-3 mr-1" />
               Save More
             </Badge>
           </div>
-          <p className="text-muted-foreground mb-8 max-w-2xl">
-            Expertly curated peptide combinations based on research protocols. 
-            Bundle and save on the most popular stacks in the research community.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {BUNDLES.map((bundle, index) => (
               <motion.div
                 key={bundle.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: index * 0.08 }}
               >
                 <Link href={`/bundles/${bundle.id}`}>
                   <Card 
-                    className={`p-6 h-full hover:scale-[1.02] transition-all cursor-pointer border-2 ${
+                    className={`h-full p-4 border-2 transition-all cursor-pointer group ${
                       bundle.color === "cyan" 
-                        ? "border-cyan-500/30 hover:border-cyan-500/60 hover:shadow-glow-blue-lg" 
-                        : "border-[#E7FB10]/30 hover:border-[#E7FB10]/60 hover:shadow-glow-lg"
+                        ? "border-cyan-500/30 hover:border-cyan-500 hover:shadow-[0_0_25px_rgba(34,211,238,0.15)]" 
+                        : "border-[#E7FB10]/30 hover:border-[#E7FB10] hover:shadow-[0_0_25px_rgba(231,251,16,0.15)]"
                     }`}
                     data-testid={`card-bundle-${bundle.id}`}
                   >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                    <div className="flex items-center justify-between mb-3">
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
                         bundle.color === "cyan" ? "bg-cyan-500/10" : "bg-[#E7FB10]/10"
                       }`}>
-                        <bundle.icon className={`h-6 w-6 ${
+                        <bundle.icon className={`h-4.5 w-4.5 ${
                           bundle.color === "cyan" ? "text-cyan-400" : "text-[#E7FB10]"
                         }`} />
                       </div>
-                      <div>
-                        <h3 className={`font-display text-xl font-bold ${
-                          bundle.color === "cyan" ? "text-cyan-400" : "text-[#E7FB10]"
-                        }`}>
-                          {bundle.name}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">{bundle.tagline}</p>
-                      </div>
-                    </div>
-                    <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-green-500/30 text-[15px] glow-pulse">
-                      Save {bundle.savings}%
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    {bundle.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {bundle.products.map((product) => (
-                      <Badge key={product} variant="outline" className="text-xs">
-                        {product}
+                      <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">
+                        Save {bundle.savings}%
                       </Badge>
-                    ))}
-                  </div>
-                  <div className="flex items-center justify-between pt-4 border-t border-border">
-                    <div className="flex items-baseline gap-2">
-                      <span className="font-display text-2xl font-bold">${bundle.bundlePrice.toFixed(2)}</span>
-                      <span className="text-sm text-muted-foreground line-through">
-                        ${bundle.originalPrice.toFixed(2)}
-                      </span>
                     </div>
-                    <Button size="sm" className="gap-2">
-                      View Bundle <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </Card>
+                    
+                    <h3 className={`font-display text-base font-bold mb-0.5 ${
+                      bundle.color === "cyan" ? "text-cyan-400" : "text-[#E7FB10]"
+                    }`}>
+                      {bundle.name}
+                    </h3>
+                    <p className="text-xs text-muted-foreground mb-2">{bundle.tagline}</p>
+                    
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {bundle.products.map((product) => (
+                        <Badge key={product} variant="outline" className="text-[10px] py-0 px-1.5">
+                          {product}
+                        </Badge>
+                      ))}
+                    </div>
+                    
+                    <div className={`flex items-center justify-between pt-3 border-t ${
+                      bundle.color === "cyan" ? "border-cyan-500/20" : "border-[#E7FB10]/20"
+                    }`}>
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="font-display text-lg font-bold">${bundle.bundlePrice.toFixed(2)}</span>
+                        <span className="text-xs text-muted-foreground line-through">
+                          ${bundle.originalPrice.toFixed(2)}
+                        </span>
+                      </div>
+                      <Button size="sm" variant="ghost" className="h-7 px-2 gap-1 text-xs">
+                        View <ArrowRight className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </Card>
                 </Link>
               </motion.div>
             ))}
           </div>
+        </motion.section>
+
+        {/* Bulk Orders Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mb-16"
+          data-testid="section-bulk-orders"
+        >
+          <Card className="p-6 md:p-8 border-2 border-[#9d4edd]/40 bg-gradient-to-r from-purple-950/30 via-background to-purple-950/20">
+            <div className="flex flex-col md:flex-row gap-6 items-center">
+              <div className="flex-shrink-0">
+                <div className="w-16 h-16 rounded-2xl bg-[#9d4edd]/20 flex items-center justify-center">
+                  <Boxes className="h-8 w-8 text-[#9d4edd]" />
+                </div>
+              </div>
+              
+              <div className="flex-1 text-center md:text-left">
+                <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
+                  <h2 className="font-display text-2xl font-bold text-[#9d4edd]">Bulk Orders</h2>
+                  <Badge className="bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30">
+                    <TrendingDown className="h-3 w-3 mr-1" />
+                    Volume Pricing
+                  </Badge>
+                </div>
+                <p className="text-muted-foreground mb-4 max-w-xl">
+                  Need larger quantities for your research facility? Contact us for custom bulk pricing 
+                  with discounts up to 30% on qualifying orders.
+                </p>
+                <div className="flex flex-wrap gap-4 justify-center md:justify-start text-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-400" />
+                    <span className="text-muted-foreground">10+ units: 10% off</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-400" />
+                    <span className="text-muted-foreground">25+ units: 20% off</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-400" />
+                    <span className="text-muted-foreground">50+ units: 30% off</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex-shrink-0">
+                <Link href="/contact">
+                  <Button className="gap-2 bg-[#9d4edd] text-white border-[#9d4edd]">
+                    <Mail className="h-4 w-4" />
+                    Request Quote
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </Card>
         </motion.section>
 
         <motion.div
