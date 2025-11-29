@@ -134,6 +134,7 @@ interface DashboardMetrics {
 
 function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string) => void }) {
   const [timeRange, setTimeRange] = useState<number>(30);
+  const [topProductsSort, setTopProductsSort] = useState<"revenue" | "units">("revenue");
   
   const { data: metrics, isLoading } = useQuery<DashboardMetrics>({
     queryKey: ["/api/admin/dashboard", timeRange],
@@ -432,17 +433,50 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-[#E7FB10]" />
-              Top Products
-            </CardTitle>
-            <CardDescription>Best sellers by revenue</CardDescription>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between gap-2">
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-[#E7FB10]" />
+                Top Products
+              </CardTitle>
+              <div className="flex rounded-lg border border-border overflow-hidden text-xs">
+                <button
+                  onClick={() => setTopProductsSort("revenue")}
+                  className={`px-3 py-1.5 transition-colors ${
+                    topProductsSort === "revenue" 
+                      ? "bg-[#E7FB10] text-black font-medium" 
+                      : "bg-background hover:bg-muted"
+                  }`}
+                  data-testid="btn-sort-revenue"
+                >
+                  Revenue
+                </button>
+                <button
+                  onClick={() => setTopProductsSort("units")}
+                  className={`px-3 py-1.5 transition-colors ${
+                    topProductsSort === "units" 
+                      ? "bg-[#21d8ff] text-black font-medium" 
+                      : "bg-background hover:bg-muted"
+                  }`}
+                  data-testid="btn-sort-units"
+                >
+                  Units Sold
+                </button>
+              </div>
+            </div>
+            <CardDescription>
+              {topProductsSort === "revenue" ? "Best sellers by revenue" : "Most popular by quantity"}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             {metrics.topProducts.length > 0 ? (
               <div className="space-y-4">
-                {metrics.topProducts.map((product, index) => (
+                {[...metrics.topProducts]
+                  .sort((a, b) => topProductsSort === "revenue" 
+                    ? b.revenue - a.revenue 
+                    : b.totalSold - a.totalSold
+                  )
+                  .map((product, index) => (
                   <div 
                     key={product.productId} 
                     className="flex items-center gap-3"
@@ -458,9 +492,19 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">{product.productName}</p>
-                      <p className="text-xs text-muted-foreground">{product.totalSold} sold</p>
+                      <p className="text-xs text-muted-foreground">
+                        {topProductsSort === "revenue" 
+                          ? `${product.totalSold} sold` 
+                          : formatCurrency(product.revenue)
+                        }
+                      </p>
                     </div>
-                    <p className="font-bold text-[#E7FB10]">{formatCurrency(product.revenue)}</p>
+                    <p className={`font-bold ${topProductsSort === "revenue" ? "text-[#E7FB10]" : "text-[#21d8ff]"}`}>
+                      {topProductsSort === "revenue" 
+                        ? formatCurrency(product.revenue)
+                        : `${product.totalSold} units`
+                      }
+                    </p>
                   </div>
                 ))}
               </div>
