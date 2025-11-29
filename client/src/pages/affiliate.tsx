@@ -467,10 +467,10 @@ export default function AffiliatePage() {
                 </h4>
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    { icon: Crown, text: "Your Premium Products" },
+                    { icon: Crown, text: "Premium Products" },
                     { icon: Shield, text: "Your Reputation Protected" },
-                    { icon: Zap, text: "Your Priority Support" },
-                    { icon: Gift, text: "Your Marketing Assets" },
+                    { icon: Zap, text: "Priority Support" },
+                    { icon: Gift, text: "Marketing Assets" },
                   ].map((item) => (
                     <div key={item.text} className="flex items-center gap-2 text-sm">
                       <item.icon className="h-3 w-3 text-[#9d4edd]" />
