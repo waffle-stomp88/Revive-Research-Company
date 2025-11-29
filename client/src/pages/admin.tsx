@@ -1097,21 +1097,19 @@ function ProductsTab() {
                     name="showOnLandingPage"
                     render={({ field }) => {
                       const currentProductOnLandingPage = editingProduct?.showOnLandingPage ?? false;
-                      const isDisabled = isLandingPageFull && !currentProductOnLandingPage;
                       const inStockValue = form.watch("inStock");
-                      const isOutOfStockWarning = field.value && !inStockValue;
+                      const isOutOfStock = !inStockValue;
+                      const isDisabled = (isLandingPageFull && !currentProductOnLandingPage) || isOutOfStock;
                       
                       return (
                         <FormItem className={`flex items-start gap-3 p-3 rounded-lg border ${
-                          isOutOfStockWarning
-                            ? "border-orange-500/50 bg-orange-500/10"
-                            : isDisabled 
-                              ? "border-muted-foreground/20 bg-muted/30 opacity-60" 
-                              : "border-[#E7FB10]/30 bg-[#E7FB10]/5"
+                          isDisabled 
+                            ? "border-muted-foreground/20 bg-muted/30 opacity-60" 
+                            : "border-[#E7FB10]/30 bg-[#E7FB10]/5"
                         }`}>
                           <FormControl>
                             <Checkbox
-                              checked={field.value ?? false}
+                              checked={isOutOfStock ? false : (field.value ?? false)}
                               onCheckedChange={field.onChange}
                               disabled={isDisabled}
                               className="mt-0.5 border-[#E7FB10]/50 data-[state=checked]:bg-[#E7FB10] data-[state=checked]:border-[#E7FB10] disabled:opacity-50"
@@ -1124,9 +1122,9 @@ function ProductsTab() {
                               Show on Landing Page
                             </FormLabel>
                             <p className="text-xs text-muted-foreground">
-                              {isOutOfStockWarning 
-                                ? <span className="text-orange-400 font-medium">Out-of-stock products won't display on landing page</span>
-                                : isDisabled 
+                              {isOutOfStock
+                                ? `Product must be in stock to show on landing page`
+                                : isLandingPageFull && !currentProductOnLandingPage
                                   ? `All 3 landing page slots are filled. Remove a product from landing page to add this one.`
                                   : `${landingPageProductCount}/3 slots used on homepage showcase`
                               }
