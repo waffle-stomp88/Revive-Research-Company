@@ -175,6 +175,12 @@ export function Navigation() {
                           Dashboard
                         </Link>
                       </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/affiliate-dashboard" className="cursor-pointer" data-testid="link-affiliate-dashboard">
+                          <User className="h-4 w-4 mr-2" />
+                          Affiliate Dashboard
+                        </Link>
+                      </DropdownMenuItem>
                       {user?.isAdmin && (
                         <DropdownMenuItem asChild>
                           <Link href="/admin" className="cursor-pointer" data-testid="link-admin">
