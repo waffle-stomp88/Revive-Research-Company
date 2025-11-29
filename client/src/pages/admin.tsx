@@ -1098,12 +1098,16 @@ function ProductsTab() {
                     render={({ field }) => {
                       const currentProductOnLandingPage = editingProduct?.showOnLandingPage ?? false;
                       const isDisabled = isLandingPageFull && !currentProductOnLandingPage;
+                      const inStockValue = form.watch("inStock");
+                      const isOutOfStockWarning = field.value && !inStockValue;
                       
                       return (
                         <FormItem className={`flex items-start gap-3 p-3 rounded-lg border ${
-                          isDisabled 
-                            ? "border-muted-foreground/20 bg-muted/30 opacity-60" 
-                            : "border-[#E7FB10]/30 bg-[#E7FB10]/5"
+                          isOutOfStockWarning
+                            ? "border-orange-500/50 bg-orange-500/10"
+                            : isDisabled 
+                              ? "border-muted-foreground/20 bg-muted/30 opacity-60" 
+                              : "border-[#E7FB10]/30 bg-[#E7FB10]/5"
                         }`}>
                           <FormControl>
                             <Checkbox
@@ -1120,9 +1124,11 @@ function ProductsTab() {
                               Show on Landing Page
                             </FormLabel>
                             <p className="text-xs text-muted-foreground">
-                              {isDisabled 
-                                ? `All 3 landing page slots are filled. Remove a product from landing page to add this one.`
-                                : `${landingPageProductCount}/3 slots used on homepage showcase`
+                              {isOutOfStockWarning 
+                                ? <span className="text-orange-400 font-medium">Out-of-stock products won't display on landing page</span>
+                                : isDisabled 
+                                  ? `All 3 landing page slots are filled. Remove a product from landing page to add this one.`
+                                  : `${landingPageProductCount}/3 slots used on homepage showcase`
                               }
                             </p>
                           </div>
