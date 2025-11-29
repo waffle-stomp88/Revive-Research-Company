@@ -187,20 +187,30 @@ export const insertAffiliatePayoutSchema = createInsertSchema(affiliatePayouts).
 export type InsertAffiliatePayout = z.infer<typeof insertAffiliatePayoutSchema>;
 export type AffiliatePayout = typeof affiliatePayouts.$inferSelect;
 
-// Product reviews table
+// Product reviews table - only verified purchasers can leave reviews
 export const reviews = pgTable("reviews", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   productId: varchar("product_id").notNull(),
-  userId: varchar("user_id"),
-  reviewerName: text("reviewer_name").notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  orderId: varchar("order_id").references(() => orders.id).notNull(),
   rating: integer("rating").notNull(),
   title: text("title"),
   comment: text("comment").notNull(),
-  isVerifiedPurchase: boolean("is_verified_purchase").default(false),
   isApproved: boolean("is_approved").default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertReviewSchema = createInsertSchema(reviews).omit({ id: true, isVerifiedPurchase: true, isApproved: true, createdAt: true });
+export const insertReviewSchema = createInsertSchema(reviews).omit({ id: true, isApproved: true, createdAt: true });
 export type InsertReview = z.infer<typeof insertReviewSchema>;
 export type Review = typeof reviews.$inferSelect;
+
+// Type for reviewable orders (orders eligible for review after 30 days)
+export type ReviewableOrder = {
+  orderId: string;
+  productId: string;
+  productName: string;
+  productImageUrl: string | null;
+  orderDate: Date;
+  eligibleDate: Date;
+  hasReviewed: boolean;
+};

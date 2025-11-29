@@ -9,7 +9,8 @@ import {
   type Affiliate, type InsertAffiliate,
   type AffiliateSale, type InsertAffiliateSale,
   type AffiliatePayout, type InsertAffiliatePayout,
-  type Review, type InsertReview
+  type Review, type InsertReview,
+  type ReviewableOrder
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, ilike, or, desc, sql, gte, and, lt, count, sum } from "drizzle-orm";
@@ -108,6 +109,12 @@ export interface IStorage {
   getAllReviews(): Promise<Review[]>;
   deleteReview(id: string): Promise<boolean>;
   updateReviewApproval(id: string, isApproved: boolean): Promise<Review | undefined>;
+  
+  // Reviewable orders (for verified purchase reviews)
+  getReviewableOrdersForUser(userId: string): Promise<ReviewableOrder[]>;
+  hasUserReviewedOrder(userId: string, orderId: string): Promise<boolean>;
+  canUserReviewOrder(userId: string, orderId: string): Promise<{ canReview: boolean; reason?: string }>;
+  getReviewByOrderId(orderId: string): Promise<Review | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -553,6 +560,104 @@ export class DatabaseStorage implements IStorage {
 
   async updateReviewApproval(id: string, isApproved: boolean): Promise<Review | undefined> {
     const [review] = await db.update(reviews).set({ isApproved }).where(eq(reviews.id, id)).returning();
+    return review || undefined;
+  }
+
+  // Get orders that are eligible for review (30+ days old, not yet reviewed)
+  async getReviewableOrdersForUser(userId: string): Promise<ReviewableOrder[]> {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    // Get all completed orders for this user that are at least 30 days old
+    const userOrders = await db.select().from(orders)
+      .where(and(
+        eq(orders.userId, userId),
+        or(eq(orders.status, 'completed'), eq(orders.status, 'shipped'))
+      ));
+
+    // Get all reviews by this user
+    const userReviews = await db.select().from(reviews)
+      .where(eq(reviews.userId, userId));
+    
+    const reviewedOrderIds = new Set(userReviews.map(r => r.orderId));
+
+    // Build reviewable orders list
+    const reviewableOrders: ReviewableOrder[] = [];
+    
+    for (const order of userOrders) {
+      if (!order.createdAt) continue;
+      
+      const orderDate = new Date(order.createdAt);
+      const eligibleDate = new Date(orderDate);
+      eligibleDate.setDate(eligibleDate.getDate() + 30);
+      
+      const hasReviewed = reviewedOrderIds.has(order.id);
+      
+      // Get product info
+      const [product] = await db.select().from(products).where(eq(products.id, order.productId));
+      
+      if (product) {
+        reviewableOrders.push({
+          orderId: order.id,
+          productId: order.productId,
+          productName: product.name,
+          productImageUrl: product.imageUrl,
+          orderDate,
+          eligibleDate,
+          hasReviewed
+        });
+      }
+    }
+
+    return reviewableOrders.sort((a, b) => b.orderDate.getTime() - a.orderDate.getTime());
+  }
+
+  async hasUserReviewedOrder(userId: string, orderId: string): Promise<boolean> {
+    const [review] = await db.select().from(reviews)
+      .where(and(eq(reviews.userId, userId), eq(reviews.orderId, orderId)));
+    return !!review;
+  }
+
+  async canUserReviewOrder(userId: string, orderId: string): Promise<{ canReview: boolean; reason?: string }> {
+    // Check if order exists and belongs to user
+    const [order] = await db.select().from(orders)
+      .where(and(eq(orders.id, orderId), eq(orders.userId, userId)));
+    
+    if (!order) {
+      return { canReview: false, reason: "Order not found or doesn't belong to you" };
+    }
+
+    // Check if order is completed/shipped
+    if (order.status !== 'completed' && order.status !== 'shipped') {
+      return { canReview: false, reason: "Order must be completed before leaving a review" };
+    }
+
+    // Check 30-day waiting period
+    if (!order.createdAt) {
+      return { canReview: false, reason: "Order date not available" };
+    }
+
+    const orderDate = new Date(order.createdAt);
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    if (orderDate > thirtyDaysAgo) {
+      const daysRemaining = Math.ceil((orderDate.getTime() + 30 * 24 * 60 * 60 * 1000 - Date.now()) / (24 * 60 * 60 * 1000));
+      return { canReview: false, reason: `You can leave a review in ${daysRemaining} days` };
+    }
+
+    // Check if already reviewed
+    const hasReviewed = await this.hasUserReviewedOrder(userId, orderId);
+    if (hasReviewed) {
+      return { canReview: false, reason: "You have already reviewed this order" };
+    }
+
+    return { canReview: true };
+  }
+
+  async getReviewByOrderId(orderId: string): Promise<Review | undefined> {
+    const [review] = await db.select().from(reviews)
+      .where(eq(reviews.orderId, orderId));
     return review || undefined;
   }
 }
