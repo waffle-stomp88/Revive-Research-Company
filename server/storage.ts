@@ -1,5 +1,5 @@
 import { 
-  users, products, coas, orders, contacts, affiliateApplications, affiliates, affiliateSales, affiliatePayouts,
+  users, products, coas, orders, contacts, affiliateApplications, affiliates, affiliateSales, affiliatePayouts, reviews,
   type User, type UpsertUser,
   type Product, type InsertProduct,
   type Coa, type InsertCoa,
@@ -8,7 +8,8 @@ import {
   type AffiliateApplication, type InsertAffiliateApplication,
   type Affiliate, type InsertAffiliate,
   type AffiliateSale, type InsertAffiliateSale,
-  type AffiliatePayout, type InsertAffiliatePayout
+  type AffiliatePayout, type InsertAffiliatePayout,
+  type Review, type InsertReview
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, ilike, or, desc, sql, gte, and, lt, count, sum } from "drizzle-orm";
@@ -99,6 +100,14 @@ export interface IStorage {
   
   // Product Sales Velocity
   getSellingFastProducts(daysBack: number, minOrders: number): Promise<string[]>;
+  
+  // Reviews
+  getProductReviews(productId: string): Promise<Review[]>;
+  createReview(review: InsertReview): Promise<Review>;
+  getProductAverageRating(productId: string): Promise<{ average: number; count: number }>;
+  getAllReviews(): Promise<Review[]>;
+  deleteReview(id: string): Promise<boolean>;
+  updateReviewApproval(id: string, isApproved: boolean): Promise<Review | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -504,6 +513,47 @@ export class DatabaseStorage implements IStorage {
       .map(([productId]) => productId);
 
     return sellingFastIds;
+  }
+
+  // Reviews
+  async getProductReviews(productId: string): Promise<Review[]> {
+    return db.select().from(reviews)
+      .where(and(eq(reviews.productId, productId), eq(reviews.isApproved, true)))
+      .orderBy(desc(reviews.createdAt));
+  }
+
+  async createReview(insertReview: InsertReview): Promise<Review> {
+    const [review] = await db.insert(reviews).values(insertReview).returning();
+    return review;
+  }
+
+  async getProductAverageRating(productId: string): Promise<{ average: number; count: number }> {
+    const productReviews = await db.select().from(reviews)
+      .where(and(eq(reviews.productId, productId), eq(reviews.isApproved, true)));
+    
+    if (productReviews.length === 0) {
+      return { average: 0, count: 0 };
+    }
+    
+    const totalRating = productReviews.reduce((sum, r) => sum + r.rating, 0);
+    return { 
+      average: totalRating / productReviews.length, 
+      count: productReviews.length 
+    };
+  }
+
+  async getAllReviews(): Promise<Review[]> {
+    return db.select().from(reviews).orderBy(desc(reviews.createdAt));
+  }
+
+  async deleteReview(id: string): Promise<boolean> {
+    const result = await db.delete(reviews).where(eq(reviews.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async updateReviewApproval(id: string, isApproved: boolean): Promise<Review | undefined> {
+    const [review] = await db.update(reviews).set({ isApproved }).where(eq(reviews.id, id)).returning();
+    return review || undefined;
   }
 }
 

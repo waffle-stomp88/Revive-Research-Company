@@ -186,3 +186,21 @@ export const affiliatePayouts = pgTable("affiliate_payouts", {
 export const insertAffiliatePayoutSchema = createInsertSchema(affiliatePayouts).omit({ id: true, processedAt: true, createdAt: true });
 export type InsertAffiliatePayout = z.infer<typeof insertAffiliatePayoutSchema>;
 export type AffiliatePayout = typeof affiliatePayouts.$inferSelect;
+
+// Product reviews table
+export const reviews = pgTable("reviews", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  productId: varchar("product_id").notNull(),
+  userId: varchar("user_id"),
+  reviewerName: text("reviewer_name").notNull(),
+  rating: integer("rating").notNull(),
+  title: text("title"),
+  comment: text("comment").notNull(),
+  isVerifiedPurchase: boolean("is_verified_purchase").default(false),
+  isApproved: boolean("is_approved").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertReviewSchema = createInsertSchema(reviews).omit({ id: true, isVerifiedPurchase: true, isApproved: true, createdAt: true });
+export type InsertReview = z.infer<typeof insertReviewSchema>;
+export type Review = typeof reviews.$inferSelect;
