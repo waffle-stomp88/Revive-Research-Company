@@ -132,7 +132,7 @@ interface DashboardMetrics {
   revenueTrend: Array<{ date: string; revenue: number; orders: number }>;
 }
 
-function DashboardOverview() {
+function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string) => void }) {
   const [timeRange, setTimeRange] = useState<number>(30);
   
   const { data: metrics, isLoading } = useQuery<DashboardMetrics>({
@@ -197,49 +197,56 @@ function DashboardOverview() {
       icon: Clock,
       title: "Pending Orders",
       count: metrics.pendingOrders,
-      color: "#E7FB10"
+      color: "#E7FB10",
+      targetTab: "orders"
     }] : []),
     ...(metrics.processingOrders > 0 ? [{
       type: "info",
       icon: Package,
       title: "Processing Orders",
       count: metrics.processingOrders,
-      color: "#21d8ff"
+      color: "#21d8ff",
+      targetTab: "orders"
     }] : []),
     ...(metrics.outOfStockProducts.length > 0 ? [{
       type: "error",
       icon: PackageX,
       title: "Out of Stock",
       count: metrics.outOfStockProducts.length,
-      color: "#ef4444"
+      color: "#ef4444",
+      targetTab: "products"
     }] : []),
     ...(metrics.lowStockProducts.length > 0 ? [{
       type: "warning",
       icon: AlertCircle,
       title: "Low Stock Items",
       count: metrics.lowStockProducts.length,
-      color: "#f59e0b"
+      color: "#f59e0b",
+      targetTab: "products"
     }] : []),
     ...(metrics.pendingAffiliateApplications > 0 ? [{
       type: "info",
       icon: Users,
       title: "Affiliate Applications",
       count: metrics.pendingAffiliateApplications,
-      color: "#9d4edd"
+      color: "#9d4edd",
+      targetTab: "affiliates"
     }] : []),
     ...(metrics.pendingPayouts > 0 ? [{
       type: "warning",
       icon: CreditCard,
       title: "Pending Payouts",
       count: metrics.pendingPayouts,
-      color: "#21d8ff"
+      color: "#21d8ff",
+      targetTab: "affiliates"
     }] : []),
     ...(metrics.recentContacts > 0 ? [{
       type: "info",
       icon: Inbox,
       title: "New Messages",
       count: metrics.recentContacts,
-      color: "#21d8ff"
+      color: "#21d8ff",
+      targetTab: "contacts"
     }] : []),
   ];
 
@@ -344,10 +351,11 @@ function DashboardOverview() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
               {attentionItems.map((item, index) => (
-                <div 
+                <button 
                   key={index}
-                  className="flex items-center gap-3 p-3 rounded-lg bg-background/50 border border-border/50"
-                  data-testid={`attention-item-${index}`}
+                  onClick={() => onNavigateToTab(item.targetTab)}
+                  className="flex items-center gap-3 p-3 rounded-lg bg-background/50 border border-border/50 hover:bg-background/80 hover:border-border transition-colors cursor-pointer text-left"
+                  data-testid={`attention-item-${item.targetTab}-${index}`}
                 >
                   <div 
                     className="h-10 w-10 rounded-full flex items-center justify-center shrink-0"
@@ -359,7 +367,7 @@ function DashboardOverview() {
                     <p className="text-xl font-bold" style={{ color: item.color }}>{item.count}</p>
                     <p className="text-xs text-muted-foreground truncate">{item.title}</p>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           </CardContent>
@@ -2265,6 +2273,7 @@ function AffiliatesTab() {
 export default function Admin() {
   const { user, isLoading: authLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("overview");
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -2346,7 +2355,7 @@ export default function Admin() {
           </motion.div>
 
           <motion.div variants={itemVariants}>
-            <Tabs defaultValue="overview" className="space-y-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
               <TabsList className="grid w-full max-w-3xl grid-cols-6">
                 <TabsTrigger value="overview" className="flex items-center gap-2" data-testid="tab-overview">
                   <LayoutDashboard className="h-4 w-4" />
@@ -2375,7 +2384,7 @@ export default function Admin() {
               </TabsList>
 
               <TabsContent value="overview">
-                <DashboardOverview />
+                <DashboardOverview onNavigateToTab={setActiveTab} />
               </TabsContent>
 
               <TabsContent value="products">
