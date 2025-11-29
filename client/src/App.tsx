@@ -65,7 +65,7 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/admin" component={Admin} />
       <Route path="/affiliate" component={Affiliate} />
-      <Route path="/affiliate/dashboard" component={AffiliateDashboard} />
+      <Route path="/affiliate-dashboard" component={AffiliateDashboard} />
       <Route path="/faq" component={FAQ} />
       <Route path="/shipping" component={Shipping} />
       <Route path="/terms" component={TermsOfService} />
