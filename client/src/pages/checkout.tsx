@@ -21,6 +21,7 @@ import {
   Percent,
   User,
   LogIn,
+  LogOut,
   UserPlus,
   CheckCircle,
   Clock,
@@ -260,14 +261,26 @@ export default function Checkout() {
                   </div>
                 ) : isAuthenticated ? (
                   <div className="bg-[#E7FB10]/10 border border-[#E7FB10]/30 rounded-lg p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#E7FB10]/20 flex items-center justify-center">
-                        <CheckCircle className="h-5 w-5 text-[#E7FB10]" />
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-[#E7FB10]/20 flex items-center justify-center">
+                          <CheckCircle className="h-5 w-5 text-[#E7FB10]" />
+                        </div>
+                        <div>
+                          <p className="font-medium">Welcome back, {user?.firstName || 'Researcher'}!</p>
+                          <p className="text-sm text-muted-foreground">{user?.email}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium">Welcome back, {user?.firstName || 'Researcher'}!</p>
-                        <p className="text-sm text-muted-foreground">{user?.email}</p>
-                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-muted-foreground hover:text-foreground"
+                        onClick={() => window.location.href = "/api/logout"}
+                        data-testid="button-checkout-logout"
+                      >
+                        <LogOut className="h-4 w-4 mr-1" />
+                        Sign out
+                      </Button>
                     </div>
                     <p className="text-sm text-muted-foreground mt-3">
                       Your order will be saved to your account for easy tracking and future reference.
