@@ -749,7 +749,7 @@ function ProductsTab() {
   });
 
   // Count products currently shown on landing page
-  const landingPageProductCount = products?.filter(p => p.showOnLandingPage).length || 0;
+  const landingPageProductCount = products?.filter(p => p.showOnLandingPage && p.inStock).length || 0;
   const isLandingPageFull = landingPageProductCount >= 3;
 
   const createMutation = useMutation({
@@ -1260,7 +1260,7 @@ function ProductsTab() {
                       <Badge variant="destructive">Out of Stock</Badge>
                     )}
                     {product.featured && <Badge className="bg-[#21d8ff] text-black">Featured</Badge>}
-                    {product.showOnLandingPage && <Badge className="bg-[#E7FB10] text-black">Landing Page</Badge>}
+                    {product.showOnLandingPage && product.inStock && <Badge className="bg-[#E7FB10] text-black">Landing Page</Badge>}
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
