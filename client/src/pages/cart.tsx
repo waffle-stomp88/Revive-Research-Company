@@ -33,7 +33,7 @@ export default function CartPage() {
       });
       return;
     }
-    setLocation("/checkout");
+    setLocation("/checkout?fromCart=true");
   };
 
   const subtotal = getSubtotal();
