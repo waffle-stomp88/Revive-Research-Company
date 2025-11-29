@@ -801,72 +801,78 @@ export default function Products() {
                       className="h-full"
                     >
                       <Link href={`/products/${product.id}`} className="h-full block">
-                        <Card 
-                          className={`group p-3 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 hover:scale-[1.03] relative overflow-hidden ${
-                            !product.inStock
-                              ? "border-red-500/40 hover:border-red-500 hover:shadow-[0_0_30px_rgba(239,68,68,0.5),0_0_60px_rgba(239,68,68,0.2)]"
-                              : "border-cyan-400/40 hover:border-cyan-400 hover:shadow-[0_0_30px_rgba(33,216,255,0.5),0_0_60px_rgba(33,216,255,0.2)]"
-                          }`}
-                          data-testid={`card-product-${product.id}`}
-                        >
-                          {!product.inStock && (
-                            <div 
-                              className="absolute inset-0 pointer-events-none z-10"
-                              style={{
-                                background: "linear-gradient(to bottom right, transparent calc(50% - 2px), rgba(239, 68, 68, 0.7) calc(50% - 1px), rgba(239, 68, 68, 0.9) 50%, rgba(239, 68, 68, 0.7) calc(50% + 1px), transparent calc(50% + 2px))",
-                              }}
-                            />
-                          )}
-                          <div className="relative aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 rounded-md mb-3 overflow-hidden">
-                            <img 
-                              src={productImage} 
-                              alt={product.name}
-                              className="w-full h-full object-contain transition-transform duration-300 p-3 group-hover:scale-105"
-                            />
-                            {/* Smart badge system - max 2 badges, positioned top-left */}
-                            {(() => {
-                              const badges = getProductBadges(product, sellingFastIds);
-                              return (
-                                <div className="absolute top-2 left-2 z-20 flex flex-col gap-1">
-                                  {badges.map((badge, index) => (
-                                    <span 
-                                      key={badge.type}
-                                      className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[11px] rounded ${badge.className}`}
-                                    >
-                                      {badge.icon && <badge.icon className="h-3 w-3" />}
-                                      {badge.label}
-                                    </span>
-                                  ))}
-                                </div>
-                              );
-                            })()}
-                          </div>
-                          
-                          <div className="flex-1 flex flex-col min-h-0">
-                            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
-                              {product.category}
-                            </div>
-                            <h3 className="font-display md:text-lg font-bold mb-1 group-hover:text-[#E7FB10] transition-colors line-clamp-1 text-center text-[20px]">
-                              {product.name}
-                            </h3>
-                            <p className="text-xs text-muted-foreground mb-2 line-clamp-2 min-h-[2rem]">
-                              {product.shortDescription}
-                            </p>
-                            <div className="flex items-center justify-between mt-auto pt-2 border-t border-border">
-                              <div className="flex items-baseline gap-1.5">
-                                <span className="font-display text-lg font-bold text-[#E7FB10]">
-                                  ${Number(product.price).toFixed(2)}
-                                </span>
-                                {product.originalPrice && (
-                                  <span className="text-[10px] text-muted-foreground line-through">
-                                    ${Number(product.originalPrice).toFixed(2)}
-                                  </span>
-                                )}
+                        {/* Check if product is out of stock (either inStock=false OR stockAmount<=0) */}
+                        {(() => {
+                          const isOutOfStock = !product.inStock || (product.stockAmount !== null && product.stockAmount <= 0);
+                          return (
+                            <Card 
+                              className={`group p-3 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 hover:scale-[1.03] relative overflow-hidden ${
+                                isOutOfStock
+                                  ? "border-red-500/40 hover:border-red-500 hover:shadow-[0_0_30px_rgba(239,68,68,0.5),0_0_60px_rgba(239,68,68,0.2)]"
+                                  : "border-cyan-400/40 hover:border-cyan-400 hover:shadow-[0_0_30px_rgba(33,216,255,0.5),0_0_60px_rgba(33,216,255,0.2)]"
+                              }`}
+                              data-testid={`card-product-${product.id}`}
+                            >
+                              {isOutOfStock && (
+                                <div 
+                                  className="absolute inset-0 pointer-events-none z-10"
+                                  style={{
+                                    background: "linear-gradient(to bottom right, transparent calc(50% - 2px), rgba(239, 68, 68, 0.7) calc(50% - 1px), rgba(239, 68, 68, 0.9) 50%, rgba(239, 68, 68, 0.7) calc(50% + 1px), transparent calc(50% + 2px))",
+                                  }}
+                                />
+                              )}
+                              <div className="relative aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 rounded-md mb-3 overflow-hidden">
+                                <img 
+                                  src={productImage} 
+                                  alt={product.name}
+                                  className="w-full h-full object-contain transition-transform duration-300 p-3 group-hover:scale-105"
+                                />
+                                {/* Smart badge system - max 2 badges, positioned top-left */}
+                                {(() => {
+                                  const badges = getProductBadges(product, sellingFastIds);
+                                  return (
+                                    <div className="absolute top-2 left-2 z-20 flex flex-col gap-1">
+                                      {badges.map((badge) => (
+                                        <span 
+                                          key={badge.type}
+                                          className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[11px] rounded ${badge.className}`}
+                                        >
+                                          {badge.icon && <badge.icon className="h-3 w-3" />}
+                                          {badge.label}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  );
+                                })()}
                               </div>
-                              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-[#E7FB10] transition-colors" />
-                            </div>
-                          </div>
-                        </Card>
+                              
+                              <div className="flex-1 flex flex-col min-h-0">
+                                <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
+                                  {product.category}
+                                </div>
+                                <h3 className="font-display md:text-lg font-bold mb-1 group-hover:text-[#E7FB10] transition-colors line-clamp-1 text-center text-[20px]">
+                                  {product.name}
+                                </h3>
+                                <p className="text-xs text-muted-foreground mb-2 line-clamp-2 min-h-[2rem]">
+                                  {product.shortDescription}
+                                </p>
+                                <div className="flex items-center justify-between mt-auto pt-2 border-t border-border">
+                                  <div className="flex items-baseline gap-1.5">
+                                    <span className="font-display text-lg font-bold text-[#E7FB10]">
+                                      ${Number(product.price).toFixed(2)}
+                                    </span>
+                                    {product.originalPrice && (
+                                      <span className="text-[10px] text-muted-foreground line-through">
+                                        ${Number(product.originalPrice).toFixed(2)}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-[#E7FB10] transition-colors" />
+                                </div>
+                              </div>
+                            </Card>
+                          );
+                        })()}
                       </Link>
                     </motion.div>
                   ))}
