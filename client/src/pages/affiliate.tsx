@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, useInView, useSpring, useTransform } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -37,6 +37,52 @@ import {
   DollarSign,
   Gift,
 } from "lucide-react";
+
+function AnimatedCounter({ 
+  value, 
+  prefix = "", 
+  suffix = "",
+  duration = 2 
+}: { 
+  value: number; 
+  prefix?: string; 
+  suffix?: string;
+  duration?: number;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useEffect(() => {
+    if (isInView) {
+      let startTime: number;
+      let animationFrame: number;
+      
+      const animate = (timestamp: number) => {
+        if (!startTime) startTime = timestamp;
+        const progress = Math.min((timestamp - startTime) / (duration * 1000), 1);
+        
+        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+        setDisplayValue(Math.floor(easeOutQuart * value));
+        
+        if (progress < 1) {
+          animationFrame = requestAnimationFrame(animate);
+        } else {
+          setDisplayValue(value);
+        }
+      };
+      
+      animationFrame = requestAnimationFrame(animate);
+      return () => cancelAnimationFrame(animationFrame);
+    }
+  }, [isInView, value, duration]);
+
+  return (
+    <span ref={ref}>
+      {prefix}{displayValue}{suffix}
+    </span>
+  );
+}
 
 const affiliateFormSchema = z.object({
   fullName: z.string().min(2, "Full name is required"),
@@ -113,8 +159,8 @@ export default function AffiliatePage() {
 
   return (
     <main className="min-h-screen overflow-hidden">
-      {/* Compact Hero Section */}
-      <section className="relative pt-24 pb-8 md:pt-28 md:pb-12 overflow-hidden">
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-10 md:pt-36 md:pb-14 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#9d4edd]/8 via-background to-background" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(157,78,221,0.12),transparent_60%)]" />
 
@@ -169,32 +215,63 @@ export default function AffiliatePage() {
         </div>
       </section>
 
-      {/* Stats Banner - Compact */}
-      <section id="benefits" className="py-6 relative overflow-hidden">
+      {/* Stats Banner with Animated Counters */}
+      <section id="benefits" className="py-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-[#9d4edd]/5" />
         
         <div className="container max-w-4xl mx-auto px-4 relative z-10">
           <div className="grid grid-cols-4 gap-4">
-            {[
-              { value: "20%", label: "Commission" },
-              { value: "30", label: "Day Cookie" },
-              { value: "$100", label: "Min Payout" },
-              { value: "10%", label: "Tier 2" },
-            ].map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                className="text-center"
-              >
-                <p className="font-display text-2xl md:text-3xl font-bold text-[#9d4edd]">
-                  {stat.value}
-                </p>
-                <p className="text-xs text-muted-foreground uppercase tracking-wider">{stat.label}</p>
-              </motion.div>
-            ))}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0 }}
+              className="text-center"
+            >
+              <p className="font-display text-2xl md:text-3xl font-bold text-[#9d4edd]">
+                <AnimatedCounter value={20} suffix="%" duration={1.5} />
+              </p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Commission</p>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="text-center"
+            >
+              <p className="font-display text-2xl md:text-3xl font-bold text-[#9d4edd]">
+                <AnimatedCounter value={30} duration={1.5} />
+              </p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Day Cookie</p>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="text-center"
+            >
+              <p className="font-display text-2xl md:text-3xl font-bold text-[#9d4edd]">
+                <AnimatedCounter value={100} prefix="$" duration={1.5} />
+              </p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Min Payout</p>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="text-center"
+            >
+              <p className="font-display text-2xl md:text-3xl font-bold text-[#9d4edd]">
+                <AnimatedCounter value={10} suffix="%" duration={1.5} />
+              </p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Tier 2</p>
+            </motion.div>
           </div>
         </div>
       </section>
