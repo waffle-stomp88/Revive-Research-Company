@@ -106,20 +106,29 @@ export default function CartPage() {
               >
                 <Card className="p-4" data-testid={`cart-item-${item.productId}`}>
                   <div className="flex gap-4">
-                    <div className="w-24 h-24 bg-muted rounded-lg flex-shrink-0 overflow-hidden">
+                    <Link 
+                      href={item.bundleId ? `/bundles/${item.bundleId}` : `/products/${item.productId}`}
+                      className="w-24 h-24 bg-muted rounded-lg flex-shrink-0 overflow-hidden cursor-pointer hover:ring-2 hover:ring-[#E7FB10]/50 transition-all"
+                      data-testid={`link-cart-item-image-${item.productId}`}
+                    >
                       <img
                         src={productImage}
                         alt={item.name}
                         className="w-full h-full object-contain p-2"
                       />
-                    </div>
+                    </Link>
                     
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-4">
                         <div>
-                          <h3 className="font-display font-semibold text-lg" data-testid={`cart-item-name-${item.productId}`}>
-                            {item.name}
-                          </h3>
+                          <Link 
+                            href={item.bundleId ? `/bundles/${item.bundleId}` : `/products/${item.productId}`}
+                            data-testid={`link-cart-item-name-${item.productId}`}
+                          >
+                            <h3 className="font-display font-semibold text-lg hover:text-[#E7FB10] transition-colors cursor-pointer" data-testid={`cart-item-name-${item.productId}`}>
+                              {item.name}
+                            </h3>
+                          </Link>
                           <p className="text-sm text-muted-foreground">
                             Dosage: {item.dosage}
                           </p>

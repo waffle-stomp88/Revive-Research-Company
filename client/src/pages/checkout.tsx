@@ -19,8 +19,14 @@ import {
   Loader2,
   Repeat,
   Percent,
+  User,
+  LogIn,
+  UserPlus,
+  CheckCircle,
+  Clock,
+  Package,
 } from "lucide-react";
-import type { Product } from "@shared/schema";
+import type { Product, User as UserType } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { getBundleById } from "@/lib/bundles";
 
@@ -54,6 +60,18 @@ export default function Checkout() {
     queryKey: ["/api/products", productId],
     enabled: !!productId && !fromCart && !bundleId,
   });
+
+  const { data: user, isLoading: userLoading } = useQuery<UserType | null>({
+    queryKey: ["/api/auth/user"],
+    queryFn: async () => {
+      const res = await fetch("/api/auth/user", { credentials: "include" });
+      if (res.status === 401) return null;
+      if (!res.ok) throw new Error("Failed to fetch user");
+      return res.json();
+    },
+  });
+
+  const isAuthenticated = !!user;
 
   const checkoutMutation = useMutation({
     mutationFn: async () => {
@@ -229,6 +247,76 @@ export default function Checkout() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
+              {/* Account Section */}
+              <Card className="p-6 mb-6">
+                <h2 className="font-display text-xl font-semibold mb-4 flex items-center gap-2">
+                  <User className="h-5 w-5" />
+                  Your Account
+                </h2>
+                
+                {userLoading ? (
+                  <div className="flex justify-center py-4">
+                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                  </div>
+                ) : isAuthenticated ? (
+                  <div className="bg-[#E7FB10]/10 border border-[#E7FB10]/30 rounded-lg p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[#E7FB10]/20 flex items-center justify-center">
+                        <CheckCircle className="h-5 w-5 text-[#E7FB10]" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Welcome back, {user?.firstName || 'Researcher'}!</p>
+                        <p className="text-sm text-muted-foreground">{user?.email}</p>
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-3">
+                      Your order will be saved to your account for easy tracking and future reference.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <p className="text-muted-foreground text-sm">
+                      Sign in or create an account to save your order history and speed up future checkouts.
+                    </p>
+                    
+                    <div className="grid gap-3">
+                      <Button
+                        className="w-full gap-2 bg-[#E7FB10] hover:bg-[#E7FB10]/90"
+                        onClick={() => window.location.href = "/api/login"}
+                        data-testid="button-checkout-login"
+                      >
+                        <LogIn className="h-4 w-4" />
+                        Sign In with Replit
+                      </Button>
+                    </div>
+                    
+                    <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                      <p className="text-sm font-medium">Benefits of signing in:</p>
+                      <ul className="space-y-2 text-sm text-muted-foreground">
+                        <li className="flex items-center gap-2">
+                          <Package className="h-4 w-4 text-[#E7FB10]" />
+                          Track all your orders in one place
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <Clock className="h-4 w-4 text-[#21d8ff]" />
+                          Faster checkout next time
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <FlaskConical className="h-4 w-4 text-[#9d4edd]" />
+                          Leave verified reviews after 30 days
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <Separator />
+                    
+                    <p className="text-center text-sm text-muted-foreground">
+                      Or continue as guest below
+                    </p>
+                  </div>
+                )}
+              </Card>
+
               <Card className="p-6 mb-6">
                 <h2 className="font-display text-xl font-semibold mb-6 flex items-center gap-2">
                   <CreditCard className="h-5 w-5" />
