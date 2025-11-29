@@ -870,6 +870,20 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Mark contact as read
+  app.patch("/api/admin/contacts/:id/read", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const contact = await storage.markContactAsRead(req.params.id);
+      if (!contact) {
+        return res.status(404).json({ error: "Contact not found" });
+      }
+      res.json(contact);
+    } catch (error) {
+      console.error("Error marking contact as read:", error);
+      res.status(500).json({ error: "Failed to mark contact as read" });
+    }
+  });
+
   // === ADMIN AFFILIATE ROUTES ===
 
   // Admin: Get all affiliate applications

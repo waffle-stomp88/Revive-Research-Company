@@ -61,6 +61,8 @@ export interface IStorage {
   
   createContact(contact: InsertContact): Promise<Contact>;
   getAllContacts(): Promise<Contact[]>;
+  markContactAsRead(id: string): Promise<Contact | undefined>;
+  getUnreadContactsCount(): Promise<number>;
   
   // Affiliate Applications
   createAffiliateApplication(application: InsertAffiliateApplication): Promise<AffiliateApplication>;
@@ -218,7 +220,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAllContacts(): Promise<Contact[]> {
-    return db.select().from(contacts);
+    return db.select().from(contacts).orderBy(desc(contacts.createdAt));
+  }
+
+  async markContactAsRead(id: string): Promise<Contact | undefined> {
+    const [contact] = await db.update(contacts).set({ isRead: true }).where(eq(contacts.id, id)).returning();
+    return contact || undefined;
+  }
+
+  async getUnreadContactsCount(): Promise<number> {
+    const [result] = await db.select({ count: sql<number>`count(*)` }).from(contacts).where(eq(contacts.isRead, false));
+    return Number(result?.count || 0);
   }
 
   // Affiliate Applications
