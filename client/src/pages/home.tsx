@@ -423,9 +423,10 @@ function ProductShowcase() {
               <motion.div
                 key={product.id}
                 variants={fadeInUp}
+                className="h-full"
               >
-                <Link href={`/products/${product.id}`}>
-                  <Card className={`group p-8 cursor-pointer transition-all duration-300 border-2 ${
+                <Link href={`/products/${product.id}`} className="h-full block">
+                  <Card className={`group p-8 cursor-pointer transition-all duration-300 border-2 h-full flex flex-col ${
                     !product.inStock
                       ? "border-red-500/50 shadow-glow-red-sm hover:border-red-500 hover:shadow-glow-red-lg hover:animate-product-glow-red backlit-red"
                       : "border-cyan-400/60 shadow-glow-blue-sm hover:border-cyan-400 hover:shadow-glow-blue-lg hover:animate-product-glow-blue backlit-blue"
@@ -436,10 +437,10 @@ function ProductShowcase() {
                     <h3 className="font-display text-xl font-semibold mb-2 group-hover:text-primary transition-colors text-[#E7FB10]">
                       {product.name}
                     </h3>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2 min-h-[2.5rem]">
                       {product.shortDescription}
                     </p>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mt-auto">
                       <span className="font-display text-2xl font-bold">
                         ${Number(product.price).toFixed(2)}
                       </span>

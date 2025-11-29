@@ -426,8 +426,9 @@ export default function Products() {
               <motion.div
                 key={product.id}
                 variants={fadeInUp}
+                className="h-full"
               >
-                <Link href={`/products/${product.id}`}>
+                <Link href={`/products/${product.id}`} className="h-full block">
                   <Card 
                     className={`group p-3 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 hover:scale-[1.03] ${
                       !product.inStock
@@ -466,7 +467,7 @@ export default function Products() {
                       <h3 className="font-display md:text-lg font-bold mb-1 group-hover:text-[#E7FB10] transition-colors line-clamp-1 text-center text-[20px]">
                         {product.name}
                       </h3>
-                      <p className="text-xs text-muted-foreground mb-2 flex-1 line-clamp-2">
+                      <p className="text-xs text-muted-foreground mb-2 line-clamp-2 min-h-[2rem]">
                         {product.shortDescription}
                       </p>
                       <div className="flex items-center justify-between mt-auto pt-2 border-t border-border">
