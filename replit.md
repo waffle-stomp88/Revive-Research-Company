@@ -40,13 +40,18 @@ Preferred communication style: Simple, everyday language.
 - Due to the nature of research compounds, all sales are final
 - Prominently displayed on FAQ page
 
-### Affiliate Program
+### Two-Tier Affiliate Program
 - Exclusivity-focused messaging ("We Don't Need Partners. We Choose Them.")
 - Selective partner program, not desperate for affiliates
-- 20% commission rate
+- **Two-Tier Commission Structure**:
+  - Tier 1: 20% of order total (paid to direct referrer)
+  - Tier 2: 10% of order total (paid to upline who referred the affiliate)
 - 30-day cookie window
 - $100 minimum payout
 - Application form with qualification questions
+- **Referral Tracking**: URL parameter `?ref=CODE` captured and persisted through checkout
+- **Affiliate Dashboard** (`/affiliate-dashboard`): View sales stats, team hierarchy, request payouts
+- **Admin Management** (`/admin` → Affiliates tab): Approve/reject applications, manage affiliates, process payouts
 
 ### Product Bundles (Research Stacks)
 1. **The Wolverine Stack** - BPC-157 + TB-500 ($89.99, saves 15%)
@@ -199,6 +204,10 @@ All pages display "Research Use Only" messaging with comprehensive disclaimers.
 - **coas**: Certificate of Authenticity records linked to products by batch number
 - **orders**: Customer orders with shipping details and order items
 - **contacts**: Contact form submissions
+- **affiliates**: Approved affiliates with referral codes, upline relationships, and earnings
+- **affiliate_applications**: Pending affiliate applications with referrer tracking
+- **affiliate_sales**: Commission records linking orders to tier 1/tier 2 affiliates
+- **affiliate_payouts**: Payout requests and processing history
 
 **Migrations**
 - Drizzle Kit for schema migrations in `migrations/` directory
@@ -237,6 +246,7 @@ All pages display "Research Use Only" messaging with comprehensive disclaimers.
 - `client/src/pages/dashboard.tsx` - Customer dashboard
 - `client/src/pages/admin.tsx` - Admin panel
 - `client/src/pages/affiliate.tsx` - Affiliate program (exclusivity-focused)
+- `client/src/pages/affiliate-dashboard.tsx` - Affiliate dashboard with sales stats and payouts
 - `client/src/pages/faq.tsx` - FAQ with NO REFUNDS policy
 - `client/src/pages/shipping.tsx` - Shipping details
 - `client/src/pages/terms-of-service.tsx` - Terms of Service
