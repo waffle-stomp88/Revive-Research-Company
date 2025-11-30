@@ -615,28 +615,66 @@ export default function AffiliatePage() {
             ))}
           </div>
 
-          {/* Not For Section - Inline */}
+          {/* Not For Section - Detailed */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <Card className="p-4 border border-red-500/30 bg-red-950/10">
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-                <span className="font-semibold text-red-400 text-sm flex items-center gap-2">
-                  <XCircle className="h-4 w-4" />
-                  Not a fit for:
-                </span>
-                {[
-                  "Coupon sites",
-                  "Unapproved health claims",
-                  "Unfamiliar with peptides",
-                  "Quick-flip promoters",
-                ].map((item) => (
-                  <span key={item} className="text-xs text-muted-foreground">
-                    • {item}
-                  </span>
-                ))}
+            <Card className="p-6 border-2 border-red-500/30 bg-red-950/10 relative overflow-hidden">
+              <div className="absolute top-4 right-4 opacity-10">
+                <XCircle className="h-12 w-12 text-red-400" />
+              </div>
+              
+              <div className="mb-5">
+                <h3 className="font-display text-xl md:text-2xl font-bold flex items-center gap-2 mb-1">
+                  <XCircle className="h-5 w-5 text-red-400" />
+                  <span className="text-red-400">Not a Fit For:</span>
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  We're selective about partnerships. The following affiliate types won't work with our program:
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <div className="p-3 rounded-lg bg-black/20 border border-red-500/20">
+                    <p className="font-semibold text-red-300 text-sm mb-1">Coupon Sites & Deal Aggregators</p>
+                    <p className="text-xs text-muted-foreground">
+                      We don't partner with discount coupon sites, deal aggregators, or promotional platforms that focus solely on finding the cheapest price. These don't align with our premium positioning.
+                    </p>
+                  </div>
+                  
+                  <div className="p-3 rounded-lg bg-black/20 border border-red-500/20">
+                    <p className="font-semibold text-red-300 text-sm mb-1">Unapproved Health Claims</p>
+                    <p className="text-xs text-muted-foreground">
+                      If you make medical claims, FDA violations, or promote unauthorized health benefits, we cannot partner. We strictly adhere to regulations and won't promote anyone who doesn't.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="p-3 rounded-lg bg-black/20 border border-red-500/20">
+                    <p className="font-semibold text-red-300 text-sm mb-1">Unfamiliar With Peptides</p>
+                    <p className="text-xs text-muted-foreground">
+                      If you can't explain what peptides are or why quality matters, you're not ready. Your audience deserves educated recommendations from someone who genuinely understands the space.
+                    </p>
+                  </div>
+                  
+                  <div className="p-3 rounded-lg bg-black/20 border border-red-500/20">
+                    <p className="font-semibold text-red-300 text-sm mb-1">Quick-Flip Promoters</p>
+                    <p className="text-xs text-muted-foreground">
+                      If your only goal is short-term cash or you promote anything that pays, this isn't for you. We need partners who believe in quality and will represent us with integrity.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 p-3 rounded-lg bg-amber-950/20 border border-amber-500/20">
+                <p className="text-xs text-amber-200 flex items-start gap-2">
+                  <span className="mt-0.5 shrink-0">→</span>
+                  <span><strong>Our Program is Selective:</strong> We review every application personally. We'd rather have 50 amazing partners than 500 mediocre ones. If you're genuinely passionate about research quality and integrity, apply.</span>
+                </p>
               </div>
             </Card>
           </motion.div>
