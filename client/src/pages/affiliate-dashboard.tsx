@@ -309,88 +309,93 @@ export default function AffiliateDashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mb-8 space-y-4"
+          className="mb-8"
         >
-          {/* Customer Referral Code */}
-          <Card className="border-[#E7FB10]/30 bg-gradient-to-r from-[#E7FB10]/5 to-transparent">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <span className="text-[#E7FB10]">●</span>
-                Personal Referral Code (Customers)
-              </CardTitle>
-              <CardDescription>
-                Share this code with customers to earn Tier 1 commissions. They get a 20% personal-use discount.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <Card>
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Basic Referral Code - 10% */}
                 <div>
-                  <code className="text-sm bg-muted px-3 py-1.5 rounded font-mono" data-testid="text-referral-link">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-[#E7FB10] text-sm font-semibold">BASIC REFERRAL</span>
+                    <span className="text-xs bg-[#E7FB10]/20 text-[#E7FB10] px-2 py-0.5 rounded">10%</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-3">Share on social media for customer referrals</p>
+                  <code className="text-xs bg-muted px-2 py-1.5 rounded font-mono block mb-2 break-all" data-testid="text-referral-link">
                     {window.location.origin}/?ref={stats?.referralCode}
                   </code>
-                </div>
-                <div className="flex gap-2">
                   <Button
                     variant="outline"
-                    className="gap-2"
+                    size="sm"
+                    className="w-full gap-2 h-8"
                     onClick={copyReferralLink}
                     data-testid="button-copy-link"
                   >
-                    <Copy className="h-4 w-4" />
+                    <Copy className="h-3 w-3" />
                     Copy Link
                   </Button>
-                  <Button
-                    variant="outline"
-                    className="gap-2"
-                    onClick={() => window.open(`/?ref=${stats?.referralCode}`, "_blank")}
-                    data-testid="button-preview-link"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                    Preview
-                  </Button>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* Recruitment/Team Code */}
-          <Card className="border-[#21d8ff]/30 bg-gradient-to-r from-[#21d8ff]/5 to-transparent">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <span className="text-[#21d8ff]">●</span>
-                Your Recruitment Code (Affiliates)
-              </CardTitle>
-              <CardDescription>
-                Share your code with other marketers/brand partners to recruit them as affiliates. You earn Tier 2 commissions (10% override) on their sales.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                {/* Personal Code - 20% */}
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">Your Code:</p>
-                  <code className="text-sm bg-muted px-3 py-1.5 rounded font-mono" data-testid="text-recruitment-code">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-[#21d8ff] text-sm font-semibold">PERSONAL CODE</span>
+                    <span className="text-xs bg-[#21d8ff]/20 text-[#21d8ff] px-2 py-0.5 rounded">20%</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-3">Your exclusive personal-use discount</p>
+                  <code className="text-xs bg-muted px-2 py-1.5 rounded font-mono block mb-2" data-testid="text-personal-code">
                     {stats?.referralCode}
                   </code>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full gap-2 h-8"
+                    onClick={() => {
+                      if (stats?.referralCode) {
+                        navigator.clipboard.writeText(stats.referralCode);
+                        toast({
+                          title: "Code Copied",
+                          description: "Your personal code has been copied to clipboard.",
+                        });
+                      }
+                    }}
+                    data-testid="button-copy-personal-code"
+                  >
+                    <Copy className="h-3 w-3" />
+                    Copy Code
+                  </Button>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                  onClick={() => {
-                    if (stats?.referralCode) {
-                      const recruitLink = `${window.location.origin}/affiliate?ref=${stats.referralCode}`;
-                      navigator.clipboard.writeText(recruitLink);
-                      toast({
-                        title: "Recruitment Link Copied",
-                        description: "Your affiliate recruitment link has been copied to clipboard.",
-                      });
-                    }
-                  }}
-                  data-testid="button-copy-recruit-link"
-                >
-                  <Copy className="h-4 w-4" />
-                  Copy Recruitment Link
-                </Button>
+
+                {/* Recruitment Code */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-[#9d4edd] text-sm font-semibold">RECRUITMENT</span>
+                    <span className="text-xs bg-[#9d4edd]/20 text-[#9d4edd] px-2 py-0.5 rounded">TIER 2</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-3">Recruit other affiliates (10% override)</p>
+                  <code className="text-xs bg-muted px-2 py-1.5 rounded font-mono block mb-2" data-testid="text-recruitment-code">
+                    {stats?.referralCode}
+                  </code>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full gap-2 h-8"
+                    onClick={() => {
+                      if (stats?.referralCode) {
+                        const recruitLink = `${window.location.origin}/affiliate?ref=${stats.referralCode}`;
+                        navigator.clipboard.writeText(recruitLink);
+                        toast({
+                          title: "Recruitment Link Copied",
+                          description: "Your affiliate recruitment link has been copied.",
+                        });
+                      }
+                    }}
+                    data-testid="button-copy-recruit-link"
+                  >
+                    <Copy className="h-3 w-3" />
+                    Copy Link
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
