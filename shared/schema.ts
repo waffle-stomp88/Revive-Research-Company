@@ -120,6 +120,7 @@ export const affiliateApplications = pgTable("affiliate_applications", {
   whyPartner: text("why_partner").notNull(),
   productExperience: text("product_experience").notNull(),
   referredByAffiliateId: varchar("referred_by_affiliate_id"),
+  referredByName: text("referred_by_name"), // Name of the person who referred them
   status: text("status").default("pending"),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -134,7 +135,8 @@ export const affiliates = pgTable("affiliates", {
   userId: varchar("user_id").references(() => users.id),
   email: text("email").notNull().unique(),
   fullName: text("full_name").notNull(),
-  referralCode: text("referral_code").notNull().unique(),
+  referralCode: text("referral_code").notNull().unique(), // Personal 20% discount code
+  basicReferralCode: text("basic_referral_code").unique(), // Short code for 10% (e.g., "GRAYSON10")
   uplineId: varchar("upline_id"),
   commissionRate: decimal("commission_rate", { precision: 5, scale: 2 }).default("20.00"),
   payoutMethod: text("payout_method").default("paypal"),
@@ -339,3 +341,22 @@ export const stockNotifications = pgTable("stock_notifications", {
 export const insertStockNotificationSchema = createInsertSchema(stockNotifications).omit({ id: true, createdAt: true, notifiedAt: true });
 export type InsertStockNotification = z.infer<typeof insertStockNotificationSchema>;
 export type StockNotification = typeof stockNotifications.$inferSelect;
+
+// Discount codes table - Admin-managed promo codes
+export const discountCodes = pgTable("discount_codes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  code: text("code").notNull().unique(),
+  description: text("description"),
+  discountPercent: decimal("discount_percent", { precision: 5, scale: 2 }).notNull(),
+  type: text("type").notNull().default("promo"), // promo, affiliate_basic, affiliate_personal
+  affiliateId: varchar("affiliate_id"), // Links to affiliate if type is affiliate_*
+  isActive: boolean("is_active").default(true),
+  usageCount: integer("usage_count").default(0),
+  maxUsages: integer("max_usages"), // null = unlimited
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertDiscountCodeSchema = createInsertSchema(discountCodes).omit({ id: true, usageCount: true, createdAt: true });
+export type InsertDiscountCode = z.infer<typeof insertDiscountCodeSchema>;
+export type DiscountCode = typeof discountCodes.$inferSelect;

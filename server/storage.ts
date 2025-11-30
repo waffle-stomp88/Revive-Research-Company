@@ -1,6 +1,6 @@
 import { 
   users, products, coas, orders, contacts, affiliateApplications, affiliates, affiliateSales, affiliatePayouts, reviews,
-  batches, productStorageProfiles, legalDocuments, faqEntries, educationArticles, coaGlossaryTerms, stockNotifications,
+  batches, productStorageProfiles, legalDocuments, faqEntries, educationArticles, coaGlossaryTerms, stockNotifications, discountCodes,
   type User, type UpsertUser,
   type Product, type InsertProduct,
   type Coa, type InsertCoa,
@@ -18,7 +18,8 @@ import {
   type FaqEntry, type InsertFaqEntry,
   type EducationArticle, type InsertEducationArticle,
   type CoaGlossaryTerm, type InsertCoaGlossaryTerm,
-  type StockNotification, type InsertStockNotification
+  type StockNotification, type InsertStockNotification,
+  type DiscountCode, type InsertDiscountCode
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, ilike, or, desc, sql, gte, and, lt, count, sum } from "drizzle-orm";
@@ -181,6 +182,16 @@ export interface IStorage {
   deleteStockNotification(id: string): Promise<boolean>;
   deleteStockNotificationsBulk(ids: string[]): Promise<number>;
   checkExistingNotification(productId: string, email: string): Promise<StockNotification | undefined>;
+  
+  // Discount Codes
+  getAllDiscountCodes(): Promise<DiscountCode[]>;
+  getDiscountCode(id: string): Promise<DiscountCode | undefined>;
+  getDiscountCodeByCode(code: string): Promise<DiscountCode | undefined>;
+  createDiscountCode(code: InsertDiscountCode): Promise<DiscountCode>;
+  updateDiscountCode(id: string, data: Partial<InsertDiscountCode>): Promise<DiscountCode | undefined>;
+  toggleDiscountCodeActive(id: string, isActive: boolean): Promise<DiscountCode | undefined>;
+  deleteDiscountCode(id: string): Promise<boolean>;
+  getAffiliateDiscountCodes(affiliateId: string): Promise<DiscountCode[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1090,6 +1101,61 @@ export class DatabaseStorage implements IStorage {
         eq(stockNotifications.status, "pending")
       ));
     return existing || undefined;
+  }
+  
+  // Discount Codes implementation
+  async getAllDiscountCodes(): Promise<DiscountCode[]> {
+    return db.select().from(discountCodes).orderBy(desc(discountCodes.createdAt));
+  }
+  
+  async getDiscountCode(id: string): Promise<DiscountCode | undefined> {
+    const [code] = await db.select().from(discountCodes).where(eq(discountCodes.id, id));
+    return code || undefined;
+  }
+  
+  async getDiscountCodeByCode(code: string): Promise<DiscountCode | undefined> {
+    const [discountCode] = await db.select().from(discountCodes)
+      .where(eq(discountCodes.code, code.toUpperCase()));
+    return discountCode || undefined;
+  }
+  
+  async createDiscountCode(codeData: InsertDiscountCode): Promise<DiscountCode> {
+    const [newCode] = await db.insert(discountCodes).values({
+      ...codeData,
+      code: codeData.code.toUpperCase()
+    }).returning();
+    return newCode;
+  }
+  
+  async updateDiscountCode(id: string, data: Partial<InsertDiscountCode>): Promise<DiscountCode | undefined> {
+    const updateData = { ...data };
+    if (updateData.code) {
+      updateData.code = updateData.code.toUpperCase();
+    }
+    const [updated] = await db.update(discountCodes)
+      .set(updateData)
+      .where(eq(discountCodes.id, id))
+      .returning();
+    return updated || undefined;
+  }
+  
+  async toggleDiscountCodeActive(id: string, isActive: boolean): Promise<DiscountCode | undefined> {
+    const [updated] = await db.update(discountCodes)
+      .set({ isActive })
+      .where(eq(discountCodes.id, id))
+      .returning();
+    return updated || undefined;
+  }
+  
+  async deleteDiscountCode(id: string): Promise<boolean> {
+    const result = await db.delete(discountCodes).where(eq(discountCodes.id, id));
+    return !!result;
+  }
+  
+  async getAffiliateDiscountCodes(affiliateId: string): Promise<DiscountCode[]> {
+    return db.select().from(discountCodes)
+      .where(eq(discountCodes.affiliateId, affiliateId))
+      .orderBy(desc(discountCodes.createdAt));
   }
 }
 
