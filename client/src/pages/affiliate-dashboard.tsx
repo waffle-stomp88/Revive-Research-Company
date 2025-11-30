@@ -96,6 +96,7 @@ interface Affiliate {
   email: string;
   fullName: string;
   referralCode: string;
+  basicReferralCode: string | null;
   payoutMethod: string;
   payoutEmail: string;
   bankAccountHolder: string | null;
@@ -324,26 +325,33 @@ export default function AffiliateDashboard() {
         >
           <Card>
             <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Basic Referral Code - 10% */}
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-[#E7FB10] text-sm font-semibold">BASIC REFERRAL</span>
-                    <span className="text-xs bg-[#E7FB10]/20 text-[#E7FB10] px-2 py-0.5 rounded">10%</span>
+                    <span className="text-[#E7FB10] text-sm font-semibold">BASIC REFERRAL CODE</span>
+                    <span className="text-xs bg-[#E7FB10]/20 text-[#E7FB10] px-2 py-0.5 rounded">10% OFF</span>
                   </div>
-                  <p className="text-xs text-muted-foreground mb-3">Share on social media for customer referrals</p>
-                  <code className="text-xs bg-muted px-2 py-1.5 rounded font-mono block mb-2 break-all" data-testid="text-referral-link">
-                    {window.location.origin}/?ref={stats?.referralCode}
+                  <p className="text-xs text-muted-foreground mb-3">Share this code for customer referrals - they save 10%, you earn 10%</p>
+                  <code className="text-lg bg-muted px-3 py-2 rounded font-mono block mb-3 text-center font-bold" data-testid="text-basic-referral-code">
+                    {affiliate?.basicReferralCode || `${affiliate?.fullName?.split(' ')[0]?.toUpperCase() || 'CODE'}10`}
                   </code>
                   <Button
                     variant="outline"
                     size="sm"
                     className="w-full gap-2 h-8"
-                    onClick={copyReferralLink}
-                    data-testid="button-copy-link"
+                    onClick={() => {
+                      const code = affiliate?.basicReferralCode || `${affiliate?.fullName?.split(' ')[0]?.toUpperCase() || 'CODE'}10`;
+                      navigator.clipboard.writeText(code);
+                      toast({
+                        title: "Code Copied",
+                        description: "Your basic referral code has been copied to clipboard.",
+                      });
+                    }}
+                    data-testid="button-copy-basic-code"
                   >
                     <Copy className="h-3 w-3" />
-                    Copy Link
+                    Copy Code
                   </Button>
                 </div>
 
@@ -351,19 +359,19 @@ export default function AffiliateDashboard() {
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-[#21d8ff] text-sm font-semibold">PERSONAL CODE</span>
-                    <span className="text-xs bg-[#21d8ff]/20 text-[#21d8ff] px-2 py-0.5 rounded">20%</span>
+                    <span className="text-xs bg-[#21d8ff]/20 text-[#21d8ff] px-2 py-0.5 rounded">20% OFF</span>
                   </div>
-                  <p className="text-xs text-muted-foreground mb-3">Your exclusive personal-use discount</p>
-                  <code className="text-xs bg-muted px-2 py-1.5 rounded font-mono block mb-2" data-testid="text-personal-code">
-                    {stats?.referralCode}
+                  <p className="text-xs text-muted-foreground mb-3">Your exclusive personal-use discount for your own orders</p>
+                  <code className="text-lg bg-muted px-3 py-2 rounded font-mono block mb-3 text-center font-bold" data-testid="text-personal-code">
+                    {affiliate?.referralCode}
                   </code>
                   <Button
                     variant="outline"
                     size="sm"
                     className="w-full gap-2 h-8"
                     onClick={() => {
-                      if (stats?.referralCode) {
-                        navigator.clipboard.writeText(stats.referralCode);
+                      if (affiliate?.referralCode) {
+                        navigator.clipboard.writeText(affiliate.referralCode);
                         toast({
                           title: "Code Copied",
                           description: "Your personal code has been copied to clipboard.",
@@ -374,37 +382,6 @@ export default function AffiliateDashboard() {
                   >
                     <Copy className="h-3 w-3" />
                     Copy Code
-                  </Button>
-                </div>
-
-                {/* Recruitment Code */}
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-[#9d4edd] text-sm font-semibold">RECRUITMENT</span>
-                    <span className="text-xs bg-[#9d4edd]/20 text-[#9d4edd] px-2 py-0.5 rounded">TIER 2</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground mb-3">Recruit other affiliates (10% override)</p>
-                  <code className="text-xs bg-muted px-2 py-1.5 rounded font-mono block mb-2" data-testid="text-recruitment-code">
-                    {stats?.referralCode}
-                  </code>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full gap-2 h-8"
-                    onClick={() => {
-                      if (stats?.referralCode) {
-                        const recruitLink = `${window.location.origin}/affiliate?ref=${stats.referralCode}`;
-                        navigator.clipboard.writeText(recruitLink);
-                        toast({
-                          title: "Recruitment Link Copied",
-                          description: "Your affiliate recruitment link has been copied.",
-                        });
-                      }
-                    }}
-                    data-testid="button-copy-recruit-link"
-                  >
-                    <Copy className="h-3 w-3" />
-                    Copy Link
                   </Button>
                 </div>
               </div>
@@ -823,9 +800,9 @@ export default function AffiliateDashboard() {
                   ) : (
                     <div className="text-center py-8 text-muted-foreground">
                       <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>No team members yet. Recruit affiliates using your link!</p>
+                      <p>No team members yet.</p>
                       <p className="text-sm mt-2">
-                        Share: {window.location.origin}/affiliate?ref={stats?.referralCode}
+                        Referred affiliates who join will appear here.
                       </p>
                     </div>
                   )}

@@ -91,6 +91,8 @@ const affiliateFormSchema = z.object({
   audienceSize: z.string().min(1, "Please tell us about your audience"),
   whyPartner: z.string().min(50, "Please provide at least 50 characters explaining why you want to partner"),
   productExperience: z.string().min(20, "Please describe your experience with peptide research"),
+  wasReferred: z.boolean().default(false),
+  referredByName: z.string().optional(),
   agreeToTerms: z.boolean().refine((val) => val === true, {
     message: "You must agree to the terms and conditions",
   }),
@@ -111,19 +113,22 @@ export default function AffiliatePage() {
       audienceSize: "",
       whyPartner: "",
       productExperience: "",
+      wasReferred: false,
+      referredByName: "",
       agreeToTerms: false,
     },
   });
 
   const submitMutation = useMutation({
     mutationFn: async (data: AffiliateFormData) => {
-      const { agreeToTerms, ...applicationData } = data;
+      const { agreeToTerms, wasReferred, ...applicationData } = data;
       const urlParams = new URLSearchParams(window.location.search);
       const referrerCode = urlParams.get('ref') || localStorage.getItem('affiliateCode');
       
       const payload = {
         ...applicationData,
         referrerCode: referrerCode || undefined,
+        referredByName: wasReferred && applicationData.referredByName ? applicationData.referredByName : undefined,
       };
       
       const res = await apiRequest("POST", "/api/affiliate-apply", payload);
@@ -782,6 +787,50 @@ export default function AffiliatePage() {
                         </FormItem>
                       )}
                     />
+
+                    {/* Were you referred? */}
+                    <div className="space-y-3 p-4 rounded-lg bg-muted/30 border border-muted/50">
+                      <FormField
+                        control={form.control}
+                        name="wasReferred"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                data-testid="checkbox-was-referred"
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel className="text-sm">
+                                Were you referred by an existing affiliate?
+                              </FormLabel>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      {form.watch("wasReferred") && (
+                        <FormField
+                          control={form.control}
+                          name="referredByName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-sm">Who referred you?</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  placeholder="Enter their name" 
+                                  {...field} 
+                                  data-testid="input-referred-by-name" 
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </div>
 
                     <FormField
                       control={form.control}
