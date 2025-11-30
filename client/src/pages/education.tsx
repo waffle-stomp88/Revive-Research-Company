@@ -207,7 +207,7 @@ export default function Education() {
                     >
                       <Card
                         className="h-full p-6 border-border/50 hover:border-[#9d4edd]/40 transition-colors cursor-pointer group"
-                        data-testid={`card-article-${article.slug}`}
+                        data-testid={`card-article-${article.slug || article.id}`}
                       >
                         <div className="flex items-start gap-4">
                           <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-[#9d4edd]/10 flex items-center justify-center group-hover:bg-[#9d4edd]/20 transition-colors">
@@ -262,7 +262,10 @@ export default function Education() {
           className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6"
         >
           <Link href="/coa-library">
-            <Card className="p-6 h-full border-[#9d4edd]/20 hover:border-[#9d4edd]/40 transition-colors cursor-pointer group">
+            <Card 
+              className="p-6 h-full border-[#9d4edd]/20 hover:border-[#9d4edd]/40 transition-colors cursor-pointer group"
+              data-testid="link-coa-library"
+            >
               <FileCheck className="h-8 w-8 text-[#9d4edd] mb-4" />
               <h3 className="font-display text-lg font-bold mb-2 group-hover:text-[#9d4edd] transition-colors">
                 Browse COA Library
@@ -274,7 +277,10 @@ export default function Education() {
           </Link>
 
           <Link href="/what-we-dont-do">
-            <Card className="p-6 h-full border-[#9d4edd]/20 hover:border-[#9d4edd]/40 transition-colors cursor-pointer group">
+            <Card 
+              className="p-6 h-full border-[#9d4edd]/20 hover:border-[#9d4edd]/40 transition-colors cursor-pointer group"
+              data-testid="link-what-we-dont-do"
+            >
               <FlaskConical className="h-8 w-8 text-[#9d4edd] mb-4" />
               <h3 className="font-display text-lg font-bold mb-2 group-hover:text-[#9d4edd] transition-colors">
                 Quality Standards
@@ -286,7 +292,10 @@ export default function Education() {
           </Link>
 
           <Link href="/faq">
-            <Card className="p-6 h-full border-[#9d4edd]/20 hover:border-[#9d4edd]/40 transition-colors cursor-pointer group">
+            <Card 
+              className="p-6 h-full border-[#9d4edd]/20 hover:border-[#9d4edd]/40 transition-colors cursor-pointer group"
+              data-testid="link-faq"
+            >
               <Info className="h-8 w-8 text-[#9d4edd] mb-4" />
               <h3 className="font-display text-lg font-bold mb-2 group-hover:text-[#9d4edd] transition-colors">
                 FAQ
