@@ -259,7 +259,7 @@ export default function LegalHub() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="mt-16"
         >
-          <Card className="p-8 border-destructive/30 bg-destructive/5">
+          <Card className="p-8 border-destructive/30 bg-destructive/5 animate-pulse-subtle" data-testid="card-ruo-disclaimer">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-destructive/20 flex items-center justify-center">
                 <AlertCircle className="h-6 w-6 text-destructive" />
