@@ -26,6 +26,7 @@ const FAQ_CATEGORIES = [
   {
     title: "Orders & Shipping",
     icon: Truck,
+    color: "#E7FB10",
     questions: [
       {
         question: "How quickly will my order ship?",
@@ -56,6 +57,7 @@ const FAQ_CATEGORIES = [
   {
     title: "Returns & Refunds",
     icon: RefreshCcw,
+    color: "#ef4444",
     questions: [
       {
         question: "Do you accept returns?",
@@ -78,6 +80,7 @@ const FAQ_CATEGORIES = [
   {
     title: "Products & Quality",
     icon: FlaskConical,
+    color: "#21d8ff",
     questions: [
       {
         question: "What are Certificates of Authenticity (COAs)?",
@@ -104,6 +107,7 @@ const FAQ_CATEGORIES = [
   {
     title: "Payment & Billing",
     icon: CreditCard,
+    color: "#22c55e",
     questions: [
       {
         question: "What payment methods do you accept?",
@@ -126,6 +130,7 @@ const FAQ_CATEGORIES = [
   {
     title: "Account & Orders",
     icon: Package,
+    color: "#9d4edd",
     questions: [
       {
         question: "How do I track my order?",
@@ -148,6 +153,7 @@ const FAQ_CATEGORIES = [
   {
     title: "Legal & Compliance",
     icon: Shield,
+    color: "#f97316",
     questions: [
       {
         question: "What is 'Research Use Only' (RUO)?",
@@ -179,8 +185,8 @@ export default function FAQ() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <div className="w-16 h-16 rounded-full bg-[#9d4edd]/10 flex items-center justify-center mx-auto mb-6">
-            <HelpCircle className="h-8 w-8 text-[#9d4edd]" />
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#E7FB10]/20 via-[#21d8ff]/20 to-[#9d4edd]/20 flex items-center justify-center mx-auto mb-6">
+            <HelpCircle className="h-8 w-8 text-white" />
           </div>
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-4" data-testid="text-faq-title">
             Frequently Asked Questions
@@ -220,13 +226,25 @@ export default function FAQ() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 + categoryIndex * 0.05 }}
             >
-              <Card className="overflow-hidden" data-testid={`faq-category-${categoryIndex + 1}`}>
-                <div className="p-6 border-b border-border bg-[#9d4edd]/5">
+              <Card 
+                className="overflow-hidden" 
+                style={{ borderColor: `${category.color}30` }}
+                data-testid={`faq-category-${categoryIndex + 1}`}
+              >
+                <div 
+                  className="p-6 border-b border-border"
+                  style={{ backgroundColor: `${category.color}10` }}
+                >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#9d4edd]/10 flex items-center justify-center">
-                      <category.icon className="h-5 w-5 text-[#9d4edd]" />
+                    <div 
+                      className="w-10 h-10 rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: `${category.color}20` }}
+                    >
+                      <category.icon className="h-5 w-5" style={{ color: category.color }} />
                     </div>
-                    <h2 className="font-display text-xl font-bold text-[#9d4edd]">{category.title}</h2>
+                    <h2 className="font-display text-xl font-bold" style={{ color: category.color }}>
+                      {category.title}
+                    </h2>
                   </div>
                 </div>
                 <Accordion type="single" collapsible className="w-full">
@@ -264,15 +282,33 @@ export default function FAQ() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/shipping">
-                <Button variant="outline" data-testid="link-shipping-info">
+                <Button 
+                  variant="outline" 
+                  className="border-[#E7FB10]/30 hover:border-[#E7FB10] text-[#E7FB10]"
+                  data-testid="link-shipping-info"
+                >
                   <Truck className="h-4 w-4 mr-2" />
                   Shipping Details
                 </Button>
               </Link>
-              <Link href="/coa">
-                <Button variant="outline" data-testid="link-verify-coa">
+              <Link href="/batch">
+                <Button 
+                  variant="outline" 
+                  className="border-[#21d8ff]/30 hover:border-[#21d8ff] text-[#21d8ff]"
+                  data-testid="link-verify-coa"
+                >
                   <FileText className="h-4 w-4 mr-2" />
                   Verify COA
+                </Button>
+              </Link>
+              <Link href="/contact">
+                <Button 
+                  variant="outline" 
+                  className="border-[#9d4edd]/30 hover:border-[#9d4edd] text-[#9d4edd]"
+                  data-testid="link-contact"
+                >
+                  <HelpCircle className="h-4 w-4 mr-2" />
+                  Contact Us
                 </Button>
               </Link>
             </div>
