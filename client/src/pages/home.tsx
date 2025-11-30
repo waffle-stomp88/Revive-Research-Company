@@ -752,8 +752,8 @@ export default function Home() {
   return (
     <main>
       <HeroSection />
-      <TrustSection />
       <ProductShowcase />
+      <TrustSection />
       <ScienceSection />
       <TransparencyHub />
       <HowItWorksSection />
