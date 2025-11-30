@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Link } from "wouter";
+import { Link, useParams } from "wouter";
 import {
   GraduationCap,
   BookOpen,
@@ -39,12 +39,29 @@ const getCategoryColor = (categoryId: string) => {
 };
 
 export default function Education() {
+  const params = useParams<{ slug?: string }>();
   const [activeCategory, setActiveCategory] = useState("all");
   const [expandedArticle, setExpandedArticle] = useState<string | null>(null);
 
   const { data: articles = [], isLoading } = useQuery<EducationArticle[]>({
     queryKey: ["/api/education"],
   });
+
+  useEffect(() => {
+    if (params.slug && articles.length > 0) {
+      const article = articles.find(a => a.slug === params.slug);
+      if (article) {
+        setExpandedArticle(article.id);
+        setActiveCategory(article.category);
+        setTimeout(() => {
+          const element = document.getElementById(`article-${article.id}`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 100);
+      }
+    }
+  }, [params.slug, articles]);
 
   const filteredArticles =
     activeCategory === "all"
@@ -185,6 +202,7 @@ export default function Education() {
                       className={isExpanded ? "md:col-span-2" : ""}
                     >
                       <Card
+                        id={`article-${article.id}`}
                         className="h-full overflow-hidden transition-all duration-300 cursor-pointer group"
                         style={{ borderColor: `${catColor}30` }}
                         data-testid={`card-article-${article.slug || article.id}`}

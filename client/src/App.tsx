@@ -83,6 +83,7 @@ function Router() {
       <Route path="/legal" component={Legal} />
       <Route path="/what-we-dont-do" component={WhatWeDontDo} />
       <Route path="/education" component={Education} />
+      <Route path="/education/:slug" component={Education} />
       <Route component={NotFound} />
     </Switch>
   );
