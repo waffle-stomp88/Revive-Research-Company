@@ -125,7 +125,7 @@ export default function CartPage() {
               Looks like you haven't added any research compounds yet. Browse our catalog to find premium peptides.
             </p>
             <Link href="/products">
-              <Button size="lg" className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 gap-2">
+              <Button size="lg" className="bg-[#E7FB10] text-black gap-2">
                 <Package className="h-5 w-5" />
                 Browse Products
               </Button>

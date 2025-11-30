@@ -209,7 +209,7 @@ export default function BuyerChecklist() {
                   practices, we're happy to answer. Transparency is what we're about.
                 </p>
                 <Link href="/contact">
-                  <Button className="bg-[#9d4edd] text-white hover:bg-[#9d4edd]/90 gap-2" data-testid="button-contact-us">
+                  <Button className="bg-[#9d4edd] text-white gap-2" data-testid="button-contact-us">
                     Contact Us
                     <ArrowRight className="h-4 w-4" />
                   </Button>

@@ -213,7 +213,7 @@ export default function PackageWarm() {
                   your order number and photos, and we'll assess the situation.
                 </p>
                 <Link href="/contact">
-                  <Button className="bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90 gap-2" data-testid="button-contact-support">
+                  <Button className="bg-[#21d8ff] text-black gap-2" data-testid="button-contact-support">
                     Contact Support
                     <ArrowRight className="h-4 w-4" />
                   </Button>

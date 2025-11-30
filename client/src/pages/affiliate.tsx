@@ -894,7 +894,7 @@ export default function AffiliatePage() {
 
                     <Button
                       type="submit"
-                      className="w-full bg-[#9d4edd] hover:bg-[#9d4edd]/90 text-white font-semibold border-2 border-[#9d4edd] animate-pulse-glow-purple"
+                      className="w-full bg-[#9d4edd] text-white font-semibold border-2 border-[#9d4edd] animate-pulse-glow-purple"
                       disabled={submitMutation.isPending}
                       data-testid="button-submit-application"
                     >

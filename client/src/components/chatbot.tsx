@@ -192,7 +192,7 @@ export function ChatBot() {
                   <Button
                     onClick={sendMessage}
                     disabled={!input.trim() || isLoading}
-                    className="bg-[#21d8ff] hover:bg-[#21d8ff]/90 text-black"
+                    className="bg-[#21d8ff] text-black"
                     data-testid="button-send-message"
                   >
                     {isLoading ? (
@@ -221,8 +221,8 @@ export function ChatBot() {
           onClick={() => setIsOpen(!isOpen)}
           className={`h-14 w-14 rounded-full shadow-lg transition-all duration-300 ${
             isOpen 
-              ? "bg-muted hover:bg-muted/80" 
-              : "bg-[#21d8ff] hover:bg-[#21d8ff]/90 shadow-[0_0_20px_rgba(33,216,255,0.5)] hover:shadow-[0_0_30px_rgba(33,216,255,0.7)]"
+              ? "bg-muted" 
+              : "bg-[#21d8ff] shadow-[0_0_20px_rgba(33,216,255,0.5)] hover:shadow-[0_0_30px_rgba(33,216,255,0.7)]"
           }`}
           data-testid="button-toggle-chat"
         >

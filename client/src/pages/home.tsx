@@ -278,13 +278,13 @@ function HeroSection() {
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <Link href="/products">
-            <Button size="lg" className="font-display text-base px-8 gap-2 bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 border-2 border-[#E7FB10] shadow-[0_0_30px_rgba(231,251,16,0.4)] hover:shadow-[0_0_50px_rgba(231,251,16,0.6)] transition-all duration-300 hover:scale-105" data-testid="button-hero-shop">
+            <Button size="lg" className="font-display text-base px-8 gap-2 bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_30px_rgba(231,251,16,0.4)] hover:shadow-[0_0_50px_rgba(231,251,16,0.6)] transition-all duration-300" data-testid="button-hero-shop">
               Shop Products
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
           <Link href="/coa">
-            <Button size="lg" variant="outline" className="font-display text-base px-8 bg-black/30 backdrop-blur-sm border-white/30 text-white hover:bg-white/10 hover:border-white/50 transition-all duration-300 hover:scale-105" data-testid="button-hero-coa">
+            <Button size="lg" variant="outline" className="font-display text-base px-8 bg-black/30 backdrop-blur-sm border-white/30 text-white transition-all duration-300" data-testid="button-hero-coa">
               Verify COA
             </Button>
           </Link>
