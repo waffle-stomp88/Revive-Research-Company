@@ -1,5 +1,6 @@
 import { 
   users, products, coas, orders, contacts, affiliateApplications, affiliates, affiliateSales, affiliatePayouts, reviews,
+  batches, productStorageProfiles, legalDocuments, faqEntries, educationArticles, coaGlossaryTerms,
   type User, type UpsertUser,
   type Product, type InsertProduct,
   type Coa, type InsertCoa,
@@ -10,7 +11,13 @@ import {
   type AffiliateSale, type InsertAffiliateSale,
   type AffiliatePayout, type InsertAffiliatePayout,
   type Review, type InsertReview,
-  type ReviewableOrder
+  type ReviewableOrder,
+  type Batch, type InsertBatch,
+  type ProductStorageProfile, type InsertProductStorageProfile,
+  type LegalDocument, type InsertLegalDocument,
+  type FaqEntry, type InsertFaqEntry,
+  type EducationArticle, type InsertEducationArticle,
+  type CoaGlossaryTerm, type InsertCoaGlossaryTerm
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, ilike, or, desc, sql, gte, and, lt, count, sum } from "drizzle-orm";
@@ -119,6 +126,47 @@ export interface IStorage {
   // Affiliate earnings and leaderboard
   getAffiliateEarningsOverTime(affiliateId: string, weeks: number): Promise<Array<{ weekStart: string; weekEnd: string; tier1: number; tier2: number; total: number }>>;
   getAffiliateLeaderboard(period: 'weekly' | 'monthly'): Promise<Array<{ rank: number; affiliateId: string; displayName: string; salesCount: number; totalRevenue: number; tier1Earnings: number; tier2Earnings: number }>>;
+  
+  // Batches
+  getAllBatches(): Promise<Batch[]>;
+  getBatch(id: string): Promise<Batch | undefined>;
+  getBatchByBatchNumber(batchNumber: string): Promise<Batch | undefined>;
+  getBatchesByProductId(productId: string): Promise<Batch[]>;
+  createBatch(batch: InsertBatch): Promise<Batch>;
+  updateBatch(id: string, batch: Partial<InsertBatch>): Promise<Batch | undefined>;
+  
+  // Product Storage Profiles
+  getProductStorageProfile(productId: string): Promise<ProductStorageProfile | undefined>;
+  createProductStorageProfile(profile: InsertProductStorageProfile): Promise<ProductStorageProfile>;
+  updateProductStorageProfile(productId: string, profile: Partial<InsertProductStorageProfile>): Promise<ProductStorageProfile | undefined>;
+  
+  // Legal Documents
+  getAllLegalDocuments(): Promise<LegalDocument[]>;
+  getLegalDocumentBySlug(slug: string): Promise<LegalDocument | undefined>;
+  getLegalDocumentsByCategory(category: string): Promise<LegalDocument[]>;
+  createLegalDocument(doc: InsertLegalDocument): Promise<LegalDocument>;
+  updateLegalDocument(id: string, doc: Partial<InsertLegalDocument>): Promise<LegalDocument | undefined>;
+  
+  // FAQ Entries
+  getAllFaqEntries(): Promise<FaqEntry[]>;
+  getFaqEntriesByCategory(category: string): Promise<FaqEntry[]>;
+  createFaqEntry(entry: InsertFaqEntry): Promise<FaqEntry>;
+  updateFaqEntry(id: string, entry: Partial<InsertFaqEntry>): Promise<FaqEntry | undefined>;
+  deleteFaqEntry(id: string): Promise<boolean>;
+  
+  // Education Articles
+  getAllEducationArticles(): Promise<EducationArticle[]>;
+  getEducationArticleBySlug(slug: string): Promise<EducationArticle | undefined>;
+  getEducationArticlesByCategory(category: string): Promise<EducationArticle[]>;
+  createEducationArticle(article: InsertEducationArticle): Promise<EducationArticle>;
+  updateEducationArticle(id: string, article: Partial<InsertEducationArticle>): Promise<EducationArticle | undefined>;
+  
+  // COA Glossary Terms
+  getAllCoaGlossaryTerms(): Promise<CoaGlossaryTerm[]>;
+  createCoaGlossaryTerm(term: InsertCoaGlossaryTerm): Promise<CoaGlossaryTerm>;
+  
+  // COA Library search
+  searchCoas(filters: { productId?: string; batchNumber?: string; testType?: string }): Promise<Coa[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -795,6 +843,169 @@ export class DatabaseStorage implements IStorage {
       }));
     
     return leaderboard;
+  }
+  
+  // Batches implementation
+  async getAllBatches(): Promise<Batch[]> {
+    return db.select().from(batches).orderBy(desc(batches.createdAt));
+  }
+  
+  async getBatch(id: string): Promise<Batch | undefined> {
+    const [batch] = await db.select().from(batches).where(eq(batches.id, id));
+    return batch || undefined;
+  }
+  
+  async getBatchByBatchNumber(batchNumber: string): Promise<Batch | undefined> {
+    const [batch] = await db.select().from(batches).where(eq(batches.batchNumber, batchNumber));
+    return batch || undefined;
+  }
+  
+  async getBatchesByProductId(productId: string): Promise<Batch[]> {
+    return db.select().from(batches).where(eq(batches.productId, productId)).orderBy(desc(batches.manufactureDate));
+  }
+  
+  async createBatch(batch: InsertBatch): Promise<Batch> {
+    const [newBatch] = await db.insert(batches).values(batch).returning();
+    return newBatch;
+  }
+  
+  async updateBatch(id: string, batchData: Partial<InsertBatch>): Promise<Batch | undefined> {
+    const [updated] = await db.update(batches).set(batchData).where(eq(batches.id, id)).returning();
+    return updated || undefined;
+  }
+  
+  // Product Storage Profiles implementation
+  async getProductStorageProfile(productId: string): Promise<ProductStorageProfile | undefined> {
+    const [profile] = await db.select().from(productStorageProfiles).where(eq(productStorageProfiles.productId, productId));
+    return profile || undefined;
+  }
+  
+  async createProductStorageProfile(profile: InsertProductStorageProfile): Promise<ProductStorageProfile> {
+    const [newProfile] = await db.insert(productStorageProfiles).values(profile).returning();
+    return newProfile;
+  }
+  
+  async updateProductStorageProfile(productId: string, profileData: Partial<InsertProductStorageProfile>): Promise<ProductStorageProfile | undefined> {
+    const [updated] = await db.update(productStorageProfiles)
+      .set({ ...profileData, updatedAt: new Date() })
+      .where(eq(productStorageProfiles.productId, productId))
+      .returning();
+    return updated || undefined;
+  }
+  
+  // Legal Documents implementation
+  async getAllLegalDocuments(): Promise<LegalDocument[]> {
+    return db.select().from(legalDocuments).where(eq(legalDocuments.isPublished, true)).orderBy(legalDocuments.sortOrder);
+  }
+  
+  async getLegalDocumentBySlug(slug: string): Promise<LegalDocument | undefined> {
+    const [doc] = await db.select().from(legalDocuments).where(eq(legalDocuments.slug, slug));
+    return doc || undefined;
+  }
+  
+  async getLegalDocumentsByCategory(category: string): Promise<LegalDocument[]> {
+    return db.select().from(legalDocuments)
+      .where(and(eq(legalDocuments.category, category), eq(legalDocuments.isPublished, true)))
+      .orderBy(legalDocuments.sortOrder);
+  }
+  
+  async createLegalDocument(doc: InsertLegalDocument): Promise<LegalDocument> {
+    const [newDoc] = await db.insert(legalDocuments).values(doc).returning();
+    return newDoc;
+  }
+  
+  async updateLegalDocument(id: string, docData: Partial<InsertLegalDocument>): Promise<LegalDocument | undefined> {
+    const [updated] = await db.update(legalDocuments)
+      .set({ ...docData, lastUpdated: new Date() })
+      .where(eq(legalDocuments.id, id))
+      .returning();
+    return updated || undefined;
+  }
+  
+  // FAQ Entries implementation
+  async getAllFaqEntries(): Promise<FaqEntry[]> {
+    return db.select().from(faqEntries).where(eq(faqEntries.isPublished, true)).orderBy(faqEntries.category, faqEntries.sortOrder);
+  }
+  
+  async getFaqEntriesByCategory(category: string): Promise<FaqEntry[]> {
+    return db.select().from(faqEntries)
+      .where(and(eq(faqEntries.category, category), eq(faqEntries.isPublished, true)))
+      .orderBy(faqEntries.sortOrder);
+  }
+  
+  async createFaqEntry(entry: InsertFaqEntry): Promise<FaqEntry> {
+    const [newEntry] = await db.insert(faqEntries).values(entry).returning();
+    return newEntry;
+  }
+  
+  async updateFaqEntry(id: string, entryData: Partial<InsertFaqEntry>): Promise<FaqEntry | undefined> {
+    const [updated] = await db.update(faqEntries)
+      .set({ ...entryData, updatedAt: new Date() })
+      .where(eq(faqEntries.id, id))
+      .returning();
+    return updated || undefined;
+  }
+  
+  async deleteFaqEntry(id: string): Promise<boolean> {
+    const result = await db.delete(faqEntries).where(eq(faqEntries.id, id));
+    return true;
+  }
+  
+  // Education Articles implementation
+  async getAllEducationArticles(): Promise<EducationArticle[]> {
+    return db.select().from(educationArticles).where(eq(educationArticles.isPublished, true)).orderBy(educationArticles.sortOrder);
+  }
+  
+  async getEducationArticleBySlug(slug: string): Promise<EducationArticle | undefined> {
+    const [article] = await db.select().from(educationArticles).where(eq(educationArticles.slug, slug));
+    return article || undefined;
+  }
+  
+  async getEducationArticlesByCategory(category: string): Promise<EducationArticle[]> {
+    return db.select().from(educationArticles)
+      .where(and(eq(educationArticles.category, category), eq(educationArticles.isPublished, true)))
+      .orderBy(educationArticles.sortOrder);
+  }
+  
+  async createEducationArticle(article: InsertEducationArticle): Promise<EducationArticle> {
+    const [newArticle] = await db.insert(educationArticles).values(article).returning();
+    return newArticle;
+  }
+  
+  async updateEducationArticle(id: string, articleData: Partial<InsertEducationArticle>): Promise<EducationArticle | undefined> {
+    const [updated] = await db.update(educationArticles)
+      .set({ ...articleData, updatedAt: new Date() })
+      .where(eq(educationArticles.id, id))
+      .returning();
+    return updated || undefined;
+  }
+  
+  // COA Glossary Terms implementation
+  async getAllCoaGlossaryTerms(): Promise<CoaGlossaryTerm[]> {
+    return db.select().from(coaGlossaryTerms).orderBy(coaGlossaryTerms.sortOrder);
+  }
+  
+  async createCoaGlossaryTerm(term: InsertCoaGlossaryTerm): Promise<CoaGlossaryTerm> {
+    const [newTerm] = await db.insert(coaGlossaryTerms).values(term).returning();
+    return newTerm;
+  }
+  
+  // COA Library search implementation
+  async searchCoas(filters: { productId?: string; batchNumber?: string; testType?: string }): Promise<Coa[]> {
+    const conditions = [];
+    
+    if (filters.productId) {
+      conditions.push(eq(coas.productId, filters.productId));
+    }
+    if (filters.batchNumber) {
+      conditions.push(ilike(coas.batchNumber, `%${filters.batchNumber}%`));
+    }
+    
+    if (conditions.length === 0) {
+      return db.select().from(coas).orderBy(desc(coas.testDate));
+    }
+    
+    return db.select().from(coas).where(and(...conditions)).orderBy(desc(coas.testDate));
   }
 }
 

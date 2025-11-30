@@ -218,3 +218,110 @@ export type ReviewableOrder = {
   eligibleDate: Date;
   hasReviewed: boolean;
 };
+
+// Batches table - Links products to batch numbers with manufacturing info
+export const batches = pgTable("batches", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  productId: varchar("product_id").notNull(),
+  batchNumber: text("batch_number").notNull().unique(),
+  manufactureDate: timestamp("manufacture_date").notNull(),
+  expirationDate: timestamp("expiration_date"),
+  status: text("status").default("active"), // active, archived, expired
+  storageNotes: text("storage_notes"),
+  qrCode: text("qr_code"), // URL or code for QR generation
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertBatchSchema = createInsertSchema(batches).omit({ id: true, createdAt: true });
+export type InsertBatch = z.infer<typeof insertBatchSchema>;
+export type Batch = typeof batches.$inferSelect;
+
+// Product storage profiles - Storage/stability info for each product
+export const productStorageProfiles = pgTable("product_storage_profiles", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  productId: varchar("product_id").notNull().unique(),
+  powderAppearance: text("powder_appearance"), // What the lyophilized powder should look like
+  storageTempDry: text("storage_temp_dry"), // Temperature range before reconstitution
+  storageTempReconstituted: text("storage_temp_reconstituted"), // Temperature range after reconstitution
+  stabilityWindowDry: text("stability_window_dry"), // How long powder is stable
+  stabilityWindowReconstituted: text("stability_window_reconstituted"), // How long after mixing
+  lightSensitivity: text("light_sensitivity"),
+  humidityNotes: text("humidity_notes"),
+  redFlags: text("red_flags").array(), // Warning signs of degradation
+  handlingInstructions: text("handling_instructions"),
+  reconstitutionNotes: text("reconstitution_notes"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertProductStorageProfileSchema = createInsertSchema(productStorageProfiles).omit({ id: true, updatedAt: true });
+export type InsertProductStorageProfile = z.infer<typeof insertProductStorageProfileSchema>;
+export type ProductStorageProfile = typeof productStorageProfiles.$inferSelect;
+
+// Legal documents table - Policies, compliance docs, etc.
+export const legalDocuments = pgTable("legal_documents", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  slug: text("slug").notNull().unique(),
+  title: text("title").notNull(),
+  category: text("category").notNull(), // policies, compliance, legal, terms
+  content: text("content").notNull(),
+  summary: text("summary"),
+  effectiveDate: timestamp("effective_date"),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  isPublished: boolean("is_published").default(true),
+  sortOrder: integer("sort_order").default(0),
+});
+
+export const insertLegalDocumentSchema = createInsertSchema(legalDocuments).omit({ id: true, lastUpdated: true });
+export type InsertLegalDocument = z.infer<typeof insertLegalDocumentSchema>;
+export type LegalDocument = typeof legalDocuments.$inferSelect;
+
+// FAQ entries table - Categorized FAQ items
+export const faqEntries = pgTable("faq_entries", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  category: text("category").notNull(), // orders, shipping, products, coa, research, returns
+  question: text("question").notNull(),
+  answer: text("answer").notNull(),
+  sortOrder: integer("sort_order").default(0),
+  isPublished: boolean("is_published").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertFaqEntrySchema = createInsertSchema(faqEntries).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertFaqEntry = z.infer<typeof insertFaqEntrySchema>;
+export type FaqEntry = typeof faqEntries.$inferSelect;
+
+// Education articles table - Research education content
+export const educationArticles = pgTable("education_articles", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  slug: text("slug").notNull().unique(),
+  title: text("title").notNull(),
+  category: text("category").notNull(), // basics, coa-guide, storage, handling, glossary
+  summary: text("summary"),
+  content: text("content").notNull(),
+  imageUrl: text("image_url"),
+  readTimeMinutes: integer("read_time_minutes").default(5),
+  relatedProductIds: text("related_product_ids").array(),
+  sortOrder: integer("sort_order").default(0),
+  isPublished: boolean("is_published").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertEducationArticleSchema = createInsertSchema(educationArticles).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertEducationArticle = z.infer<typeof insertEducationArticleSchema>;
+export type EducationArticle = typeof educationArticles.$inferSelect;
+
+// COA Glossary terms - For explaining COA terminology
+export const coaGlossaryTerms = pgTable("coa_glossary_terms", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  term: text("term").notNull().unique(),
+  definition: text("definition").notNull(),
+  category: text("category"), // testing, purity, methods
+  sortOrder: integer("sort_order").default(0),
+});
+
+export const insertCoaGlossaryTermSchema = createInsertSchema(coaGlossaryTerms).omit({ id: true });
+export type InsertCoaGlossaryTerm = z.infer<typeof insertCoaGlossaryTermSchema>;
+export type CoaGlossaryTerm = typeof coaGlossaryTerms.$inferSelect;
