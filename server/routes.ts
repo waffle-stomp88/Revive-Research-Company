@@ -1455,6 +1455,17 @@ export async function registerRoutes(
     }
   });
   
+  // Get education articles by product ID
+  app.get("/api/products/:id/education", async (req, res) => {
+    try {
+      const articles = await storage.getEducationArticlesByProductId(req.params.id);
+      res.json(articles);
+    } catch (error) {
+      console.error("Error fetching product education articles:", error);
+      res.status(500).json({ error: "Failed to fetch education articles" });
+    }
+  });
+  
   // ============================================
   // COA GLOSSARY ROUTES
   // ============================================

@@ -19,15 +19,17 @@ import {
   Info,
   Shield,
   AlertTriangle,
+  Pill,
 } from "lucide-react";
 import type { EducationArticle } from "@shared/schema";
 
 const categories = [
   { id: "all", label: "All Articles", icon: BookOpen, color: "#ffffff" },
-  { id: "basics", label: "Research Basics", icon: Beaker, color: "#E7FB10" },
-  { id: "coa-guide", label: "Understanding COAs", icon: FileCheck, color: "#21d8ff" },
-  { id: "storage", label: "Storage & Handling", icon: Thermometer, color: "#9d4edd" },
-  { id: "safety", label: "Lab Safety", icon: AlertTriangle, color: "#f97316" },
+  { id: "peptides", label: "Peptide Profiles", icon: FlaskConical, color: "#ec4899" },
+  { id: "basics", label: "Research Basics", icon: Beaker, color: "#21d8ff" },
+  { id: "coa-guide", label: "Understanding COAs", icon: FileCheck, color: "#9d4edd" },
+  { id: "storage", label: "Storage & Handling", icon: Thermometer, color: "#f97316" },
+  { id: "safety", label: "Lab Safety", icon: AlertTriangle, color: "#ef4444" },
   { id: "glossary", label: "Terminology", icon: Info, color: "#22c55e" },
 ];
 
@@ -51,6 +53,8 @@ export default function Education() {
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
+      case "peptides":
+        return FlaskConical;
       case "basics":
         return Beaker;
       case "coa-guide":

@@ -160,6 +160,7 @@ export interface IStorage {
   getAllEducationArticles(): Promise<EducationArticle[]>;
   getEducationArticleBySlug(slug: string): Promise<EducationArticle | undefined>;
   getEducationArticlesByCategory(category: string): Promise<EducationArticle[]>;
+  getEducationArticlesByProductId(productId: string): Promise<EducationArticle[]>;
   createEducationArticle(article: InsertEducationArticle): Promise<EducationArticle>;
   updateEducationArticle(id: string, article: Partial<InsertEducationArticle>): Promise<EducationArticle | undefined>;
   
@@ -975,6 +976,14 @@ export class DatabaseStorage implements IStorage {
     return db.select().from(educationArticles)
       .where(and(eq(educationArticles.category, category), eq(educationArticles.isPublished, true)))
       .orderBy(educationArticles.sortOrder);
+  }
+  
+  async getEducationArticlesByProductId(productId: string): Promise<EducationArticle[]> {
+    const allArticles = await db.select().from(educationArticles)
+      .where(eq(educationArticles.isPublished, true));
+    return allArticles.filter(article => 
+      article.relatedProductIds && article.relatedProductIds.includes(productId)
+    );
   }
   
   async createEducationArticle(article: InsertEducationArticle): Promise<EducationArticle> {
