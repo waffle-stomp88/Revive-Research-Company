@@ -46,8 +46,14 @@ import {
   Calendar,
   GraduationCap,
   BookOpen,
-  ChevronRight
+  ChevronRight,
+  Bell,
+  Mail,
+  Loader2
 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import type { Product, Review, ProductStorageProfile, Batch, Coa, EducationArticle } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 
@@ -146,6 +152,8 @@ export default function ProductDetail() {
   const [selectedDosage, setSelectedDosage] = useState<string>("10mg");
   const [purchaseType, setPurchaseType] = useState<PurchaseType>("one-time");
   const [subscriptionInterval, setSubscriptionInterval] = useState<SubscriptionInterval>("monthly");
+  const [notifyEmail, setNotifyEmail] = useState("");
+  const [notifySuccess, setNotifySuccess] = useState(false);
 
   const { data: product, isLoading, error } = useQuery<Product>({
     queryKey: ["/api/products", params.id],
@@ -179,6 +187,35 @@ export default function ProductDetail() {
     queryKey: ["/api/products", params.id, "education"],
     enabled: !!params.id,
   });
+
+  // Mutation for stock notification signup
+  const stockNotifyMutation = useMutation({
+    mutationFn: async (data: { productId: string; email: string }) => {
+      const response = await apiRequest("POST", "/api/stock-notifications", data);
+      return response.json() as Promise<{ message: string; alreadyExists?: boolean }>;
+    },
+    onSuccess: (response) => {
+      setNotifySuccess(true);
+      setNotifyEmail("");
+      toast({
+        title: response.alreadyExists ? "Already Subscribed" : "Success!",
+        description: response.message,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to subscribe. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleNotifySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!product || !notifyEmail.trim()) return;
+    stockNotifyMutation.mutate({ productId: product.id, email: notifyEmail.trim() });
+  };
 
   useEffect(() => {
     if (product?.dosageOptions && product.dosageOptions.length > 0) {
@@ -545,6 +582,60 @@ export default function ProductDetail() {
               <p className="text-[10px] text-center text-muted-foreground mt-2">
                 Save ${((getBasePrice() - getDiscountedPrice()) * quantity).toFixed(2)} per order • Cancel anytime
               </p>
+            )}
+
+            {!product.inStock && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-4 p-4 rounded-lg border-2 border-[#21d8ff]/30 bg-[#21d8ff]/5"
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <Bell className="h-4 w-4 text-[#21d8ff]" />
+                  <h4 className="font-display font-semibold text-sm">Get Notified When Back in Stock</h4>
+                </div>
+                
+                {notifySuccess ? (
+                  <div className="flex items-center gap-2 text-sm text-green-400">
+                    <CheckCircle className="h-4 w-4" />
+                    <span>You'll be notified when this product is available!</span>
+                  </div>
+                ) : (
+                  <form onSubmit={handleNotifySubmit} className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        type="email"
+                        placeholder="Enter your email"
+                        value={notifyEmail}
+                        onChange={(e) => setNotifyEmail(e.target.value)}
+                        className="pl-9 h-9 bg-background/50"
+                        required
+                        data-testid="input-notify-email"
+                      />
+                    </div>
+                    <Button
+                      type="submit"
+                      size="sm"
+                      className="bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90 gap-1.5 px-4"
+                      disabled={stockNotifyMutation.isPending}
+                      data-testid="button-notify-me"
+                    >
+                      {stockNotifyMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <>
+                          <Bell className="h-3.5 w-3.5" />
+                          Notify Me
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                )}
+                <p className="text-[10px] text-muted-foreground mt-2">
+                  We'll send you one email when this product is restocked. No spam, ever.
+                </p>
+              </motion.div>
             )}
 
             <Separator className="my-6" />

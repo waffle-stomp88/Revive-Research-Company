@@ -75,6 +75,7 @@ import {
   CreditCard,
   Activity,
   BarChart3,
+  Bell,
 } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { ObjectUploader } from "@/components/ObjectUploader";
@@ -132,9 +133,29 @@ interface DashboardMetrics {
   revenueTrend: Array<{ date: string; revenue: number; orders: number }>;
 }
 
+interface StockNotificationWithProduct {
+  id: string;
+  email: string;
+  productId: string;
+  productName: string;
+  status: string;
+  createdAt: string;
+}
+
 function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string) => void }) {
   const [timeRange, setTimeRange] = useState<number>(30);
   const [topProductsSort, setTopProductsSort] = useState<"revenue" | "units">("revenue");
+  
+  const { data: pendingNotifications = [] } = useQuery<StockNotificationWithProduct[]>({
+    queryKey: ["/api/admin/stock-notifications"],
+    queryFn: async () => {
+      const response = await fetch("/api/admin/stock-notifications", {
+        credentials: "include"
+      });
+      if (!response.ok) return [];
+      return response.json();
+    }
+  });
   
   const { data: metrics, isLoading } = useQuery<DashboardMetrics>({
     queryKey: ["/api/admin/dashboard", timeRange],
@@ -248,6 +269,14 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
       count: metrics.recentContacts,
       color: "#21d8ff",
       targetTab: "contacts"
+    }] : []),
+    ...(pendingNotifications.length > 0 ? [{
+      type: "info",
+      icon: Bell,
+      title: "Stock Notifications",
+      count: pendingNotifications.length,
+      color: "#21d8ff",
+      targetTab: "notifications"
     }] : []),
   ];
 
@@ -2093,6 +2122,147 @@ function ContactsTab() {
   );
 }
 
+interface StockNotificationWithProduct {
+  id: string;
+  email: string;
+  productId: string;
+  productName: string;
+  status: string;
+  createdAt: string;
+  notifiedAt?: string;
+}
+
+function StockNotificationsTab() {
+  const { toast } = useToast();
+  
+  const { data: notifications, isLoading } = useQuery<StockNotificationWithProduct[]>({
+    queryKey: ["/api/admin/stock-notifications"],
+    queryFn: async () => {
+      const response = await fetch("/api/admin/stock-notifications", {
+        credentials: "include"
+      });
+      if (!response.ok) throw new Error("Failed to fetch notifications");
+      return response.json();
+    }
+  });
+
+  const markSentMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest("PATCH", `/api/admin/stock-notifications/${id}/sent`, {});
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stock-notifications"] });
+      toast({ title: "Notification marked as sent" });
+    },
+    onError: () => {
+      toast({ title: "Failed to update notification", variant: "destructive" });
+    },
+  });
+
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
+
+  if (!notifications || notifications.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4">
+          <Bell className="h-8 w-8 text-muted-foreground" />
+        </div>
+        <h3 className="font-medium mb-2">No Stock Notifications</h3>
+        <p className="text-sm text-muted-foreground">
+          When customers sign up for back-in-stock notifications, they'll appear here.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="font-display text-xl font-bold" data-testid="text-notifications-title">
+            Stock Notifications
+          </h2>
+          <p className="text-muted-foreground text-sm">
+            Customers waiting for out-of-stock products
+          </p>
+        </div>
+        <Badge variant="secondary" className="text-sm">
+          {notifications.length} pending
+        </Badge>
+      </div>
+
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Email</TableHead>
+            <TableHead>Product</TableHead>
+            <TableHead>Requested</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {notifications.map((notification) => (
+            <TableRow key={notification.id} data-testid={`row-notification-${notification.id}`}>
+              <TableCell className="font-medium">{notification.email}</TableCell>
+              <TableCell>{notification.productName}</TableCell>
+              <TableCell className="text-muted-foreground text-sm">
+                {formatDate(notification.createdAt)}
+              </TableCell>
+              <TableCell>
+                <Badge 
+                  variant={notification.status === "pending" ? "secondary" : "default"}
+                  className={notification.status === "pending" ? "bg-[#21d8ff]/20 text-[#21d8ff]" : "bg-green-500/20 text-green-400"}
+                >
+                  {notification.status === "pending" ? "Waiting" : "Notified"}
+                </Badge>
+              </TableCell>
+              <TableCell className="text-right">
+                {notification.status === "pending" && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => markSentMutation.mutate(notification.id)}
+                    disabled={markSentMutation.isPending}
+                    data-testid={`btn-mark-sent-${notification.id}`}
+                  >
+                    {markSentMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <>
+                        <Check className="h-4 w-4 mr-1" />
+                        Mark Sent
+                      </>
+                    )}
+                  </Button>
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+
 function AffiliatesTab() {
   const { toast } = useToast();
   const [activeSubTab, setActiveSubTab] = useState("applications");
@@ -2592,7 +2762,7 @@ export default function Admin() {
 
           <motion.div variants={itemVariants}>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full max-w-3xl grid-cols-6">
+              <TabsList className="grid w-full max-w-4xl grid-cols-7">
                 <TabsTrigger value="overview" className="flex items-center gap-2" data-testid="tab-overview">
                   <LayoutDashboard className="h-4 w-4" />
                   <span className="hidden sm:inline">Overview</span>
@@ -2616,6 +2786,10 @@ export default function Admin() {
                 <TabsTrigger value="affiliates" className="flex items-center gap-2" data-testid="tab-affiliates">
                   <Users className="h-4 w-4" />
                   <span className="hidden sm:inline">Affiliates</span>
+                </TabsTrigger>
+                <TabsTrigger value="notifications" className="flex items-center gap-2" data-testid="tab-notifications">
+                  <Bell className="h-4 w-4" />
+                  <span className="hidden sm:inline">Notify</span>
                 </TabsTrigger>
               </TabsList>
 
@@ -2650,6 +2824,12 @@ export default function Admin() {
               <TabsContent value="affiliates">
                 <Card className="p-6">
                   <AffiliatesTab />
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="notifications">
+                <Card className="p-6">
+                  <StockNotificationsTab />
                 </Card>
               </TabsContent>
             </Tabs>
