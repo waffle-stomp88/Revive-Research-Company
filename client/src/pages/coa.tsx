@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,6 +40,8 @@ import {
   Beaker,
   Calendar,
   Building2,
+  Archive,
+  ArrowRight,
 } from "lucide-react";
 import type { Coa } from "@shared/schema";
 
@@ -338,7 +341,7 @@ export default function CoaVerification() {
             transition={{ delay: 0.3 }}
             className="mt-16"
           >
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid md:grid-cols-3 gap-8">
               <Card className="p-6">
                 <div className="flex items-start gap-4">
                   <div className="p-3 rounded-full bg-primary/10 flex-shrink-0">
@@ -369,6 +372,29 @@ export default function CoaVerification() {
                     </p>
                   </div>
                 </div>
+              </Card>
+
+              <Card className="p-6 hover-elevate">
+                <Link href="/coa-library">
+                  <div className="flex items-start gap-4 h-full">
+                    <div className="p-3 rounded-full bg-[#21d8ff]/10 flex-shrink-0">
+                      <Archive className="h-6 w-6 text-[#21d8ff]" />
+                    </div>
+                    <div className="flex-1 flex flex-col justify-between">
+                      <div>
+                        <h3 className="font-display font-semibold mb-2">Browse COA Library</h3>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          Search all certificates in our comprehensive database or explore 
+                          certificates by product and batch number.
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1 text-[#21d8ff] text-sm font-medium mt-4">
+                        View Library
+                        <ArrowRight className="h-4 w-4" />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
               </Card>
             </div>
           </motion.div>
