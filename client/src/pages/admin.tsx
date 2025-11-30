@@ -2370,6 +2370,289 @@ function StockNotificationsTab() {
   );
 }
 
+interface DiscountCode {
+  id: string;
+  code: string;
+  description: string | null;
+  discountPercent: string;
+  type: string;
+  affiliateId: string | null;
+  isActive: boolean;
+  maxUsages: number | null;
+  usageCount: number | null;
+  expiresAt: string | null;
+  createdAt: string;
+}
+
+function DiscountCodesTab() {
+  const { toast } = useToast();
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [newCode, setNewCode] = useState("");
+  const [newDescription, setNewDescription] = useState("");
+  const [newDiscountPercent, setNewDiscountPercent] = useState("10");
+  const [newType, setNewType] = useState("promo");
+
+  const { data: discountCodes, isLoading } = useQuery<DiscountCode[]>({
+    queryKey: ["/api/admin/discount-codes"],
+    queryFn: async () => {
+      const response = await fetch("/api/admin/discount-codes", {
+        credentials: "include"
+      });
+      if (!response.ok) throw new Error("Failed to fetch discount codes");
+      return response.json();
+    }
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: { code: string; description: string; discountPercent: string; type: string }) => {
+      const response = await apiRequest("POST", "/api/admin/discount-codes", data);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/discount-codes"] });
+      setShowCreateDialog(false);
+      setNewCode("");
+      setNewDescription("");
+      setNewDiscountPercent("10");
+      setNewType("promo");
+      toast({ title: "Discount code created" });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Failed to create discount code", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const toggleMutation = useMutation({
+    mutationFn: async ({ id, isActive }: { id: string; isActive: boolean }) => {
+      const response = await apiRequest("PATCH", `/api/admin/discount-codes/${id}/toggle`, { isActive });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/discount-codes"] });
+      toast({ title: "Discount code updated" });
+    },
+    onError: () => {
+      toast({ title: "Failed to update discount code", variant: "destructive" });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest("DELETE", `/api/admin/discount-codes/${id}`, {});
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/discount-codes"] });
+      toast({ title: "Discount code deleted" });
+    },
+    onError: () => {
+      toast({ title: "Failed to delete discount code", variant: "destructive" });
+    },
+  });
+
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <div>
+          <h2 className="font-display text-xl font-bold" data-testid="text-discount-codes-title">
+            Discount Codes
+          </h2>
+          <p className="text-muted-foreground text-sm">
+            Manage promo codes and affiliate discount codes
+          </p>
+        </div>
+        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+          <DialogTrigger asChild>
+            <Button className="bg-[#E7FB10] hover:bg-[#E7FB10]/90 text-black" data-testid="btn-create-discount-code">
+              <Plus className="h-4 w-4 mr-2" />
+              Create Code
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Create Discount Code</DialogTitle>
+              <DialogDescription>
+                Create a new discount code for promotions or affiliates
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Code</Label>
+                <Input
+                  placeholder="e.g., SAVE10"
+                  value={newCode}
+                  onChange={(e) => setNewCode(e.target.value.toUpperCase())}
+                  data-testid="input-new-code"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Description (optional)</Label>
+                <Input
+                  placeholder="e.g., Summer sale discount"
+                  value={newDescription}
+                  onChange={(e) => setNewDescription(e.target.value)}
+                  data-testid="input-new-description"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Discount Percent</Label>
+                <Input
+                  type="number"
+                  min="1"
+                  max="100"
+                  value={newDiscountPercent}
+                  onChange={(e) => setNewDiscountPercent(e.target.value)}
+                  data-testid="input-new-discount-percent"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Type</Label>
+                <Select value={newType} onValueChange={setNewType}>
+                  <SelectTrigger data-testid="select-new-type">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="promo">Promo Code</SelectItem>
+                    <SelectItem value="affiliate_referral">Affiliate Referral (10%)</SelectItem>
+                    <SelectItem value="affiliate_personal">Affiliate Personal (20%)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
+                Cancel
+              </Button>
+              <Button
+                onClick={() => createMutation.mutate({
+                  code: newCode,
+                  description: newDescription,
+                  discountPercent: newDiscountPercent,
+                  type: newType
+                })}
+                disabled={!newCode || createMutation.isPending}
+                data-testid="btn-confirm-create"
+              >
+                {createMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : null}
+                Create
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {!discountCodes || discountCodes.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4">
+            <Tag className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <h3 className="font-medium mb-2">No Discount Codes</h3>
+          <p className="text-sm text-muted-foreground">
+            Create your first discount code to get started.
+          </p>
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Code</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead>Discount</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Created</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {discountCodes.map((code) => (
+                <TableRow key={code.id} data-testid={`row-discount-code-${code.id}`}>
+                  <TableCell>
+                    <code className="font-mono font-bold text-sm bg-muted px-2 py-1 rounded">
+                      {code.code}
+                    </code>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground text-sm">
+                    {code.description || "-"}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="secondary" className="bg-[#E7FB10]/20 text-[#E7FB10]">
+                      {code.discountPercent}% OFF
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="capitalize">
+                      {code.type.replace("_", " ")}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={code.isActive ? "default" : "secondary"}>
+                      {code.isActive ? "Active" : "Inactive"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground text-sm">
+                    {formatDate(code.createdAt)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => toggleMutation.mutate({ id: code.id, isActive: !code.isActive })}
+                        disabled={toggleMutation.isPending}
+                        data-testid={`btn-toggle-${code.id}`}
+                      >
+                        {code.isActive ? (
+                          <ToggleRight className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <ToggleLeft className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => deleteMutation.mutate(code.id)}
+                        disabled={deleteMutation.isPending}
+                        data-testid={`btn-delete-${code.id}`}
+                      >
+                        {deleteMutation.isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function AffiliatesTab() {
   const { toast } = useToast();
   const [activeSubTab, setActiveSubTab] = useState("applications");
@@ -2869,7 +3152,7 @@ export default function Admin() {
 
           <motion.div variants={itemVariants}>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full max-w-4xl grid-cols-7">
+              <TabsList className="grid w-full max-w-5xl grid-cols-8">
                 <TabsTrigger value="overview" className="flex items-center gap-2" data-testid="tab-overview">
                   <LayoutDashboard className="h-4 w-4" />
                   <span className="hidden sm:inline">Overview</span>
@@ -2893,6 +3176,10 @@ export default function Admin() {
                 <TabsTrigger value="affiliates" className="flex items-center gap-2" data-testid="tab-affiliates">
                   <Users className="h-4 w-4" />
                   <span className="hidden sm:inline">Affiliates</span>
+                </TabsTrigger>
+                <TabsTrigger value="discounts" className="flex items-center gap-2" data-testid="tab-discounts">
+                  <Tag className="h-4 w-4" />
+                  <span className="hidden sm:inline">Discounts</span>
                 </TabsTrigger>
                 <TabsTrigger value="notifications" className="flex items-center gap-2" data-testid="tab-notifications">
                   <Bell className="h-4 w-4" />
@@ -2931,6 +3218,12 @@ export default function Admin() {
               <TabsContent value="affiliates">
                 <Card className="p-6">
                   <AffiliatesTab />
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="discounts">
+                <Card className="p-6">
+                  <DiscountCodesTab />
                 </Card>
               </TabsContent>
 

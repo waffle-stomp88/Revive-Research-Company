@@ -31,6 +31,12 @@ function generateReferralCode(): string {
   return code;
 }
 
+function generateBasicReferralCode(fullName: string): string {
+  const firstName = fullName.split(' ')[0] || 'CODE';
+  const cleanName = firstName.replace(/[^A-Za-z]/g, '').toUpperCase().slice(0, 10);
+  return `${cleanName}10`;
+}
+
 const TIER1_COMMISSION_RATE = 0.10;
 const TIER2_COMMISSION_RATE = 0.10;
 
@@ -1138,6 +1144,8 @@ export async function registerRoutes(
         attempts++;
       }
 
+      const basicReferralCode = generateBasicReferralCode(application.fullName);
+
       const { uplineReferralCode, commissionRate } = req.body;
       let uplineId: string | undefined;
 
@@ -1155,6 +1163,7 @@ export async function registerRoutes(
         email: application.email,
         fullName: application.fullName,
         referralCode,
+        basicReferralCode,
         uplineId,
         commissionRate: commissionRate || "20.00",
         payoutMethod: "paypal",
