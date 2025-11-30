@@ -25,7 +25,7 @@ export function FreeShippingBanner() {
       <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 text-sm font-medium">
         <Truck className="h-4 w-4" />
         <span>
-          <span className="font-bold text-red-600" style={{ animation: 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}>FREE SHIPPING</span> on orders over ${FREE_SHIPPING_THRESHOLD}
+          <span className="font-bold text-red-500" style={{ animation: 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}>FREE SHIPPING</span> on orders over ${FREE_SHIPPING_THRESHOLD}
           <span className="hidden sm:inline"> • Same day shipping on orders placed before 12:00 PM CT</span>
         </span>
         <Link href="/products" className="ml-2 underline hover:no-underline font-semibold">
