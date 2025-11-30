@@ -332,7 +332,7 @@ export async function registerRoutes(
   // Create affiliate application
   app.post("/api/affiliate-apply", async (req, res) => {
     try {
-      const { referrerCode, ...applicationData } = req.body;
+      const { referrerCode, referredByName, ...applicationData } = req.body;
       
       let referredByAffiliateId: string | undefined;
       if (referrerCode) {
@@ -346,6 +346,7 @@ export async function registerRoutes(
       const validatedData = insertAffiliateApplicationSchema.parse({
         ...applicationData,
         referredByAffiliateId,
+        referredByName: referredByName || null,
       });
       console.log("New affiliate application received:", validatedData);
       
@@ -1608,6 +1609,132 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error deleting notifications:", error);
       res.status(500).json({ error: "Failed to delete notifications" });
+    }
+  });
+
+  // DISCOUNT CODE ROUTES
+  
+  // Get all discount codes (admin only)
+  app.get("/api/admin/discount-codes", isAdmin, async (req, res) => {
+    try {
+      const codes = await storage.getAllDiscountCodes();
+      res.json(codes);
+    } catch (error) {
+      console.error("Error fetching discount codes:", error);
+      res.status(500).json({ error: "Failed to fetch discount codes" });
+    }
+  });
+
+  // Create discount code (admin only)
+  app.post("/api/admin/discount-codes", isAdmin, async (req, res) => {
+    try {
+      const { code, description, discountPercent, type, affiliateId, maxUsages, expiresAt } = req.body;
+      
+      if (!code || !discountPercent) {
+        return res.status(400).json({ error: "Code and discount percent are required" });
+      }
+      
+      // Check if code already exists
+      const existing = await storage.getDiscountCodeByCode(code);
+      if (existing) {
+        return res.status(400).json({ error: "Discount code already exists" });
+      }
+      
+      const newCode = await storage.createDiscountCode({
+        code: code.toUpperCase(),
+        description: description || null,
+        discountPercent: discountPercent.toString(),
+        type: type || "promo",
+        affiliateId: affiliateId || null,
+        maxUsages: maxUsages || null,
+        expiresAt: expiresAt ? new Date(expiresAt) : null,
+        isActive: true,
+      });
+      
+      res.status(201).json(newCode);
+    } catch (error) {
+      console.error("Error creating discount code:", error);
+      res.status(500).json({ error: "Failed to create discount code" });
+    }
+  });
+
+  // Toggle discount code active status (admin only)
+  app.patch("/api/admin/discount-codes/:id/toggle", isAdmin, async (req, res) => {
+    try {
+      const { isActive } = req.body;
+      const updated = await storage.toggleDiscountCodeActive(req.params.id, isActive);
+      
+      if (!updated) {
+        return res.status(404).json({ error: "Discount code not found" });
+      }
+      
+      res.json(updated);
+    } catch (error) {
+      console.error("Error toggling discount code:", error);
+      res.status(500).json({ error: "Failed to update discount code" });
+    }
+  });
+
+  // Update discount code (admin only)
+  app.patch("/api/admin/discount-codes/:id", isAdmin, async (req, res) => {
+    try {
+      const updated = await storage.updateDiscountCode(req.params.id, req.body);
+      
+      if (!updated) {
+        return res.status(404).json({ error: "Discount code not found" });
+      }
+      
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating discount code:", error);
+      res.status(500).json({ error: "Failed to update discount code" });
+    }
+  });
+
+  // Delete discount code (admin only)
+  app.delete("/api/admin/discount-codes/:id", isAdmin, async (req, res) => {
+    try {
+      const result = await storage.deleteDiscountCode(req.params.id);
+      if (!result) {
+        return res.status(404).json({ error: "Discount code not found" });
+      }
+      res.json({ message: "Discount code deleted" });
+    } catch (error) {
+      console.error("Error deleting discount code:", error);
+      res.status(500).json({ error: "Failed to delete discount code" });
+    }
+  });
+
+  // Validate discount code (public - for checkout)
+  app.get("/api/discount-codes/validate/:code", async (req, res) => {
+    try {
+      const code = await storage.getDiscountCodeByCode(req.params.code);
+      
+      if (!code) {
+        return res.status(404).json({ valid: false, error: "Invalid discount code" });
+      }
+      
+      if (!code.isActive) {
+        return res.status(400).json({ valid: false, error: "This discount code is no longer active" });
+      }
+      
+      if (code.expiresAt && new Date(code.expiresAt) < new Date()) {
+        return res.status(400).json({ valid: false, error: "This discount code has expired" });
+      }
+      
+      if (code.maxUsages && code.usageCount && code.usageCount >= code.maxUsages) {
+        return res.status(400).json({ valid: false, error: "This discount code has reached its usage limit" });
+      }
+      
+      res.json({
+        valid: true,
+        code: code.code,
+        discountPercent: code.discountPercent,
+        type: code.type
+      });
+    } catch (error) {
+      console.error("Error validating discount code:", error);
+      res.status(500).json({ valid: false, error: "Failed to validate discount code" });
     }
   });
 
