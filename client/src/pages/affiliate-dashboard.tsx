@@ -309,13 +309,22 @@ export default function AffiliateDashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mb-8"
+          className="mb-8 space-y-4"
         >
+          {/* Customer Referral Code */}
           <Card className="border-[#E7FB10]/30 bg-gradient-to-r from-[#E7FB10]/5 to-transparent">
-            <CardContent className="p-6">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <span className="text-[#E7FB10]">●</span>
+                Personal Referral Code (Customers)
+              </CardTitle>
+              <CardDescription>
+                Share this code with customers to earn Tier 1 commissions. They get a 20% personal-use discount.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-0">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Your Referral Link</p>
                   <code className="text-sm bg-muted px-3 py-1.5 rounded font-mono" data-testid="text-referral-link">
                     {window.location.origin}/?ref={stats?.referralCode}
                   </code>
@@ -340,6 +349,48 @@ export default function AffiliateDashboard() {
                     Preview
                   </Button>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Recruitment/Team Code */}
+          <Card className="border-[#21d8ff]/30 bg-gradient-to-r from-[#21d8ff]/5 to-transparent">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <span className="text-[#21d8ff]">●</span>
+                Your Recruitment Code (Affiliates)
+              </CardTitle>
+              <CardDescription>
+                Share your code with other marketers/brand partners to recruit them as affiliates. You earn Tier 2 commissions (10% override) on their sales.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">Your Code:</p>
+                  <code className="text-sm bg-muted px-3 py-1.5 rounded font-mono" data-testid="text-recruitment-code">
+                    {stats?.referralCode}
+                  </code>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => {
+                    if (stats?.referralCode) {
+                      const recruitLink = `${window.location.origin}/affiliate?ref=${stats.referralCode}`;
+                      navigator.clipboard.writeText(recruitLink);
+                      toast({
+                        title: "Recruitment Link Copied",
+                        description: "Your affiliate recruitment link has been copied to clipboard.",
+                      });
+                    }
+                  }}
+                  data-testid="button-copy-recruit-link"
+                >
+                  <Copy className="h-4 w-4" />
+                  Copy Recruitment Link
+                </Button>
               </div>
             </CardContent>
           </Card>
