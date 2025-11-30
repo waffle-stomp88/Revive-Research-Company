@@ -1267,6 +1267,196 @@ export async function registerRoutes(
     }
   });
 
+  // ============================================
+  // BATCHES ROUTES
+  // ============================================
+  
+  // Get all batches
+  app.get("/api/batches", async (req, res) => {
+    try {
+      const batches = await storage.getAllBatches();
+      res.json(batches);
+    } catch (error) {
+      console.error("Error fetching batches:", error);
+      res.status(500).json({ error: "Failed to fetch batches" });
+    }
+  });
+  
+  // Get batch by batch number (for QR code lookups)
+  app.get("/api/batches/lookup/:batchNumber", async (req, res) => {
+    try {
+      const batch = await storage.getBatchByBatchNumber(req.params.batchNumber);
+      if (!batch) {
+        return res.status(404).json({ error: "Batch not found" });
+      }
+      
+      // Get the associated COA
+      const coa = await storage.getCoaByBatchNumber(req.params.batchNumber);
+      
+      // Get the product info
+      const product = await storage.getProduct(batch.productId);
+      
+      res.json({ batch, coa, product });
+    } catch (error) {
+      console.error("Error looking up batch:", error);
+      res.status(500).json({ error: "Failed to lookup batch" });
+    }
+  });
+  
+  // Get batches by product ID
+  app.get("/api/batches/product/:productId", async (req, res) => {
+    try {
+      const batches = await storage.getBatchesByProductId(req.params.productId);
+      res.json(batches);
+    } catch (error) {
+      console.error("Error fetching batches for product:", error);
+      res.status(500).json({ error: "Failed to fetch batches" });
+    }
+  });
+  
+  // ============================================
+  // PRODUCT STORAGE PROFILES ROUTES
+  // ============================================
+  
+  // Get storage profile for a product
+  app.get("/api/products/:productId/storage-profile", async (req, res) => {
+    try {
+      const profile = await storage.getProductStorageProfile(req.params.productId);
+      if (!profile) {
+        return res.status(404).json({ error: "Storage profile not found" });
+      }
+      res.json(profile);
+    } catch (error) {
+      console.error("Error fetching storage profile:", error);
+      res.status(500).json({ error: "Failed to fetch storage profile" });
+    }
+  });
+  
+  // ============================================
+  // LEGAL DOCUMENTS ROUTES
+  // ============================================
+  
+  // Get all legal documents
+  app.get("/api/legal", async (req, res) => {
+    try {
+      const category = req.query.category as string;
+      let documents;
+      if (category) {
+        documents = await storage.getLegalDocumentsByCategory(category);
+      } else {
+        documents = await storage.getAllLegalDocuments();
+      }
+      res.json(documents);
+    } catch (error) {
+      console.error("Error fetching legal documents:", error);
+      res.status(500).json({ error: "Failed to fetch legal documents" });
+    }
+  });
+  
+  // Get legal document by slug
+  app.get("/api/legal/:slug", async (req, res) => {
+    try {
+      const document = await storage.getLegalDocumentBySlug(req.params.slug);
+      if (!document) {
+        return res.status(404).json({ error: "Document not found" });
+      }
+      res.json(document);
+    } catch (error) {
+      console.error("Error fetching legal document:", error);
+      res.status(500).json({ error: "Failed to fetch legal document" });
+    }
+  });
+  
+  // ============================================
+  // FAQ ROUTES
+  // ============================================
+  
+  // Get all FAQ entries
+  app.get("/api/faq", async (req, res) => {
+    try {
+      const category = req.query.category as string;
+      let entries;
+      if (category) {
+        entries = await storage.getFaqEntriesByCategory(category);
+      } else {
+        entries = await storage.getAllFaqEntries();
+      }
+      res.json(entries);
+    } catch (error) {
+      console.error("Error fetching FAQ entries:", error);
+      res.status(500).json({ error: "Failed to fetch FAQ entries" });
+    }
+  });
+  
+  // ============================================
+  // EDUCATION ARTICLES ROUTES
+  // ============================================
+  
+  // Get all education articles
+  app.get("/api/education", async (req, res) => {
+    try {
+      const category = req.query.category as string;
+      let articles;
+      if (category) {
+        articles = await storage.getEducationArticlesByCategory(category);
+      } else {
+        articles = await storage.getAllEducationArticles();
+      }
+      res.json(articles);
+    } catch (error) {
+      console.error("Error fetching education articles:", error);
+      res.status(500).json({ error: "Failed to fetch education articles" });
+    }
+  });
+  
+  // Get education article by slug
+  app.get("/api/education/:slug", async (req, res) => {
+    try {
+      const article = await storage.getEducationArticleBySlug(req.params.slug);
+      if (!article) {
+        return res.status(404).json({ error: "Article not found" });
+      }
+      res.json(article);
+    } catch (error) {
+      console.error("Error fetching education article:", error);
+      res.status(500).json({ error: "Failed to fetch article" });
+    }
+  });
+  
+  // ============================================
+  // COA GLOSSARY ROUTES
+  // ============================================
+  
+  // Get all COA glossary terms
+  app.get("/api/coa-glossary", async (req, res) => {
+    try {
+      const terms = await storage.getAllCoaGlossaryTerms();
+      res.json(terms);
+    } catch (error) {
+      console.error("Error fetching COA glossary terms:", error);
+      res.status(500).json({ error: "Failed to fetch glossary terms" });
+    }
+  });
+  
+  // ============================================
+  // COA LIBRARY SEARCH ROUTES
+  // ============================================
+  
+  // Search COAs with filters
+  app.get("/api/coa-library", async (req, res) => {
+    try {
+      const productId = req.query.productId as string;
+      const batchNumber = req.query.batchNumber as string;
+      const testType = req.query.testType as string;
+      
+      const coas = await storage.searchCoas({ productId, batchNumber, testType });
+      res.json(coas);
+    } catch (error) {
+      console.error("Error searching COAs:", error);
+      res.status(500).json({ error: "Failed to search COAs" });
+    }
+  });
+
   // Chatbot endpoint
   app.post("/api/chat", async (req, res) => {
     try {
