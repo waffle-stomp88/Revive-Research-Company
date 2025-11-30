@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, User, LogIn, LogOut, Shield, ShoppingCart } from "lucide-react";
+import { Menu, X, User, LogIn, LogOut, Shield, ShoppingCart, ChevronDown, FileCheck, GraduationCap, Scale, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -22,6 +22,14 @@ const navLinks = [
   { href: "/products", label: "Products" },
   { href: "/coa", label: "COA Verification" },
   { href: "/affiliate", label: "Affiliates" },
+];
+
+const resourceLinks = [
+  { href: "/coa-library", label: "COA Library", icon: FileCheck },
+  { href: "/education", label: "Education Center", icon: GraduationCap },
+  { href: "/legal", label: "Legal & Compliance", icon: Scale },
+  { href: "/what-we-dont-do", label: "What We Don't Do", icon: BookOpen },
+  { href: "/faq", label: "FAQ", icon: BookOpen },
 ];
 
 export function Navigation() {
@@ -121,6 +129,49 @@ export function Navigation() {
                     </Link>
                   );
                 })}
+                
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <motion.div
+                      className="relative px-4 py-2 rounded-md cursor-pointer"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <span
+                        className={`flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 ${
+                          resourceLinks.some(r => location === r.href)
+                            ? "text-[#9d4edd] drop-shadow-[0_0_8px_rgba(157,78,221,0.6)]"
+                            : "text-muted-foreground hover:text-[#9d4edd]"
+                        }`}
+                        data-testid="link-nav-resources"
+                      >
+                        Resources
+                        <ChevronDown className="h-4 w-4" />
+                      </span>
+                      {resourceLinks.some(r => location === r.href) && (
+                        <div className="absolute inset-0 bg-[#9d4edd]/10 rounded-md border border-[#9d4edd]/30" />
+                      )}
+                    </motion.div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="center" className="w-56">
+                    {resourceLinks.map((link) => {
+                      const Icon = link.icon;
+                      const isActive = location === link.href;
+                      return (
+                        <DropdownMenuItem key={link.href} asChild>
+                          <Link 
+                            href={link.href} 
+                            className={`cursor-pointer ${isActive ? "text-[#9d4edd]" : ""}`}
+                            data-testid={`link-resource-${link.label.toLowerCase().replace(/ /g, "-")}`}
+                          >
+                            <Icon className="h-4 w-4 mr-2" />
+                            {link.label}
+                          </Link>
+                        </DropdownMenuItem>
+                      );
+                    })}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
 
               <div className="flex items-center gap-2 md:gap-4">
@@ -250,7 +301,7 @@ export function Navigation() {
             className="fixed inset-0 z-40 bg-background/95 backdrop-blur-lg md:hidden"
             style={{ paddingTop: 'calc(var(--banner-height, 40px) + 80px)' }}
           >
-            <nav className="flex flex-col items-center justify-center h-full gap-8">
+            <nav className="flex flex-col items-center justify-center h-full gap-6 overflow-y-auto py-8">
               {navLinks.map((link, index) => {
                 const isActive = location === link.href;
                 return (
@@ -269,6 +320,49 @@ export function Navigation() {
                         }`}
                         data-testid={`link-mobile-${link.label.toLowerCase().replace(" ", "-")}`}
                       >
+                        {link.label}
+                      </span>
+                    </Link>
+                  </motion.div>
+                );
+              })}
+              
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.5 }}
+                transition={{ delay: 0.4 }}
+                className="w-24 h-px bg-[#9d4edd]/50 my-2"
+              />
+              
+              <motion.span
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.45 }}
+                className="text-sm font-medium text-[#9d4edd]"
+              >
+                Resources
+              </motion.span>
+              
+              {resourceLinks.map((link, index) => {
+                const isActive = location === link.href;
+                const Icon = link.icon;
+                return (
+                  <motion.div
+                    key={link.href}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 + index * 0.05 }}
+                  >
+                    <Link href={link.href}>
+                      <span
+                        className={`flex items-center gap-2 text-xl font-display font-medium tracking-wide cursor-pointer transition-all duration-300 ${
+                          isActive
+                            ? "text-[#9d4edd] drop-shadow-[0_0_12px_rgba(157,78,221,0.6)]"
+                            : "text-muted-foreground hover:text-[#9d4edd]"
+                        }`}
+                        data-testid={`link-mobile-${link.label.toLowerCase().replace(/ /g, "-")}`}
+                      >
+                        <Icon className="h-5 w-5" />
                         {link.label}
                       </span>
                     </Link>
