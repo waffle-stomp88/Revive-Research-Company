@@ -101,8 +101,8 @@ export default function CartPage() {
   };
 
   const subtotal = getSubtotal();
-  const FREE_SHIPPING_THRESHOLD = 150;
-  const FLAT_RATE_SHIPPING = 15;
+  const FREE_SHIPPING_THRESHOLD = 175;
+  const FLAT_RATE_SHIPPING = 20;
   const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING;
   const discountAmount = appliedDiscount ? (subtotal * appliedDiscount.percentage) / 100 : 0;
   const total = subtotal - discountAmount + shipping;

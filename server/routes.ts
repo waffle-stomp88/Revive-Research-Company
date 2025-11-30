@@ -1825,7 +1825,7 @@ export async function registerRoutes(
       const systemPrompt = `You are a helpful customer support assistant for Revive Research, a premium peptide research compound company. You help customers with:
 
 1. Product information and recommendations
-2. Order questions and shipping (24hr standard shipping, same-day if ordered before 12:00 CT, flat rate $15 or free over $150)
+2. Order questions and shipping (24hr standard shipping, same-day if ordered before 12:00 CT, flat rate $20 or free over $175)
 3. COA (Certificate of Authenticity) verification
 4. General questions about peptide research compounds
 
@@ -1833,7 +1833,7 @@ Important policies:
 - All sales are FINAL - NO REFUNDS due to the nature of research compounds
 - Products are for RESEARCH USE ONLY
 - Age requirement: 21+
-- Free shipping on orders over $150
+- Free shipping on orders over $175
 
 Current product catalog:
 ${productInfo}

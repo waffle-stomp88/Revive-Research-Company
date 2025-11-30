@@ -143,8 +143,8 @@ export default function Checkout() {
     checkoutMutation.mutate();
   };
 
-  const FREE_SHIPPING_THRESHOLD = 150;
-  const FLAT_RATE_SHIPPING = 15;
+  const FREE_SHIPPING_THRESHOLD = 175;
+  const FLAT_RATE_SHIPPING = 20;
   const cartSubtotal = getSubtotal();
   const cartShipping = cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING;
   const cartTotal = cartSubtotal + cartShipping;
@@ -622,7 +622,7 @@ export default function Checkout() {
                   </div>
                   {bundleShipping > 0 && (
                     <p className="text-xs text-muted-foreground mt-1">
-                      Free shipping on orders over $150
+                      Free shipping on orders over $175
                     </p>
                   )}
                 </div>

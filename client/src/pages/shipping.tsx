@@ -17,8 +17,8 @@ import {
 } from "lucide-react";
 
 const SHIPPING_INFO = {
-  freeShippingThreshold: 150,
-  flatRate: 15,
+  freeShippingThreshold: 175,
+  flatRate: 20,
   processingTime: "24 hours",
   sameDayCutoff: "12:00 PM CT",
   carrier: "USPS Priority / UPS Ground",

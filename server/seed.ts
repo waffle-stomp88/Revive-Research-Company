@@ -368,8 +368,8 @@ Complete information about our shipping methods, delivery timeframes, and handli
 
 | Order Total | Shipping Cost |
 |-------------|---------------|
-| Under $150  | $15 flat rate |
-| $150+       | **FREE** |
+| Under $175  | $20 flat rate |
+| $175+       | **FREE** |
 
 All shipping is via expedited courier service within the continental United States.
 

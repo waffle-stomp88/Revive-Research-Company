@@ -20,7 +20,7 @@ The platform features an Apple-inspired design with a dark charcoal background (
 
 ### Feature Specifications
 - **Age Verification**: A 21+ age gate appears on the first visit, storing verification status in localStorage for legal compliance.
-- **Shipping**: Free shipping on orders over $150, otherwise a flat $15. Features 24-hour standard shipping and same-day shipping before 12:00 CT.
+- **Shipping**: Free shipping on orders over $175, otherwise a flat $20. Features 24-hour standard shipping and same-day shipping before 12:00 CT.
 - **No Refunds Policy**: Clearly stated due to the nature of research compounds.
 - **Affiliate Program**: Two-tier commission structure (10% direct + 10% customer discount, 10% team override) with 20% total cap per order, 30-day cookie window, $100 minimum payout, and monthly payouts. Affiliates receive a private 20% personal-use discount code. Includes an application form, referral tracking, affiliate dashboard, and Non-MLM disclaimer. Not an MLM - commission stops at one level with no ranks, forced purchases, or recruitment requirements.
 - **Product Bundles**: Curated "Research Stacks" offer discounted combinations of peptides.

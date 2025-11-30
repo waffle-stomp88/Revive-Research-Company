@@ -50,7 +50,7 @@ const commitments = [
   "Transparent cost breakdown",
   "Competitive with quality vendors",
   "Volume discounts clearly stated",
-  "Free shipping over $150",
+  "Free shipping over $175",
 ];
 
 export default function EthicalPricing() {
