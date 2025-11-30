@@ -1545,10 +1545,10 @@ export async function registerRoutes(
     }
   });
   
-  // Get pending notifications (admin only)
+  // Get all notifications (admin only)
   app.get("/api/admin/stock-notifications", isAdmin, async (req, res) => {
     try {
-      const notifications = await storage.getPendingStockNotifications();
+      const notifications = await storage.getAllStockNotifications();
       
       // Get product details for each notification
       const notificationsWithProducts = await Promise.all(
@@ -1579,6 +1579,35 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error marking notification as sent:", error);
       res.status(500).json({ error: "Failed to update notification" });
+    }
+  });
+
+  // Delete single notification (admin only)
+  app.delete("/api/admin/stock-notifications/:id", isAdmin, async (req, res) => {
+    try {
+      const result = await storage.deleteStockNotification(req.params.id);
+      if (!result) {
+        return res.status(404).json({ error: "Notification not found" });
+      }
+      res.json({ message: "Notification deleted" });
+    } catch (error) {
+      console.error("Error deleting notification:", error);
+      res.status(500).json({ error: "Failed to delete notification" });
+    }
+  });
+
+  // Delete bulk notifications (admin only)
+  app.delete("/api/admin/stock-notifications", isAdmin, async (req, res) => {
+    try {
+      const { ids } = req.body;
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ error: "No IDs provided" });
+      }
+      const deleted = await storage.deleteStockNotificationsBulk(ids);
+      res.json({ message: `${deleted} notification(s) deleted` });
+    } catch (error) {
+      console.error("Error deleting notifications:", error);
+      res.status(500).json({ error: "Failed to delete notifications" });
     }
   });
 

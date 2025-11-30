@@ -2134,6 +2134,7 @@ interface StockNotificationWithProduct {
 
 function StockNotificationsTab() {
   const { toast } = useToast();
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   
   const { data: notifications, isLoading } = useQuery<StockNotificationWithProduct[]>({
     queryKey: ["/api/admin/stock-notifications"],
@@ -2159,6 +2160,53 @@ function StockNotificationsTab() {
       toast({ title: "Failed to update notification", variant: "destructive" });
     },
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest("DELETE", `/api/admin/stock-notifications/${id}`, {});
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stock-notifications"] });
+      toast({ title: "Notification deleted" });
+    },
+    onError: () => {
+      toast({ title: "Failed to delete notification", variant: "destructive" });
+    },
+  });
+
+  const deleteBulkMutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      const response = await apiRequest("DELETE", "/api/admin/stock-notifications", { ids });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stock-notifications"] });
+      setSelectedIds(new Set());
+      toast({ title: "Notifications deleted" });
+    },
+    onError: () => {
+      toast({ title: "Failed to delete notifications", variant: "destructive" });
+    },
+  });
+
+  const toggleSelectId = (id: string) => {
+    const newSet = new Set(selectedIds);
+    if (newSet.has(id)) {
+      newSet.delete(id);
+    } else {
+      newSet.add(id);
+    }
+    setSelectedIds(newSet);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === notifications?.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(notifications?.map(n => n.id) || []));
+    }
+  };
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString("en-US", {
@@ -2195,70 +2243,126 @@ function StockNotificationsTab() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <div>
           <h2 className="font-display text-xl font-bold" data-testid="text-notifications-title">
             Stock Notifications
           </h2>
           <p className="text-muted-foreground text-sm">
-            Customers waiting for out-of-stock products
+            All notification requests (pending & sent)
           </p>
         </div>
         <Badge variant="secondary" className="text-sm">
-          {notifications.length} pending
+          {notifications.length} total
         </Badge>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Email</TableHead>
-            <TableHead>Product</TableHead>
-            <TableHead>Requested</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {notifications.map((notification) => (
-            <TableRow key={notification.id} data-testid={`row-notification-${notification.id}`}>
-              <TableCell className="font-medium">{notification.email}</TableCell>
-              <TableCell>{notification.productName}</TableCell>
-              <TableCell className="text-muted-foreground text-sm">
-                {formatDate(notification.createdAt)}
-              </TableCell>
-              <TableCell>
-                <Badge 
-                  variant={notification.status === "pending" ? "secondary" : "default"}
-                  className={notification.status === "pending" ? "bg-[#21d8ff]/20 text-[#21d8ff]" : "bg-green-500/20 text-green-400"}
-                >
-                  {notification.status === "pending" ? "Waiting" : "Notified"}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-right">
-                {notification.status === "pending" && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => markSentMutation.mutate(notification.id)}
-                    disabled={markSentMutation.isPending}
-                    data-testid={`btn-mark-sent-${notification.id}`}
-                  >
-                    {markSentMutation.isPending ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <>
-                        <Check className="h-4 w-4 mr-1" />
-                        Mark Sent
-                      </>
-                    )}
-                  </Button>
-                )}
-              </TableCell>
+      {selectedIds.size > 0 && (
+        <div className="bg-muted/50 p-3 rounded-md flex items-center justify-between gap-2">
+          <span className="text-sm font-medium">{selectedIds.size} selected</span>
+          <Button
+            size="sm"
+            variant="destructive"
+            onClick={() => deleteBulkMutation.mutate(Array.from(selectedIds))}
+            disabled={deleteBulkMutation.isPending}
+            data-testid="btn-delete-selected"
+          >
+            {deleteBulkMutation.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-1" />
+            ) : (
+              <Trash2 className="h-4 w-4 mr-1" />
+            )}
+            Delete Selected
+          </Button>
+        </div>
+      )}
+
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-8">
+                <input
+                  type="checkbox"
+                  checked={selectedIds.size === notifications.length && notifications.length > 0}
+                  onChange={toggleSelectAll}
+                  data-testid="checkbox-select-all"
+                  className="rounded border-gray-300"
+                />
+              </TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Product</TableHead>
+              <TableHead>Requested</TableHead>
+              <TableHead>Notified At</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {notifications.map((notification) => (
+              <TableRow key={notification.id} data-testid={`row-notification-${notification.id}`}>
+                <TableCell className="w-8">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(notification.id)}
+                    onChange={() => toggleSelectId(notification.id)}
+                    data-testid={`checkbox-notification-${notification.id}`}
+                    className="rounded border-gray-300"
+                  />
+                </TableCell>
+                <TableCell className="font-medium">{notification.email}</TableCell>
+                <TableCell>{notification.productName}</TableCell>
+                <TableCell className="text-muted-foreground text-sm">
+                  {formatDate(notification.createdAt)}
+                </TableCell>
+                <TableCell className="text-muted-foreground text-sm">
+                  {notification.notifiedAt ? formatDate(notification.notifiedAt) : "—"}
+                </TableCell>
+                <TableCell>
+                  <Badge 
+                    variant={notification.status === "pending" ? "secondary" : "default"}
+                    className={notification.status === "pending" ? "bg-[#21d8ff]/20 text-[#21d8ff]" : "bg-green-500/20 text-green-400"}
+                  >
+                    {notification.status === "pending" ? "Waiting" : "Notified"}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex items-center justify-end gap-1">
+                    {notification.status === "pending" && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => markSentMutation.mutate(notification.id)}
+                        disabled={markSentMutation.isPending}
+                        data-testid={`btn-mark-sent-${notification.id}`}
+                      >
+                        {markSentMutation.isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Check className="h-4 w-4" />
+                        )}
+                      </Button>
+                    )}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => deleteMutation.mutate(notification.id)}
+                      disabled={deleteMutation.isPending}
+                      data-testid={`btn-delete-${notification.id}`}
+                    >
+                      {deleteMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }

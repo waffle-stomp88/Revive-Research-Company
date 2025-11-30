@@ -176,7 +176,10 @@ export interface IStorage {
   createStockNotification(notification: InsertStockNotification): Promise<StockNotification>;
   getStockNotificationsByProductId(productId: string): Promise<StockNotification[]>;
   getPendingStockNotifications(): Promise<StockNotification[]>;
+  getAllStockNotifications(): Promise<StockNotification[]>;
   markNotificationAsSent(id: string): Promise<StockNotification | undefined>;
+  deleteStockNotification(id: string): Promise<boolean>;
+  deleteStockNotificationsBulk(ids: string[]): Promise<number>;
   checkExistingNotification(productId: string, email: string): Promise<StockNotification | undefined>;
 }
 
@@ -1053,12 +1056,30 @@ export class DatabaseStorage implements IStorage {
       .orderBy(stockNotifications.createdAt);
   }
   
+  async getAllStockNotifications(): Promise<StockNotification[]> {
+    return db.select().from(stockNotifications)
+      .orderBy(desc(stockNotifications.createdAt));
+  }
+  
   async markNotificationAsSent(id: string): Promise<StockNotification | undefined> {
     const [updated] = await db.update(stockNotifications)
       .set({ status: "notified", notifiedAt: new Date() })
       .where(eq(stockNotifications.id, id))
       .returning();
     return updated || undefined;
+  }
+  
+  async deleteStockNotification(id: string): Promise<boolean> {
+    const result = await db.delete(stockNotifications)
+      .where(eq(stockNotifications.id, id));
+    return !!result;
+  }
+  
+  async deleteStockNotificationsBulk(ids: string[]): Promise<number> {
+    if (ids.length === 0) return 0;
+    const result = await db.delete(stockNotifications)
+      .where(sql`${stockNotifications.id} = ANY(${ids}::text[])`);
+    return ids.length;
   }
   
   async checkExistingNotification(productId: string, email: string): Promise<StockNotification | undefined> {
