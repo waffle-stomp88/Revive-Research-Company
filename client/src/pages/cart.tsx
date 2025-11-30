@@ -401,12 +401,17 @@ export default function CartPage() {
 
                 <Separator className="my-4" />
 
-                <div className="p-3 bg-red-950/30 border border-red-500/30 rounded-lg">
-                  <div className="flex items-start gap-2">
-                    <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0 mt-0.5" />
-                    <p className="text-[10px] text-muted-foreground">
-                      Research Use Only. Not for human consumption.
-                    </p>
+                <div className="p-4 bg-red-950/30 border border-red-500/40 rounded-lg animate-pulse-subtle">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 rounded-full bg-red-500/20 flex-shrink-0">
+                      <AlertTriangle className="h-5 w-5 text-red-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-red-400 mb-1">Research Use Only</p>
+                      <p className="text-xs text-muted-foreground">
+                        Not for human consumption. All products are intended for laboratory research purposes only.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </Card>

@@ -410,4 +410,18 @@
   .glow-pulse {
     animation: glow-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
+
+  /* RUO Safety Warning Pulse Animation */
+  @keyframes ruo-pulse {
+    0%, 100% {
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.4), 0 0 30px rgba(239, 68, 68, 0.2);
+    }
+  }
+
+  .animate-pulse-subtle {
+    animation: ruo-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
 }
