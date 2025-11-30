@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { Mail, MapPin, AlertTriangle, Shield, Scale, FileCheck } from "lucide-react";
+import { Mail, MapPin, AlertTriangle, Shield, Scale, FileCheck, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import logoImage from "@assets/REVIVE-11_1764290805698.png";
@@ -8,15 +8,27 @@ import logoImage from "@assets/REVIVE-11_1764290805698.png";
 const footerLinks = {
   shop: [
     { label: "All Products", href: "/products" },
-    { label: "COA Verification", href: "/coa" },
+    { label: "COA Library", href: "/coa-library" },
+    { label: "Batch Archive", href: "/batch-archive" },
     { label: "Affiliate Program", href: "/affiliate" },
+  ],
+  resources: [
+    { label: "Education Center", href: "/education" },
+    { label: "Quality Process", href: "/quality-process" },
+    { label: "Lab Notes", href: "/lab-notes" },
+    { label: "Buyer Checklist", href: "/buyer-checklist" },
   ],
   support: [
     { label: "FAQ", href: "/faq" },
     { label: "Shipping Details", href: "/shipping" },
+    { label: "Package Arrived Warm?", href: "/package-warm" },
+    { label: "Troubleshooting", href: "/troubleshooting" },
     { label: "Contact Us", href: "/contact" },
   ],
-  legal: [
+  company: [
+    { label: "Our Standards", href: "/what-we-dont-do" },
+    { label: "Transparency", href: "/transparency" },
+    { label: "Ethical Pricing", href: "/ethical-pricing" },
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Service", href: "/terms" },
   ],
@@ -26,7 +38,7 @@ export function Footer() {
   return (
     <footer className="bg-card border-t border-border">
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 lg:gap-8">
           <div className="lg:col-span-2">
             <Link href="/">
               <img
@@ -36,11 +48,11 @@ export function Footer() {
                 data-testid="img-footer-logo"
               />
             </Link>
-            <p className="text-muted-foreground text-sm leading-relaxed max-w-sm mb-8">
+            <p className="text-muted-foreground text-sm leading-relaxed max-w-sm mb-6">
               Engineered with intention. Built for those who don't wait for permission. 
               Premium research compounds backed by third-party testing and rigorous quality standards.
             </p>
-            <div className="space-y-3 text-sm text-muted-foreground">
+            <div className="space-y-3 text-sm text-muted-foreground mb-6">
               <div className="flex items-center gap-3">
                 <Mail className="h-4 w-4" />
                 <span>research@reviveresearch.com</span>
@@ -48,6 +60,13 @@ export function Footer() {
               <div className="flex items-center gap-3">
                 <MapPin className="h-4 w-4" />
                 <span>United States</span>
+              </div>
+            </div>
+            <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20 inline-flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <div className="text-sm">
+                <span className="text-muted-foreground">Support: </span>
+                <span className="text-green-400 font-medium">2-4 hour response</span>
               </div>
             </div>
           </div>
@@ -58,6 +77,23 @@ export function Footer() {
             </h4>
             <ul className="space-y-3">
               {footerLinks.shop.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href}>
+                    <span className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+                      {link.label}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-display font-semibold text-sm uppercase tracking-wider mb-6">
+              Resources
+            </h4>
+            <ul className="space-y-3">
+              {footerLinks.resources.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href}>
                     <span className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
@@ -88,10 +124,10 @@ export function Footer() {
 
           <div>
             <h4 className="font-display font-semibold text-sm uppercase tracking-wider mb-6">
-              Legal
+              Company
             </h4>
             <ul className="space-y-3">
-              {footerLinks.legal.map((link) => (
+              {footerLinks.company.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href}>
                     <span className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">

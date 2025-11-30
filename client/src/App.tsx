@@ -33,6 +33,14 @@ import Contact from "@/pages/contact";
 import Legal from "@/pages/legal";
 import WhatWeDontDo from "@/pages/what-we-dont-do";
 import Education from "@/pages/education";
+import QualityProcess from "@/pages/quality-process";
+import PackageWarm from "@/pages/package-warm";
+import Transparency from "@/pages/transparency";
+import EthicalPricing from "@/pages/ethical-pricing";
+import BuyerChecklist from "@/pages/buyer-checklist";
+import Troubleshooting from "@/pages/troubleshooting";
+import BatchArchive from "@/pages/batch-archive";
+import LabNotes from "@/pages/lab-notes";
 import NotFound from "@/pages/not-found";
 
 function ScrollToTop() {
@@ -84,6 +92,14 @@ function Router() {
       <Route path="/what-we-dont-do" component={WhatWeDontDo} />
       <Route path="/education" component={Education} />
       <Route path="/education/:slug" component={Education} />
+      <Route path="/quality-process" component={QualityProcess} />
+      <Route path="/package-warm" component={PackageWarm} />
+      <Route path="/transparency" component={Transparency} />
+      <Route path="/ethical-pricing" component={EthicalPricing} />
+      <Route path="/buyer-checklist" component={BuyerChecklist} />
+      <Route path="/troubleshooting" component={Troubleshooting} />
+      <Route path="/batch-archive" component={BatchArchive} />
+      <Route path="/lab-notes" component={LabNotes} />
       <Route component={NotFound} />
     </Switch>
   );

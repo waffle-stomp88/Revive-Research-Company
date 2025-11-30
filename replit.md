@@ -29,6 +29,19 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **Subscription System**: Offers weekly (15% off), bi-weekly (12% off), and monthly (10% off) subscription options.
 - **Legal Compliance**: Footer contains consolidated sections for FDA & Regulatory Compliance and Researcher Responsibility, with "Research Use Only" disclaimers across all pages.
 - **Cart & Checkout UX**: Cart items (both products and bundles) are clickable and navigate back to their detail pages. Checkout page shows an account section with login option for unauthenticated users, displaying benefits like order tracking and verified reviews.
+- **Discount Code System**: Cart page includes discount code input with validation API supporting affiliate codes (Basic Referral 10%, Personal 20%) and promotional codes.
+
+### Phase 2 Trust & Transparency Features
+- **Education Center**: Comprehensive 5-part researcher onboarding course (Research Use Only, Reading COAs, Batch Numbers, Storage 101, Ordering Expectations) with full article library covering peptide profiles, research basics, storage, safety, and terminology.
+- **Quality Process Page**: Interactive 6-step visualization (Synthesis → Lyophilization → QC → Testing → Packaging → Fulfillment) showing production transparency.
+- **Package Warm Guide**: Diagnostic tool explaining why cold packs melt, lyophilization stability, and when to contact support.
+- **Batch Archive**: Historical record of all batches including active and retired/archived batches with COA links.
+- **Ethical Pricing Page**: Transparent breakdown of pricing factors (synthesis complexity, third-party testing, purity, stability).
+- **Transparency Page**: Company story, core values, and detailed "What We Do/Don't Do" commitments.
+- **Lab Notes Blog**: Technical micro-posts on endotoxin testing, lyophilization, purity percentages, color variation, cross-contamination prevention.
+- **Buyer Checklist**: Vendor evaluation checklist positioning brand as ethical leader with testing, product info, and business practice criteria.
+- **Troubleshooting Guides**: Expandable "What To Do If..." guides for warm packages, clumpy vials, flat powder, smudged labels, moisture, and broken COA links.
+- **Support Status Widget**: Real-time support availability indicator (2-4 hour response) displayed in footer.
 
 ## External Dependencies
 
