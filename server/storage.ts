@@ -86,6 +86,7 @@ export interface IStorage {
   getAffiliate(id: string): Promise<Affiliate | undefined>;
   getAffiliateByEmail(email: string): Promise<Affiliate | undefined>;
   getAffiliateByReferralCode(referralCode: string): Promise<Affiliate | undefined>;
+  getAffiliateByBasicReferralCode(basicReferralCode: string): Promise<Affiliate | undefined>;
   getAffiliateByUserId(userId: string): Promise<Affiliate | undefined>;
   getAllAffiliates(): Promise<Affiliate[]>;
   getAffiliateTeam(affiliateId: string): Promise<Affiliate[]>;
@@ -387,6 +388,11 @@ export class DatabaseStorage implements IStorage {
 
   async getAffiliateByReferralCode(referralCode: string): Promise<Affiliate | undefined> {
     const [affiliate] = await db.select().from(affiliates).where(eq(affiliates.referralCode, referralCode));
+    return affiliate || undefined;
+  }
+
+  async getAffiliateByBasicReferralCode(basicReferralCode: string): Promise<Affiliate | undefined> {
+    const [affiliate] = await db.select().from(affiliates).where(eq(affiliates.basicReferralCode, basicReferralCode));
     return affiliate || undefined;
   }
 

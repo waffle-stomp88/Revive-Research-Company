@@ -1,10 +1,14 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import {
   ShoppingCart,
   Trash2,
@@ -16,13 +20,69 @@ import {
   Shield,
   Truck,
   AlertTriangle,
+  Tag,
+  X,
+  Loader2,
 } from "lucide-react";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
+
+interface AppliedDiscount {
+  code: string;
+  percentage: number;
+  type: "basic" | "personal";
+}
 
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, getSubtotal, clearCart } = useCart();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const [discountCode, setDiscountCode] = useState("");
+  const [appliedDiscount, setAppliedDiscount] = useState<AppliedDiscount | null>(() => {
+    const saved = localStorage.getItem("appliedDiscount");
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  const applyDiscountMutation = useMutation({
+    mutationFn: async (code: string) => {
+      const response = await apiRequest("POST", "/api/discount/validate", { code });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      const discount: AppliedDiscount = {
+        code: data.code,
+        percentage: data.percentage,
+        type: data.type,
+      };
+      setAppliedDiscount(discount);
+      localStorage.setItem("appliedDiscount", JSON.stringify(discount));
+      setDiscountCode("");
+      toast({
+        title: "Discount Applied!",
+        description: `${data.percentage}% discount has been applied to your order.`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Invalid Code",
+        description: error.message || "This discount code is not valid.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleApplyDiscount = () => {
+    if (!discountCode.trim()) return;
+    applyDiscountMutation.mutate(discountCode.trim().toUpperCase());
+  };
+
+  const removeDiscount = () => {
+    setAppliedDiscount(null);
+    localStorage.removeItem("appliedDiscount");
+    toast({
+      title: "Discount Removed",
+      description: "The discount code has been removed from your order.",
+    });
+  };
 
   const handleCheckout = () => {
     if (items.length === 0) {
@@ -40,7 +100,8 @@ export default function CartPage() {
   const FREE_SHIPPING_THRESHOLD = 150;
   const FLAT_RATE_SHIPPING = 15;
   const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING;
-  const total = subtotal + shipping;
+  const discountAmount = appliedDiscount ? (subtotal * appliedDiscount.percentage) / 100 : 0;
+  const total = subtotal - discountAmount + shipping;
   const amountToFreeShipping = FREE_SHIPPING_THRESHOLD - subtotal;
 
   if (items.length === 0) {
@@ -212,6 +273,24 @@ export default function CartPage() {
                     <span className="text-muted-foreground">Subtotal</span>
                     <span data-testid="text-subtotal">${subtotal.toFixed(2)}</span>
                   </div>
+                  {appliedDiscount && (
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        <Tag className="h-3 w-3 text-green-500" />
+                        <span className="text-green-500">Discount ({appliedDiscount.percentage}%)</span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-4 w-4 p-0 hover:bg-transparent"
+                          onClick={removeDiscount}
+                          data-testid="button-remove-discount"
+                        >
+                          <X className="h-3 w-3 text-muted-foreground hover:text-red-400" />
+                        </Button>
+                      </div>
+                      <span className="text-green-500" data-testid="text-discount">-${discountAmount.toFixed(2)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Shipping</span>
                     <span className={shipping === 0 ? "text-green-500" : ""}>
@@ -224,6 +303,46 @@ export default function CartPage() {
                     </p>
                   )}
                 </div>
+
+                <Separator className="my-4" />
+
+                {!appliedDiscount ? (
+                  <div className="mb-4">
+                    <label className="text-xs text-muted-foreground mb-2 block">Discount Code</label>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Enter code"
+                        value={discountCode}
+                        onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+                        onKeyDown={(e) => e.key === "Enter" && handleApplyDiscount()}
+                        className="flex-1 uppercase"
+                        data-testid="input-discount-code"
+                      />
+                      <Button
+                        variant="outline"
+                        onClick={handleApplyDiscount}
+                        disabled={!discountCode.trim() || applyDiscountMutation.isPending}
+                        data-testid="button-apply-discount"
+                      >
+                        {applyDiscountMutation.isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          "Apply"
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mb-4 p-3 bg-green-950/30 border border-green-500/30 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Tag className="h-4 w-4 text-green-500" />
+                      <span className="text-sm font-medium text-green-500" data-testid="text-applied-code">
+                        {appliedDiscount.code}
+                      </span>
+                      <span className="text-xs text-muted-foreground">applied</span>
+                    </div>
+                  </div>
+                )}
 
                 <Separator className="my-4" />
 

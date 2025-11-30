@@ -1714,7 +1714,65 @@ export async function registerRoutes(
     }
   });
 
-  // Validate discount code (public - for checkout)
+  // Validate discount code (public - for checkout) - POST version
+  app.post("/api/discount/validate", async (req, res) => {
+    try {
+      const { code } = req.body;
+      if (!code) {
+        return res.status(400).json({ error: "Code is required" });
+      }
+
+      const upperCode = code.toUpperCase().trim();
+
+      // First check if it's a basic referral code (ends with "10" and 10% discount)
+      const affiliateByBasicCode = await storage.getAffiliateByBasicReferralCode(upperCode);
+      if (affiliateByBasicCode && affiliateByBasicCode.isActive) {
+        return res.json({
+          code: upperCode,
+          percentage: 10,
+          type: "basic",
+          affiliateId: affiliateByBasicCode.id,
+        });
+      }
+
+      // Check if it's a personal code (affiliate's referralCode for 20% discount)
+      const affiliateByPersonalCode = await storage.getAffiliateByReferralCode(upperCode);
+      if (affiliateByPersonalCode && affiliateByPersonalCode.isActive) {
+        return res.json({
+          code: upperCode,
+          percentage: 20,
+          type: "personal",
+          affiliateId: affiliateByPersonalCode.id,
+        });
+      }
+
+      // Check discount codes table
+      const discountCode = await storage.getDiscountCodeByCode(upperCode);
+      if (discountCode) {
+        if (!discountCode.isActive) {
+          return res.status(400).json({ error: "This discount code is no longer active" });
+        }
+        if (discountCode.expiresAt && new Date(discountCode.expiresAt) < new Date()) {
+          return res.status(400).json({ error: "This discount code has expired" });
+        }
+        if (discountCode.maxUsages && discountCode.usageCount && discountCode.usageCount >= discountCode.maxUsages) {
+          return res.status(400).json({ error: "This discount code has reached its usage limit" });
+        }
+        return res.json({
+          code: discountCode.code,
+          percentage: parseFloat(discountCode.discountPercent),
+          type: discountCode.type,
+        });
+      }
+
+      return res.status(404).json({ error: "Invalid discount code" });
+    } catch (error) {
+      console.error("Error validating discount code:", error);
+      res.status(500).json({ error: "Failed to validate discount code" });
+    }
+  });
+
+  // Validate discount code (public - for checkout) - GET version (legacy)
   app.get("/api/discount-codes/validate/:code", async (req, res) => {
     try {
       const code = await storage.getDiscountCodeByCode(req.params.code);
