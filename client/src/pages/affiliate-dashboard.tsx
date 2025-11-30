@@ -994,6 +994,20 @@ export default function AffiliateDashboard() {
                           data-testid="input-bank-account-number"
                         />
                       </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setBankAccountHolder("");
+                            setBankRoutingNumber("");
+                            setBankAccountNumber("");
+                          }}
+                          data-testid="button-clear-bank-details"
+                        >
+                          Clear Bank Details
+                        </Button>
+                      </div>
                       <p className="text-xs text-muted-foreground">
                         Your bank details are securely stored and used only for commission payouts
                       </p>
