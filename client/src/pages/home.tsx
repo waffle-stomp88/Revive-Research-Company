@@ -81,7 +81,6 @@ function HeroSection() {
           className="w-full h-full object-cover object-center"
         />
       </motion.div>
-      
       {/* Animated Smoke Effects */}
       <div className="absolute inset-0 z-[1] overflow-hidden pointer-events-none">
         {/* Smoke Layer 1 - Slow drift left to right */}
@@ -198,11 +197,9 @@ function HeroSection() {
           }}
         />
       </div>
-      
       {/* Dark overlay gradient - subtle to preserve vial logo */}
       <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-[2]" />
       <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-background z-[2]" />
-      
       {/* Neon glow effects */}
       <div className="absolute inset-0 overflow-hidden z-[3] pointer-events-none">
         <motion.div 
@@ -222,7 +219,6 @@ function HeroSection() {
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
         />
       </div>
-
       {/* Content - Positioned below vial */}
       <motion.div
         style={{ opacity }}
@@ -253,9 +249,7 @@ function HeroSection() {
           >
             The Future of
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E7FB10] via-white to-[#21d8ff] animate-pulse">
-              Supplementation
-            </span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E7FB10] via-white to-[#21d8ff] animate-pulse">Research Compounds</span>
           </h1>
         </motion.div>
 
@@ -292,7 +286,6 @@ function HeroSection() {
           </Link>
         </motion.div>
       </motion.div>
-      
       {/* Scroll indicator */}
       <motion.div
         initial={{ opacity: 0 }}
