@@ -12,7 +12,11 @@ import {
   CheckCircle,
   FlaskConical,
   Microscope,
-  FileCheck
+  FileCheck,
+  Eye,
+  Target,
+  BookOpen,
+  ClipboardCheck,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { Product } from "@shared/schema";
@@ -604,6 +608,100 @@ function HowItWorksSection() {
   );
 }
 
+const transparencyLinks = [
+  {
+    icon: Eye,
+    title: "Our Transparency",
+    description: "Company values and our commitment to openness",
+    href: "/transparency",
+    color: "#9d4edd"
+  },
+  {
+    icon: Target,
+    title: "Quality Process",
+    description: "See our 6-step production and testing flow",
+    href: "/quality-process",
+    color: "#21d8ff"
+  },
+  {
+    icon: BookOpen,
+    title: "Education Center",
+    description: "Learn about peptides with our research guides",
+    href: "/education",
+    color: "#ec4899"
+  },
+  {
+    icon: ClipboardCheck,
+    title: "Buyer Checklist",
+    description: "Know what to look for in a peptide vendor",
+    href: "/buyer-checklist",
+    color: "#E7FB10"
+  }
+];
+
+function TransparencyHub() {
+  return (
+    <section className="py-24 md:py-32 bg-card border-y border-border">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <h2 className="font-display text-4xl md:text-5xl font-bold mb-6" data-testid="text-transparency-heading">
+            Full Transparency
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            We believe you deserve to know exactly who you're buying from and how we operate.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={staggerContainer}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        >
+          {transparencyLinks.map((item) => (
+            <motion.div
+              key={item.title}
+              variants={fadeInUp}
+            >
+              <Link href={item.href}>
+                <Card 
+                  className="p-6 h-full cursor-pointer transition-all duration-300 hover:border-opacity-100 group"
+                  style={{ borderColor: `${item.color}30` }}
+                  data-testid={`link-transparency-${item.title.toLowerCase().replace(/\s+/g, '-')}`}
+                >
+                  <div 
+                    className="w-12 h-12 rounded-lg flex items-center justify-center mb-4"
+                    style={{ backgroundColor: `${item.color}15` }}
+                  >
+                    <item.icon className="h-6 w-6" style={{ color: item.color }} />
+                  </div>
+                  <h3 className="font-display text-lg font-semibold mb-2 group-hover:text-[var(--accent)]" style={{ '--accent': item.color } as React.CSSProperties}>
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {item.description}
+                  </p>
+                  <div className="flex items-center text-sm font-medium group-hover:translate-x-1 transition-transform" style={{ color: item.color }}>
+                    Learn More
+                    <ArrowRight className="h-4 w-4 ml-1" />
+                  </div>
+                </Card>
+              </Link>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 function CTASection() {
   return (
     <section className="py-24 md:py-32 text-primary-foreground bg-[#e7fb10]">
@@ -657,6 +755,7 @@ export default function Home() {
       <TrustSection />
       <ProductShowcase />
       <ScienceSection />
+      <TransparencyHub />
       <HowItWorksSection />
       <CTASection />
     </main>

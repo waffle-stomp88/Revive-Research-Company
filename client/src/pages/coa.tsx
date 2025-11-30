@@ -42,6 +42,9 @@ import {
   Building2,
   Archive,
   ArrowRight,
+  GraduationCap,
+  BookOpen,
+  ExternalLink,
 } from "lucide-react";
 import type { Coa } from "@shared/schema";
 
@@ -283,9 +286,18 @@ export default function CoaVerification() {
 
                   <Separator className="my-8" />
 
-                  <h4 className="font-display font-semibold text-lg mb-4">
-                    Test Results
-                  </h4>
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="font-display font-semibold text-lg">
+                      Test Results
+                    </h4>
+                    <Link href="/education/how-to-read-coas">
+                      <div className="flex items-center gap-2 text-sm text-[#ec4899] hover:underline cursor-pointer" data-testid="link-learn-read-coas">
+                        <GraduationCap className="h-4 w-4" />
+                        <span>Learn how to read COAs</span>
+                        <ExternalLink className="h-3 w-3" />
+                      </div>
+                    </Link>
+                  </div>
 
                   <div className="overflow-x-auto">
                     <Table>
@@ -342,21 +354,26 @@ export default function CoaVerification() {
             className="mt-16"
           >
             <div className="grid md:grid-cols-3 gap-8">
-              <Card className="p-6">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-full bg-primary/10 flex-shrink-0">
-                    <Shield className="h-6 w-6 text-foreground" />
+              <Link href="/education/how-to-read-coas">
+                <Card className="p-6 hover-elevate cursor-pointer h-full">
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 rounded-full bg-[#ec4899]/10 flex-shrink-0">
+                      <GraduationCap className="h-6 w-6 text-[#ec4899]" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-display font-semibold mb-2">How to Read COAs</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                        Learn what each test means, how to interpret purity percentages, 
+                        and what to look for in a Certificate of Analysis.
+                      </p>
+                      <div className="flex items-center gap-1 text-[#ec4899] text-sm font-medium" data-testid="link-education-coa">
+                        Read Guide
+                        <ArrowRight className="h-4 w-4" />
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-display font-semibold mb-2">Why Verify?</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      Our Certificate of Authenticity ensures you receive genuine, 
-                      high-quality research compounds. Each batch is independently 
-                      tested by third-party laboratories.
-                    </p>
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              </Link>
 
               <Card className="p-6">
                 <div className="flex items-start gap-4">

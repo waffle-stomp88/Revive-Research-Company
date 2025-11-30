@@ -23,6 +23,10 @@ import {
   Tag,
   X,
   Loader2,
+  Thermometer,
+  Clock,
+  FileCheck,
+  ExternalLink,
 } from "lucide-react";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 
@@ -368,9 +372,32 @@ export default function CartPage() {
                   </div>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Truck className="h-4 w-4 text-[#21d8ff]" />
-                    <span>Fast, discreet shipping</span>
+                    <span>Same-day shipping (orders before 12pm CT)</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <FileCheck className="h-4 w-4 text-[#21d8ff]" />
+                    <span>COA included with every order</span>
                   </div>
                 </div>
+
+                <Separator className="my-4" />
+
+                {/* Helpful Shipping Info */}
+                <Card className="p-4 border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 to-transparent mb-4">
+                  <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                    <Thermometer className="h-4 w-4 text-[#21d8ff]" />
+                    What to Expect
+                  </h4>
+                  <div className="space-y-2 text-xs text-muted-foreground">
+                    <p>Your order ships with cold packs to maintain optimal temperature during transit.</p>
+                    <Link href="/package-warm">
+                      <div className="flex items-center gap-1.5 text-[#21d8ff] hover:underline cursor-pointer mt-2" data-testid="link-package-warm">
+                        <span>If your package arrives warm, don't worry</span>
+                        <ExternalLink className="h-3 w-3" />
+                      </div>
+                    </Link>
+                  </div>
+                </Card>
 
                 <Separator className="my-4" />
 

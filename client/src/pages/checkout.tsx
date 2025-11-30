@@ -26,6 +26,9 @@ import {
   CheckCircle,
   Clock,
   Package,
+  ClipboardCheck,
+  ExternalLink,
+  Target,
 } from "lucide-react";
 import type { Product, User as UserType } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
@@ -363,6 +366,33 @@ export default function Checkout() {
                   </li>
                 </ul>
               </Card>
+
+              {/* Trust & Verification Links - Cart Checkout */}
+              <Card className="p-6 mt-6 border-[#9d4edd]/20 bg-gradient-to-br from-[#9d4edd]/5 to-transparent">
+                <h2 className="font-display text-lg font-semibold mb-4 flex items-center gap-2">
+                  <ClipboardCheck className="h-5 w-5 text-[#9d4edd]" />
+                  Buying With Confidence
+                </h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Not sure what to look for in a peptide vendor? We've put together resources to help you make an informed decision.
+                </p>
+                <div className="space-y-2">
+                  <Link href="/buyer-checklist">
+                    <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#9d4edd]/10 transition-colors cursor-pointer group" data-testid="link-buyer-checklist">
+                      <CheckCircle className="h-4 w-4 text-[#9d4edd]" />
+                      <span className="text-sm font-medium flex-1">Vendor Evaluation Checklist</span>
+                      <ExternalLink className="h-3 w-3 text-muted-foreground group-hover:text-[#9d4edd]" />
+                    </div>
+                  </Link>
+                  <Link href="/quality-process">
+                    <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#21d8ff]/10 transition-colors cursor-pointer group" data-testid="link-quality-process">
+                      <Target className="h-4 w-4 text-[#21d8ff]" />
+                      <span className="text-sm font-medium flex-1">See Our Quality Process</span>
+                      <ExternalLink className="h-3 w-3 text-muted-foreground group-hover:text-[#21d8ff]" />
+                    </div>
+                  </Link>
+                </div>
+              </Card>
             </motion.div>
 
             <motion.div
@@ -526,6 +556,33 @@ export default function Checkout() {
                     <span>Certificate of Authenticity included with shipment</span>
                   </li>
                 </ul>
+              </Card>
+
+              {/* Trust & Verification Links - Bundle Checkout */}
+              <Card className="p-6 mt-6 border-[#9d4edd]/20 bg-gradient-to-br from-[#9d4edd]/5 to-transparent">
+                <h2 className="font-display text-lg font-semibold mb-4 flex items-center gap-2">
+                  <ClipboardCheck className="h-5 w-5 text-[#9d4edd]" />
+                  Buying With Confidence
+                </h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Not sure what to look for in a peptide vendor? We've put together resources to help you make an informed decision.
+                </p>
+                <div className="space-y-2">
+                  <Link href="/buyer-checklist">
+                    <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#9d4edd]/10 transition-colors cursor-pointer group" data-testid="link-buyer-checklist">
+                      <CheckCircle className="h-4 w-4 text-[#9d4edd]" />
+                      <span className="text-sm font-medium flex-1">Vendor Evaluation Checklist</span>
+                      <ExternalLink className="h-3 w-3 text-muted-foreground group-hover:text-[#9d4edd]" />
+                    </div>
+                  </Link>
+                  <Link href="/quality-process">
+                    <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#21d8ff]/10 transition-colors cursor-pointer group" data-testid="link-quality-process">
+                      <Target className="h-4 w-4 text-[#21d8ff]" />
+                      <span className="text-sm font-medium flex-1">See Our Quality Process</span>
+                      <ExternalLink className="h-3 w-3 text-muted-foreground group-hover:text-[#21d8ff]" />
+                    </div>
+                  </Link>
+                </div>
               </Card>
             </motion.div>
 
@@ -720,6 +777,33 @@ export default function Checkout() {
                   <span>Certificate of Authenticity included with shipment</span>
                 </li>
               </ul>
+            </Card>
+
+            {/* Trust & Verification Links */}
+            <Card className="p-6 mt-6 border-[#9d4edd]/20 bg-gradient-to-br from-[#9d4edd]/5 to-transparent">
+              <h2 className="font-display text-lg font-semibold mb-4 flex items-center gap-2">
+                <ClipboardCheck className="h-5 w-5 text-[#9d4edd]" />
+                Buying With Confidence
+              </h2>
+              <p className="text-sm text-muted-foreground mb-4">
+                Not sure what to look for in a peptide vendor? We've put together resources to help you make an informed decision.
+              </p>
+              <div className="space-y-2">
+                <Link href="/buyer-checklist">
+                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#9d4edd]/10 transition-colors cursor-pointer group" data-testid="link-buyer-checklist">
+                    <CheckCircle className="h-4 w-4 text-[#9d4edd]" />
+                    <span className="text-sm font-medium flex-1">Vendor Evaluation Checklist</span>
+                    <ExternalLink className="h-3 w-3 text-muted-foreground group-hover:text-[#9d4edd]" />
+                  </div>
+                </Link>
+                <Link href="/quality-process">
+                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#21d8ff]/10 transition-colors cursor-pointer group" data-testid="link-quality-process">
+                    <Target className="h-4 w-4 text-[#21d8ff]" />
+                    <span className="text-sm font-medium flex-1">See Our Quality Process</span>
+                    <ExternalLink className="h-3 w-3 text-muted-foreground group-hover:text-[#21d8ff]" />
+                  </div>
+                </Link>
+              </div>
             </Card>
           </motion.div>
 

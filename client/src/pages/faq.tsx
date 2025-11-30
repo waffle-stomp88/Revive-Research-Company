@@ -269,11 +269,46 @@ export default function FAQ() {
           ))}
         </div>
 
+        {/* Helpful Resources Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.35 }}
+          className="mt-12"
+        >
+          <Card className="p-6 border-[#9d4edd]/20 bg-gradient-to-r from-[#9d4edd]/5 to-transparent">
+            <h3 className="font-display text-lg font-bold mb-4 flex items-center gap-2">
+              <HelpCircle className="h-5 w-5 text-[#9d4edd]" />
+              Helpful Resources
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <Link href="/troubleshooting">
+                <div className="p-4 rounded-lg border border-border hover:border-[#21d8ff]/50 hover:bg-[#21d8ff]/5 transition-colors cursor-pointer group" data-testid="link-troubleshooting-guide">
+                  <p className="font-medium text-sm mb-1 group-hover:text-[#21d8ff]">Troubleshooting</p>
+                  <p className="text-xs text-muted-foreground">Step-by-step help for common issues</p>
+                </div>
+              </Link>
+              <Link href="/education">
+                <div className="p-4 rounded-lg border border-border hover:border-[#ec4899]/50 hover:bg-[#ec4899]/5 transition-colors cursor-pointer group" data-testid="link-education-center">
+                  <p className="font-medium text-sm mb-1 group-hover:text-[#ec4899]">Education Center</p>
+                  <p className="text-xs text-muted-foreground">Learn about peptide research</p>
+                </div>
+              </Link>
+              <Link href="/package-warm">
+                <div className="p-4 rounded-lg border border-border hover:border-[#E7FB10]/50 hover:bg-[#E7FB10]/5 transition-colors cursor-pointer group" data-testid="link-package-warm-guide">
+                  <p className="font-medium text-sm mb-1 group-hover:text-[#E7FB10]">Warm Package Guide</p>
+                  <p className="text-xs text-muted-foreground">Package arrived warm? Don't worry</p>
+                </div>
+              </Link>
+            </div>
+          </Card>
+        </motion.div>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-12"
+          className="mt-8"
         >
           <Card className="p-8 text-center bg-muted/30">
             <h3 className="font-display text-xl font-bold mb-3">Still Have Questions?</h3>

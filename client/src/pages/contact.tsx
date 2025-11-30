@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Link } from "wouter";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +19,19 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Mail, MessageSquare, User, Send, CheckCircle, Clock, MapPin } from "lucide-react";
+import { 
+  Mail, 
+  MessageSquare, 
+  User, 
+  Send, 
+  CheckCircle, 
+  Clock, 
+  MapPin,
+  HelpCircle,
+  Wrench,
+  BookOpen,
+  ArrowRight,
+} from "lucide-react";
 
 const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -95,6 +108,46 @@ export default function Contact() {
               Have questions about our research compounds? Need help with an order? 
               We're here to help. Send us a message and we'll respond as soon as possible.
             </p>
+          </motion.div>
+
+          {/* Self-Service Resources - Before You Reach Out */}
+          <motion.div variants={itemVariants} className="mb-10">
+            <Card className="p-6 border-[#21d8ff]/20 bg-gradient-to-r from-[#21d8ff]/5 to-transparent">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-lg bg-[#21d8ff]/10 flex-shrink-0">
+                  <HelpCircle className="h-6 w-6 text-[#21d8ff]" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-display text-lg font-semibold mb-2">Before You Reach Out</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Many questions can be answered instantly! Check out these helpful resources:
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <Link href="/troubleshooting">
+                      <div className="flex items-center gap-2 p-3 rounded-lg border border-border hover:border-[#21d8ff]/40 hover:bg-[#21d8ff]/5 transition-colors cursor-pointer" data-testid="link-troubleshooting">
+                        <Wrench className="h-4 w-4 text-[#21d8ff]" />
+                        <span className="text-sm font-medium">Troubleshooting</span>
+                        <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground" />
+                      </div>
+                    </Link>
+                    <Link href="/faq">
+                      <div className="flex items-center gap-2 p-3 rounded-lg border border-border hover:border-[#E7FB10]/40 hover:bg-[#E7FB10]/5 transition-colors cursor-pointer" data-testid="link-faq">
+                        <HelpCircle className="h-4 w-4 text-[#E7FB10]" />
+                        <span className="text-sm font-medium">FAQ</span>
+                        <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground" />
+                      </div>
+                    </Link>
+                    <Link href="/education">
+                      <div className="flex items-center gap-2 p-3 rounded-lg border border-border hover:border-[#ec4899]/40 hover:bg-[#ec4899]/5 transition-colors cursor-pointer" data-testid="link-education">
+                        <BookOpen className="h-4 w-4 text-[#ec4899]" />
+                        <span className="text-sm font-medium">Education</span>
+                        <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground" />
+                      </div>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </Card>
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

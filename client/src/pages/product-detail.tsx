@@ -781,6 +781,23 @@ export default function ProductDetail() {
                 </p>
               </Card>
             )}
+
+            {/* Storage Education Link */}
+            <div className="mt-6 flex items-center justify-between p-4 rounded-lg border border-[#9d4edd]/20 bg-gradient-to-r from-[#9d4edd]/5 to-transparent">
+              <div className="flex items-center gap-3">
+                <GraduationCap className="h-5 w-5 text-[#9d4edd]" />
+                <div>
+                  <p className="text-sm font-medium">New to peptide storage?</p>
+                  <p className="text-xs text-muted-foreground">Our guide covers everything you need to know</p>
+                </div>
+              </div>
+              <Link href="/education/storage-101">
+                <Button variant="outline" size="sm" className="border-[#9d4edd]/30 hover:border-[#9d4edd] gap-2" data-testid="link-storage-guide">
+                  Storage 101
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
           </motion.section>
         )}
 
