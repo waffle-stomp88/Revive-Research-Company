@@ -1500,6 +1500,88 @@ export async function registerRoutes(
     }
   });
 
+  // ============================================
+  // STOCK NOTIFICATION ROUTES
+  // ============================================
+  
+  // Create a stock notification request
+  app.post("/api/stock-notifications", async (req, res) => {
+    try {
+      const { productId, email } = req.body;
+      
+      if (!productId || !email) {
+        return res.status(400).json({ error: "Product ID and email are required" });
+      }
+      
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: "Invalid email format" });
+      }
+      
+      // Check if notification already exists
+      const existing = await storage.checkExistingNotification(productId, email);
+      if (existing) {
+        return res.status(200).json({ 
+          message: "You're already on the notification list for this product",
+          alreadyExists: true
+        });
+      }
+      
+      // Create the notification
+      const notification = await storage.createStockNotification({
+        productId,
+        email,
+        status: "pending"
+      });
+      
+      res.status(201).json({ 
+        message: "You'll be notified when this product is back in stock!",
+        notification
+      });
+    } catch (error) {
+      console.error("Error creating stock notification:", error);
+      res.status(500).json({ error: "Failed to create notification" });
+    }
+  });
+  
+  // Get pending notifications (admin only)
+  app.get("/api/admin/stock-notifications", isAdmin, async (req, res) => {
+    try {
+      const notifications = await storage.getPendingStockNotifications();
+      
+      // Get product details for each notification
+      const notificationsWithProducts = await Promise.all(
+        notifications.map(async (n) => {
+          const product = await storage.getProduct(n.productId);
+          return {
+            ...n,
+            productName: product?.name || "Unknown Product"
+          };
+        })
+      );
+      
+      res.json(notificationsWithProducts);
+    } catch (error) {
+      console.error("Error fetching stock notifications:", error);
+      res.status(500).json({ error: "Failed to fetch notifications" });
+    }
+  });
+  
+  // Mark notification as sent (admin only)
+  app.patch("/api/admin/stock-notifications/:id/sent", isAdmin, async (req, res) => {
+    try {
+      const notification = await storage.markNotificationAsSent(req.params.id);
+      if (!notification) {
+        return res.status(404).json({ error: "Notification not found" });
+      }
+      res.json(notification);
+    } catch (error) {
+      console.error("Error marking notification as sent:", error);
+      res.status(500).json({ error: "Failed to update notification" });
+    }
+  });
+
   // Chatbot endpoint
   app.post("/api/chat", async (req, res) => {
     try {

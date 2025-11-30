@@ -325,3 +325,17 @@ export const coaGlossaryTerms = pgTable("coa_glossary_terms", {
 export const insertCoaGlossaryTermSchema = createInsertSchema(coaGlossaryTerms).omit({ id: true });
 export type InsertCoaGlossaryTerm = z.infer<typeof insertCoaGlossaryTermSchema>;
 export type CoaGlossaryTerm = typeof coaGlossaryTerms.$inferSelect;
+
+// Stock notifications - Notify customers when products are back in stock
+export const stockNotifications = pgTable("stock_notifications", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  productId: varchar("product_id").notNull(),
+  email: text("email").notNull(),
+  status: text("status").default("pending"), // pending, notified, cancelled
+  createdAt: timestamp("created_at").defaultNow(),
+  notifiedAt: timestamp("notified_at"),
+});
+
+export const insertStockNotificationSchema = createInsertSchema(stockNotifications).omit({ id: true, createdAt: true, notifiedAt: true });
+export type InsertStockNotification = z.infer<typeof insertStockNotificationSchema>;
+export type StockNotification = typeof stockNotifications.$inferSelect;

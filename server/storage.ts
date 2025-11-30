@@ -1,6 +1,6 @@
 import { 
   users, products, coas, orders, contacts, affiliateApplications, affiliates, affiliateSales, affiliatePayouts, reviews,
-  batches, productStorageProfiles, legalDocuments, faqEntries, educationArticles, coaGlossaryTerms,
+  batches, productStorageProfiles, legalDocuments, faqEntries, educationArticles, coaGlossaryTerms, stockNotifications,
   type User, type UpsertUser,
   type Product, type InsertProduct,
   type Coa, type InsertCoa,
@@ -17,7 +17,8 @@ import {
   type LegalDocument, type InsertLegalDocument,
   type FaqEntry, type InsertFaqEntry,
   type EducationArticle, type InsertEducationArticle,
-  type CoaGlossaryTerm, type InsertCoaGlossaryTerm
+  type CoaGlossaryTerm, type InsertCoaGlossaryTerm,
+  type StockNotification, type InsertStockNotification
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, ilike, or, desc, sql, gte, and, lt, count, sum } from "drizzle-orm";
@@ -170,6 +171,13 @@ export interface IStorage {
   
   // COA Library search
   searchCoas(filters: { productId?: string; batchNumber?: string; testType?: string }): Promise<Coa[]>;
+  
+  // Stock Notifications
+  createStockNotification(notification: InsertStockNotification): Promise<StockNotification>;
+  getStockNotificationsByProductId(productId: string): Promise<StockNotification[]>;
+  getPendingStockNotifications(): Promise<StockNotification[]>;
+  markNotificationAsSent(id: string): Promise<StockNotification | undefined>;
+  checkExistingNotification(productId: string, email: string): Promise<StockNotification | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1025,6 +1033,42 @@ export class DatabaseStorage implements IStorage {
     }
     
     return db.select().from(coas).where(and(...conditions)).orderBy(desc(coas.testDate));
+  }
+  
+  // Stock Notifications implementation
+  async createStockNotification(notification: InsertStockNotification): Promise<StockNotification> {
+    const [newNotification] = await db.insert(stockNotifications).values(notification).returning();
+    return newNotification;
+  }
+  
+  async getStockNotificationsByProductId(productId: string): Promise<StockNotification[]> {
+    return db.select().from(stockNotifications)
+      .where(eq(stockNotifications.productId, productId))
+      .orderBy(desc(stockNotifications.createdAt));
+  }
+  
+  async getPendingStockNotifications(): Promise<StockNotification[]> {
+    return db.select().from(stockNotifications)
+      .where(eq(stockNotifications.status, "pending"))
+      .orderBy(stockNotifications.createdAt);
+  }
+  
+  async markNotificationAsSent(id: string): Promise<StockNotification | undefined> {
+    const [updated] = await db.update(stockNotifications)
+      .set({ status: "notified", notifiedAt: new Date() })
+      .where(eq(stockNotifications.id, id))
+      .returning();
+    return updated || undefined;
+  }
+  
+  async checkExistingNotification(productId: string, email: string): Promise<StockNotification | undefined> {
+    const [existing] = await db.select().from(stockNotifications)
+      .where(and(
+        eq(stockNotifications.productId, productId),
+        eq(stockNotifications.email, email),
+        eq(stockNotifications.status, "pending")
+      ));
+    return existing || undefined;
   }
 }
 
