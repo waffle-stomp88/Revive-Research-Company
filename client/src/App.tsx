@@ -19,6 +19,8 @@ import Cart from "@/pages/cart";
 import Checkout from "@/pages/checkout";
 import CheckoutSuccess from "@/pages/checkout-success";
 import CoaVerification from "@/pages/coa";
+import CoaLibrary from "@/pages/coa-library";
+import BatchLookup from "@/pages/batch-lookup";
 import Dashboard from "@/pages/dashboard";
 import Admin from "@/pages/admin";
 import Affiliate from "@/pages/affiliate";
@@ -28,6 +30,9 @@ import Shipping from "@/pages/shipping";
 import TermsOfService from "@/pages/terms-of-service";
 import PrivacyPolicy from "@/pages/privacy-policy";
 import Contact from "@/pages/contact";
+import Legal from "@/pages/legal";
+import WhatWeDontDo from "@/pages/what-we-dont-do";
+import Education from "@/pages/education";
 import NotFound from "@/pages/not-found";
 
 function ScrollToTop() {
@@ -64,6 +69,8 @@ function Router() {
       <Route path="/checkout" component={Checkout} />
       <Route path="/checkout/success" component={CheckoutSuccess} />
       <Route path="/coa" component={CoaVerification} />
+      <Route path="/coa-library" component={CoaLibrary} />
+      <Route path="/batch-lookup" component={BatchLookup} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/admin" component={Admin} />
       <Route path="/affiliate" component={Affiliate} />
@@ -73,6 +80,9 @@ function Router() {
       <Route path="/terms" component={TermsOfService} />
       <Route path="/privacy" component={PrivacyPolicy} />
       <Route path="/contact" component={Contact} />
+      <Route path="/legal" component={Legal} />
+      <Route path="/what-we-dont-do" component={WhatWeDontDo} />
+      <Route path="/education" component={Education} />
       <Route component={NotFound} />
     </Switch>
   );
