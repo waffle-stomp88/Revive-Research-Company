@@ -28,6 +28,7 @@ import {
   AlertCircle,
   FileCheck,
   Loader2,
+  Camera,
 } from "lucide-react";
 import type { Batch, Coa, Product } from "@shared/schema";
 
@@ -123,7 +124,7 @@ export default function BatchLookup() {
           </div>
           <h1
             className="font-display text-4xl md:text-5xl font-bold mb-4"
-            data-testid="text-batch-lookup-title"
+            data-testid="text-batch-title"
           >
             Batch Verification
           </h1>
@@ -152,10 +153,22 @@ export default function BatchLookup() {
                 />
               </div>
               <Button
+                type="button"
+                variant="outline"
+                className="h-12 px-4 border-[#9d4edd]/30 hover:bg-[#9d4edd]/10"
+                data-testid="button-scan-qr"
+                onClick={() => {
+                  alert("QR Scanner requires camera permissions. Use the manual batch entry for now.");
+                }}
+              >
+                <Camera className="h-5 w-5" />
+                <span className="ml-2 hidden sm:inline">Scan QR</span>
+              </Button>
+              <Button
                 type="submit"
                 className="h-12 px-8 bg-[#9d4edd] hover:bg-[#9d4edd]/90"
                 disabled={!searchInput.trim()}
-                data-testid="button-search-batch"
+                data-testid="button-batch-lookup"
               >
                 {isLoading ? (
                   <Loader2 className="h-5 w-5 animate-spin" />

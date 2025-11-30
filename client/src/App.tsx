@@ -70,7 +70,7 @@ function Router() {
       <Route path="/checkout/success" component={CheckoutSuccess} />
       <Route path="/coa" component={CoaVerification} />
       <Route path="/coa-library" component={CoaLibrary} />
-      <Route path="/batch-lookup" component={BatchLookup} />
+      <Route path="/batch" component={BatchLookup} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/admin" component={Admin} />
       <Route path="/affiliate" component={Affiliate} />

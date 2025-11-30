@@ -726,7 +726,7 @@ export default function ProductDetail() {
                         </p>
                       )}
                     </div>
-                    <Link href={`/batch-lookup?batch=${batch.batchNumber}`}>
+                    <Link href={`/batch?batch=${batch.batchNumber}`}>
                       <Button variant="ghost" size="sm" className="text-[#9d4edd] h-8" data-testid={`button-verify-batch-${batch.id}`}>
                         Verify
                       </Button>
