@@ -152,6 +152,17 @@ export default function AffiliateDashboard() {
     enabled: isAuthenticated,
   });
 
+  useEffect(() => {
+    if (affiliate) {
+      setPayoutEmail(affiliate.payoutEmail || "");
+      setVenmoUsername(affiliate.venmoUsername || "");
+      setBankAccountHolder(affiliate.bankAccountHolder || "");
+      setBankRoutingNumber(affiliate.bankRoutingNumber || "");
+      setBankAccountNumber(affiliate.bankAccountNumber || "");
+      setPayoutMethod(affiliate.payoutMethod || "paypal");
+    }
+  }, [affiliate]);
+
   const { data: stats, isLoading: statsLoading } = useQuery<AffiliateStats>({
     queryKey: ["/api/affiliate/stats"],
     enabled: !!affiliate,
@@ -968,7 +979,7 @@ export default function AffiliateDashboard() {
                         <Input
                           id="bankAccountHolder"
                           placeholder="Full name as it appears on your account"
-                          value={bankAccountHolder || affiliate.bankAccountHolder || ""}
+                          value={bankAccountHolder}
                           onChange={(e) => setBankAccountHolder(e.target.value)}
                           data-testid="input-bank-account-holder"
                         />
@@ -979,7 +990,7 @@ export default function AffiliateDashboard() {
                           id="bankRoutingNumber"
                           placeholder="9-digit routing number"
                           maxLength={9}
-                          value={bankRoutingNumber || affiliate.bankRoutingNumber || ""}
+                          value={bankRoutingNumber}
                           onChange={(e) => setBankRoutingNumber(e.target.value.replace(/\D/g, ""))}
                           data-testid="input-bank-routing-number"
                         />
@@ -989,7 +1000,7 @@ export default function AffiliateDashboard() {
                         <Input
                           id="bankAccountNumber"
                           placeholder="Your bank account number"
-                          value={bankAccountNumber || affiliate.bankAccountNumber || ""}
+                          value={bankAccountNumber}
                           onChange={(e) => setBankAccountNumber(e.target.value.replace(/\D/g, ""))}
                           data-testid="input-bank-account-number"
                         />
@@ -999,12 +1010,22 @@ export default function AffiliateDashboard() {
                           variant="outline"
                           size="sm"
                           onClick={() => {
+                            updateSettingsMutation.mutate({ 
+                              payoutMethod: "bank", 
+                              bankAccountHolder: "",
+                              bankRoutingNumber: "",
+                              bankAccountNumber: ""
+                            });
                             setBankAccountHolder("");
                             setBankRoutingNumber("");
                             setBankAccountNumber("");
                           }}
+                          disabled={updateSettingsMutation.isPending}
                           data-testid="button-clear-bank-details"
                         >
+                          {updateSettingsMutation.isPending ? (
+                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                          ) : null}
                           Clear Bank Details
                         </Button>
                       </div>
@@ -1016,7 +1037,7 @@ export default function AffiliateDashboard() {
 
                   <Button
                     onClick={() => {
-                      const selectedMethod = payoutMethod || affiliate.payoutMethod || "paypal";
+                      const selectedMethod = payoutMethod || "paypal";
                       const data: {
                         payoutMethod: string;
                         payoutEmail?: string;
@@ -1027,13 +1048,13 @@ export default function AffiliateDashboard() {
                       } = { payoutMethod: selectedMethod };
                       
                       if (selectedMethod === "paypal") {
-                        data.payoutEmail = payoutEmail || affiliate.payoutEmail || "";
+                        data.payoutEmail = payoutEmail;
                       } else if (selectedMethod === "venmo") {
-                        data.venmoUsername = venmoUsername || affiliate.venmoUsername || "";
+                        data.venmoUsername = venmoUsername;
                       } else if (selectedMethod === "bank") {
-                        data.bankAccountHolder = bankAccountHolder || affiliate.bankAccountHolder || "";
-                        data.bankRoutingNumber = bankRoutingNumber || affiliate.bankRoutingNumber || "";
-                        data.bankAccountNumber = bankAccountNumber || affiliate.bankAccountNumber || "";
+                        data.bankAccountHolder = bankAccountHolder;
+                        data.bankRoutingNumber = bankRoutingNumber;
+                        data.bankAccountNumber = bankAccountNumber;
                       }
                       
                       updateSettingsMutation.mutate(data);
