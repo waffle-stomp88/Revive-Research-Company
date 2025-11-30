@@ -314,6 +314,9 @@ export default function ProductDetail() {
   }
 
   const benefits = product.benefits || [];
+  
+  // Unified out-of-stock check - considers BOTH inStock flag AND stockAmount
+  const isOutOfStock = !product.inStock || (product.stockAmount !== null && product.stockAmount !== undefined && product.stockAmount <= 0);
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-12">
@@ -337,12 +340,27 @@ export default function ProductDetail() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center sticky top-24 overflow-hidden">
+            <div className={`relative aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center sticky top-24 overflow-hidden ${isOutOfStock ? 'border-2 border-red-500' : ''}`}>
               <img 
                 src={productImage} 
                 alt={product.name}
-                className="w-full h-full object-contain p-6"
+                className={`w-full h-full object-contain p-6 ${isOutOfStock ? 'opacity-60' : ''}`}
               />
+              {/* Out of Stock Overlay */}
+              {isOutOfStock && (
+                <div className="absolute inset-0 pointer-events-none" data-testid="overlay-out-of-stock">
+                  {/* Diagonal red stripe */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="absolute w-[150%] h-8 bg-red-600/90 transform -rotate-45 flex items-center justify-center shadow-lg">
+                      <span className="text-white font-display font-bold text-sm uppercase tracking-wider">
+                        Out of Stock
+                      </span>
+                    </div>
+                  </div>
+                  {/* Subtle dark overlay */}
+                  <div className="absolute inset-0 bg-black/20" />
+                </div>
+              )}
             </div>
           </motion.div>
 
@@ -409,26 +427,26 @@ export default function ProductDetail() {
 
               <div>
                 <Label className="text-xs font-medium mb-1.5 block text-muted-foreground">Quantity</Label>
-                <div className="flex items-center border border-border rounded-md h-9">
+                <div className={`flex items-center border rounded-md h-9 ${isOutOfStock ? 'border-red-500/50 opacity-50' : 'border-border'}`}>
                   <Button
                     variant="ghost"
                     size="icon"
                     className="h-9 w-9"
                     onClick={() => handleQuantityChange(-1)}
-                    disabled={quantity <= 1}
+                    disabled={quantity <= 1 || isOutOfStock}
                     data-testid="button-quantity-minus"
                   >
                     <Minus className="h-3 w-3" />
                   </Button>
                   <span className="flex-1 text-center font-medium text-sm" data-testid="text-quantity">
-                    {quantity}
+                    {isOutOfStock ? 0 : quantity}
                   </span>
                   <Button
                     variant="ghost"
                     size="icon"
                     className="h-9 w-9"
                     onClick={() => handleQuantityChange(1)}
-                    disabled={quantity >= 10}
+                    disabled={quantity >= 10 || isOutOfStock}
                     data-testid="button-quantity-plus"
                   >
                     <Plus className="h-3 w-3" />
@@ -437,53 +455,56 @@ export default function ProductDetail() {
               </div>
             </div>
 
-            <div className="mb-4">
-              <Label className="text-xs font-medium mb-1.5 block text-muted-foreground">Purchase Option</Label>
-              <div className="grid grid-cols-2 gap-2">
-                <div 
-                  className={`relative flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                    purchaseType === "one-time" 
-                      ? "border-[#E7FB10] bg-[#E7FB10]/5" 
-                      : "border-border hover:border-border/80"
-                  }`}
-                  onClick={() => setPurchaseType("one-time")}
-                  data-testid="option-one-time"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-1.5">
-                      <ShoppingCart className="h-3.5 w-3.5" />
-                      <span className="font-medium text-sm">One-time</span>
+            {/* Purchase Options - Hidden when out of stock */}
+            {!isOutOfStock && (
+              <div className="mb-4">
+                <Label className="text-xs font-medium mb-1.5 block text-muted-foreground">Purchase Option</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  <div 
+                    className={`relative flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                      purchaseType === "one-time" 
+                        ? "border-[#E7FB10] bg-[#E7FB10]/5" 
+                        : "border-border hover:border-border/80"
+                    }`}
+                    onClick={() => setPurchaseType("one-time")}
+                    data-testid="option-one-time"
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <ShoppingCart className="h-3.5 w-3.5" />
+                        <span className="font-medium text-sm">One-time</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        ${getBasePrice().toFixed(2)}
+                      </p>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      ${getBasePrice().toFixed(2)}
-                    </p>
                   </div>
-                </div>
-                
-                <div 
-                  className={`relative flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                    purchaseType === "subscription" 
-                      ? "border-[#21d8ff] bg-[#21d8ff]/5" 
-                      : "border-border hover:border-border/80"
-                  }`}
-                  onClick={() => setPurchaseType("subscription")}
-                  data-testid="option-subscription"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-1.5">
-                      <Repeat className="h-3.5 w-3.5" />
-                      <span className="font-medium text-sm">Subscribe</span>
-                      <Badge className="bg-[#21d8ff] text-[10px] px-1 py-0">15% off</Badge>
+                  
+                  <div 
+                    className={`relative flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                      purchaseType === "subscription" 
+                        ? "border-[#21d8ff] bg-[#21d8ff]/5" 
+                        : "border-border hover:border-border/80"
+                    }`}
+                    onClick={() => setPurchaseType("subscription")}
+                    data-testid="option-subscription"
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <Repeat className="h-3.5 w-3.5" />
+                        <span className="font-medium text-sm">Subscribe</span>
+                        <Badge className="bg-[#21d8ff] text-[10px] px-1 py-0">15% off</Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Auto-delivery
+                      </p>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Auto-delivery
-                    </p>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            {purchaseType === "subscription" && (
+            {purchaseType === "subscription" && !isOutOfStock && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
@@ -515,7 +536,12 @@ export default function ProductDetail() {
             )}
 
             <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">
-              {product.inStock ? (
+              {isOutOfStock ? (
+                <span className="flex items-center gap-1.5 text-red-400 font-medium">
+                  <AlertTriangle className="h-3.5 w-3.5" />
+                  Out of Stock
+                </span>
+              ) : (
                 <span className="flex items-center gap-1">
                   {product.stockAmount && product.stockAmount <= 20 ? (
                     <>
@@ -529,11 +555,6 @@ export default function ProductDetail() {
                     </>
                   )}
                 </span>
-              ) : (
-                <span className="flex items-center gap-1 text-red-400">
-                  <AlertTriangle className="h-3 w-3" />
-                  Out of stock
-                </span>
               )}
               <div className="flex items-center gap-3">
                 <span className="flex items-center gap-1"><Shield className="h-3 w-3" /> Lab Tested</span>
@@ -541,63 +562,77 @@ export default function ProductDetail() {
               </div>
             </div>
 
-            <div className="flex gap-3">
-              <Button
-                size="lg"
-                variant="outline"
-                className="flex-1 font-display gap-2 border-2"
-                onClick={handleAddToCart}
-                disabled={!product.inStock}
-                data-testid="button-add-to-cart"
-              >
-                <ShoppingBag className="h-5 w-5" />
-                Add to Cart
-              </Button>
-              <Button
-                size="lg"
-                className={`flex-1 font-display gap-2 transition-shadow duration-300 text-black ${
-                  purchaseType === "subscription" 
-                    ? "bg-[#21d8ff] border-[#21d8ff] hover:bg-[#21d8ff]/90 shadow-[0_0_20px_rgba(33,216,255,0.4)] hover:shadow-[0_0_40px_rgba(33,216,255,0.6)]" 
-                    : "bg-[#E7FB10] border-[#E7FB10] hover:bg-[#E7FB10]/90 shadow-[0_0_20px_rgba(231,251,16,0.4)] hover:shadow-[0_0_40px_rgba(231,251,16,0.6)]"
-                }`}
-                onClick={handleBuyNow}
-                disabled={!product.inStock}
-                data-testid="button-buy-now"
-              >
-                {purchaseType === "subscription" ? (
-                  <>
-                    <Repeat className="h-5 w-5" />
-                    Subscribe
-                  </>
-                ) : (
-                  <>
-                    <ShoppingCart className="h-5 w-5" />
-                    Buy Now
-                  </>
+            {/* Purchase buttons - only show when in stock */}
+            {!isOutOfStock ? (
+              <>
+                <div className="flex gap-3">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="flex-1 font-display gap-2 border-2"
+                    onClick={handleAddToCart}
+                    data-testid="button-add-to-cart"
+                  >
+                    <ShoppingBag className="h-5 w-5" />
+                    Add to Cart
+                  </Button>
+                  <Button
+                    size="lg"
+                    className={`flex-1 font-display gap-2 transition-shadow duration-300 text-black ${
+                      purchaseType === "subscription" 
+                        ? "bg-[#21d8ff] border-[#21d8ff] hover:bg-[#21d8ff]/90 shadow-[0_0_20px_rgba(33,216,255,0.4)] hover:shadow-[0_0_40px_rgba(33,216,255,0.6)]" 
+                        : "bg-[#E7FB10] border-[#E7FB10] hover:bg-[#E7FB10]/90 shadow-[0_0_20px_rgba(231,251,16,0.4)] hover:shadow-[0_0_40px_rgba(231,251,16,0.6)]"
+                    }`}
+                    onClick={handleBuyNow}
+                    data-testid="button-buy-now"
+                  >
+                    {purchaseType === "subscription" ? (
+                      <>
+                        <Repeat className="h-5 w-5" />
+                        Subscribe
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart className="h-5 w-5" />
+                        Buy Now
+                      </>
+                    )}
+                  </Button>
+                </div>
+
+                {purchaseType === "subscription" && (
+                  <p className="text-[10px] text-center text-muted-foreground mt-2">
+                    Save ${((getBasePrice() - getDiscountedPrice()) * quantity).toFixed(2)} per order • Cancel anytime
+                  </p>
                 )}
-              </Button>
-            </div>
-
-            {purchaseType === "subscription" && (
-              <p className="text-[10px] text-center text-muted-foreground mt-2">
-                Save ${((getBasePrice() - getDiscountedPrice()) * quantity).toFixed(2)} per order • Cancel anytime
-              </p>
-            )}
-
-            {!product.inStock && (
+              </>
+            ) : (
+              /* Out of Stock - Show prominent notification signup */
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mt-4 p-4 rounded-lg border-2 border-[#21d8ff]/30 bg-[#21d8ff]/5"
+                className="p-5 rounded-lg border-2 border-red-500/30 bg-red-500/5"
               >
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="p-2 rounded-full bg-red-500/20">
+                    <AlertTriangle className="h-5 w-5 text-red-400" />
+                  </div>
+                  <div>
+                    <h4 className="font-display font-semibold text-base text-red-400">Currently Out of Stock</h4>
+                    <p className="text-xs text-muted-foreground">This product is temporarily unavailable</p>
+                  </div>
+                </div>
+                
+                <Separator className="my-4" />
+                
                 <div className="flex items-center gap-2 mb-3">
                   <Bell className="h-4 w-4 text-[#21d8ff]" />
                   <h4 className="font-display font-semibold text-sm">Get Notified When Back in Stock</h4>
                 </div>
                 
                 {notifySuccess ? (
-                  <div className="flex items-center gap-2 text-sm text-green-400">
-                    <CheckCircle className="h-4 w-4" />
+                  <div className="flex items-center gap-2 text-sm text-green-400 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+                    <CheckCircle className="h-5 w-5" />
                     <span>You'll be notified when this product is available!</span>
                   </div>
                 ) : (
@@ -609,15 +644,14 @@ export default function ProductDetail() {
                         placeholder="Enter your email"
                         value={notifyEmail}
                         onChange={(e) => setNotifyEmail(e.target.value)}
-                        className="pl-9 h-9 bg-background/50"
+                        className="pl-9 h-10 bg-background/50"
                         required
                         data-testid="input-notify-email"
                       />
                     </div>
                     <Button
                       type="submit"
-                      size="sm"
-                      className="bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90 gap-1.5 px-4"
+                      className="bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90 gap-1.5 px-5"
                       disabled={stockNotifyMutation.isPending}
                       data-testid="button-notify-me"
                     >
@@ -625,14 +659,14 @@ export default function ProductDetail() {
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
                         <>
-                          <Bell className="h-3.5 w-3.5" />
+                          <Bell className="h-4 w-4" />
                           Notify Me
                         </>
                       )}
                     </Button>
                   </form>
                 )}
-                <p className="text-[10px] text-muted-foreground mt-2">
+                <p className="text-[10px] text-muted-foreground mt-3">
                   We'll send you one email when this product is restocked. No spam, ever.
                 </p>
               </motion.div>
