@@ -36,9 +36,16 @@ import {
   TrendingUp,
   Star,
   User,
-  CheckCircle2
+  CheckCircle2,
+  Thermometer,
+  Snowflake,
+  Eye,
+  Clock,
+  Beaker,
+  ExternalLink,
+  Calendar
 } from "lucide-react";
-import type { Product, Review } from "@shared/schema";
+import type { Product, Review, ProductStorageProfile, Batch, Coa } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 
 // Badge priority system - max 2 badges per product
@@ -149,6 +156,18 @@ export default function ProductDetail() {
   // Query for product reviews
   const { data: reviewsData } = useQuery<{ reviews: (Review & { reviewerName: string; isVerifiedPurchase: boolean })[]; average: number; count: number }>({
     queryKey: ["/api/products", params.id, "reviews"],
+    enabled: !!params.id,
+  });
+
+  // Query for storage profile
+  const { data: storageProfile } = useQuery<ProductStorageProfile>({
+    queryKey: ["/api/products", params.id, "storage"],
+    enabled: !!params.id,
+  });
+
+  // Query for recent batches with COAs
+  const { data: batchesWithCoas = [] } = useQuery<(Batch & { coas?: Coa[] })[]>({
+    queryKey: ["/api/products", params.id, "batches"],
     enabled: !!params.id,
   });
 
@@ -583,6 +602,160 @@ export default function ProductDetail() {
             </Card>
           </motion.div>
         </div>
+
+        {/* Storage & Stability Section */}
+        {storageProfile && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.15 }}
+            className="mt-12"
+            data-testid="section-storage"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <Thermometer className="h-6 w-6 text-[#9d4edd]" />
+              <h2 className="font-display text-2xl font-bold">Storage & Stability</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card className="p-4 border-[#9d4edd]/20 hover:border-[#9d4edd]/40 transition-colors" data-testid="card-storage-temp">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-[#9d4edd]/10">
+                    <Snowflake className="h-5 w-5 text-[#9d4edd]" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Storage Temperature (Dry)</p>
+                    <p className="font-bold">{storageProfile.storageTempDry || "Refrigerated"}</p>
+                    {storageProfile.storageTempReconstituted && (
+                      <p className="text-xs text-muted-foreground mt-1">Reconstituted: {storageProfile.storageTempReconstituted}</p>
+                    )}
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-4 border-[#9d4edd]/20 hover:border-[#9d4edd]/40 transition-colors" data-testid="card-stability">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-[#9d4edd]/10">
+                    <Clock className="h-5 w-5 text-[#9d4edd]" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Stability Window</p>
+                    <p className="font-bold">{storageProfile.stabilityWindowDry || "24 months"}</p>
+                    {storageProfile.stabilityWindowReconstituted && (
+                      <p className="text-xs text-muted-foreground mt-1">After reconstitution: {storageProfile.stabilityWindowReconstituted}</p>
+                    )}
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-4 border-[#9d4edd]/20 hover:border-[#9d4edd]/40 transition-colors" data-testid="card-light-sensitive">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-[#9d4edd]/10">
+                    <Eye className="h-5 w-5 text-[#9d4edd]" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Light Sensitivity</p>
+                    <p className="font-bold">{storageProfile.lightSensitivity || "Protect from light"}</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-4 border-[#9d4edd]/20 hover:border-[#9d4edd]/40 transition-colors" data-testid="card-form">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-[#9d4edd]/10">
+                    <Beaker className="h-5 w-5 text-[#9d4edd]" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Appearance</p>
+                    <p className="font-bold">{storageProfile.powderAppearance || "White lyophilized powder"}</p>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            {storageProfile.handlingInstructions && (
+              <Card className="mt-4 p-4 border-[#9d4edd]/20 bg-[#9d4edd]/5" data-testid="card-handling-notes">
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-medium text-foreground">Handling Instructions: </span>
+                  {storageProfile.handlingInstructions}
+                </p>
+              </Card>
+            )}
+          </motion.section>
+        )}
+
+        {/* Batch & COA Section */}
+        {batchesWithCoas.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.18 }}
+            className="mt-12"
+            data-testid="section-batches"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <FileCheck className="h-6 w-6 text-[#9d4edd]" />
+                <h2 className="font-display text-2xl font-bold">Recent Batches & COAs</h2>
+              </div>
+              <Link href="/coa-library">
+                <Button variant="outline" size="sm" className="border-[#9d4edd]/30 hover:border-[#9d4edd]" data-testid="link-view-all-coas">
+                  View All COAs
+                  <ExternalLink className="h-4 w-4 ml-2" />
+                </Button>
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {batchesWithCoas.slice(0, 4).map((batch) => (
+                <Card 
+                  key={batch.id} 
+                  className="p-4 border-[#9d4edd]/20 hover:border-[#9d4edd]/40 transition-colors"
+                  data-testid={`card-batch-${batch.id}`}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-mono font-bold text-sm">{batch.batchNumber}</span>
+                        <Badge className="bg-green-500/20 text-green-400 text-xs">Verified</Badge>
+                      </div>
+                      {batch.manufactureDate && (
+                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          Manufactured: {new Date(batch.manufactureDate).toLocaleDateString()}
+                        </p>
+                      )}
+                    </div>
+                    <Link href={`/batch-lookup?batch=${batch.batchNumber}`}>
+                      <Button variant="ghost" size="sm" className="text-[#9d4edd] h-8" data-testid={`button-verify-batch-${batch.id}`}>
+                        Verify
+                      </Button>
+                    </Link>
+                  </div>
+
+                  {batch.coas && batch.coas.length > 0 && (
+                    <div className="space-y-2">
+                      <p className="text-xs font-medium text-muted-foreground">Test Results:</p>
+                      <div className="flex flex-wrap gap-2">
+                        <Badge variant="outline" className="text-xs border-[#9d4edd]/30">
+                          Purity: {batch.coas[0].purity}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs border-[#9d4edd]/30">
+                          Lab: {batch.coas[0].labName}
+                        </Badge>
+                        {batch.coas[0].verified && (
+                          <Badge className="bg-green-500/20 text-green-400 text-xs">
+                            Verified
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </Card>
+              ))}
+            </div>
+          </motion.section>
+        )}
 
         {/* Reviews Section */}
         <motion.section

@@ -219,6 +219,38 @@ export async function registerRoutes(
     }
   });
 
+  // Get storage profile for a product
+  app.get("/api/products/:id/storage", async (req, res) => {
+    try {
+      const storageProfile = await storage.getProductStorageProfile(req.params.id);
+      if (!storageProfile) {
+        return res.status(404).json({ error: "Storage profile not found" });
+      }
+      res.json(storageProfile);
+    } catch (error) {
+      console.error("Error fetching storage profile:", error);
+      res.status(500).json({ error: "Failed to fetch storage profile" });
+    }
+  });
+
+  // Get batches with COAs for a product
+  app.get("/api/products/:id/batches", async (req, res) => {
+    try {
+      const batches = await storage.getProductBatches(req.params.id);
+      
+      // Enrich batches with COAs
+      const batchesWithCoas = await Promise.all(batches.map(async (batch) => {
+        const coas = await storage.getBatchCoas(batch.id);
+        return { ...batch, coas };
+      }));
+      
+      res.json(batchesWithCoas);
+    } catch (error) {
+      console.error("Error fetching product batches:", error);
+      res.status(500).json({ error: "Failed to fetch product batches" });
+    }
+  });
+
   // Get reviewable orders for authenticated user (orders eligible for reviews)
   app.get("/api/reviews/my-reviewable-orders", isAuthenticated, async (req: any, res) => {
     try {

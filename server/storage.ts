@@ -132,6 +132,8 @@ export interface IStorage {
   getBatch(id: string): Promise<Batch | undefined>;
   getBatchByBatchNumber(batchNumber: string): Promise<Batch | undefined>;
   getBatchesByProductId(productId: string): Promise<Batch[]>;
+  getProductBatches(productId: string): Promise<Batch[]>;
+  getBatchCoas(batchId: string): Promise<Coa[]>;
   createBatch(batch: InsertBatch): Promise<Batch>;
   updateBatch(id: string, batch: Partial<InsertBatch>): Promise<Batch | undefined>;
   
@@ -872,6 +874,14 @@ export class DatabaseStorage implements IStorage {
   async updateBatch(id: string, batchData: Partial<InsertBatch>): Promise<Batch | undefined> {
     const [updated] = await db.update(batches).set(batchData).where(eq(batches.id, id)).returning();
     return updated || undefined;
+  }
+  
+  async getProductBatches(productId: string): Promise<Batch[]> {
+    return this.getBatchesByProductId(productId);
+  }
+  
+  async getBatchCoas(batchId: string): Promise<Coa[]> {
+    return db.select().from(coas).where(eq(coas.batchId, batchId)).orderBy(desc(coas.testDate));
   }
   
   // Product Storage Profiles implementation
