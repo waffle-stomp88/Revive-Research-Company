@@ -717,7 +717,7 @@ export default function ProductDetail() {
 
             <div className="grid grid-cols-1 gap-4">
               {relatedArticles.slice(0, 1).map((article) => (
-                <Link key={article.id} href="/education">
+                <Link key={article.id} href={`/education/${article.slug}`}>
                   <Card 
                     className="p-6 border-[#ec4899]/20 hover:border-[#ec4899]/40 transition-colors cursor-pointer group"
                     data-testid={`card-article-${article.id}`}
