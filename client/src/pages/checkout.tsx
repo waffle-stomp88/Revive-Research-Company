@@ -368,13 +368,13 @@ export default function Checkout() {
                 </h3>
                 <div className="grid grid-cols-2 gap-2">
                   <Link href="/buyer-checklist">
-                    <div className="flex items-center gap-2 p-2 rounded-lg border border-border hover:border-[#9d4edd]/40 transition-colors cursor-pointer group" data-testid="link-buyer-checklist">
+                    <div className="flex items-center gap-2 p-2 rounded-lg border border-border hover:border-[#9d4edd]/40 hover:shadow-glow-purple transition-all duration-300 cursor-pointer group" data-testid="link-buyer-checklist">
                       <CheckCircle className="h-3.5 w-3.5 text-[#9d4edd]" />
                       <span className="text-xs font-medium">Vendor Checklist</span>
                     </div>
                   </Link>
                   <Link href="/quality-process">
-                    <div className="flex items-center gap-2 p-2 rounded-lg border border-border hover:border-[#21d8ff]/40 transition-colors cursor-pointer group" data-testid="link-quality-process">
+                    <div className="flex items-center gap-2 p-2 rounded-lg border border-border hover:border-[#21d8ff]/40 hover:shadow-glow-cyan transition-all duration-300 cursor-pointer group" data-testid="link-quality-process">
                       <Target className="h-3.5 w-3.5 text-[#21d8ff]" />
                       <span className="text-xs font-medium">Quality Process</span>
                     </div>
@@ -547,13 +547,13 @@ export default function Checkout() {
                 </h3>
                 <div className="grid grid-cols-2 gap-2">
                   <Link href="/buyer-checklist">
-                    <div className="flex items-center gap-2 p-2 rounded-lg border border-border hover:border-[#9d4edd]/40 transition-colors cursor-pointer group" data-testid="link-buyer-checklist">
+                    <div className="flex items-center gap-2 p-2 rounded-lg border border-border hover:border-[#9d4edd]/40 hover:shadow-glow-purple transition-all duration-300 cursor-pointer group" data-testid="link-buyer-checklist">
                       <CheckCircle className="h-3.5 w-3.5 text-[#9d4edd]" />
                       <span className="text-xs font-medium">Vendor Checklist</span>
                     </div>
                   </Link>
                   <Link href="/quality-process">
-                    <div className="flex items-center gap-2 p-2 rounded-lg border border-border hover:border-[#21d8ff]/40 transition-colors cursor-pointer group" data-testid="link-quality-process">
+                    <div className="flex items-center gap-2 p-2 rounded-lg border border-border hover:border-[#21d8ff]/40 hover:shadow-glow-cyan transition-all duration-300 cursor-pointer group" data-testid="link-quality-process">
                       <Target className="h-3.5 w-3.5 text-[#21d8ff]" />
                       <span className="text-xs font-medium">Quality Process</span>
                     </div>
