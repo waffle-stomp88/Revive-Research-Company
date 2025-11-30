@@ -141,7 +141,7 @@ export function Footer() {
         </div>
 
         {/* FDA & Regulatory Compliance */}
-        <div className="mt-16 p-6 rounded-lg bg-red-950/30 border-2 border-red-500/50 shadow-glow-red-sm" data-testid="section-fda-disclaimer">
+        <div className="mt-16 p-6 rounded-lg bg-red-950/30 border-2 border-red-500/50 animate-pulse-subtle" data-testid="section-fda-disclaimer">
           <div className="flex items-start gap-4">
             <div className="p-3 rounded-full bg-red-500/20 border border-red-500/30 flex-shrink-0">
               <AlertTriangle className="h-6 w-6 text-red-400" />
