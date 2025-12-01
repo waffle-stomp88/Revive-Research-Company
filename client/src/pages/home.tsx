@@ -256,8 +256,9 @@ function ProductShowcase() {
           <div className="overflow-hidden">
             <motion.div
               className="flex gap-4 px-4 md:px-8"
-              animate={{ x: ["0%", "-50%"] }}
-              transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+              initial={{ x: 0 }}
+              animate={{ x: "-50%" }}
+              transition={{ duration: 40, repeat: Infinity, repeatType: "loop", ease: "linear" }}
             >
               {duplicatedItems.map((product, idx) => (
                 <Link key={`${product.id}-${idx}`} href={`/products/${product.id}`} className="flex-shrink-0">
