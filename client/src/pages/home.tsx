@@ -221,93 +221,77 @@ function ProductShowcase() {
     queryKey: ["/api/products"],
   });
 
-  const featuredProducts = products?.filter(p => p.showOnLandingPage && p.inStock).slice(0, 3) || [];
+  const weeklyDeal = products?.find(p => p.isWeeklyDeal && p.inStock);
+  const featuredProducts = products?.filter(p => p.showOnLandingPage && p.inStock && !p.isWeeklyDeal).slice(0, 2) || [];
+  
+  const carouselItems = weeklyDeal ? [weeklyDeal, ...featuredProducts] : featuredProducts;
+  const duplicatedItems = [...carouselItems, ...carouselItems];
 
   return (
-    <section className="py-12 md:py-16" id="products">
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
+    <section className="py-8 md:py-10" id="products">
+      <div className="w-full">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-8"
+          className="text-center mb-6 px-4 md:px-8"
         >
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4" data-testid="text-products-heading">
-            Featured Products
+          <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
+            Featured & Sale Items
           </h2>
-          <p className="text-base text-muted-foreground max-w-2xl mx-auto">
-            Premium research compounds, rigorously tested and verified for quality and purity.
-          </p>
         </motion.div>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="flex gap-4 px-4 md:px-8 overflow-x-auto pb-2">
             {[1, 2, 3].map((i) => (
-              <Card key={i} className="p-8 animate-pulse">
-                <div className="aspect-square bg-muted rounded-md mb-6" />
-                <div className="h-6 bg-muted rounded w-3/4 mb-3" />
-                <div className="h-4 bg-muted rounded w-full mb-2" />
-                <div className="h-4 bg-muted rounded w-2/3" />
+              <Card key={i} className="flex-shrink-0 w-48 h-64 animate-pulse p-4">
+                <div className="w-full h-32 bg-muted rounded-md mb-3" />
+                <div className="h-4 bg-muted rounded w-3/4 mb-2" />
+                <div className="h-3 bg-muted rounded w-1/2" />
               </Card>
             ))}
           </div>
         ) : (
-          <motion.div
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            {featuredProducts.map((product) => (
-              <motion.div
-                key={product.id}
-                variants={fadeInUp}
-                className="h-full"
-              >
-                <Link href={`/products/${product.id}`} className="h-full block">
-                  <Card className={`group p-8 cursor-pointer transition-all duration-300 border-2 h-full flex flex-col relative overflow-hidden ${
-                    !product.inStock
-                      ? "border-red-500/50 shadow-glow-red-sm hover:border-red-500 hover:shadow-glow-red-lg hover:animate-product-glow-red backlit-red"
-                      : "border-cyan-400/60 shadow-glow-blue-sm hover:border-cyan-400 hover:shadow-glow-blue-lg hover:animate-product-glow-blue backlit-blue"
+          <div className="overflow-hidden">
+            <motion.div
+              className="flex gap-4 px-4 md:px-8"
+              animate={{ x: ["0%", "-50%"] }}
+              transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+            >
+              {duplicatedItems.map((product, idx) => (
+                <Link key={`${product.id}-${idx}`} href={`/products/${product.id}`} className="flex-shrink-0">
+                  <Card className={`group w-48 h-auto cursor-pointer transition-all duration-300 border-2 flex flex-col relative overflow-hidden ${
+                    product.isWeeklyDeal
+                      ? "border-[#E7FB10]/80 shadow-[0_0_20px_rgba(231,251,16,0.3)] hover:shadow-[0_0_30px_rgba(231,251,16,0.5)]"
+                      : "border-cyan-400/60 shadow-glow-blue-sm hover:shadow-glow-blue-lg"
                   }`} data-testid={`card-product-${product.id}`}>
-                    {!product.inStock && (
-                      <div 
-                        className="absolute inset-0 pointer-events-none z-10"
-                        style={{
-                          background: "linear-gradient(to bottom right, transparent calc(50% - 2px), rgba(239, 68, 68, 0.7) calc(50% - 1px), rgba(239, 68, 68, 0.9) 50%, rgba(239, 68, 68, 0.7) calc(50% + 1px), transparent calc(50% + 2px))",
-                        }}
-                      />
+                    {product.isWeeklyDeal && (
+                      <div className="absolute top-2 right-2 z-20 px-3 py-1 text-xs font-bold rounded-full bg-[#E7FB10] text-black">
+                        HOT DEAL
+                      </div>
                     )}
-                    <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-md mb-6 flex items-center justify-center overflow-hidden relative">
-                      <FlaskConical className="h-16 w-16 text-muted-foreground/30 group-hover:scale-110 transition-transform duration-300" />
-                      {!product.inStock && (
-                        <span className="absolute bottom-2 left-2 z-20 px-1.5 py-0.5 text-[10px] font-semibold rounded bg-destructive text-destructive-foreground">
-                          Out of Stock
-                        </span>
-                      )}
+                    <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-md m-3 flex items-center justify-center overflow-hidden relative">
+                      <FlaskConical className="h-12 w-12 text-muted-foreground/30 group-hover:scale-110 transition-transform duration-300" />
                     </div>
-                    <h3 className="font-display text-xl font-semibold mb-2 group-hover:text-primary transition-colors text-[#E7FB10]">
-                      {product.name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2 min-h-[2.5rem]">
-                      {product.shortDescription}
-                    </p>
-                    <div className="flex items-center justify-between mt-auto">
-                      <span className="font-display text-2xl font-bold">
-                        ${Number(product.price).toFixed(2)}
-                      </span>
-                      <span className="text-sm text-muted-foreground flex items-center gap-1">
-                        View Details
-                        <ArrowRight className="h-4 w-4" />
-                      </span>
+                    <div className="px-3 pb-3 flex flex-col flex-1">
+                      <h3 className="font-display text-sm font-semibold mb-1 group-hover:text-primary transition-colors text-[#E7FB10] line-clamp-2">
+                        {product.name}
+                      </h3>
+                      <p className="text-xs text-muted-foreground mb-3 line-clamp-2 flex-1">
+                        {product.shortDescription}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <span className="font-display text-lg font-bold">
+                          ${Number(product.price).toFixed(2)}
+                        </span>
+                      </div>
                     </div>
                   </Card>
                 </Link>
-              </motion.div>
-            ))}
-          </motion.div>
+              ))}
+            </motion.div>
+          </div>
         )}
 
         <motion.div
@@ -315,7 +299,7 @@ function ProductShowcase() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4 }}
-          className="text-center mt-8"
+          className="text-center mt-6"
         >
           <Link href="/products">
             <Button variant="outline" size="lg" className="font-display gap-2" data-testid="button-view-all-products">
