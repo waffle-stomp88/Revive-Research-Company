@@ -824,8 +824,10 @@ function ProductsTab() {
       const response = await apiRequest("PATCH", `/api/admin/products/${id}`, data);
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
+      // Invalidate both the product list and the specific product detail page
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/products", variables.id] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
       toast({ title: "Product updated successfully" });
       setIsDialogOpen(false);
