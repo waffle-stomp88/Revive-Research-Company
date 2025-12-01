@@ -43,6 +43,8 @@ export const products = pgTable("products", {
   dosageOptions: text("dosage_options").array(),
   featured: boolean("featured").default(false),
   showOnLandingPage: boolean("show_on_landing_page").default(false),
+  isWeeklyDeal: boolean("is_weekly_deal").default(false),
+  weeklyDealEndDate: text("weekly_deal_end_date"),
   benefits: text("benefits").array(),
   usage: text("usage"),
   imageUrl: text("image_url"),

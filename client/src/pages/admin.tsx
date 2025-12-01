@@ -114,6 +114,8 @@ const productFormSchema = insertProductSchema.extend({
   benefits: z.string().optional(),
   stockAmount: z.coerce.number().int().optional(),
   dosageOptions: z.string().optional(),
+  isWeeklyDeal: z.boolean().optional(),
+  weeklyDealEndDate: z.string().optional(),
 });
 
 type ProductFormValues = z.infer<typeof productFormSchema>;
@@ -1181,6 +1183,64 @@ function ProductsTab() {
                     }}
                   />
                 </div>
+
+                {/* Weekly Deal Checkbox and Dropdown */}
+                <FormField
+                  control={form.control}
+                  name="isWeeklyDeal"
+                  render={({ field }) => (
+                    <FormItem className={`flex items-start gap-3 p-3 rounded-lg border ${
+                      field.value
+                        ? "border-red-500/50 bg-red-500/5"
+                        : "border-muted-foreground/20 bg-muted/30"
+                    }`}>
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value ?? false}
+                          onCheckedChange={field.onChange}
+                          className="mt-0.5 border-red-500/50 data-[state=checked]:bg-red-500 data-[state=checked]:border-red-500"
+                          data-testid="checkbox-weekly-deal"
+                        />
+                      </FormControl>
+                      <div className="flex flex-col gap-2 flex-1">
+                        <FormLabel className={`!mt-0 font-semibold flex items-center gap-2 ${field.value ? "text-red-500" : "text-muted-foreground"}`}>
+                          <Tag className="h-4 w-4" />
+                          Mark as Weekly Deal
+                        </FormLabel>
+                        <p className="text-xs text-muted-foreground">
+                          Set this product as the featured sale of the week with a custom end date
+                        </p>
+
+                        {/* Deal End Date Dropdown - Only visible when checked */}
+                        {field.value && (
+                          <FormField
+                            control={form.control}
+                            name="weeklyDealEndDate"
+                            render={({ field: dateField }) => (
+                              <FormItem className="mt-2">
+                                <FormLabel className="text-sm">Deal Ends</FormLabel>
+                                <Select value={dateField.value || ""} onValueChange={dateField.onChange}>
+                                  <FormControl>
+                                    <SelectTrigger className="w-full" data-testid="select-weekly-deal-end-date">
+                                      <SelectValue placeholder="Select end date" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="Tomorrow">Tomorrow</SelectItem>
+                                    <SelectItem value="End of This Week">End of This Week</SelectItem>
+                                    <SelectItem value="Next Monday">Next Monday</SelectItem>
+                                    <SelectItem value="End of This Month">End of This Month</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        )}
+                      </div>
+                    </FormItem>
+                  )}
+                />
                 
                 <div className="space-y-2">
                   <Label>Product Image</Label>

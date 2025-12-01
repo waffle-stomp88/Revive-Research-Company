@@ -225,7 +225,7 @@ export default function Products() {
 
   const saleProduct = useMemo(() => {
     if (!products) return null;
-    return products.find(p => p.name.toLowerCase().includes("retatrutide"));
+    return products.find(p => p.isWeeklyDeal);
   }, [products]);
 
   const priceStats = useMemo(() => {
@@ -608,16 +608,20 @@ export default function Products() {
                         </div>
                         <div className="flex-1 text-center md:text-left">
                           <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2">
-                            <Badge variant="destructive" className="text-base px-2.5 py-0.5">
-                              {SALE_OF_THE_WEEK.discount}
-                            </Badge>
-                            <span className="text-sm text-muted-foreground">{SALE_OF_THE_WEEK.endDate}</span>
+                            {saleProduct.originalPrice && (
+                              <Badge variant="destructive" className="text-base px-2.5 py-0.5">
+                                {Math.round(((Number(saleProduct.originalPrice) - Number(saleProduct.price)) / Number(saleProduct.originalPrice)) * 100)}% OFF
+                              </Badge>
+                            )}
+                            {saleProduct.weeklyDealEndDate && (
+                              <span className="text-sm text-muted-foreground">Ends {saleProduct.weeklyDealEndDate}</span>
+                            )}
                           </div>
                           <h3 className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10] mb-2">
                             {saleProduct.name}
                           </h3>
                           <p className="text-sm text-muted-foreground mb-4 max-w-lg">
-                            {SALE_OF_THE_WEEK.description}
+                            {saleProduct.shortDescription}
                           </p>
                           <div className="flex items-center justify-center md:justify-start gap-4">
                             <span className="font-display text-2xl md:text-3xl font-bold">${Number(saleProduct.price).toFixed(2)}</span>
