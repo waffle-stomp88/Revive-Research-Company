@@ -34,6 +34,7 @@ interface AppliedDiscount {
   code: string;
   percentage: number;
   type: "basic" | "personal";
+  freeShipping?: boolean;
 }
 
 export default function CartPage() {
@@ -56,13 +57,17 @@ export default function CartPage() {
         code: data.code,
         percentage: data.percentage,
         type: data.type,
+        freeShipping: data.freeShipping || false,
       };
       setAppliedDiscount(discount);
       localStorage.setItem("appliedDiscount", JSON.stringify(discount));
       setDiscountCode("");
+      const description = data.freeShipping 
+        ? `${data.percentage}% discount + Free Shipping applied!`
+        : `${data.percentage}% discount has been applied to your order.`;
       toast({
         title: "Discount Applied!",
-        description: `${data.percentage}% discount has been applied to your order.`,
+        description,
       });
     },
     onError: (error: Error) => {
@@ -103,7 +108,8 @@ export default function CartPage() {
   const subtotal = getSubtotal();
   const FREE_SHIPPING_THRESHOLD = 175;
   const FLAT_RATE_SHIPPING = 20;
-  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING;
+  const hasFreeShippingFromDiscount = appliedDiscount?.freeShipping || false;
+  const shipping = (subtotal >= FREE_SHIPPING_THRESHOLD || hasFreeShippingFromDiscount) ? 0 : FLAT_RATE_SHIPPING;
   const discountAmount = appliedDiscount ? (subtotal * appliedDiscount.percentage) / 100 : 0;
   const total = subtotal - discountAmount + shipping;
   const amountToFreeShipping = FREE_SHIPPING_THRESHOLD - subtotal;

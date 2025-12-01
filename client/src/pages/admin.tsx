@@ -2377,6 +2377,7 @@ interface DiscountCode {
   discountPercent: string;
   type: string;
   affiliateId: string | null;
+  freeShipping: boolean;
   isActive: boolean;
   maxUsages: number | null;
   usageCount: number | null;
@@ -2391,6 +2392,7 @@ function DiscountCodesTab() {
   const [newDescription, setNewDescription] = useState("");
   const [newDiscountPercent, setNewDiscountPercent] = useState("10");
   const [newType, setNewType] = useState("promo");
+  const [newFreeShipping, setNewFreeShipping] = useState(false);
 
   const { data: discountCodes, isLoading } = useQuery<DiscountCode[]>({
     queryKey: ["/api/admin/discount-codes"],
@@ -2404,7 +2406,7 @@ function DiscountCodesTab() {
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: { code: string; description: string; discountPercent: string; type: string }) => {
+    mutationFn: async (data: { code: string; description: string; discountPercent: string; type: string; freeShipping: boolean }) => {
       const response = await apiRequest("POST", "/api/admin/discount-codes", data);
       return response.json();
     },
@@ -2415,6 +2417,7 @@ function DiscountCodesTab() {
       setNewDescription("");
       setNewDiscountPercent("10");
       setNewType("promo");
+      setNewFreeShipping(false);
       toast({ title: "Discount code created" });
     },
     onError: (error: Error) => {
@@ -2535,6 +2538,17 @@ function DiscountCodesTab() {
                   </SelectContent>
                 </Select>
               </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="free-shipping"
+                  checked={newFreeShipping}
+                  onCheckedChange={(checked) => setNewFreeShipping(checked === true)}
+                  data-testid="checkbox-free-shipping"
+                />
+                <Label htmlFor="free-shipping" className="cursor-pointer">
+                  Free Shipping
+                </Label>
+              </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
@@ -2545,7 +2559,8 @@ function DiscountCodesTab() {
                   code: newCode,
                   description: newDescription,
                   discountPercent: newDiscountPercent,
-                  type: newType
+                  type: newType,
+                  freeShipping: newFreeShipping
                 })}
                 disabled={!newCode || createMutation.isPending}
                 data-testid="btn-confirm-create"
@@ -2578,6 +2593,7 @@ function DiscountCodesTab() {
                 <TableHead>Code</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Discount</TableHead>
+                <TableHead>Shipping</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Created</TableHead>
@@ -2599,6 +2615,15 @@ function DiscountCodesTab() {
                     <Badge variant="secondary" className="bg-[#E7FB10]/20 text-[#E7FB10]">
                       {code.discountPercent}% OFF
                     </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {code.freeShipping ? (
+                      <Badge variant="secondary" className="bg-[#21d8ff]/20 text-[#21d8ff]">
+                        Free Shipping
+                      </Badge>
+                    ) : (
+                      <span className="text-muted-foreground text-sm">-</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className="capitalize">

@@ -1637,7 +1637,7 @@ export async function registerRoutes(
   // Create discount code (admin only)
   app.post("/api/admin/discount-codes", isAdmin, async (req, res) => {
     try {
-      const { code, description, discountPercent, type, affiliateId, maxUsages, expiresAt } = req.body;
+      const { code, description, discountPercent, type, affiliateId, maxUsages, expiresAt, freeShipping } = req.body;
       
       if (!code || !discountPercent) {
         return res.status(400).json({ error: "Code and discount percent are required" });
@@ -1655,6 +1655,7 @@ export async function registerRoutes(
         discountPercent: discountPercent.toString(),
         type: type || "promo",
         affiliateId: affiliateId || null,
+        freeShipping: freeShipping || false,
         maxUsages: maxUsages || null,
         expiresAt: expiresAt ? new Date(expiresAt) : null,
         isActive: true,
@@ -1762,6 +1763,7 @@ export async function registerRoutes(
           code: discountCode.code,
           percentage: parseFloat(discountCode.discountPercent),
           type: discountCode.type,
+          freeShipping: discountCode.freeShipping || false,
         });
       }
 
@@ -1797,7 +1799,8 @@ export async function registerRoutes(
         valid: true,
         code: code.code,
         discountPercent: code.discountPercent,
-        type: code.type
+        type: code.type,
+        freeShipping: code.freeShipping || false
       });
     } catch (error) {
       console.error("Error validating discount code:", error);

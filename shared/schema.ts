@@ -350,6 +350,7 @@ export const discountCodes = pgTable("discount_codes", {
   discountPercent: decimal("discount_percent", { precision: 5, scale: 2 }).notNull(),
   type: text("type").notNull().default("promo"), // promo, affiliate_basic, affiliate_personal
   affiliateId: varchar("affiliate_id"), // Links to affiliate if type is affiliate_*
+  freeShipping: boolean("free_shipping").default(false),
   isActive: boolean("is_active").default(true),
   usageCount: integer("usage_count").default(0),
   maxUsages: integer("max_usages"), // null = unlimited
