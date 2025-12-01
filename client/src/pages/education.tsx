@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Link, useParams } from "wouter";
 import {
   GraduationCap,
@@ -23,6 +24,8 @@ import {
   PlayCircle,
   CheckCircle2,
   Sparkles,
+  List,
+  X,
 } from "lucide-react";
 import type { EducationArticle } from "@shared/schema";
 import { LearningRoadmap } from "@/components/infographics/learning-roadmap";
@@ -37,9 +40,7 @@ import {
 
 const articleVisuals: Record<string, () => JSX.Element> = {
   "how-to-read-coas": () => <COAAnatomyDiagram />,
-  "reading-coa-documents": () => <COAAnatomyDiagram />,
   "understanding-peptide-purity": () => <HPLCExplainer />,
-  "proper-peptide-storage": () => <StorageTemperatureGuide />,
   "storage-101": () => <StorageTemperatureGuide />,
   "epithalon-research-guide": () => <TelomereVisual />,
   "semaglutide-research-guide": () => <GLP1ReceptorComparison />,
@@ -77,10 +78,22 @@ export default function Education() {
   const params = useParams<{ slug?: string }>();
   const [activeCategory, setActiveCategory] = useState("all");
   const [expandedArticle, setExpandedArticle] = useState<string | null>(null);
+  const [showSideNav, setShowSideNav] = useState(false);
+  const onboardingRef = useRef<HTMLDivElement>(null);
+  const [scrolledPastOnboarding, setScrolledPastOnboarding] = useState(false);
 
   const { data: articles = [], isLoading } = useQuery<EducationArticle[]>({
     queryKey: ["/api/education"],
   });
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolledPastOnboarding(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     if (params.slug && articles.length > 0) {
@@ -163,6 +176,7 @@ export default function Education() {
         </motion.div>
 
         <motion.div
+          ref={onboardingRef}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
@@ -422,6 +436,115 @@ export default function Education() {
           </Link>
         </motion.div>
       </div>
+
+      <AnimatePresence>
+        {scrolledPastOnboarding && (
+          <>
+            <motion.button
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              onClick={() => setShowSideNav(!showSideNav)}
+              className="fixed left-4 top-1/2 -translate-y-1/2 z-40 w-12 h-12 rounded-full bg-[#9d4edd] text-white flex items-center justify-center shadow-lg cursor-pointer"
+              style={{ boxShadow: "0 0 20px rgba(157, 78, 221, 0.4)" }}
+              data-testid="button-toggle-sidenav"
+            >
+              {showSideNav ? <X className="h-5 w-5" /> : <List className="h-5 w-5" />}
+            </motion.button>
+
+            {showSideNav && (
+              <motion.div
+                key="side-nav-panel"
+                initial={{ opacity: 0, x: -280 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -280 }}
+                transition={{ duration: 0.25 }}
+                className="fixed left-0 top-0 bottom-0 w-72 bg-background/95 backdrop-blur-lg border-r border-border z-30 pt-32"
+              >
+              <ScrollArea className="h-full px-4 pb-8">
+                <div className="mb-6">
+                  <h3 className="text-sm font-semibold text-[#9d4edd] mb-3">Categories</h3>
+                  <div className="space-y-1">
+                    {categories.map((cat) => {
+                      const Icon = cat.icon;
+                      const isActive = activeCategory === cat.id;
+                      return (
+                        <button
+                          key={cat.id}
+                          onClick={() => {
+                            setActiveCategory(cat.id);
+                            setShowSideNav(false);
+                          }}
+                          className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer ${
+                            isActive 
+                              ? 'bg-[#9d4edd]/20 text-[#9d4edd]' 
+                              : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                          }`}
+                          data-testid={`sidenav-category-${cat.id}`}
+                        >
+                          <Icon className="h-4 w-4" />
+                          <span>{cat.label}</span>
+                          <span className="ml-auto text-xs text-muted-foreground">
+                            {cat.id === 'all' 
+                              ? articles.length 
+                              : articles.filter(a => a.category === cat.id).length
+                            }
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <Separator className="my-4" />
+
+                <div>
+                  <h3 className="text-sm font-semibold text-[#9d4edd] mb-3">
+                    {activeCategory === 'all' ? 'All Articles' : getCategoryLabel(activeCategory)}
+                  </h3>
+                  <div className="space-y-1">
+                    {filteredArticles.map((article) => {
+                      const catColor = getCategoryColor(article.category);
+                      const isExpanded = expandedArticle === article.id;
+                      return (
+                        <button
+                          key={article.id}
+                          onClick={() => {
+                            const articleId = article.id;
+                            setShowSideNav(false);
+                            setTimeout(() => {
+                              setExpandedArticle(articleId);
+                              setTimeout(() => {
+                                const element = document.getElementById(`article-${articleId}`);
+                                if (element) {
+                                  element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }
+                              }, 150);
+                            }, 300);
+                          }}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer ${
+                            isExpanded 
+                              ? 'bg-muted/50' 
+                              : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
+                          }`}
+                          style={{ borderLeft: isExpanded ? `2px solid ${catColor}` : '2px solid transparent' }}
+                          data-testid={`sidenav-article-${article.slug}`}
+                        >
+                          <span className="line-clamp-2">{article.title}</span>
+                          <span className="text-xs text-muted-foreground mt-0.5 block">
+                            {article.readTimeMinutes} min read
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </ScrollArea>
+            </motion.div>
+            )}
+          </>
+        )}
+      </AnimatePresence>
     </main>
   );
 }

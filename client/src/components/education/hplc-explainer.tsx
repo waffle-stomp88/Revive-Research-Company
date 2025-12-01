@@ -1,5 +1,5 @@
-import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
 import { Info, TrendingUp, Droplets, Zap, CheckCircle2 } from "lucide-react";
 
 interface PurityGrade {
@@ -74,6 +74,22 @@ export function HPLCExplainer() {
                   <stop offset="0%" stopColor="#21d8ff" stopOpacity="0.5" />
                   <stop offset="100%" stopColor="#21d8ff" stopOpacity="0" />
                 </linearGradient>
+                <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#21d8ff" stopOpacity="0" />
+                  <stop offset="50%" stopColor="#21d8ff" stopOpacity="1" />
+                  <stop offset="100%" stopColor="#21d8ff" stopOpacity="0" />
+                </linearGradient>
+                <mask id="waveMask">
+                  <motion.rect
+                    x="-20"
+                    y="0"
+                    width="30"
+                    height="100"
+                    fill="white"
+                    animate={{ x: ["-20", "120"] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "linear", repeatDelay: 1 }}
+                  />
+                </mask>
               </defs>
 
               <motion.path
@@ -117,6 +133,27 @@ export function HPLCExplainer() {
                 animate={isInView ? { pathLength: 1 } : {}}
                 transition={{ duration: 2, delay: 0.5 }}
               />
+
+              <path
+                d={`
+                  M 0 95
+                  Q 8 95 10 ${chromatogramPoints[0].y}
+                  Q 12 95 20 95
+                  Q 23 95 25 ${chromatogramPoints[1].y}
+                  Q 27 95 35 95
+                  Q 38 95 40 ${chromatogramPoints[2].y}
+                  Q 42 95 50 95
+                  Q 55 95 60 ${chromatogramPoints[3].y}
+                  Q 65 95 70 95
+                  Q 78 95 80 ${chromatogramPoints[4].y}
+                  Q 82 95 100 95
+                `}
+                fill="none"
+                stroke="#21d8ff"
+                strokeWidth="2"
+                mask="url(#waveMask)"
+                style={{ filter: "drop-shadow(0 0 4px #21d8ff)" }}
+              />
             </svg>
 
             {chromatogramPoints.map((point, i) => (
@@ -125,28 +162,29 @@ export function HPLCExplainer() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 1 + i * 0.15 }}
-                className="absolute transform -translate-x-1/2"
+                className="absolute"
                 style={{ 
                   left: `${point.x}%`, 
-                  top: `${point.y - 8}%`
+                  top: `${point.y}%`,
+                  transform: "translate(-50%, -50%)"
                 }}
               >
                 {point.isMain ? (
-                  <div className="relative">
+                  <div className="relative flex flex-col items-center">
                     <motion.div
-                      animate={{ scale: [1, 1.2, 1] }}
+                      animate={{ scale: [1, 1.3, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
-                      className="w-3 h-3 rounded-full bg-[#22c55e] shadow-lg"
-                      style={{ boxShadow: "0 0 10px #22c55e" }}
+                      className="w-4 h-4 rounded-full bg-[#22c55e] shadow-lg"
+                      style={{ boxShadow: "0 0 12px #22c55e, 0 0 24px #22c55e50" }}
                     />
-                    <div className="absolute top-full mt-1 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-                      <span className="text-xs font-bold text-[#22c55e] bg-background/80 px-2 py-0.5 rounded">
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+                      <span className="text-xs font-bold text-[#22c55e] bg-background/90 px-2 py-1 rounded border border-[#22c55e]/30">
                         {point.label}
                       </span>
                     </div>
                   </div>
                 ) : (
-                  <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50" />
+                  <div className="w-2 h-2 rounded-full bg-muted-foreground/60" />
                 )}
               </motion.div>
             ))}

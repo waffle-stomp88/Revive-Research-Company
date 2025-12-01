@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, User, LogIn, LogOut, Shield, ShoppingCart, ChevronDown, FileCheck, GraduationCap, Scale, BookOpen } from "lucide-react";
+import { Menu, X, User, LogIn, LogOut, Shield, ShoppingCart, ChevronDown, FileCheck, GraduationCap, Scale, BookOpen, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -12,6 +12,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/contexts/CartContext";
@@ -37,8 +42,10 @@ export function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [location] = useLocation();
   const { user, isAuthenticated, isLoading } = useAuth();
-  const { getItemCount } = useCart();
+  const { items, getItemCount, getSubtotal } = useCart();
   const cartItemCount = getItemCount();
+  const regularItems = items.filter(item => !item.isBundle);
+  const bundleItems = items.filter(item => item.isBundle);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -177,21 +184,91 @@ export function Navigation() {
               <div className="flex items-center gap-2 md:gap-4">
                 <ThemeToggle />
                 
-                <Link href="/cart">
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="relative hover:bg-[#E7FB10]/10 hover:text-[#E7FB10] transition-all duration-300" 
-                    data-testid="button-cart"
-                  >
-                    <ShoppingCart className="h-5 w-5" />
-                    {cartItemCount > 0 && (
-                      <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] bg-[#E7FB10] text-black border-0">
-                        {cartItemCount > 9 ? "9+" : cartItemCount}
-                      </Badge>
+                <HoverCard openDelay={100} closeDelay={200}>
+                  <HoverCardTrigger asChild>
+                    <Link href="/cart">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="relative hover:bg-[#E7FB10]/10 hover:text-[#E7FB10] transition-all duration-300" 
+                        data-testid="button-cart"
+                      >
+                        <ShoppingCart className="h-5 w-5" />
+                        {cartItemCount > 0 && (
+                          <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] bg-[#E7FB10] text-black border-0">
+                            {cartItemCount > 9 ? "9+" : cartItemCount}
+                          </Badge>
+                        )}
+                      </Button>
+                    </Link>
+                  </HoverCardTrigger>
+                  <HoverCardContent align="end" className="w-80 p-0" sideOffset={8}>
+                    <div className="p-4 border-b border-border">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-semibold text-sm">Shopping Cart</h4>
+                        <span className="text-xs text-muted-foreground">{cartItemCount} items</span>
+                      </div>
+                    </div>
+                    
+                    {cartItemCount === 0 ? (
+                      <div className="p-6 text-center">
+                        <ShoppingCart className="h-8 w-8 mx-auto text-muted-foreground/50 mb-2" />
+                        <p className="text-sm text-muted-foreground">Your cart is empty</p>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="max-h-64 overflow-y-auto">
+                          {regularItems.slice(0, 3).map((item) => (
+                            <div key={`${item.productId}-${item.dosage}`} className="flex items-center gap-3 p-3 border-b border-border/50 last:border-0">
+                              <div className="w-10 h-10 rounded-lg bg-[#E7FB10]/10 flex items-center justify-center flex-shrink-0">
+                                <Package className="h-5 w-5 text-[#E7FB10]" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium truncate">{item.name}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {item.dosage} × {item.quantity}
+                                </p>
+                              </div>
+                              <p className="text-sm font-semibold text-[#E7FB10]">
+                                ${(item.price * item.quantity).toFixed(2)}
+                              </p>
+                            </div>
+                          ))}
+                          {bundleItems.slice(0, 2).map((bundle) => (
+                            <div key={bundle.bundleId} className="flex items-center gap-3 p-3 border-b border-border/50 last:border-0">
+                              <div className="w-10 h-10 rounded-lg bg-[#21d8ff]/10 flex items-center justify-center flex-shrink-0">
+                                <Package className="h-5 w-5 text-[#21d8ff]" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium truncate">{bundle.name}</p>
+                                <p className="text-xs text-muted-foreground">Bundle × {bundle.quantity}</p>
+                              </div>
+                              <p className="text-sm font-semibold text-[#21d8ff]">
+                                ${(bundle.price * bundle.quantity).toFixed(2)}
+                              </p>
+                            </div>
+                          ))}
+                          {(regularItems.length > 3 || bundleItems.length > 2) && (
+                            <div className="p-2 text-center text-xs text-muted-foreground">
+                              +{Math.max(0, regularItems.length - 3) + Math.max(0, bundleItems.length - 2)} more items
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-4 border-t border-border bg-muted/20">
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-sm text-muted-foreground">Subtotal</span>
+                            <span className="font-semibold text-[#E7FB10]">${getSubtotal().toFixed(2)}</span>
+                          </div>
+                          <Link href="/cart">
+                            <Button className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90" size="sm">
+                              View Cart
+                            </Button>
+                          </Link>
+                        </div>
+                      </>
                     )}
-                  </Button>
-                </Link>
+                  </HoverCardContent>
+                </HoverCard>
                 
                 {!isLoading && !isAuthenticated && (
                   <a href="/api/login">

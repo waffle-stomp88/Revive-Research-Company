@@ -165,7 +165,7 @@ export function GHAxisDiagram() {
                 >
                   <motion.div
                     animate={isActive ? { scale: 1.1 } : { scale: 1 }}
-                    className="relative cursor-pointer"
+                    className="relative"
                   >
                     <div
                       className="w-32 h-16 rounded-xl flex flex-col items-center justify-center transition-all duration-300"

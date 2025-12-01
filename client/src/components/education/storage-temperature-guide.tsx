@@ -139,7 +139,7 @@ export function StorageTemperatureGuide() {
                   initial={{ opacity: 0, y: -20 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ delay: 0.5 + i * 0.1 }}
-                  className="absolute top-1/2 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+                  className="absolute top-1/2 transform -translate-x-1/2 -translate-y-1/2"
                   style={{ left: `${zone.position}%` }}
                   onMouseEnter={() => setActiveZone(zone.id)}
                   onMouseLeave={() => setActiveZone(null)}
