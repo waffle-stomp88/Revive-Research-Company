@@ -424,4 +424,32 @@
   .animate-pulse-subtle {
     animation: ruo-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
+
+  /* Custom Scrollbar Styling */
+  .sidebar-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar-thumb {
+    background: rgba(33, 216, 255, 0.4);
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(33, 216, 255, 0.7);
+  }
+
+  /* Firefox */
+  .sidebar-scroll {
+    scrollbar-color: rgba(33, 216, 255, 0.4) transparent;
+  }
+
+  .sidebar-scroll:hover {
+    scrollbar-color: rgba(33, 216, 255, 0.7) transparent;
+  }
 }

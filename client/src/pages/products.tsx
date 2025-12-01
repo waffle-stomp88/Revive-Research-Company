@@ -350,7 +350,7 @@ export default function Products() {
                 transition={{ duration: 0.3 }}
                 className="hidden lg:block flex-shrink-0"
               >
-                <div className="sticky top-28 max-h-[calc(100vh-120px)] overflow-y-auto space-y-6 pr-2">
+                <div className="sticky top-28 max-h-[calc(100vh-120px)] overflow-y-auto space-y-6 pr-2 sidebar-scroll">
                   {/* Sidebar Header */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
