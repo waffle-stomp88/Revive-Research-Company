@@ -353,61 +353,45 @@ export default function CoaVerification() {
             transition={{ delay: 0.3 }}
             className="mt-16"
           >
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-6">
               <Link href="/education/how-to-read-coas">
-                <Card className="p-6 hover-elevate cursor-pointer h-full">
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-full bg-[#ec4899]/10 flex-shrink-0">
-                      <GraduationCap className="h-6 w-6 text-[#ec4899]" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-display font-semibold mb-2">How to Read COAs</h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                        Learn what each test means, how to interpret purity percentages, 
-                        and what to look for in a Certificate of Analysis.
-                      </p>
-                      <div className="flex items-center gap-1 text-[#ec4899] text-sm font-medium" data-testid="link-education-coa">
-                        Read Guide
-                        <ArrowRight className="h-4 w-4" />
-                      </div>
-                    </div>
+                <Card className="p-6 cursor-pointer h-full border-2 border-[#ec4899]/40 hover:border-[#ec4899]/100 hover:shadow-[0_0_20px_rgba(236,72,153,0.3)] transition-all duration-300 flex flex-col items-center text-center">
+                  <div className="p-4 rounded-full bg-[#ec4899]/10 mb-4">
+                    <GraduationCap className="h-8 w-8 text-[#ec4899]" />
+                  </div>
+                  <h3 className="font-display font-semibold mb-3 text-lg">How to Read COAs</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-1">
+                    Learn what each test means, how to interpret purity percentages, and what to look for in a Certificate of Analysis.
+                  </p>
+                  <div className="flex items-center gap-1 text-[#ec4899] text-sm font-medium" data-testid="link-education-coa">
+                    Read Guide
+                    <ArrowRight className="h-4 w-4" />
                   </div>
                 </Card>
               </Link>
 
-              <Card className="p-6">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-full bg-primary/10 flex-shrink-0">
-                    <FileCheck className="h-6 w-6 text-foreground" />
-                  </div>
-                  <div>
-                    <h3 className="font-display font-semibold mb-2">Where to Find Your Batch Number</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      Your batch number can be found on the product label or 
-                      included documentation. It typically starts with "RVR" 
-                      followed by the year and sequence number.
-                    </p>
-                  </div>
+              <Card className="p-6 h-full border-2 border-white/20 hover:border-white/60 hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all duration-300 flex flex-col items-center text-center">
+                <div className="p-4 rounded-full bg-foreground/10 mb-4">
+                  <FileCheck className="h-8 w-8 text-foreground" />
                 </div>
+                <h3 className="font-display font-semibold mb-3 text-lg">Where to Find Your Batch Number</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed flex-1">
+                  Your batch number can be found on the product label or included documentation. It typically starts with "RVR" followed by the year and sequence number.
+                </p>
               </Card>
 
               <Link href="/coa-library">
-                <Card className="p-6 hover-elevate cursor-pointer h-full">
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-full bg-[#21d8ff]/10 flex-shrink-0">
-                      <Archive className="h-6 w-6 text-[#21d8ff]" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-display font-semibold mb-2">Browse COA Library</h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                        Search all certificates in our comprehensive database or explore 
-                        certificates by product and batch number.
-                      </p>
-                      <div className="flex items-center gap-1 text-[#21d8ff] text-sm font-medium">
-                        View Library
-                        <ArrowRight className="h-4 w-4" />
-                      </div>
-                    </div>
+                <Card className="p-6 cursor-pointer h-full border-2 border-[#21d8ff]/40 hover:border-[#21d8ff]/100 hover:shadow-[0_0_20px_rgba(33,216,255,0.3)] transition-all duration-300 flex flex-col items-center text-center">
+                  <div className="p-4 rounded-full bg-[#21d8ff]/10 mb-4">
+                    <Archive className="h-8 w-8 text-[#21d8ff]" />
+                  </div>
+                  <h3 className="font-display font-semibold mb-3 text-lg">Browse COA Library</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-1">
+                    Search all certificates in our comprehensive database or explore certificates by product and batch number.
+                  </p>
+                  <div className="flex items-center gap-1 text-[#21d8ff] text-sm font-medium">
+                    View Library
+                    <ArrowRight className="h-4 w-4" />
                   </div>
                 </Card>
               </Link>
