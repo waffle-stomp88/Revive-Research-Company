@@ -126,11 +126,7 @@ export function Navigation() {
                             className="absolute inset-0 bg-[#E7FB10]/10 rounded-md border border-[#E7FB10]/30"
                             initial={false}
                             animate={{ 
-                              borderColor: [
-                                "rgba(231, 251, 16, 0.25)",
-                                "rgba(231, 251, 16, 0.4)",
-                                "rgba(231, 251, 16, 0.25)"
-                              ]
+                              opacity: [0.8, 1, 0.8]
                             }}
                             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                           />
