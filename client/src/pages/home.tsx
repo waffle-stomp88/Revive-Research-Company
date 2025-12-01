@@ -293,19 +293,6 @@ function HeroSection() {
             </Button>
           </Link>
         </motion.div>
-
-        {/* Newsletter signup section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.9 }}
-          className="mt-12 pt-8 border-t border-white/10 max-w-md mx-auto"
-        >
-          <p className="text-center text-sm text-gray-300 mb-4">
-            Join our research community. Be first to access new compounds.
-          </p>
-          <NewsletterSignup />
-        </motion.div>
       </motion.div>
       {/* Scroll indicator */}
       <motion.div
@@ -800,6 +787,30 @@ function CTASection() {
   );
 }
 
+function NewsletterSection() {
+  return (
+    <section className="py-20 md:py-28 bg-gradient-to-b from-background to-background/50 border-t border-border">
+      <div className="max-w-3xl mx-auto px-4 md:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+          className="text-center"
+        >
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
+            Stay Updated on New Research
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10">
+            Get early access to new compound releases, lab research updates, and exclusive subscriber content. Join 500+ researchers in our community.
+          </p>
+          <NewsletterSignup />
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   return (
     <main>
@@ -811,6 +822,7 @@ export default function Home() {
       <TransparencyHub />
       <HowItWorksSection />
       <CTASection />
+      <NewsletterSection />
     </main>
   );
 }
