@@ -28,6 +28,7 @@ import {
   Truck,
   Star,
   MessageSquare,
+  TrendingUp,
 } from "lucide-react";
 import type { Order, Product, ReviewableOrder } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -496,6 +497,62 @@ export default function Dashboard() {
                   </Link>
                 </CardContent>
               </Card>
+
+              <div 
+                className="rounded-lg p-6 overflow-hidden relative"
+                style={{
+                  background: 'linear-gradient(135deg, rgb(157, 78, 221) 0%, rgb(157, 78, 221) 50%, rgb(147, 51, 234) 100%)',
+                }}
+              >
+                <div className="relative z-10">
+                  <div className="flex items-start justify-between gap-4 mb-4">
+                    <div>
+                      <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-1">
+                        <TrendingUp className="h-5 w-5" />
+                        Become an Affiliate
+                      </h3>
+                      <p className="text-white/90 text-sm">
+                        Earn commissions by sharing Revive Research with others
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white/15 backdrop-blur-sm rounded-lg p-4 mb-4 border border-white/20">
+                    <ul className="space-y-2 text-sm text-white/95">
+                      <li className="flex items-start gap-2">
+                        <span className="text-[#E7FB10] font-bold text-lg leading-none mt-0.5">✓</span>
+                        <span>10% commission on direct sales</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-[#E7FB10] font-bold text-lg leading-none mt-0.5">✓</span>
+                        <span>10% team override on recruits</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-[#E7FB10] font-bold text-lg leading-none mt-0.5">✓</span>
+                        <span>20% personal-use discount</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-[#E7FB10] font-bold text-lg leading-none mt-0.5">✓</span>
+                        <span>Get paid monthly via PayPal, Venmo, or Zelle</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <Link href="/affiliate-apply">
+                    <Button 
+                      className="w-full font-semibold text-base"
+                      style={{
+                        backgroundColor: '#E7FB10',
+                        color: '#000',
+                      }}
+                      data-testid="button-affiliate-apply"
+                    >
+                      Apply to Our Program
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
 
               <Card>
                 <CardHeader>
