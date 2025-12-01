@@ -46,7 +46,7 @@ export default function ResourcesHub() {
     <main className="min-h-screen">
       {/* Hero Section */}
       <section 
-        className="relative pb-8 overflow-hidden"
+        className="relative pb-16 overflow-hidden"
         style={{ paddingTop: 'calc(var(--banner-height, 40px) + 80px)' }}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-[#9d4edd]/8 via-background to-background" />
