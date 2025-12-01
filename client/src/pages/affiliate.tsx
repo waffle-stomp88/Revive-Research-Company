@@ -210,7 +210,7 @@ export default function AffiliatePage() {
             <Button
               size="lg"
               onClick={() => scrollToSection("apply")}
-              className="w-full font-display text-lg gap-2 bg-[#E7FB10] hover:bg-[#E7FB10]/90"
+              className="gap-2 bg-[#E7FB10] text-black font-display text-lg hover:bg-[#E7FB10]/90 w-full sm:w-auto shadow-[0_0_30px_rgba(231,251,16,0.6)]"
               data-testid="button-apply-now"
             >
               Apply Now
