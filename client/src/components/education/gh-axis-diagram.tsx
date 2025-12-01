@@ -230,7 +230,10 @@ export function GHAxisDiagram() {
           className="mt-6"
         >
           <button
-            onClick={() => setShowPeptides(!showPeptides)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowPeptides(!showPeptides);
+            }}
             className="flex items-center gap-2 mx-auto px-4 py-2 rounded-lg bg-[#21d8ff]/10 border border-[#21d8ff]/30 text-[#21d8ff] hover:bg-[#21d8ff]/20 transition-colors"
             data-testid="button-toggle-peptides"
           >

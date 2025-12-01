@@ -337,6 +337,7 @@ export default function Education() {
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: "auto" }}
                             className="px-6 pb-6"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             <Separator className="mb-6" style={{ backgroundColor: `${catColor}30` }} />
                             

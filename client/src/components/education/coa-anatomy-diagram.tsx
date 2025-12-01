@@ -237,25 +237,6 @@ export function COAAnatomyDiagram() {
             );
           })}
 
-          <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }}>
-            <defs>
-              <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#21d8ff" stopOpacity="0.3" />
-                <stop offset="50%" stopColor="#9d4edd" stopOpacity="0.3" />
-                <stop offset="100%" stopColor="#E7FB10" stopOpacity="0.3" />
-              </linearGradient>
-            </defs>
-            <motion.path
-              d="M 200 80 L 200 160 M 200 160 L 80 180 M 200 160 L 320 180"
-              stroke="url(#lineGradient)"
-              strokeWidth="1"
-              strokeDasharray="4 4"
-              fill="none"
-              initial={{ pathLength: 0 }}
-              animate={isInView ? { pathLength: 1 } : {}}
-              transition={{ duration: 2, delay: 1 }}
-            />
-          </svg>
         </motion.div>
 
         <motion.div
@@ -265,7 +246,10 @@ export function COAAnatomyDiagram() {
           className="mt-6"
         >
           <button
-            onClick={() => setShowRedFlags(!showRedFlags)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowRedFlags(!showRedFlags);
+            }}
             className="flex items-center gap-2 mx-auto px-4 py-2 rounded-lg bg-red-950/30 border border-red-500/30 text-red-400 hover:bg-red-950/50 transition-colors"
             data-testid="button-toggle-red-flags"
           >

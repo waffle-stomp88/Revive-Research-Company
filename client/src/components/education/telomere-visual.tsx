@@ -124,7 +124,10 @@ export function TelomereVisual() {
           className="mt-6"
         >
           <button
-            onClick={() => setShowMechanism(!showMechanism)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowMechanism(!showMechanism);
+            }}
             className="flex items-center gap-2 mx-auto px-4 py-2 rounded-lg bg-[#9d4edd]/10 border border-[#9d4edd]/30 text-[#9d4edd] hover:bg-[#9d4edd]/20 transition-colors"
             data-testid="button-toggle-mechanism"
           >
