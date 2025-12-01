@@ -3,7 +3,6 @@ import { Link, useLocation } from "wouter";
 import { Menu, X, User, LogIn, LogOut, Shield, ShoppingCart, ChevronDown, FileCheck, GraduationCap, Scale, BookOpen, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -200,8 +199,6 @@ export function Navigation() {
               </div>
 
               <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
-                <ThemeToggle />
-                
                 <HoverCard openDelay={100} closeDelay={200}>
                   <HoverCardTrigger asChild>
                     <Link href="/cart">
