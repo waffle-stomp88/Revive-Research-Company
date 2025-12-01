@@ -233,10 +233,18 @@
   /* Yellow Glow Animation for Neon Yellow Buttons */
   @keyframes glow-yellow {
     0%, 100% {
-      box-shadow: 0 0 15px rgba(231, 251, 16, 0.3), 0 0 25px rgba(231, 251, 16, 0.1);
+      box-shadow: 
+        0 0 20px rgba(231, 251, 16, 0.5),
+        0 0 40px rgba(231, 251, 16, 0.3),
+        0 0 60px rgba(231, 251, 16, 0.2),
+        inset 0 0 10px rgba(231, 251, 16, 0.1);
     }
     50% {
-      box-shadow: 0 0 30px rgba(231, 251, 16, 0.6), 0 0 45px rgba(231, 251, 16, 0.3);
+      box-shadow: 
+        0 0 30px rgba(231, 251, 16, 0.8),
+        0 0 60px rgba(231, 251, 16, 0.6),
+        0 0 90px rgba(231, 251, 16, 0.4),
+        inset 0 0 20px rgba(231, 251, 16, 0.2);
     }
   }
 
@@ -245,7 +253,8 @@
   }
 
   .glow-yellow:hover {
-    animation: glow-yellow 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation: glow-yellow 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    filter: brightness(1.1);
   }
 
   /* RUO Safety Warning Pulse Animation */
