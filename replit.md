@@ -50,6 +50,17 @@ Located in `client/src/components/infographics/`:
 - **ProcessPipeline**: Interactive 6-step production visualization with expanding detail panels, animated particles, progress bar, and timeline connector. Steps: Synthesis, Lyophilization, QC, Third-Party Testing, Packaging, Fulfillment.
 - **LearningRoadmap**: Visual 5-module learning path with animated progress bar, expandable topic lists on hover, step indicators, and module completion tracking. Also includes `LearningProgress` component.
 
+### Education Article Visuals
+Located in `client/src/components/education/`:
+- **COAAnatomyDiagram**: Interactive annotated Certificate of Analysis diagram with hoverable sections (header, batch, identity, purity, endotoxin, content, results) and toggleable red flags warning panel.
+- **HPLCExplainer**: Animated HPLC chromatogram visualization showing how purity is measured, with purity grade comparison bars (Research >95%, High Purity >98%, Ultra Pure >99%).
+- **StorageTemperatureGuide**: Temperature scale showing optimal storage zones (Freezer -20°C, Refrigerator 2-8°C, Room Temp, Danger Zone) with lyophilized vs reconstituted storage guidelines.
+- **TelomereVisual**: Telomere shortening visualization for Epithalon article, showing chromosome caps at different life stages with optional telomerase mechanism explanation.
+- **GLP1ReceptorComparison**: Comparison chart for incretin peptides (Semaglutide/Tirzepatide/Retatrutide) showing single/dual/triple receptor agonism with color-coded receptor indicators.
+- **GHAxisDiagram**: Growth hormone axis pathway diagram (Hypothalamus → Pituitary → Liver) with toggleable peptide mechanism overlay showing where CJC-1295, Ipamorelin, and Tesamorelin act.
+
+**Visual Mapping Strategy**: Only articles that genuinely benefit from visualization have visuals. Text-based articles (Research Use Only, Glossary, Applications lists) remain text-only. Visuals are mapped via `articleVisuals` object in education.tsx using article slugs as keys.
+
 **Design Philosophy**: Intentional visual storytelling through educational graphics that create "wow" moments for visual learners. Uses intentional color variety: yellow (#E7FB10) for products/CTAs, cyan (#21d8ff) for subscriptions/verification, purple (#9d4edd) for informational pages, pink (#ec4899) for peptide education.
 
 ## External Dependencies
