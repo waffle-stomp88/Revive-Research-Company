@@ -99,9 +99,6 @@ interface Affiliate {
   basicReferralCode: string | null;
   payoutMethod: string;
   payoutEmail: string;
-  bankAccountHolder: string | null;
-  bankRoutingNumber: string | null;
-  bankAccountNumber: string | null;
   venmoUsername: string | null;
   pendingBalance: string;
 }
@@ -130,9 +127,6 @@ export default function AffiliateDashboard() {
   const [payoutMethod, setPayoutMethod] = useState("");
   const [payoutEmail, setPayoutEmail] = useState("");
   const [venmoUsername, setVenmoUsername] = useState("");
-  const [bankAccountHolder, setBankAccountHolder] = useState("");
-  const [bankRoutingNumber, setBankRoutingNumber] = useState("");
-  const [bankAccountNumber, setBankAccountNumber] = useState("");
   const [leaderboardPeriod, setLeaderboardPeriod] = useState<"weekly" | "monthly">("monthly");
 
   useEffect(() => {
@@ -157,9 +151,6 @@ export default function AffiliateDashboard() {
     if (affiliate) {
       setPayoutEmail(affiliate.payoutEmail || "");
       setVenmoUsername(affiliate.venmoUsername || "");
-      setBankAccountHolder(affiliate.bankAccountHolder || "");
-      setBankRoutingNumber(affiliate.bankRoutingNumber || "");
-      setBankAccountNumber(affiliate.bankAccountNumber || "");
       setPayoutMethod(affiliate.payoutMethod || "paypal");
     }
   }, [affiliate]);
@@ -911,7 +902,6 @@ export default function AffiliateDashboard() {
                       <SelectContent>
                         <SelectItem value="paypal">PayPal</SelectItem>
                         <SelectItem value="venmo">Venmo</SelectItem>
-                        <SelectItem value="bank">Bank Transfer (ACH)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -949,69 +939,6 @@ export default function AffiliateDashboard() {
                     </div>
                   )}
 
-                  {(payoutMethod || affiliate.payoutMethod) === "bank" && (
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="bankAccountHolder">Account Holder Name</Label>
-                        <Input
-                          id="bankAccountHolder"
-                          placeholder="Full name as it appears on your account"
-                          value={bankAccountHolder}
-                          onChange={(e) => setBankAccountHolder(e.target.value)}
-                          data-testid="input-bank-account-holder"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="bankRoutingNumber">Routing Number (ABA)</Label>
-                        <Input
-                          id="bankRoutingNumber"
-                          placeholder="9-digit routing number"
-                          maxLength={9}
-                          value={bankRoutingNumber}
-                          onChange={(e) => setBankRoutingNumber(e.target.value.replace(/\D/g, ""))}
-                          data-testid="input-bank-routing-number"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="bankAccountNumber">Account Number</Label>
-                        <Input
-                          id="bankAccountNumber"
-                          placeholder="Your bank account number"
-                          value={bankAccountNumber}
-                          onChange={(e) => setBankAccountNumber(e.target.value.replace(/\D/g, ""))}
-                          data-testid="input-bank-account-number"
-                        />
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            updateSettingsMutation.mutate({ 
-                              payoutMethod: "bank", 
-                              bankAccountHolder: "",
-                              bankRoutingNumber: "",
-                              bankAccountNumber: ""
-                            });
-                            setBankAccountHolder("");
-                            setBankRoutingNumber("");
-                            setBankAccountNumber("");
-                          }}
-                          disabled={updateSettingsMutation.isPending}
-                          data-testid="button-clear-bank-details"
-                        >
-                          {updateSettingsMutation.isPending ? (
-                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                          ) : null}
-                          Clear Bank Details
-                        </Button>
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        Your bank details are securely stored and used only for commission payouts
-                      </p>
-                    </div>
-                  )}
-
                   <Button
                     onClick={() => {
                       const selectedMethod = payoutMethod || "paypal";
@@ -1019,19 +946,12 @@ export default function AffiliateDashboard() {
                         payoutMethod: string;
                         payoutEmail?: string;
                         venmoUsername?: string;
-                        bankAccountHolder?: string;
-                        bankRoutingNumber?: string;
-                        bankAccountNumber?: string;
                       } = { payoutMethod: selectedMethod };
                       
                       if (selectedMethod === "paypal") {
                         data.payoutEmail = payoutEmail;
                       } else if (selectedMethod === "venmo") {
                         data.venmoUsername = venmoUsername;
-                      } else if (selectedMethod === "bank") {
-                        data.bankAccountHolder = bankAccountHolder;
-                        data.bankRoutingNumber = bankRoutingNumber;
-                        data.bankAccountNumber = bankAccountNumber;
                       }
                       
                       updateSettingsMutation.mutate(data);
