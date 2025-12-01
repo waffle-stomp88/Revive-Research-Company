@@ -627,92 +627,6 @@ export default function Products() {
               )}
             </div>
 
-            {/* Research Stacks Section */}
-            <div ref={bundlesRef} className="scroll-mt-36">
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                className="mb-12"
-                data-testid="section-bundles"
-              >
-                <div className="flex items-center gap-3 mb-5">
-                  <Package className="h-6 w-6 text-[#21d8ff]" />
-                  <h2 className="font-display font-bold text-2xl md:text-3xl">Research Stacks</h2>
-                  <Badge variant="outline" className="border-primary/50 text-primary">
-                    <Sparkles className="h-3 w-3 mr-1" />
-                    Save More
-                  </Badge>
-                </div>
-                <p className="text-muted-foreground mb-6 max-w-2xl">
-                  Expertly curated peptide combinations based on research protocols. Bundle and save on the most popular stacks.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {BUNDLES.map((bundle, index) => (
-                    <motion.div
-                      key={bundle.id}
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.4, delay: index * 0.08 }}
-                    >
-                      <Link href={`/bundles/${bundle.id}`}>
-                        <Card 
-                          className={`h-full p-4 border-2 transition-all cursor-pointer group ${
-                            bundle.color === "cyan" 
-                              ? "border-cyan-500/30 hover:border-cyan-500 hover:shadow-[0_0_25px_rgba(34,211,238,0.15)]" 
-                              : "border-[#E7FB10]/30 hover:border-[#E7FB10] hover:shadow-[0_0_25px_rgba(231,251,16,0.15)]"
-                          }`}
-                          data-testid={`card-bundle-${bundle.id}`}
-                        >
-                          <div className="flex items-center justify-between mb-3">
-                            <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
-                              bundle.color === "cyan" ? "bg-cyan-500/10" : "bg-[#E7FB10]/10"
-                            }`}>
-                              <bundle.icon className={`h-4.5 w-4.5 ${
-                                bundle.color === "cyan" ? "text-cyan-400" : "text-[#E7FB10]"
-                              }`} />
-                            </div>
-                            <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">
-                              Save {bundle.savings}%
-                            </Badge>
-                          </div>
-                          
-                          <h3 className={`font-display text-base font-bold mb-0.5 ${
-                            bundle.color === "cyan" ? "text-cyan-400" : "text-[#E7FB10]"
-                          }`}>
-                            {bundle.name}
-                          </h3>
-                          <p className="text-xs text-muted-foreground mb-2">{bundle.tagline}</p>
-                          
-                          <div className="flex flex-wrap gap-1 mb-3">
-                            {bundle.products.map((product) => (
-                              <Badge key={product} variant="outline" className="text-[10px] py-0 px-1.5">
-                                {product}
-                              </Badge>
-                            ))}
-                          </div>
-                          
-                          <div className={`flex items-center justify-between pt-3 border-t ${
-                            bundle.color === "cyan" ? "border-cyan-500/20" : "border-[#E7FB10]/20"
-                          }`}>
-                            <div className="flex items-baseline gap-1.5">
-                              <span className="font-display text-lg font-bold">${bundle.bundlePrice.toFixed(2)}</span>
-                              <span className="text-xs text-muted-foreground line-through">
-                                ${bundle.originalPrice.toFixed(2)}
-                              </span>
-                            </div>
-                            <Button size="sm" variant="ghost" className="h-7 px-2 gap-1 text-xs">
-                              View <ArrowRight className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        </Card>
-                      </Link>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.section>
-            </div>
-
             {/* All Products Section */}
             <div ref={productsRef} className="scroll-mt-36">
               <motion.div
@@ -893,6 +807,92 @@ export default function Products() {
                   )}
                 </Card>
               )}
+            </div>
+
+            {/* Research Stacks Section */}
+            <div ref={bundlesRef} className="scroll-mt-36">
+              <motion.section
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="mb-12"
+                data-testid="section-bundles"
+              >
+                <div className="flex items-center gap-3 mb-5">
+                  <Package className="h-6 w-6 text-[#21d8ff]" />
+                  <h2 className="font-display font-bold text-2xl md:text-3xl">Research Stacks</h2>
+                  <Badge variant="outline" className="border-primary/50 text-primary">
+                    <Sparkles className="h-3 w-3 mr-1" />
+                    Save More
+                  </Badge>
+                </div>
+                <p className="text-muted-foreground mb-6 max-w-2xl">
+                  Expertly curated peptide combinations based on research protocols. Bundle and save on the most popular stacks.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {BUNDLES.map((bundle, index) => (
+                    <motion.div
+                      key={bundle.id}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.4, delay: index * 0.08 }}
+                    >
+                      <Link href={`/bundles/${bundle.id}`}>
+                        <Card 
+                          className={`h-full p-4 border-2 transition-all cursor-pointer group ${
+                            bundle.color === "cyan" 
+                              ? "border-cyan-500/30 hover:border-cyan-500 hover:shadow-[0_0_25px_rgba(34,211,238,0.15)]" 
+                              : "border-[#E7FB10]/30 hover:border-[#E7FB10] hover:shadow-[0_0_25px_rgba(231,251,16,0.15)]"
+                          }`}
+                          data-testid={`card-bundle-${bundle.id}`}
+                        >
+                          <div className="flex items-center justify-between mb-3">
+                            <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
+                              bundle.color === "cyan" ? "bg-cyan-500/10" : "bg-[#E7FB10]/10"
+                            }`}>
+                              <bundle.icon className={`h-4.5 w-4.5 ${
+                                bundle.color === "cyan" ? "text-cyan-400" : "text-[#E7FB10]"
+                              }`} />
+                            </div>
+                            <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">
+                              Save {bundle.savings}%
+                            </Badge>
+                          </div>
+                          
+                          <h3 className={`font-display text-base font-bold mb-0.5 ${
+                            bundle.color === "cyan" ? "text-cyan-400" : "text-[#E7FB10]"
+                          }`}>
+                            {bundle.name}
+                          </h3>
+                          <p className="text-xs text-muted-foreground mb-2">{bundle.tagline}</p>
+                          
+                          <div className="flex flex-wrap gap-1 mb-3">
+                            {bundle.products.map((product) => (
+                              <Badge key={product} variant="outline" className="text-[10px] py-0 px-1.5">
+                                {product}
+                              </Badge>
+                            ))}
+                          </div>
+                          
+                          <div className={`flex items-center justify-between pt-3 border-t ${
+                            bundle.color === "cyan" ? "border-cyan-500/20" : "border-[#E7FB10]/20"
+                          }`}>
+                            <div className="flex items-baseline gap-1.5">
+                              <span className="font-display text-lg font-bold">${bundle.bundlePrice.toFixed(2)}</span>
+                              <span className="text-xs text-muted-foreground line-through">
+                                ${bundle.originalPrice.toFixed(2)}
+                              </span>
+                            </div>
+                            <Button size="sm" variant="ghost" className="h-7 px-2 gap-1 text-xs">
+                              View <ArrowRight className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </Card>
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.section>
             </div>
 
             {/* Bulk Orders Section - Now at the bottom */}
