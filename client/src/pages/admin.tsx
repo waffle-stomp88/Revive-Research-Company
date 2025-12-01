@@ -2990,6 +2990,13 @@ function AffiliatesTab() {
     <div className="space-y-6">
       <div className="flex gap-2 border-b pb-4">
         <Button
+          variant={activeSubTab === "affiliates" ? "default" : "ghost"}
+          onClick={() => setActiveSubTab("affiliates")}
+          data-testid="subtab-affiliates"
+        >
+          Affiliates ({affiliates?.length || 0})
+        </Button>
+        <Button
           variant={activeSubTab === "applications" ? "default" : "ghost"}
           onClick={() => setActiveSubTab("applications")}
           className="relative"
@@ -3001,13 +3008,6 @@ function AffiliatesTab() {
               {pendingApplications.length}
             </Badge>
           )}
-        </Button>
-        <Button
-          variant={activeSubTab === "affiliates" ? "default" : "ghost"}
-          onClick={() => setActiveSubTab("affiliates")}
-          data-testid="subtab-affiliates"
-        >
-          Affiliates ({affiliates?.length || 0})
         </Button>
         <Button
           variant={activeSubTab === "payouts" ? "default" : "ghost"}
