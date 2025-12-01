@@ -1,6 +1,6 @@
 import { 
   users, products, coas, orders, contacts, affiliateApplications, affiliates, affiliateSales, affiliatePayouts, reviews,
-  batches, productStorageProfiles, legalDocuments, faqEntries, educationArticles, coaGlossaryTerms, stockNotifications, discountCodes,
+  batches, productStorageProfiles, legalDocuments, faqEntries, educationArticles, coaGlossaryTerms, stockNotifications, discountCodes, newsletterSubscribers,
   type User, type UpsertUser,
   type Product, type InsertProduct,
   type Coa, type InsertCoa,
@@ -19,7 +19,8 @@ import {
   type EducationArticle, type InsertEducationArticle,
   type CoaGlossaryTerm, type InsertCoaGlossaryTerm,
   type StockNotification, type InsertStockNotification,
-  type DiscountCode, type InsertDiscountCode
+  type DiscountCode, type InsertDiscountCode,
+  type NewsletterSubscriber, type InsertNewsletterSubscriber
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, ilike, or, desc, sql, gte, and, lt, count, sum } from "drizzle-orm";
@@ -194,6 +195,12 @@ export interface IStorage {
   toggleDiscountCodeActive(id: string, isActive: boolean): Promise<DiscountCode | undefined>;
   deleteDiscountCode(id: string): Promise<boolean>;
   getAffiliateDiscountCodes(affiliateId: string): Promise<DiscountCode[]>;
+  
+  // Newsletter Subscribers
+  subscribeToNewsletter(subscriber: InsertNewsletterSubscriber): Promise<NewsletterSubscriber>;
+  getAllNewsletterSubscribers(): Promise<NewsletterSubscriber[]>;
+  unsubscribeFromNewsletter(email: string): Promise<NewsletterSubscriber | undefined>;
+  checkNewsletterSubscription(email: string): Promise<NewsletterSubscriber | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1168,6 +1175,28 @@ export class DatabaseStorage implements IStorage {
     return db.select().from(discountCodes)
       .where(eq(discountCodes.affiliateId, affiliateId))
       .orderBy(desc(discountCodes.createdAt));
+  }
+
+  async subscribeToNewsletter(subscriber: InsertNewsletterSubscriber): Promise<NewsletterSubscriber> {
+    const [result] = await db.insert(newsletterSubscribers).values(subscriber).onConflictDoUpdate({
+      target: newsletterSubscribers.email,
+      set: { status: "subscribed" }
+    }).returning();
+    return result;
+  }
+
+  async getAllNewsletterSubscribers(): Promise<NewsletterSubscriber[]> {
+    return db.select().from(newsletterSubscribers).orderBy(desc(newsletterSubscribers.createdAt));
+  }
+
+  async unsubscribeFromNewsletter(email: string): Promise<NewsletterSubscriber | undefined> {
+    const [result] = await db.update(newsletterSubscribers).set({ status: "unsubscribed" }).where(eq(newsletterSubscribers.email, email)).returning();
+    return result || undefined;
+  }
+
+  async checkNewsletterSubscription(email: string): Promise<NewsletterSubscriber | undefined> {
+    const [result] = await db.select().from(newsletterSubscribers).where(eq(newsletterSubscribers.email, email));
+    return result || undefined;
   }
 }
 

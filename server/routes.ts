@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertReviewSchema } from "@shared/schema";
+import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertReviewSchema, insertNewsletterSubscriberSchema } from "@shared/schema";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
@@ -1873,6 +1873,31 @@ Be friendly, professional, and helpful. If you don't know something specific abo
     } catch (error) {
       console.error("Error in chat endpoint:", error);
       res.status(500).json({ error: "Failed to process chat message" });
+    }
+  });
+
+  // Newsletter subscription
+  app.post("/api/newsletter/subscribe", async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: "Email is required" });
+      }
+
+      const parsed = insertNewsletterSubscriberSchema.safeParse({ email });
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Invalid email address" });
+      }
+
+      const subscriber = await storage.subscribeToNewsletter(parsed.data);
+      res.status(201).json({ success: true, message: "Successfully subscribed to newsletter!", subscriber });
+    } catch (error: any) {
+      if (error.code === "23505") {
+        return res.status(200).json({ success: true, message: "Email already subscribed!" });
+      }
+      console.error("Error subscribing to newsletter:", error);
+      res.status(500).json({ error: "Failed to subscribe to newsletter" });
     }
   });
 

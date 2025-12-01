@@ -25,6 +25,7 @@ import heroBackground from "@assets/69bf34cc-d177-46c6-af24-c51da5ee10fa_1764382
 import researchLabImage from "@assets/generated_images/neon_peptide_research_lab.png";
 import { AnimatedTrustStats } from "@/components/infographics/animated-stats";
 import { VerificationJourney } from "@/components/infographics/verification-journey";
+import { NewsletterSignup } from "@/components/newsletter-signup";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 40 },
@@ -291,6 +292,19 @@ function HeroSection() {
               Verify COA
             </Button>
           </Link>
+        </motion.div>
+
+        {/* Newsletter signup section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.9 }}
+          className="mt-12 pt-8 border-t border-white/10 max-w-md mx-auto"
+        >
+          <p className="text-center text-sm text-gray-300 mb-4">
+            Join our research community. Be first to access new compounds.
+          </p>
+          <NewsletterSignup />
         </motion.div>
       </motion.div>
       {/* Scroll indicator */}
