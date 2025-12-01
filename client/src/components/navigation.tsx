@@ -123,12 +123,9 @@ export function Navigation() {
                         {isActive && (
                           <motion.div
                             layoutId="nav-highlight"
-                            className="absolute inset-0 bg-[#E7FB10]/10 rounded-md border border-[#E7FB10]/30"
+                            className="absolute inset-0 bg-[#E7FB10]/10 rounded-md border border-[#E7FB10]/40 shadow-[0_0_16px_rgba(231,251,16,0.3)]"
                             initial={false}
-                            animate={{ 
-                              opacity: [0.8, 1, 0.8]
-                            }}
-                            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                           />
                         )}
                         <motion.div
