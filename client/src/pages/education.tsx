@@ -22,8 +22,10 @@ import {
   Pill,
   PlayCircle,
   CheckCircle2,
+  Sparkles,
 } from "lucide-react";
 import type { EducationArticle } from "@shared/schema";
+import { LearningRoadmap } from "@/components/infographics/learning-roadmap";
 
 const categories = [
   { id: "all", label: "All Articles", icon: BookOpen, color: "#ffffff" },
@@ -141,55 +143,45 @@ export default function Education() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="mb-12"
+          className="mb-16"
         >
-          <Card className="p-6 md:p-8 border-[#ec4899]/20 bg-gradient-to-br from-[#ec4899]/5 to-transparent overflow-hidden relative">
+          <Card className="p-6 md:p-8 border-[#ec4899]/20 bg-gradient-to-br from-[#ec4899]/5 via-transparent to-[#9d4edd]/5 overflow-hidden relative">
             <div className="absolute top-0 right-0 w-64 h-64 bg-[#ec4899]/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#9d4edd]/10 rounded-full blur-3xl" />
             <div className="relative">
-              <div className="flex items-center gap-3 mb-4">
-                <Badge className="bg-[#ec4899]/20 text-[#ec4899] border-[#ec4899]/30">
-                  New Researcher Course
-                </Badge>
-                <Badge variant="outline" className="text-muted-foreground">5 Parts</Badge>
+              <div className="text-center mb-8">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", delay: 0.3 }}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ec4899]/10 border border-[#ec4899]/30 mb-4"
+                >
+                  <Sparkles className="h-4 w-4 text-[#ec4899]" />
+                  <span className="text-sm font-medium text-[#ec4899]">5-Part Course</span>
+                </motion.div>
+                <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
+                  Researcher Onboarding Journey
+                </h2>
+                <p className="text-muted-foreground max-w-2xl mx-auto">
+                  New to peptide research? Follow this learning path to build your foundation —
+                  from legal frameworks to proper handling and ordering expectations.
+                </p>
               </div>
-              <h2 className="font-display text-2xl font-bold mb-2">Researcher Onboarding</h2>
-              <p className="text-muted-foreground mb-6 max-w-2xl">
-                New to peptide research? Start here with our essential 5-part course covering 
-                everything from legal frameworks to proper handling and ordering.
-              </p>
-              <div className="grid md:grid-cols-5 gap-3">
-                {onboardingCourse.map((module, index) => {
-                  const article = articles.find(a => a.slug === module.slug);
-                  return (
-                    <div
-                      key={module.step}
-                      className="p-3 rounded-lg bg-card/50 border border-border/50 hover:border-[#ec4899]/30 transition-colors cursor-pointer group"
-                      onClick={() => {
-                        if (article) {
-                          setExpandedArticle(article.id);
-                          setActiveCategory(article.category);
-                          setTimeout(() => {
-                            const element = document.getElementById(`article-${article.id}`);
-                            if (element) {
-                              element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            }
-                          }, 100);
-                        }
-                      }}
-                      data-testid={`course-module-${module.step}`}
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-6 h-6 rounded-full bg-[#ec4899]/20 flex items-center justify-center flex-shrink-0">
-                          <span className="text-xs font-bold text-[#ec4899]">{module.step}</span>
-                        </div>
-                        <ChevronRight className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity ml-auto" />
-                      </div>
-                      <h4 className="font-semibold text-sm mb-1 group-hover:text-[#ec4899] transition-colors">{module.title}</h4>
-                      <p className="text-xs text-muted-foreground">{module.description}</p>
-                    </div>
-                  );
-                })}
-              </div>
+              <LearningRoadmap 
+                onModuleClick={(slug) => {
+                  const article = articles.find(a => a.slug === slug);
+                  if (article) {
+                    setExpandedArticle(article.id);
+                    setActiveCategory(article.category);
+                    setTimeout(() => {
+                      const element = document.getElementById(`article-${article.id}`);
+                      if (element) {
+                        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }
+                    }, 100);
+                  }
+                }}
+              />
             </div>
           </Card>
         </motion.div>

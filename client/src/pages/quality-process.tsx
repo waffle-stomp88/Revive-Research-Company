@@ -1,110 +1,36 @@
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 import {
-  FlaskConical,
-  Snowflake,
-  CheckCircle2,
-  FileCheck,
-  Package,
-  Truck,
   ArrowRight,
   Shield,
+  Sparkles,
+  QrCode,
+  FileCheck,
 } from "lucide-react";
-
-const processSteps = [
-  {
-    id: 1,
-    title: "Synthesis",
-    icon: FlaskConical,
-    color: "#E7FB10",
-    description: "Peptide synthesis using advanced solid-phase techniques",
-    details: [
-      "High-purity amino acid building blocks",
-      "Automated synthesis protocols",
-      "Real-time monitoring for quality control",
-      "Multiple purification cycles",
-    ],
-  },
-  {
-    id: 2,
-    title: "Lyophilization",
-    icon: Snowflake,
-    color: "#21d8ff",
-    description: "Freeze-drying process for long-term stability",
-    details: [
-      "Controlled freezing at -80°C",
-      "Vacuum sublimation of water",
-      "Preserves peptide structure",
-      "Creates stable powder form",
-    ],
-  },
-  {
-    id: 3,
-    title: "Quality Control",
-    icon: CheckCircle2,
-    color: "#22c55e",
-    description: "Internal QC checks before third-party testing",
-    details: [
-      "Visual inspection for appearance",
-      "Weight verification per vial",
-      "Label accuracy check",
-      "Packaging integrity",
-    ],
-  },
-  {
-    id: 4,
-    title: "Third-Party Testing",
-    icon: FileCheck,
-    color: "#9d4edd",
-    description: "Independent laboratory verification",
-    details: [
-      "HPLC purity analysis (98%+ target)",
-      "Mass spectrometry confirmation",
-      "Endotoxin screening",
-      "Batch-specific COA generation",
-    ],
-  },
-  {
-    id: 5,
-    title: "Packaging",
-    icon: Package,
-    color: "#f97316",
-    description: "Secure packaging with full traceability",
-    details: [
-      "Pharmaceutical-grade vials",
-      "Batch-specific labels with QR codes",
-      "Tamper-evident seals",
-      "Cold pack preparation",
-    ],
-  },
-  {
-    id: 6,
-    title: "Fulfillment",
-    icon: Truck,
-    color: "#ec4899",
-    description: "Fast, temperature-controlled shipping",
-    details: [
-      "Same-day processing before 12:00 CT",
-      "Cold chain maintenance",
-      "Discreet packaging",
-      "Tracking provided",
-    ],
-  },
-];
+import { ProcessPipeline } from "@/components/infographics/process-pipeline";
+import { VerificationJourneyCompact } from "@/components/infographics/verification-journey";
 
 export default function QualityProcess() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <div className="max-w-6xl mx-auto px-4 md:px-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <Badge className="mb-4 bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30">
-            Transparency
-          </Badge>
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", delay: 0.2 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#21d8ff]/10 border border-[#21d8ff]/30 mb-6"
+          >
+            <Sparkles className="h-4 w-4 text-[#21d8ff]" />
+            <span className="text-sm font-medium text-[#21d8ff]">Full Transparency</span>
+          </motion.div>
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-4" data-testid="text-quality-title">
             Our Quality & Production Process
           </h1>
@@ -118,7 +44,7 @@ export default function QualityProcess() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mb-12"
+          className="mb-16"
         >
           <Card className="p-6 border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 to-transparent">
             <div className="flex items-start gap-4">
@@ -137,106 +63,157 @@ export default function QualityProcess() {
           </Card>
         </motion.div>
 
-        <div className="relative">
-          <div className="absolute left-1/2 top-0 bottom-0 w-px bg-border hidden lg:block" />
-          
-          <div className="space-y-8">
-            {processSteps.map((step, index) => {
-              const Icon = step.icon;
-              const isEven = index % 2 === 0;
-              
-              return (
-                <motion.div
-                  key={step.id}
-                  initial={{ opacity: 0, x: isEven ? -20 : 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 * index }}
-                  className={`lg:grid lg:grid-cols-2 gap-8 items-center ${isEven ? '' : 'lg:flex-row-reverse'}`}
-                >
-                  <div className={`${isEven ? 'lg:text-right lg:pr-12' : 'lg:order-2 lg:pl-12'}`}>
-                    <Card 
-                      className="p-6 relative overflow-hidden"
-                      style={{ borderColor: `${step.color}30` }}
-                      data-testid={`card-step-${step.id}`}
-                    >
-                      <div 
-                        className="absolute top-0 right-0 w-32 h-32 opacity-10 blur-2xl"
-                        style={{ backgroundColor: step.color }}
-                      />
-                      
-                      <div className={`flex items-start gap-4 ${isEven ? 'lg:flex-row-reverse' : ''}`}>
-                        <div 
-                          className="flex-shrink-0 w-14 h-14 rounded-xl flex items-center justify-center"
-                          style={{ backgroundColor: `${step.color}20` }}
-                        >
-                          <Icon className="h-7 w-7" style={{ color: step.color }} />
-                        </div>
-                        
-                        <div className={`flex-1 ${isEven ? 'lg:text-right' : ''}`}>
-                          <div className="flex items-center gap-2 mb-2">
-                            <Badge 
-                              variant="outline" 
-                              className="text-xs"
-                              style={{ borderColor: step.color, color: step.color }}
-                            >
-                              Step {step.id}
-                            </Badge>
-                          </div>
-                          <h3 className="font-display text-xl font-bold mb-2" style={{ color: step.color }}>
-                            {step.title}
-                          </h3>
-                          <p className="text-muted-foreground mb-4">
-                            {step.description}
-                          </p>
-                          <ul className={`space-y-2 ${isEven ? 'lg:text-right' : ''}`}>
-                            {step.details.map((detail, i) => (
-                              <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                                {!isEven && <CheckCircle2 className="h-4 w-4 flex-shrink-0" style={{ color: step.color }} />}
-                                <span>{detail}</span>
-                                {isEven && <CheckCircle2 className="h-4 w-4 flex-shrink-0 lg:order-first" style={{ color: step.color }} />}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    </Card>
-                  </div>
-                  
-                  <div className={`hidden lg:flex items-center justify-center ${isEven ? 'lg:order-2' : ''}`}>
-                    <div 
-                      className="w-12 h-12 rounded-full flex items-center justify-center border-4 bg-background z-10"
-                      style={{ borderColor: step.color }}
-                    >
-                      <span className="font-display font-bold" style={{ color: step.color }}>
-                        {step.id}
-                      </span>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mb-20"
+        >
+          <div className="text-center mb-8">
+            <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
+              The 6-Step Journey
+            </h2>
+            <p className="text-muted-foreground">
+              Hover over each step to explore the details
+            </p>
           </div>
-        </div>
+          <ProcessPipeline />
+        </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="mt-16 text-center"
+          transition={{ delay: 0.5 }}
+          className="grid md:grid-cols-2 gap-8 mb-16"
         >
-          <Card className="p-8 border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 to-transparent" data-testid="card-traceability">
+          <Card className="p-8 border-[#9d4edd]/20 bg-gradient-to-br from-[#9d4edd]/5 to-transparent relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#9d4edd]/10 rounded-full blur-3xl" />
+            <div className="relative">
+              <div className="w-14 h-14 rounded-xl bg-[#9d4edd]/20 flex items-center justify-center mb-4">
+                <FileCheck className="h-7 w-7 text-[#9d4edd]" />
+              </div>
+              <h3 className="font-display text-xl font-bold mb-3 text-[#9d4edd]">
+                Third-Party Testing
+              </h3>
+              <p className="text-muted-foreground mb-4">
+                Every single batch goes through independent laboratory testing. We don't 
+                test in-house and call it verified — we use accredited third-party labs 
+                that have no connection to our business.
+              </p>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#9d4edd]" />
+                  HPLC purity analysis (98%+ target)
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#9d4edd]" />
+                  Mass spectrometry molecular confirmation
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#9d4edd]" />
+                  Endotoxin and sterility screening
+                </li>
+              </ul>
+            </div>
+          </Card>
+
+          <Card className="p-8 border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 to-transparent relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#E7FB10]/10 rounded-full blur-3xl" />
+            <div className="relative">
+              <div className="w-14 h-14 rounded-xl bg-[#E7FB10]/20 flex items-center justify-center mb-4">
+                <QrCode className="h-7 w-7 text-[#E7FB10]" />
+              </div>
+              <h3 className="font-display text-xl font-bold mb-3 text-[#E7FB10]">
+                Full Traceability
+              </h3>
+              <p className="text-muted-foreground mb-4">
+                Every vial includes a unique QR code that links directly to its 
+                batch-specific Certificate of Analysis. Scan it anytime to verify 
+                exactly what you're working with.
+              </p>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#E7FB10]" />
+                  Unique batch numbers per production run
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#E7FB10]" />
+                  QR codes linked to COA verification
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#E7FB10]" />
+                  Complete production history on record
+                </li>
+              </ul>
+            </div>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="mb-16"
+        >
+          <Card className="p-8 border-[#21d8ff]/20 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#E7FB10]/5 via-[#21d8ff]/5 to-[#9d4edd]/5" />
+            <div className="relative">
+              <div className="text-center mb-8">
+                <Badge className="mb-4 bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30">
+                  Verification Flow
+                </Badge>
+                <h3 className="font-display text-2xl font-bold mb-2">
+                  From QR to Verified COA
+                </h3>
+                <p className="text-muted-foreground max-w-lg mx-auto">
+                  The complete journey to verify any product takes just seconds
+                </p>
+              </div>
+              <VerificationJourneyCompact />
+              <div className="text-center mt-8">
+                <Link href="/coa">
+                  <Button className="bg-[#21d8ff] text-black gap-2" data-testid="button-verify-now">
+                    Verify a Product Now
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="text-center"
+        >
+          <Card className="p-8 border-[#22c55e]/20 bg-gradient-to-br from-[#22c55e]/5 to-transparent" data-testid="card-commitment">
+            <div className="w-16 h-16 rounded-full bg-[#22c55e]/20 flex items-center justify-center mx-auto mb-4">
+              <Shield className="h-8 w-8 text-[#22c55e]" />
+            </div>
             <h3 className="font-display text-2xl font-bold mb-4">
-              Every Vial is Traceable
+              Our Commitment to You
             </h3>
             <p className="text-muted-foreground max-w-xl mx-auto mb-6">
-              Each product you receive includes a QR code that links directly to its 
-              batch-specific Certificate of Analysis. Scan it anytime to verify exactly 
-              what you're working with.
+              We never cut corners. Every step of this process exists because we believe 
+              researchers deserve to know exactly what they're working with. If you have 
+              questions about our process, we're always happy to explain.
             </p>
-            <a href="/coa-library" className="inline-flex items-center gap-2 text-[#E7FB10] hover:underline" data-testid="link-coa-system">
-              <span className="font-semibold">Learn more about our COA system</span>
-              <ArrowRight className="h-4 w-4" />
-            </a>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link href="/coa-library">
+                <Button variant="outline" className="gap-2 border-[#9d4edd]/30 text-[#9d4edd]" data-testid="link-coa-library">
+                  <FileCheck className="h-4 w-4" />
+                  Browse COA Library
+                </Button>
+              </Link>
+              <Link href="/contact">
+                <Button variant="outline" className="gap-2" data-testid="link-contact">
+                  Ask Us Anything
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
           </Card>
         </motion.div>
       </div>

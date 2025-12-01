@@ -17,11 +17,14 @@ import {
   Target,
   BookOpen,
   ClipboardCheck,
+  Sparkles,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { Product } from "@shared/schema";
 import heroBackground from "@assets/69bf34cc-d177-46c6-af24-c51da5ee10fa_1764382400961.png";
 import researchLabImage from "@assets/generated_images/neon_peptide_research_lab.png";
+import { AnimatedTrustStats } from "@/components/infographics/animated-stats";
+import { VerificationJourney } from "@/components/infographics/verification-journey";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 40 },
@@ -311,62 +314,38 @@ function HeroSection() {
 
 function TrustSection() {
   return (
-    <section className="py-24 md:py-32 bg-card border-y border-border">
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
+    <section className="py-24 md:py-32 bg-card border-y border-border relative overflow-hidden">
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-[#E7FB10]/10 blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-[#21d8ff]/10 blur-3xl" />
+      </div>
+      
+      <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
         <motion.div
-          initial="initial"
-          whileInView="animate"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          variants={staggerContainer}
-          className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12"
+          className="text-center mb-16"
         >
-          {trustMetrics.map((metric, index) => (
-            <motion.div
-              key={metric.label}
-              variants={fadeInUp}
-              className="text-center"
-            >
-              <motion.div 
-                className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#E7FB10]/10 border-2 border-[#E7FB10]/30 mb-6 shadow-glow-sm"
-                whileHover={{ scale: 1.1, boxShadow: "0px 0px 40px 0px rgba(231, 251, 16, 0.60)" }}
-                animate={{ 
-                  boxShadow: [
-                    "0px 0px 15px 0px rgba(231, 251, 16, 0.20)",
-                    "0px 0px 25px 0px rgba(231, 251, 16, 0.40)",
-                    "0px 0px 15px 0px rgba(231, 251, 16, 0.20)"
-                  ]
-                }}
-                transition={{ 
-                  duration: 2, 
-                  repeat: Infinity, 
-                  ease: "easeInOut",
-                  delay: index * 0.3
-                }}
-              >
-                <motion.div
-                  animate={{ 
-                    y: [0, -3, 0],
-                    rotate: [0, 5, 0, -5, 0]
-                  }}
-                  transition={{ 
-                    duration: 3, 
-                    repeat: Infinity, 
-                    ease: "easeInOut",
-                    delay: index * 0.2
-                  }}
-                >
-                  <metric.icon className="h-8 w-8 text-[#E7FB10]" />
-                </motion.div>
-              </motion.div>
-              <div className="font-display text-4xl md:text-5xl font-bold mb-3 text-[#E7FB10]" data-testid={`text-metric-${index}`}>
-                {metric.value}
-              </div>
-              <div className="text-base md:text-lg text-muted-foreground uppercase tracking-wider font-medium">
-                {metric.label}
-              </div>
-            </motion.div>
-          ))}
+          <motion.div
+            initial={{ scale: 0 }}
+            whileInView={{ scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ type: "spring", delay: 0.2 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#21d8ff]/10 border border-[#21d8ff]/30 mb-6"
+          >
+            <Sparkles className="h-4 w-4 text-[#21d8ff]" />
+            <span className="text-sm font-medium text-[#21d8ff]">Verified Quality</span>
+          </motion.div>
+          <h2 className="font-display text-4xl md:text-5xl font-bold mb-4">
+            Our Commitment to Excellence
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Every product meets the highest standards of purity, testing, and verification.
+          </p>
         </motion.div>
+        
+        <AnimatedTrustStats />
       </div>
     </section>
   );
@@ -504,9 +483,7 @@ function ScienceSection() {
                 alt="Advanced peptide research laboratory" 
                 className="w-full h-full object-cover"
               />
-              {/* Neon glow overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-[#21d8ff]/20 via-transparent to-[#E7FB10]/10 opacity-60" />
-              {/* Border glow effect */}
               <div className="absolute inset-0 rounded-lg border border-[#21d8ff]/30 shadow-[0_0_30px_rgba(33,216,255,0.2)]" />
             </div>
           </motion.div>
@@ -549,6 +526,67 @@ function ScienceSection() {
             </Link>
           </motion.div>
         </div>
+      </div>
+    </section>
+  );
+}
+
+function VerificationSection() {
+  return (
+    <section className="py-24 md:py-32 relative overflow-hidden">
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full bg-[#21d8ff]/5 blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full bg-[#9d4edd]/5 blur-3xl" />
+      </div>
+      
+      <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          className="text-center mb-12"
+        >
+          <motion.div
+            initial={{ scale: 0 }}
+            whileInView={{ scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ type: "spring", delay: 0.2 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#9d4edd]/10 border border-[#9d4edd]/30 mb-6"
+          >
+            <FileCheck className="h-4 w-4 text-[#9d4edd]" />
+            <span className="text-sm font-medium text-[#9d4edd]">Complete Traceability</span>
+          </motion.div>
+          <h2 className="font-display text-4xl md:text-5xl font-bold mb-4" data-testid="text-verification-heading">
+            Verify Every Product
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            From QR code to verified COA — trace every product back to its lab-tested origins in seconds.
+          </p>
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2 }}
+        >
+          <VerificationJourney />
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.6 }}
+          className="text-center mt-12"
+        >
+          <Link href="/coa">
+            <Button size="lg" className="font-display gap-2 bg-[#21d8ff] text-black border-2 border-[#21d8ff]" data-testid="button-try-verification">
+              Try It Now
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
+        </motion.div>
       </div>
     </section>
   );
@@ -754,6 +792,7 @@ export default function Home() {
       <HeroSection />
       <ProductShowcase />
       <TrustSection />
+      <VerificationSection />
       <ScienceSection />
       <TransparencyHub />
       <HowItWorksSection />

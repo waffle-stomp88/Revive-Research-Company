@@ -43,6 +43,15 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **Troubleshooting Guides**: Expandable "What To Do If..." guides for warm packages, clumpy vials, flat powder, smudged labels, moisture, and broken COA links.
 - **Support Status Widget**: Real-time support availability indicator (2-4 hour response) displayed in footer.
 
+### Visual Infographic Components (Phase 3)
+Located in `client/src/components/infographics/`:
+- **AnimatedTrustStats**: Animated counter stats with glow effects for trust metrics (99%+ purity, third-party testing, 24hr shipping, batch traceability). Uses counting animation and pulsing glow borders.
+- **VerificationJourney**: 4-step visual flow (QR Code → Batch Number → View COA → Verified) with animated connectors, gradient SVG paths, and interactive hover states. Also includes compact variant `VerificationJourneyCompact`.
+- **ProcessPipeline**: Interactive 6-step production visualization with expanding detail panels, animated particles, progress bar, and timeline connector. Steps: Synthesis, Lyophilization, QC, Third-Party Testing, Packaging, Fulfillment.
+- **LearningRoadmap**: Visual 5-module learning path with animated progress bar, expandable topic lists on hover, step indicators, and module completion tracking. Also includes `LearningProgress` component.
+
+**Design Philosophy**: Intentional visual storytelling through educational graphics that create "wow" moments for visual learners. Uses intentional color variety: yellow (#E7FB10) for products/CTAs, cyan (#21d8ff) for subscriptions/verification, purple (#9d4edd) for informational pages, pink (#ec4899) for peptide education.
+
 ## External Dependencies
 
 - **Database**: Neon Database (PostgreSQL)
