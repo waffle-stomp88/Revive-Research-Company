@@ -225,7 +225,7 @@ export default function Products() {
 
   const saleProduct = useMemo(() => {
     if (!products) return null;
-    return products.find(p => p.isWeeklyDeal);
+    return products.find(p => p.isWeeklyDeal && p.inStock);
   }, [products]);
 
   const priceStats = useMemo(() => {
