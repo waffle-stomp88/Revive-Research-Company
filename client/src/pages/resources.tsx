@@ -84,20 +84,27 @@ export default function ResourcesHub() {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  whileHover={{ scale: 1.08 }}
                   transition={{ type: "spring", stiffness: 400, damping: 10, delay: index * 0.1 }}
+                  className="h-full"
                 >
                   <Link href={resource.href} onClick={() => window.scrollTo(0, 0)}>
-                    <Card className="h-full p-6 hover-elevate cursor-pointer border-l-4 group relative overflow-hidden"
-                      style={{ borderLeftColor: resource.color }}
+                    <motion.div
+                      whileHover={{ scale: 1.08 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                      className="h-full"
                     >
-                      <motion.div
-                        className="absolute inset-0 rounded-md"
-                        initial={{ x: "100%" }}
-                        whileHover={{ x: "-100%" }}
-                        transition={{ duration: 0.6, ease: "easeInOut" }}
-                        style={{ backgroundColor: `${resource.color}15` }}
-                      />
+                      <Card 
+                        className="h-full p-6 hover-elevate cursor-pointer border-l-4 group relative overflow-hidden"
+                        style={{ borderLeftColor: resource.color }}
+                      >
+                        <motion.div
+                          className="absolute inset-0 rounded-md pointer-events-none"
+                          initial={{ x: "100%" }}
+                          animate={{ x: "100%" }}
+                          whileHover={{ x: "-100%" }}
+                          transition={{ duration: 0.5, ease: "easeInOut" }}
+                          style={{ backgroundColor: `${resource.color}15` }}
+                        />
                       <div className="relative z-10 flex items-start gap-4 mb-3">
                         <motion.div 
                           className="p-3 rounded-lg"
@@ -123,6 +130,7 @@ export default function ResourcesHub() {
                         <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                       </div>
                     </Card>
+                    </motion.div>
                   </Link>
                 </motion.div>
               );
