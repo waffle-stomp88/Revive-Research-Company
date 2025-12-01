@@ -322,7 +322,6 @@ function QualityAndTrustSection() {
         <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-[#E7FB10]/10 blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-[#21d8ff]/10 blur-3xl" />
       </div>
-      
       <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -330,7 +329,7 @@ function QualityAndTrustSection() {
           viewport={{ once: true, margin: "-100px" }}
           className="text-center mb-12"
         >
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="font-display md:text-4xl font-bold mb-4 text-[45px]">
             Verified Quality & Transparency
           </h2>
           <p className="text-base text-muted-foreground max-w-2xl mx-auto mb-8">
