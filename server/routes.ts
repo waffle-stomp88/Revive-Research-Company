@@ -664,8 +664,6 @@ export async function registerRoutes(
         status: "pending",
       });
 
-      await storage.updateAffiliate(affiliate.id, { pendingBalance: "0.00" });
-
       res.status(201).json({ success: true, payout });
     } catch (error) {
       console.error("Error requesting payout:", error);
@@ -780,7 +778,7 @@ export async function registerRoutes(
         return res.status(400).json({ error: "Payment not completed" });
       }
 
-      const shippingDetails = session.shipping_details;
+      const shippingDetails = session.shipping;
       const customerDetails = session.customer_details;
       const metadata = session.metadata || {};
 
@@ -1305,15 +1303,6 @@ export async function registerRoutes(
       const payout = await storage.updateAffiliatePayoutStatus(req.params.id, "rejected");
       if (!payout) {
         return res.status(404).json({ error: "Payout not found" });
-      }
-
-      const affiliate = await storage.getAffiliate(payout.affiliateId);
-      if (affiliate) {
-        const currentPending = parseFloat(affiliate.pendingBalance || "0");
-        const rejectedAmount = parseFloat(payout.amount);
-        await storage.updateAffiliate(affiliate.id, { 
-          pendingBalance: (currentPending + rejectedAmount).toFixed(2) 
-        });
       }
 
       res.json({ success: true, payout });
