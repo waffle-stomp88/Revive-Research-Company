@@ -91,6 +91,7 @@ export interface IStorage {
   getAllAffiliates(): Promise<Affiliate[]>;
   getAffiliateTeam(affiliateId: string): Promise<Affiliate[]>;
   updateAffiliate(id: string, data: Partial<InsertAffiliate>): Promise<Affiliate | undefined>;
+  deleteAffiliate(id: string): Promise<boolean>;
   updateAffiliateEarnings(id: string, tier1Amount: number, tier2Amount: number, pendingAmount: number): Promise<Affiliate | undefined>;
   
   // Affiliate Sales
@@ -412,6 +413,11 @@ export class DatabaseStorage implements IStorage {
   async updateAffiliate(id: string, data: Partial<InsertAffiliate>): Promise<Affiliate | undefined> {
     const [affiliate] = await db.update(affiliates).set(data).where(eq(affiliates.id, id)).returning();
     return affiliate || undefined;
+  }
+
+  async deleteAffiliate(id: string): Promise<boolean> {
+    const result = await db.delete(affiliates).where(eq(affiliates.id, id));
+    return result.rowCount > 0;
   }
 
   async updateAffiliateEarnings(id: string, tier1Amount: number, tier2Amount: number, pendingAmount: number): Promise<Affiliate | undefined> {

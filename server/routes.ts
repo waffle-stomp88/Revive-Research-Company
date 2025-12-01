@@ -1248,6 +1248,20 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Delete affiliate
+  app.delete("/api/admin/affiliates/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const deleted = await storage.deleteAffiliate(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ error: "Affiliate not found" });
+      }
+      res.json({ success: true, message: "Affiliate deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting affiliate:", error);
+      res.status(500).json({ error: "Failed to delete affiliate" });
+    }
+  });
+
   // Admin: Get all affiliate sales
   app.get("/api/admin/affiliate-sales", isAuthenticated, isAdmin, async (req, res) => {
     try {
