@@ -230,87 +230,85 @@ function ProductShowcase() {
 
   return (
     <section className="py-8 md:py-10" id="products">
-      <div className="w-full">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-6 px-4 md:px-8"
-        >
-          <h2 className="font-display md:text-3xl font-bold mb-2 text-[45px]">
-            Featured & Sale Items
-          </h2>
-        </motion.div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6 }}
+        className="text-center mb-6 px-4 md:px-8"
+      >
+        <h2 className="font-display md:text-3xl font-bold mb-2 text-[45px]">
+          Featured & Sale Items
+        </h2>
+      </motion.div>
 
-        {isLoading ? (
-          <div className="flex gap-4 px-4 md:px-8 overflow-x-auto pb-2">
-            {[1, 2, 3].map((i) => (
-              <Card key={i} className="flex-shrink-0 w-48 h-64 animate-pulse p-4">
-                <div className="w-full h-32 bg-muted rounded-md mb-3" />
-                <div className="h-4 bg-muted rounded w-3/4 mb-2" />
-                <div className="h-3 bg-muted rounded w-1/2" />
-              </Card>
+      {isLoading ? (
+        <div className="flex gap-4 px-4 md:px-8 overflow-x-auto pb-2">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="flex-shrink-0 w-48 h-64 animate-pulse p-4">
+              <div className="w-full h-32 bg-muted rounded-md mb-3" />
+              <div className="h-4 bg-muted rounded w-3/4 mb-2" />
+              <div className="h-3 bg-muted rounded w-1/2" />
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="overflow-hidden w-screen relative -ml-[calc((100vw-100%)/2)]">
+          <motion.div
+            className="flex gap-4 px-4 md:px-8"
+            initial={{ x: 0 }}
+            animate={{ x: "-50%" }}
+            transition={{ duration: 40, repeat: Infinity, repeatType: "loop", ease: "linear" }}
+          >
+            {duplicatedItems.map((product, idx) => (
+              <Link key={`${product.id}-${idx}`} href={`/products/${product.id}`} onClick={() => trackEvent('product_click', 'carousel', product.name)} className="flex-shrink-0">
+                <Card className={`group w-48 h-auto cursor-pointer transition-all duration-300 border-2 flex flex-col relative overflow-hidden ${
+                  product.isWeeklyDeal
+                    ? "border-[#E7FB10]/80 shadow-[0_0_20px_rgba(231,251,16,0.3)] hover:shadow-[0_0_30px_rgba(231,251,16,0.5)]"
+                    : "border-cyan-400/60 shadow-glow-blue-sm hover:shadow-glow-blue-lg"
+                }`} data-testid={`card-product-${product.id}`}>
+                  {product.isWeeklyDeal && (
+                    <div className="absolute top-2 right-2 z-20 px-3 py-1 text-xs font-bold rounded-full bg-[#E7FB10] text-black">
+                      HOT DEAL
+                    </div>
+                  )}
+                  <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-md m-3 flex items-center justify-center overflow-hidden relative">
+                    <FlaskConical className="h-12 w-12 text-muted-foreground/30 group-hover:scale-110 transition-transform duration-300" />
+                  </div>
+                  <div className="px-3 pb-3 flex flex-col flex-1">
+                    <h3 className="font-display text-sm font-semibold mb-1 group-hover:text-primary transition-colors text-[#E7FB10] line-clamp-2">
+                      {product.name}
+                    </h3>
+                    <p className="text-xs text-muted-foreground mb-3 line-clamp-2 flex-1">
+                      {product.shortDescription}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <span className="font-display text-lg font-bold">
+                        ${Number(product.price).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </Card>
+              </Link>
             ))}
-          </div>
-        ) : (
-          <div className="px-4 md:px-8 overflow-hidden">
-            <motion.div
-              className="flex gap-4"
-              initial={{ x: 0 }}
-              animate={{ x: "-50%" }}
-              transition={{ duration: 40, repeat: Infinity, repeatType: "loop", ease: "linear" }}
-            >
-              {duplicatedItems.map((product, idx) => (
-                <Link key={`${product.id}-${idx}`} href={`/products/${product.id}`} onClick={() => trackEvent('product_click', 'carousel', product.name)} className="flex-shrink-0">
-                  <Card className={`group w-48 h-auto cursor-pointer transition-all duration-300 border-2 flex flex-col relative overflow-hidden ${
-                    product.isWeeklyDeal
-                      ? "border-[#E7FB10]/80 shadow-[0_0_20px_rgba(231,251,16,0.3)] hover:shadow-[0_0_30px_rgba(231,251,16,0.5)]"
-                      : "border-cyan-400/60 shadow-glow-blue-sm hover:shadow-glow-blue-lg"
-                  }`} data-testid={`card-product-${product.id}`}>
-                    {product.isWeeklyDeal && (
-                      <div className="absolute top-2 right-2 z-20 px-3 py-1 text-xs font-bold rounded-full bg-[#E7FB10] text-black">
-                        HOT DEAL
-                      </div>
-                    )}
-                    <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-md m-3 flex items-center justify-center overflow-hidden relative">
-                      <FlaskConical className="h-12 w-12 text-muted-foreground/30 group-hover:scale-110 transition-transform duration-300" />
-                    </div>
-                    <div className="px-3 pb-3 flex flex-col flex-1">
-                      <h3 className="font-display text-sm font-semibold mb-1 group-hover:text-primary transition-colors text-[#E7FB10] line-clamp-2">
-                        {product.name}
-                      </h3>
-                      <p className="text-xs text-muted-foreground mb-3 line-clamp-2 flex-1">
-                        {product.shortDescription}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <span className="font-display text-lg font-bold">
-                          ${Number(product.price).toFixed(2)}
-                        </span>
-                      </div>
-                    </div>
-                  </Card>
-                </Link>
-              ))}
-            </motion.div>
-          </div>
-        )}
+          </motion.div>
+        </div>
+      )}
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.4 }}
-          className="text-center mt-6"
-        >
-          <Link href="/products">
-            <Button variant="outline" size="lg" className="font-display gap-2" data-testid="button-view-all-products">
-              View All Products
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
-        </motion.div>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.4 }}
+        className="text-center mt-6"
+      >
+        <Link href="/products">
+          <Button variant="outline" size="lg" className="font-display gap-2" data-testid="button-view-all-products">
+            View All Products
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        </Link>
+      </motion.div>
     </section>
   );
 }
