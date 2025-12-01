@@ -29,6 +29,7 @@ import {
   Star,
   MessageSquare,
   TrendingUp,
+  BadgeCheck,
 } from "lucide-react";
 import type { Order, Product, ReviewableOrder } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -106,6 +107,11 @@ export default function Dashboard() {
 
   const { data: reviewableOrders, isLoading: reviewableLoading } = useQuery<ReviewableOrder[]>({
     queryKey: ["/api/reviews/my-reviewable-orders"],
+    enabled: isAuthenticated,
+  });
+
+  const { data: affiliate } = useQuery<{ id: string } | null>({
+    queryKey: ["/api/affiliate/me"],
     enabled: isAuthenticated,
   });
 
@@ -233,10 +239,21 @@ export default function Dashboard() {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="font-display text-2xl md:text-3xl font-bold" data-testid="text-user-name">
-                    Welcome{user?.firstName ? `, ${user.firstName}` : ""}
-                  </h1>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <div className="flex items-center gap-1">
+                    <h1 className="font-display text-2xl md:text-3xl font-bold" data-testid="text-user-name">
+                      Welcome{user?.firstName ? `, ${user.firstName}` : ""}
+                    </h1>
+                    {affiliate && (
+                      <div 
+                        className="relative inline-flex items-center justify-center"
+                        data-testid="badge-verified-affiliate"
+                        title="Verified Affiliate"
+                      >
+                        <BadgeCheck className="h-6 w-6 text-green-500 fill-green-500" />
+                      </div>
+                    )}
+                  </div>
                   <Link href="/account-settings">
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0" data-testid="button-edit-profile">
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
