@@ -238,7 +238,7 @@ function ProductShowcase() {
           transition={{ duration: 0.6 }}
           className="text-center mb-6 px-4 md:px-8"
         >
-          <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
+          <h2 className="font-display md:text-3xl font-bold mb-2 text-[45px]">
             Featured & Sale Items
           </h2>
         </motion.div>
