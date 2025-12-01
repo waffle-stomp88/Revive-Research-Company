@@ -1875,6 +1875,12 @@ Be friendly, professional, and helpful. If you don't know something specific abo
         return res.status(403).json({ error: "Admin access required" });
       }
 
+      const { 
+        inventoryWeight = 1, 
+        marketWeight = 1, 
+        complexityWeight = 1 
+      } = req.body;
+
       const products = await storage.getAllProducts();
       
       if (products.length === 0) {
@@ -1894,16 +1900,22 @@ Be friendly, professional, and helpful. If you don't know something specific abo
         shortDescription: p.shortDescription
       }));
 
-      const systemPrompt = `You are a pricing optimization AI for a premium peptide research compound e-commerce store called Revive Research. Analyze the product catalog and suggest optimal pricing adjustments based on:
+      const systemPrompt = `You are a pricing optimization AI for a premium peptide research compound e-commerce store called Revive Research. Analyze the product catalog and suggest optimal pricing adjustments based on these weighted factors:
 
-1. Market positioning (premium research compounds should be priced competitively but reflect quality)
-2. Inventory levels (low stock may warrant price increases, overstocked items may need discounts)
-3. Product category and complexity (more complex peptides command higher prices)
+1. Market positioning (premium research compounds should be priced competitively but reflect quality) - Weight: ${marketWeight}
+2. Inventory levels (low stock may warrant price increases, overstocked items may need discounts) - Weight: ${inventoryWeight}
+3. Product category and complexity (more complex peptides command higher prices) - Weight: ${complexityWeight}
 4. Current sale/deal status
 5. Competitive positioning within the catalog
 
+STABILITY RULES (IMPORTANT):
+- ONLY suggest changes with at least 5-8% price difference from current price
+- Avoid suggesting small 1-2% adjustments that are likely to change on next analysis
+- Be conservative: maintain prices unless there's a strong business case for change
+- Suggest "maintain" action for products that don't have clear optimization opportunities
+
 For each product, provide:
-- suggestedPrice: The optimal price (number)
+- suggestedPrice: The optimal price (number, rounded to 2 decimals)
 - percentChange: The percentage change from current price (positive = increase, negative = decrease)
 - confidence: How confident you are in this suggestion (high/medium/low)
 - reasoning: A brief explanation (1-2 sentences max)
@@ -1931,10 +1943,10 @@ Return ONLY valid JSON in this exact format:
         model: "gpt-4o-mini",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: `Analyze this product catalog and provide pricing suggestions:\n${JSON.stringify(productData, null, 2)}` }
+          { role: "user", content: `Analyze this product catalog and provide pricing suggestions using the weighted factors:\n${JSON.stringify(productData, null, 2)}` }
         ],
         max_tokens: 2000,
-        temperature: 0.7,
+        temperature: 0.3,
       });
 
       const responseText = completion.choices[0]?.message?.content || "{}";

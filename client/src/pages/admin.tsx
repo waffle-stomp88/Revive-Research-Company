@@ -95,6 +95,7 @@ import {
   RefreshCw,
   CheckCircle,
   XCircle,
+  Settings,
 } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { ObjectUploader } from "@/components/ObjectUploader";
@@ -3391,6 +3392,10 @@ function PricingOptimizerTab() {
   const [pricingData, setPricingData] = useState<PricingResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [appliedSuggestions, setAppliedSuggestions] = useState<string[]>([]);
+  const [showSettings, setShowSettings] = useState(false);
+  const [inventoryWeight, setInventoryWeight] = useState(1);
+  const [marketWeight, setMarketWeight] = useState(1);
+  const [complexityWeight, setComplexityWeight] = useState(1);
 
   const { data: products = [] } = useQuery<Product[]>({
     queryKey: ["/api/products"],
@@ -3430,6 +3435,11 @@ function PricingOptimizerTab() {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          inventoryWeight,
+          marketWeight,
+          complexityWeight
+        })
       });
       
       if (!response.ok) throw new Error("Failed to generate suggestions");
@@ -3501,10 +3511,19 @@ function PricingOptimizerTab() {
             AI-Powered Price Optimization
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
-            Get intelligent pricing suggestions based on market trends, inventory, and product positioning.
+            Get intelligent pricing suggestions with stable analysis and customizable factor weights.
           </p>
         </div>
         <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setShowSettings(!showSettings)}
+            className="border-border"
+            size="sm"
+            data-testid="button-pricing-settings"
+          >
+            <Settings className="h-4 w-4" />
+          </Button>
           {pricingData?.suggestions && pricingData.suggestions.length > 0 && (
             <Button
               variant="outline"
@@ -3537,6 +3556,74 @@ function PricingOptimizerTab() {
           </Button>
         </div>
       </div>
+
+      {showSettings && (
+        <Card className="p-4 border-[#21d8ff]/30 bg-[#21d8ff]/5">
+          <h3 className="font-medium mb-4">Factor Weights</h3>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Label className="text-sm">Inventory Impact</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="range"
+                  min="0.1"
+                  max="3"
+                  step="0.1"
+                  value={inventoryWeight}
+                  onChange={(e) => setInventoryWeight(parseFloat(e.target.value))}
+                  className="flex-1"
+                  data-testid="slider-inventory-weight"
+                />
+                <span className="w-10 text-right font-medium">{inventoryWeight.toFixed(1)}x</span>
+              </div>
+              <p className="text-xs text-muted-foreground">How much stock levels influence pricing</p>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm">Market Position</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="range"
+                  min="0.1"
+                  max="3"
+                  step="0.1"
+                  value={marketWeight}
+                  onChange={(e) => setMarketWeight(parseFloat(e.target.value))}
+                  className="flex-1"
+                  data-testid="slider-market-weight"
+                />
+                <span className="w-10 text-right font-medium">{marketWeight.toFixed(1)}x</span>
+              </div>
+              <p className="text-xs text-muted-foreground">How much competitive positioning matters</p>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm">Product Complexity</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="range"
+                  min="0.1"
+                  max="3"
+                  step="0.1"
+                  value={complexityWeight}
+                  onChange={(e) => setComplexityWeight(parseFloat(e.target.value))}
+                  className="flex-1"
+                  data-testid="slider-complexity-weight"
+                />
+                <span className="w-10 text-right font-medium">{complexityWeight.toFixed(1)}x</span>
+              </div>
+              <p className="text-xs text-muted-foreground">How much peptide complexity influences price</p>
+            </div>
+          </div>
+          <Button
+            onClick={generateSuggestions}
+            disabled={isLoading}
+            className="mt-4 w-full bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90"
+            size="sm"
+            data-testid="button-regenerate-with-weights"
+          >
+            Regenerate with New Weights
+          </Button>
+        </Card>
+      )}
 
       {pricingData?.marketInsights && (
         <Card className="border-[#21d8ff]/30 bg-[#21d8ff]/5">
