@@ -106,15 +106,15 @@ export function Navigation() {
                   return (
                     <Link key={link.href} href={link.href}>
                       <motion.div
-                        className="relative px-4 py-2 rounded-md"
-                        whileHover={{ scale: 1.02 }}
+                        className="relative px-4 py-2 rounded-md group"
+                        whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.98 }}
                       >
                         <span
-                          className={`text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer relative z-10 ${
+                          className={`text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer relative z-10 block ${
                             isActive
-                              ? "text-[#E7FB10] drop-shadow-[0_0_8px_rgba(231,251,16,0.6)]"
-                              : "text-muted-foreground hover:text-[#E7FB10]"
+                              ? "text-[#E7FB10] drop-shadow-[0_0_12px_rgba(231,251,16,0.8)]"
+                              : "text-muted-foreground group-hover:text-[#E7FB10] group-hover:drop-shadow-[0_0_12px_rgba(231,251,16,0.5)]"
                           }`}
                           data-testid={`link-nav-${link.label.toLowerCase().replace(" ", "-")}`}
                         >
@@ -123,13 +123,19 @@ export function Navigation() {
                         {isActive && (
                           <motion.div
                             layoutId="nav-highlight"
-                            className="absolute inset-0 bg-[#E7FB10]/10 rounded-md border border-[#E7FB10]/30"
+                            className="absolute inset-0 bg-[#E7FB10]/10 rounded-md border border-[#E7FB10]/40 shadow-[0_0_16px_rgba(231,251,16,0.3)]"
                             initial={false}
                             transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                           />
                         )}
                         <motion.div
-                          className="absolute inset-0 bg-[#E7FB10]/5 rounded-md opacity-0 hover:opacity-100 transition-opacity"
+                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#E7FB10] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
+                          initial={{ scaleX: 0 }}
+                          whileHover={{ scaleX: 1 }}
+                          transition={{ duration: 0.4 }}
+                        />
+                        <motion.div
+                          className="absolute inset-0 bg-[#E7FB10]/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                           whileHover={{ opacity: 1 }}
                         />
                       </motion.div>
