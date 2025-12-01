@@ -258,20 +258,6 @@
     transform: scale(1.08);
   }
 
-  /* Apply Button: Enhanced Glow + Subtle Scale on Hover */
-  .apply-glow-pulse {
-    box-shadow: 
-      0 0 30px rgba(231, 251, 16, 0.7),
-      0 0 60px rgba(231, 251, 16, 0.5),
-      0 0 90px rgba(231, 251, 16, 0.2),
-      inset 0 0 15px rgba(231, 251, 16, 0.15);
-  }
-
-  .apply-glow-pulse:hover {
-    transform: scale(1.05);
-    transition: transform 0.2s ease;
-  }
-
   /* RUO Safety Warning Pulse Animation */
   @keyframes ruo-pulse {
     0%, 100% {
