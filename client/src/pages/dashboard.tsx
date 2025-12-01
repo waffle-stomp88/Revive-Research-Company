@@ -112,6 +112,7 @@ export default function Dashboard() {
   const { data: affiliate } = useQuery<{ id: string } | null>({
     queryKey: ["/api/affiliate/me"],
     enabled: isAuthenticated,
+    retry: false,
   });
 
   const submitReviewMutation = useMutation({
@@ -243,7 +244,7 @@ export default function Dashboard() {
                     <h1 className="font-display text-2xl md:text-3xl font-bold" data-testid="text-user-name">
                       Welcome{user?.firstName ? `, ${user.firstName}` : ""}
                     </h1>
-                    {affiliate && (
+                    {affiliate?.id && (
                       <div data-testid="badge-verified-affiliate" title="Verified Affiliate">
                         <svg
                           className="h-6 w-6"
