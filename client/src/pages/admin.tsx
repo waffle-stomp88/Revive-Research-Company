@@ -2404,6 +2404,13 @@ function DiscountCodesTab() {
   const [newDiscountPercent, setNewDiscountPercent] = useState("10");
   const [newType, setNewType] = useState("promo");
   const [newFreeShipping, setNewFreeShipping] = useState(false);
+  
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editCode, setEditCode] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editDiscountPercent, setEditDiscountPercent] = useState("10");
+  const [editType, setEditType] = useState("promo");
+  const [editFreeShipping, setEditFreeShipping] = useState(false);
 
   const { data: discountCodes, isLoading } = useQuery<DiscountCode[]>({
     queryKey: ["/api/admin/discount-codes"],
@@ -2450,6 +2457,31 @@ function DiscountCodesTab() {
     },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: async (data: { id: string; description: string; discountPercent: string; type: string; freeShipping: boolean }) => {
+      const response = await apiRequest("PATCH", `/api/admin/discount-codes/${data.id}`, {
+        description: data.description,
+        discountPercent: data.discountPercent,
+        type: data.type,
+        freeShipping: data.freeShipping
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/discount-codes"] });
+      setEditingId(null);
+      setEditCode("");
+      setEditDescription("");
+      setEditDiscountPercent("10");
+      setEditType("promo");
+      setEditFreeShipping(false);
+      toast({ title: "Discount code updated" });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Failed to update discount code", description: error.message, variant: "destructive" });
+    },
+  });
+
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       const response = await apiRequest("DELETE", `/api/admin/discount-codes/${id}`, {});
@@ -2463,6 +2495,15 @@ function DiscountCodesTab() {
       toast({ title: "Failed to delete discount code", variant: "destructive" });
     },
   });
+
+  const startEdit = (code: DiscountCode) => {
+    setEditingId(code.id);
+    setEditCode(code.code);
+    setEditDescription(code.description || "");
+    setEditDiscountPercent(code.discountPercent);
+    setEditType(code.type);
+    setEditFreeShipping(code.freeShipping || false);
+  };
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString("en-US", {
@@ -2587,6 +2628,89 @@ function DiscountCodesTab() {
         </Dialog>
       </div>
 
+      <Dialog open={editingId !== null} onOpenChange={(open) => !open && setEditingId(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Discount Code</DialogTitle>
+            <DialogDescription>
+              Update the discount code details
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Code (read-only)</Label>
+              <Input value={editCode} disabled className="bg-muted" />
+            </div>
+            <div className="space-y-2">
+              <Label>Description (optional)</Label>
+              <Input
+                placeholder="e.g., Summer sale discount"
+                value={editDescription}
+                onChange={(e) => setEditDescription(e.target.value)}
+                data-testid="input-edit-description"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Discount Percent {editFreeShipping ? "(Optional)" : ""}</Label>
+              <Input
+                type="number"
+                min="0"
+                max="100"
+                value={editDiscountPercent}
+                onChange={(e) => setEditDiscountPercent(e.target.value)}
+                placeholder={editFreeShipping ? "Leave as 0 for free shipping only" : "e.g., 10"}
+                data-testid="input-edit-discount-percent"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Type</Label>
+              <Select value={editType} onValueChange={setEditType}>
+                <SelectTrigger data-testid="select-edit-type">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="promo">Promo Code</SelectItem>
+                  <SelectItem value="affiliate_referral">Affiliate Referral (10%)</SelectItem>
+                  <SelectItem value="affiliate_personal">Affiliate Personal (20%)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="edit-free-shipping"
+                checked={editFreeShipping}
+                onCheckedChange={(checked) => setEditFreeShipping(checked === true)}
+                data-testid="checkbox-edit-free-shipping"
+              />
+              <Label htmlFor="edit-free-shipping" className="cursor-pointer">
+                Free Shipping
+              </Label>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingId(null)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => editingId && updateMutation.mutate({
+                id: editingId,
+                description: editDescription,
+                discountPercent: editDiscountPercent,
+                type: editType,
+                freeShipping: editFreeShipping
+              })}
+              disabled={updateMutation.isPending}
+              data-testid="btn-confirm-edit"
+            >
+              {updateMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : null}
+              Update
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {!discountCodes || discountCodes.length === 0 ? (
         <div className="text-center py-12">
           <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4">
@@ -2652,6 +2776,14 @@ function DiscountCodesTab() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => startEdit(code)}
+                        data-testid={`btn-edit-${code.id}`}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
                       <Button
                         size="sm"
                         variant="outline"
