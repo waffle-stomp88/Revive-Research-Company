@@ -26,6 +26,29 @@ import {
 } from "lucide-react";
 import type { EducationArticle } from "@shared/schema";
 import { LearningRoadmap } from "@/components/infographics/learning-roadmap";
+import { 
+  COAAnatomyDiagram, 
+  HPLCExplainer, 
+  StorageTemperatureGuide,
+  TelomereVisual,
+  GLP1ReceptorComparison,
+  GHAxisDiagram
+} from "@/components/education";
+
+const articleVisuals: Record<string, () => JSX.Element> = {
+  "how-to-read-coas": () => <COAAnatomyDiagram />,
+  "reading-coa-documents": () => <COAAnatomyDiagram />,
+  "understanding-peptide-purity": () => <HPLCExplainer />,
+  "proper-peptide-storage": () => <StorageTemperatureGuide />,
+  "storage-101": () => <StorageTemperatureGuide />,
+  "epithalon-research-guide": () => <TelomereVisual />,
+  "semaglutide-research-guide": () => <GLP1ReceptorComparison />,
+  "tirzepatide-research-guide": () => <GLP1ReceptorComparison />,
+  "retatrutide-research-guide": () => <GLP1ReceptorComparison />,
+  "cjc-1295-research-guide": () => <GHAxisDiagram />,
+  "ipamorelin-research-guide": () => <GHAxisDiagram />,
+  "tesamorelin-research-guide": () => <GHAxisDiagram />,
+};
 
 const categories = [
   { id: "all", label: "All Articles", icon: BookOpen, color: "#ffffff" },
@@ -316,6 +339,13 @@ export default function Education() {
                             className="px-6 pb-6"
                           >
                             <Separator className="mb-6" style={{ backgroundColor: `${catColor}30` }} />
+                            
+                            {article.slug && articleVisuals[article.slug] && (
+                              <div className="mb-8">
+                                {articleVisuals[article.slug]()}
+                              </div>
+                            )}
+                            
                             <div 
                               className="prose prose-invert max-w-none text-muted-foreground"
                               dangerouslySetInnerHTML={{ __html: renderMarkdown(article.content) }}
