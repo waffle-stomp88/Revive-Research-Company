@@ -528,11 +528,21 @@ export default function Dashboard() {
               </Card>
 
               <div 
-                className="rounded-lg p-6 overflow-hidden relative"
+                className="rounded-lg p-6 overflow-hidden relative group"
                 style={{
-                  background: 'linear-gradient(135deg, rgb(157, 78, 221) 0%, rgb(157, 78, 221) 50%, rgb(147, 51, 234) 100%)',
+                  background: 'linear-gradient(135deg, #21d8ff 0%, #21d8ff 25%, #9d4edd 50%, #ec4899 75%, #21d8ff 100%)',
+                  backgroundSize: '200% 200%',
+                  animation: 'gradient-shift 8s ease infinite',
                 }}
               >
+                <style>{`
+                  @keyframes gradient-shift {
+                    0% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                    100% { background-position: 0% 50%; }
+                  }
+                `}</style>
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
                 <div className="relative z-10">
                   <div className="flex items-start justify-between gap-4 mb-4">
                     <div>
@@ -540,13 +550,13 @@ export default function Dashboard() {
                         <TrendingUp className="h-5 w-5" />
                         Become an Affiliate
                       </h3>
-                      <p className="text-white/90 text-sm">
+                      <p className="text-white/95 text-sm">
                         Earn commissions by sharing Revive Research with others
                       </p>
                     </div>
                   </div>
                   
-                  <div className="bg-white/15 backdrop-blur-sm rounded-lg p-4 mb-4 border border-white/20">
+                  <div className="bg-black/20 backdrop-blur-sm rounded-lg p-4 mb-4 border border-white/30">
                     <ul className="space-y-2 text-sm text-white/95">
                       <li className="flex items-start gap-2">
                         <span className="text-[#E7FB10] font-bold text-lg leading-none mt-0.5">✓</span>
