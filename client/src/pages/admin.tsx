@@ -3396,6 +3396,10 @@ function PricingOptimizerTab() {
     queryKey: ["/api/products"],
   });
 
+  useEffect(() => {
+    generateSuggestions();
+  }, []);
+
   const updateProductMutation = useMutation({
     mutationFn: async ({ id, price }: { id: string; price: string }) => {
       const response = await apiRequest("PATCH", `/api/admin/products/${id}`, { price });
@@ -3437,6 +3441,7 @@ function PricingOptimizerTab() {
         description: `Generated ${data.suggestions?.length || 0} pricing suggestions.`,
       });
     } catch (error) {
+      console.error("Pricing generation error:", error);
       toast({
         title: "Error",
         description: "Failed to generate pricing suggestions. Please try again.",
