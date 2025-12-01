@@ -101,8 +101,7 @@ export default function ResourcesHub() {
                           className="absolute inset-0 rounded-md pointer-events-none group-hover:wipe-animation"
                           style={{ 
                             backgroundColor: `${resource.color}15`,
-                            transform: "translateX(100%)",
-                            transition: "transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)"
+                            transform: "translateX(100%)"
                           }}
                         />
                         <div className="relative z-10 flex items-start gap-4 mb-3">
