@@ -123,13 +123,13 @@ export function Navigation() {
                         {isActive && (
                           <motion.div
                             layoutId="nav-highlight"
-                            className="absolute inset-0 bg-[#E7FB10]/10 rounded-md border border-[#E7FB10]/40"
+                            className="absolute inset-0 bg-[#E7FB10]/10 rounded-md border border-[#E7FB10]/30"
                             initial={false}
                             animate={{ 
-                              boxShadow: [
-                                "0 0 16px rgba(231, 251, 16, 0.2)",
-                                "0 0 24px rgba(231, 251, 16, 0.4)",
-                                "0 0 16px rgba(231, 251, 16, 0.2)"
+                              borderColor: [
+                                "rgba(231, 251, 16, 0.25)",
+                                "rgba(231, 251, 16, 0.4)",
+                                "rgba(231, 251, 16, 0.25)"
                               ]
                             }}
                             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
