@@ -254,9 +254,9 @@ function ProductShowcase() {
             ))}
           </div>
         ) : (
-          <div className="overflow-hidden">
+          <div className="px-4 md:px-8 overflow-hidden">
             <motion.div
-              className="flex gap-4 px-4 md:px-8"
+              className="flex gap-4"
               initial={{ x: 0 }}
               animate={{ x: "-50%" }}
               transition={{ duration: 40, repeat: Infinity, repeatType: "loop", ease: "linear" }}
