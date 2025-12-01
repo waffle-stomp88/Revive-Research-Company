@@ -102,7 +102,7 @@ export default function ResourcesHub() {
                           style={{ 
                             backgroundColor: `${resource.color}15`,
                             transform: "translateX(100%)",
-                            transition: "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)"
+                            transition: "transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)"
                           }}
                         />
                         <div className="relative z-10 flex items-start gap-4 mb-3">
