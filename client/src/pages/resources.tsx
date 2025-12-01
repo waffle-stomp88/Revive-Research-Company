@@ -85,6 +85,7 @@ export default function ResourcesHub() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
+                  whileHover={{ scale: 1.08 }}
                 >
                   <Link href={resource.href} onClick={() => window.scrollTo(0, 0)}>
                     <Card className="h-full p-6 hover-elevate cursor-pointer transition-all duration-300 border-l-4 group"
@@ -92,7 +93,7 @@ export default function ResourcesHub() {
                     >
                       <div className="flex items-start gap-4 mb-3">
                         <div 
-                          className="p-3 rounded-lg transition-all duration-300 group-hover:scale-110"
+                          className="p-3 rounded-lg transition-all duration-300 group-hover:scale-125"
                           style={{ backgroundColor: `${resource.color}20` }}
                         >
                           <Icon className="h-6 w-6" style={{ color: resource.color }} />
