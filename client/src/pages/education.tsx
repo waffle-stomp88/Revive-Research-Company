@@ -340,6 +340,20 @@ export default function Education() {
                   </div>
                 </div>
 
+                {activeCategory === 'all' && (
+                  <div className="mb-10">
+                    <LearningRoadmap 
+                      onModuleClick={(slug: string) => {
+                        const article = articles.find(a => a.slug === slug);
+                        if (article) {
+                          setExpandedArticle(article.id);
+                          setActiveCategory(article.category);
+                        }
+                      }}
+                    />
+                  </div>
+                )}
+
                 {activeCategory === 'all' ? (
                   <div className="space-y-10">
                     {groupedArticles.map((group) => {
