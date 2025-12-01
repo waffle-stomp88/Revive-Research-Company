@@ -241,7 +241,6 @@ function ProductShowcase() {
           Featured & Sale Items
         </h2>
       </motion.div>
-
       {isLoading ? (
         <div className="flex gap-4 px-4 md:px-8 overflow-x-auto pb-2">
           {[1, 2, 3].map((i) => (
@@ -255,7 +254,7 @@ function ProductShowcase() {
       ) : (
         <div className="overflow-hidden w-screen relative -ml-[calc((100vw-100%)/2)]">
           <motion.div
-            className="flex gap-4 px-4 md:px-8"
+            className="flex gap-4 px-4 md:px-8 text-center"
             initial={{ x: 0 }}
             animate={{ x: "-50%" }}
             transition={{ duration: 40, repeat: Infinity, repeatType: "loop", ease: "linear" }}
@@ -294,7 +293,6 @@ function ProductShowcase() {
           </motion.div>
         </div>
       )}
-
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
