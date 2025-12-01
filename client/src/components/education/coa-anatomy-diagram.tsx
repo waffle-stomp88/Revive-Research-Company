@@ -126,57 +126,108 @@ const redFlags = [
 
 function PeptideVial() {
   return (
-    <svg viewBox="0 0 60 120" className="w-16 h-32">
+    <svg viewBox="0 0 80 140" className="w-20 h-36">
       <defs>
-        <linearGradient id="vialGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#2a2a35" />
-          <stop offset="50%" stopColor="#3a3a45" />
-          <stop offset="100%" stopColor="#2a2a35" />
+        <linearGradient id="glassGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#1a1a20" />
+          <stop offset="15%" stopColor="#2a2a35" />
+          <stop offset="50%" stopColor="#3a3a48" />
+          <stop offset="85%" stopColor="#2a2a35" />
+          <stop offset="100%" stopColor="#1a1a20" />
         </linearGradient>
         <linearGradient id="liquidGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#E7FB10" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#E7FB10" stopOpacity="0.6" />
+          <stop offset="0%" stopColor="#E7FB10" stopOpacity="0.5" />
+          <stop offset="50%" stopColor="#d4e50e" stopOpacity="0.7" />
+          <stop offset="100%" stopColor="#c4d40d" stopOpacity="0.8" />
         </linearGradient>
         <linearGradient id="capGradient" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stopColor="#E7FB10" />
-          <stop offset="100%" stopColor="#c4d40d" />
+          <stop offset="50%" stopColor="#d4e50e" />
+          <stop offset="100%" stopColor="#a8b80a" />
+        </linearGradient>
+        <linearGradient id="rubberGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#555" />
+          <stop offset="50%" stopColor="#444" />
+          <stop offset="100%" stopColor="#333" />
+        </linearGradient>
+        <linearGradient id="neckGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#1a1a20" />
+          <stop offset="50%" stopColor="#2a2a35" />
+          <stop offset="100%" stopColor="#1a1a20" />
+        </linearGradient>
+        <linearGradient id="glassShine" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="transparent" />
+          <stop offset="30%" stopColor="rgba(255,255,255,0.05)" />
+          <stop offset="50%" stopColor="rgba(255,255,255,0.1)" />
+          <stop offset="70%" stopColor="rgba(255,255,255,0.05)" />
+          <stop offset="100%" stopColor="transparent" />
         </linearGradient>
       </defs>
       
-      <rect x="15" y="0" width="30" height="12" rx="2" fill="url(#capGradient)" />
-      <rect x="20" y="10" width="20" height="6" fill="#888" />
+      <ellipse cx="40" cy="6" rx="12" ry="4" fill="url(#capGradient)" />
+      <rect x="28" y="4" width="24" height="10" fill="url(#capGradient)" />
+      <ellipse cx="40" cy="14" rx="12" ry="3" fill="#a8b80a" />
+      
+      <rect x="30" y="14" width="20" height="10" fill="url(#rubberGradient)" />
+      <ellipse cx="40" cy="24" rx="10" ry="2" fill="#333" />
+      
+      <rect x="32" y="24" width="16" height="8" fill="url(#neckGradient)" />
+      <ellipse cx="40" cy="32" rx="8" ry="2" fill="#2a2a35" />
       
       <path 
-        d="M 12 18 L 12 100 Q 12 115 30 115 Q 48 115 48 100 L 48 18 Z" 
-        fill="url(#vialGradient)"
+        d="M 32 32 
+           L 20 45 
+           L 20 120 
+           Q 20 130 40 130 
+           Q 60 130 60 120 
+           L 60 45 
+           L 48 32 Z" 
+        fill="url(#glassGradient)"
         stroke="#555"
-        strokeWidth="1"
+        strokeWidth="0.5"
       />
       
       <path 
-        d="M 14 45 L 14 98 Q 14 112 30 112 Q 46 112 46 98 L 46 45 Z" 
+        d="M 22 55 
+           L 22 118 
+           Q 22 128 40 128 
+           Q 58 128 58 118 
+           L 58 55 Z" 
         fill="url(#liquidGradient)"
       />
       
-      <text x="30" y="75" textAnchor="middle" fill="#E7FB10" fontSize="7" fontWeight="bold">
+      <path 
+        d="M 32 32 
+           L 20 45 
+           L 20 120 
+           Q 20 130 40 130 
+           Q 60 130 60 120 
+           L 60 45 
+           L 48 32 Z" 
+        fill="url(#glassShine)"
+      />
+      
+      <rect x="24" y="72" width="32" height="28" rx="2" fill="rgba(255,255,255,0.9)" />
+      
+      <text x="40" y="84" textAnchor="middle" fill="#1a1a1f" fontSize="8" fontWeight="bold" fontFamily="sans-serif">
         REVIVE
       </text>
-      <text x="30" y="85" textAnchor="middle" fill="#888" fontSize="5">
+      <text x="40" y="93" textAnchor="middle" fill="#666" fontSize="5" fontFamily="sans-serif">
         RESEARCH
       </text>
       
       <motion.ellipse
-        cx="30"
-        cy="50"
-        rx="8"
-        ry="2"
+        cx="40"
+        cy="58"
+        rx="16"
+        ry="3"
         fill="#E7FB10"
-        opacity="0.3"
+        opacity="0.4"
         animate={{ 
-          cy: [50, 55, 50],
+          ry: [3, 4, 3],
           opacity: [0.3, 0.5, 0.3]
         }}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
       />
     </svg>
   );
@@ -188,9 +239,9 @@ export function COAAnatomyDiagram() {
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [showRedFlags, setShowRedFlags] = useState(false);
 
-  const radius = 160;
+  const radius = 140;
   const centerX = 200;
-  const centerY = 180;
+  const centerY = 200;
 
   const getPosition = (angle: number) => {
     const rad = (angle * Math.PI) / 180;
@@ -228,11 +279,11 @@ export function COAAnatomyDiagram() {
         </p>
       </motion.div>
 
-      <div className="relative max-w-xl mx-auto overflow-visible">
-        <div className="relative" style={{ height: "420px" }}>
+      <div className="relative max-w-2xl mx-auto overflow-visible">
+        <div className="relative" style={{ height: "480px" }}>
           <svg 
             className="absolute inset-0 w-full h-full pointer-events-none" 
-            viewBox="0 0 400 360"
+            viewBox="0 0 400 400"
             style={{ overflow: "visible" }}
           >
             <defs>
@@ -295,22 +346,34 @@ export function COAAnatomyDiagram() {
             <motion.circle
               cx={centerX}
               cy={centerY}
-              r="50"
+              r="60"
               fill="none"
               stroke="#E7FB10"
               strokeWidth="1"
-              strokeOpacity="0.3"
+              strokeOpacity="0.2"
               initial={{ scale: 0 }}
               animate={isInView ? { scale: 1 } : {}}
               transition={{ duration: 0.8, delay: 0.3 }}
             />
+            <motion.circle
+              cx={centerX}
+              cy={centerY}
+              r="75"
+              fill="none"
+              stroke="#E7FB10"
+              strokeWidth="0.5"
+              strokeOpacity="0.1"
+              initial={{ scale: 0 }}
+              animate={isInView ? { scale: 1 } : {}}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            />
           </svg>
 
           <motion.div 
-            className="absolute"
+            className="absolute flex items-center justify-center"
             style={{ 
-              left: "50%", 
-              top: "50%", 
+              left: `${(centerX / 400) * 100}%`, 
+              top: `${(centerY / 400) * 100}%`, 
               transform: "translate(-50%, -50%)"
             }}
             initial={{ opacity: 0, scale: 0.5 }}
@@ -356,7 +419,7 @@ export function COAAnatomyDiagram() {
                 className="absolute z-10"
                 style={{ 
                   left: `${(pos.x / 400) * 100}%`, 
-                  top: `${(pos.y / 360) * 100}%`,
+                  top: `${(pos.y / 400) * 100}%`,
                   transform: "translate(-50%, -50%)"
                 }}
                 onMouseEnter={() => setActiveSection(section.id)}
