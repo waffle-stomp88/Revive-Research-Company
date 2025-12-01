@@ -27,14 +27,22 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **Product Bundles**: Curated "Research Stacks" offer discounted combinations of peptides.
 - **Sale of the Week**: Prominently displayed promotions with a "HOT DEAL" badge and countdown.
 - **AI Chatbot**: A floating chat button powered by OpenAI (gpt-4o-mini) provides customer support with product context and enforces platform policies.
+- **AI Dynamic Pricing**: Admin panel "Pricing" tab uses OpenAI to analyze products and suggest optimal prices with confidence ratings, reasoning, and one-click apply functionality.
 - **Subscription System**: Offers weekly (15% off), bi-weekly (12% off), and monthly (10% off) subscription options.
 - **Legal Compliance**: Footer contains consolidated sections for FDA & Regulatory Compliance and Researcher Responsibility, with "Research Use Only" disclaimers across all pages.
 - **Cart & Checkout UX**: Cart items (both products and bundles) are clickable and navigate back to their detail pages. Checkout page shows an account section with login option for unauthenticated users, displaying benefits like order tracking and verified reviews.
 - **Discount Code System**: Cart page includes discount code input with validation API supporting affiliate codes (Basic Referral 10%, Personal 20%) and promotional codes.
 
-### Recent Implementation (Session 6)
+### Recent Implementation (Session 6-7)
 - **Google Analytics Integration**: GA4 tracking implemented with automatic page view tracking, custom event tracking for hero CTA clicks, product clicks, and newsletter signups. Requires VITE_GA_MEASUREMENT_ID environment variable.
 - **3D Model Viewer Component**: Interactive viewer using Google's model-viewer web component with auto-rotation, camera controls, and AR capabilities. Integrated into product detail pages.
+- **Dark Mode Only**: Light mode removed - app permanently uses dark theme only.
+- **Dynamic Pricing Suggestions**: AI-powered price optimization in admin panel (Pricing tab). Uses OpenAI (gpt-4o-mini) to analyze product catalog and suggest optimal prices based on:
+  - Market positioning and product category
+  - Inventory levels and stock status
+  - Current sale/deal status
+  - Competitive positioning within the catalog
+  - Features: confidence levels (high/medium/low), reasoning explanations, one-click apply, bulk apply all suggestions, market insights summary, potential revenue impact estimates.
 
 ### Phase 2 Trust & Transparency Features
 - **Education Center**: Comprehensive 5-part researcher onboarding course (Research Use Only, Reading COAs, Batch Numbers, Storage 101, Ordering Expectations) with full article library covering peptide profiles, research basics, storage, safety, and terminology.

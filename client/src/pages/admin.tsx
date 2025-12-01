@@ -90,6 +90,11 @@ import {
   Tag,
   ToggleLeft,
   ToggleRight,
+  Zap,
+  Sparkles,
+  RefreshCw,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { ObjectUploader } from "@/components/ObjectUploader";
@@ -3345,6 +3350,305 @@ function AffiliatesTab() {
   );
 }
 
+interface PricingSuggestion {
+  productId: string;
+  productName: string;
+  currentPrice: number;
+  suggestedPrice: number;
+  percentChange: number;
+  confidence: "high" | "medium" | "low";
+  reasoning: string;
+  action: "increase" | "decrease" | "maintain" | "sale";
+}
+
+interface PricingResponse {
+  suggestions: PricingSuggestion[];
+  marketInsights: string;
+  totalPotentialRevenue: string;
+}
+
+function PricingOptimizerTab() {
+  const { toast } = useToast();
+  const [pricingData, setPricingData] = useState<PricingResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [appliedSuggestions, setAppliedSuggestions] = useState<Set<string>>(new Set());
+
+  const { data: products = [] } = useQuery<Product[]>({
+    queryKey: ["/api/products"],
+  });
+
+  const updateProductMutation = useMutation({
+    mutationFn: async ({ id, price }: { id: string; price: string }) => {
+      const response = await apiRequest("PATCH", `/api/admin/products/${id}`, { price });
+      return response.json();
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      setAppliedSuggestions(prev => new Set([...prev, variables.id]));
+      toast({
+        title: "Price Updated",
+        description: "Product price has been updated successfully.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update product price.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const generateSuggestions = async () => {
+    setIsLoading(true);
+    setAppliedSuggestions(new Set());
+    try {
+      const response = await fetch("/api/admin/pricing-suggestions", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
+      
+      if (!response.ok) throw new Error("Failed to generate suggestions");
+      
+      const data = await response.json();
+      setPricingData(data);
+      toast({
+        title: "Analysis Complete",
+        description: `Generated ${data.suggestions?.length || 0} pricing suggestions.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate pricing suggestions. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const applyAllSuggestions = async () => {
+    if (!pricingData?.suggestions) return;
+    
+    for (const suggestion of pricingData.suggestions) {
+      if (suggestion.action !== "maintain" && !appliedSuggestions.has(suggestion.productId)) {
+        await updateProductMutation.mutateAsync({
+          id: suggestion.productId,
+          price: suggestion.suggestedPrice.toFixed(2),
+        });
+      }
+    }
+  };
+
+  const getActionColor = (action: string) => {
+    switch (action) {
+      case "increase": return "text-green-500";
+      case "decrease": return "text-red-500";
+      case "sale": return "text-[#E7FB10]";
+      default: return "text-muted-foreground";
+    }
+  };
+
+  const getActionIcon = (action: string) => {
+    switch (action) {
+      case "increase": return <TrendingUp className="h-4 w-4" />;
+      case "decrease": return <TrendingDown className="h-4 w-4" />;
+      case "sale": return <Tag className="h-4 w-4" />;
+      default: return <Activity className="h-4 w-4" />;
+    }
+  };
+
+  const getConfidenceBadge = (confidence: string) => {
+    const colors = {
+      high: "bg-green-500/20 text-green-400 border-green-500/30",
+      medium: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+      low: "bg-red-500/20 text-red-400 border-red-500/30",
+    };
+    return colors[confidence as keyof typeof colors] || colors.medium;
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-semibold flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-[#E7FB10]" />
+            AI-Powered Price Optimization
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Get intelligent pricing suggestions based on market trends, inventory, and product positioning.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          {pricingData?.suggestions && pricingData.suggestions.length > 0 && (
+            <Button
+              variant="outline"
+              onClick={applyAllSuggestions}
+              disabled={updateProductMutation.isPending}
+              className="border-[#E7FB10]/50 text-[#E7FB10] hover:bg-[#E7FB10]/10"
+              data-testid="button-apply-all-prices"
+            >
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Apply All
+            </Button>
+          )}
+          <Button
+            onClick={generateSuggestions}
+            disabled={isLoading}
+            className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
+            data-testid="button-generate-pricing"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Analyzing...
+              </>
+            ) : (
+              <>
+                <Zap className="h-4 w-4 mr-2" />
+                Generate Suggestions
+              </>
+            )}
+          </Button>
+        </div>
+      </div>
+
+      {pricingData?.marketInsights && (
+        <Card className="border-[#21d8ff]/30 bg-[#21d8ff]/5">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <div className="h-10 w-10 rounded-lg bg-[#21d8ff]/20 flex items-center justify-center flex-shrink-0">
+                <BarChart3 className="h-5 w-5 text-[#21d8ff]" />
+              </div>
+              <div>
+                <h3 className="font-medium text-[#21d8ff]">Market Insights</h3>
+                <p className="text-sm text-muted-foreground mt-1">{pricingData.marketInsights}</p>
+                {pricingData.totalPotentialRevenue && (
+                  <p className="text-sm mt-2">
+                    <span className="text-muted-foreground">Potential Revenue Impact:</span>{" "}
+                    <span className="text-[#E7FB10] font-semibold">{pricingData.totalPotentialRevenue}</span>
+                  </p>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {pricingData?.suggestions && pricingData.suggestions.length > 0 ? (
+        <div className="space-y-4">
+          <div className="grid grid-cols-4 gap-4 mb-6">
+            <Card className="p-4">
+              <div className="text-2xl font-bold text-[#E7FB10]">{pricingData.suggestions.length}</div>
+              <div className="text-sm text-muted-foreground">Total Suggestions</div>
+            </Card>
+            <Card className="p-4">
+              <div className="text-2xl font-bold text-green-500">
+                {pricingData.suggestions.filter(s => s.action === "increase").length}
+              </div>
+              <div className="text-sm text-muted-foreground">Price Increases</div>
+            </Card>
+            <Card className="p-4">
+              <div className="text-2xl font-bold text-red-500">
+                {pricingData.suggestions.filter(s => s.action === "decrease").length}
+              </div>
+              <div className="text-sm text-muted-foreground">Price Decreases</div>
+            </Card>
+            <Card className="p-4">
+              <div className="text-2xl font-bold text-muted-foreground">
+                {pricingData.suggestions.filter(s => s.action === "maintain").length}
+              </div>
+              <div className="text-sm text-muted-foreground">No Change</div>
+            </Card>
+          </div>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Product</TableHead>
+                <TableHead>Current Price</TableHead>
+                <TableHead>Suggested Price</TableHead>
+                <TableHead>Change</TableHead>
+                <TableHead>Confidence</TableHead>
+                <TableHead>Reasoning</TableHead>
+                <TableHead>Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pricingData.suggestions.map((suggestion) => (
+                <TableRow key={suggestion.productId}>
+                  <TableCell className="font-medium">{suggestion.productName}</TableCell>
+                  <TableCell>${suggestion.currentPrice.toFixed(2)}</TableCell>
+                  <TableCell className={getActionColor(suggestion.action)}>
+                    ${suggestion.suggestedPrice.toFixed(2)}
+                  </TableCell>
+                  <TableCell>
+                    <div className={`flex items-center gap-1 ${getActionColor(suggestion.action)}`}>
+                      {getActionIcon(suggestion.action)}
+                      <span>{suggestion.percentChange > 0 ? "+" : ""}{suggestion.percentChange.toFixed(1)}%</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className={getConfidenceBadge(suggestion.confidence)}>
+                      {suggestion.confidence}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="max-w-xs">
+                    <p className="text-sm text-muted-foreground truncate" title={suggestion.reasoning}>
+                      {suggestion.reasoning}
+                    </p>
+                  </TableCell>
+                  <TableCell>
+                    {appliedSuggestions.has(suggestion.productId) ? (
+                      <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        Applied
+                      </Badge>
+                    ) : suggestion.action === "maintain" ? (
+                      <Badge variant="secondary">No Change</Badge>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => updateProductMutation.mutate({
+                          id: suggestion.productId,
+                          price: suggestion.suggestedPrice.toFixed(2),
+                        })}
+                        disabled={updateProductMutation.isPending}
+                        className="border-[#E7FB10]/50 hover:bg-[#E7FB10]/10"
+                        data-testid={`button-apply-price-${suggestion.productId}`}
+                      >
+                        Apply
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      ) : !isLoading ? (
+        <Card className="p-12 text-center">
+          <Sparkles className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+          <h3 className="font-medium mb-2">No Pricing Suggestions Yet</h3>
+          <p className="text-sm text-muted-foreground mb-6">
+            Click "Generate Suggestions" to analyze your product catalog and get AI-powered pricing recommendations.
+          </p>
+          <Button
+            onClick={generateSuggestions}
+            className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
+            data-testid="button-generate-pricing-empty"
+          >
+            <Zap className="h-4 w-4 mr-2" />
+            Generate Suggestions
+          </Button>
+        </Card>
+      ) : null}
+    </div>
+  );
+}
+
 export default function Admin() {
   const { user, isLoading: authLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
@@ -3431,7 +3735,7 @@ export default function Admin() {
 
           <motion.div variants={itemVariants}>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full max-w-5xl grid-cols-8">
+              <TabsList className="grid w-full max-w-6xl grid-cols-9">
                 <TabsTrigger value="overview" className="flex items-center gap-2" data-testid="tab-overview">
                   <LayoutDashboard className="h-4 w-4" />
                   <span className="hidden sm:inline">Overview</span>
@@ -3439,6 +3743,10 @@ export default function Admin() {
                 <TabsTrigger value="products" className="flex items-center gap-2" data-testid="tab-products">
                   <Package className="h-4 w-4" />
                   <span className="hidden sm:inline">Products</span>
+                </TabsTrigger>
+                <TabsTrigger value="pricing" className="flex items-center gap-2" data-testid="tab-pricing">
+                  <Zap className="h-4 w-4" />
+                  <span className="hidden sm:inline">Pricing</span>
                 </TabsTrigger>
                 <TabsTrigger value="coas" className="flex items-center gap-2" data-testid="tab-coas">
                   <FileCheck className="h-4 w-4" />
@@ -3473,6 +3781,12 @@ export default function Admin() {
               <TabsContent value="products">
                 <Card className="p-6">
                   <ProductsTab />
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="pricing">
+                <Card className="p-6">
+                  <PricingOptimizerTab />
                 </Card>
               </TabsContent>
 

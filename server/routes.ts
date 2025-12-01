@@ -1876,6 +1876,102 @@ Be friendly, professional, and helpful. If you don't know something specific abo
     }
   });
 
+  // Dynamic pricing suggestions using AI
+  app.post("/api/admin/pricing-suggestions", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user?.isAdmin) {
+        return res.status(403).json({ error: "Admin access required" });
+      }
+
+      const products = await storage.getAllProducts();
+      
+      if (products.length === 0) {
+        return res.json({ suggestions: [] });
+      }
+
+      const productData = products.map(p => ({
+        id: p.id,
+        name: p.name,
+        category: p.category,
+        currentPrice: Number(p.price),
+        originalPrice: p.originalPrice ? Number(p.originalPrice) : null,
+        inStock: p.inStock,
+        stockAmount: p.stockAmount,
+        featured: p.featured,
+        isWeeklyDeal: p.isWeeklyDeal,
+        shortDescription: p.shortDescription
+      }));
+
+      const systemPrompt = `You are a pricing optimization AI for a premium peptide research compound e-commerce store called Revive Research. Analyze the product catalog and suggest optimal pricing adjustments based on:
+
+1. Market positioning (premium research compounds should be priced competitively but reflect quality)
+2. Inventory levels (low stock may warrant price increases, overstocked items may need discounts)
+3. Product category and complexity (more complex peptides command higher prices)
+4. Current sale/deal status
+5. Competitive positioning within the catalog
+
+For each product, provide:
+- suggestedPrice: The optimal price (number)
+- percentChange: The percentage change from current price (positive = increase, negative = decrease)
+- confidence: How confident you are in this suggestion (high/medium/low)
+- reasoning: A brief explanation (1-2 sentences max)
+- action: One of "increase", "decrease", "maintain", or "sale"
+
+Return ONLY valid JSON in this exact format:
+{
+  "suggestions": [
+    {
+      "productId": "id",
+      "productName": "name",
+      "currentPrice": 49.99,
+      "suggestedPrice": 54.99,
+      "percentChange": 10,
+      "confidence": "high",
+      "reasoning": "Brief explanation",
+      "action": "increase"
+    }
+  ],
+  "marketInsights": "1-2 sentence overall market insight",
+  "totalPotentialRevenue": "Estimated revenue impact if all suggestions are applied"
+}`;
+
+      const completion = await openaiClient.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: `Analyze this product catalog and provide pricing suggestions:\n${JSON.stringify(productData, null, 2)}` }
+        ],
+        max_tokens: 2000,
+        temperature: 0.7,
+      });
+
+      const responseText = completion.choices[0]?.message?.content || "{}";
+      
+      // Parse the JSON response
+      let parsedResponse;
+      try {
+        // Try to extract JSON from the response (in case there's extra text)
+        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          parsedResponse = JSON.parse(jsonMatch[0]);
+        } else {
+          throw new Error("No JSON found in response");
+        }
+      } catch (parseError) {
+        console.error("Failed to parse AI response:", parseError);
+        parsedResponse = { suggestions: [], marketInsights: "Unable to generate insights at this time.", totalPotentialRevenue: "$0" };
+      }
+
+      res.json(parsedResponse);
+    } catch (error) {
+      console.error("Error generating pricing suggestions:", error);
+      res.status(500).json({ error: "Failed to generate pricing suggestions" });
+    }
+  });
+
   // Newsletter subscription
   app.post("/api/newsletter/subscribe", async (req, res) => {
     try {
