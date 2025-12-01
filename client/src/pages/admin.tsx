@@ -2526,13 +2526,14 @@ function DiscountCodesTab() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Discount Percent</Label>
+                <Label>Discount Percent {newFreeShipping ? "(Optional)" : ""}</Label>
                 <Input
                   type="number"
-                  min="1"
+                  min="0"
                   max="100"
                   value={newDiscountPercent}
                   onChange={(e) => setNewDiscountPercent(e.target.value)}
+                  placeholder={newFreeShipping ? "Leave as 0 for free shipping only" : "e.g., 10"}
                   data-testid="input-new-discount-percent"
                 />
               </div>
