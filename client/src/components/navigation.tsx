@@ -357,7 +357,6 @@ export function Navigation() {
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
-                </div>
                 )}
                 
                 <Link href="/products">
@@ -381,6 +380,7 @@ export function Navigation() {
                     <Menu className="h-5 w-5" />
                   )}
                 </Button>
+              </div>
               </div>
             </div>
           </nav>
