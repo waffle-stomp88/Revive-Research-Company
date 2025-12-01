@@ -287,7 +287,7 @@ function HeroSection() {
             </Button>
           </Link>
           <Link href="/coa">
-            <Button size="lg" variant="outline" className="font-display text-base px-8 bg-black/30 backdrop-blur-sm border-white/30 text-white transition-all duration-300" data-testid="button-hero-coa">
+            <Button size="lg" variant="outline" className="font-display text-base px-8 bg-black/30 backdrop-blur-sm border-white/30 text-white transition-all duration-300 hover:bg-[#21d8ff] hover:text-black hover:border-[#21d8ff]" data-testid="button-hero-coa">
               Verify COA
             </Button>
           </Link>
