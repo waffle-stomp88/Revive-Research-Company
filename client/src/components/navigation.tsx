@@ -85,8 +85,8 @@ export function Navigation() {
             : "bg-background/80 backdrop-blur-sm"
         }`}>
           <nav className="max-w-7xl mx-auto px-4 md:px-8">
-            <div className="flex items-center justify-between h-16 md:h-20">
-              <Link href="/" data-testid="link-home-logo">
+            <div className="flex items-center justify-between h-16 md:h-20 min-w-0">
+              <Link href="/" data-testid="link-home-logo" className="flex-shrink-0">
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -100,7 +100,7 @@ export function Navigation() {
                 </motion.div>
               </Link>
 
-              <div className="hidden md:flex items-center gap-3">
+              <div className="hidden md:flex items-center gap-3 flex-shrink-0">
                 {navLinks.map((link) => {
                   const isActive = location === link.href;
                   return (
@@ -187,7 +187,7 @@ export function Navigation() {
                 </DropdownMenu>
               </div>
 
-              <div className="flex items-center gap-2 md:gap-4">
+              <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
                 <ThemeToggle />
                 
                 <HoverCard openDelay={100} closeDelay={200}>
