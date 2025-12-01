@@ -255,6 +255,7 @@
   .glow-yellow:hover {
     animation: glow-yellow 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     filter: brightness(1.1);
+    transform: scale(1.08);
   }
 
   /* RUO Safety Warning Pulse Animation */
