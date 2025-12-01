@@ -315,7 +315,7 @@ function HeroSection() {
 
 function TrustSection() {
   return (
-    <section className="py-24 md:py-32 bg-card border-y border-border relative overflow-hidden">
+    <section className="py-12 md:py-16 bg-card border-y border-border relative overflow-hidden">
       <div className="absolute inset-0 opacity-30">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-[#E7FB10]/10 blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-[#21d8ff]/10 blur-3xl" />
@@ -326,7 +326,7 @@ function TrustSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          className="text-center mb-16"
+          className="text-center mb-8"
         >
           <motion.div
             initial={{ scale: 0 }}
@@ -360,14 +360,14 @@ function ProductShowcase() {
   const featuredProducts = products?.filter(p => p.showOnLandingPage && p.inStock).slice(0, 3) || [];
 
   return (
-    <section className="py-24 md:py-32" id="products">
+    <section className="py-12 md:py-16" id="products">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-8"
         >
           <h2 className="font-display text-4xl md:text-5xl font-bold mb-6" data-testid="text-products-heading">
             Featured Products
@@ -378,7 +378,7 @@ function ProductShowcase() {
         </motion.div>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
               <Card key={i} className="p-8 animate-pulse">
                 <div className="aspect-square bg-muted rounded-md mb-6" />
@@ -394,7 +394,7 @@ function ProductShowcase() {
             whileInView="animate"
             viewport={{ once: true, margin: "-100px" }}
             variants={staggerContainer}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
             {featuredProducts.map((product) => (
               <motion.div
@@ -452,7 +452,7 @@ function ProductShowcase() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4 }}
-          className="text-center mt-12"
+          className="text-center mt-8"
         >
           <Link href="/products">
             <Button variant="outline" size="lg" className="font-display gap-2" data-testid="button-view-all-products">
@@ -468,9 +468,9 @@ function ProductShowcase() {
 
 function ScienceSection() {
   return (
-    <section className="py-24 md:py-32 bg-card border-y border-border">
+    <section className="py-12 md:py-16 bg-card border-y border-border">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
-        <div className="grid md:grid-cols-2 gap-16 items-center">
+        <div className="grid md:grid-cols-2 gap-10 items-center">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -495,18 +495,18 @@ function ScienceSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6 }}
           >
-            <span className="text-sm font-medium uppercase tracking-wider text-muted-foreground mb-4 block">
+            <span className="text-sm font-medium uppercase tracking-wider text-muted-foreground mb-2 block">
               Quality Assurance
             </span>
-            <h2 className="font-display text-4xl md:text-5xl font-bold mb-6" data-testid="text-science-heading">
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4" data-testid="text-science-heading">
               Rigorous Testing Standards
             </h2>
-            <p className="text-lg text-muted-foreground leading-relaxed mb-8">
+            <p className="text-base text-muted-foreground leading-relaxed mb-6">
               Every batch of our research compounds undergoes comprehensive third-party 
               laboratory testing. We maintain the highest standards of purity, potency, 
               and quality control to ensure researchers receive exactly what they need.
             </p>
-            <ul className="space-y-4 mb-8">
+            <ul className="space-y-3 mb-6">
               {[
                 "Third-party laboratory verification",
                 "HPLC purity analysis",
@@ -534,7 +534,7 @@ function ScienceSection() {
 
 function VerificationSection() {
   return (
-    <section className="py-24 md:py-32 relative overflow-hidden">
+    <section className="py-12 md:py-16 relative overflow-hidden">
       <div className="absolute inset-0">
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full bg-[#21d8ff]/5 blur-3xl" />
         <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full bg-[#9d4edd]/5 blur-3xl" />
@@ -545,7 +545,7 @@ function VerificationSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          className="text-center mb-12"
+          className="text-center mb-8"
         >
           <motion.div
             initial={{ scale: 0 }}
@@ -557,10 +557,10 @@ function VerificationSection() {
             <FileCheck className="h-4 w-4 text-[#9d4edd]" />
             <span className="text-sm font-medium text-[#9d4edd]">Complete Traceability</span>
           </motion.div>
-          <h2 className="font-display text-4xl md:text-5xl font-bold mb-4" data-testid="text-verification-heading">
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-3" data-testid="text-verification-heading">
             Verify Every Product
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base text-muted-foreground max-w-2xl mx-auto">
             From QR code to verified COA — trace every product back to its lab-tested origins in seconds.
           </p>
         </motion.div>
@@ -579,7 +579,7 @@ function VerificationSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.6 }}
-          className="text-center mt-12"
+          className="text-center mt-8"
         >
           <Link href="/coa">
             <Button size="lg" className="font-display gap-2 bg-[#21d8ff] text-black border-2 border-[#21d8ff]" data-testid="button-try-verification">
@@ -595,19 +595,19 @@ function VerificationSection() {
 
 function HowItWorksSection() {
   return (
-    <section className="py-24 md:py-32">
+    <section className="py-12 md:py-16">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-8"
         >
-          <h2 className="font-display text-4xl md:text-5xl font-bold mb-6" data-testid="text-how-it-works-heading">
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4" data-testid="text-how-it-works-heading">
             How It Works
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base text-muted-foreground max-w-2xl mx-auto">
             From synthesis to delivery, every step is designed with precision and care.
           </p>
         </motion.div>
@@ -617,7 +617,7 @@ function HowItWorksSection() {
           whileInView="animate"
           viewport={{ once: true, margin: "-100px" }}
           variants={staggerContainer}
-          className="grid grid-cols-1 md:grid-cols-3 gap-12"
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
         >
           {howItWorks.map((item, index) => (
             <motion.div
@@ -629,13 +629,13 @@ function HowItWorksSection() {
                 {item.step}
               </span>
               <div className="relative pt-16">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-6">
-                  <item.icon className="h-7 w-7 text-foreground" />
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 mb-4">
+                  <item.icon className="h-6 w-6 text-foreground" />
                 </div>
-                <h3 className="font-display text-xl font-semibold mb-3">
+                <h3 className="font-display text-lg font-semibold mb-2">
                   {item.title}
                 </h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   {item.description}
                 </p>
               </div>
@@ -680,16 +680,16 @@ const transparencyLinks = [
 
 function TransparencyHub() {
   return (
-    <section className="py-24 md:py-32 bg-card border-y border-border">
+    <section className="py-12 md:py-16 bg-card border-y border-border">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-8"
         >
-          <h2 className="font-display text-4xl md:text-5xl font-bold mb-6" data-testid="text-transparency-heading">
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4" data-testid="text-transparency-heading">
             Full Transparency
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -743,7 +743,7 @@ function TransparencyHub() {
 
 function CTASection() {
   return (
-    <section className="py-24 md:py-32 text-primary-foreground bg-[#e7fb10]">
+    <section className="py-16 md:py-20 text-primary-foreground bg-[#e7fb10]">
       <div className="max-w-4xl mx-auto px-4 md:px-8 text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -751,10 +751,10 @@ function CTASection() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="font-display text-4xl md:text-5xl font-bold mb-6" data-testid="text-cta-heading">
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4" data-testid="text-cta-heading">
             Ready to Begin Your Research?
           </h2>
-          <p className="text-lg opacity-80 mb-10 max-w-2xl mx-auto">
+          <p className="text-base opacity-80 mb-8 max-w-2xl mx-auto">
             Join researchers worldwide who trust Revive for premium quality compounds 
             backed by rigorous testing and verification.
           </p>
@@ -789,7 +789,7 @@ function CTASection() {
 
 function NewsletterSection() {
   return (
-    <section className="py-20 md:py-28 bg-gradient-to-b from-background to-background/50 border-t border-border">
+    <section className="py-16 md:py-20 bg-gradient-to-b from-background to-background/50 border-t border-border">
       <div className="max-w-3xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -798,10 +798,10 @@ function NewsletterSection() {
           transition={{ duration: 0.6 }}
           className="text-center"
         >
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="font-display text-3xl md:text-3xl font-bold mb-3">
             Stay Updated on New Research
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10">
+          <p className="text-base text-muted-foreground max-w-2xl mx-auto mb-8">
             Get early access to new compound releases, lab research updates, and exclusive subscriber content. Join 500+ researchers in our community.
           </p>
           <NewsletterSignup />
