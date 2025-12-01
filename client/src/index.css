@@ -282,21 +282,21 @@
   }
 
   .sidebar-scroll::-webkit-scrollbar-thumb {
-    background: rgba(33, 216, 255, 0.4);
+    background: rgba(33, 216, 255, 0.15);
     border-radius: 4px;
     transition: background 0.2s;
   }
 
   .sidebar-scroll::-webkit-scrollbar-thumb:hover {
-    background: rgba(33, 216, 255, 0.7);
+    background: rgba(33, 216, 255, 0.6);
   }
 
   /* Firefox */
   .sidebar-scroll {
-    scrollbar-color: rgba(33, 216, 255, 0.4) transparent;
+    scrollbar-color: rgba(33, 216, 255, 0.15) transparent;
   }
 
   .sidebar-scroll:hover {
-    scrollbar-color: rgba(33, 216, 255, 0.7) transparent;
+    scrollbar-color: rgba(33, 216, 255, 0.6) transparent;
   }
 }
