@@ -29,7 +29,6 @@ import {
   Star,
   MessageSquare,
   TrendingUp,
-  BadgeCheck,
 } from "lucide-react";
 import type { Order, Product, ReviewableOrder } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -245,12 +244,15 @@ export default function Dashboard() {
                       Welcome{user?.firstName ? `, ${user.firstName}` : ""}
                     </h1>
                     {affiliate && (
-                      <div 
-                        className="relative inline-flex items-center justify-center"
-                        data-testid="badge-verified-affiliate"
-                        title="Verified Affiliate"
-                      >
-                        <BadgeCheck className="h-6 w-6 text-green-500 fill-green-500" />
+                      <div data-testid="badge-verified-affiliate" title="Verified Affiliate">
+                        <svg
+                          className="h-6 w-6"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                        >
+                          <circle cx="12" cy="12" r="10" fill="#22c55e" />
+                          <path d="M8 12l2 2 4-4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
                       </div>
                     )}
                   </div>
