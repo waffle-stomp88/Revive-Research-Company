@@ -2884,7 +2884,7 @@ function DiscountCodesTab() {
 
 function AffiliatesTab() {
   const { toast } = useToast();
-  const [activeSubTab, setActiveSubTab] = useState("applications");
+  const [activeSubTab, setActiveSubTab] = useState("affiliates");
 
   const { data: applications, isLoading: applicationsLoading } = useQuery<AffiliateApplication[]>({
     queryKey: ["/api/admin/affiliate-applications"],
