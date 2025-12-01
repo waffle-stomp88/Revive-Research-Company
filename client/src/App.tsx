@@ -22,6 +22,7 @@ import CoaVerification from "@/pages/coa";
 import CoaLibrary from "@/pages/coa-library";
 import BatchLookup from "@/pages/batch-lookup";
 import Dashboard from "@/pages/dashboard";
+import AccountSettings from "@/pages/account-settings";
 import Admin from "@/pages/admin";
 import Affiliate from "@/pages/affiliate";
 import AffiliateDashboard from "@/pages/affiliate-dashboard";
@@ -80,6 +81,7 @@ function Router() {
       <Route path="/coa-library" component={CoaLibrary} />
       <Route path="/batch" component={BatchLookup} />
       <Route path="/dashboard" component={Dashboard} />
+      <Route path="/account-settings" component={AccountSettings} />
       <Route path="/admin" component={Admin} />
       <Route path="/affiliate" component={Affiliate} />
       <Route path="/affiliate-dashboard" component={AffiliateDashboard} />
