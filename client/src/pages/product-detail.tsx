@@ -54,6 +54,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { ModelViewer3D } from "@/components/model-viewer-3d";
 import type { Product, Review, ProductStorageProfile, Batch, Coa, EducationArticle } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 
@@ -340,12 +341,20 @@ export default function ProductDetail() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <div className={`relative aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center sticky top-24 overflow-hidden ${isOutOfStock ? 'border-2 border-red-500' : ''}`}>
-              <img 
-                src={productImage} 
-                alt={product.name}
-                className={`w-full h-full object-contain p-6 ${isOutOfStock ? 'opacity-60' : ''}`}
-              />
+            {product.model3dUrl ? (
+              <div className="sticky top-24">
+                <ModelViewer3D 
+                  modelUrl={product.model3dUrl}
+                  productName={product.name}
+                />
+              </div>
+            ) : (
+              <div className={`relative aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center sticky top-24 overflow-hidden ${isOutOfStock ? 'border-2 border-red-500' : ''}`}>
+                <img 
+                  src={productImage} 
+                  alt={product.name}
+                  className={`w-full h-full object-contain p-6 ${isOutOfStock ? 'opacity-60' : ''}`}
+                />
               {/* Out of Stock Overlay */}
               {isOutOfStock && (
                 <div className="absolute inset-0 pointer-events-none" data-testid="overlay-out-of-stock">
@@ -361,7 +370,8 @@ export default function ProductDetail() {
                   <div className="absolute inset-0 bg-black/20" />
                 </div>
               )}
-            </div>
+              </div>
+            )}
           </motion.div>
 
           <motion.div

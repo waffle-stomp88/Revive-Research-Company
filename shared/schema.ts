@@ -48,6 +48,7 @@ export const products = pgTable("products", {
   benefits: text("benefits").array(),
   usage: text("usage"),
   imageUrl: text("image_url"),
+  model3dUrl: text("model_3d_url"),
 });
 
 export const insertProductSchema = createInsertSchema(products).omit({ id: true });
