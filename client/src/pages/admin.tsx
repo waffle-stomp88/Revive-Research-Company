@@ -1302,7 +1302,12 @@ function ProductsTab() {
                   <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending} data-testid="button-save-product">
+                  <Button 
+                    type="submit" 
+                    disabled={createMutation.isPending || updateMutation.isPending}
+                    className={form.formState.isDirty ? "bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90" : ""}
+                    data-testid="button-save-product"
+                  >
                     {createMutation.isPending || updateMutation.isPending ? "Saving..." : "Save Product"}
                   </Button>
                 </DialogFooter>
