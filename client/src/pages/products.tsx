@@ -437,16 +437,6 @@ export default function Products() {
                         <Badge variant="destructive" className="ml-auto text-xs px-1.5 py-0">HOT</Badge>
                       </Button>
                       <Button
-                        variant={activeSection === "bundles" ? "secondary" : "ghost"}
-                        className="w-full justify-start gap-2 h-9"
-                        onClick={() => scrollToSection("bundles")}
-                        data-testid="nav-sidebar-bundles"
-                      >
-                        <Package className="h-4 w-4 text-[#21d8ff]" />
-                        Research Stacks
-                        <Badge variant="secondary" className="ml-auto text-xs px-1.5 py-0 bg-green-500/20 text-green-400">{BUNDLES.length}</Badge>
-                      </Button>
-                      <Button
                         variant={activeSection === "products" ? "secondary" : "ghost"}
                         className="w-full justify-start gap-2 h-9"
                         onClick={() => scrollToSection("products")}
@@ -455,6 +445,16 @@ export default function Products() {
                         <Grid3X3 className="h-4 w-4 text-[#E7FB10]" />
                         All Products
                         {products && <Badge variant="secondary" className="ml-auto text-xs px-1.5 py-0">{products.length}</Badge>}
+                      </Button>
+                      <Button
+                        variant={activeSection === "bundles" ? "secondary" : "ghost"}
+                        className="w-full justify-start gap-2 h-9"
+                        onClick={() => scrollToSection("bundles")}
+                        data-testid="nav-sidebar-bundles"
+                      >
+                        <Package className="h-4 w-4 text-[#21d8ff]" />
+                        Research Stacks
+                        <Badge variant="secondary" className="ml-auto text-xs px-1.5 py-0 bg-green-500/20 text-green-400">{BUNDLES.length}</Badge>
                       </Button>
                       <Button
                         variant={activeSection === "bulk" ? "secondary" : "ghost"}
