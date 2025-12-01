@@ -31,7 +31,12 @@ import {
   StorageTemperatureGuide,
   TelomereVisual,
   GLP1ReceptorComparison,
-  GHAxisDiagram
+  GHAxisDiagram,
+  HealingPathwayVisual,
+  IGF1PathwayVisual,
+  CellularEnergyVisual,
+  NeuropeptideVisual,
+  HormonalPathwayVisual
 } from "@/components/education";
 
 const articleVisuals: Record<string, () => JSX.Element> = {
@@ -45,6 +50,15 @@ const articleVisuals: Record<string, () => JSX.Element> = {
   "cjc-1295-research-guide": () => <GHAxisDiagram />,
   "ipamorelin-research-guide": () => <GHAxisDiagram />,
   "tesamorelin-research-guide": () => <GHAxisDiagram />,
+  "bpc-157-research-guide": () => <HealingPathwayVisual peptide="bpc-157" />,
+  "tb-500-research-guide": () => <HealingPathwayVisual peptide="tb-500" />,
+  "ghk-cu-research-guide": () => <HealingPathwayVisual peptide="ghk-cu" />,
+  "glow-peptide-complex-research-guide": () => <HealingPathwayVisual peptide="glow" />,
+  "igf-1-lr3-research-guide": () => <IGF1PathwayVisual />,
+  "mots-c-research-guide": () => <CellularEnergyVisual peptide="mots-c" />,
+  "nad-precursor-research-guide": () => <CellularEnergyVisual peptide="nad" />,
+  "semax-research-guide": () => <NeuropeptideVisual />,
+  "hcg-research-guide": () => <HormonalPathwayVisual />,
 };
 
 const categories = [
@@ -200,16 +214,28 @@ export default function Education() {
                       }}
                       data-testid={`nav-category-${cat.id}`}
                     >
-                      <Icon 
-                        className="h-5 w-5 flex-shrink-0" 
-                        style={{ color: isActive ? cat.color : 'currentColor' }}
-                      />
+                      <div 
+                        className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                        style={{ 
+                          backgroundColor: `${cat.color}20`,
+                          boxShadow: isActive ? `0 0 10px ${cat.color}30` : undefined
+                        }}
+                      >
+                        <Icon 
+                          className="h-4 w-4" 
+                          style={{ color: cat.color }}
+                        />
+                      </div>
                       <span className={`flex-1 text-sm font-medium ${isActive ? 'text-foreground' : 'text-muted-foreground'}`}>
                         {cat.label}
                       </span>
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${
-                        isActive ? 'bg-background' : 'bg-muted'
-                      }`}>
+                      <span 
+                        className="text-xs px-2 py-0.5 rounded-full"
+                        style={{
+                          backgroundColor: isActive ? `${cat.color}20` : 'hsl(var(--muted))',
+                          color: isActive ? cat.color : undefined
+                        }}
+                      >
                         {count}
                       </span>
                     </button>

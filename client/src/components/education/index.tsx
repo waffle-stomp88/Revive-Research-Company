@@ -4,3 +4,8 @@ export { StorageTemperatureGuide, StorageQuickReference } from "./storage-temper
 export { TelomereVisual } from "./telomere-visual";
 export { GLP1ReceptorComparison, GLP1ComparisonCompact } from "./glp1-receptor-comparison";
 export { GHAxisDiagram } from "./gh-axis-diagram";
+export { HealingPathwayVisual } from "./healing-pathway-visual";
+export { IGF1PathwayVisual } from "./igf1-pathway-visual";
+export { CellularEnergyVisual } from "./cellular-energy-visual";
+export { NeuropeptideVisual } from "./neuropeptide-visual";
+export { HormonalPathwayVisual } from "./hormonal-pathway-visual";
