@@ -259,7 +259,7 @@ export function LearningRoadmap({ onModuleClick, completedModules = [] }: Learni
         <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-r from-[#ec4899]/10 via-[#9d4edd]/10 to-[#21d8ff]/10 border border-[#ec4899]/20">
           <Sparkles className="h-4 w-4 text-[#ec4899]" />
           <span className="text-sm text-muted-foreground">
-            Complete all 5 modules to become a certified researcher
+            Complete all 5 modules to master the researcher essentials
           </span>
         </div>
       </motion.div>
