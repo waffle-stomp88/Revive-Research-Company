@@ -808,7 +808,7 @@ function ProductsTab() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/products"], exact: false });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
       toast({ title: "Product created successfully" });
       setIsDialogOpen(false);
@@ -826,9 +826,10 @@ function ProductsTab() {
     },
     onSuccess: (_, variables) => {
       // Invalidate both the product list and the specific product detail page
-      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/products", variables.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/products"], exact: false });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
+      // Force refetch immediately for the product detail page
+      queryClient.refetchQueries({ queryKey: ["/api/products", variables.id] });
       toast({ title: "Product updated successfully" });
       setIsDialogOpen(false);
       setEditingProduct(null);
@@ -845,7 +846,7 @@ function ProductsTab() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/products"], exact: false });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
       toast({ title: "Product deleted successfully" });
     },
@@ -3378,7 +3379,7 @@ function PricingOptimizerTab() {
   const { toast } = useToast();
   const [pricingData, setPricingData] = useState<PricingResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [appliedSuggestions, setAppliedSuggestions] = useState<Set<string>>(new Set());
+  const [appliedSuggestions, setAppliedSuggestions] = useState<string[]>([]);
 
   const { data: products = [] } = useQuery<Product[]>({
     queryKey: ["/api/products"],
@@ -3391,7 +3392,7 @@ function PricingOptimizerTab() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
-      setAppliedSuggestions(prev => new Set([...prev, variables.id]));
+      setAppliedSuggestions(prev => [...prev, variables.id]);
       toast({
         title: "Price Updated",
         description: "Product price has been updated successfully.",
@@ -3408,7 +3409,7 @@ function PricingOptimizerTab() {
 
   const generateSuggestions = async () => {
     setIsLoading(true);
-    setAppliedSuggestions(new Set());
+    setAppliedSuggestions([]);
     try {
       const response = await fetch("/api/admin/pricing-suggestions", {
         method: "POST",
@@ -3439,7 +3440,7 @@ function PricingOptimizerTab() {
     if (!pricingData?.suggestions) return;
     
     for (const suggestion of pricingData.suggestions) {
-      if (suggestion.action !== "maintain" && !appliedSuggestions.has(suggestion.productId)) {
+      if (suggestion.action !== "maintain" && !appliedSuggestions.includes(suggestion.productId)) {
         await updateProductMutation.mutateAsync({
           id: suggestion.productId,
           price: suggestion.suggestedPrice.toFixed(2),
@@ -3577,14 +3578,14 @@ function PricingOptimizerTab() {
                 <div>
                   <h3 className="font-medium">Ready to optimize your prices?</h3>
                   <p className="text-sm text-muted-foreground">
-                    Apply all {pricingData.suggestions.filter(s => s.action !== "maintain" && !appliedSuggestions.has(s.productId)).length} pending suggestions with one click
+                    Apply all {pricingData.suggestions.filter(s => s.action !== "maintain" && !appliedSuggestions.includes(s.productId)).length} pending suggestions with one click
                   </p>
                 </div>
               </div>
               <Button
                 size="lg"
                 onClick={applyAllSuggestions}
-                disabled={updateProductMutation.isPending || pricingData.suggestions.filter(s => s.action !== "maintain" && !appliedSuggestions.has(s.productId)).length === 0}
+                disabled={updateProductMutation.isPending || pricingData.suggestions.filter(s => s.action !== "maintain" && !appliedSuggestions.includes(s.productId)).length === 0}
                 className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 font-semibold px-6"
                 data-testid="button-apply-all-suggestions"
               >
@@ -3640,7 +3641,7 @@ function PricingOptimizerTab() {
                     </p>
                   </TableCell>
                   <TableCell>
-                    {appliedSuggestions.has(suggestion.productId) ? (
+                    {appliedSuggestions.includes(suggestion.productId) ? (
                       <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
                         <CheckCircle className="h-3 w-3 mr-1" />
                         Applied
