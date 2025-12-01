@@ -43,12 +43,9 @@ const resources = [
 
 export default function ResourcesHub() {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen pt-32">
       {/* Hero Section */}
-      <section 
-        className="relative pb-16 overflow-hidden"
-        style={{ paddingTop: 'calc(var(--banner-height, 40px) + 80px)' }}
-      >
+      <section className="relative pb-16 md:pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#9d4edd]/8 via-background to-background" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(157,78,221,0.12),transparent_60%)]" />
 
