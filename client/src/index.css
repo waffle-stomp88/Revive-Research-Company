@@ -4,6 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .group:hover .group-hover\:wipe-animation {
+    transform: translateX(-100%) !important;
+  }
+}
+
 /* Banner height CSS variable - controlled by FreeShippingBanner component */
 :root {
   --banner-height: 40px;

@@ -91,45 +91,45 @@ export default function ResourcesHub() {
                     <motion.div
                       whileHover={{ scale: 1.08 }}
                       transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                      className="h-full"
+                      className="h-full group"
                     >
                       <Card 
-                        className="h-full p-6 hover-elevate cursor-pointer border-l-4 group relative overflow-hidden"
+                        className="h-full p-6 hover-elevate cursor-pointer border-l-4 relative overflow-hidden"
                         style={{ borderLeftColor: resource.color }}
                       >
-                        <motion.div
-                          className="absolute inset-0 rounded-md pointer-events-none"
-                          initial={{ x: "100%" }}
-                          animate={{ x: "100%" }}
-                          whileHover={{ x: "-100%" }}
-                          transition={{ duration: 0.5, ease: "easeInOut" }}
-                          style={{ backgroundColor: `${resource.color}15` }}
+                        <div
+                          className="absolute inset-0 rounded-md pointer-events-none group-hover:wipe-animation"
+                          style={{ 
+                            backgroundColor: `${resource.color}15`,
+                            transform: "translateX(100%)",
+                            transition: "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)"
+                          }}
                         />
-                      <div className="relative z-10 flex items-start gap-4 mb-3">
-                        <motion.div 
-                          className="p-3 rounded-lg"
-                          whileHover={{ scale: 1.25 }}
-                          transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                          style={{ backgroundColor: `${resource.color}20` }}
+                        <div className="relative z-10 flex items-start gap-4 mb-3">
+                          <motion.div 
+                            className="p-3 rounded-lg"
+                            whileHover={{ scale: 1.25 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                            style={{ backgroundColor: `${resource.color}20` }}
+                          >
+                            <Icon className="h-6 w-6" style={{ color: resource.color }} />
+                          </motion.div>
+                        </div>
+                        
+                        <h3 className="text-lg font-semibold mb-2 relative z-10" data-testid={`text-resource-${resource.title.toLowerCase().replace(/\s+/g, "-")}`}>
+                          {resource.title}
+                        </h3>
+                        <p className="text-sm text-muted-foreground mb-4 relative z-10">
+                          {resource.description}
+                        </p>
+                        
+                        <div className="flex items-center gap-2 text-sm font-medium transition-all duration-300 relative z-10"
+                          style={{ color: resource.color }}
                         >
-                          <Icon className="h-6 w-6" style={{ color: resource.color }} />
-                        </motion.div>
-                      </div>
-                      
-                      <h3 className="text-lg font-semibold mb-2 relative z-10" data-testid={`text-resource-${resource.title.toLowerCase().replace(/\s+/g, "-")}`}>
-                        {resource.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mb-4 relative z-10">
-                        {resource.description}
-                      </p>
-                      
-                      <div className="flex items-center gap-2 text-sm font-medium transition-all duration-300 relative z-10"
-                        style={{ color: resource.color }}
-                      >
-                        Explore
-                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                      </div>
-                    </Card>
+                          Explore
+                          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        </div>
+                      </Card>
                     </motion.div>
                   </Link>
                 </motion.div>
