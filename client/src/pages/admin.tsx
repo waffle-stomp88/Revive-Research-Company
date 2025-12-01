@@ -2739,20 +2739,20 @@ function DiscountCodesTab() {
             <TableBody>
               {discountCodes.map((code) => (
                 <TableRow key={code.id} data-testid={`row-discount-code-${code.id}`}>
-                  <TableCell>
+                  <TableCell className="select-none">
                     <code className="font-mono font-bold text-sm bg-muted px-2 py-1 rounded">
                       {code.code}
                     </code>
                   </TableCell>
-                  <TableCell className="text-muted-foreground text-sm">
+                  <TableCell className="text-muted-foreground text-sm select-none">
                     {code.description || "-"}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="select-none">
                     <Badge variant="secondary" className="bg-[#E7FB10]/20 text-[#E7FB10]">
                       {code.discountPercent}% OFF
                     </Badge>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="select-none">
                     {code.freeShipping ? (
                       <Badge variant="secondary" className="bg-[#21d8ff]/20 text-[#21d8ff]">
                         Free Shipping
@@ -2761,17 +2761,17 @@ function DiscountCodesTab() {
                       <span className="text-muted-foreground text-sm">-</span>
                     )}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="select-none">
                     <Badge variant="outline" className="capitalize">
                       {code.type.replace("_", " ")}
                     </Badge>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="select-none">
                     <Badge variant={code.isActive ? "default" : "secondary"}>
                       {code.isActive ? "Active" : "Inactive"}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-muted-foreground text-sm">
+                  <TableCell className="text-muted-foreground text-sm select-none">
                     {formatDate(code.createdAt)}
                   </TableCell>
                   <TableCell className="text-right">
