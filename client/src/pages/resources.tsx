@@ -44,37 +44,17 @@ const resources = [
 export default function ResourcesHub() {
   return (
     <main className="min-h-screen">
-      {/* Animated Hero Background */}
-      <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
-        {/* Gradient Background Elements */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#9d4edd]/12 via-background to-background" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(157,78,221,0.15),transparent_70%)]" />
-        
-        {/* Animated Accent Elements */}
-        <motion.div
-          className="absolute top-20 left-10 w-48 h-48 bg-[#9d4edd]/8 rounded-full blur-3xl"
-          animate={{ 
-            y: [0, 30, 0],
-            scale: [1, 1.1, 1]
-          }}
-          transition={{ duration: 6, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute bottom-20 right-10 w-64 h-64 bg-[#21d8ff]/8 rounded-full blur-3xl"
-          animate={{ 
-            y: [0, -30, 0],
-            scale: [1, 0.95, 1]
-          }}
-          transition={{ duration: 8, repeat: Infinity }}
-        />
+      {/* Hero Section */}
+      <section className="relative py-12 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#9d4edd]/8 via-background to-background" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(157,78,221,0.12),transparent_60%)]" />
 
-        {/* Content */}
         <div className="container max-w-4xl mx-auto px-4 relative z-10 text-center">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6"
+            className="font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4"
             data-testid="text-resources-headline"
           >
             Resource <span className="text-[#9d4edd]">Central</span>
@@ -84,36 +64,11 @@ export default function ResourcesHub() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-8"
+            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto"
             data-testid="text-resources-subheadline"
           >
             Everything you need to understand peptide research, verify authenticity, and make informed decisions. Explore our comprehensive library of resources.
           </motion.p>
-
-          {/* Decorative Icon Grid */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="flex items-center justify-center gap-8 flex-wrap"
-          >
-            {[
-              { icon: "📚", color: "#9d4edd" },
-              { icon: "✓", color: "#E7FB10" },
-              { icon: "🔬", color: "#21d8ff" },
-              { icon: "⚖", color: "#ec4899" },
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.3 + i * 0.1 }}
-                className="text-4xl"
-              >
-                {item.icon}
-              </motion.div>
-            ))}
-          </motion.div>
         </div>
       </section>
 
