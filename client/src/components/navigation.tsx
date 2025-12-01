@@ -381,7 +381,6 @@ export function Navigation() {
                   )}
                 </Button>
               </div>
-              </div>
             </div>
           </nav>
         </div>
