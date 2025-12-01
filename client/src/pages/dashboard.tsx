@@ -251,7 +251,7 @@ export default function Dashboard() {
                           fill="none"
                         >
                           <circle cx="12" cy="12" r="10" fill="#22c55e" />
-                          <path d="M8 12l2 2 4-4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                          <path d="M9 12.5l2.5 2.5 4-4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                       </div>
                     )}
