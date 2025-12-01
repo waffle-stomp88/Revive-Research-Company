@@ -521,6 +521,21 @@ function FAQSection() {
             </motion.div>
           ))}
         </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.4 }}
+          className="text-center mt-8"
+        >
+          <Link href="/faq">
+            <Button size="lg" variant="outline" className="font-display gap-2" data-testid="button-view-full-faq">
+              Explore Full FAQ
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
+        </motion.div>
       </div>
     </section>
   );
