@@ -3563,6 +3563,39 @@ function PricingOptimizerTab() {
             </Card>
           </div>
 
+          <Card className="p-4 mb-4 border-[#E7FB10]/30 bg-[#E7FB10]/5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Sparkles className="h-5 w-5 text-[#E7FB10]" />
+                <div>
+                  <h3 className="font-medium">Ready to optimize your prices?</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Apply all {pricingData.suggestions.filter(s => s.action !== "maintain" && !appliedSuggestions.has(s.productId)).length} pending suggestions with one click
+                  </p>
+                </div>
+              </div>
+              <Button
+                size="lg"
+                onClick={applyAllSuggestions}
+                disabled={updateProductMutation.isPending || pricingData.suggestions.filter(s => s.action !== "maintain" && !appliedSuggestions.has(s.productId)).length === 0}
+                className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 font-semibold px-6"
+                data-testid="button-apply-all-suggestions"
+              >
+                {updateProductMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Applying...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Apply All Suggestions
+                  </>
+                )}
+              </Button>
+            </div>
+          </Card>
+
           <Table>
             <TableHeader>
               <TableRow>
