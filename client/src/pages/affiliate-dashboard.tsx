@@ -303,11 +303,23 @@ export default function AffiliateDashboard() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="font-display text-3xl md:text-4xl font-bold mb-2" data-testid="text-dashboard-title">
-            Affiliate Dashboard
-          </h1>
+          <div className="flex items-center gap-2 flex-wrap mb-2">
+            <h1 className="font-display text-2xl md:text-3xl font-bold" data-testid="text-dashboard-title">
+              WELCOME, {affiliate.fullName?.split(' ')[0]?.toUpperCase() || 'AFFILIATE'}
+            </h1>
+            <div data-testid="badge-verified-affiliate" title="Verified Affiliate">
+              <svg
+                className="h-6 w-6"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <circle cx="12" cy="12" r="10" fill="#22c55e" />
+                <path d="M9 12.5l2.5 2.5 4-4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+          </div>
           <p className="text-muted-foreground">
-            Welcome back, {affiliate.fullName}! Here's your performance overview.
+            {affiliate.email}
           </p>
         </motion.div>
 
