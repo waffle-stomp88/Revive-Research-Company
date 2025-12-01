@@ -6,7 +6,6 @@ import {
   TestTube2, 
   Scale, 
   Shield, 
-  Calendar,
   Building2,
   Hash,
   CheckCircle2,
@@ -19,7 +18,7 @@ interface COASection {
   description: string;
   icon: typeof FileCheck;
   color: string;
-  position: { top: string; left: string };
+  angle: number;
   details: string[];
 }
 
@@ -30,7 +29,7 @@ const coaSections: COASection[] = [
     description: "Product identification and lab details",
     icon: Building2,
     color: "#21d8ff",
-    position: { top: "5%", left: "50%" },
+    angle: 270,
     details: [
       "Laboratory name & accreditation",
       "Product name & catalog number",
@@ -43,7 +42,7 @@ const coaSections: COASection[] = [
     description: "Unique identifier for traceability",
     icon: Hash,
     color: "#E7FB10",
-    position: { top: "20%", left: "15%" },
+    angle: 225,
     details: [
       "Must match your vial label",
       "Links to production records",
@@ -56,7 +55,7 @@ const coaSections: COASection[] = [
     description: "Confirms molecular structure",
     icon: Fingerprint,
     color: "#9d4edd",
-    position: { top: "20%", left: "85%" },
+    angle: 315,
     details: [
       "Expected vs observed MW",
       "Should match within ±0.5 Da",
@@ -69,7 +68,7 @@ const coaSections: COASection[] = [
     description: "Percentage of target peptide",
     icon: TestTube2,
     color: "#21d8ff",
-    position: { top: "45%", left: "15%" },
+    angle: 180,
     details: [
       "Target: 98%+ for most peptides",
       "Main peak percentage",
@@ -82,7 +81,7 @@ const coaSections: COASection[] = [
     description: "Bacterial contamination check",
     icon: Shield,
     color: "#ec4899",
-    position: { top: "45%", left: "85%" },
+    angle: 0,
     details: [
       "Measures bacterial endotoxin",
       "Critical for biological assays",
@@ -95,7 +94,7 @@ const coaSections: COASection[] = [
     description: "Net peptide percentage",
     icon: Scale,
     color: "#f97316",
-    position: { top: "70%", left: "15%" },
+    angle: 135,
     details: [
       "Accounts for salt & moisture",
       "Important for accurate dosing",
@@ -108,7 +107,7 @@ const coaSections: COASection[] = [
     description: "Pass/Fail for all specifications",
     icon: CheckCircle2,
     color: "#22c55e",
-    position: { top: "70%", left: "85%" },
+    angle: 45,
     details: [
       "All specs should show 'Pass'",
       "Specification vs actual result",
@@ -125,11 +124,93 @@ const redFlags = [
   "Outdated testing (6+ months old)"
 ];
 
+function PeptideVial() {
+  return (
+    <svg viewBox="0 0 60 120" className="w-16 h-32">
+      <defs>
+        <linearGradient id="vialGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#2a2a35" />
+          <stop offset="50%" stopColor="#3a3a45" />
+          <stop offset="100%" stopColor="#2a2a35" />
+        </linearGradient>
+        <linearGradient id="liquidGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#E7FB10" stopOpacity="0.3" />
+          <stop offset="100%" stopColor="#E7FB10" stopOpacity="0.6" />
+        </linearGradient>
+        <linearGradient id="capGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#E7FB10" />
+          <stop offset="100%" stopColor="#c4d40d" />
+        </linearGradient>
+      </defs>
+      
+      <rect x="15" y="0" width="30" height="12" rx="2" fill="url(#capGradient)" />
+      <rect x="20" y="10" width="20" height="6" fill="#888" />
+      
+      <path 
+        d="M 12 18 L 12 100 Q 12 115 30 115 Q 48 115 48 100 L 48 18 Z" 
+        fill="url(#vialGradient)"
+        stroke="#555"
+        strokeWidth="1"
+      />
+      
+      <path 
+        d="M 14 45 L 14 98 Q 14 112 30 112 Q 46 112 46 98 L 46 45 Z" 
+        fill="url(#liquidGradient)"
+      />
+      
+      <text x="30" y="75" textAnchor="middle" fill="#E7FB10" fontSize="7" fontWeight="bold">
+        REVIVE
+      </text>
+      <text x="30" y="85" textAnchor="middle" fill="#888" fontSize="5">
+        RESEARCH
+      </text>
+      
+      <motion.ellipse
+        cx="30"
+        cy="50"
+        rx="8"
+        ry="2"
+        fill="#E7FB10"
+        opacity="0.3"
+        animate={{ 
+          cy: [50, 55, 50],
+          opacity: [0.3, 0.5, 0.3]
+        }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+      />
+    </svg>
+  );
+}
+
 export function COAAnatomyDiagram() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [showRedFlags, setShowRedFlags] = useState(false);
+
+  const radius = 160;
+  const centerX = 200;
+  const centerY = 180;
+
+  const getPosition = (angle: number) => {
+    const rad = (angle * Math.PI) / 180;
+    return {
+      x: centerX + radius * Math.cos(rad),
+      y: centerY + radius * Math.sin(rad)
+    };
+  };
+
+  const getTooltipPosition = (angle: number) => {
+    if (angle >= 45 && angle <= 135) {
+      return { horizontal: "center", vertical: "bottom" };
+    } else if (angle > 135 && angle < 225) {
+      return { horizontal: "right", vertical: "center" };
+    } else if (angle >= 225 && angle <= 315) {
+      return { horizontal: "center", vertical: "top" };
+    } else {
+      return { horizontal: "left", vertical: "center" };
+    }
+  };
 
   return (
     <div ref={ref} className="py-8" data-testid="coa-anatomy-diagram">
@@ -147,41 +228,143 @@ export function COAAnatomyDiagram() {
         </p>
       </motion.div>
 
-      <div className="relative max-w-4xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={isInView ? { opacity: 1, scale: 1 } : {}}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="relative bg-card border rounded-xl p-6 min-h-[400px]"
-          style={{ borderColor: "rgba(255,255,255,0.1)" }}
-        >
-          <div 
-            className="absolute inset-4 rounded-lg border-2 border-dashed"
-            style={{ borderColor: "rgba(33, 216, 255, 0.2)" }}
+      <div className="relative max-w-xl mx-auto overflow-visible">
+        <div className="relative" style={{ height: "420px" }}>
+          <svg 
+            className="absolute inset-0 w-full h-full pointer-events-none" 
+            viewBox="0 0 400 360"
+            style={{ overflow: "visible" }}
           >
-            <div className="absolute top-2 left-4 text-xs text-muted-foreground/50 uppercase tracking-wider">
-              Certificate of Analysis
-            </div>
-          </div>
+            <defs>
+              {coaSections.map((section) => (
+                <linearGradient 
+                  key={`gradient-${section.id}`} 
+                  id={`line-${section.id}`} 
+                  x1="0%" 
+                  y1="0%" 
+                  x2="100%" 
+                  y2="0%"
+                >
+                  <stop offset="0%" stopColor={section.color} stopOpacity="0.1" />
+                  <stop offset="100%" stopColor={section.color} stopOpacity="0.8" />
+                </linearGradient>
+              ))}
+            </defs>
+
+            {coaSections.map((section, index) => {
+              const pos = getPosition(section.angle);
+              const isActive = activeSection === section.id;
+              
+              return (
+                <g key={section.id}>
+                  <motion.line
+                    x1={centerX}
+                    y1={centerY}
+                    x2={pos.x}
+                    y2={pos.y}
+                    stroke={`url(#line-${section.id})`}
+                    strokeWidth={isActive ? 3 : 2}
+                    strokeDasharray={isActive ? "0" : "4 4"}
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={isInView ? { 
+                      pathLength: 1, 
+                      opacity: isActive ? 1 : 0.6 
+                    } : {}}
+                    transition={{ 
+                      duration: 1, 
+                      delay: 0.5 + index * 0.1,
+                      ease: "easeOut"
+                    }}
+                  />
+                  
+                  {isActive && (
+                    <motion.circle
+                      cx={pos.x}
+                      cy={pos.y}
+                      r="4"
+                      fill={section.color}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: [1, 1.5, 1] }}
+                      transition={{ duration: 1, repeat: Infinity }}
+                    />
+                  )}
+                </g>
+              );
+            })}
+
+            <motion.circle
+              cx={centerX}
+              cy={centerY}
+              r="50"
+              fill="none"
+              stroke="#E7FB10"
+              strokeWidth="1"
+              strokeOpacity="0.3"
+              initial={{ scale: 0 }}
+              animate={isInView ? { scale: 1 } : {}}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            />
+          </svg>
+
+          <motion.div 
+            className="absolute"
+            style={{ 
+              left: "50%", 
+              top: "50%", 
+              transform: "translate(-50%, -50%)"
+            }}
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <PeptideVial />
+          </motion.div>
 
           {coaSections.map((section, index) => {
             const Icon = section.icon;
             const isActive = activeSection === section.id;
+            const pos = getPosition(section.angle);
+            const tooltipPos = getTooltipPosition(section.angle);
             
+            let tooltipClasses = "absolute z-30 w-56";
+            let tooltipStyle: React.CSSProperties = {};
+            
+            if (tooltipPos.horizontal === "left") {
+              tooltipClasses += " left-full ml-3";
+              tooltipStyle.top = "50%";
+              tooltipStyle.transform = "translateY(-50%)";
+            } else if (tooltipPos.horizontal === "right") {
+              tooltipClasses += " right-full mr-3";
+              tooltipStyle.top = "50%";
+              tooltipStyle.transform = "translateY(-50%)";
+            } else {
+              tooltipClasses += " left-1/2";
+              tooltipStyle.transform = "translateX(-50%)";
+              if (tooltipPos.vertical === "top") {
+                tooltipClasses += " bottom-full mb-3";
+              } else {
+                tooltipClasses += " top-full mt-3";
+              }
+            }
+
             return (
               <motion.div
                 key={section.id}
                 initial={{ opacity: 0, scale: 0 }}
                 animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ delay: 0.4 + index * 0.1, type: "spring", stiffness: 200 }}
-                className="absolute transform -translate-x-1/2 -translate-y-1/2 z-10"
-                style={{ top: section.position.top, left: section.position.left }}
+                transition={{ delay: 0.6 + index * 0.1, type: "spring", stiffness: 200 }}
+                className="absolute z-10"
+                style={{ 
+                  left: `${(pos.x / 400) * 100}%`, 
+                  top: `${(pos.y / 360) * 100}%`,
+                  transform: "translate(-50%, -50%)"
+                }}
                 onMouseEnter={() => setActiveSection(section.id)}
                 onMouseLeave={() => setActiveSection(null)}
                 data-testid={`coa-section-${section.id}`}
               >
                 <motion.div
-                  animate={isActive ? { scale: 1.1 } : { scale: 1 }}
+                  animate={isActive ? { scale: 1.15 } : { scale: 1 }}
                   className="relative cursor-pointer"
                 >
                   <div
@@ -189,22 +372,29 @@ export function COAAnatomyDiagram() {
                     style={{
                       backgroundColor: `${section.color}20`,
                       border: `2px solid ${section.color}`,
-                      boxShadow: isActive ? `0 0 20px ${section.color}40` : "none"
+                      boxShadow: isActive ? `0 0 25px ${section.color}60` : "none"
                     }}
                   >
                     <Icon className="h-5 w-5" style={{ color: section.color }} />
                   </div>
 
+                  <div className="absolute top-full mt-1 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+                    <span className="text-xs font-medium text-muted-foreground">
+                      {section.title}
+                    </span>
+                  </div>
+
                   {isActive && (
                     <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.9 }}
-                      className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 z-20 w-64"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      className={tooltipClasses}
+                      style={tooltipStyle}
                     >
                       <div 
-                        className="bg-background/95 backdrop-blur-sm border rounded-lg p-4 shadow-xl"
-                        style={{ borderColor: `${section.color}40` }}
+                        className="bg-background border rounded-lg p-4 shadow-2xl"
+                        style={{ borderColor: `${section.color}50` }}
                       >
                         <h4 
                           className="font-bold text-sm mb-1"
@@ -215,11 +405,11 @@ export function COAAnatomyDiagram() {
                         <p className="text-xs text-muted-foreground mb-3">
                           {section.description}
                         </p>
-                        <ul className="space-y-1">
+                        <ul className="space-y-1.5">
                           {section.details.map((detail, i) => (
                             <li key={i} className="text-xs text-foreground/80 flex items-start gap-2">
-                              <span style={{ color: section.color }}>•</span>
-                              {detail}
+                              <span className="mt-0.5" style={{ color: section.color }}>•</span>
+                              <span>{detail}</span>
                             </li>
                           ))}
                         </ul>
@@ -227,23 +417,16 @@ export function COAAnatomyDiagram() {
                     </motion.div>
                   )}
                 </motion.div>
-
-                <div className="absolute top-full mt-1 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-                  <span className="text-xs font-medium text-muted-foreground">
-                    {section.title}
-                  </span>
-                </div>
               </motion.div>
             );
           })}
-
-        </motion.div>
+        </div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 1.2 }}
-          className="mt-6"
+          className="mt-8"
         >
           <button
             onClick={(e) => {
