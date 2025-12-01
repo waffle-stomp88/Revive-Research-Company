@@ -155,6 +155,12 @@ export default function Products() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 300]);
   const [categoriesExpanded, setCategoriesExpanded] = useState(true);
+  
+  // Collapsible section states
+  const [dealsOpen, setDealsOpen] = useState(true);
+  const [productsOpen, setProductsOpen] = useState(true);
+  const [bundlesOpen, setBundlesOpen] = useState(true);
+  const [bulkOpen, setBulkOpen] = useState(true);
 
   const dealsRef = useRef<HTMLDivElement>(null);
   const bundlesRef = useRef<HTMLDivElement>(null);
@@ -571,20 +577,25 @@ export default function Products() {
             {/* Weekly Deal Section */}
             <div ref={dealsRef} className="scroll-mt-36">
               {saleProduct && (
-                <motion.section
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6 }}
-                  className="mb-12"
-                  data-testid="section-sale-of-week"
-                >
-                  <div className="flex items-center gap-3 mb-5">
-                    <Flame className="h-6 w-6 text-red-500" />
-                    <h2 className="font-display font-bold text-2xl md:text-3xl">Weekly Deal</h2>
-                    <Badge variant="destructive" className="animate-pulse">
-                      {SALE_OF_THE_WEEK.badge}
-                    </Badge>
-                  </div>
+                <Collapsible open={dealsOpen} onOpenChange={setDealsOpen} className="mb-12">
+                  <CollapsibleTrigger asChild>
+                    <div className="cursor-pointer flex items-center gap-3 mb-5">
+                      <Flame className="h-6 w-6 text-red-500" />
+                      <h2 className="font-display font-bold text-2xl md:text-3xl">Weekly Deal</h2>
+                      <Badge variant="destructive" className="animate-pulse">
+                        {SALE_OF_THE_WEEK.badge}
+                      </Badge>
+                      <ChevronDown className={`h-5 w-5 ml-auto transition-transform ${dealsOpen ? "" : "-rotate-90"}`} />
+                    </div>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <motion.section
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6 }}
+                      className="mb-12"
+                      data-testid="section-sale-of-week"
+                    >
                   <Link href={`/products/${saleProduct.id}`}>
                     <Card className="p-5 md:p-6 border-2 border-red-500/40 bg-gradient-to-br from-red-950/40 via-background to-background hover:border-red-500 hover:shadow-[0_0_30px_rgba(239,68,68,0.2)] transition-all cursor-pointer group">
                       <div className="flex flex-col md:flex-row gap-5 items-center">
@@ -622,30 +633,30 @@ export default function Products() {
                         </div>
                       </div>
                     </Card>
-                  </Link>
-                </motion.section>
+                    </Link>
+                    </motion.section>
+                  </CollapsibleContent>
+                </Collapsible>
               )}
             </div>
 
             {/* All Products Section */}
             <div ref={productsRef} className="scroll-mt-36">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="mb-6"
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <Grid3X3 className="h-6 w-6 text-[#E7FB10]" />
-                  <h2 className="font-display font-bold text-2xl md:text-3xl">All Products</h2>
-                  {products && <Badge variant="secondary">{filteredAndSortedProducts.length} of {products.length} items</Badge>}
-                </div>
-                <p className="text-muted-foreground max-w-2xl">
-                  Premium research compounds, rigorously tested and verified. Each product includes a Certificate of Authenticity.
-                </p>
-              </motion.div>
+              <Collapsible open={productsOpen} onOpenChange={setProductsOpen} className="mb-12">
+                <CollapsibleTrigger asChild>
+                  <div className="cursor-pointer flex items-center gap-3 mb-3">
+                    <Grid3X3 className="h-6 w-6 text-[#E7FB10]" />
+                    <h2 className="font-display font-bold text-2xl md:text-3xl">All Products</h2>
+                    {products && <Badge variant="secondary">{filteredAndSortedProducts.length} of {products.length} items</Badge>}
+                    <ChevronDown className={`h-5 w-5 ml-auto transition-transform ${productsOpen ? "" : "-rotate-90"}`} />
+                  </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <p className="text-muted-foreground max-w-2xl mb-6">
+                    Premium research compounds, rigorously tested and verified. Each product includes a Certificate of Authenticity.
+                  </p>
 
-              {/* Mobile Filters */}
+                  {/* Mobile Filters */}
               <div className="lg:hidden mb-6 space-y-4">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -791,41 +802,48 @@ export default function Products() {
                     </motion.div>
                   ))}
                 </motion.div>
-              ) : (
-                <Card className="p-12 text-center">
-                  <FlaskConical className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-                  <h3 className="font-display text-xl font-semibold mb-2">No Products Found</h3>
-                  <p className="text-muted-foreground mb-4">
-                    {searchQuery
-                      ? `No products match "${searchQuery}". Try a different search term.`
-                      : "No products match your current filters."}
-                  </p>
-                  {hasActiveFilters && (
-                    <Button variant="outline" onClick={clearFilters}>
-                      Clear Filters
-                    </Button>
-                  )}
-                </Card>
-              )}
+                ) : (
+                  <Card className="p-12 text-center">
+                    <FlaskConical className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+                    <h3 className="font-display text-xl font-semibold mb-2">No Products Found</h3>
+                    <p className="text-muted-foreground mb-4">
+                      {searchQuery
+                        ? `No products match "${searchQuery}". Try a different search term.`
+                        : "No products match your current filters."}
+                    </p>
+                    {hasActiveFilters && (
+                      <Button variant="outline" onClick={clearFilters}>
+                        Clear Filters
+                      </Button>
+                    )}
+                  </Card>
+                )}
+                </CollapsibleContent>
+              </Collapsible>
             </div>
 
             {/* Research Stacks Section */}
             <div ref={bundlesRef} className="scroll-mt-36">
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                className="mb-12"
-                data-testid="section-bundles"
-              >
-                <div className="flex items-center gap-3 mb-5">
-                  <Package className="h-6 w-6 text-[#21d8ff]" />
-                  <h2 className="font-display font-bold text-2xl md:text-3xl">Research Stacks</h2>
-                  <Badge variant="outline" className="border-primary/50 text-primary">
-                    <Sparkles className="h-3 w-3 mr-1" />
-                    Save More
-                  </Badge>
-                </div>
+              <Collapsible open={bundlesOpen} onOpenChange={setBundlesOpen} className="mb-12">
+                <CollapsibleTrigger asChild>
+                  <div className="cursor-pointer flex items-center gap-3 mb-5">
+                    <Package className="h-6 w-6 text-[#21d8ff]" />
+                    <h2 className="font-display font-bold text-2xl md:text-3xl">Research Stacks</h2>
+                    <Badge variant="outline" className="border-primary/50 text-primary">
+                      <Sparkles className="h-3 w-3 mr-1" />
+                      Save More
+                    </Badge>
+                    <ChevronDown className={`h-5 w-5 ml-auto transition-transform ${bundlesOpen ? "" : "-rotate-90"}`} />
+                  </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <motion.section
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.1 }}
+                    className="mb-12"
+                    data-testid="section-bundles"
+                  >
                 <p className="text-muted-foreground mb-6 max-w-2xl">
                   Expertly curated peptide combinations based on research protocols. Bundle and save on the most popular stacks.
                 </p>
@@ -890,27 +908,34 @@ export default function Products() {
                         </Card>
                       </Link>
                     </motion.div>
-                  ))}
-                </div>
-              </motion.section>
+                    ))}
+                  </div>
+                  </motion.section>
+                </CollapsibleContent>
+              </Collapsible>
             </div>
 
             {/* Bulk Orders Section - Now at the bottom */}
             <div ref={bulkRef} className="scroll-mt-36 mt-16">
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                data-testid="section-bulk-orders"
-              >
-                <div className="flex items-center gap-3 mb-5">
-                  <Boxes className="h-6 w-6 text-[#9d4edd]" />
-                  <h2 className="font-display font-bold text-2xl md:text-3xl">Bulk Orders</h2>
-                  <Badge className="bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30">
-                    <TrendingDown className="h-3 w-3 mr-1" />
-                    Volume Pricing
-                  </Badge>
-                </div>
+              <Collapsible open={bulkOpen} onOpenChange={setBulkOpen} className="mb-12">
+                <CollapsibleTrigger asChild>
+                  <div className="cursor-pointer flex items-center gap-3 mb-5">
+                    <Boxes className="h-6 w-6 text-[#9d4edd]" />
+                    <h2 className="font-display font-bold text-2xl md:text-3xl">Bulk Orders</h2>
+                    <Badge className="bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30">
+                      <TrendingDown className="h-3 w-3 mr-1" />
+                      Volume Pricing
+                    </Badge>
+                    <ChevronDown className={`h-5 w-5 ml-auto transition-transform ${bulkOpen ? "" : "-rotate-90"}`} />
+                  </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <motion.section
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                    data-testid="section-bulk-orders"
+                  >
                 <Card className="p-6 md:p-8 border-2 border-[#9d4edd]/40 bg-gradient-to-r from-purple-950/30 via-background to-purple-950/20">
                   <div className="flex flex-col md:flex-row gap-6 items-center">
                     <p className="text-muted-foreground flex-1 max-w-xl text-center md:text-left">
@@ -939,9 +964,11 @@ export default function Products() {
                         </Button>
                       </Link>
                     </div>
-                  </div>
-                </Card>
-              </motion.section>
+                    </div>
+                  </Card>
+                  </motion.section>
+                </CollapsibleContent>
+              </Collapsible>
             </div>
           </div>
         </div>
