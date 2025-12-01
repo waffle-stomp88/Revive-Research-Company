@@ -3504,58 +3504,65 @@ function PricingOptimizerTab() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-semibold flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-[#E7FB10]" />
-            AI-Powered Price Optimization
-          </h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Get intelligent pricing suggestions with stable analysis and customizable factor weights.
-          </p>
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center py-12 gap-4">
+          <div className="relative">
+            <div className="absolute inset-0 bg-[#E7FB10]/20 rounded-full blur-xl animate-pulse" />
+            <div className="relative bg-gradient-to-br from-[#E7FB10]/10 to-[#21d8ff]/10 rounded-full p-6 border-2 border-[#E7FB10]/50 animate-pulse">
+              <Loader2 className="h-12 w-12 text-[#E7FB10] animate-spin" />
+            </div>
+          </div>
+          <div className="text-center">
+            <h3 className="text-lg font-semibold text-[#E7FB10] mb-1">Analyzing Your Pricing...</h3>
+            <p className="text-sm text-muted-foreground">Running AI analysis on your product catalog</p>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={() => setShowSettings(!showSettings)}
-            className="border-border"
-            size="sm"
-            data-testid="button-pricing-settings"
-          >
-            <Settings className="h-4 w-4" />
-          </Button>
-          {pricingData?.suggestions && pricingData.suggestions.length > 0 && (
+      ) : (
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-[#E7FB10]" />
+              AI-Powered Price Optimization
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Get intelligent pricing suggestions with stable analysis and customizable factor weights.
+            </p>
+          </div>
+          <div className="flex gap-2">
             <Button
               variant="outline"
-              onClick={applyAllSuggestions}
-              disabled={updateProductMutation.isPending}
-              className="border-[#E7FB10]/50 text-[#E7FB10] hover:bg-[#E7FB10]/10"
-              data-testid="button-apply-all-prices"
+              onClick={() => setShowSettings(!showSettings)}
+              className="border-border"
+              size="sm"
+              data-testid="button-pricing-settings"
             >
-              <CheckCircle className="h-4 w-4 mr-2" />
-              Apply All
+              <Settings className="h-4 w-4" />
             </Button>
-          )}
-          <Button
-            onClick={generateSuggestions}
-            disabled={isLoading}
-            className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
-            data-testid="button-generate-pricing"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Analyzing...
-              </>
-            ) : (
-              <>
-                <Zap className="h-4 w-4 mr-2" />
-                Generate Suggestions
-              </>
+            {pricingData?.suggestions && pricingData.suggestions.length > 0 && (
+              <Button
+                variant="outline"
+                onClick={applyAllSuggestions}
+                disabled={updateProductMutation.isPending}
+                className="border-[#E7FB10]/50 text-[#E7FB10] hover:bg-[#E7FB10]/10"
+                data-testid="button-apply-all-prices"
+              >
+                <CheckCircle className="h-4 w-4 mr-2" />
+                Apply All
+              </Button>
             )}
-          </Button>
+            <Button
+              onClick={generateSuggestions}
+              disabled={isLoading}
+              className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
+              size="lg"
+              data-testid="button-generate-pricing"
+            >
+              <Zap className="h-4 w-4 mr-2" />
+              Generate Suggestions
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
 
       {showSettings && (
         <Card className="p-4 border-[#21d8ff]/30 bg-[#21d8ff]/5">
