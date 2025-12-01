@@ -22,6 +22,7 @@ import { AnimatedTrustStats } from "@/components/infographics/animated-stats";
 import { VerificationJourney } from "@/components/infographics/verification-journey";
 import { NewsletterSignup } from "@/components/newsletter-signup";
 import { useState } from "react";
+import { trackEvent } from "@/lib/analytics";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 40 },
@@ -185,7 +186,7 @@ function HeroSection() {
           transition={{ duration: 0.8, delay: 0.7 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <Link href="/products">
+          <Link href="/products" onClick={() => trackEvent('hero_cta_click', 'engagement', 'shop_products')}>
             <Button size="lg" className="font-display text-base px-8 gap-2 bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_30px_rgba(231,251,16,0.4)] hover:shadow-[0_0_50px_rgba(231,251,16,0.6)] transition-all duration-300" data-testid="button-hero-shop">
               Shop Products
               <ArrowRight className="h-4 w-4" />
@@ -261,7 +262,7 @@ function ProductShowcase() {
               transition={{ duration: 40, repeat: Infinity, repeatType: "loop", ease: "linear" }}
             >
               {duplicatedItems.map((product, idx) => (
-                <Link key={`${product.id}-${idx}`} href={`/products/${product.id}`} className="flex-shrink-0">
+                <Link key={`${product.id}-${idx}`} href={`/products/${product.id}`} onClick={() => trackEvent('product_click', 'carousel', product.name)} className="flex-shrink-0">
                   <Card className={`group w-48 h-auto cursor-pointer transition-all duration-300 border-2 flex flex-col relative overflow-hidden ${
                     product.isWeeklyDeal
                       ? "border-[#E7FB10]/80 shadow-[0_0_20px_rgba(231,251,16,0.3)] hover:shadow-[0_0_30px_rgba(231,251,16,0.5)]"

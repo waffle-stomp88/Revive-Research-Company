@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, CheckCircle, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { trackEvent } from "@/lib/analytics";
 
 export function NewsletterSignup() {
   const [email, setEmail] = useState("");
@@ -34,6 +35,7 @@ export function NewsletterSignup() {
       }
 
       setIsSubmitted(true);
+      trackEvent('newsletter_signup', 'conversion', email);
       toast({
         title: "Success!",
         description: data.message || "You've been added to our mailing list",

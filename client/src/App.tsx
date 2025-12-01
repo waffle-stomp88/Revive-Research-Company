@@ -11,6 +11,8 @@ import { Footer } from "@/components/footer";
 import { AgeVerificationModal } from "@/components/age-verification-modal";
 import { FreeShippingBanner } from "@/components/free-shipping-banner";
 import { ChatBot } from "@/components/chatbot";
+import { initGA } from "@/lib/analytics";
+import { useAnalytics } from "@/hooks/use-analytics";
 import Home from "@/pages/home";
 import Products from "@/pages/products";
 import ProductDetail from "@/pages/product-detail";
@@ -55,6 +57,11 @@ function ScrollToTop() {
   return null;
 }
 
+function AnalyticsTracker() {
+  useAnalytics();
+  return null;
+}
+
 function AffiliateTracker() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -70,8 +77,10 @@ function AffiliateTracker() {
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={Home} />
+    <>
+      <AnalyticsTracker />
+      <Switch>
+        <Route path="/" component={Home} />
       <Route path="/products" component={Products} />
       <Route path="/products/:id" component={ProductDetail} />
       <Route path="/bundles/:id" component={BundleDetail} />
@@ -106,10 +115,19 @@ function Router() {
       <Route path="/resources" component={ResourcesHub} />
       <Route component={NotFound} />
     </Switch>
+    </>
   );
 }
 
 function App() {
+  useEffect(() => {
+    if (!import.meta.env.VITE_GA_MEASUREMENT_ID) {
+      console.warn('Missing required Google Analytics key: VITE_GA_MEASUREMENT_ID');
+    } else {
+      initGA();
+    }
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="dark" storageKey="revive-theme">
