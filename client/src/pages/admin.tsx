@@ -121,7 +121,18 @@ const productFormSchema = insertProductSchema.extend({
   dosageOptions: z.string().optional(),
   isWeeklyDeal: z.boolean().optional(),
   weeklyDealEndDate: z.string().optional(),
-});
+}).refine(
+  (data) => {
+    if (data.inStock) {
+      return data.stockAmount !== undefined && data.stockAmount > 0;
+    }
+    return true;
+  },
+  {
+    message: "Stock amount must be greater than 0 when product is marked as In Stock",
+    path: ["stockAmount"],
+  }
+);
 
 type ProductFormValues = z.infer<typeof productFormSchema>;
 
