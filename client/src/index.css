@@ -258,14 +258,13 @@
     transform: scale(1.08);
   }
 
-  /* Apply Button: Glow + Pulse Animation */
+  /* Apply Button: Glow + Pulse at Idle */
   @keyframes apply-glow-pulse {
     0%, 100% {
       box-shadow: 
         0 0 20px rgba(231, 251, 16, 0.5),
         0 0 40px rgba(231, 251, 16, 0.3),
         inset 0 0 10px rgba(231, 251, 16, 0.1);
-      transform: scale(1);
     }
     50% {
       box-shadow: 
@@ -273,12 +272,16 @@
         0 0 70px rgba(231, 251, 16, 0.6),
         0 0 100px rgba(231, 251, 16, 0.3),
         inset 0 0 20px rgba(231, 251, 16, 0.2);
-      transform: scale(1.12);
     }
   }
 
+  .apply-glow-pulse {
+    animation: apply-glow-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
   .apply-glow-pulse:hover {
-    animation: apply-glow-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
   }
 
   /* RUO Safety Warning Pulse Animation */
