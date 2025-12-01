@@ -579,7 +579,7 @@ export default function Dashboard() {
 
                   <Link href="/affiliate-apply">
                     <Button 
-                      className="w-full font-semibold text-base"
+                      className="w-full font-semibold text-base glow-yellow"
                       style={{
                         backgroundColor: '#E7FB10',
                         color: '#000',
