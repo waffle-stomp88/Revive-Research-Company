@@ -5,9 +5,13 @@
 @tailwind utilities;
 
 @layer utilities {
+  .group-hover\:wipe-animation {
+    transition: none !important;
+  }
+  
   .group:hover .group-hover\:wipe-animation {
     transform: translateX(-100%) !important;
-    animation: none !important;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 }
 
