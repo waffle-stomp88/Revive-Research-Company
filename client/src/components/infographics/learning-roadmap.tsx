@@ -127,7 +127,10 @@ export function LearningRoadmap({ onModuleClick, completedModules = [] }: Learni
               <motion.div
                 className="relative bg-card border rounded-xl p-4 cursor-pointer h-full overflow-hidden"
                 style={{ 
-                  borderColor: isHovered ? module.color : 'rgba(255,255,255,0.1)',
+                  borderColor: isHovered ? module.color : `${module.color}40`,
+                  boxShadow: isHovered 
+                    ? `0 0 25px ${module.color}40, 0 0 50px ${module.color}20` 
+                    : `0 0 15px ${module.color}20`,
                 }}
                 whileHover={{ y: -5 }}
                 onClick={() => onModuleClick?.(module.slug)}
@@ -135,17 +138,20 @@ export function LearningRoadmap({ onModuleClick, completedModules = [] }: Learni
                 <motion.div
                   className="absolute inset-0"
                   style={{ 
-                    background: `radial-gradient(circle at top center, ${module.color}15 0%, transparent 60%)`
+                    background: `radial-gradient(circle at top center, ${module.color}25 0%, transparent 70%)`
                   }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: isHovered ? 1 : 0.3 }}
+                  initial={{ opacity: 0.5 }}
+                  animate={{ opacity: isHovered ? 1 : 0.5 }}
                 />
 
                 <div className="relative">
                   <div className="flex items-center justify-between mb-3">
                     <motion.div
                       className="relative w-10 h-10 rounded-lg flex items-center justify-center"
-                      style={{ backgroundColor: `${module.color}20` }}
+                      style={{ 
+                        backgroundColor: `${module.color}35`,
+                        boxShadow: `0 0 12px ${module.color}50`
+                      }}
                       animate={isHovered ? { scale: 1.1 } : { scale: 1 }}
                     >
                       <Icon className="h-5 w-5" style={{ color: module.color }} />
@@ -164,8 +170,9 @@ export function LearningRoadmap({ onModuleClick, completedModules = [] }: Learni
                       <span 
                         className="text-[10px] font-bold px-1.5 py-0.5 rounded"
                         style={{ 
-                          backgroundColor: `${module.color}20`,
-                          color: module.color
+                          backgroundColor: `${module.color}30`,
+                          color: module.color,
+                          border: `1px solid ${module.color}50`
                         }}
                       >
                         {module.step}/5
