@@ -100,6 +100,7 @@ interface Affiliate {
   payoutMethod: string;
   payoutEmail: string;
   venmoUsername: string | null;
+  zelleEmail: string | null;
   pendingBalance: string;
 }
 
@@ -127,6 +128,7 @@ export default function AffiliateDashboard() {
   const [payoutMethod, setPayoutMethod] = useState("");
   const [payoutEmail, setPayoutEmail] = useState("");
   const [venmoUsername, setVenmoUsername] = useState("");
+  const [zelleEmail, setZelleEmail] = useState("");
   const [leaderboardPeriod, setLeaderboardPeriod] = useState<"weekly" | "monthly">("monthly");
 
   useEffect(() => {
@@ -151,6 +153,7 @@ export default function AffiliateDashboard() {
     if (affiliate) {
       setPayoutEmail(affiliate.payoutEmail || "");
       setVenmoUsername(affiliate.venmoUsername || "");
+      setZelleEmail(affiliate.zelleEmail || "");
       setPayoutMethod(affiliate.payoutMethod || "paypal");
     }
   }, [affiliate]);
@@ -902,6 +905,7 @@ export default function AffiliateDashboard() {
                       <SelectContent>
                         <SelectItem value="paypal">PayPal</SelectItem>
                         <SelectItem value="venmo">Venmo</SelectItem>
+                        <SelectItem value="zelle">Zelle</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -939,6 +943,23 @@ export default function AffiliateDashboard() {
                     </div>
                   )}
 
+                  {(payoutMethod || affiliate.payoutMethod) === "zelle" && (
+                    <div className="space-y-2">
+                      <Label htmlFor="zelleEmail">Zelle Email</Label>
+                      <Input
+                        id="zelleEmail"
+                        type="email"
+                        placeholder="your-email@example.com"
+                        value={zelleEmail || affiliate.zelleEmail || ""}
+                        onChange={(e) => setZelleEmail(e.target.value)}
+                        data-testid="input-zelle-email"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Enter the email address associated with your Zelle account
+                      </p>
+                    </div>
+                  )}
+
                   <Button
                     onClick={() => {
                       const selectedMethod = payoutMethod || "paypal";
@@ -946,12 +967,15 @@ export default function AffiliateDashboard() {
                         payoutMethod: string;
                         payoutEmail?: string;
                         venmoUsername?: string;
+                        zelleEmail?: string;
                       } = { payoutMethod: selectedMethod };
                       
                       if (selectedMethod === "paypal") {
                         data.payoutEmail = payoutEmail;
                       } else if (selectedMethod === "venmo") {
                         data.venmoUsername = venmoUsername;
+                      } else if (selectedMethod === "zelle") {
+                        data.zelleEmail = zelleEmail;
                       }
                       
                       updateSettingsMutation.mutate(data);
