@@ -106,21 +106,7 @@ export function LearningRoadmap({ onModuleClick, completedModules = [] }: Learni
         ))}
       </div>
 
-      <motion.div
-        className="flex justify-center mb-6 pt-6 md:pt-16"
-        initial={{ opacity: 0 }}
-        animate={isInView ? { opacity: 1 } : {}}
-        transition={{ delay: 0.2 }}
-      >
-        <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-r from-[#ec4899]/10 via-[#9d4edd]/10 to-[#21d8ff]/10 border border-[#ec4899]/20">
-          <Sparkles className="h-4 w-4 text-[#ec4899]" />
-          <span className="text-sm text-muted-foreground">
-            Complete all 5 modules to master the researcher essentials
-          </span>
-        </div>
-      </motion.div>
-
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 md:gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 md:gap-3 pt-6 md:pt-16">
         {courseModules.map((module, index) => {
           const Icon = module.icon;
           const isCompleted = completedModules.includes(module.step);
@@ -264,6 +250,19 @@ export function LearningRoadmap({ onModuleClick, completedModules = [] }: Learni
         })}
       </div>
 
+      <motion.div
+        className="flex justify-center mt-8"
+        initial={{ opacity: 0 }}
+        animate={isInView ? { opacity: 1 } : {}}
+        transition={{ delay: 1.5 }}
+      >
+        <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-r from-[#ec4899]/10 via-[#9d4edd]/10 to-[#21d8ff]/10 border border-[#ec4899]/20">
+          <Sparkles className="h-4 w-4 text-[#ec4899]" />
+          <span className="text-sm text-muted-foreground">
+            Complete all 5 modules to master the researcher essentials
+          </span>
+        </div>
+      </motion.div>
     </div>
   );
 }
