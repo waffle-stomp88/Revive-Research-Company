@@ -11,13 +11,8 @@ import {
   Truck,
   CheckCircle,
   FlaskConical,
-  Microscope,
   FileCheck,
-  Eye,
-  Target,
-  BookOpen,
-  ClipboardCheck,
-  Sparkles,
+  ChevronDown as ChevronDownIcon,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { Product } from "@shared/schema";
@@ -26,6 +21,7 @@ import researchLabImage from "@assets/generated_images/neon_peptide_research_lab
 import { AnimatedTrustStats } from "@/components/infographics/animated-stats";
 import { VerificationJourney } from "@/components/infographics/verification-journey";
 import { NewsletterSignup } from "@/components/newsletter-signup";
+import { useState } from "react";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 40 },
@@ -41,32 +37,31 @@ const staggerContainer = {
   }
 };
 
-const trustMetrics = [
-  { icon: Shield, value: "99.9%", label: "Purity Verified" },
-  { icon: Beaker, value: "3rd Party", label: "Lab Tested" },
-  { icon: Award, value: "GMP", label: "Certified" },
-  { icon: Truck, value: "24hr", label: "Shipping" },
-];
-
-const howItWorks = [
+const faqItems = [
   {
-    step: "01",
-    icon: Beaker,
-    title: "Premium Synthesis",
-    description: "Our compounds are synthesized using industry-leading methods and quality raw materials."
+    question: "What does 'Research Use Only' mean?",
+    answer: "Research compounds are intended exclusively for scientific research, laboratory testing, and educational purposes. They are not approved for human consumption or medical use."
   },
   {
-    step: "02",
-    icon: Microscope,
-    title: "Rigorous Testing",
-    description: "Every batch undergoes comprehensive third-party testing for purity and potency verification."
+    question: "How do I verify the authenticity of my product?",
+    answer: "Every product includes a QR code that links directly to its Certificate of Authenticity (COA). Scan it to view lab-verified purity, batch information, and testing results instantly."
   },
   {
-    step: "03",
-    icon: FileCheck,
-    title: "COA Verified",
-    description: "Each product ships with a Certificate of Authenticity you can verify on our platform."
+    question: "What's your shipping policy?",
+    answer: "Free shipping on orders over $175. Otherwise flat $20 shipping. We offer 24-hour standard shipping and same-day shipping for orders placed before 12:00 CT."
   },
+  {
+    question: "Can I get a refund?",
+    answer: "No refunds—all sales are final due to the nature of research compounds. However, if there's a quality issue, contact our support team and we'll work with you on a solution."
+  },
+  {
+    question: "How should I store my compounds?",
+    answer: "Storage depends on the specific compound. Check the product page for detailed storage instructions. Generally, lyophilized peptides are stable at room temp or refrigerated (2-8°C). Reconstituted solutions should be refrigerated."
+  },
+  {
+    question: "Do you offer subscriptions?",
+    answer: "Yes! We offer weekly (15% off), bi-weekly (12% off), and monthly (10% off) subscriptions for automatic reorders. You can cancel anytime."
+  }
 ];
 
 function HeroSection() {
@@ -78,7 +73,6 @@ function HeroSection() {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image with Parallax */}
       <motion.div 
         style={{ y, scale, opacity: imageOpacity }}
         className="absolute inset-0 z-0"
@@ -89,9 +83,7 @@ function HeroSection() {
           className="w-full h-full object-cover object-center"
         />
       </motion.div>
-      {/* Animated Smoke Effects */}
       <div className="absolute inset-0 z-[1] overflow-hidden pointer-events-none">
-        {/* Smoke Layer 1 - Slow drift left to right */}
         <motion.div
           className="absolute -left-1/4 bottom-0 w-[150%] h-[60%] opacity-40"
           style={{
@@ -108,8 +100,6 @@ function HeroSection() {
             ease: "easeInOut",
           }}
         />
-        
-        {/* Smoke Layer 2 - Slower drift right to left */}
         <motion.div
           className="absolute -right-1/4 bottom-0 w-[150%] h-[50%] opacity-30"
           style={{
@@ -127,88 +117,9 @@ function HeroSection() {
             delay: 2,
           }}
         />
-        
-        {/* Smoke Layer 3 - Rising wisps */}
-        <motion.div
-          className="absolute left-1/4 bottom-0 w-[80%] h-[70%] opacity-25"
-          style={{
-            background: "radial-gradient(ellipse 80% 50% at 50% 100%, rgba(60,70,90,0.6) 0%, transparent 60%)",
-            filter: "blur(60px)",
-          }}
-          animate={{
-            y: ["0%", "-15%", "0%"],
-            scale: [1, 1.1, 1],
-            opacity: [0.25, 0.35, 0.25],
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1,
-          }}
-        />
-        
-        {/* Smoke Layer 4 - Subtle top haze */}
-        <motion.div
-          className="absolute top-0 left-0 w-full h-[40%] opacity-20"
-          style={{
-            background: "linear-gradient(to bottom, rgba(50,60,80,0.4) 0%, transparent 100%)",
-            filter: "blur(30px)",
-          }}
-          animate={{
-            opacity: [0.2, 0.3, 0.2],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        
-        {/* Smoke Layer 5 - Side wisps left */}
-        <motion.div
-          className="absolute -left-20 bottom-1/4 w-[400px] h-[400px] opacity-30"
-          style={{
-            background: "radial-gradient(ellipse at center, rgba(70,80,100,0.5) 0%, transparent 70%)",
-            filter: "blur(45px)",
-          }}
-          animate={{
-            x: ["-20%", "30%", "-20%"],
-            y: ["-10%", "10%", "-10%"],
-            scale: [1, 1.2, 1],
-          }}
-          transition={{
-            duration: 18,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 3,
-          }}
-        />
-        
-        {/* Smoke Layer 6 - Side wisps right */}
-        <motion.div
-          className="absolute -right-20 bottom-1/3 w-[350px] h-[350px] opacity-25"
-          style={{
-            background: "radial-gradient(ellipse at center, rgba(90,100,120,0.4) 0%, transparent 65%)",
-            filter: "blur(50px)",
-          }}
-          animate={{
-            x: ["20%", "-25%", "20%"],
-            y: ["5%", "-15%", "5%"],
-            scale: [1.1, 0.9, 1.1],
-          }}
-          transition={{
-            duration: 22,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 5,
-          }}
-        />
       </div>
-      {/* Dark overlay gradient - subtle to preserve vial logo */}
       <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-[2]" />
       <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-background z-[2]" />
-      {/* Neon glow effects */}
       <div className="absolute inset-0 overflow-hidden z-[3] pointer-events-none">
         <motion.div 
           className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-[#21d8ff]/10 rounded-full blur-[150px]"
@@ -227,12 +138,10 @@ function HeroSection() {
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
         />
       </div>
-      {/* Content - Positioned below vial */}
       <motion.div
         style={{ opacity }}
         className="relative z-[10] max-w-6xl mx-auto px-4 md:px-8 text-center flex flex-col items-center justify-center h-full"
       >
-        {/* Badge at top */}
         <motion.div
           initial={{ opacity: 0, y: 20, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -245,7 +154,6 @@ function HeroSection() {
           </span>
         </motion.div>
 
-        {/* Main Headline with premium entrance */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -261,7 +169,6 @@ function HeroSection() {
           </h1>
         </motion.div>
 
-        {/* Subheadline with staggered animation */}
         <motion.p
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -269,12 +176,9 @@ function HeroSection() {
           className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-10 leading-relaxed drop-shadow-lg"
           data-testid="text-hero-subheadline"
         >
-          Engineered with intention.
-          <br />
-          Built for those who don't wait for permission.
+          Third-party tested. QR-verifiable. Built for researchers who demand transparency.
         </motion.p>
 
-        {/* CTA Buttons with premium animation */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -294,7 +198,6 @@ function HeroSection() {
           </Link>
         </motion.div>
       </motion.div>
-      {/* Scroll indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -309,45 +212,6 @@ function HeroSection() {
           <ChevronDown className="h-6 w-6 text-white" />
         </motion.div>
       </motion.div>
-    </section>
-  );
-}
-
-function TrustSection() {
-  return (
-    <section className="py-12 md:py-16 bg-card border-y border-border relative overflow-hidden">
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-[#E7FB10]/10 blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-[#21d8ff]/10 blur-3xl" />
-      </div>
-      
-      <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          className="text-center mb-8"
-        >
-          <motion.div
-            initial={{ scale: 0 }}
-            whileInView={{ scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ type: "spring", delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#21d8ff]/10 border border-[#21d8ff]/30 mb-6"
-          >
-            <Sparkles className="h-4 w-4 text-[#21d8ff]" />
-            <span className="text-sm font-medium text-[#21d8ff]">Verified Quality</span>
-          </motion.div>
-          <h2 className="font-display text-4xl md:text-5xl font-bold mb-4">
-            Our Commitment to Excellence
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Every product meets the highest standards of purity, testing, and verification.
-          </p>
-        </motion.div>
-        
-        <AnimatedTrustStats />
-      </div>
     </section>
   );
 }
@@ -369,10 +233,10 @@ function ProductShowcase() {
           transition={{ duration: 0.6 }}
           className="text-center mb-8"
         >
-          <h2 className="font-display text-4xl md:text-5xl font-bold mb-6" data-testid="text-products-heading">
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4" data-testid="text-products-heading">
             Featured Products
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base text-muted-foreground max-w-2xl mx-auto">
             Premium research compounds, rigorously tested and verified for quality and purity.
           </p>
         </motion.div>
@@ -408,7 +272,6 @@ function ProductShowcase() {
                       ? "border-red-500/50 shadow-glow-red-sm hover:border-red-500 hover:shadow-glow-red-lg hover:animate-product-glow-red backlit-red"
                       : "border-cyan-400/60 shadow-glow-blue-sm hover:border-cyan-400 hover:shadow-glow-blue-lg hover:animate-product-glow-blue backlit-blue"
                   }`} data-testid={`card-product-${product.id}`}>
-                    {/* Diagonal red line for out of stock */}
                     {!product.inStock && (
                       <div 
                         className="absolute inset-0 pointer-events-none z-10"
@@ -466,11 +329,30 @@ function ProductShowcase() {
   );
 }
 
-function ScienceSection() {
+function QualityAndTrustSection() {
   return (
-    <section className="py-12 md:py-16 bg-card border-y border-border">
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
-        <div className="grid md:grid-cols-2 gap-10 items-center">
+    <section className="py-12 md:py-16 bg-card border-y border-border relative overflow-hidden">
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-[#E7FB10]/10 blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-[#21d8ff]/10 blur-3xl" />
+      </div>
+      
+      <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          className="text-center mb-12"
+        >
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
+            Verified Quality & Transparency
+          </h2>
+          <p className="text-base text-muted-foreground max-w-2xl mx-auto mb-8">
+            Every compound undergoes rigorous third-party lab testing. View metrics and testing details below.
+          </p>
+        </motion.div>
+
+        <div className="grid md:grid-cols-2 gap-10 items-center mb-10">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -495,16 +377,11 @@ function ScienceSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6 }}
           >
-            <span className="text-sm font-medium uppercase tracking-wider text-muted-foreground mb-2 block">
-              Quality Assurance
-            </span>
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4" data-testid="text-science-heading">
+            <h3 className="font-display text-2xl md:text-3xl font-bold mb-4">
               Rigorous Testing Standards
-            </h2>
+            </h3>
             <p className="text-base text-muted-foreground leading-relaxed mb-6">
-              Every batch of our research compounds undergoes comprehensive third-party 
-              laboratory testing. We maintain the highest standards of purity, potency, 
-              and quality control to ensure researchers receive exactly what they need.
+              Every batch undergoes comprehensive third-party laboratory testing with HPLC purity analysis and mass spectrometry confirmation.
             </p>
             <ul className="space-y-3 mb-6">
               {[
@@ -514,19 +391,21 @@ function ScienceSection() {
                 "Certificate of Authenticity included"
               ].map((item, index) => (
                 <li key={index} className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-foreground flex-shrink-0" />
-                  <span className="text-muted-foreground">{item}</span>
+                  <CheckCircle className="h-5 w-5 text-[#E7FB10] flex-shrink-0" />
+                  <span className="text-muted-foreground text-sm">{item}</span>
                 </li>
               ))}
             </ul>
             <Link href="/coa">
-              <Button className="font-display gap-2 bg-[#E7FB10] border-2 border-[#E7FB10] shadow-glow-sm hover:shadow-glow-lg transition-shadow duration-300" data-testid="button-verify-coa">
+              <Button className="font-display gap-2 bg-[#E7FB10] text-black border-2 border-[#E7FB10]" data-testid="button-verify-coa">
                 Verify Your COA
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
           </motion.div>
         </div>
+
+        <AnimatedTrustStats />
       </div>
     </section>
   );
@@ -552,12 +431,12 @@ function VerificationSection() {
             whileInView={{ scale: 1 }}
             viewport={{ once: true }}
             transition={{ type: "spring", delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#9d4edd]/10 border border-[#9d4edd]/30 mb-6"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#9d4edd]/10 border border-[#9d4edd]/30 mb-4"
           >
             <FileCheck className="h-4 w-4 text-[#9d4edd]" />
             <span className="text-sm font-medium text-[#9d4edd]">Complete Traceability</span>
           </motion.div>
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-3" data-testid="text-verification-heading">
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-3">
             Verify Every Product
           </h2>
           <p className="text-base text-muted-foreground max-w-2xl mx-auto">
@@ -582,7 +461,7 @@ function VerificationSection() {
           className="text-center mt-8"
         >
           <Link href="/coa">
-            <Button size="lg" className="font-display gap-2 bg-[#21d8ff] text-black border-2 border-[#21d8ff]" data-testid="button-try-verification">
+            <Button size="lg" className="font-display gap-2 bg-[#21d8ff] text-black border-2 border-[#21d8ff]">
               Try It Now
               <ArrowRight className="h-4 w-4" />
             </Button>
@@ -593,22 +472,24 @@ function VerificationSection() {
   );
 }
 
-function HowItWorksSection() {
+function FAQSection() {
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
+
   return (
     <section className="py-12 md:py-16">
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
+      <div className="max-w-3xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-8"
+          className="text-center mb-10"
         >
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4" data-testid="text-how-it-works-heading">
-            How It Works
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-3">
+            Frequently Asked Questions
           </h2>
-          <p className="text-base text-muted-foreground max-w-2xl mx-auto">
-            From synthesis to delivery, every step is designed with precision and care.
+          <p className="text-base text-muted-foreground">
+            Find answers to common questions about our products and policies.
           </p>
         </motion.div>
 
@@ -617,122 +498,41 @@ function HowItWorksSection() {
           whileInView="animate"
           viewport={{ once: true, margin: "-100px" }}
           variants={staggerContainer}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          className="space-y-3"
         >
-          {howItWorks.map((item, index) => (
+          {faqItems.map((item, index) => (
             <motion.div
-              key={item.step}
-              variants={fadeInUp}
-              className="relative text-center"
-            >
-              <span className="font-display text-8xl font-bold text-muted/50 absolute -top-4 left-1/2 -translate-x-1/2">
-                {item.step}
-              </span>
-              <div className="relative pt-16">
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 mb-4">
-                  <item.icon className="h-6 w-6 text-foreground" />
-                </div>
-                <h3 className="font-display text-lg font-semibold mb-2">
-                  {item.title}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {item.description}
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-const transparencyLinks = [
-  {
-    icon: Eye,
-    title: "Our Transparency",
-    description: "Company values and our commitment to openness",
-    href: "/transparency",
-    color: "#9d4edd"
-  },
-  {
-    icon: Target,
-    title: "Quality Process",
-    description: "See our 6-step production and testing flow",
-    href: "/quality-process",
-    color: "#21d8ff"
-  },
-  {
-    icon: BookOpen,
-    title: "Education Center",
-    description: "Learn about peptides with our research guides",
-    href: "/education",
-    color: "#ec4899"
-  },
-  {
-    icon: ClipboardCheck,
-    title: "Buyer Checklist",
-    description: "Know what to look for in a peptide vendor",
-    href: "/buyer-checklist",
-    color: "#E7FB10"
-  }
-];
-
-function TransparencyHub() {
-  return (
-    <section className="py-12 md:py-16 bg-card border-y border-border">
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-8"
-        >
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4" data-testid="text-transparency-heading">
-            Full Transparency
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            We believe you deserve to know exactly who you're buying from and how we operate.
-          </p>
-        </motion.div>
-
-        <motion.div
-          initial="initial"
-          whileInView="animate"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={staggerContainer}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-        >
-          {transparencyLinks.map((item) => (
-            <motion.div
-              key={item.title}
+              key={index}
               variants={fadeInUp}
             >
-              <Link href={item.href}>
-                <Card 
-                  className="p-6 h-full cursor-pointer transition-all duration-300 hover:border-opacity-100 group"
-                  style={{ borderColor: `${item.color}30` }}
-                  data-testid={`link-transparency-${item.title.toLowerCase().replace(/\s+/g, '-')}`}
-                >
-                  <div 
-                    className="w-12 h-12 rounded-lg flex items-center justify-center mb-4"
-                    style={{ backgroundColor: `${item.color}15` }}
+              <button
+                onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                className="w-full text-left p-4 rounded-lg border border-border bg-card hover:bg-card/80 transition-colors"
+                data-testid={`button-faq-${index}`}
+              >
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-sm">{item.question}</h3>
+                  <motion.div
+                    animate={{ rotate: openIndex === index ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <item.icon className="h-6 w-6" style={{ color: item.color }} />
-                  </div>
-                  <h3 className="font-display text-lg font-semibold mb-2 group-hover:text-[var(--accent)]" style={{ '--accent': item.color } as React.CSSProperties}>
-                    {item.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    {item.description}
-                  </p>
-                  <div className="flex items-center text-sm font-medium group-hover:translate-x-1 transition-transform" style={{ color: item.color }}>
-                    Learn More
-                    <ArrowRight className="h-4 w-4 ml-1" />
-                  </div>
-                </Card>
-              </Link>
+                    <ChevronDownIcon className="h-5 w-5 text-muted-foreground" />
+                  </motion.div>
+                </div>
+              </button>
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ 
+                  opacity: openIndex === index ? 1 : 0,
+                  height: openIndex === index ? "auto" : 0
+                }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <p className="text-sm text-muted-foreground px-4 py-3">
+                  {item.answer}
+                </p>
+              </motion.div>
             </motion.div>
           ))}
         </motion.div>
@@ -751,20 +551,18 @@ function CTASection() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4" data-testid="text-cta-heading">
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
             Ready to Begin Your Research?
           </h2>
           <p className="text-base opacity-80 mb-8 max-w-2xl mx-auto">
-            Join researchers worldwide who trust Revive for premium quality compounds 
-            backed by rigorous testing and verification.
+            Join researchers worldwide who trust Revive for premium quality compounds backed by rigorous testing and verification.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/products">
               <Button 
                 size="lg" 
                 variant="secondary"
-                className="font-display text-base px-8 gap-2 shadow-glow-sm hover:shadow-glow-lg transition-shadow duration-300"
-                data-testid="button-cta-shop"
+                className="font-display text-base px-8 gap-2"
               >
                 Browse Products
                 <ArrowRight className="h-4 w-4" />
@@ -775,7 +573,6 @@ function CTASection() {
                 size="lg" 
                 variant="outline"
                 className="font-display text-base px-8 bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
-                data-testid="button-cta-contact"
               >
                 Verify COA
               </Button>
@@ -816,11 +613,9 @@ export default function Home() {
     <main>
       <HeroSection />
       <ProductShowcase />
-      <TrustSection />
+      <QualityAndTrustSection />
       <VerificationSection />
-      <ScienceSection />
-      <TransparencyHub />
-      <HowItWorksSection />
+      <FAQSection />
       <CTASection />
       <NewsletterSection />
     </main>
