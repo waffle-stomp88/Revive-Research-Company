@@ -42,6 +42,7 @@ import BuyerChecklist from "@/pages/buyer-checklist";
 import Troubleshooting from "@/pages/troubleshooting";
 import BatchArchive from "@/pages/batch-archive";
 import LabNotes from "@/pages/lab-notes";
+import ResourcesHub from "@/pages/resources";
 import NotFound from "@/pages/not-found";
 
 function ScrollToTop() {
@@ -102,6 +103,7 @@ function Router() {
       <Route path="/troubleshooting" component={Troubleshooting} />
       <Route path="/batch-archive" component={BatchArchive} />
       <Route path="/lab-notes" component={LabNotes} />
+      <Route path="/resources" component={ResourcesHub} />
       <Route component={NotFound} />
     </Switch>
   );

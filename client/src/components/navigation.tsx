@@ -145,26 +145,37 @@ export function Navigation() {
                 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <motion.div
-                      className="relative px-4 py-2 rounded-md cursor-pointer"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <span
-                        className={`flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 ${
-                          resourceLinks.some(r => location === r.href)
-                            ? "text-[#9d4edd] drop-shadow-[0_0_8px_rgba(157,78,221,0.6)]"
-                            : "text-muted-foreground hover:text-[#9d4edd]"
-                        }`}
-                        data-testid="link-nav-resources"
+                    <Link href="/resources" onClick={() => window.scrollTo(0, 0)}>
+                      <motion.div
+                        className="relative px-4 py-2 rounded-md group cursor-pointer"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.98 }}
                       >
-                        Resources
-                        <ChevronDown className="h-4 w-4" />
-                      </span>
-                      {resourceLinks.some(r => location === r.href) && (
-                        <div className="absolute inset-0 bg-[#9d4edd]/10 rounded-md border border-[#9d4edd]/30" />
-                      )}
-                    </motion.div>
+                        <span
+                          className={`flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 ${
+                            location === "/resources" || resourceLinks.some(r => location === r.href)
+                              ? "text-[#9d4edd] drop-shadow-[0_0_8px_rgba(157,78,221,0.6)]"
+                              : "text-muted-foreground group-hover:text-[#9d4edd]"
+                          }`}
+                          data-testid="link-nav-resources"
+                        >
+                          Resources
+                          <ChevronDown className="h-4 w-4" />
+                        </span>
+                        {(location === "/resources" || resourceLinks.some(r => location === r.href)) && (
+                          <motion.div
+                            className="absolute inset-0 bg-[#9d4edd]/10 rounded-md border border-[#9d4edd]/30"
+                            layoutId="resource-highlight"
+                          />
+                        )}
+                        <motion.div
+                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#9d4edd] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
+                          initial={{ scaleX: 0 }}
+                          whileHover={{ scaleX: 1 }}
+                          transition={{ duration: 0.4 }}
+                        />
+                      </motion.div>
+                    </Link>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="center" className="w-56">
                     {resourceLinks.map((link) => {
@@ -346,6 +357,7 @@ export function Navigation() {
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
+                </div>
                 )}
                 
                 <Link href="/products">
