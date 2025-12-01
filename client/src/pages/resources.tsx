@@ -84,20 +84,22 @@ export default function ResourcesHub() {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
                   whileHover={{ scale: 1.08 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10, delay: index * 0.1 }}
                 >
                   <Link href={resource.href} onClick={() => window.scrollTo(0, 0)}>
-                    <Card className="h-full p-6 hover-elevate cursor-pointer transition-all duration-300 border-l-4 group"
+                    <Card className="h-full p-6 hover-elevate cursor-pointer border-l-4 group"
                       style={{ borderLeftColor: resource.color }}
                     >
                       <div className="flex items-start gap-4 mb-3">
-                        <div 
-                          className="p-3 rounded-lg transition-all duration-300 group-hover:scale-125"
+                        <motion.div 
+                          className="p-3 rounded-lg"
+                          whileHover={{ scale: 1.25 }}
+                          transition={{ type: "spring", stiffness: 400, damping: 10 }}
                           style={{ backgroundColor: `${resource.color}20` }}
                         >
                           <Icon className="h-6 w-6" style={{ color: resource.color }} />
-                        </div>
+                        </motion.div>
                       </div>
                       
                       <h3 className="text-lg font-semibold mb-2" data-testid={`text-resource-${resource.title.toLowerCase().replace(/\s+/g, "-")}`}>
