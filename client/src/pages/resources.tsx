@@ -43,7 +43,7 @@ const resources = [
 
 export default function ResourcesHub() {
   return (
-    <main className="min-h-screen pt-32">
+    <main className="min-h-screen pt-40">
       {/* Hero Section */}
       <section className="relative pb-16 md:pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#9d4edd]/8 via-background to-background" />
