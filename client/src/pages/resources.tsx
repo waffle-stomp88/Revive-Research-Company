@@ -45,7 +45,7 @@ export default function ResourcesHub() {
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative py-16 md:py-20 overflow-hidden">
+      <section className="relative pt-24 pb-8 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#9d4edd]/8 via-background to-background" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(157,78,221,0.12),transparent_60%)]" />
 
