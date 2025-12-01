@@ -1653,7 +1653,7 @@ export async function registerRoutes(
     try {
       const { code, description, discountPercent, type, affiliateId, maxUsages, expiresAt, freeShipping } = req.body;
       
-      if (!code || !discountPercent) {
+      if (!code || discountPercent === undefined || discountPercent === null || discountPercent === '') {
         return res.status(400).json({ error: "Code and discount percent are required" });
       }
       
