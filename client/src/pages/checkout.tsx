@@ -297,7 +297,7 @@ export default function Checkout() {
               <Checkbox 
                 checked={ruoAcknowledged}
                 onCheckedChange={(checked) => setRuoAcknowledged(checked === true)}
-                className="mt-0.5 border-red-500/50 data-[state=checked]:bg-red-500 data-[state=checked]:border-red-500"
+                className="mt-0.5 border-red-500/50 data-[state=checked]:bg-red-500 data-[state=checked]:border-red-500 transition-colors duration-200"
                 data-testid="checkbox-ruo-acknowledge"
               />
               <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
@@ -309,7 +309,7 @@ export default function Checkout() {
               <Checkbox 
                 checked={ageConfirmed}
                 onCheckedChange={(checked) => setAgeConfirmed(checked === true)}
-                className="mt-0.5 border-[#E7FB10]/50 data-[state=checked]:bg-[#E7FB10] data-[state=checked]:border-[#E7FB10]"
+                className="mt-0.5 border-[#E7FB10]/50 data-[state=checked]:bg-[#E7FB10] data-[state=checked]:border-[#E7FB10] transition-colors duration-200"
                 data-testid="checkbox-age-confirm"
               />
               <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
