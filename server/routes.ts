@@ -1998,5 +1998,29 @@ Return ONLY valid JSON in this exact format:
     }
   });
 
+  // Delete user account
+  app.post("/api/user/delete-account", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      await storage.deleteUser(userId);
+      res.json({ success: true, message: "Your account has been deleted" });
+    } catch (error) {
+      console.error("Error deleting user account:", error);
+      res.status(500).json({ error: "Failed to delete account" });
+    }
+  });
+
+  // Delete affiliate account
+  app.post("/api/affiliate/delete-account", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      await storage.deleteAffiliate(userId);
+      res.json({ success: true, message: "Your affiliate account has been deleted" });
+    } catch (error) {
+      console.error("Error deleting affiliate account:", error);
+      res.status(500).json({ error: "Failed to delete affiliate account" });
+    }
+  });
+
   return httpServer;
 }

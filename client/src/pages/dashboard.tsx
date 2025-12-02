@@ -76,6 +76,7 @@ export default function Dashboard() {
   const { user, isLoading: authLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<ReviewableOrder | null>(null);
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewTitle, setReviewTitle] = useState("");
@@ -135,6 +136,28 @@ export default function Dashboard() {
       toast({
         title: "Error",
         description: error.message || "Failed to submit review",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteAccountMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("POST", "/api/user/delete-account", {});
+    },
+    onSuccess: () => {
+      toast({
+        title: "Account Deleted",
+        description: "Your account has been permanently deleted.",
+      });
+      setTimeout(() => {
+        window.location.href = "/api/logout";
+      }, 1000);
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete your account. Please try again.",
         variant: "destructive",
       });
     },
@@ -592,10 +615,62 @@ export default function Dashboard() {
                   </Link>
                 </div>
               </div>
+
+              <div className="border-t-2 border-red-500/20 pt-8 mt-8">
+                <h3 className="font-display text-lg font-bold text-red-500 mb-4">Danger Zone</h3>
+                <Card className="border-red-500/40 bg-red-950/10 p-4">
+                  <div className="mb-4">
+                    <h4 className="font-semibold mb-2">Delete Account</h4>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Permanently delete your account and all associated data. This action cannot be undone.
+                    </p>
+                    <Button
+                      variant="destructive"
+                      onClick={() => setDeleteDialogOpen(true)}
+                      data-testid="button-delete-account"
+                    >
+                      Delete My Account
+                    </Button>
+                  </div>
+                </Card>
+              </div>
             </div>
           </motion.div>
         </motion.div>
       </div>
+
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-red-500">Delete Account</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. Your account and all associated data will be permanently deleted.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Are you absolutely sure? This will permanently delete your account, orders, and reviews.
+            </p>
+          </div>
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+              data-testid="button-cancel-delete"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => deleteAccountMutation.mutate()}
+              disabled={deleteAccountMutation.isPending}
+              data-testid="button-confirm-delete"
+            >
+              {deleteAccountMutation.isPending ? "Deleting..." : "Delete My Account"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
         <DialogContent className="sm:max-w-md">

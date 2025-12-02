@@ -132,6 +132,7 @@ export default function AffiliateDashboard() {
   const [venmoUsername, setVenmoUsername] = useState("");
   const [zelleEmail, setZelleEmail] = useState("");
   const [leaderboardPeriod, setLeaderboardPeriod] = useState<"weekly" | "monthly">("monthly");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -202,6 +203,29 @@ export default function AffiliateDashboard() {
       });
       if (!res.ok) throw new Error("Failed to fetch leaderboard");
       return res.json();
+    },
+  });
+
+  const deleteAccountMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/affiliate/delete-account", {});
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Account Deleted",
+        description: "Your affiliate account has been permanently deleted.",
+      });
+      setTimeout(() => {
+        window.location.href = "/api/logout";
+      }, 1000);
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete your account. Please try again.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -1044,9 +1068,66 @@ export default function AffiliateDashboard() {
                   </div>
                 </CardContent>
               </Card>
+
+              <Card className="border-red-500/40 bg-red-950/10 border-2 mt-6">
+                <CardHeader>
+                  <CardTitle className="text-red-500 flex items-center gap-2">
+                    <AlertCircle className="h-5 w-5" />
+                    Danger Zone
+                  </CardTitle>
+                  <CardDescription>
+                    Permanently delete your affiliate account and all associated data
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    This action cannot be undone. Your affiliate account, commission history, and team information will be permanently deleted.
+                  </p>
+                  <Button
+                    variant="destructive"
+                    onClick={() => setDeleteDialogOpen(true)}
+                    data-testid="button-delete-affiliate-account"
+                  >
+                    Delete My Affiliate Account
+                  </Button>
+                </CardContent>
+              </Card>
             </TabsContent>
           </Tabs>
         </motion.div>
+
+        <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-red-500">Delete Affiliate Account</DialogTitle>
+              <DialogDescription>
+                This action cannot be undone. Your affiliate account will be permanently deleted.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4 space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Are you absolutely sure? This will permanently delete your affiliate account, commission history, and all team information.
+              </p>
+            </div>
+            <div className="flex justify-end gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setDeleteDialogOpen(false)}
+                data-testid="button-cancel-delete-affiliate"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => deleteAccountMutation.mutate()}
+                disabled={deleteAccountMutation.isPending}
+                data-testid="button-confirm-delete-affiliate"
+              >
+                {deleteAccountMutation.isPending ? "Deleting..." : "Delete My Account"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </main>
   );
