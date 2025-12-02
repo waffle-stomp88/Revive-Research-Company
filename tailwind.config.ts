@@ -74,8 +74,31 @@ export default {
           foreground: "hsl(var(--sidebar-accent-foreground) / <alpha-value>)",
           border: "var(--sidebar-accent-border)"
         },
-        cyan: "hsl(var(--cyan) / <alpha-value>)",
-        yellow: "hsl(var(--yellow) / <alpha-value>)",
+        cyan: {
+          DEFAULT: "#21d8ff",
+          50: "#21d8ff0D",
+          100: "#21d8ff1A",
+          200: "#21d8ff33",
+          300: "#21d8ff4D",
+          400: "#21d8ff66",
+          500: "#21d8ff80",
+        },
+        yellow: {
+          DEFAULT: "#E7FB10",
+          50: "#E7FB100D",
+          100: "#E7FB101A",
+          200: "#E7FB1033",
+          300: "#E7FB104D",
+          400: "#E7FB1066",
+          500: "#E7FB1080",
+        },
+        brand: {
+          cyan: "#21d8ff",
+          yellow: "#E7FB10",
+          purple: "#9d4edd",
+          pink: "#ec4899",
+          orange: "#f97316",
+        },
         status: {
           online: "rgb(34 197 94)",
           away: "rgb(245 158 11)",
