@@ -115,16 +115,15 @@ export function LearningRoadmap({ onModuleClick, completedModules = [] }: Learni
             key={`connector-${index}`}
             className="hidden md:block absolute pointer-events-none"
             style={{
-              left: `calc(2rem + (100% - 4rem) * ${ratio})`,
+              left: `calc(2rem + (100% - 4rem) * ${ratio} - 1px)`,
               top: '52px',
               width: '2px',
               height: '90px',
               background: module.color,
-              transformOrigin: 'top center',
             }}
-            initial={{ scaleY: 0 }}
+            initial={{ scaleY: 0, originY: 0 }}
             animate={isInView ? { scaleY: 1 } : {}}
-            transition={{ delay: 0.7 + index * 0.15, duration: 0.6 }}
+            transition={{ delay: 0.5 + index * 0.12, duration: 0.5, ease: "easeOut" }}
           />
         );
       })}
