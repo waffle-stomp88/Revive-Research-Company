@@ -4,6 +4,22 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * IMPORTANT: SHARED PRIMITIVE COMPONENT
+ * 
+ * This Button component is used throughout the entire application.
+ * DO NOT modify the base classes or the Button component implementation directly.
+ * 
+ * To customize button appearance:
+ * 1. Use the existing variants (default, destructive, outline, secondary, ghost)
+ * 2. Use the size props (default, sm, lg, icon)
+ * 3. Pass additional classes via the className prop
+ * 4. For brand colors, use: bg-brand-yellow, bg-brand-cyan, etc.
+ * 
+ * Any direct edits to buttonVariants or the Button implementation
+ * will affect ALL buttons across the entire website.
+ */
+
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0" +
   " hover-elevate active-elevate-2",
