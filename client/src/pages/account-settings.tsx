@@ -11,7 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowLeft, User, Loader2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { ArrowLeft, User, Loader2, AlertCircle } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 
 interface UserData {
@@ -41,6 +42,7 @@ export default function AccountSettings() {
   const { toast } = useToast();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -77,6 +79,29 @@ export default function AccountSettings() {
       toast({
         title: "Error",
         description: error.message || "Failed to update settings",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteAccountMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/user/delete-account", {});
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Account Deleted",
+        description: "Your account has been permanently deleted.",
+      });
+      setTimeout(() => {
+        window.location.href = "/api/logout";
+      }, 1000);
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete your account. Please try again.",
         variant: "destructive",
       });
     },
@@ -245,8 +270,65 @@ export default function AccountSettings() {
                 </div>
               </CardContent>
             </Card>
+
+            <Card className="border-red-500/40 bg-red-950/10 border-2">
+              <CardHeader>
+                <CardTitle className="text-red-500 flex items-center gap-2">
+                  <AlertCircle className="h-5 w-5" />
+                  Danger Zone
+                </CardTitle>
+                <CardDescription>
+                  Permanently delete your account and all associated data
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground mb-4">
+                  This action cannot be undone. Your account, orders, and reviews will be permanently deleted.
+                </p>
+                <Button
+                  variant="destructive"
+                  onClick={() => setDeleteDialogOpen(true)}
+                  data-testid="button-delete-account"
+                >
+                  Delete My Account
+                </Button>
+              </CardContent>
+            </Card>
           </motion.div>
         </motion.div>
+
+        <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-red-500">Delete Account</DialogTitle>
+              <DialogDescription>
+                This action cannot be undone. Your account will be permanently deleted.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4 space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Are you absolutely sure? This will permanently delete your account, orders, and reviews.
+              </p>
+            </div>
+            <div className="flex justify-end gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setDeleteDialogOpen(false)}
+                data-testid="button-cancel-delete"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => deleteAccountMutation.mutate()}
+                disabled={deleteAccountMutation.isPending}
+                data-testid="button-confirm-delete"
+              >
+                {deleteAccountMutation.isPending ? "Deleting..." : "Delete My Account"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </main>
   );

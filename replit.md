@@ -33,7 +33,7 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **Cart & Checkout UX**: Cart items (both products and bundles) are clickable and navigate back to their detail pages. Checkout page shows an account section with login option for unauthenticated users, displaying benefits like order tracking and verified reviews.
 - **Discount Code System**: Cart page includes discount code input with validation API supporting affiliate codes (Basic Referral 10%, Personal 20%) and promotional codes.
 
-### Recent Implementation (Session 6-7)
+### Recent Implementation (Session 6-8)
 - **Google Analytics Integration**: GA4 tracking implemented with automatic page view tracking, custom event tracking for hero CTA clicks, product clicks, and newsletter signups. Requires VITE_GA_MEASUREMENT_ID environment variable.
 - **3D Model Viewer Component**: Interactive viewer using Google's model-viewer web component with auto-rotation, camera controls, and AR capabilities. Integrated into product detail pages.
 - **Dark Mode Only**: Light mode removed - app permanently uses dark theme only.
@@ -43,6 +43,7 @@ The platform features an Apple-inspired design with a dark charcoal background (
   - Current sale/deal status
   - Competitive positioning within the catalog
   - Features: confidence levels (high/medium/low), reasoning explanations, one-click apply, bulk apply all suggestions, market insights summary, potential revenue impact estimates.
+- **Account Deletion Feature**: Users can permanently delete their accounts with Danger Zone section in Account Settings page. Includes confirmation dialog with clear warnings. Backend endpoints: `POST /api/user/delete-account` and `POST /api/affiliate/delete-account`. Affiliates also have delete account option in Settings tab of affiliate dashboard.
 
 ### Phase 2 Trust & Transparency Features
 - **Education Center**: Comprehensive 5-part researcher onboarding course (Research Use Only, Reading COAs, Batch Numbers, Storage 101, Ordering Expectations) with full article library covering peptide profiles, research basics, storage, safety, and terminology.
