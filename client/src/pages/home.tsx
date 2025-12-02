@@ -279,96 +279,63 @@ function ProductShowcase() {
   const timeLeft = useCountdown();
 
   const weeklyDeal = products?.find(p => p.isWeeklyDeal && p.inStock);
-  const bestSellers = products?.filter(p => p.inStock).slice(0, 6) || [];
+  const bestSellers = products?.filter(p => p.inStock).slice(0, 4) || [];
   const featuredBundles = BUNDLES.slice(0, 3);
 
   return (
-    <section className="py-12 md:py-16" id="products">
+    <section className="py-8 md:py-12" id="products">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         
-        {/* Sale of the Week Spotlight */}
+        {/* Sale of the Week - Compact */}
         {weeklyDeal && (
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mb-16"
+            className="mb-8"
           >
-            <div className="text-center mb-8">
-              <motion.div
-                initial={{ scale: 0 }}
-                whileInView={{ scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ type: "spring", delay: 0.2 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/20 border border-red-500/40 mb-4"
-              >
-                <Flame className="h-4 w-4 text-red-500 animate-pulse" />
-                <span className="text-sm font-bold text-red-500">SALE OF THE WEEK</span>
-              </motion.div>
-              <h2 className="font-display text-3xl md:text-4xl font-bold mb-2">
-                Limited Time Offer
-              </h2>
-            </div>
-            
-            <div className="sale-glow-pulse rounded-2xl">
-              <Card className="border-2 border-red-500 bg-gradient-to-br from-red-500/10 via-background to-background overflow-hidden">
-                <div className="grid md:grid-cols-2 gap-8 p-6 md:p-8">
-                  {/* Product Image Side */}
-                  <div className="relative">
-                    <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-xl flex items-center justify-center relative overflow-hidden">
-                      <FlaskConical className="h-32 w-32 text-red-500/30" />
-                      <div className="absolute top-4 right-4">
-                        <Badge className="bg-[#E7FB10] text-black font-bold text-sm px-3 py-1">
-                          HOT DEAL
-                        </Badge>
+            <div className="sale-glow-pulse rounded-xl">
+              <Card className="border-2 border-red-500 bg-gradient-to-r from-red-500/10 via-background to-background overflow-hidden">
+                <div className="flex flex-col md:flex-row items-center gap-4 p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-16 h-16 bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <FlaskConical className="h-8 w-8 text-red-500/50" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <Badge className="bg-[#E7FB10] text-black font-bold text-[10px] px-2 py-0.5">HOT DEAL</Badge>
+                        <span className="text-xs text-red-400 font-medium flex items-center gap-1">
+                          <Flame className="h-3 w-3 animate-pulse" />
+                          Sale of the Week
+                        </span>
                       </div>
+                      <h3 className="font-display text-lg font-bold text-[#E7FB10]">{weeklyDeal.name}</h3>
                     </div>
                   </div>
                   
-                  {/* Product Details Side */}
-                  <div className="flex flex-col justify-center">
-                    <h3 className="font-display text-2xl md:text-3xl font-bold mb-3 text-[#E7FB10]">
-                      {weeklyDeal.name}
-                    </h3>
-                    <p className="text-muted-foreground mb-6">
-                      {weeklyDeal.shortDescription}
-                    </p>
-                    
-                    {/* Countdown Timer */}
-                    <div className="mb-6">
-                      <p className="text-xs text-muted-foreground mb-2 flex items-center gap-2">
-                        <Clock className="h-3 w-3" />
-                        Offer ends in:
-                      </p>
-                      <div className="flex gap-3">
-                        {[
-                          { value: timeLeft.days, label: "Days" },
-                          { value: timeLeft.hours, label: "Hrs" },
-                          { value: timeLeft.minutes, label: "Min" },
-                          { value: timeLeft.seconds, label: "Sec" },
-                        ].map((item, i) => (
-                          <div key={i} className="text-center">
-                            <div className="bg-red-500/20 border border-red-500/40 rounded-lg px-3 py-2 min-w-[50px]">
-                              <span className="font-display text-xl font-bold text-red-400">
-                                {String(item.value).padStart(2, '0')}
-                              </span>
-                            </div>
-                            <span className="text-[10px] text-muted-foreground mt-1">{item.label}</span>
+                  <div className="flex items-center gap-4 md:ml-auto">
+                    <div className="flex gap-2">
+                      {[
+                        { value: timeLeft.days, label: "D" },
+                        { value: timeLeft.hours, label: "H" },
+                        { value: timeLeft.minutes, label: "M" },
+                        { value: timeLeft.seconds, label: "S" },
+                      ].map((item, i) => (
+                        <div key={i} className="text-center">
+                          <div className="bg-red-500/20 border border-red-500/40 rounded px-2 py-1 min-w-[36px]">
+                            <span className="font-display text-sm font-bold text-red-400">
+                              {String(item.value).padStart(2, '0')}
+                            </span>
                           </div>
-                        ))}
-                      </div>
+                        </div>
+                      ))}
                     </div>
-                    
-                    <div className="flex items-center gap-4 mb-6">
-                      <span className="font-display text-3xl font-bold text-[#E7FB10]">
-                        ${Number(weeklyDeal.price).toFixed(2)}
-                      </span>
-                    </div>
-                    
+                    <span className="font-display text-xl font-bold text-[#E7FB10]">
+                      ${Number(weeklyDeal.price).toFixed(2)}
+                    </span>
                     <Link href={`/products/${weeklyDeal.id}`} data-testid={`link-weekly-deal-${weeklyDeal.id}`}>
-                      <Button size="lg" className="w-full md:w-auto bg-red-500 hover:bg-red-600 text-white font-display gap-2" data-testid="button-weekly-deal">
-                        View Deal
-                        <ArrowRight className="h-4 w-4" />
+                      <Button size="sm" className="bg-red-500 hover:bg-red-600 text-white font-display gap-1" data-testid="button-weekly-deal">
+                        View <ArrowRight className="h-3 w-3" />
                       </Button>
                     </Link>
                   </div>
@@ -378,14 +345,14 @@ function ProductShowcase() {
           </motion.div>
         )}
 
-        {/* Category Quick Links */}
+        {/* Category Quick Links - Compact */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mb-16"
+          className="mb-8"
         >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {categories.map((category, index) => {
               const Icon = category.icon;
               const colorClass = category.color === "cyan" 
@@ -397,16 +364,16 @@ function ProductShowcase() {
               return (
                 <motion.div
                   key={category.name}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
+                  transition={{ delay: index * 0.05 }}
                 >
                   <Link href={category.href}>
-                    <Card className={`p-4 cursor-pointer transition-all duration-300 border-2 ${colorClass} group`} data-testid={`link-category-${category.name.toLowerCase().replace(' ', '-')}`}>
-                      <div className="flex items-center gap-3">
-                        <Icon className="h-6 w-6 group-hover:scale-110 transition-transform" />
-                        <span className="font-medium">{category.name}</span>
+                    <Card className={`p-3 cursor-pointer transition-all duration-300 border ${colorClass} group`} data-testid={`link-category-${category.name.toLowerCase().replace(' ', '-')}`}>
+                      <div className="flex items-center gap-2">
+                        <Icon className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                        <span className="text-sm font-medium">{category.name}</span>
                       </div>
                     </Card>
                   </Link>
@@ -416,70 +383,60 @@ function ProductShowcase() {
           </div>
         </motion.div>
 
-        {/* Best Sellers Section */}
+        {/* Best Sellers Section - Compact */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mb-16"
+          className="mb-8"
         >
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="font-display text-3xl md:text-4xl font-bold mb-2">
-                Best Sellers
-              </h2>
-              <p className="text-muted-foreground">Our most popular research compounds</p>
-            </div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display text-xl md:text-2xl font-bold">Best Sellers</h2>
             <Link href="/products">
-              <Button variant="outline" className="hidden md:flex gap-2" data-testid="button-view-all-products">
-                View All
-                <ArrowRight className="h-4 w-4" />
+              <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground hover:text-foreground" data-testid="button-view-all-products">
+                View All <ArrowRight className="h-3 w-3" />
               </Button>
             </Link>
           </div>
           
           {isLoading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <Card key={i} className="animate-pulse p-4">
-                  <div className="aspect-square bg-muted rounded-md mb-3" />
-                  <div className="h-4 bg-muted rounded w-3/4 mb-2" />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[1, 2, 3, 4].map((i) => (
+                <Card key={i} className="animate-pulse p-3">
+                  <div className="aspect-square bg-muted rounded-md mb-2" />
+                  <div className="h-3 bg-muted rounded w-3/4 mb-1" />
                   <div className="h-3 bg-muted rounded w-1/2" />
                 </Card>
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {bestSellers.map((product, index) => (
                 <motion.div
                   key={product.id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.05 }}
+                  transition={{ delay: index * 0.03 }}
                 >
                   <Link href={`/products/${product.id}`} onClick={() => trackEvent('product_click', 'best_sellers', product.name)}>
                     <Card 
-                      className="group cursor-pointer transition-all duration-300 border-2 border-[#21d8ff]/30 hover:border-[#21d8ff] hover:shadow-glow-blue-lg overflow-hidden"
+                      className="group cursor-pointer transition-all duration-300 border border-[#21d8ff]/30 hover:border-[#21d8ff] overflow-hidden"
                       data-testid={`card-bestseller-${product.id}`}
                     >
-                      <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center relative">
-                        <FlaskConical className="h-10 w-10 text-muted-foreground/30 group-hover:scale-110 transition-transform duration-300" />
+                      <div className="aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center relative">
+                        <FlaskConical className="h-8 w-8 text-muted-foreground/30 group-hover:scale-110 transition-transform duration-300" />
                         {product.isWeeklyDeal && (
-                          <Badge className="absolute top-2 right-2 bg-[#E7FB10] text-black text-[10px]">DEAL</Badge>
+                          <Badge className="absolute top-1 right-1 bg-[#E7FB10] text-black text-[8px] px-1.5 py-0">DEAL</Badge>
                         )}
                       </div>
-                      <div className="p-3">
-                        <h3 className="font-display text-sm font-semibold mb-1 text-[#E7FB10] truncate group-hover:text-[#21d8ff] transition-colors">
+                      <div className="p-2">
+                        <h3 className="font-display text-xs font-semibold text-[#E7FB10] truncate group-hover:text-[#21d8ff] transition-colors">
                           {product.name}
                         </h3>
-                        <div className="flex items-center justify-between">
-                          <span className="font-display text-base font-bold">
-                            ${Number(product.price).toFixed(2)}
-                          </span>
-                          <Badge variant="outline" className="text-[10px] border-[#21d8ff]/50 text-[#21d8ff]">
-                            99%+
-                          </Badge>
+                        <div className="flex items-center justify-between mt-1">
+                          <span className="font-display text-sm font-bold">${Number(product.price).toFixed(2)}</span>
+                          <Badge variant="outline" className="text-[8px] px-1 py-0 border-[#21d8ff]/50 text-[#21d8ff]">99%+</Badge>
                         </div>
                       </div>
                     </Card>
@@ -488,43 +445,27 @@ function ProductShowcase() {
               ))}
             </div>
           )}
-          
-          <div className="text-center mt-6 md:hidden">
-            <Link href="/products">
-              <Button variant="outline" className="gap-2" data-testid="button-view-all-products-mobile">
-                View All Products
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
         </motion.div>
 
-        {/* Research Stacks / Bundles Section */}
+        {/* Research Stacks - Compact */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <div className="text-center mb-8">
-            <motion.div
-              initial={{ scale: 0 }}
-              whileInView={{ scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ type: "spring", delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#21d8ff]/10 border border-[#21d8ff]/30 mb-4"
-            >
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
               <Package className="h-4 w-4 text-[#21d8ff]" />
-              <span className="text-sm font-medium text-[#21d8ff]">Save More with Bundles</span>
-            </motion.div>
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-2">
-              Research Stacks
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Curated peptide combinations for comprehensive research protocols
-            </p>
+              <h2 className="font-display text-xl md:text-2xl font-bold">Research Stacks</h2>
+            </div>
+            <Link href="/bundles">
+              <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground hover:text-foreground" data-testid="button-view-all-bundles">
+                View All <ArrowRight className="h-3 w-3" />
+              </Button>
+            </Link>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-3">
             {featuredBundles.map((bundle, index) => {
               const Icon = bundle.icon;
               const isCyan = bundle.color === "cyan";
@@ -532,55 +473,49 @@ function ProductShowcase() {
               return (
                 <motion.div
                   key={bundle.id}
-                  initial={{ opacity: 0, y: 30 }}
+                  initial={{ opacity: 0, y: 15 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
+                  transition={{ delay: index * 0.05 }}
                 >
                   <Link href={`/bundles/${bundle.id}`} data-testid={`link-bundle-${bundle.id}`}>
                     <Card 
-                      className={`group cursor-pointer transition-all duration-300 border-2 overflow-hidden h-full ${
+                      className={`group cursor-pointer transition-all duration-300 border overflow-hidden h-full ${
                         isCyan 
-                          ? "border-[#21d8ff]/30 hover:border-[#21d8ff] hover:shadow-glow-blue-lg" 
-                          : "border-[#E7FB10]/30 hover:border-[#E7FB10] hover:shadow-glow-yellow-lg"
+                          ? "border-[#21d8ff]/30 hover:border-[#21d8ff]" 
+                          : "border-[#E7FB10]/30 hover:border-[#E7FB10]"
                       }`}
                       data-testid={`card-bundle-${bundle.id}`}
                     >
-                      <div className="p-6">
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className={isCyan ? "p-2 rounded-lg bg-[#21d8ff]/20" : "p-2 rounded-lg bg-[#E7FB10]/20"}>
-                            <Icon className={isCyan ? "h-6 w-6 text-[#21d8ff]" : "h-6 w-6 text-[#E7FB10]"} />
+                      <div className="p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <Icon className={isCyan ? "h-4 w-4 text-[#21d8ff]" : "h-4 w-4 text-[#E7FB10]"} />
+                            <h3 className={`font-display text-sm font-bold ${isCyan ? "text-[#21d8ff]" : "text-[#E7FB10]"}`}>
+                              {bundle.name}
+                            </h3>
                           </div>
-                          <Badge className={isCyan ? "bg-[#21d8ff] text-black" : "bg-[#E7FB10] text-black"}>
-                            Save {bundle.savings}%
+                          <Badge className={`text-[10px] ${isCyan ? "bg-[#21d8ff] text-black" : "bg-[#E7FB10] text-black"}`}>
+                            -{bundle.savings}%
                           </Badge>
                         </div>
                         
-                        <h3 className={`font-display text-xl font-bold mb-1 ${isCyan ? "text-[#21d8ff]" : "text-[#E7FB10]"}`}>
-                          {bundle.name}
-                        </h3>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          {bundle.tagline}
-                        </p>
-                        
-                        <div className="flex flex-wrap gap-2 mb-4">
+                        <div className="flex flex-wrap gap-1 mb-2">
                           {bundle.products.map((product, i) => (
-                            <Badge key={i} variant="outline" className="text-xs">
+                            <Badge key={i} variant="outline" className="text-[10px] px-1.5 py-0">
                               {product}
                             </Badge>
                           ))}
                         </div>
                         
                         <div className="flex items-center justify-between">
-                          <div>
-                            <span className="text-sm text-muted-foreground line-through">
-                              ${bundle.originalPrice.toFixed(2)}
-                            </span>
-                            <span className={`font-display text-2xl font-bold ml-2 ${isCyan ? "text-[#21d8ff]" : "text-[#E7FB10]"}`}>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground line-through">${bundle.originalPrice.toFixed(2)}</span>
+                            <span className={`font-display text-base font-bold ${isCyan ? "text-[#21d8ff]" : "text-[#E7FB10]"}`}>
                               ${bundle.bundlePrice.toFixed(2)}
                             </span>
                           </div>
-                          <ArrowRight className={`h-5 w-5 group-hover:translate-x-1 transition-transform ${isCyan ? "text-[#21d8ff]" : "text-[#E7FB10]"}`} />
+                          <ArrowRight className={`h-4 w-4 group-hover:translate-x-1 transition-transform ${isCyan ? "text-[#21d8ff]" : "text-[#E7FB10]"}`} />
                         </div>
                       </div>
                     </Card>
@@ -588,15 +523,6 @@ function ProductShowcase() {
                 </motion.div>
               );
             })}
-          </div>
-          
-          <div className="text-center mt-8">
-            <Link href="/bundles">
-              <Button variant="outline" size="lg" className="font-display gap-2 border-[#21d8ff]/50 text-[#21d8ff] hover:bg-[#21d8ff]/10" data-testid="button-view-all-bundles">
-                View All Research Stacks
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
           </div>
         </motion.div>
       </div>
