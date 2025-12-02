@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
@@ -41,6 +41,22 @@ export default function LegalHub() {
   const { data: documents = [], isLoading } = useQuery<LegalDocument[]>({
     queryKey: ["/api/legal"],
   });
+
+  // Auto-expand document if doc slug is in URL params
+  useEffect(() => {
+    if (!isLoading && documents.length > 0) {
+      const params = new URLSearchParams(window.location.search);
+      const docSlug = params.get("doc");
+      
+      if (docSlug) {
+        const doc = documents.find(d => d.slug === docSlug);
+        if (doc) {
+          setActiveCategory(doc.category);
+          setExpandedDoc(doc.id);
+        }
+      }
+    }
+  }, [documents, isLoading]);
 
   const filteredDocs = documents.filter((doc) => doc.category === activeCategory);
   const activeConfig = categories.find(c => c.id === activeCategory) || categories[0];

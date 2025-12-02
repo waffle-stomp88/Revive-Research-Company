@@ -700,7 +700,7 @@ export default function AffiliatePage() {
                     Compliance is Non-Negotiable
                   </h3>
                   <p className="text-sm text-muted-foreground mb-3">
-                    All partners must strictly follow <Link href="/legal" className="font-semibold text-red-300 hover:text-red-200 underline underline-offset-2">Revive's Compliance Guidelines</Link>. Any violations result in immediate program termination.
+                    All partners must strictly follow <Link href="/legal?doc=affiliate-compliance-guidelines" className="font-semibold text-red-300 hover:text-red-200 underline underline-offset-2">Revive's Compliance Guidelines</Link>. Any violations result in immediate program termination.
                   </p>
                   <div className="space-y-2">
                     <div className="flex items-start gap-2 text-sm">
