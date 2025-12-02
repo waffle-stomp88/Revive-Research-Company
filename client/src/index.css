@@ -4,27 +4,27 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Range input slider styling */
-input[type="range"] {
+/* Range input slider styling - uses dynamic gradient background set by JS */
+.range-slider {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 24px;
-  background: transparent;
-  cursor: pointer;
-  padding: 0;
-}
-
-/* Chrome/Safari track - unfilled portion */
-input[type="range"]::-webkit-slider-track {
-  background: #374151;
   height: 6px;
   border-radius: 3px;
-  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  outline: none;
+  background: linear-gradient(to right, #4ade80 0%, #4ade80 50%, #374151 50%, #374151 100%);
+}
+
+/* Chrome/Safari - hide default track (we use background on input) */
+.range-slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 3px;
+  background: transparent;
 }
 
 /* Chrome/Safari thumb */
-input[type="range"]::-webkit-slider-thumb {
+.range-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 20px;
@@ -33,56 +33,50 @@ input[type="range"]::-webkit-slider-thumb {
   background: #4ade80;
   cursor: grab;
   box-shadow: 0 0 8px rgba(74, 222, 128, 0.6), 0 0 4px rgba(74, 222, 128, 0.4);
-  transition: all 0.2s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
   margin-top: -7px;
 }
 
-input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.15);
+.range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
   box-shadow: 0 0 12px rgba(74, 222, 128, 0.8), 0 0 6px rgba(74, 222, 128, 0.6);
 }
 
-input[type="range"]::-webkit-slider-thumb:active {
-  transform: scale(1.3);
+.range-slider::-webkit-slider-thumb:active {
+  transform: scale(1.35);
   cursor: grabbing;
   box-shadow: 0 0 16px rgba(74, 222, 128, 1), 0 0 8px rgba(74, 222, 128, 0.8);
 }
 
 /* Firefox thumb */
-input[type="range"]::-moz-range-thumb {
+.range-slider::-moz-range-thumb {
   width: 20px;
   height: 20px;
   border-radius: 50%;
   background: #4ade80;
   cursor: grab;
   box-shadow: 0 0 8px rgba(74, 222, 128, 0.6), 0 0 4px rgba(74, 222, 128, 0.4);
-  transition: all 0.2s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
   border: none;
 }
 
-input[type="range"]::-moz-range-thumb:hover {
-  transform: scale(1.15);
+.range-slider::-moz-range-thumb:hover {
+  transform: scale(1.2);
   box-shadow: 0 0 12px rgba(74, 222, 128, 0.8), 0 0 6px rgba(74, 222, 128, 0.6);
 }
 
-input[type="range"]::-moz-range-thumb:active {
-  transform: scale(1.3);
+.range-slider::-moz-range-thumb:active {
+  transform: scale(1.35);
   cursor: grabbing;
   box-shadow: 0 0 16px rgba(74, 222, 128, 1), 0 0 8px rgba(74, 222, 128, 0.8);
 }
 
-/* Firefox track */
-input[type="range"]::-moz-range-track {
+/* Firefox track - transparent to show input background */
+.range-slider::-moz-range-track {
   background: transparent;
   border: none;
-}
-
-/* Firefox progress (filled portion) */
-input[type="range"]::-moz-range-progress {
-  background: #4ade80;
   height: 6px;
   border-radius: 3px;
-  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.5);
 }
 
 @layer utilities {

@@ -56,6 +56,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
+import { RangeSlider } from "@/components/ui/range-slider";
 import {
   Package,
   FileCheck,
@@ -3625,13 +3626,12 @@ function PricingOptimizerTab() {
               <div>
                 <Label className="text-sm font-semibold">📦 Inventory Impact</Label>
                 <div className="flex items-center gap-2 mt-2">
-                  <Input
-                    type="range"
-                    min="0.1"
-                    max="3"
-                    step="0.1"
+                  <RangeSlider
+                    min={0.1}
+                    max={3}
+                    step={0.1}
                     value={inventoryWeight}
-                    onChange={(e) => setInventoryWeight(parseFloat(e.target.value))}
+                    onChange={setInventoryWeight}
                     className="flex-1"
                     data-testid="slider-inventory-weight"
                   />
@@ -3653,13 +3653,12 @@ function PricingOptimizerTab() {
               <div>
                 <Label className="text-sm font-semibold">📊 Market Position</Label>
                 <div className="flex items-center gap-2 mt-2">
-                  <Input
-                    type="range"
-                    min="0.1"
-                    max="3"
-                    step="0.1"
+                  <RangeSlider
+                    min={0.1}
+                    max={3}
+                    step={0.1}
                     value={marketWeight}
-                    onChange={(e) => setMarketWeight(parseFloat(e.target.value))}
+                    onChange={setMarketWeight}
                     className="flex-1"
                     data-testid="slider-market-weight"
                   />
@@ -3681,13 +3680,12 @@ function PricingOptimizerTab() {
               <div>
                 <Label className="text-sm font-semibold">⚗️ Product Complexity</Label>
                 <div className="flex items-center gap-2 mt-2">
-                  <Input
-                    type="range"
-                    min="0.1"
-                    max="3"
-                    step="0.1"
+                  <RangeSlider
+                    min={0.1}
+                    max={3}
+                    step={0.1}
                     value={complexityWeight}
-                    onChange={(e) => setComplexityWeight(parseFloat(e.target.value))}
+                    onChange={setComplexityWeight}
                     className="flex-1"
                     data-testid="slider-complexity-weight"
                   />
