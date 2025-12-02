@@ -744,11 +744,19 @@ export default function ProductDetail() {
                   {product.usage}
                 </p>
                 <Link href="/education/storage-101">
-                  <Button variant="outline" size="sm" className="gap-2" data-testid="link-learn-storage">
-                    <BookOpen className="h-4 w-4" />
-                    Learn More: Storage Best Practices
-                    <ChevronRight className="h-3 w-3" />
-                  </Button>
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Button 
+                      className="gap-2 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold hover:shadow-[0_0_20px_rgba(33,216,255,0.6)] transition-shadow" 
+                      data-testid="link-learn-storage"
+                    >
+                      <BookOpen className="h-4 w-4" />
+                      Learn More: Storage Best Practices
+                      <ChevronRight className="h-3 w-3" />
+                    </Button>
+                  </motion.div>
                 </Link>
               </div>
             )}
