@@ -302,7 +302,7 @@ export function Navigation() {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button 
-                        className="relative flex items-center gap-2 px-2 md:px-3 py-1.5 md:py-2 rounded-full hover:bg-[#21d8ff]/10 border border-[#21d8ff]/50 hover:border-[#21d8ff] transition-all duration-300 outline-none" 
+                        className="relative flex items-center gap-2 px-2 md:px-3 py-1.5 md:py-2 rounded-full hover:bg-[#21d8ff]/10 border border-[#21d8ff]/50 hover:border-[#21d8ff] transition-all duration-300 outline-none focus-visible:ring-0 focus-visible:ring-offset-0" 
                         data-testid="button-user-menu"
                       >
                         <div className="relative">
