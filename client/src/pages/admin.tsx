@@ -3386,9 +3386,12 @@ interface PricingResponse {
   suggestions: PricingSuggestion[];
   marketInsights: string;
   totalPotentialRevenue: string;
+  filteredCount?: number;
+  totalAnalyzed?: number;
 }
 
 const RECENT_UPDATE_WINDOW_HOURS = 24;
+const AUTO_RUN_COOLDOWN_MINUTES = 60;
 
 function PricingOptimizerTab() {
   const { toast } = useToast();
@@ -3405,6 +3408,24 @@ function PricingOptimizerTab() {
   });
 
   useEffect(() => {
+    // Check if we have cached data from a recent run (within 60 minutes)
+    try {
+      const cached = localStorage.getItem("pricingAnalysisCache");
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        const minutesSinceRun = (Date.now() - timestamp) / (1000 * 60);
+        
+        if (minutesSinceRun < AUTO_RUN_COOLDOWN_MINUTES) {
+          // Use cached data instead of auto-running
+          setPricingData(data);
+          return;
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load cached pricing data:", error);
+    }
+    
+    // No recent cached data, run analysis
     generateSuggestions();
   }, []);
 
@@ -3490,12 +3511,28 @@ function PricingOptimizerTab() {
         wasRecentlyUpdated: recentlyUpdated.includes(s.productId)
       })).filter((s: PricingSuggestion & { wasRecentlyUpdated: boolean }) => !s.wasRecentlyUpdated);
       
-      setPricingData({
-        ...data,
-        suggestions: filtered
-      });
-      
       const filteredCount = data.suggestions.length - filtered.length;
+      const totalAnalyzed = data.suggestions.length;
+      
+      const pricingResult: PricingResponse = {
+        ...data,
+        suggestions: filtered,
+        filteredCount,
+        totalAnalyzed
+      };
+      
+      setPricingData(pricingResult);
+      
+      // Cache the results with timestamp
+      try {
+        localStorage.setItem("pricingAnalysisCache", JSON.stringify({
+          data: pricingResult,
+          timestamp: Date.now()
+        }));
+      } catch (e) {
+        console.error("Failed to cache pricing data:", e);
+      }
+      
       const message = filteredCount > 0 
         ? `Generated ${filtered.length} suggestions (${filteredCount} recently updated products excluded)`
         : `Generated ${data.suggestions?.length || 0} pricing suggestions.`;
@@ -3862,6 +3899,64 @@ function PricingOptimizerTab() {
               ))}
             </TableBody>
           </Table>
+        </div>
+      ) : !isLoading && pricingData ? (
+        // Dashboard with all products recently updated
+        <div className="space-y-4">
+          <div className="grid grid-cols-4 gap-4 mb-6">
+            <Card className="p-4">
+              <div className="text-2xl font-bold text-[#21d8ff]">{pricingData.totalAnalyzed || 0}</div>
+              <div className="text-sm text-muted-foreground">Products Analyzed</div>
+            </Card>
+            <Card className="p-4">
+              <div className="text-2xl font-bold text-[#E7FB10]">{pricingData.filteredCount || 0}</div>
+              <div className="text-sm text-muted-foreground">Recently Updated</div>
+            </Card>
+            <Card className="p-4">
+              <div className="text-2xl font-bold text-green-500">0</div>
+              <div className="text-sm text-muted-foreground">New Suggestions</div>
+            </Card>
+            <Card className="p-4">
+              <div className="text-2xl font-bold text-muted-foreground">24h</div>
+              <div className="text-sm text-muted-foreground">Cooldown Period</div>
+            </Card>
+          </div>
+
+          <Card className="p-6 border-[#21d8ff]/30 bg-[#21d8ff]/5">
+            <div className="flex items-start gap-4">
+              <div className="h-12 w-12 rounded-xl bg-[#21d8ff]/20 flex items-center justify-center flex-shrink-0">
+                <CheckCircle className="h-6 w-6 text-[#21d8ff]" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-[#21d8ff] text-lg">All Products Recently Updated</h3>
+                <p className="text-muted-foreground mt-1">
+                  You've already applied pricing changes to all {pricingData.filteredCount || 0} products in the last 24 hours. 
+                  New suggestions will be available after the cooldown period expires.
+                </p>
+                {pricingData.marketInsights && (
+                  <div className="mt-4 p-3 bg-background/50 rounded-lg">
+                    <p className="text-sm font-medium mb-1">Market Insights</p>
+                    <p className="text-sm text-muted-foreground">{pricingData.marketInsights}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4 text-center border-dashed">
+            <p className="text-sm text-muted-foreground mb-3">
+              Want to analyze again anyway? You can force a new analysis at any time.
+            </p>
+            <Button
+              variant="outline"
+              onClick={generateSuggestions}
+              className="border-[#E7FB10]/50 hover:bg-[#E7FB10]/10"
+              data-testid="button-force-reanalyze"
+            >
+              <Zap className="h-4 w-4 mr-2" />
+              Force Re-Analyze
+            </Button>
+          </Card>
         </div>
       ) : !isLoading ? (
         <Card className="p-12 text-center">
