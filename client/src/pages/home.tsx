@@ -289,24 +289,14 @@ function ProductShowcase() {
               return (
                 <Link key={`${product.id}-${idx}`} href={`/products/${product.id}`} onClick={() => trackEvent('product_click', 'carousel', product.name)} className="flex-shrink-0">
                   {product.isWeeklyDeal ? (
-                    <motion.div
-                      animate={{
-                        boxShadow: [
-                          '0 0 15px rgba(239, 68, 68, 0.5), 0 0 30px rgba(239, 68, 68, 0.3)',
-                          '0 0 30px rgba(239, 68, 68, 0.9), 0 0 60px rgba(239, 68, 68, 0.6), 0 0 80px rgba(239, 68, 68, 0.3)',
-                          '0 0 15px rgba(239, 68, 68, 0.5), 0 0 30px rgba(239, 68, 68, 0.3)'
-                        ]
-                      }}
-                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                      className="rounded-xl"
-                    >
+                    <div className="sale-glow-pulse rounded-xl">
                       <Card 
                         className="group w-48 h-auto cursor-pointer transition-all duration-300 border-2 border-red-500 flex flex-col relative overflow-hidden"
                         data-testid={`card-product-${product.id}`}
                       >
                         {cardContent}
                       </Card>
-                    </motion.div>
+                    </div>
                   ) : (
                     <Card 
                       className="group w-48 h-auto cursor-pointer transition-all duration-300 border-2 border-cyan-400/60 shadow-glow-blue-sm hover:shadow-glow-blue-lg flex flex-col relative overflow-hidden"
