@@ -702,7 +702,7 @@ export default function AffiliatePage() {
                   <p className="text-sm text-muted-foreground mb-3">
                     All partners must strictly follow <Link href="/legal" className="font-semibold text-red-300 hover:text-red-200 underline underline-offset-2">Revive's Compliance Guidelines</Link>. Any violations result in immediate program termination.
                   </p>
-                  <div className="space-y-2 mb-4">
+                  <div className="space-y-2">
                     <div className="flex items-start gap-2 text-sm">
                       <XCircle className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
                       <span className="text-muted-foreground"><span className="font-semibold text-red-300">No medical claims</span> or health benefit statements</span>
@@ -716,17 +716,6 @@ export default function AffiliatePage() {
                       <span className="text-muted-foreground"><span className="font-semibold text-red-300">No human-use statements</span> or therapeutic claims</span>
                     </div>
                   </div>
-                  <Link href="/legal">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="border-red-500/30 text-red-300 hover:border-red-400 hover:text-red-200"
-                      data-testid="button-view-compliance-guidelines"
-                    >
-                      View Full Compliance Guidelines
-                      <ArrowRight className="h-3 w-3 ml-2" />
-                    </Button>
-                  </Link>
                 </div>
               </div>
             </Card>
