@@ -72,6 +72,13 @@ function HeroSection() {
   const scale = useTransform(scrollY, [0, 500], [1, 1.1]);
   const imageOpacity = useTransform(scrollY, [0, 400], [1, 0.3]);
 
+  const handleScrollClick = () => {
+    const productsSection = document.getElementById('products');
+    if (productsSection) {
+      productsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <motion.div 
@@ -205,13 +212,16 @@ function HeroSection() {
         transition={{ delay: 1, duration: 1 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
       >
-        <motion.div
+        <motion.button
+          onClick={handleScrollClick}
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="p-2 rounded-full bg-black/30 backdrop-blur-sm border border-white/20"
+          className="p-2 rounded-full bg-black/30 backdrop-blur-sm border border-white/20 hover:border-white/40 transition-colors cursor-pointer hover-elevate"
+          data-testid="button-scroll-down"
+          aria-label="Scroll to products"
         >
           <ChevronDown className="h-6 w-6 text-white" />
-        </motion.div>
+        </motion.button>
       </motion.div>
     </section>
   );
