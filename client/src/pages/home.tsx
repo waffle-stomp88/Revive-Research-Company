@@ -429,18 +429,18 @@ function ProductShowcase() {
                         <img 
                           src={bottleImage} 
                           alt={product.name}
-                          className="h-full w-full object-contain p-2 group-hover:scale-110 transition-transform duration-300"
+                          className="h-4/5 w-4/5 object-contain p-2 group-hover:scale-110 transition-transform duration-300"
                         />
                         {product.isWeeklyDeal && (
                           <Badge className="absolute top-1 right-1 bg-[#E7FB10] text-black text-[8px] px-1.5 py-0">DEAL</Badge>
                         )}
                       </div>
-                      <div className="p-2">
-                        <h3 className="font-display text-xs font-semibold text-[#E7FB10] truncate group-hover:text-[#21d8ff] transition-colors">
+                      <div className="p-3">
+                        <h3 className="font-display text-sm font-semibold text-[#E7FB10] truncate group-hover:text-[#21d8ff] transition-colors">
                           {product.name}
                         </h3>
                         <div className="flex items-center justify-between mt-1">
-                          <span className="font-display text-sm font-bold">${Number(product.price).toFixed(2)}</span>
+                          <span className="font-display text-base font-bold">${Number(product.price).toFixed(2)}</span>
                           <Badge variant="outline" className="text-[8px] px-1 py-0 border-[#21d8ff]/50 text-[#21d8ff]">99%+</Badge>
                         </div>
                       </div>
