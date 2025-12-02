@@ -302,11 +302,17 @@ export function Navigation() {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button 
-                        className="relative flex items-center gap-2 px-2 md:px-3 py-1.5 md:py-2 rounded-full hover:bg-[#21d8ff]/10 border border-[#21d8ff]/50 hover:border-[#21d8ff] transition-all duration-300 outline-none focus-visible:ring-0 focus-visible:ring-offset-0" 
+                        className="relative flex items-center gap-2 px-2 md:px-3 py-1.5 md:py-2 rounded-full hover:bg-[#21d8ff]/10 border border-[#21d8ff]/50 hover:border-[#21d8ff] focus:border-[#21d8ff]/50 active:border-[#21d8ff]/50 transition-all duration-300 outline-none"
+                        style={{
+                          boxShadow: 'none !important',
+                          outline: 'none !important',
+                          WebkitAppearance: 'none',
+                          WebkitTapHighlightColor: 'transparent'
+                        }}
                         data-testid="button-user-menu"
                       >
                         <div className="relative">
-                          <Avatar className="h-8 w-8 border-2 border-[#21d8ff]">
+                          <Avatar className="h-8 w-8 border-2 border-[#21d8ff] focus:!ring-0 focus-visible:!ring-0 [&:focus]:!ring-0 [&:focus-visible]:!ring-0">
                             {user?.profileImageUrl && (
                               <AvatarImage src={user.profileImageUrl} alt={user?.firstName || "User"} className="object-cover" />
                             )}
