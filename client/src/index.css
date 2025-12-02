@@ -9,26 +9,18 @@ input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 6px;
+  height: 24px;
   background: transparent;
   cursor: pointer;
+  padding: 0;
 }
 
-/* Chrome/Safari track */
+/* Chrome/Safari track - unfilled portion */
 input[type="range"]::-webkit-slider-track {
-  background: linear-gradient(to right, #4ade80, #4ade80);
-  height: 4px;
-  border-radius: 2px;
-  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.3);
-}
-
-/* Firefox track */
-input[type="range"]::-moz-range-track {
-  background: linear-gradient(to right, #4ade80, #4ade80);
-  height: 4px;
-  border-radius: 2px;
-  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.3);
-  border: none;
+  background: #374151;
+  height: 6px;
+  border-radius: 3px;
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.5);
 }
 
 /* Chrome/Safari thumb */
@@ -42,7 +34,7 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: grab;
   box-shadow: 0 0 8px rgba(74, 222, 128, 0.6), 0 0 4px rgba(74, 222, 128, 0.4);
   transition: all 0.2s ease;
-  margin-top: -8px;
+  margin-top: -7px;
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
@@ -79,7 +71,7 @@ input[type="range"]::-moz-range-thumb:active {
   box-shadow: 0 0 16px rgba(74, 222, 128, 1), 0 0 8px rgba(74, 222, 128, 0.8);
 }
 
-/* Firefox track background */
+/* Firefox track */
 input[type="range"]::-moz-range-track {
   background: transparent;
   border: none;
@@ -87,10 +79,10 @@ input[type="range"]::-moz-range-track {
 
 /* Firefox progress (filled portion) */
 input[type="range"]::-moz-range-progress {
-  background: linear-gradient(to right, #4ade80, #4ade80);
-  height: 4px;
-  border-radius: 2px;
-  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.3);
+  background: #4ade80;
+  height: 6px;
+  border-radius: 3px;
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.5);
 }
 
 @layer utilities {
