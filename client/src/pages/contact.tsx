@@ -300,9 +300,9 @@ export default function Contact() {
                     <div className="h-10 w-10 rounded-full bg-[#E7FB10]/20 flex items-center justify-center shrink-0">
                       <Mail className="h-5 w-5 text-[#E7FB10]" />
                     </div>
-                    <div className="flex-1 min-w-0 overflow-hidden">
-                      <h3 className="font-medium mb-1 truncate">Email Us Directly</h3>
-                      <p className="text-xs text-muted-foreground break-words">
+                    <div>
+                      <h3 className="font-medium mb-1">Email Us Directly</h3>
+                      <p className="text-sm text-muted-foreground">
                         support@reviveresearch.com
                       </p>
                     </div>
