@@ -79,6 +79,34 @@
   border-radius: 3px;
 }
 
+@keyframes holographic-shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.holographic-text {
+  background: linear-gradient(
+    90deg,
+    #21d8ff 0%,
+    #E7FB10 25%,
+    #ec4899 50%,
+    #21d8ff 75%,
+    #E7FB10 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: holographic-shimmer 3s linear infinite;
+}
+
 @layer utilities {
   .group-hover\:wipe-animation {
     transition: none !important;

@@ -4055,7 +4055,7 @@ export default function Admin() {
               <Shield className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="font-display text-2xl md:text-3xl font-bold" data-testid="text-admin-title">
+              <h1 className="font-display text-2xl md:text-3xl font-bold holographic-text" data-testid="text-admin-title">
                 Admin Panel
               </h1>
               <p className="text-muted-foreground">Manage products, orders, and site content</p>
