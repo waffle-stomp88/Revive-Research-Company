@@ -333,7 +333,7 @@ export default function AffiliateDashboard() {
           className="mb-8"
         >
           <div className="flex items-center gap-2 flex-wrap mb-2">
-            <h1 className="font-display text-2xl md:text-3xl font-bold" data-testid="text-dashboard-title">
+            <h1 className="font-display text-2xl md:text-3xl font-bold holographic-text" data-testid="text-dashboard-title">
               WELCOME, {affiliate.fullName?.split(' ')[0]?.toUpperCase() || 'AFFILIATE'}
             </h1>
             <div data-testid="badge-verified-affiliate" title="Verified Affiliate">

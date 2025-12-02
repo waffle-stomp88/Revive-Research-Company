@@ -186,10 +186,10 @@ export default function AffiliatePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4"
+            className="font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 holographic-text"
             data-testid="text-affiliate-headline"
           >
-            <span className="text-[#9d4edd]">Grow With Us</span>
+            <span>Grow With Us</span>
           </motion.h1>
           
           <motion.p
