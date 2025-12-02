@@ -1,13 +1,40 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Mail, Phone, MessageCircle } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface SupportStatusProps {
   variant?: "inline" | "card";
   showAll?: boolean;
 }
 
+function getResponseTimeByTimeZone(): string {
+  const now = new Date();
+  
+  // Convert to Central Time
+  const ctTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Chicago" }));
+  const ctHour = ctTime.getHours();
+  
+  // Between 5pm (17) and 9am (9): show 12 hours
+  // Otherwise: show 2-4 hours
+  const isOffHours = ctHour >= 17 || ctHour < 9;
+  return isOffHours ? "12 hours" : "2-4 hours";
+}
+
 export function SupportStatus({ variant = "inline", showAll = false }: SupportStatusProps) {
+  const [responseTime, setResponseTime] = useState("2-4 hours");
+  
+  useEffect(() => {
+    setResponseTime(getResponseTimeByTimeZone());
+    
+    // Update every minute to catch time changes
+    const interval = setInterval(() => {
+      setResponseTime(getResponseTimeByTimeZone());
+    }, 60000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
   const statusItems = [
     {
       icon: MessageCircle,
@@ -24,7 +51,7 @@ export function SupportStatus({ variant = "inline", showAll = false }: SupportSt
     {
       icon: Clock,
       label: "Typical Response",
-      value: "2-4 hours",
+      value: responseTime,
       color: "#E7FB10",
     },
   ];

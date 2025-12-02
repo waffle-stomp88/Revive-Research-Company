@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { useMutation } from "@tanstack/react-query";
@@ -51,9 +51,26 @@ const itemVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
+function getResponseTimeByTimeZone(): string {
+  const now = new Date();
+  const ctTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Chicago" }));
+  const ctHour = ctTime.getHours();
+  const isOffHours = ctHour >= 17 || ctHour < 9;
+  return isOffHours ? "12 hours" : "2-4 hours";
+}
+
 export default function Contact() {
   const { toast } = useToast();
   const [submitted, setSubmitted] = useState(false);
+  const [responseTime, setResponseTime] = useState("2-4 hours");
+
+  useEffect(() => {
+    setResponseTime(getResponseTimeByTimeZone());
+    const interval = setInterval(() => {
+      setResponseTime(getResponseTimeByTimeZone());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
@@ -287,7 +304,7 @@ export default function Contact() {
                     <div>
                       <h3 className="font-medium mb-1">Response Time</h3>
                       <p className="text-sm text-muted-foreground">
-                        We typically respond within 24 hours during business days.
+                        We typically respond within <span className="text-[#21d8ff] font-medium">{responseTime}</span> during business hours.
                       </p>
                     </div>
                   </div>
