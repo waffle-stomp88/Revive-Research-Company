@@ -422,7 +422,7 @@ function ProductShowcase() {
                 >
                   <Link href={`/products/${product.id}`} onClick={() => trackEvent('product_click', 'best_sellers', product.name)}>
                     <Card 
-                      className="group cursor-pointer transition-all duration-300 border border-[#21d8ff]/30 hover:border-[#21d8ff] overflow-hidden"
+                      className="group cursor-pointer transition-all duration-300 border border-[#21d8ff]/30 hover:border-[#21d8ff] hover:scale-105 hover:shadow-[0_0_25px_rgba(33,216,255,0.6)] overflow-hidden"
                       data-testid={`card-bestseller-${product.id}`}
                     >
                       <div className="aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center relative overflow-hidden">
