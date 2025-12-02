@@ -220,7 +220,7 @@ export default function AffiliatePage() {
                   boxShadow: "0 0 30px rgba(231, 251, 16, 0.6)",
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = "0 0 50px rgba(231, 251, 16, 1), 0 0 80px rgba(231, 251, 16, 0.6)";
+                  (e.currentTarget as HTMLElement).style.boxShadow = "0 0 40px rgba(231, 251, 16, 0.8), 0 0 60px rgba(231, 251, 16, 0.4)";
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLElement).style.boxShadow = "0 0 30px rgba(231, 251, 16, 0.6)";
