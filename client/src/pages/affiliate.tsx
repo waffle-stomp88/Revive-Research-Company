@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
+import { Link } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
@@ -689,19 +690,19 @@ export default function AffiliatePage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <Card className="p-6 border-2 border-red-500/40 bg-red-950/5 relative overflow-hidden">
+            <Card className="p-6 border-2 border-red-500/40 bg-red-950/5 relative overflow-hidden animate-pulse-subtle">
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center shrink-0 mt-0.5">
                   <Shield className="h-5 w-5 text-red-400" />
                 </div>
-                <div>
+                <div className="flex-1">
                   <h3 className="font-display text-lg md:text-xl font-bold mb-2">
                     Compliance is Non-Negotiable
                   </h3>
                   <p className="text-sm text-muted-foreground mb-3">
-                    All partners must strictly follow <span className="font-semibold text-foreground">Revive's Compliance Guidelines</span>. Any violations result in immediate program termination.
+                    All partners must strictly follow <Link href="/legal" className="font-semibold text-red-300 hover:text-red-200 underline underline-offset-2">Revive's Compliance Guidelines</Link>. Any violations result in immediate program termination.
                   </p>
-                  <div className="space-y-2">
+                  <div className="space-y-2 mb-4">
                     <div className="flex items-start gap-2 text-sm">
                       <XCircle className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
                       <span className="text-muted-foreground"><span className="font-semibold text-red-300">No medical claims</span> or health benefit statements</span>
@@ -715,6 +716,17 @@ export default function AffiliatePage() {
                       <span className="text-muted-foreground"><span className="font-semibold text-red-300">No human-use statements</span> or therapeutic claims</span>
                     </div>
                   </div>
+                  <Link href="/legal">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="border-red-500/30 text-red-300 hover:border-red-400 hover:text-red-200"
+                      data-testid="button-view-compliance-guidelines"
+                    >
+                      View Full Compliance Guidelines
+                      <ArrowRight className="h-3 w-3 ml-2" />
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </Card>
