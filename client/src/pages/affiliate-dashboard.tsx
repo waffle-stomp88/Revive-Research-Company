@@ -125,6 +125,8 @@ interface LeaderboardEntry {
 export default function AffiliateDashboard() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
   const [payoutMethod, setPayoutMethod] = useState("");
   const [payoutEmail, setPayoutEmail] = useState("");
   const [venmoUsername, setVenmoUsername] = useState("");
@@ -151,6 +153,8 @@ export default function AffiliateDashboard() {
 
   useEffect(() => {
     if (affiliate) {
+      setFullName(affiliate.fullName || "");
+      setEmail(affiliate.email || "");
       setPayoutEmail(affiliate.payoutEmail || "");
       setVenmoUsername(affiliate.venmoUsername || "");
       setZelleEmail(affiliate.zelleEmail || "");
@@ -203,12 +207,12 @@ export default function AffiliateDashboard() {
 
   const updateSettingsMutation = useMutation({
     mutationFn: async (data: { 
+      fullName?: string;
+      email?: string;
       payoutMethod: string; 
       payoutEmail?: string;
       venmoUsername?: string;
-      bankAccountHolder?: string;
-      bankRoutingNumber?: string;
-      bankAccountNumber?: string;
+      zelleEmail?: string;
     }) => {
       const response = await apiRequest("PATCH", "/api/affiliate/settings", data);
       return response.json();
@@ -217,7 +221,7 @@ export default function AffiliateDashboard() {
       queryClient.invalidateQueries({ queryKey: ["/api/affiliate/me"] });
       toast({
         title: "Settings Updated",
-        description: "Your payout settings have been saved.",
+        description: "Your profile and payout settings have been saved.",
       });
     },
     onError: () => {
@@ -898,15 +902,45 @@ export default function AffiliateDashboard() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Settings className="h-5 w-5" />
-                    Payout Settings
+                    Profile & Settings
                   </CardTitle>
                   <CardDescription>
-                    Configure how you want to receive your commission payments
+                    Manage your profile information and payment preferences
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="payoutMethod">Payout Method</Label>
+                  <div className="border-b pb-6">
+                    <h3 className="font-semibold mb-4">Profile Information</h3>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="fullName">Full Name</Label>
+                        <Input
+                          id="fullName"
+                          placeholder="Your full name"
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          data-testid="input-profile-fullname"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="profileEmail">Email Address</Label>
+                        <Input
+                          id="profileEmail"
+                          type="email"
+                          placeholder="your-email@example.com"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          data-testid="input-profile-email"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold mb-4">Payout Settings</h3>
+                    <div className="space-y-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="payoutMethod">Payout Method</Label>
                     <Select
                       value={payoutMethod || affiliate.payoutMethod || "paypal"}
                       onValueChange={setPayoutMethod}
@@ -972,34 +1006,42 @@ export default function AffiliateDashboard() {
                     </div>
                   )}
 
-                  <Button
-                    onClick={() => {
-                      const selectedMethod = payoutMethod || "paypal";
-                      const data: {
-                        payoutMethod: string;
-                        payoutEmail?: string;
-                        venmoUsername?: string;
-                        zelleEmail?: string;
-                      } = { payoutMethod: selectedMethod };
-                      
-                      if (selectedMethod === "paypal") {
-                        data.payoutEmail = payoutEmail;
-                      } else if (selectedMethod === "venmo") {
-                        data.venmoUsername = venmoUsername;
-                      } else if (selectedMethod === "zelle") {
-                        data.zelleEmail = zelleEmail;
-                      }
-                      
-                      updateSettingsMutation.mutate(data);
-                    }}
-                    disabled={updateSettingsMutation.isPending}
-                    data-testid="button-save-settings"
-                  >
-                    {updateSettingsMutation.isPending ? (
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    ) : null}
-                    Save Settings
-                  </Button>
+                    <Button
+                      onClick={() => {
+                        const selectedMethod = payoutMethod || "paypal";
+                        const data: {
+                          fullName?: string;
+                          email?: string;
+                          payoutMethod: string;
+                          payoutEmail?: string;
+                          venmoUsername?: string;
+                          zelleEmail?: string;
+                        } = { 
+                          fullName,
+                          email,
+                          payoutMethod: selectedMethod 
+                        };
+                        
+                        if (selectedMethod === "paypal") {
+                          data.payoutEmail = payoutEmail;
+                        } else if (selectedMethod === "venmo") {
+                          data.venmoUsername = venmoUsername;
+                        } else if (selectedMethod === "zelle") {
+                          data.zelleEmail = zelleEmail;
+                        }
+                        
+                        updateSettingsMutation.mutate(data);
+                      }}
+                      disabled={updateSettingsMutation.isPending}
+                      data-testid="button-save-settings"
+                    >
+                      {updateSettingsMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      ) : null}
+                      Save Settings
+                    </Button>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
