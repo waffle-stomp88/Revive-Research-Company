@@ -108,23 +108,26 @@ export function LearningRoadmap({ onModuleClick, completedModules = [] }: Learni
       </div>
 
       {/* Vertical connector lines - positioned absolutely to connect timeline to cards */}
-      {courseModules.map((module, index) => (
-        <motion.div
-          key={`connector-${index}`}
-          className="hidden md:block absolute pointer-events-none"
-          style={{
-            left: `calc(${8 + (index / (courseModules.length - 1)) * (100 - 16)}%)`,
-            top: '52px',
-            width: '2px',
-            height: '90px',
-            background: module.color,
-            transformOrigin: 'top center',
-          }}
-          initial={{ scaleY: 0 }}
-          animate={isInView ? { scaleY: 1 } : {}}
-          transition={{ delay: 0.7 + index * 0.15, duration: 0.6 }}
-        />
-      ))}
+      {courseModules.map((module, index) => {
+        const ratio = index / (courseModules.length - 1);
+        return (
+          <motion.div
+            key={`connector-${index}`}
+            className="hidden md:block absolute pointer-events-none"
+            style={{
+              left: `calc(2rem + (100% - 4rem) * ${ratio})`,
+              top: '52px',
+              width: '2px',
+              height: '90px',
+              background: module.color,
+              transformOrigin: 'top center',
+            }}
+            initial={{ scaleY: 0 }}
+            animate={isInView ? { scaleY: 1 } : {}}
+            transition={{ delay: 0.7 + index * 0.15, duration: 0.6 }}
+          />
+        );
+      })}
 
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4 md:gap-3 pt-6 md:pt-20">
         {courseModules.map((module, index) => {
