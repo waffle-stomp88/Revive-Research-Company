@@ -404,19 +404,20 @@ export function COAAnatomyDiagram() {
           transition={{ delay: 1 }}
           className="mt-10"
         >
-          <button
+          <motion.button
             onClick={(e) => {
               e.stopPropagation();
               setShowRedFlags(!showRedFlags);
             }}
-            className="flex items-center gap-2 mx-auto px-4 py-2 rounded-lg bg-red-950/30 border border-red-500/30 text-red-400 hover:bg-red-950/50 transition-colors cursor-pointer"
+            whileHover={{ scale: 1.05 }}
+            className="flex items-center justify-center gap-2 mx-auto px-6 py-3 rounded-lg bg-red-950/40 border-2 border-red-500/60 text-red-300 hover:text-red-200 hover:bg-red-950/60 transition-all cursor-pointer shadow-lg hover-elevate animate-pulse-subtle font-semibold"
             data-testid="button-toggle-red-flags"
           >
-            <AlertTriangle className="h-4 w-4" />
-            <span className="text-sm font-medium">
+            <AlertTriangle className="h-5 w-5" />
+            <span className="text-base">
               {showRedFlags ? "Hide" : "Show"} Red Flags to Watch For
             </span>
-          </button>
+          </motion.button>
 
           {showRedFlags && (
             <motion.div
