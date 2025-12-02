@@ -152,21 +152,21 @@ export default {
         "pulse-glow-yellow": {
           "0%, 100%": {
             borderColor: "rgba(231, 251, 16, 0.6)",
-            boxShadow: "0 0 20px rgba(231, 251, 16, 0.3), inset 0 0 20px rgba(231, 251, 16, 0.05)",
+            boxShadow: "0 0 20px rgba(231, 251, 16, 0.2), inset 0 0 20px rgba(231, 251, 16, 0.04)",
           },
           "50%": {
-            borderColor: "rgba(231, 251, 16, 1)",
-            boxShadow: "0 0 40px rgba(231, 251, 16, 0.8), inset 0 0 20px rgba(231, 251, 16, 0.15)",
+            borderColor: "rgba(231, 251, 16, 0.9)",
+            boxShadow: "0 0 30px rgba(231, 251, 16, 0.5), inset 0 0 20px rgba(231, 251, 16, 0.1)",
           },
         },
         "pulse-glow-cyan": {
           "0%, 100%": {
             borderColor: "rgba(33, 216, 255, 0.6)",
-            boxShadow: "0 0 20px rgba(33, 216, 255, 0.3), inset 0 0 20px rgba(33, 216, 255, 0.05)",
+            boxShadow: "0 0 20px rgba(33, 216, 255, 0.2), inset 0 0 20px rgba(33, 216, 255, 0.04)",
           },
           "50%": {
-            borderColor: "rgba(33, 216, 255, 1)",
-            boxShadow: "0 0 40px rgba(33, 216, 255, 0.8), inset 0 0 20px rgba(33, 216, 255, 0.15)",
+            borderColor: "rgba(33, 216, 255, 0.9)",
+            boxShadow: "0 0 30px rgba(33, 216, 255, 0.5), inset 0 0 20px rgba(33, 216, 255, 0.1)",
           },
         },
       },
