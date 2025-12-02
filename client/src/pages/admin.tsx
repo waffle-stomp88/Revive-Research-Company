@@ -3387,6 +3387,8 @@ interface PricingResponse {
   totalPotentialRevenue: string;
 }
 
+const RECENT_UPDATE_WINDOW_HOURS = 24;
+
 function PricingOptimizerTab() {
   const { toast } = useToast();
   const [pricingData, setPricingData] = useState<PricingResponse | null>(null);
@@ -3405,6 +3407,39 @@ function PricingOptimizerTab() {
     generateSuggestions();
   }, []);
 
+  const getRecentlyUpdatedProducts = (): string[] => {
+    try {
+      const stored = localStorage.getItem("recentPriceUpdates");
+      if (!stored) return [];
+      const updates = JSON.parse(stored) as Record<string, number>;
+      const now = Date.now();
+      const recent: string[] = [];
+      
+      Object.entries(updates).forEach(([productId, timestamp]) => {
+        const hoursSinceUpdate = (now - timestamp) / (1000 * 60 * 60);
+        if (hoursSinceUpdate < RECENT_UPDATE_WINDOW_HOURS) {
+          recent.push(productId);
+        }
+      });
+      
+      return recent;
+    } catch (error) {
+      console.error("Failed to get recent updates:", error);
+      return [];
+    }
+  };
+
+  const markPriceAsUpdated = (productId: string) => {
+    try {
+      const stored = localStorage.getItem("recentPriceUpdates");
+      const updates = stored ? JSON.parse(stored) : {};
+      updates[productId] = Date.now();
+      localStorage.setItem("recentPriceUpdates", JSON.stringify(updates));
+    } catch (error) {
+      console.error("Failed to mark price as updated:", error);
+    }
+  };
+
   const updateProductMutation = useMutation({
     mutationFn: async ({ id, price }: { id: string; price: string }) => {
       const response = await apiRequest("PATCH", `/api/admin/products/${id}`, { price });
@@ -3412,6 +3447,7 @@ function PricingOptimizerTab() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      markPriceAsUpdated(variables.id);
       setAppliedSuggestions(prev => [...prev, variables.id]);
       toast({
         title: "Price Updated",
@@ -3445,10 +3481,27 @@ function PricingOptimizerTab() {
       if (!response.ok) throw new Error("Failed to generate suggestions");
       
       const data = await response.json();
-      setPricingData(data);
+      const recentlyUpdated = getRecentlyUpdatedProducts();
+      
+      // Filter out recently updated products and mark them
+      const filtered = data.suggestions.map((s: PricingSuggestion) => ({
+        ...s,
+        wasRecentlyUpdated: recentlyUpdated.includes(s.productId)
+      })).filter((s: PricingSuggestion & { wasRecentlyUpdated: boolean }) => !s.wasRecentlyUpdated);
+      
+      setPricingData({
+        ...data,
+        suggestions: filtered
+      });
+      
+      const filteredCount = data.suggestions.length - filtered.length;
+      const message = filteredCount > 0 
+        ? `Generated ${filtered.length} suggestions (${filteredCount} recently updated products excluded)`
+        : `Generated ${data.suggestions?.length || 0} pricing suggestions.`;
+      
       toast({
         title: "Analysis Complete",
-        description: `Generated ${data.suggestions?.length || 0} pricing suggestions.`,
+        description: message,
       });
     } catch (error) {
       console.error("Pricing generation error:", error);
