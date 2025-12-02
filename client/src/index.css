@@ -6,6 +6,11 @@
   html {
     scrollbar-gutter: stable;
   }
+
+  /* Prevent body overflow from hiding scrollbar when dropdowns/modals open */
+  body {
+    overflow-y: scroll !important;
+  }
 }
 
 @tailwind components;
