@@ -50,6 +50,7 @@ export interface DashboardMetrics {
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
+  deleteUser(id: string): Promise<boolean>;
   
   getAllProducts(): Promise<Product[]>;
   getProduct(id: string): Promise<Product | undefined>;
@@ -234,6 +235,11 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return user;
+  }
+
+  async deleteUser(id: string): Promise<boolean> {
+    const result = await db.delete(users).where(eq(users.id, id)).returning();
+    return result.length > 0;
   }
 
   async getAllProducts(): Promise<Product[]> {
@@ -435,8 +441,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteAffiliate(id: string): Promise<boolean> {
-    const result = await db.delete(affiliates).where(eq(affiliates.id, id));
-    return result.rowCount > 0;
+    const result = await db.delete(affiliates).where(eq(affiliates.id, id)).returning();
+    return result.length > 0;
   }
 
   async updateAffiliateEarnings(id: string, tier1Amount: number, tier2Amount: number, pendingAmount: number): Promise<Affiliate | undefined> {
@@ -935,7 +941,9 @@ export class DatabaseStorage implements IStorage {
   }
   
   async getBatchCoas(batchId: string): Promise<Coa[]> {
-    return db.select().from(coas).where(eq(coas.batchId, batchId)).orderBy(desc(coas.testDate));
+    const batch = await this.getBatch(batchId);
+    if (!batch) return [];
+    return db.select().from(coas).where(eq(coas.batchNumber, batch.batchNumber)).orderBy(desc(coas.testDate));
   }
   
   // Product Storage Profiles implementation

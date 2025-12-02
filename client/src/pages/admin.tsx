@@ -822,13 +822,6 @@ function ProductsTab() {
       const response = await apiRequest("POST", "/api/admin/products", data);
       return response.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/products"], exact: false });
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
-      toast({ title: "Product created successfully" });
-      setIsDialogOpen(false);
-      form.reset();
-    },
     onError: () => {
       toast({ title: "Failed to create product", variant: "destructive" });
     },
@@ -838,17 +831,6 @@ function ProductsTab() {
     mutationFn: async ({ id, data }: { id: string; data: any }) => {
       const response = await apiRequest("PATCH", `/api/admin/products/${id}`, data);
       return response.json();
-    },
-    onSuccess: (_, variables) => {
-      // Invalidate both the product list and the specific product detail page
-      queryClient.invalidateQueries({ queryKey: ["/api/products"], exact: false });
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
-      // Force refetch immediately for the product detail page
-      queryClient.refetchQueries({ queryKey: ["/api/products", variables.id] });
-      toast({ title: "Product updated successfully" });
-      setIsDialogOpen(false);
-      setEditingProduct(null);
-      form.reset();
     },
     onError: () => {
       toast({ title: "Failed to update product", variant: "destructive" });
@@ -863,6 +845,7 @@ function ProductsTab() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"], exact: false });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products-with-stock"] });
       toast({ title: "Product deleted successfully" });
     },
     onError: () => {
@@ -870,10 +853,54 @@ function ProductsTab() {
     },
   });
 
-  const handleOpenDialog = (product?: Product) => {
+  // Mutation for syncing dosage stocks
+  const syncDosageStocksMutation = useMutation({
+    mutationFn: async ({ productId, dosageStocks }: { productId: string; dosageStocks: DosageStockItem[] }) => {
+      const response = await apiRequest("POST", `/api/admin/products/${productId}/dosage-stocks`, { dosageStocks });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/products"], exact: false });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products-with-stock"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
+    },
+    onError: () => {
+      toast({ title: "Failed to update dosage inventory", variant: "destructive" });
+    },
+  });
+
+  // Helper to get dosage stock summary for a product
+  const getDosageStockSummary = (product: ProductWithDosageStock) => {
+    const stocks = product.dosageStocks || [];
+    if (stocks.length === 0) return null;
+    const inStockCount = stocks.filter(s => s.inStock).length;
+    return { inStock: inStockCount, total: stocks.length };
+  };
+
+  const handleOpenDialog = (product?: ProductWithDosageStock | Product) => {
     if (product) {
       setEditingProduct(product);
       setProductImageUrl(product.imageUrl || null);
+      
+      // Load existing dosage stocks or initialize from dosageOptions
+      const productWithStock = product as ProductWithDosageStock;
+      if (productWithStock.dosageStocks && productWithStock.dosageStocks.length > 0) {
+        setDosageStocks(productWithStock.dosageStocks.map(ds => ({
+          dosage: ds.dosage,
+          stockAmount: ds.stockAmount,
+          inStock: ds.inStock,
+        })));
+      } else if (product.dosageOptions && product.dosageOptions.length > 0) {
+        // Initialize from dosageOptions with default values
+        setDosageStocks(product.dosageOptions.map(dosage => ({
+          dosage,
+          stockAmount: Math.floor((product.stockAmount || 0) / product.dosageOptions!.length),
+          inStock: product.inStock ?? true,
+        })));
+      } else {
+        setDosageStocks([{ dosage: "10mg", stockAmount: product.stockAmount || 0, inStock: product.inStock ?? true }]);
+      }
+      
       form.reset({
         name: product.name,
         description: product.description,
@@ -893,9 +920,39 @@ function ProductsTab() {
     } else {
       setEditingProduct(null);
       setProductImageUrl(null);
+      setDosageStocks([{ dosage: "10mg", stockAmount: 0, inStock: true }]);
       form.reset();
     }
+    setNewDosage("");
     setIsDialogOpen(true);
+  };
+
+  // Dosage stock management helpers
+  const updateDosageStock = (index: number, field: keyof DosageStockItem, value: any) => {
+    setDosageStocks(prev => prev.map((ds, i) => 
+      i === index ? { ...ds, [field]: value } : ds
+    ));
+  };
+
+  const addDosage = () => {
+    if (newDosage.trim() && !dosageStocks.some(ds => ds.dosage === newDosage.trim())) {
+      setDosageStocks(prev => [...prev, { dosage: newDosage.trim(), stockAmount: 0, inStock: true }]);
+      setNewDosage("");
+    }
+  };
+
+  const removeDosage = (index: number) => {
+    if (dosageStocks.length > 1) {
+      setDosageStocks(prev => prev.filter((_, i) => i !== index));
+    }
+  };
+
+  const markAllInStock = () => {
+    setDosageStocks(prev => prev.map(ds => ({ ...ds, inStock: true })));
+  };
+
+  const markAllOutOfStock = () => {
+    setDosageStocks(prev => prev.map(ds => ({ ...ds, inStock: false, stockAmount: 0 })));
   };
 
   const handleProductImageUpload = async () => {
@@ -943,19 +1000,73 @@ function ProductsTab() {
     form.setValue("imageUrl", "");
   };
 
-  const onSubmit = (values: ProductFormValues) => {
+  const onSubmit = async (values: ProductFormValues) => {
+    // Calculate aggregate stock values from dosage stocks
+    const totalStock = dosageStocks.reduce((sum, ds) => sum + ds.stockAmount, 0);
+    const anyInStock = dosageStocks.some(ds => ds.inStock);
+    
     const data = {
       ...values,
       benefits: values.benefits ? values.benefits.split(",").map((b) => b.trim()).filter(Boolean) : [],
-      dosageOptions: values.dosageOptions ? values.dosageOptions.split(",").map((d) => d.trim()).filter(Boolean) : [],
+      dosageOptions: dosageStocks.map(ds => ds.dosage), // Use dosages from inventory manager
       originalPrice: values.originalPrice || null,
       imageUrl: values.imageUrl || null,
+      stockAmount: totalStock,
+      inStock: anyInStock,
+    };
+
+    const handleSaveComplete = () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/products"], exact: false });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products-with-stock"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
+      setIsDialogOpen(false);
+      setEditingProduct(null);
+      form.reset();
     };
 
     if (editingProduct) {
-      updateMutation.mutate({ id: editingProduct.id, data });
+      // Update product, then sync dosage stocks
+      updateMutation.mutate({ id: editingProduct.id, data }, {
+        onSuccess: () => {
+          syncDosageStocksMutation.mutate(
+            { productId: editingProduct.id, dosageStocks },
+            {
+              onSuccess: () => {
+                toast({ title: "Product and inventory updated successfully" });
+                handleSaveComplete();
+              },
+              onError: () => {
+                toast({ title: "Product saved but inventory sync failed", variant: "destructive" });
+                handleSaveComplete();
+              }
+            }
+          );
+        }
+      });
     } else {
-      createMutation.mutate(data);
+      // Create product, then sync dosage stocks
+      createMutation.mutate(data, {
+        onSuccess: (newProduct: Product) => {
+          if (newProduct?.id) {
+            syncDosageStocksMutation.mutate(
+              { productId: newProduct.id, dosageStocks },
+              {
+                onSuccess: () => {
+                  toast({ title: "Product created with inventory" });
+                  handleSaveComplete();
+                },
+                onError: () => {
+                  toast({ title: "Product created but inventory sync failed", variant: "destructive" });
+                  handleSaveComplete();
+                }
+              }
+            );
+          } else {
+            toast({ title: "Product created successfully" });
+            handleSaveComplete();
+          }
+        }
+      });
     }
   };
 
@@ -1056,33 +1167,133 @@ function ProductsTab() {
                     )}
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="stockAmount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Stock Amount (units)</FormLabel>
-                        <FormControl>
-                          <Input {...field} type="number" data-testid="input-product-stock" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="dosageOptions"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Dosage Options (comma-separated)</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="10mg, 12mg, 15mg, 20mg" data-testid="input-product-dosages" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                {/* Dosage Inventory Manager */}
+                <div className="space-y-4 p-4 rounded-lg border border-[#21d8ff]/30 bg-[#21d8ff]/5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Package className="h-5 w-5 text-[#21d8ff]" />
+                      <h4 className="font-semibold text-[#21d8ff]">Dosage Inventory</h4>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={markAllInStock}
+                        className="text-xs border-green-500/50 text-green-500 hover:bg-green-500/10"
+                        data-testid="button-mark-all-in-stock"
+                      >
+                        <Check className="h-3 w-3 mr-1" />
+                        All In Stock
+                      </Button>
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={markAllOutOfStock}
+                        className="text-xs border-red-500/50 text-red-500 hover:bg-red-500/10"
+                        data-testid="button-mark-all-out"
+                      >
+                        <X className="h-3 w-3 mr-1" />
+                        All Out
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <p className="text-xs text-muted-foreground">
+                    Manage stock levels for each dosage. Product availability is calculated from dosage stock.
+                  </p>
+
+                  {/* Dosage stock table */}
+                  <div className="space-y-2">
+                    {dosageStocks.map((ds, index) => (
+                      <div 
+                        key={index}
+                        className={`flex items-center gap-3 p-3 rounded-lg border ${
+                          ds.inStock ? 'border-green-500/30 bg-green-500/5' : 'border-red-500/30 bg-red-500/5'
+                        }`}
+                        data-testid={`dosage-row-${index}`}
+                      >
+                        <div className="flex-1 min-w-[80px]">
+                          <span className="font-mono font-medium">{ds.dosage}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="number"
+                            min="0"
+                            value={ds.stockAmount}
+                            onChange={(e) => updateDosageStock(index, 'stockAmount', parseInt(e.target.value) || 0)}
+                            className="w-20 h-8 text-center"
+                            data-testid={`input-stock-${index}`}
+                          />
+                          <span className="text-xs text-muted-foreground">units</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            type="button"
+                            variant={ds.inStock ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => updateDosageStock(index, 'inStock', !ds.inStock)}
+                            className={ds.inStock ? "bg-green-600 hover:bg-green-700" : "border-red-500/50 text-red-500"}
+                            data-testid={`toggle-stock-${index}`}
+                          >
+                            {ds.inStock ? (
+                              <><Check className="h-3 w-3 mr-1" /> In Stock</>
+                            ) : (
+                              <><X className="h-3 w-3 mr-1" /> Out</>
+                            )}
+                          </Button>
+                          {dosageStocks.length > 1 && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeDosage(index)}
+                              className="h-8 w-8 p-0 text-muted-foreground hover:text-red-500"
+                              data-testid={`remove-dosage-${index}`}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Add new dosage */}
+                  <div className="flex gap-2 pt-2 border-t border-[#21d8ff]/20">
+                    <Input
+                      placeholder="New dosage (e.g., 15mg)"
+                      value={newDosage}
+                      onChange={(e) => setNewDosage(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addDosage())}
+                      className="flex-1"
+                      data-testid="input-new-dosage"
+                    />
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      onClick={addDosage}
+                      className="border-[#21d8ff]/50 text-[#21d8ff]"
+                      data-testid="button-add-dosage"
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add Dosage
+                    </Button>
+                  </div>
+
+                  {/* Stock summary */}
+                  <div className="flex items-center justify-between pt-3 border-t border-[#21d8ff]/20">
+                    <span className="text-sm text-muted-foreground">Overall Status:</span>
+                    <div className="flex items-center gap-3">
+                      <Badge className={dosageStocks.some(ds => ds.inStock) ? "bg-green-600" : "bg-red-600"}>
+                        {dosageStocks.filter(ds => ds.inStock).length}/{dosageStocks.length} In Stock
+                      </Badge>
+                      <span className="text-sm text-muted-foreground">
+                        Total: {dosageStocks.reduce((sum, ds) => sum + ds.stockAmount, 0)} units
+                      </span>
+                    </div>
+                  </div>
                 </div>
                 <FormField
                   control={form.control}
@@ -1124,52 +1335,34 @@ function ProductsTab() {
                   )}
                 />
                 <div className="flex flex-col gap-4">
-                  <div className="flex gap-6">
-                    <FormField
-                      control={form.control}
-                      name="inStock"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center gap-2">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value ?? true}
-                              onCheckedChange={field.onChange}
-                              data-testid="checkbox-in-stock"
-                            />
-                          </FormControl>
-                          <FormLabel className="!mt-0">In Stock</FormLabel>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="featured"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center gap-2">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value ?? false}
-                              onCheckedChange={field.onChange}
-                              className="border-[#21d8ff]/50 data-[state=checked]:bg-[#21d8ff] data-[state=checked]:border-[#21d8ff]"
-                              data-testid="checkbox-featured"
-                            />
-                          </FormControl>
-                          <FormLabel className="!mt-0 flex items-center gap-1.5">
-                            <Star className="h-3.5 w-3.5 text-[#21d8ff]" />
-                            Featured Badge
-                          </FormLabel>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="featured"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center gap-2">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value ?? false}
+                            onCheckedChange={field.onChange}
+                            className="border-[#21d8ff]/50 data-[state=checked]:bg-[#21d8ff] data-[state=checked]:border-[#21d8ff]"
+                            data-testid="checkbox-featured"
+                          />
+                        </FormControl>
+                        <FormLabel className="!mt-0 flex items-center gap-1.5">
+                          <Star className="h-3.5 w-3.5 text-[#21d8ff]" />
+                          Featured Badge
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  />
                   
                   <FormField
                     control={form.control}
                     name="showOnLandingPage"
                     render={({ field }) => {
                       const currentProductOnLandingPage = editingProduct?.showOnLandingPage ?? false;
-                      const inStockValue = form.watch("inStock");
-                      const isOutOfStock = !inStockValue;
+                      const anyDosageInStock = dosageStocks.some(ds => ds.inStock);
+                      const isOutOfStock = !anyDosageInStock;
                       const isDisabled = (isLandingPageFull && !currentProductOnLandingPage) || isOutOfStock;
                       
                       return (
@@ -1381,40 +1574,56 @@ function ProductsTab() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sortedProducts?.map((product) => (
-              <TableRow key={product.id} data-testid={`row-product-${product.id}`}>
-                <TableCell className="font-medium">{product.name}</TableCell>
-                <TableCell>{product.category}</TableCell>
-                <TableCell>${Number(product.price).toFixed(2)}</TableCell>
-                <TableCell>
-                  <div className="flex gap-2">
-                    {product.inStock ? (
-                      <Badge variant="secondary">In Stock</Badge>
-                    ) : (
-                      <Badge variant="destructive">Out of Stock</Badge>
-                    )}
-                    {product.featured && <Badge className="bg-[#21d8ff] text-black">Featured</Badge>}
-                    {product.showOnLandingPage && product.inStock && <Badge className="bg-[#E7FB10] text-black">Landing Page</Badge>}
-                  </div>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(product)} data-testid={`button-edit-product-${product.id}`}>
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => deleteMutation.mutate(product.id)}
-                      disabled={deleteMutation.isPending}
-                      data-testid={`button-delete-product-${product.id}`}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+            {sortedProducts?.map((product) => {
+              const productWithStock = product as ProductWithDosageStock;
+              const stockSummary = getDosageStockSummary(productWithStock);
+              const anyInStock = stockSummary ? stockSummary.inStock > 0 : product.inStock;
+              
+              return (
+                <TableRow key={product.id} data-testid={`row-product-${product.id}`}>
+                  <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableCell>{product.category}</TableCell>
+                  <TableCell>${Number(product.price).toFixed(2)}</TableCell>
+                  <TableCell>
+                    <div className="flex flex-wrap gap-2">
+                      {stockSummary ? (
+                        <Badge 
+                          variant={stockSummary.inStock > 0 ? "secondary" : "destructive"}
+                          className={stockSummary.inStock === stockSummary.total ? "bg-green-600 text-white" : ""}
+                        >
+                          <Package className="h-3 w-3 mr-1" />
+                          {stockSummary.inStock}/{stockSummary.total} Dosages
+                        </Badge>
+                      ) : (
+                        product.inStock ? (
+                          <Badge variant="secondary">In Stock</Badge>
+                        ) : (
+                          <Badge variant="destructive">Out of Stock</Badge>
+                        )
+                      )}
+                      {product.featured && <Badge className="bg-[#21d8ff] text-black">Featured</Badge>}
+                      {product.showOnLandingPage && anyInStock && <Badge className="bg-[#E7FB10] text-black">Landing</Badge>}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(productWithStock)} data-testid={`button-edit-product-${product.id}`}>
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => deleteMutation.mutate(product.id)}
+                        disabled={deleteMutation.isPending}
+                        data-testid={`button-delete-product-${product.id}`}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>

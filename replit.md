@@ -44,6 +44,15 @@ The platform features an Apple-inspired design with a dark charcoal background (
   - Competitive positioning within the catalog
   - Features: confidence levels (high/medium/low), reasoning explanations, one-click apply, bulk apply all suggestions, market insights summary, potential revenue impact estimates.
 - **Account Deletion Feature**: Users can permanently delete their accounts with Danger Zone section in Account Settings page. Includes confirmation dialog with clear warnings. Backend endpoints: `POST /api/user/delete-account` and `POST /api/affiliate/delete-account`. Affiliates also have delete account option in Settings tab of affiliate dashboard.
+- **Dosage-Specific Stock Management**: Admin Products tab now has per-dosage inventory tracking instead of product-level only. Features:
+  - Inline dosage inventory manager in product edit dialog with cyan (#21d8ff) styling
+  - Per-dosage stock table with columns: dosage name, stock amount input, in stock toggle
+  - Quick actions: "All In Stock" and "All Out" buttons for bulk updates
+  - Add/remove dosage options dynamically
+  - Product-level stock is derived from dosage data (inStock = any dosage in stock, stockAmount = sum of all dosage amounts)
+  - Products table shows dosage summary badges: "X/Y Dosages" with color coding (green = all in stock, secondary = some in stock, red = none)
+  - Database: `productDosageStock` table with fields: productId, dosage, stockAmount, inStock
+  - API endpoints: `GET/POST /api/admin/products/:id/dosage-stocks` for fetching/syncing dosage inventory
 
 ### Phase 2 Trust & Transparency Features
 - **Education Center**: Comprehensive 5-part researcher onboarding course (Research Use Only, Reading COAs, Batch Numbers, Storage 101, Ordering Expectations) with full article library covering peptide profiles, research basics, storage, safety, and terminology.

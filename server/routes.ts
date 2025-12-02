@@ -778,14 +778,14 @@ export async function registerRoutes(
         return res.status(400).json({ error: "Payment not completed" });
       }
 
-      const shippingDetails = session.shipping;
+      const shippingDetails = (session as any).shipping_details || (session as any).shipping;
       const customerDetails = session.customer_details;
       const metadata = session.metadata || {};
 
       const order = await storage.createOrder({
         email: customerDetails?.email || '',
-        firstName: shippingDetails?.name?.split(' ')[0] || '',
-        lastName: shippingDetails?.name?.split(' ').slice(1).join(' ') || '',
+        firstName: shippingDetails?.name?.split(' ')[0] || customerDetails?.name?.split(' ')[0] || '',
+        lastName: shippingDetails?.name?.split(' ').slice(1).join(' ') || customerDetails?.name?.split(' ').slice(1).join(' ') || '',
         address: shippingDetails?.address?.line1 || '',
         city: shippingDetails?.address?.city || '',
         state: shippingDetails?.address?.state || '',
