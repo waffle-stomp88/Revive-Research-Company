@@ -373,7 +373,7 @@ export default function Education() {
 
                 {activeCategory === 'all' && (
                   <div className="mb-12 p-6 rounded-lg border border-[#9d4edd]/30 bg-gradient-to-br from-[#9d4edd]/5 to-[#ec4899]/5">
-                    <div className="mb-6">
+                    <div className="mb-8">
                       <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#9d4edd]/10 border border-[#9d4edd]/20 mb-3">
                         <Sparkles className="h-3 w-3 text-[#9d4edd]" />
                         <span className="text-xs font-semibold text-[#9d4edd]">Guided Onboarding</span>
