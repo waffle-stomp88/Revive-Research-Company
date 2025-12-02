@@ -1,8 +1,10 @@
 import { 
   users, products, coas, orders, contacts, affiliateApplications, affiliates, affiliateSales, affiliatePayouts, reviews,
   batches, productStorageProfiles, legalDocuments, faqEntries, educationArticles, coaGlossaryTerms, stockNotifications, discountCodes, newsletterSubscribers,
+  productDosageStock,
   type User, type UpsertUser,
   type Product, type InsertProduct,
+  type ProductDosageStock, type InsertProductDosageStock, type ProductWithDosageStock,
   type Coa, type InsertCoa,
   type Order, type InsertOrder,
   type Contact, type InsertContact,
@@ -201,6 +203,16 @@ export interface IStorage {
   getAllNewsletterSubscribers(): Promise<NewsletterSubscriber[]>;
   unsubscribeFromNewsletter(email: string): Promise<NewsletterSubscriber | undefined>;
   checkNewsletterSubscription(email: string): Promise<NewsletterSubscriber | undefined>;
+  
+  // Product Dosage Stock Management
+  getProductDosageStocks(productId: string): Promise<ProductDosageStock[]>;
+  getAllProductDosageStocks(): Promise<ProductDosageStock[]>;
+  getProductWithDosageStock(productId: string): Promise<ProductWithDosageStock | undefined>;
+  getAllProductsWithDosageStock(): Promise<ProductWithDosageStock[]>;
+  upsertDosageStock(productId: string, dosage: string, stockAmount: number, inStock: boolean): Promise<ProductDosageStock>;
+  deleteDosageStock(id: string): Promise<boolean>;
+  syncProductDosageStocks(productId: string, dosageStocks: Array<{ dosage: string; stockAmount: number; inStock: boolean }>): Promise<ProductDosageStock[]>;
+  initializeDosageStocksFromProduct(productId: string): Promise<ProductDosageStock[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1197,6 +1209,113 @@ export class DatabaseStorage implements IStorage {
   async checkNewsletterSubscription(email: string): Promise<NewsletterSubscriber | undefined> {
     const [result] = await db.select().from(newsletterSubscribers).where(eq(newsletterSubscribers.email, email));
     return result || undefined;
+  }
+
+  // Product Dosage Stock Management Implementation
+  async getProductDosageStocks(productId: string): Promise<ProductDosageStock[]> {
+    return db.select().from(productDosageStock).where(eq(productDosageStock.productId, productId));
+  }
+
+  async getAllProductDosageStocks(): Promise<ProductDosageStock[]> {
+    return db.select().from(productDosageStock);
+  }
+
+  async getProductWithDosageStock(productId: string): Promise<ProductWithDosageStock | undefined> {
+    const [product] = await db.select().from(products).where(eq(products.id, productId));
+    if (!product) return undefined;
+    
+    const dosageStocks = await this.getProductDosageStocks(productId);
+    return { ...product, dosageStocks };
+  }
+
+  async getAllProductsWithDosageStock(): Promise<ProductWithDosageStock[]> {
+    const allProducts = await db.select().from(products);
+    const allDosageStocks = await db.select().from(productDosageStock);
+    
+    return allProducts.map(product => ({
+      ...product,
+      dosageStocks: allDosageStocks.filter(ds => ds.productId === product.id)
+    }));
+  }
+
+  async upsertDosageStock(productId: string, dosage: string, stockAmount: number, inStock: boolean): Promise<ProductDosageStock> {
+    // Check if this dosage stock already exists
+    const [existing] = await db.select().from(productDosageStock)
+      .where(and(
+        eq(productDosageStock.productId, productId),
+        eq(productDosageStock.dosage, dosage)
+      ));
+    
+    if (existing) {
+      // Update existing
+      const [updated] = await db.update(productDosageStock)
+        .set({ stockAmount, inStock })
+        .where(eq(productDosageStock.id, existing.id))
+        .returning();
+      return updated;
+    } else {
+      // Insert new
+      const [created] = await db.insert(productDosageStock)
+        .values({ productId, dosage, stockAmount, inStock })
+        .returning();
+      return created;
+    }
+  }
+
+  async deleteDosageStock(id: string): Promise<boolean> {
+    const result = await db.delete(productDosageStock).where(eq(productDosageStock.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async syncProductDosageStocks(
+    productId: string, 
+    dosageStocks: Array<{ dosage: string; stockAmount: number; inStock: boolean }>
+  ): Promise<ProductDosageStock[]> {
+    // Get current dosage stocks for this product
+    const currentStocks = await this.getProductDosageStocks(productId);
+    const currentDosages = new Set(currentStocks.map(s => s.dosage));
+    const newDosages = new Set(dosageStocks.map(s => s.dosage));
+    
+    // Delete dosages that are no longer in the list
+    for (const stock of currentStocks) {
+      if (!newDosages.has(stock.dosage)) {
+        await this.deleteDosageStock(stock.id);
+      }
+    }
+    
+    // Upsert all dosage stocks
+    const results: ProductDosageStock[] = [];
+    for (const ds of dosageStocks) {
+      const result = await this.upsertDosageStock(productId, ds.dosage, ds.stockAmount, ds.inStock);
+      results.push(result);
+    }
+    
+    // Update product-level inStock based on whether ANY dosage is in stock
+    const anyInStock = results.some(r => r.inStock);
+    const totalStock = results.reduce((sum, r) => sum + r.stockAmount, 0);
+    await db.update(products).set({ 
+      inStock: anyInStock,
+      stockAmount: totalStock
+    }).where(eq(products.id, productId));
+    
+    return results;
+  }
+
+  async initializeDosageStocksFromProduct(productId: string): Promise<ProductDosageStock[]> {
+    const product = await this.getProduct(productId);
+    if (!product) return [];
+    
+    const dosageOptions = product.dosageOptions || ["10mg"];
+    const stockPerDosage = Math.floor((product.stockAmount || 0) / dosageOptions.length);
+    const isInStock = product.inStock ?? true;
+    
+    const results: ProductDosageStock[] = [];
+    for (const dosage of dosageOptions) {
+      const result = await this.upsertDosageStock(productId, dosage, stockPerDosage, isInStock);
+      results.push(result);
+    }
+    
+    return results;
   }
 }
 
