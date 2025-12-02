@@ -150,7 +150,7 @@ export function LearningRoadmap({ onModuleClick, completedModules = [] }: Learni
                   animate={{ opacity: isHovered ? 1 : 0.5 }}
                 />
 
-                <div className="relative">
+                <div className="relative flex flex-col h-full">
                   <div className="flex items-center justify-between mb-3">
                     <motion.div
                       className="relative w-10 h-10 rounded-lg flex items-center justify-center"
@@ -193,7 +193,7 @@ export function LearningRoadmap({ onModuleClick, completedModules = [] }: Learni
                     {module.title}
                   </h4>
                   
-                  <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
+                  <p className="text-xs text-muted-foreground mb-3 line-clamp-2 flex-1">
                     {module.description}
                   </p>
 
@@ -231,7 +231,7 @@ export function LearningRoadmap({ onModuleClick, completedModules = [] }: Learni
                   </motion.div>
 
                   <motion.div
-                    className="flex items-center gap-1 mt-3"
+                    className="flex items-center gap-1 mt-auto"
                     style={{ color: module.color }}
                     animate={{ x: isHovered ? 5 : 0 }}
                   >
