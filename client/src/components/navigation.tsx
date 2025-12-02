@@ -303,9 +303,33 @@ export function Navigation() {
                     <DropdownMenuTrigger asChild>
                       <Button 
                         variant="ghost" 
-                        size="icon" 
-                        className="relative rounded-full hover:ring-2 hover:ring-[#21d8ff] transition-all duration-300 hover:bg-[#21d8ff]/10" 
+                        className="relative hidden md:flex items-center gap-2 px-3 py-2 h-auto rounded-full hover:bg-[#21d8ff]/10 border border-[#21d8ff]/50 hover:border-[#21d8ff] transition-all duration-300" 
                         data-testid="button-user-menu"
+                      >
+                        <div className="relative">
+                          <Avatar className="h-8 w-8 border-2 border-[#21d8ff]">
+                            {user?.profileImageUrl && (
+                              <AvatarImage src={user.profileImageUrl} alt={user?.firstName || "User"} className="object-cover" />
+                            )}
+                            <AvatarFallback className="text-xs font-semibold bg-[#21d8ff]/20">
+                              {getInitials()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 bg-green-500 border-2 border-background rounded-full animate-pulse shadow-lg shadow-green-500/50"></span>
+                        </div>
+                        <div className="flex flex-col items-start">
+                          <span className="text-[10px] text-muted-foreground leading-none">Welcome back</span>
+                          <span className="text-sm font-semibold text-[#21d8ff] leading-tight">{user?.firstName || "User"}</span>
+                        </div>
+                        <ChevronDown className="h-4 w-4 text-muted-foreground ml-1" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="relative md:hidden rounded-full hover:bg-[#21d8ff]/10 transition-all duration-300" 
+                        data-testid="button-user-menu-mobile"
                       >
                         <Avatar className="h-9 w-9 border-2 border-[#21d8ff]">
                           {user?.profileImageUrl && (
