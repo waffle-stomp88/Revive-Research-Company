@@ -261,11 +261,12 @@ function ProductShowcase() {
           >
             {duplicatedItems.map((product, idx) => (
               <Link key={`${product.id}-${idx}`} href={`/products/${product.id}`} onClick={() => trackEvent('product_click', 'carousel', product.name)} className="flex-shrink-0">
-                <Card className={`group w-48 h-auto cursor-pointer transition-all duration-300 border-2 flex flex-col relative overflow-hidden ${
-                  product.isWeeklyDeal
-                    ? "border-red-600/90 sale-glow-pulse"
-                    : "border-cyan-400/60 shadow-glow-blue-sm hover:shadow-glow-blue-lg"
-                }`} data-testid={`card-product-${product.id}`}>
+                <div className={product.isWeeklyDeal ? "sale-glow-pulse" : ""}>
+                  <Card className={`group w-48 h-auto cursor-pointer transition-all duration-300 border-2 flex flex-col relative overflow-hidden ${
+                    product.isWeeklyDeal
+                      ? "border-red-600/80"
+                      : "border-cyan-400/60 shadow-glow-blue-sm hover:shadow-glow-blue-lg"
+                  }`} data-testid={`card-product-${product.id}`}>
                   {product.isWeeklyDeal && (
                     <div className="absolute top-2 right-2 z-20 px-3 py-1 text-xs font-bold rounded-full bg-[#E7FB10] text-black">
                       HOT DEAL
@@ -288,6 +289,7 @@ function ProductShowcase() {
                     </div>
                   </div>
                 </Card>
+                </div>
               </Link>
             ))}
           </motion.div>
