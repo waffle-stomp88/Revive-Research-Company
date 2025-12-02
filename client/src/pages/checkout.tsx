@@ -292,7 +292,7 @@ export default function Checkout() {
           </div>
           
           {/* Acknowledgment Checkboxes */}
-          <div className="space-y-3 pt-2">
+          <div className="space-y-3 pt-2" onPointerDown={(e) => e.stopPropagation()}>
             <label className="flex items-start gap-3 cursor-pointer group">
               <Checkbox 
                 checked={ruoAcknowledged}
