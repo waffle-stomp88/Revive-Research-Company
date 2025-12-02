@@ -740,9 +740,16 @@ export default function ProductDetail() {
             {product.usage && (
               <div className="mb-8">
                 <h3 className="font-display font-semibold text-lg mb-4">Usage Information</h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed mb-4">
                   {product.usage}
                 </p>
+                <Link href="/education/storage-101">
+                  <Button variant="outline" size="sm" className="gap-2" data-testid="link-learn-storage">
+                    <BookOpen className="h-4 w-4" />
+                    Learn More: Storage Best Practices
+                    <ChevronRight className="h-3 w-3" />
+                  </Button>
+                </Link>
               </div>
             )}
           </motion.div>
