@@ -311,38 +311,69 @@ function LoyaltyProgress({ totalSpent }: { totalSpent: number }) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-3">
           <span className="font-bold text-lg" style={{ color: currentTier.color }}>
             {currentTier.name}
           </span>
           {nextTier && (
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs font-medium" style={{ color: nextTier.color }}>
               ${toNextTier.toFixed(0)} to {nextTier.name}
             </span>
           )}
         </div>
-        <Progress value={progress} className="h-2 mb-3" />
-        <div className="flex justify-between">
-          {tiers.slice(0, 5).map((tier, i) => (
-            <Tooltip key={tier.name}>
-              <TooltipTrigger>
-                <div 
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all ${
-                    totalSpent >= tier.min ? 'scale-110' : 'opacity-40'
-                  }`}
-                  style={{ 
-                    backgroundColor: totalSpent >= tier.min ? tier.color : 'var(--muted)',
-                    color: totalSpent >= tier.min ? '#000' : 'var(--muted-foreground)'
-                  }}
-                >
-                  {i + 1}
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{tier.name} (${tier.min}+)</p>
-              </TooltipContent>
-            </Tooltip>
-          ))}
+        <div className="mb-4">
+          <div 
+            className="h-3 rounded-full overflow-hidden bg-muted/30"
+            style={{
+              background: `linear-gradient(90deg, rgba(${r},${g},${b},0.15) 0%, transparent 100%)`
+            }}
+          >
+            <div
+              className="h-full rounded-full transition-all"
+              style={{
+                width: `${progress}%`,
+                background: `linear-gradient(90deg, ${currentTier.color}, rgba(${r},${g},${b},0.4))`,
+                boxShadow: `0 0 12px ${currentTier.color}`
+              }}
+            />
+          </div>
+          {nextTier && (
+            <p className="text-[11px] text-muted-foreground mt-1.5">
+              {Math.round(progress)}% to {nextTier.name}
+            </p>
+          )}
+        </div>
+        <div className="flex justify-between gap-1.5 p-3 rounded-lg" style={{ background: `rgba(${r},${g},${b},0.05)` }}>
+          {tiers.slice(0, 5).map((tier, i) => {
+            const tierR = parseInt(tier.color.slice(1, 3), 16);
+            const tierG = parseInt(tier.color.slice(3, 5), 16);
+            const tierB = parseInt(tier.color.slice(5, 7), 16);
+            const isAchieved = totalSpent >= tier.min;
+            const isNext = nextTier && tier.name === nextTier.name;
+            
+            return (
+              <Tooltip key={tier.name}>
+                <TooltipTrigger>
+                  <div 
+                    className={`w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold transition-all ${
+                      isAchieved ? 'scale-110' : isNext ? '' : 'opacity-30'
+                    }`}
+                    style={{ 
+                      backgroundColor: isAchieved ? tier.color : isNext ? `rgba(${tierR},${tierG},${tierB},0.1)` : 'var(--muted)',
+                      color: isAchieved ? '#000' : isNext ? tier.color : 'var(--muted-foreground)',
+                      outline: isNext ? `2px solid ${tier.color}` : 'none',
+                      boxShadow: isNext ? `0 0 16px ${tier.color}, inset 0 0 16px ${tier.color}50` : isAchieved ? `0 0 8px ${tier.color}` : 'none'
+                    }}
+                  >
+                    {i + 1}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{tier.name} (${tier.min}+)</p>
+                </TooltipContent>
+              </Tooltip>
+            );
+          })}
         </div>
       </CardContent>
     </Card>
