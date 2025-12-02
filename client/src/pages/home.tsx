@@ -289,61 +289,61 @@ function ProductShowcase() {
         
         {/* Sale of the Week - Compact */}
         {weeklyDeal && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-8"
-          >
-            <div className="sale-glow-pulse rounded-xl">
-              <Card className="border-2 border-red-500 bg-gradient-to-r from-red-500/10 via-background to-background overflow-hidden">
-                <div className="flex flex-col md:flex-row items-center gap-4 p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-16 h-16 bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <FlaskConical className="h-8 w-8 text-red-500/50" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <Badge className="bg-[#E7FB10] text-black font-bold text-[10px] px-2 py-0.5">HOT DEAL</Badge>
-                        <span className="text-xs text-red-400 font-medium flex items-center gap-1">
-                          <Flame className="h-3 w-3 animate-pulse" />
-                          Sale of the Week
-                        </span>
+          <Link href={`/products/${weeklyDeal.id}`} data-testid={`link-weekly-deal-${weeklyDeal.id}`}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mb-8 cursor-pointer"
+            >
+              <div className="sale-glow-pulse rounded-xl hover-elevate">
+                <Card className="border-2 border-red-500 bg-gradient-to-r from-red-500/10 via-background to-background overflow-hidden">
+                  <div className="flex flex-col md:flex-row items-center gap-4 p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-16 h-16 bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <FlaskConical className="h-8 w-8 text-red-500/50" />
                       </div>
-                      <h3 className="font-display text-lg font-bold text-[#E7FB10]">{weeklyDeal.name}</h3>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-4 md:ml-auto">
-                    <div className="flex gap-2">
-                      {[
-                        { value: timeLeft.days, label: "D" },
-                        { value: timeLeft.hours, label: "H" },
-                        { value: timeLeft.minutes, label: "M" },
-                        { value: timeLeft.seconds, label: "S" },
-                      ].map((item, i) => (
-                        <div key={i} className="text-center">
-                          <div className="bg-red-500/20 border border-red-500/40 rounded px-2 py-1 min-w-[36px]">
-                            <span className="font-display text-sm font-bold text-red-400">
-                              {String(item.value).padStart(2, '0')}
-                            </span>
-                          </div>
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <Badge className="bg-[#E7FB10] text-black font-bold text-[10px] px-2 py-0.5">HOT DEAL</Badge>
+                          <span className="text-xs text-red-400 font-medium flex items-center gap-1">
+                            <Flame className="h-3 w-3 animate-pulse" />
+                            Sale of the Week
+                          </span>
                         </div>
-                      ))}
+                        <h3 className="font-display text-lg font-bold text-[#E7FB10]">{weeklyDeal.name}</h3>
+                      </div>
                     </div>
-                    <span className="font-display text-xl font-bold text-[#E7FB10]">
-                      ${Number(weeklyDeal.price).toFixed(2)}
-                    </span>
-                    <Link href={`/products/${weeklyDeal.id}`} data-testid={`link-weekly-deal-${weeklyDeal.id}`}>
-                      <Button size="sm" className="bg-red-500 hover:bg-red-600 text-white font-display gap-1" data-testid="button-weekly-deal">
+                    
+                    <div className="flex items-center gap-4 md:ml-auto">
+                      <div className="flex gap-2">
+                        {[
+                          { value: timeLeft.days, label: "D" },
+                          { value: timeLeft.hours, label: "H" },
+                          { value: timeLeft.minutes, label: "M" },
+                          { value: timeLeft.seconds, label: "S" },
+                        ].map((item, i) => (
+                          <div key={i} className="text-center">
+                            <div className="bg-red-500/20 border border-red-500/40 rounded px-2 py-1 min-w-[36px]">
+                              <span className="font-display text-sm font-bold text-red-400">
+                                {String(item.value).padStart(2, '0')}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <span className="font-display text-xl font-bold text-[#E7FB10]">
+                        ${Number(weeklyDeal.price).toFixed(2)}
+                      </span>
+                      <Button size="sm" className="bg-red-500 hover:bg-red-600 text-white font-display gap-1 pointer-events-none" data-testid="button-weekly-deal">
                         View <ArrowRight className="h-3 w-3" />
                       </Button>
-                    </Link>
+                    </div>
                   </div>
-                </div>
-              </Card>
-            </div>
-          </motion.div>
+                </Card>
+              </div>
+            </motion.div>
+          </Link>
         )}
 
         {/* Category Quick Links - Compact */}
