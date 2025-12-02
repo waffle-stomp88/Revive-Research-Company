@@ -372,6 +372,26 @@ export default function ProductDetail() {
               )}
               </div>
             )}
+            
+            {/* RUO Disclaimer - Under Product Image */}
+            <Card className="p-6 bg-red-950/30 border-2 border-red-500/50 animate-pulse-subtle mt-6" data-testid="card-ruo-disclaimer">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-full bg-red-500/20 border border-red-500/30">
+                  <AlertTriangle className="h-6 w-6 text-red-400" />
+                </div>
+                <div>
+                  <h4 className="font-display font-bold text-red-400 uppercase tracking-wider text-lg mb-2">
+                    Research Use Only
+                  </h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    This product is sold for research purposes only and is not intended 
+                    for human consumption. By purchasing, you confirm you are a qualified 
+                    researcher and will use this product in accordance with all applicable 
+                    federal and state laws and regulations.
+                  </p>
+                </div>
+              </div>
+            </Card>
           </motion.div>
 
           <motion.div
@@ -725,25 +745,6 @@ export default function ProductDetail() {
                 </p>
               </div>
             )}
-
-            <Card className="p-6 bg-red-950/30 border-2 border-red-500/50 animate-pulse-subtle" data-testid="card-ruo-disclaimer">
-              <div className="flex items-start gap-4">
-                <div className="p-3 rounded-full bg-red-500/20 border border-red-500/30">
-                  <AlertTriangle className="h-6 w-6 text-red-400" />
-                </div>
-                <div>
-                  <h4 className="font-display font-bold text-red-400 uppercase tracking-wider text-lg mb-2">
-                    Research Use Only
-                  </h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    This product is sold for research purposes only and is not intended 
-                    for human consumption. By purchasing, you confirm you are a qualified 
-                    researcher and will use this product in accordance with all applicable 
-                    federal and state laws and regulations.
-                  </p>
-                </div>
-              </div>
-            </Card>
           </motion.div>
         </div>
 
