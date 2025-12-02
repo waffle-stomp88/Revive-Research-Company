@@ -89,22 +89,6 @@ export function LearningRoadmap({ onModuleClick, completedModules = [] }: Learni
           animate={isInView ? { width: "100%" } : {}}
           transition={{ duration: 2, ease: "easeOut", delay: 0.3 }}
         />
-        
-        {courseModules.map((module, index) => (
-          <motion.div
-            key={index}
-            className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-background border-2"
-            style={{ 
-              left: `${(index / (courseModules.length - 1)) * 100}%`,
-              transform: 'translate(-50%, -50%)',
-              borderColor: module.color,
-              zIndex: 20,
-            }}
-            initial={{ scale: 0 }}
-            animate={isInView ? { scale: 1 } : {}}
-            transition={{ delay: 0.5 + index * 0.15 }}
-          />
-        ))}
       </div>
 
       {/* Vertical connector lines - positioned absolutely to connect timeline to cards */}
@@ -121,9 +105,29 @@ export function LearningRoadmap({ onModuleClick, completedModules = [] }: Learni
               height: '90px',
               background: module.color,
             }}
-            initial={{ scaleY: 0, originY: 0 }}
-            animate={isInView ? { scaleY: 1 } : {}}
-            transition={{ delay: 0.5 + index * 0.12, duration: 0.5, ease: "easeOut" }}
+            initial={{ height: 0 }}
+            animate={isInView ? { height: '90px' } : {}}
+            transition={{ delay: 2.5 + index * 0.2, duration: 0.8, ease: "easeOut" }}
+          />
+        );
+      })}
+
+      {/* Dots at the top of each card where lines meet */}
+      {courseModules.map((module, index) => {
+        const ratio = index / (courseModules.length - 1);
+        return (
+          <motion.div
+            key={`dot-${index}`}
+            className="hidden md:block absolute w-3 h-3 rounded-full bg-background border-2 pointer-events-none"
+            style={{
+              left: `calc(2rem + (100% - 4rem) * ${ratio} - 6px)`,
+              top: '137px',
+              borderColor: module.color,
+              zIndex: 20,
+            }}
+            initial={{ scale: 0 }}
+            animate={isInView ? { scale: 1 } : {}}
+            transition={{ delay: 3.2 + index * 0.2, duration: 0.3 }}
           />
         );
       })}
