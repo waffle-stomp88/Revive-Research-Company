@@ -3716,7 +3716,7 @@ function PricingOptimizerTab() {
         </Card>
       )}
 
-      {pricingData?.marketInsights && (
+      {pricingData?.marketInsights && pricingData.suggestions.length > 0 && (
         <Card className="border-[#21d8ff]/30 bg-[#21d8ff]/5">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
