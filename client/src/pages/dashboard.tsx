@@ -1346,6 +1346,69 @@ export default function Dashboard() {
                   </Link>
                 </CardContent>
               </Card>
+              <motion.div variants={itemVariants} className="mb-0">
+                <div 
+                  className="rounded-lg p-4 overflow-hidden relative group"
+                  style={{
+                    background: 'linear-gradient(135deg, #21d8ff 0%, #21d8ff 25%, #9d4edd 50%, #ec4899 75%, #21d8ff 100%)',
+                    backgroundSize: '200% 200%',
+                    animation: 'gradient-shift 8s ease infinite',
+                  }}
+                >
+                  <style>{`
+                    @keyframes gradient-shift {
+                      0% { background-position: 0% 50%; }
+                      50% { background-position: 100% 50%; }
+                      100% { background-position: 0% 50%; }
+                    }
+                  `}</style>
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+                  <div className="relative z-10">
+                    <div className="flex items-start justify-between gap-3 mb-3">
+                      <div>
+                        <h3 className="text-base font-bold text-white flex items-center gap-2 mb-0.5">
+                          <TrendingUp className="h-4 w-4" />
+                          Become an Affiliate
+                        </h3>
+                        <p className="text-white/90 text-xs">
+                          Earn commissions by sharing Revive Research
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="mb-3">
+                      <ul className="space-y-1 text-xs text-white/90">
+                        <li className="flex items-start gap-1.5">
+                          <span className="text-[#E7FB10] font-bold leading-none mt-0.5">✓</span>
+                          <span>10% commission on direct sales</span>
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <span className="text-[#E7FB10] font-bold leading-none mt-0.5">✓</span>
+                          <span>10% team override on recruits</span>
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <span className="text-[#E7FB10] font-bold leading-none mt-0.5">✓</span>
+                          <span>20% private discount</span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <Link href="/affiliate">
+                      <Button 
+                        className="w-full font-semibold text-sm glow-yellow"
+                        style={{
+                          backgroundColor: '#E7FB10',
+                          color: '#000',
+                        }}
+                        data-testid="button-affiliate-apply"
+                      >
+                        Apply to Our Program
+                        <ArrowRight className="h-3 w-3 ml-1.5" />
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </motion.div>
             </div>
           </motion.div>
         </motion.div>
@@ -1425,70 +1488,6 @@ export default function Dashboard() {
           </div>
         </DialogContent>
       </Dialog>
-
-      <motion.div variants={itemVariants} className="mb-8 max-w-2xl">
-        <div 
-          className="rounded-lg p-4 overflow-hidden relative group"
-          style={{
-            background: 'linear-gradient(135deg, #21d8ff 0%, #21d8ff 25%, #9d4edd 50%, #ec4899 75%, #21d8ff 100%)',
-            backgroundSize: '200% 200%',
-            animation: 'gradient-shift 8s ease infinite',
-          }}
-        >
-          <style>{`
-            @keyframes gradient-shift {
-              0% { background-position: 0% 50%; }
-              50% { background-position: 100% 50%; }
-              100% { background-position: 0% 50%; }
-            }
-          `}</style>
-          <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
-          <div className="relative z-10">
-            <div className="flex items-start justify-between gap-3 mb-3">
-              <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2 mb-0.5">
-                  <TrendingUp className="h-4 w-4" />
-                  Become an Affiliate
-                </h3>
-                <p className="text-white/90 text-xs">
-                  Earn commissions by sharing Revive Research
-                </p>
-              </div>
-            </div>
-            
-            <div className="mb-3">
-              <ul className="space-y-1 text-xs text-white/90">
-                <li className="flex items-start gap-1.5">
-                  <span className="text-[#E7FB10] font-bold leading-none mt-0.5">✓</span>
-                  <span>10% commission on direct sales</span>
-                </li>
-                <li className="flex items-start gap-1.5">
-                  <span className="text-[#E7FB10] font-bold leading-none mt-0.5">✓</span>
-                  <span>10% team override on recruits</span>
-                </li>
-                <li className="flex items-start gap-1.5">
-                  <span className="text-[#E7FB10] font-bold leading-none mt-0.5">✓</span>
-                  <span>20% private discount</span>
-                </li>
-              </ul>
-            </div>
-
-            <Link href="/affiliate">
-              <Button 
-                className="w-full font-semibold text-sm glow-yellow"
-                style={{
-                  backgroundColor: '#E7FB10',
-                  color: '#000',
-                }}
-                data-testid="button-affiliate-apply"
-              >
-                Apply to Our Program
-                <ArrowRight className="h-3 w-3 ml-1.5" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </motion.div>
     </main>
   );
 }
