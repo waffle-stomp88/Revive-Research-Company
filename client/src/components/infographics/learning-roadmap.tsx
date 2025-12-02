@@ -112,13 +112,14 @@ export function LearningRoadmap({ onModuleClick, completedModules = [] }: Learni
         {courseModules.map((module, index) => (
           <motion.div
             key={`connector-${index}`}
-            className="absolute w-0.5 bg-gradient-to-b"
+            className="absolute w-1 rounded-full"
             style={{
               left: `${(index / (courseModules.length - 1)) * 100}%`,
               top: '100%',
-              height: '60px',
+              height: '70px',
               transform: 'translateX(-50%)',
-              backgroundImage: `linear-gradient(to bottom, ${module.color}60, ${module.color}10)`,
+              background: `linear-gradient(to bottom, ${module.color}, ${module.color}80 50%, transparent)`,
+              boxShadow: `0 0 8px ${module.color}60`,
             }}
             initial={{ scaleY: 0 }}
             animate={isInView ? { scaleY: 1 } : {}}
