@@ -3619,58 +3619,91 @@ function PricingOptimizerTab() {
 
       {showSettings && (
         <Card className="p-4 border-[#21d8ff]/30 bg-[#21d8ff]/5">
-          <h3 className="font-medium mb-4">Factor Weights</h3>
+          <h3 className="font-medium mb-4">Factor Weights - How Each Affects Pricing</h3>
           <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label className="text-sm">Inventory Impact</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  type="range"
-                  min="0.1"
-                  max="3"
-                  step="0.1"
-                  value={inventoryWeight}
-                  onChange={(e) => setInventoryWeight(parseFloat(e.target.value))}
-                  className="flex-1"
-                  data-testid="slider-inventory-weight"
-                />
-                <span className="w-10 text-right font-medium">{inventoryWeight.toFixed(1)}x</span>
+            <div className="space-y-3 p-3 rounded-lg border border-border/30">
+              <div>
+                <Label className="text-sm font-semibold">📦 Inventory Impact</Label>
+                <div className="flex items-center gap-2 mt-2">
+                  <Input
+                    type="range"
+                    min="0.1"
+                    max="3"
+                    step="0.1"
+                    value={inventoryWeight}
+                    onChange={(e) => setInventoryWeight(parseFloat(e.target.value))}
+                    className="flex-1"
+                    data-testid="slider-inventory-weight"
+                  />
+                  <span className="w-10 text-right font-medium text-[#E7FB10]">{inventoryWeight.toFixed(1)}x</span>
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground">How much stock levels influence pricing</p>
+              <div className="text-xs space-y-1">
+                <p className="text-muted-foreground"><strong>At {inventoryWeight.toFixed(1)}x:</strong></p>
+                <div className="bg-background/40 p-2 rounded space-y-1">
+                  <p>🟢 <strong>Low stock (5 units)</strong></p>
+                  <p className="text-muted-foreground">→ Increase price to boost margin</p>
+                  <p className="mt-2">🔴 <strong>High stock (100+ units)</strong></p>
+                  <p className="text-muted-foreground">→ Decrease price to move inventory</p>
+                </div>
+                <p className="text-muted-foreground mt-2"><em>0.1x = ignore stock | 3x = heavily prioritize stock levels</em></p>
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label className="text-sm">Market Position</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  type="range"
-                  min="0.1"
-                  max="3"
-                  step="0.1"
-                  value={marketWeight}
-                  onChange={(e) => setMarketWeight(parseFloat(e.target.value))}
-                  className="flex-1"
-                  data-testid="slider-market-weight"
-                />
-                <span className="w-10 text-right font-medium">{marketWeight.toFixed(1)}x</span>
+            <div className="space-y-3 p-3 rounded-lg border border-border/30">
+              <div>
+                <Label className="text-sm font-semibold">📊 Market Position</Label>
+                <div className="flex items-center gap-2 mt-2">
+                  <Input
+                    type="range"
+                    min="0.1"
+                    max="3"
+                    step="0.1"
+                    value={marketWeight}
+                    onChange={(e) => setMarketWeight(parseFloat(e.target.value))}
+                    className="flex-1"
+                    data-testid="slider-market-weight"
+                  />
+                  <span className="w-10 text-right font-medium text-[#21d8ff]">{marketWeight.toFixed(1)}x</span>
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground">How much competitive positioning matters</p>
+              <div className="text-xs space-y-1">
+                <p className="text-muted-foreground"><strong>At {marketWeight.toFixed(1)}x:</strong></p>
+                <div className="bg-background/40 p-2 rounded space-y-1">
+                  <p>💰 <strong>Premium vs your catalog</strong></p>
+                  <p className="text-muted-foreground">→ Maintain higher pricing</p>
+                  <p className="mt-2">💵 <strong>Budget vs your catalog</strong></p>
+                  <p className="text-muted-foreground">→ Suggest competitive pricing</p>
+                </div>
+                <p className="text-muted-foreground mt-2"><em>0.1x = ignore positioning | 3x = strongly compete in market</em></p>
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label className="text-sm">Product Complexity</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  type="range"
-                  min="0.1"
-                  max="3"
-                  step="0.1"
-                  value={complexityWeight}
-                  onChange={(e) => setComplexityWeight(parseFloat(e.target.value))}
-                  className="flex-1"
-                  data-testid="slider-complexity-weight"
-                />
-                <span className="w-10 text-right font-medium">{complexityWeight.toFixed(1)}x</span>
+            <div className="space-y-3 p-3 rounded-lg border border-border/30">
+              <div>
+                <Label className="text-sm font-semibold">⚗️ Product Complexity</Label>
+                <div className="flex items-center gap-2 mt-2">
+                  <Input
+                    type="range"
+                    min="0.1"
+                    max="3"
+                    step="0.1"
+                    value={complexityWeight}
+                    onChange={(e) => setComplexityWeight(parseFloat(e.target.value))}
+                    className="flex-1"
+                    data-testid="slider-complexity-weight"
+                  />
+                  <span className="w-10 text-right font-medium text-[#9d4edd]">{complexityWeight.toFixed(1)}x</span>
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground">How much peptide complexity influences price</p>
+              <div className="text-xs space-y-1">
+                <p className="text-muted-foreground"><strong>At {complexityWeight.toFixed(1)}x:</strong></p>
+                <div className="bg-background/40 p-2 rounded space-y-1">
+                  <p>🔬 <strong>Complex peptides</strong></p>
+                  <p className="text-muted-foreground">→ Higher synthesis cost = higher prices</p>
+                  <p className="mt-2">📋 <strong>Simple peptides</strong></p>
+                  <p className="text-muted-foreground">→ Lower cost basis = competitive pricing</p>
+                </div>
+                <p className="text-muted-foreground mt-2"><em>0.1x = ignore complexity | 3x = maximize premium for complex</em></p>
+              </div>
             </div>
           </div>
           <Button
