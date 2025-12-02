@@ -251,8 +251,13 @@ export default function Checkout() {
 
   // RUO/Age Reminder Dialog Component
   const RuoReminderDialog = () => (
-    <Dialog open={showRuoReminder} onOpenChange={() => {}}>
-      <DialogContent className="max-w-md" onPointerDownOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
+    <Dialog open={showRuoReminder} onOpenChange={(open) => { /* prevent close */ }}>
+      <DialogContent 
+        className="max-w-md" 
+        onPointerDownOutside={(e) => e.preventDefault()} 
+        onEscapeKeyDown={(e) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader className="text-center">
           <div className="mx-auto mb-3 w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
             <AlertTriangle className="h-6 w-6 text-red-500" />
@@ -292,12 +297,13 @@ export default function Checkout() {
           </div>
           
           {/* Acknowledgment Checkboxes */}
-          <div className="space-y-3 pt-2" onPointerDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
-            <label className="flex items-start gap-3 cursor-pointer group" onClick={(e) => e.stopPropagation()}>
-              <Checkbox 
+          <div className="space-y-3 pt-2">
+            <label className="flex items-start gap-3 cursor-pointer group">
+              <input 
+                type="checkbox"
                 checked={ruoAcknowledged}
-                onCheckedChange={(checked) => setRuoAcknowledged(checked === true)}
-                className="mt-0.5 border-red-500/50 data-[state=checked]:bg-red-500 data-[state=checked]:border-red-500 transition-colors duration-200"
+                onChange={(e) => setRuoAcknowledged(e.target.checked)}
+                className="mt-0.5 w-4 h-4 rounded border-red-500/50 accent-red-500 cursor-pointer"
                 data-testid="checkbox-ruo-acknowledge"
               />
               <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
@@ -305,11 +311,12 @@ export default function Checkout() {
               </span>
             </label>
             
-            <label className="flex items-start gap-3 cursor-pointer group" onClick={(e) => e.stopPropagation()}>
-              <Checkbox 
+            <label className="flex items-start gap-3 cursor-pointer group">
+              <input 
+                type="checkbox"
                 checked={ageConfirmed}
-                onCheckedChange={(checked) => setAgeConfirmed(checked === true)}
-                className="mt-0.5 border-[#E7FB10]/50 data-[state=checked]:bg-[#E7FB10] data-[state=checked]:border-[#E7FB10] transition-colors duration-200"
+                onChange={(e) => setAgeConfirmed(e.target.checked)}
+                className="mt-0.5 w-4 h-4 rounded border-[#E7FB10]/50 accent-[#E7FB10] cursor-pointer"
                 data-testid="checkbox-age-confirm"
               />
               <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
