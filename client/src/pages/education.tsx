@@ -378,7 +378,7 @@ export default function Education() {
                         <Sparkles className="h-3 w-3 text-[#9d4edd]" />
                         <span className="text-xs font-semibold text-[#9d4edd]">Guided Onboarding</span>
                       </div>
-                      <h3 className="text-2xl font-bold mb-2" style={{ color: '#9d4edd' }}>Your Learning Path</h3>
+                      <h3 className="text-2xl font-bold mb-2 text-center" style={{ color: '#9d4edd' }}>Your Learning Path</h3>
                       <p className="text-sm text-muted-foreground">
                         Complete our guided 5-part onboarding course to master the fundamentals
                       </p>
