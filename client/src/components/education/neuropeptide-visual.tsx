@@ -24,12 +24,12 @@ const mechanisms = [
 ];
 
 const researchAreas = [
-  'Cognitive Enhancement',
-  'Neuroprotective Mechanisms',
-  'Stroke Recovery',
-  'Anxiety Research',
-  'ADHD Studies',
-  'Memory Formation',
+  'Nootropic Mechanisms',
+  'Neuroprotective Pathways',
+  'Ischemia Models',
+  'Stress Response Research',
+  'Attention Pathway Studies',
+  'Memory Mechanism Research',
 ];
 
 export function NeuropeptideVisual() {

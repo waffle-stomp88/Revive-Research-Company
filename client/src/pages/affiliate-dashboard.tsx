@@ -390,13 +390,13 @@ export default function AffiliateDashboard() {
                   </Button>
                 </div>
 
-                {/* Personal Code - 20% */}
+                {/* Private Affiliate Code - 20% */}
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-[#21d8ff] text-sm font-semibold">PERSONAL CODE</span>
+                    <span className="text-[#21d8ff] text-sm font-semibold">PRIVATE CODE</span>
                     <span className="text-xs bg-[#21d8ff]/20 text-[#21d8ff] px-2 py-0.5 rounded">20% OFF</span>
                   </div>
-                  <p className="text-xs text-muted-foreground mb-3">Your exclusive personal-use discount for your own orders</p>
+                  <p className="text-xs text-muted-foreground mb-3">Your exclusive affiliate discount for your own orders</p>
                   <code className="text-lg bg-muted px-3 py-2 rounded font-mono block mb-3 text-center font-bold" data-testid="text-personal-code">
                     {affiliate?.referralCode}
                   </code>
@@ -409,7 +409,7 @@ export default function AffiliateDashboard() {
                         navigator.clipboard.writeText(affiliate.referralCode);
                         toast({
                           title: "Code Copied",
-                          description: "Your personal code has been copied to clipboard.",
+                          description: "Your private affiliate code has been copied to clipboard.",
                         });
                       }
                     }}

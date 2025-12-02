@@ -568,7 +568,7 @@ export default function Dashboard() {
                       </li>
                       <li className="flex items-start gap-2">
                         <span className="text-[#E7FB10] font-bold text-lg leading-none mt-0.5">✓</span>
-                        <span>20% personal-use discount</span>
+                        <span>20% private affiliate discount</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <span className="text-[#E7FB10] font-bold text-lg leading-none mt-0.5">✓</span>

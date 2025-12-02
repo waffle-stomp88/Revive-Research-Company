@@ -21,7 +21,7 @@ const peptideComparison: ReceptorData[] = [
     type: "Single Agonist",
     color: "#21d8ff",
     receptors: [
-      { name: "GLP-1", active: true, effect: "Glucose control, satiety" },
+      { name: "GLP-1", active: true, effect: "Incretin pathway modulation" },
       { name: "GIP", active: false, effect: "" },
       { name: "Glucagon", active: false, effect: "" }
     ],
@@ -33,8 +33,8 @@ const peptideComparison: ReceptorData[] = [
     type: "Dual Agonist",
     color: "#E7FB10",
     receptors: [
-      { name: "GLP-1", active: true, effect: "Glucose control, satiety" },
-      { name: "GIP", active: true, effect: "Enhanced insulin, beta cell function" },
+      { name: "GLP-1", active: true, effect: "Incretin pathway modulation" },
+      { name: "GIP", active: true, effect: "Secondary incretin signaling" },
       { name: "Glucagon", active: false, effect: "" }
     ],
     halfLife: "~5 days",
@@ -45,9 +45,9 @@ const peptideComparison: ReceptorData[] = [
     type: "Triple Agonist",
     color: "#ec4899",
     receptors: [
-      { name: "GLP-1", active: true, effect: "Glucose control, satiety" },
-      { name: "GIP", active: true, effect: "Enhanced insulin, beta cell function" },
-      { name: "Glucagon", active: true, effect: "Thermogenesis, energy expenditure" }
+      { name: "GLP-1", active: true, effect: "Incretin pathway modulation" },
+      { name: "GIP", active: true, effect: "Secondary incretin signaling" },
+      { name: "Glucagon", active: true, effect: "Metabolic pathway activation" }
     ],
     halfLife: "~6 days",
     keyFeature: "First triple-receptor approach"
@@ -202,9 +202,9 @@ export function GLP1ReceptorComparison() {
             <Info className="h-4 w-4 text-[#21d8ff] mt-0.5 flex-shrink-0" />
             <div className="text-sm text-muted-foreground">
               <strong className="text-foreground">Research context:</strong> Each additional 
-              receptor target adds distinct metabolic effects. Triple agonists like Retatrutide 
-              combine appetite reduction (GLP-1), enhanced insulin secretion (GIP), and increased 
-              energy expenditure (Glucagon) for a multi-pronged approach.
+              receptor target adds distinct signaling pathways. Triple agonists like Retatrutide 
+              combine GLP-1 incretin modulation, GIP pathway activation, and glucagon receptor 
+              signaling for multi-pathway research applications.
             </div>
           </div>
         </motion.div>

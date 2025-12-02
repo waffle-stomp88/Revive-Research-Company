@@ -199,7 +199,7 @@ export default function AffiliatePage() {
             className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-6"
             data-testid="text-affiliate-subheadline"
           >
-            Join an exclusive network of researchers and wellness professionals. Earn premium commissions representing the gold standard in peptide research.
+            Join an exclusive network of research professionals and science educators. Earn premium commissions representing the gold standard in peptide research.
           </motion.p>
           
           <motion.div
@@ -490,13 +490,13 @@ export default function AffiliatePage() {
         </div>
       </section>
 
-      {/* Personal Use Discount + Customer Discount */}
+      {/* Private Affiliate Discount + Customer Discount */}
       <section className="py-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-[#9d4edd]/5" />
         
         <div className="container max-w-4xl mx-auto px-4 relative z-10">
           <div className="grid md:grid-cols-2 gap-5">
-            {/* Personal Use Code */}
+            {/* Private Affiliate Code */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -513,7 +513,7 @@ export default function AffiliatePage() {
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Every affiliate receives a <span className="text-[#9d4edd] font-semibold">private 20% personal-use discount</span> code for your own purchases.
+                  Every affiliate receives a <span className="text-[#9d4edd] font-semibold">private 20% affiliate discount</span> code for your own orders.
                 </p>
                 <div className="space-y-1 text-xs text-muted-foreground">
                   <div className="flex items-center gap-2">
@@ -526,7 +526,7 @@ export default function AffiliatePage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle className="h-3 w-3 text-[#9d4edd]" />
-                    <span>For your personal use only</span>
+                    <span>For affiliate orders only</span>
                   </div>
                 </div>
               </Card>

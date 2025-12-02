@@ -9,7 +9,7 @@ import {
   Activity
 } from "lucide-react";
 
-interface HealingPathwayVisualProps {
+interface TissuePathwayVisualProps {
   peptide: 'bpc-157' | 'tb-500' | 'ghk-cu' | 'glow';
 }
 
@@ -20,12 +20,12 @@ const peptideData = {
     fullName: 'Body Protection Compound',
     mechanism: 'Gastric Peptide',
     pathways: [
-      { name: 'Angiogenesis', description: 'New blood vessel formation', icon: Heart },
+      { name: 'Angiogenesis', description: 'Blood vessel formation pathway', icon: Heart },
       { name: 'Growth Factors', description: 'VEGF & EGF modulation', icon: Zap },
       { name: 'Nitric Oxide', description: 'NO pathway activation', icon: Activity },
-      { name: 'Tissue Repair', description: 'Collagen synthesis', icon: Shield },
+      { name: 'Tissue Mechanisms', description: 'Collagen synthesis pathway', icon: Shield },
     ],
-    targets: ['Tendons', 'Ligaments', 'Muscle', 'GI Tract'],
+    targets: ['Tendon Models', 'Ligament Models', 'Muscle Tissue', 'GI Models'],
   },
   'tb-500': {
     name: 'TB-500',
@@ -33,12 +33,12 @@ const peptideData = {
     fullName: 'Thymosin Beta-4 Fragment',
     mechanism: 'Actin-Binding Peptide',
     pathways: [
-      { name: 'Cell Migration', description: 'Enhanced cellular movement', icon: Activity },
+      { name: 'Cell Migration', description: 'Cellular motility mechanisms', icon: Activity },
       { name: 'Actin Regulation', description: 'Cytoskeleton organization', icon: Zap },
-      { name: 'Anti-Inflammatory', description: 'Reduced inflammation', icon: Shield },
-      { name: 'Stem Cell Activation', description: 'Progenitor cell recruitment', icon: Sparkles },
+      { name: 'Inflammatory Modulation', description: 'Cytokine pathway research', icon: Shield },
+      { name: 'Progenitor Signaling', description: 'Stem cell pathway research', icon: Sparkles },
     ],
-    targets: ['Heart', 'Muscle', 'Skin', 'Blood Vessels'],
+    targets: ['Cardiac Models', 'Muscle Tissue', 'Dermal Models', 'Vascular Models'],
   },
   'ghk-cu': {
     name: 'GHK-Cu',
@@ -49,9 +49,9 @@ const peptideData = {
       { name: 'Collagen Synthesis', description: 'Type I & III collagen', icon: Shield },
       { name: 'Antioxidant', description: 'SOD enzyme activation', icon: Sparkles },
       { name: 'Gene Expression', description: '4,000+ gene modulation', icon: Zap },
-      { name: 'Wound Healing', description: 'Matrix remodeling', icon: Heart },
+      { name: 'Matrix Remodeling', description: 'ECM research applications', icon: Heart },
     ],
-    targets: ['Skin', 'Hair', 'Bone', 'Connective Tissue'],
+    targets: ['Dermal Models', 'Follicle Research', 'Bone Models', 'Connective Tissue'],
   },
   'glow': {
     name: 'GLOW',
@@ -59,16 +59,16 @@ const peptideData = {
     fullName: 'Multi-Peptide Complex',
     mechanism: 'Synergistic Blend',
     pathways: [
-      { name: 'Fibroblast Activation', description: 'Dermal cell stimulation', icon: Activity },
+      { name: 'Fibroblast Activation', description: 'Cell stimulation pathway', icon: Activity },
       { name: 'Collagen I & III', description: 'Structural protein synthesis', icon: Shield },
-      { name: 'Elastin Production', description: 'Skin elasticity support', icon: Sparkles },
-      { name: 'Matrix Regeneration', description: 'ECM remodeling', icon: Heart },
+      { name: 'Elastin Pathway', description: 'Elastin gene expression', icon: Sparkles },
+      { name: 'Matrix Remodeling', description: 'ECM pathway research', icon: Heart },
     ],
-    targets: ['Dermis', 'Epidermis', 'Hair Follicles', 'Nails'],
+    targets: ['Dermal Models', 'Epidermal Research', 'Follicle Studies', 'Nail Matrix'],
   },
 };
 
-export function HealingPathwayVisual({ peptide }: HealingPathwayVisualProps) {
+export function HealingPathwayVisual({ peptide }: TissuePathwayVisualProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-50px" });
   const [activePathway, setActivePathway] = useState<number | null>(null);
