@@ -58,6 +58,7 @@ import {
   ArrowUp,
   Timer,
   PieChart as PieChartIcon,
+  ChevronDown,
 } from "lucide-react";
 
 interface AffiliateStats {
@@ -173,6 +174,7 @@ const getBadgeStyles = (color: string, earned: boolean) => {
 };
 
 function AchievementBadges({ stats, team, sales }: { stats?: AffiliateStats; team?: TeamMember[]; sales?: AffiliateSale[] }) {
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const badges: AchievementBadge[] = useMemo(() => {
     const salesCount = stats?.directSalesCount || 0;
     const teamSize = stats?.teamSize || 0;
@@ -254,72 +256,91 @@ function AchievementBadges({ stats, team, sales }: { stats?: AffiliateStats; tea
     <Card className="border-[#E7FB10]/20">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center justify-between">
-          <span className="flex items-center gap-2">
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="flex items-center gap-2 hover-elevate active-elevate-2 rounded-md px-2 py-1"
+            data-testid="button-achievements-toggle"
+          >
             <Award className="h-5 w-5 text-[#E7FB10]" />
             Achievements
-          </span>
-          <Badge variant="secondary" className="text-xs">
+            <ChevronDown 
+              className="h-4 w-4 transition-transform"
+              style={{ transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }}
+            />
+          </button>
+          <Badge variant="secondary" className="bg-[#E7FB10]/10 text-[#E7FB10] border border-[#E7FB10]/30 text-xs">
             {earnedCount}/{badges.length} Unlocked
           </Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {badges.map((badge) => {
-            const Icon = badge.icon;
-            const badgeStyles = getBadgeStyles(badge.color, badge.earned);
-            const r = parseInt(badge.color.slice(1, 3), 16);
-            const g = parseInt(badge.color.slice(3, 5), 16);
-            const b = parseInt(badge.color.slice(5, 7), 16);
-            
-            return (
-              <motion.div
-                key={badge.id}
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className={`relative p-3 rounded-lg transition-all ${
-                  badge.earned ? "" : "bg-muted/30 border border-muted opacity-60"
-                }`}
-                style={badgeStyles}
-                data-testid={`badge-${badge.id}`}
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <div
-                    className="p-1.5 rounded-lg"
-                    style={{ 
-                      backgroundColor: badge.earned ? `rgba(${r},${g},${b},0.2)` : 'var(--muted)',
-                      color: badge.earned ? badge.color : 'var(--muted-foreground)'
-                    }}
-                  >
-                    <Icon className="h-4 w-4" />
-                  </div>
-                  {badge.earned && (
-                    <Sparkles className="h-3 w-3 animate-pulse" style={{ color: badge.color }} />
-                  )}
-                </div>
-                <span 
-                  className="text-xs font-semibold block"
-                  style={{ color: badge.earned ? badge.color : 'var(--muted-foreground)' }}
-                >
-                  {badge.title}
-                </span>
-                <span className="text-[10px] text-muted-foreground mt-0.5 block">{badge.description}</span>
-                {!badge.earned && badge.progress !== undefined && badge.target && (
-                  <div className="mt-2">
-                    <Progress 
-                      value={(badge.progress / badge.target) * 100} 
-                      className="h-1"
-                    />
-                    <span className="text-[9px] text-muted-foreground mt-1 block">
-                      {badge.progress}/{badge.target}
-                    </span>
-                  </div>
-                )}
-              </motion.div>
-            );
-          })}
-        </div>
-      </CardContent>
+      <AnimatePresence>
+        {!isCollapsed && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {badges.map((badge) => {
+                  const Icon = badge.icon;
+                  const badgeStyles = getBadgeStyles(badge.color, badge.earned);
+                  const r = parseInt(badge.color.slice(1, 3), 16);
+                  const g = parseInt(badge.color.slice(3, 5), 16);
+                  const b = parseInt(badge.color.slice(5, 7), 16);
+                  
+                  return (
+                    <motion.div
+                      key={badge.id}
+                      initial={{ scale: 0.9, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className={`relative p-3 rounded-lg transition-all ${
+                        badge.earned ? "" : "bg-muted/30 border border-muted opacity-60"
+                      }`}
+                      style={badgeStyles}
+                      data-testid={`badge-${badge.id}`}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <div
+                          className="p-1.5 rounded-lg"
+                          style={{ 
+                            backgroundColor: badge.earned ? `rgba(${r},${g},${b},0.2)` : 'var(--muted)',
+                            color: badge.earned ? badge.color : 'var(--muted-foreground)'
+                          }}
+                        >
+                          <Icon className="h-4 w-4" />
+                        </div>
+                        {badge.earned && (
+                          <Sparkles className="h-3 w-3 animate-pulse" style={{ color: badge.color }} />
+                        )}
+                      </div>
+                      <span 
+                        className="text-xs font-semibold block"
+                        style={{ color: badge.earned ? badge.color : 'var(--muted-foreground)' }}
+                      >
+                        {badge.title}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground mt-0.5 block">{badge.description}</span>
+                      {!badge.earned && badge.progress !== undefined && badge.target && (
+                        <div className="mt-2">
+                          <Progress 
+                            value={(badge.progress / badge.target) * 100} 
+                            className="h-1"
+                          />
+                          <span className="text-[9px] text-muted-foreground mt-1 block">
+                            {badge.progress}/{badge.target}
+                          </span>
+                        </div>
+                      )}
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Card>
   );
 }
