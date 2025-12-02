@@ -262,12 +262,15 @@ function CustomerAchievements({ orders, totalSpent }: { orders?: Order[]; totalS
                         )}
                       </div>
                       <span 
-                        className="text-xs font-semibold block"
-                        style={{ color: badge.earned ? badge.color : `rgba(${r},${g},${b},0.6)` }}
+                        className="text-sm font-bold block"
+                        style={{ 
+                          color: badge.color,
+                          textShadow: badge.earned ? `0 0 8px rgba(${r},${g},${b},0.5)` : 'none'
+                        }}
                       >
                         {badge.title}
                       </span>
-                      <span className="text-[10px] text-muted-foreground mt-0.5 block">{badge.description}</span>
+                      <span className="text-xs mt-1 block" style={{ color: badge.earned ? `rgba(${r},${g},${b},0.8)` : `rgba(${r},${g},${b},0.5)` }}>{badge.description}</span>
                       {!badge.earned && badge.progress !== undefined && badge.target && (
                         <div className="mt-2">
                           <Progress 
