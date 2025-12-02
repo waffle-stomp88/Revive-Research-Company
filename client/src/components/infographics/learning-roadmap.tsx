@@ -90,23 +90,40 @@ export function LearningRoadmap({ onModuleClick, completedModules = [] }: Learni
           transition={{ duration: 2, ease: "easeOut", delay: 0.3 }}
         />
         
-        {courseModules.map((_, index) => (
-          <motion.div
-            key={index}
-            className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-background border-2"
-            style={{ 
-              left: `${(index / (courseModules.length - 1)) * 100}%`,
-              transform: 'translate(-50%, -50%)',
-              borderColor: courseModules[index].color,
-            }}
-            initial={{ scale: 0 }}
-            animate={isInView ? { scale: 1 } : {}}
-            transition={{ delay: 0.5 + index * 0.15 }}
-          />
+        {courseModules.map((module, index) => (
+          <div key={index}>
+            <motion.div
+              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-background border-2"
+              style={{ 
+                left: `${(index / (courseModules.length - 1)) * 100}%`,
+                transform: 'translate(-50%, -50%)',
+                borderColor: module.color,
+                zIndex: 20,
+              }}
+              initial={{ scale: 0 }}
+              animate={isInView ? { scale: 1 } : {}}
+              transition={{ delay: 0.5 + index * 0.15 }}
+            />
+            {/* Vertical connector line from timeline to card */}
+            <motion.div
+              className="absolute hidden md:block w-0.5 bg-gradient-to-b"
+              style={{
+                left: `calc(${(index / (courseModules.length - 1)) * 100}% + 0px)`,
+                top: '50%',
+                height: '60px',
+                transform: 'translateX(-50%)',
+                backgroundImage: `linear-gradient(to bottom, ${module.color}60, ${module.color}10)`,
+                zIndex: 10,
+              }}
+              initial={{ scaleY: 0 }}
+              animate={isInView ? { scaleY: 1 } : {}}
+              transition={{ delay: 0.7 + index * 0.15, duration: 0.6 }}
+            />
+          </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 md:gap-3 pt-6 md:pt-16">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 md:gap-3 pt-6 md:pt-20">
         {courseModules.map((module, index) => {
           const Icon = module.icon;
           const isCompleted = completedModules.includes(module.step);
