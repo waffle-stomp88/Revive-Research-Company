@@ -125,7 +125,7 @@ const getBadgeStyles = (color: string, earned: boolean) => {
 };
 
 function CustomerAchievements({ orders, totalSpent }: { orders?: Order[]; totalSpent: number }) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const orderCount = orders?.length || 0;
   const uniqueProducts = new Set(orders?.map(o => o.productId) || []).size;
   
