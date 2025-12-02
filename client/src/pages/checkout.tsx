@@ -875,7 +875,7 @@ export default function Checkout() {
             </Card>
 
             {/* Compact Trust & Verification Links - Product */}
-            <Card className="p-4 border-[#9d4edd]/20 bg-gradient-to-br from-[#9d4edd]/5 to-transparent">
+            <Card className="p-4 border-[#9d4edd]/50 bg-gradient-to-br from-[#9d4edd]/20 to-transparent">
               <h3 className="text-sm font-semibold mb-1 flex items-center gap-2">
                 <ClipboardCheck className="h-4 w-4 text-[#9d4edd]" />
                 Buying With Confidence
