@@ -252,20 +252,16 @@ function ProductShowcase() {
           ))}
         </div>
       ) : (
-        <div className="overflow-hidden w-screen relative -ml-[calc((100vw-100%)/2)]">
+        <div className="overflow-x-clip overflow-y-visible w-screen relative -ml-[calc((100vw-100%)/2)] py-4">
           <motion.div
             className="flex gap-4 px-4 md:px-8 text-center"
             initial={{ x: 0 }}
             animate={{ x: "-50%" }}
             transition={{ duration: 40, repeat: Infinity, repeatType: "loop", ease: "linear" }}
           >
-            {duplicatedItems.map((product, idx) => (
-              <Link key={`${product.id}-${idx}`} href={`/products/${product.id}`} onClick={() => trackEvent('product_click', 'carousel', product.name)} className="flex-shrink-0">
-                <Card className={`group w-48 h-auto cursor-pointer transition-all duration-300 border-2 flex flex-col relative overflow-hidden ${
-                  product.isWeeklyDeal
-                    ? "border-red-600/80 sale-glow-pulse"
-                    : "border-cyan-400/60 shadow-glow-blue-sm hover:shadow-glow-blue-lg"
-                }`} data-testid={`card-product-${product.id}`}>
+            {duplicatedItems.map((product, idx) => {
+              const cardContent = (
+                <>
                   {product.isWeeklyDeal && (
                     <div className="absolute top-2 right-2 z-20 px-3 py-1 text-xs font-bold rounded-full bg-[#E7FB10] text-black">
                       HOT DEAL
@@ -287,9 +283,41 @@ function ProductShowcase() {
                       </span>
                     </div>
                   </div>
-                </Card>
-              </Link>
-            ))}
+                </>
+              );
+
+              return (
+                <Link key={`${product.id}-${idx}`} href={`/products/${product.id}`} onClick={() => trackEvent('product_click', 'carousel', product.name)} className="flex-shrink-0">
+                  {product.isWeeklyDeal ? (
+                    <motion.div
+                      animate={{
+                        boxShadow: [
+                          '0 0 15px rgba(239, 68, 68, 0.5), 0 0 30px rgba(239, 68, 68, 0.3)',
+                          '0 0 30px rgba(239, 68, 68, 0.9), 0 0 60px rgba(239, 68, 68, 0.6), 0 0 80px rgba(239, 68, 68, 0.3)',
+                          '0 0 15px rgba(239, 68, 68, 0.5), 0 0 30px rgba(239, 68, 68, 0.3)'
+                        ]
+                      }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                      className="rounded-xl"
+                    >
+                      <Card 
+                        className="group w-48 h-auto cursor-pointer transition-all duration-300 border-2 border-red-500 flex flex-col relative overflow-hidden"
+                        data-testid={`card-product-${product.id}`}
+                      >
+                        {cardContent}
+                      </Card>
+                    </motion.div>
+                  ) : (
+                    <Card 
+                      className="group w-48 h-auto cursor-pointer transition-all duration-300 border-2 border-cyan-400/60 shadow-glow-blue-sm hover:shadow-glow-blue-lg flex flex-col relative overflow-hidden"
+                      data-testid={`card-product-${product.id}`}
+                    >
+                      {cardContent}
+                    </Card>
+                  )}
+                </Link>
+              );
+            })}
           </motion.div>
         </div>
       )}
