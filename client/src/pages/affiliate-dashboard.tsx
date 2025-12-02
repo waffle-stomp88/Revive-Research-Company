@@ -295,18 +295,22 @@ function AchievementBadges({ stats, team, sales }: { stats?: AffiliateStats; tea
                       key={badge.id}
                       initial={{ scale: 0.9, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      className={`relative p-3 rounded-lg transition-all ${
-                        badge.earned ? "" : "bg-muted/30 border border-muted opacity-60"
-                      }`}
-                      style={badgeStyles}
+                      whileHover={{ scale: 1.02 }}
+                      className="relative p-3 rounded-lg transition-all"
+                      style={badge.earned ? badgeStyles : {
+                        background: `linear-gradient(135deg, rgba(${r},${g},${b},0.05) 0%, transparent 100%)`,
+                        borderColor: `rgba(${r},${g},${b},0.2)`,
+                        borderWidth: '1px',
+                        borderStyle: 'solid',
+                      }}
                       data-testid={`badge-${badge.id}`}
                     >
                       <div className="flex items-center gap-2 mb-2">
                         <div
                           className="p-1.5 rounded-lg"
                           style={{ 
-                            backgroundColor: badge.earned ? `rgba(${r},${g},${b},0.2)` : 'var(--muted)',
-                            color: badge.earned ? badge.color : 'var(--muted-foreground)'
+                            backgroundColor: badge.earned ? `rgba(${r},${g},${b},0.2)` : `rgba(${r},${g},${b},0.1)`,
+                            color: badge.earned ? badge.color : `rgba(${r},${g},${b},0.5)`
                           }}
                         >
                           <Icon className="h-4 w-4" />
@@ -316,19 +320,23 @@ function AchievementBadges({ stats, team, sales }: { stats?: AffiliateStats; tea
                         )}
                       </div>
                       <span 
-                        className="text-xs font-semibold block"
-                        style={{ color: badge.earned ? badge.color : 'var(--muted-foreground)' }}
+                        className="text-sm font-bold block"
+                        style={{ 
+                          color: badge.color,
+                          textShadow: badge.earned ? `0 0 8px rgba(${r},${g},${b},0.5)` : 'none'
+                        }}
                       >
                         {badge.title}
                       </span>
-                      <span className="text-[10px] text-muted-foreground mt-0.5 block">{badge.description}</span>
+                      <span className="text-xs mt-1 block" style={{ color: badge.earned ? `rgba(${r},${g},${b},0.8)` : `rgba(${r},${g},${b},0.5)` }}>{badge.description}</span>
                       {!badge.earned && badge.progress !== undefined && badge.target && (
                         <div className="mt-2">
                           <Progress 
                             value={(badge.progress / badge.target) * 100} 
                             className="h-1"
+                            style={{ ['--progress-background' as string]: `rgba(${r},${g},${b},0.3)` }}
                           />
-                          <span className="text-[9px] text-muted-foreground mt-1 block">
+                          <span className="text-[9px] mt-1 block" style={{ color: `rgba(${r},${g},${b},0.6)` }}>
                             {badge.progress}/{badge.target}
                           </span>
                         </div>
