@@ -607,8 +607,8 @@ export default function Products() {
                             className="w-full h-full object-contain p-3 group-hover:scale-110 transition-transform"
                           />
                         </div>
-                        <div className="flex-1 text-center">
-                          <div className="flex flex-wrap items-center justify-center gap-2 mb-2">
+                        <div className="flex-1 text-center md:text-left">
+                          <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2">
                             {saleProduct.originalPrice && (
                               <Badge variant="destructive" className="text-base px-2.5 py-0.5">
                                 {Math.round(((Number(saleProduct.originalPrice) - Number(saleProduct.price)) / Number(saleProduct.originalPrice)) * 100)}% OFF
