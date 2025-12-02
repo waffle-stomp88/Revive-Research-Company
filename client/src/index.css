@@ -364,12 +364,12 @@
       box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
     }
     50% {
-      box-shadow: 0 0 40px rgba(34, 197, 94, 0.8), 0 0 60px rgba(34, 197, 94, 0.4);
+      box-shadow: 0 0 30px rgba(34, 197, 94, 0.6), 0 0 40px rgba(34, 197, 94, 0.3);
     }
   }
 
   .glow-pulse {
-    animation: glow-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation: glow-pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   /* Yellow Glow Animation for Neon Yellow Buttons */
@@ -403,61 +403,61 @@
   /* RUO Safety Warning Pulse Animation */
   @keyframes ruo-pulse {
     0%, 100% {
-      box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.15);
     }
     50% {
-      box-shadow: 0 0 20px rgba(239, 68, 68, 0.4), 0 0 30px rgba(239, 68, 68, 0.2);
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.3), 0 0 20px rgba(239, 68, 68, 0.15);
     }
   }
 
   .animate-pulse-subtle {
-    animation: ruo-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation: ruo-pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   /* Sale of the Week Red Glow Pulse - Subtle effect */
   @keyframes sale-glow-pulse {
     0%, 100% {
-      filter: drop-shadow(0 0 4px rgba(220, 38, 38, 0.6));
+      filter: drop-shadow(0 0 4px rgba(220, 38, 38, 0.4));
     }
     50% {
-      filter: drop-shadow(0 0 8px rgba(220, 38, 38, 0.9));
+      filter: drop-shadow(0 0 6px rgba(220, 38, 38, 0.6));
     }
   }
 
   .sale-glow-pulse {
-    animation: sale-glow-pulse 2s ease-in-out infinite;
+    animation: sale-glow-pulse 4s ease-in-out infinite;
   }
 
   /* Yellow Border Glow & Pulse Animation */
   @keyframes pulse-glow-yellow {
     0%, 100% {
-      border-color: rgba(231, 251, 16, 0.6);
-      box-shadow: 0 0 20px rgba(231, 251, 16, 0.2), inset 0 0 20px rgba(231, 251, 16, 0.04);
+      border-color: rgba(231, 251, 16, 0.5);
+      box-shadow: 0 0 15px rgba(231, 251, 16, 0.15), inset 0 0 15px rgba(231, 251, 16, 0.02);
     }
     50% {
-      border-color: rgba(231, 251, 16, 0.9);
-      box-shadow: 0 0 30px rgba(231, 251, 16, 0.5), inset 0 0 20px rgba(231, 251, 16, 0.1);
+      border-color: rgba(231, 251, 16, 0.75);
+      box-shadow: 0 0 25px rgba(231, 251, 16, 0.35), inset 0 0 15px rgba(231, 251, 16, 0.05);
     }
   }
 
   .animate-\[pulse-glow-yellow_5s_ease-in-out_infinite\] {
-    animation: pulse-glow-yellow 5s ease-in-out infinite;
+    animation: pulse-glow-yellow 6s ease-in-out infinite;
   }
 
   /* Cyan Border Glow & Pulse Animation */
   @keyframes pulse-glow-cyan {
     0%, 100% {
-      border-color: rgba(33, 216, 255, 0.6);
-      box-shadow: 0 0 20px rgba(33, 216, 255, 0.2), inset 0 0 20px rgba(33, 216, 255, 0.04);
+      border-color: rgba(33, 216, 255, 0.5);
+      box-shadow: 0 0 15px rgba(33, 216, 255, 0.15), inset 0 0 15px rgba(33, 216, 255, 0.02);
     }
     50% {
-      border-color: rgba(33, 216, 255, 0.9);
-      box-shadow: 0 0 30px rgba(33, 216, 255, 0.5), inset 0 0 20px rgba(33, 216, 255, 0.1);
+      border-color: rgba(33, 216, 255, 0.75);
+      box-shadow: 0 0 25px rgba(33, 216, 255, 0.35), inset 0 0 15px rgba(33, 216, 255, 0.05);
     }
   }
 
   .animate-\[pulse-glow-cyan_5s_ease-in-out_infinite\] {
-    animation: pulse-glow-cyan 5s ease-in-out infinite;
+    animation: pulse-glow-cyan 6s ease-in-out infinite;
   }
 
   /* Custom Scrollbar Styling */
