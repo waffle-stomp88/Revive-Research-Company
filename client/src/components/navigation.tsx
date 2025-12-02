@@ -301,9 +301,8 @@ export function Navigation() {
                 {!isLoading && isAuthenticated && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        className="relative hidden md:flex items-center gap-2 px-3 py-2 h-auto rounded-full hover:bg-[#21d8ff]/10 border border-[#21d8ff]/50 hover:border-[#21d8ff] transition-all duration-300" 
+                      <button 
+                        className="relative flex items-center gap-2 px-2 md:px-3 py-1.5 md:py-2 rounded-full hover:bg-[#21d8ff]/10 border border-[#21d8ff]/50 hover:border-[#21d8ff] transition-all duration-300 outline-none" 
                         data-testid="button-user-menu"
                       >
                         <div className="relative">
@@ -317,32 +316,14 @@ export function Navigation() {
                           </Avatar>
                           <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 bg-green-500 border-2 border-background rounded-full animate-pulse shadow-lg shadow-green-500/50"></span>
                         </div>
-                        <div className="flex flex-col items-start">
+                        <div className="hidden md:flex flex-col items-start">
                           <span className="text-[10px] text-muted-foreground leading-none">Welcome back</span>
                           <span className="text-sm font-semibold text-[#21d8ff] leading-tight">{user?.firstName || "User"}</span>
                         </div>
-                        <ChevronDown className="h-4 w-4 text-muted-foreground ml-1" />
-                      </Button>
+                        <ChevronDown className="h-4 w-4 text-muted-foreground hidden md:block" />
+                      </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="relative md:hidden rounded-full hover:bg-[#21d8ff]/10 transition-all duration-300" 
-                        data-testid="button-user-menu-mobile"
-                      >
-                        <Avatar className="h-9 w-9 border-2 border-[#21d8ff]">
-                          {user?.profileImageUrl && (
-                            <AvatarImage src={user.profileImageUrl} alt={user?.firstName || "User"} className="object-cover" />
-                          )}
-                          <AvatarFallback className="text-xs font-semibold bg-[#21d8ff]/20">
-                            {getInitials()}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 bg-green-500 border-2 border-background rounded-full animate-pulse shadow-lg shadow-green-500/50"></span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuContent align="end" className="w-48" sideOffset={8}>
                       <div className="px-2 py-1.5">
                         <p className="text-sm font-medium">
                           {user?.firstName ? `${user.firstName} ${user.lastName || ""}`.trim() : "Account"}
