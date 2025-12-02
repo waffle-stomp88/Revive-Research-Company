@@ -149,6 +149,26 @@ export default {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-10px)" },
         },
+        "pulse-glow-yellow": {
+          "0%, 100%": {
+            borderColor: "rgba(231, 251, 16, 0.6)",
+            boxShadow: "0 0 20px rgba(231, 251, 16, 0.3), inset 0 0 20px rgba(231, 251, 16, 0.05)",
+          },
+          "50%": {
+            borderColor: "rgba(231, 251, 16, 1)",
+            boxShadow: "0 0 40px rgba(231, 251, 16, 0.8), inset 0 0 20px rgba(231, 251, 16, 0.15)",
+          },
+        },
+        "pulse-glow-cyan": {
+          "0%, 100%": {
+            borderColor: "rgba(33, 216, 255, 0.6)",
+            boxShadow: "0 0 20px rgba(33, 216, 255, 0.3), inset 0 0 20px rgba(33, 216, 255, 0.05)",
+          },
+          "50%": {
+            borderColor: "rgba(33, 216, 255, 1)",
+            boxShadow: "0 0 40px rgba(33, 216, 255, 0.8), inset 0 0 20px rgba(33, 216, 255, 0.15)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -165,6 +185,8 @@ export default {
         "product-glow-red": "product-glow-red 0.4s ease-in-out forwards",
         "product-glow-blue": "product-glow-blue 0.4s ease-in-out forwards",
         "pulse-glow-purple": "pulse-glow-purple 3s ease-in-out infinite",
+        "pulse-glow-yellow": "pulse-glow-yellow 3s ease-in-out infinite",
+        "pulse-glow-cyan": "pulse-glow-cyan 3s ease-in-out infinite",
       },
       boxShadow: {
         "glow-sm": "0px 0px 20px 5px rgba(231, 251, 16, 0.45)",
