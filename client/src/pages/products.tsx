@@ -597,7 +597,8 @@ export default function Products() {
                       data-testid="section-sale-of-week"
                     >
                   <Link href={`/products/${saleProduct.id}`}>
-                    <Card className="p-5 md:p-6 border-2 border-red-500/40 bg-gradient-to-br from-red-950/40 via-background to-background hover:border-red-500 hover:shadow-[0_0_30px_rgba(239,68,68,0.2)] transition-all cursor-pointer group">
+                    <div className="sale-glow-pulse rounded-xl">
+                    <Card className="p-5 md:p-6 border-2 border-red-500 bg-gradient-to-br from-red-950/40 via-background to-background transition-all cursor-pointer group">
                       <div className="flex flex-col md:flex-row gap-5 items-center">
                         <div className="w-28 h-28 md:w-36 md:h-36 bg-muted/50 rounded-lg overflow-hidden flex-shrink-0 border border-red-500/20">
                           <img 
@@ -637,6 +638,7 @@ export default function Products() {
                         </div>
                       </div>
                     </Card>
+                    </div>
                     </Link>
                     </motion.section>
                   </CollapsibleContent>
