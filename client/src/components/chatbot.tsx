@@ -125,7 +125,7 @@ export function ChatBot() {
                     <Bot className="h-5 w-5" style={{ color: CYAN }} />
                   </div>
                   <div>
-                    <h3 className="font-display font-bold text-sm">Revive Assistant</h3>
+                    <h3 className="font-display font-bold text-lg">Revive Assistant</h3>
                     <div className="flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                       <span className="text-xs text-muted-foreground">Online</span>
@@ -234,7 +234,7 @@ export function ChatBot() {
                   <Button
                     onClick={sendMessage}
                     disabled={!input.trim() || isLoading}
-                    style={{ backgroundColor: CYAN, color: "#000000" }}
+                    style={{ backgroundColor: YELLOW, color: "#000000" }}
                     data-testid="button-send-message"
                   >
                     {isLoading ? (
