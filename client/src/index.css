@@ -415,6 +415,10 @@
     }
   }
 
+  .animate-\[pulse-glow-yellow_5s_ease-in-out_infinite\] {
+    animation: pulse-glow-yellow 5s ease-in-out infinite;
+  }
+
   /* Cyan Border Glow & Pulse Animation */
   @keyframes pulse-glow-cyan {
     0%, 100% {
@@ -425,6 +429,10 @@
       border-color: rgba(33, 216, 255, 1);
       box-shadow: 0 0 40px rgba(33, 216, 255, 0.8), inset 0 0 20px rgba(33, 216, 255, 0.15);
     }
+  }
+
+  .animate-\[pulse-glow-cyan_5s_ease-in-out_infinite\] {
+    animation: pulse-glow-cyan 5s ease-in-out infinite;
   }
 
   /* Custom Scrollbar Styling */
