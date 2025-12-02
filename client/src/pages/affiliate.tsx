@@ -215,7 +215,16 @@ export default function AffiliatePage() {
               <Button
                 size="lg"
                 onClick={() => scrollToSection("apply")}
-                className="gap-2 bg-[#E7FB10] text-black font-display text-lg hover:bg-[#E7FB10]/90 w-full sm:w-auto shadow-[0_0_30px_rgba(231,251,16,0.6)]"
+                className="gap-2 bg-[#E7FB10] text-black font-display text-lg hover:bg-[#E7FB10]/90 w-full sm:w-auto"
+                style={{
+                  boxShadow: "0 0 30px rgba(231, 251, 16, 0.6)",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.boxShadow = "0 0 50px rgba(231, 251, 16, 1), 0 0 80px rgba(231, 251, 16, 0.6)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.boxShadow = "0 0 30px rgba(231, 251, 16, 0.6)";
+                }}
                 data-testid="button-apply-now"
               >
                 Apply Now
