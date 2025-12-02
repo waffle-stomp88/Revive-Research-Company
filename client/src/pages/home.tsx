@@ -25,7 +25,6 @@ import { useQuery } from "@tanstack/react-query";
 import type { Product } from "@shared/schema";
 import heroBackground from "@assets/69bf34cc-d177-46c6-af24-c51da5ee10fa_1764382400961.png";
 import researchLabImage from "@assets/generated_images/neon_peptide_research_lab.png";
-import bottleImage from "@assets/reta_bottle_1764702933066.jpg";
 import { AnimatedTrustStats } from "@/components/infographics/animated-stats";
 import { VerificationJourney } from "@/components/infographics/verification-journey";
 import { NewsletterSignup } from "@/components/newsletter-signup";
@@ -425,12 +424,8 @@ function ProductShowcase() {
                       className="group cursor-pointer transition-all duration-300 border border-[#21d8ff]/30 hover:border-[#21d8ff] overflow-hidden"
                       data-testid={`card-bestseller-${product.id}`}
                     >
-                      <div className="aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center relative overflow-hidden">
-                        <img 
-                          src={bottleImage} 
-                          alt={product.name}
-                          className="h-full w-full object-contain p-2 group-hover:scale-110 transition-transform duration-300"
-                        />
+                      <div className="aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center relative">
+                        <FlaskConical className="h-8 w-8 text-muted-foreground/30 group-hover:scale-110 transition-transform duration-300" />
                         {product.isWeeklyDeal && (
                           <Badge className="absolute top-1 right-1 bg-[#E7FB10] text-black text-[8px] px-1.5 py-0">DEAL</Badge>
                         )}
