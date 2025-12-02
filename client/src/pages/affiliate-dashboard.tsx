@@ -306,7 +306,9 @@ function AchievementBadges({ stats, team, sales }: { stats?: AffiliateStats; tea
                       data-testid={`badge-${badge.id}`}
                     >
                       <div className="flex items-center gap-2 mb-2">
-                        <div
+                        <motion.div
+                          animate={badge.earned ? { rotate: 360 } : { y: [0, -4, 0] }}
+                          transition={badge.earned ? { duration: 4, repeat: Infinity, ease: "linear" } : { duration: 2, repeat: Infinity }}
                           className="p-1.5 rounded-lg"
                           style={{ 
                             backgroundColor: badge.earned ? `rgba(${r},${g},${b},0.2)` : `rgba(${r},${g},${b},0.1)`,
@@ -314,7 +316,7 @@ function AchievementBadges({ stats, team, sales }: { stats?: AffiliateStats; tea
                           }}
                         >
                           <Icon className="h-4 w-4" />
-                        </div>
+                        </motion.div>
                         {badge.earned && (
                           <Sparkles className="h-3 w-3 animate-pulse" style={{ color: badge.color }} />
                         )}
