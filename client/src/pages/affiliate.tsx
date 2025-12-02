@@ -681,6 +681,47 @@ export default function AffiliatePage() {
         </div>
       </section>
 
+      {/* Compliance Guidelines */}
+      <section className="py-8 relative overflow-hidden">
+        <div className="container max-w-6xl mx-auto px-4 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <Card className="p-6 border-2 border-red-500/40 bg-red-950/5 relative overflow-hidden">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                  <Shield className="h-5 w-5 text-red-400" />
+                </div>
+                <div>
+                  <h3 className="font-display text-lg md:text-xl font-bold mb-2">
+                    Compliance is Non-Negotiable
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    All partners must strictly follow <span className="font-semibold text-foreground">Revive's Compliance Guidelines</span>. Any violations result in immediate program termination.
+                  </p>
+                  <div className="space-y-2">
+                    <div className="flex items-start gap-2 text-sm">
+                      <XCircle className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
+                      <span className="text-muted-foreground"><span className="font-semibold text-red-300">No medical claims</span> or health benefit statements</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-sm">
+                      <XCircle className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
+                      <span className="text-muted-foreground"><span className="font-semibold text-red-300">No dosing guidance</span> or usage instructions</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-sm">
+                      <XCircle className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
+                      <span className="text-muted-foreground"><span className="font-semibold text-red-300">No human-use statements</span> or therapeutic claims</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Application Form - Compact */}
       <section id="apply" className="py-10 md:py-14 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(157,78,221,0.06),transparent_70%)]" />
