@@ -208,15 +208,20 @@ export default function AffiliatePage() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="flex flex-col sm:flex-row gap-3 justify-center"
           >
-            <Button
-              size="lg"
-              onClick={() => scrollToSection("apply")}
-              className="gap-2 bg-[#E7FB10] text-black font-display text-lg hover:bg-[#E7FB10]/90 w-full sm:w-auto shadow-[0_0_30px_rgba(231,251,16,0.6)]"
-              data-testid="button-apply-now"
+            <motion.div
+              whileHover={{ scale: 1.08 }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
-              Apply Now
-              <ArrowRight className="h-4 w-4" />
-            </Button>
+              <Button
+                size="lg"
+                onClick={() => scrollToSection("apply")}
+                className="gap-2 bg-[#E7FB10] text-black font-display text-lg hover:bg-[#E7FB10]/90 w-full sm:w-auto shadow-[0_0_30px_rgba(231,251,16,0.6)]"
+                data-testid="button-apply-now"
+              >
+                Apply Now
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </motion.div>
           </motion.div>
         </div>
       </section>
