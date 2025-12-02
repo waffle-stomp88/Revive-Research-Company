@@ -6,14 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useCart } from "@/contexts/CartContext";
@@ -251,22 +249,17 @@ export default function Checkout() {
 
   // RUO/Age Reminder Dialog Component
   const RuoReminderDialog = () => (
-    <Dialog open={showRuoReminder} onOpenChange={(open) => { /* prevent close */ }}>
-      <DialogContent 
-        className="max-w-md" 
-        onPointerDownOutside={(e) => e.preventDefault()} 
-        onEscapeKeyDown={(e) => e.preventDefault()}
-        onInteractOutside={(e) => e.preventDefault()}
-      >
-        <DialogHeader className="text-center">
+    <AlertDialog open={showRuoReminder} onOpenChange={() => {}}>
+      <AlertDialogContent className="max-w-md">
+        <div className="text-center">
           <div className="mx-auto mb-3 w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
             <AlertTriangle className="h-6 w-6 text-red-500" />
           </div>
-          <DialogTitle className="font-display text-xl">Before You Continue</DialogTitle>
-          <DialogDescription className="text-muted-foreground">
+          <AlertDialogTitle className="font-display text-xl">Before You Continue</AlertDialogTitle>
+          <AlertDialogDescription className="text-muted-foreground mt-2">
             Please confirm you understand the following
-          </DialogDescription>
-        </DialogHeader>
+          </AlertDialogDescription>
+        </div>
         
         <div className="space-y-4 py-4">
           {/* Research Use Only Notice */}
@@ -334,8 +327,8 @@ export default function Checkout() {
         >
           Continue to Checkout
         </Button>
-      </DialogContent>
-    </Dialog>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 
   if (fromCart) {
