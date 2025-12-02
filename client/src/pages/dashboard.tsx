@@ -1119,74 +1119,6 @@ export default function Dashboard() {
             <CustomerAchievements orders={orders} totalSpent={totalSpent} />
           </motion.div>
 
-          <motion.div variants={itemVariants} className="mb-8">
-            <div 
-              className="rounded-lg p-6 overflow-hidden relative group"
-              style={{
-                background: 'linear-gradient(135deg, #21d8ff 0%, #21d8ff 25%, #9d4edd 50%, #ec4899 75%, #21d8ff 100%)',
-                backgroundSize: '200% 200%',
-                animation: 'gradient-shift 8s ease infinite',
-              }}
-            >
-              <style>{`
-                @keyframes gradient-shift {
-                  0% { background-position: 0% 50%; }
-                  50% { background-position: 100% 50%; }
-                  100% { background-position: 0% 50%; }
-                }
-              `}</style>
-              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
-              <div className="relative z-10">
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <div>
-                    <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-1">
-                      <TrendingUp className="h-5 w-5" />
-                      Become an Affiliate
-                    </h3>
-                    <p className="text-white/95 text-sm">
-                      Earn commissions by sharing Revive Research with others
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="mb-4">
-                  <ul className="space-y-2 text-sm text-white/90">
-                    <li className="flex items-start gap-2">
-                      <span className="text-[#E7FB10] font-bold text-lg leading-none mt-0.5">✓</span>
-                      <span>10% commission on direct sales</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-[#E7FB10] font-bold text-lg leading-none mt-0.5">✓</span>
-                      <span>10% team override on recruits</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-[#E7FB10] font-bold text-lg leading-none mt-0.5">✓</span>
-                      <span>20% private affiliate discount</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-[#E7FB10] font-bold text-lg leading-none mt-0.5">✓</span>
-                      <span>Get paid monthly via PayPal, Venmo, or Zelle</span>
-                    </li>
-                  </ul>
-                </div>
-
-                <Link href="/affiliate">
-                  <Button 
-                    className="w-full font-semibold text-base glow-yellow"
-                    style={{
-                      backgroundColor: '#E7FB10',
-                      color: '#000',
-                    }}
-                    data-testid="button-affiliate-apply"
-                  >
-                    Apply to Our Program
-                    <ArrowRight className="h-4 w-4 ml-2" />
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </motion.div>
-
           <motion.div variants={itemVariants} className="grid gap-6 lg:grid-cols-3 mb-8">
             <div className="lg:col-span-2 space-y-6">
               <Card className="border-[#9d4edd]/20">
@@ -1493,6 +1425,74 @@ export default function Dashboard() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <motion.div variants={itemVariants} className="mb-8">
+        <div 
+          className="rounded-lg p-6 overflow-hidden relative group"
+          style={{
+            background: 'linear-gradient(135deg, #21d8ff 0%, #21d8ff 25%, #9d4edd 50%, #ec4899 75%, #21d8ff 100%)',
+            backgroundSize: '200% 200%',
+            animation: 'gradient-shift 8s ease infinite',
+          }}
+        >
+          <style>{`
+            @keyframes gradient-shift {
+              0% { background-position: 0% 50%; }
+              50% { background-position: 100% 50%; }
+              100% { background-position: 0% 50%; }
+            }
+          `}</style>
+          <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+          <div className="relative z-10">
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div>
+                <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-1">
+                  <TrendingUp className="h-5 w-5" />
+                  Become an Affiliate
+                </h3>
+                <p className="text-white/95 text-sm">
+                  Earn commissions by sharing Revive Research with others
+                </p>
+              </div>
+            </div>
+            
+            <div className="mb-4">
+              <ul className="space-y-2 text-sm text-white/90">
+                <li className="flex items-start gap-2">
+                  <span className="text-[#E7FB10] font-bold text-lg leading-none mt-0.5">✓</span>
+                  <span>10% commission on direct sales</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#E7FB10] font-bold text-lg leading-none mt-0.5">✓</span>
+                  <span>10% team override on recruits</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#E7FB10] font-bold text-lg leading-none mt-0.5">✓</span>
+                  <span>20% private affiliate discount</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#E7FB10] font-bold text-lg leading-none mt-0.5">✓</span>
+                  <span>Get paid monthly via PayPal, Venmo, or Zelle</span>
+                </li>
+              </ul>
+            </div>
+
+            <Link href="/affiliate">
+              <Button 
+                className="w-full font-semibold text-base glow-yellow"
+                style={{
+                  backgroundColor: '#E7FB10',
+                  color: '#000',
+                }}
+                data-testid="button-affiliate-apply"
+              >
+                Apply to Our Program
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </motion.div>
     </main>
   );
 }
