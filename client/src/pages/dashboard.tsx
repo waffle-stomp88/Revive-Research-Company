@@ -1426,7 +1426,7 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      <motion.div variants={itemVariants} className="mb-8">
+      <motion.div variants={itemVariants} className="mb-8 max-w-2xl">
         <div 
           className="rounded-lg p-4 overflow-hidden relative group"
           style={{
