@@ -364,15 +364,15 @@
   /* Sale of the Week Red Glow Pulse */
   @keyframes sale-glow-pulse {
     0%, 100% {
-      box-shadow: 0 0 15px rgba(220, 38, 38, 0.3), inset 0 0 8px rgba(220, 38, 38, 0.1);
+      box-shadow: 0 0 20px rgba(220, 38, 38, 0.5), 0 0 40px rgba(220, 38, 38, 0.2), inset 0 0 10px rgba(220, 38, 38, 0.2);
     }
     50% {
-      box-shadow: 0 0 25px rgba(220, 38, 38, 0.6), 0 0 35px rgba(220, 38, 38, 0.3), inset 0 0 12px rgba(220, 38, 38, 0.15);
+      box-shadow: 0 0 35px rgba(220, 38, 38, 0.9), 0 0 60px rgba(220, 38, 38, 0.6), 0 0 80px rgba(220, 38, 38, 0.3), inset 0 0 20px rgba(220, 38, 38, 0.3);
     }
   }
 
   .sale-glow-pulse {
-    animation: sale-glow-pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation: sale-glow-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   /* Custom Scrollbar Styling */
