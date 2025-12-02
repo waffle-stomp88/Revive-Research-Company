@@ -526,6 +526,28 @@ function ProductShowcase() {
           </div>
         </motion.div>
       </div>
+
+      {/* Wanna See More CTA */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="mt-12 flex justify-center"
+      >
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-[#E7FB10]/20 via-[#21d8ff]/20 to-[#E7FB10]/20 rounded-lg blur-lg" />
+          <Link href="/products">
+            <Button 
+              size="lg" 
+              className="relative font-display text-lg gap-2 border-2 border-[#E7FB10] bg-transparent hover:bg-[#E7FB10]/10 text-[#E7FB10]"
+              data-testid="button-wanna-see-more"
+            >
+              Wanna See More?
+              <ArrowRight className="h-5 w-5" />
+            </Button>
+          </Link>
+        </div>
+      </motion.div>
     </section>
   );
 }
