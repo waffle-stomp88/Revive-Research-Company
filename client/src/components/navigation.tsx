@@ -304,17 +304,18 @@ export function Navigation() {
                       <Button 
                         variant="ghost" 
                         size="icon" 
-                        className="rounded-full hover:ring-2 hover:ring-[#E7FB10]/50 transition-all duration-300" 
+                        className="relative rounded-full hover:ring-2 hover:ring-[#21d8ff] transition-all duration-300 hover:bg-[#21d8ff]/10" 
                         data-testid="button-user-menu"
                       >
-                        <Avatar className="h-8 w-8">
+                        <Avatar className="h-9 w-9 border-2 border-[#21d8ff]">
                           {user?.profileImageUrl && (
                             <AvatarImage src={user.profileImageUrl} alt={user?.firstName || "User"} className="object-cover" />
                           )}
-                          <AvatarFallback className="text-xs">
+                          <AvatarFallback className="text-xs font-semibold bg-[#21d8ff]/20">
                             {getInitials()}
                           </AvatarFallback>
                         </Avatar>
+                        <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 bg-green-500 border-2 border-background rounded-full animate-pulse shadow-lg shadow-green-500/50"></span>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
