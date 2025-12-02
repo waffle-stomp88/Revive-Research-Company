@@ -193,14 +193,14 @@ function CustomerAchievements({ orders, totalSpent }: { orders?: Order[]; totalS
   const earnedCount = badges.filter(b => b.earned).length;
 
   return (
-    <Card>
+    <Card className="border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 via-transparent to-[#9d4edd]/5">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center justify-between">
           <span className="flex items-center gap-2">
             <Trophy className="h-5 w-5 text-[#E7FB10]" />
             Achievements
           </span>
-          <Badge variant="secondary" className="bg-[#E7FB10]/10 text-[#E7FB10]">
+          <Badge variant="secondary" className="bg-[#E7FB10]/10 text-[#E7FB10] border border-[#E7FB10]/30">
             {earnedCount}/{badges.length}
           </Badge>
         </CardTitle>
@@ -219,18 +219,22 @@ function CustomerAchievements({ orders, totalSpent }: { orders?: Order[]; totalS
                 key={badge.id}
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className={`relative p-3 rounded-lg transition-all ${
-                  badge.earned ? "" : "bg-muted/30 border border-muted opacity-60"
-                }`}
-                style={badgeStyles}
+                whileHover={{ scale: 1.02 }}
+                className="relative p-3 rounded-lg transition-all"
+                style={badge.earned ? badgeStyles : {
+                  background: `linear-gradient(135deg, rgba(${r},${g},${b},0.05) 0%, transparent 100%)`,
+                  borderColor: `rgba(${r},${g},${b},0.2)`,
+                  borderWidth: '1px',
+                  borderStyle: 'solid',
+                }}
                 data-testid={`customer-badge-${badge.id}`}
               >
                 <div className="flex items-center gap-2 mb-2">
                   <div
                     className="p-1.5 rounded-lg"
                     style={{ 
-                      backgroundColor: badge.earned ? `rgba(${r},${g},${b},0.2)` : 'var(--muted)',
-                      color: badge.earned ? badge.color : 'var(--muted-foreground)'
+                      backgroundColor: badge.earned ? `rgba(${r},${g},${b},0.2)` : `rgba(${r},${g},${b},0.1)`,
+                      color: badge.earned ? badge.color : `rgba(${r},${g},${b},0.5)`
                     }}
                   >
                     <Icon className="h-4 w-4" />
@@ -241,7 +245,7 @@ function CustomerAchievements({ orders, totalSpent }: { orders?: Order[]; totalS
                 </div>
                 <span 
                   className="text-xs font-semibold block"
-                  style={{ color: badge.earned ? badge.color : 'var(--muted-foreground)' }}
+                  style={{ color: badge.earned ? badge.color : `rgba(${r},${g},${b},0.6)` }}
                 >
                   {badge.title}
                 </span>
@@ -251,8 +255,9 @@ function CustomerAchievements({ orders, totalSpent }: { orders?: Order[]; totalS
                     <Progress 
                       value={(badge.progress / badge.target) * 100} 
                       className="h-1"
+                      style={{ ['--progress-background' as string]: `rgba(${r},${g},${b},0.3)` }}
                     />
-                    <span className="text-[9px] text-muted-foreground mt-1 block">
+                    <span className="text-[9px] mt-1 block" style={{ color: `rgba(${r},${g},${b},0.6)` }}>
                       {badge.id === "big-spender" ? `$${badge.progress.toFixed(0)}` : badge.progress}/{badge.id === "big-spender" ? `$${badge.target}` : badge.target}
                     </span>
                   </div>
@@ -281,12 +286,27 @@ function LoyaltyProgress({ totalSpent }: { totalSpent: number }) {
     ? ((totalSpent - currentTier.min) / (nextTier.min - currentTier.min)) * 100
     : 100;
   const toNextTier = nextTier ? nextTier.min - totalSpent : 0;
+  
+  const r = parseInt(currentTier.color.slice(1, 3), 16);
+  const g = parseInt(currentTier.color.slice(3, 5), 16);
+  const b = parseInt(currentTier.color.slice(5, 7), 16);
 
   return (
-    <Card>
+    <Card 
+      className="border-opacity-30"
+      style={{ 
+        borderColor: `rgba(${r},${g},${b},0.3)`,
+        background: `linear-gradient(135deg, rgba(${r},${g},${b},0.05) 0%, transparent 100%)`
+      }}
+    >
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-sm">
-          <Award className="h-4 w-4" style={{ color: currentTier.color }} />
+          <div 
+            className="h-6 w-6 rounded-full flex items-center justify-center"
+            style={{ backgroundColor: `rgba(${r},${g},${b},0.15)` }}
+          >
+            <Award className="h-4 w-4" style={{ color: currentTier.color }} />
+          </div>
           Loyalty Status
         </CardTitle>
       </CardHeader>
@@ -991,13 +1011,15 @@ export default function Dashboard() {
           </motion.div>
 
           <motion.div variants={itemVariants} className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-            <Card>
+            <Card className="border-[#E7FB10]/30 bg-gradient-to-br from-[#E7FB10]/5 to-transparent">
               <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
                 <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-                <Package className="h-4 w-4 text-muted-foreground" />
+                <div className="h-8 w-8 rounded-full bg-[#E7FB10]/10 flex items-center justify-center">
+                  <Package className="h-4 w-4 text-[#E7FB10]" />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold" data-testid="text-total-orders">
+                <div className="text-2xl font-bold text-[#E7FB10]" data-testid="text-total-orders">
                   {ordersLoading ? "..." : orders?.length || 0}
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -1006,13 +1028,15 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-[#22c55e]/30 bg-gradient-to-br from-[#22c55e]/5 to-transparent">
               <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
                 <CardTitle className="text-sm font-medium">Total Spent</CardTitle>
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
+                <div className="h-8 w-8 rounded-full bg-[#22c55e]/10 flex items-center justify-center">
+                  <DollarSign className="h-4 w-4 text-[#22c55e]" />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold" data-testid="text-total-spent">
+                <div className="text-2xl font-bold text-[#22c55e]" data-testid="text-total-spent">
                   ${ordersLoading ? "..." : totalSpent.toFixed(2)}
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -1021,13 +1045,15 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-[#21d8ff]/30 bg-gradient-to-br from-[#21d8ff]/5 to-transparent">
               <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
                 <CardTitle className="text-sm font-medium">Account Status</CardTitle>
-                <User className="h-4 w-4 text-muted-foreground" />
+                <div className="h-8 w-8 rounded-full bg-[#21d8ff]/10 flex items-center justify-center">
+                  <User className="h-4 w-4 text-[#21d8ff]" />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-green-500">Active</div>
+                <div className="text-2xl font-bold text-[#21d8ff]">Active</div>
                 <p className="text-xs text-muted-foreground">
                   Member since {formatDate(user?.createdAt || new Date())}
                 </p>
@@ -1043,18 +1069,20 @@ export default function Dashboard() {
 
           <motion.div variants={itemVariants} className="grid gap-6 lg:grid-cols-3 mb-8">
             <div className="lg:col-span-2 space-y-6">
-              <Card>
+              <Card className="border-[#9d4edd]/20">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle className="flex items-center gap-2">
-                        <ShoppingBag className="h-5 w-5" />
+                        <div className="h-7 w-7 rounded-full bg-[#9d4edd]/15 flex items-center justify-center">
+                          <ShoppingBag className="h-4 w-4 text-[#9d4edd]" />
+                        </div>
                         Order History
                       </CardTitle>
                       <CardDescription>View your past orders and track shipments</CardDescription>
                     </div>
                     <Link href="/products">
-                      <Button variant="outline" size="sm" data-testid="link-shop-more">
+                      <Button size="sm" className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90" data-testid="link-shop-more">
                         Shop More
                         <ArrowRight className="h-4 w-4 ml-2" />
                       </Button>
@@ -1077,14 +1105,21 @@ export default function Dashboard() {
                     </div>
                   ) : orders && orders.length > 0 ? (
                     <div className="space-y-4">
-                      {orders.slice(0, 5).map((order) => (
+                      {orders.slice(0, 5).map((order, idx) => {
+                        const colors = ['#E7FB10', '#21d8ff', '#9d4edd', '#ec4899', '#f97316'];
+                        const color = colors[idx % colors.length];
+                        return (
                         <div
                           key={order.id}
                           className="flex items-center gap-4 p-4 rounded-lg border hover-elevate transition-colors"
+                          style={{ borderColor: `rgba(${parseInt(color.slice(1,3),16)},${parseInt(color.slice(3,5),16)},${parseInt(color.slice(5,7),16)},0.2)` }}
                           data-testid={`order-item-${order.id}`}
                         >
-                          <div className="h-12 w-12 rounded bg-muted flex items-center justify-center">
-                            <Package className="h-6 w-6 text-muted-foreground" />
+                          <div 
+                            className="h-12 w-12 rounded flex items-center justify-center"
+                            style={{ backgroundColor: `rgba(${parseInt(color.slice(1,3),16)},${parseInt(color.slice(3,5),16)},${parseInt(color.slice(5,7),16)},0.1)` }}
+                          >
+                            <Package className="h-6 w-6" style={{ color }} />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-medium truncate" data-testid={`text-order-product-${order.id}`}>
@@ -1106,7 +1141,8 @@ export default function Dashboard() {
                             </Badge>
                           </div>
                         </div>
-                      ))}
+                        );
+                      })}
                       {orders.length > 5 && (
                         <p className="text-center text-sm text-muted-foreground">
                           Showing 5 of {orders.length} orders
@@ -1115,13 +1151,15 @@ export default function Dashboard() {
                     </div>
                   ) : (
                     <div className="text-center py-12">
-                      <ShoppingBag className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+                      <div className="h-16 w-16 mx-auto rounded-full bg-[#9d4edd]/10 flex items-center justify-center mb-4">
+                        <ShoppingBag className="h-8 w-8 text-[#9d4edd]" />
+                      </div>
                       <h3 className="font-medium mb-2">No orders yet</h3>
                       <p className="text-sm text-muted-foreground mb-4">
                         Start shopping to see your order history here.
                       </p>
                       <Link href="/products">
-                        <Button data-testid="button-start-shopping">
+                        <Button className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90" data-testid="button-start-shopping">
                           Browse Products
                         </Button>
                       </Link>
@@ -1130,18 +1168,20 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="border-[#ec4899]/20">
                 <CardHeader>
                   <div className="flex items-center justify-between gap-2">
                     <div>
                       <CardTitle className="flex items-center gap-2">
-                        <MessageSquare className="h-5 w-5" />
+                        <div className="h-7 w-7 rounded-full bg-[#ec4899]/15 flex items-center justify-center">
+                          <MessageSquare className="h-4 w-4 text-[#ec4899]" />
+                        </div>
                         Product Reviews
                       </CardTitle>
                       <CardDescription>Share your experience with our products</CardDescription>
                     </div>
                     {eligibleForReview.length > 0 && (
-                      <Badge variant="secondary" className="bg-primary/10 text-primary">
+                      <Badge variant="secondary" className="bg-[#ec4899]/10 text-[#ec4899] border border-[#ec4899]/30">
                         {eligibleForReview.length} to review
                       </Badge>
                     )}
@@ -1230,10 +1270,12 @@ export default function Dashboard() {
               <ResearchTimeline orders={orders} products={products} />
               <ActivityFeed orders={orders} products={products} />
 
-              <Card>
+              <Card className="border-[#21d8ff]/30 bg-gradient-to-br from-[#21d8ff]/5 to-transparent">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <FileCheck className="h-5 w-5" />
+                    <div className="h-7 w-7 rounded-full bg-[#21d8ff]/15 flex items-center justify-center">
+                      <FileCheck className="h-4 w-4 text-[#21d8ff]" />
+                    </div>
                     COA Verification
                   </CardTitle>
                   <CardDescription>
@@ -1245,7 +1287,7 @@ export default function Dashboard() {
                     Each product comes with a Certificate of Authenticity. Verify your batch number to ensure you have genuine Revive Research products.
                   </p>
                   <Link href="/coa">
-                    <Button className="w-full" variant="outline" data-testid="link-verify-coa">
+                    <Button className="w-full bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90" data-testid="link-verify-coa">
                       Verify Batch Number
                       <ArrowRight className="h-4 w-4 ml-2" />
                     </Button>
