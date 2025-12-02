@@ -11,11 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/contexts/CartContext";
@@ -40,7 +35,7 @@ export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isCartHoverOpen, setIsCartHoverOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const [location] = useLocation();
   const { user, isAuthenticated, isLoading } = useAuth();
   const { items, getItemCount, getSubtotal } = useCart();
@@ -60,7 +55,7 @@ export function Navigation() {
   useEffect(() => {
     setIsMobileMenuOpen(false);
     setIsDropdownOpen(false);
-    setIsCartHoverOpen(false);
+    setIsCartOpen(false);
   }, [location]);
 
   const getInitials = () => {
@@ -203,25 +198,23 @@ export function Navigation() {
               </div>
 
               <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
-                <HoverCard openDelay={100} closeDelay={200} open={isCartHoverOpen} onOpenChange={setIsCartHoverOpen}>
-                  <HoverCardTrigger asChild>
-                    <Link href="/cart">
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="relative hover:bg-[#E7FB10]/10 hover:text-[#E7FB10] transition-all duration-300" 
-                        data-testid="button-cart"
-                      >
-                        <ShoppingCart className="h-5 w-5" />
-                        {cartItemCount > 0 && (
-                          <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] bg-[#E7FB10] text-black border-0">
-                            {cartItemCount > 9 ? "9+" : cartItemCount}
-                          </Badge>
-                        )}
-                      </Button>
-                    </Link>
-                  </HoverCardTrigger>
-                  <HoverCardContent align="end" className="w-80 p-0" sideOffset={8}>
+                <DropdownMenu open={isCartOpen} onOpenChange={setIsCartOpen}>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="relative hover:bg-[#E7FB10]/10 hover:text-[#E7FB10] transition-all duration-300" 
+                      data-testid="button-cart"
+                    >
+                      <ShoppingCart className="h-5 w-5" />
+                      {cartItemCount > 0 && (
+                        <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] bg-[#E7FB10] text-black border-0">
+                          {cartItemCount > 9 ? "9+" : cartItemCount}
+                        </Badge>
+                      )}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-80 p-0">
                     <div className="p-4 border-b border-border">
                       <div className="flex items-center justify-between">
                         <h4 className="font-semibold text-sm">Shopping Cart</h4>
@@ -286,8 +279,8 @@ export function Navigation() {
                         </div>
                       </>
                     )}
-                  </HoverCardContent>
-                </HoverCard>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 
                 {!isLoading && !isAuthenticated && (
                   <a href="/api/login">
