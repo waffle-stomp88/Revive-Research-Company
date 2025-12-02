@@ -39,6 +39,7 @@ const resourceLinks = [
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [location] = useLocation();
   const { user, isAuthenticated, isLoading } = useAuth();
   const { items, getItemCount, getSubtotal } = useCart();
@@ -57,6 +58,7 @@ export function Navigation() {
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
+    setIsDropdownOpen(false);
   }, [location]);
 
   const getInitials = () => {
@@ -299,7 +301,7 @@ export function Navigation() {
                 )}
                 
                 {!isLoading && isAuthenticated && (
-                  <DropdownMenu>
+                  <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
                     <DropdownMenuTrigger asChild>
                       <button 
                         className="relative flex items-center gap-2 px-2 md:px-3 py-1.5 md:py-2 rounded-full hover:bg-[#21d8ff]/10 border border-[#21d8ff]/50 hover:border-[#21d8ff] transition-all duration-300 outline-none"
