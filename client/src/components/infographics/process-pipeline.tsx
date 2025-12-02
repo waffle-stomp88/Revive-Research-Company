@@ -112,13 +112,13 @@ export function ProcessPipeline() {
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.3 + index * 0.15, duration: 0.5 }}
-              className="relative"
+              className="relative h-full"
               onMouseEnter={() => setActiveStep(step.id)}
               onMouseLeave={() => setActiveStep(null)}
               data-testid={`pipeline-step-${step.id}`}
             >
               <motion.div
-                className="relative bg-card border rounded-xl p-4 cursor-pointer overflow-hidden"
+                className="relative bg-card border rounded-xl p-4 cursor-pointer overflow-hidden h-full"
                 style={{ 
                   borderColor: isActive ? step.color : 'rgba(255,255,255,0.1)',
                   boxShadow: isActive ? `0 0 30px ${step.color}30` : 'none'
