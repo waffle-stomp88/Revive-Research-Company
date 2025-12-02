@@ -763,6 +763,68 @@ export default function ProductDetail() {
           </motion.div>
         </div>
 
+        {/* Related Education Article Section */}
+        {relatedArticles.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.15 }}
+            className="mt-12"
+            data-testid="section-education"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <GraduationCap className="h-6 w-6 text-[#ec4899]" />
+                <h2 className="font-display text-2xl font-bold">Learn About This Peptide</h2>
+              </div>
+              <Link href="/education">
+                <Button variant="outline" size="sm" className="border-[#ec4899]/30 hover:border-[#ec4899]" data-testid="link-view-all-education">
+                  All Articles
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4">
+              {relatedArticles.slice(0, 1).map((article) => (
+                <Link key={article.id} href={`/education/${article.slug}`}>
+                  <Card 
+                    className="p-6 border-[#ec4899]/20 hover:border-[#ec4899]/40 transition-colors cursor-pointer group"
+                    data-testid={`card-article-${article.id}`}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 rounded-lg bg-[#ec4899]/10 flex-shrink-0">
+                        <BookOpen className="h-6 w-6 text-[#ec4899]" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="outline" className="border-[#ec4899]/50 text-[#ec4899] text-xs">
+                            Research Guide
+                          </Badge>
+                          <span className="flex items-center text-xs text-muted-foreground">
+                            <Clock className="h-3 w-3 mr-1" />
+                            {article.readTimeMinutes} min read
+                          </span>
+                        </div>
+                        <h3 className="font-display text-lg font-bold mb-2 group-hover:text-[#ec4899] transition-colors">
+                          {article.title}
+                        </h3>
+                        <p className="text-sm text-muted-foreground line-clamp-2">
+                          {article.summary}
+                        </p>
+                        <div className="flex items-center text-sm text-[#ec4899] mt-3 group-hover:translate-x-1 transition-transform">
+                          Read Full Article
+                          <ChevronRight className="h-4 w-4 ml-1" />
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
         {/* Storage & Stability Section */}
         {storageProfile && (
           <motion.section
@@ -857,68 +919,6 @@ export default function ProductDetail() {
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </Link>
-            </div>
-          </motion.section>
-        )}
-
-        {/* Related Education Article Section */}
-        {relatedArticles.length > 0 && (
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.16 }}
-            className="mt-12"
-            data-testid="section-education"
-          >
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <GraduationCap className="h-6 w-6 text-[#ec4899]" />
-                <h2 className="font-display text-2xl font-bold">Learn About This Peptide</h2>
-              </div>
-              <Link href="/education">
-                <Button variant="outline" size="sm" className="border-[#ec4899]/30 hover:border-[#ec4899]" data-testid="link-view-all-education">
-                  All Articles
-                  <ChevronRight className="h-4 w-4 ml-1" />
-                </Button>
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4">
-              {relatedArticles.slice(0, 1).map((article) => (
-                <Link key={article.id} href={`/education/${article.slug}`}>
-                  <Card 
-                    className="p-6 border-[#ec4899]/20 hover:border-[#ec4899]/40 transition-colors cursor-pointer group"
-                    data-testid={`card-article-${article.id}`}
-                  >
-                    <div className="flex items-start gap-4">
-                      <div className="p-3 rounded-lg bg-[#ec4899]/10 flex-shrink-0">
-                        <BookOpen className="h-6 w-6 text-[#ec4899]" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="outline" className="border-[#ec4899]/50 text-[#ec4899] text-xs">
-                            Research Guide
-                          </Badge>
-                          <span className="flex items-center text-xs text-muted-foreground">
-                            <Clock className="h-3 w-3 mr-1" />
-                            {article.readTimeMinutes} min read
-                          </span>
-                        </div>
-                        <h3 className="font-display text-lg font-bold mb-2 group-hover:text-[#ec4899] transition-colors">
-                          {article.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground line-clamp-2">
-                          {article.summary}
-                        </p>
-                        <div className="flex items-center text-sm text-[#ec4899] mt-3 group-hover:translate-x-1 transition-transform">
-                          Read Full Article
-                          <ChevronRight className="h-4 w-4 ml-1" />
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                </Link>
-              ))}
             </div>
           </motion.section>
         )}
