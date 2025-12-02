@@ -263,7 +263,7 @@ function ProductShowcase() {
               <Link key={`${product.id}-${idx}`} href={`/products/${product.id}`} onClick={() => trackEvent('product_click', 'carousel', product.name)} className="flex-shrink-0">
                 <Card className={`group w-48 h-auto cursor-pointer transition-all duration-300 border-2 flex flex-col relative overflow-hidden ${
                   product.isWeeklyDeal
-                    ? "border-[#E7FB10]/80 shadow-[0_0_20px_rgba(231,251,16,0.3)] hover:shadow-[0_0_30px_rgba(231,251,16,0.5)]"
+                    ? "border-red-600/90 sale-glow-pulse"
                     : "border-cyan-400/60 shadow-glow-blue-sm hover:shadow-glow-blue-lg"
                 }`} data-testid={`card-product-${product.id}`}>
                   {product.isWeeklyDeal && (
