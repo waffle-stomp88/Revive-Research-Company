@@ -241,7 +241,7 @@ export default function Dashboard() {
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <div className="flex items-center gap-1">
-                    <h1 className="font-display text-2xl md:text-3xl font-bold" data-testid="text-user-name">
+                    <h1 className="font-display text-2xl md:text-3xl font-bold holographic-text" data-testid="text-user-name">
                       Welcome{user?.firstName ? `, ${user.firstName}` : ""}
                     </h1>
                     {affiliate?.id && (
