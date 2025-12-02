@@ -102,8 +102,15 @@ import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianG
 import { ObjectUploader } from "@/components/ObjectUploader";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertProductSchema, insertCoaSchema, type Product, type Coa, type Order, type Contact, type AffiliateApplication, type Affiliate, type AffiliatePayout } from "@shared/schema";
+import { insertProductSchema, insertCoaSchema, type Product, type Coa, type Order, type Contact, type AffiliateApplication, type Affiliate, type AffiliatePayout, type ProductDosageStock, type ProductWithDosageStock } from "@shared/schema";
 import { z } from "zod";
+
+// Dosage stock item type for local state management
+interface DosageStockItem {
+  dosage: string;
+  stockAmount: number;
+  inStock: boolean;
+}
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -123,18 +130,7 @@ const productFormSchema = insertProductSchema.extend({
   dosageOptions: z.string().optional(),
   isWeeklyDeal: z.boolean().optional(),
   weeklyDealEndDate: z.string().optional(),
-}).refine(
-  (data) => {
-    if (data.inStock) {
-      return data.stockAmount !== undefined && data.stockAmount > 0;
-    }
-    return true;
-  },
-  {
-    message: "Stock amount must be greater than 0 when product is marked as In Stock",
-    path: ["stockAmount"],
-  }
-);
+});
 
 type ProductFormValues = z.infer<typeof productFormSchema>;
 
@@ -744,11 +740,17 @@ function ProductsTab() {
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [productImageUrl, setProductImageUrl] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [dosageStocks, setDosageStocks] = useState<DosageStockItem[]>([]);
+  const [newDosage, setNewDosage] = useState("");
   const { toast } = useToast();
 
-  const { data: products, isLoading } = useQuery<Product[]>({
-    queryKey: ["/api/products"],
+  // Fetch products with dosage stock data
+  const { data: productsWithStock, isLoading } = useQuery<ProductWithDosageStock[]>({
+    queryKey: ["/api/admin/products-with-stock"],
   });
+
+  // Fallback to regular products for non-admin use
+  const products = productsWithStock;
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
