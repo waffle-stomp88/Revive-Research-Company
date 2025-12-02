@@ -1,19 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "wouter";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useCart } from "@/contexts/CartContext";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Package,
   FileCheck,
@@ -29,9 +33,31 @@ import {
   Star,
   MessageSquare,
   TrendingUp,
+  Trophy,
+  Award,
+  Zap,
+  Crown,
+  Flame,
+  Gift,
+  Heart,
+  RefreshCw,
+  Sparkles,
+  Target,
+  Shield,
+  PiggyBank,
+  Bookmark,
+  BookmarkCheck,
+  X,
+  Plus,
+  ExternalLink,
+  ChevronRight,
+  History,
+  Timer,
+  Boxes,
 } from "lucide-react";
-import type { Order, Product, ReviewableOrder } from "@shared/schema";
+import type { Order, Product, ReviewableOrder, Coa } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { BUNDLES, type Bundle } from "@/lib/bundles";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -70,6 +96,660 @@ function getStatusColor(status: string | null): "default" | "secondary" | "outli
     default:
       return "outline";
   }
+}
+
+interface CustomerBadge {
+  id: string;
+  title: string;
+  description: string;
+  icon: typeof Trophy;
+  color: string;
+  earned: boolean;
+  progress?: number;
+  target?: number;
+}
+
+const getBadgeStyles = (color: string, earned: boolean) => {
+  if (!earned) return undefined;
+  const r = parseInt(color.slice(1, 3), 16);
+  const g = parseInt(color.slice(3, 5), 16);
+  const b = parseInt(color.slice(5, 7), 16);
+  return {
+    background: `linear-gradient(135deg, rgba(${r},${g},${b},0.15) 0%, transparent 100%)`,
+    borderColor: color,
+    borderWidth: '1px',
+    borderStyle: 'solid' as const,
+    boxShadow: `0 0 20px rgba(${r},${g},${b},0.5), 0 0 40px rgba(${r},${g},${b},0.2)`,
+  };
+};
+
+function CustomerAchievements({ orders, totalSpent }: { orders?: Order[]; totalSpent: number }) {
+  const orderCount = orders?.length || 0;
+  const uniqueProducts = new Set(orders?.map(o => o.productId) || []).size;
+  
+  const badges: CustomerBadge[] = useMemo(() => [
+    {
+      id: "first-order",
+      title: "First Steps",
+      description: "Placed your first order",
+      icon: Zap,
+      color: "#E7FB10",
+      earned: orderCount >= 1,
+      progress: Math.min(orderCount, 1),
+      target: 1,
+    },
+    {
+      id: "repeat-customer",
+      title: "Repeat Researcher",
+      description: "Made 5+ orders",
+      icon: RefreshCw,
+      color: "#21d8ff",
+      earned: orderCount >= 5,
+      progress: Math.min(orderCount, 5),
+      target: 5,
+    },
+    {
+      id: "explorer",
+      title: "Compound Explorer",
+      description: "Tried 3+ different products",
+      icon: Target,
+      color: "#9d4edd",
+      earned: uniqueProducts >= 3,
+      progress: Math.min(uniqueProducts, 3),
+      target: 3,
+    },
+    {
+      id: "big-spender",
+      title: "Dedicated Researcher",
+      description: "Spent $500+ total",
+      icon: Crown,
+      color: "#E7FB10",
+      earned: totalSpent >= 500,
+      progress: Math.min(totalSpent, 500),
+      target: 500,
+    },
+    {
+      id: "bundle-master",
+      title: "Stack Specialist",
+      description: "Ordered research stacks",
+      icon: Boxes,
+      color: "#ec4899",
+      earned: orderCount >= 2 && uniqueProducts >= 2,
+      progress: uniqueProducts >= 2 ? 1 : 0,
+      target: 1,
+    },
+    {
+      id: "loyal",
+      title: "Loyal Partner",
+      description: "10+ lifetime orders",
+      icon: Trophy,
+      color: "#f97316",
+      earned: orderCount >= 10,
+      progress: Math.min(orderCount, 10),
+      target: 10,
+    },
+  ], [orderCount, uniqueProducts, totalSpent]);
+
+  const earnedCount = badges.filter(b => b.earned).length;
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center justify-between">
+          <span className="flex items-center gap-2">
+            <Trophy className="h-5 w-5 text-[#E7FB10]" />
+            Achievements
+          </span>
+          <Badge variant="secondary" className="bg-[#E7FB10]/10 text-[#E7FB10]">
+            {earnedCount}/{badges.length}
+          </Badge>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {badges.map((badge) => {
+            const Icon = badge.icon;
+            const badgeStyles = getBadgeStyles(badge.color, badge.earned);
+            const r = parseInt(badge.color.slice(1, 3), 16);
+            const g = parseInt(badge.color.slice(3, 5), 16);
+            const b = parseInt(badge.color.slice(5, 7), 16);
+            
+            return (
+              <motion.div
+                key={badge.id}
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className={`relative p-3 rounded-lg transition-all ${
+                  badge.earned ? "" : "bg-muted/30 border border-muted opacity-60"
+                }`}
+                style={badgeStyles}
+                data-testid={`customer-badge-${badge.id}`}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <div
+                    className="p-1.5 rounded-lg"
+                    style={{ 
+                      backgroundColor: badge.earned ? `rgba(${r},${g},${b},0.2)` : 'var(--muted)',
+                      color: badge.earned ? badge.color : 'var(--muted-foreground)'
+                    }}
+                  >
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  {badge.earned && (
+                    <Sparkles className="h-3 w-3 animate-pulse" style={{ color: badge.color }} />
+                  )}
+                </div>
+                <span 
+                  className="text-xs font-semibold block"
+                  style={{ color: badge.earned ? badge.color : 'var(--muted-foreground)' }}
+                >
+                  {badge.title}
+                </span>
+                <span className="text-[10px] text-muted-foreground mt-0.5 block">{badge.description}</span>
+                {!badge.earned && badge.progress !== undefined && badge.target && (
+                  <div className="mt-2">
+                    <Progress 
+                      value={(badge.progress / badge.target) * 100} 
+                      className="h-1"
+                    />
+                    <span className="text-[9px] text-muted-foreground mt-1 block">
+                      {badge.id === "big-spender" ? `$${badge.progress.toFixed(0)}` : badge.progress}/{badge.id === "big-spender" ? `$${badge.target}` : badge.target}
+                    </span>
+                  </div>
+                )}
+              </motion.div>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function LoyaltyProgress({ totalSpent }: { totalSpent: number }) {
+  const tiers = [
+    { name: "Newcomer", min: 0, max: 100, color: "#64748b" },
+    { name: "Explorer", min: 100, max: 300, color: "#21d8ff" },
+    { name: "Researcher", min: 300, max: 750, color: "#9d4edd" },
+    { name: "Scientist", min: 750, max: 1500, color: "#ec4899" },
+    { name: "Elite", min: 1500, max: Infinity, color: "#E7FB10" },
+  ];
+
+  const currentTier = tiers.find(t => totalSpent >= t.min && totalSpent < t.max) || tiers[tiers.length - 1];
+  const nextTier = tiers[tiers.indexOf(currentTier) + 1];
+  const progress = nextTier 
+    ? ((totalSpent - currentTier.min) / (nextTier.min - currentTier.min)) * 100
+    : 100;
+  const toNextTier = nextTier ? nextTier.min - totalSpent : 0;
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-sm">
+          <Award className="h-4 w-4" style={{ color: currentTier.color }} />
+          Loyalty Status
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex items-center justify-between mb-2">
+          <span className="font-bold text-lg" style={{ color: currentTier.color }}>
+            {currentTier.name}
+          </span>
+          {nextTier && (
+            <span className="text-xs text-muted-foreground">
+              ${toNextTier.toFixed(0)} to {nextTier.name}
+            </span>
+          )}
+        </div>
+        <Progress value={progress} className="h-2 mb-3" />
+        <div className="flex justify-between">
+          {tiers.slice(0, 5).map((tier, i) => (
+            <Tooltip key={tier.name}>
+              <TooltipTrigger>
+                <div 
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all ${
+                    totalSpent >= tier.min ? 'scale-110' : 'opacity-40'
+                  }`}
+                  style={{ 
+                    backgroundColor: totalSpent >= tier.min ? tier.color : 'var(--muted)',
+                    color: totalSpent >= tier.min ? '#000' : 'var(--muted-foreground)'
+                  }}
+                >
+                  {i + 1}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{tier.name} (${tier.min}+)</p>
+              </TooltipContent>
+            </Tooltip>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function SavingsSummary({ orders, products }: { orders?: Order[]; products?: Product[] }) {
+  const savings = useMemo(() => {
+    if (!orders || !products) return { total: 0, deals: 0, bundles: 0 };
+    
+    let dealSavings = 0;
+    orders.forEach(order => {
+      const product = products.find(p => p.id === order.productId);
+      if (product?.originalPrice && Number(product.originalPrice) > Number(product.price)) {
+        dealSavings += (Number(product.originalPrice) - Number(product.price)) * order.quantity;
+      }
+    });
+
+    return {
+      total: dealSavings,
+      deals: dealSavings,
+      bundles: 0,
+    };
+  }, [orders, products]);
+
+  if (savings.total === 0) return null;
+
+  return (
+    <Card className="border-green-500/30 bg-green-500/5">
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center gap-2 text-sm text-green-500">
+          <PiggyBank className="h-4 w-4" />
+          You've Saved
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold text-green-500" data-testid="text-total-savings">
+          ${savings.total.toFixed(2)}
+        </div>
+        <p className="text-xs text-muted-foreground">From deals and promotions</p>
+      </CardContent>
+    </Card>
+  );
+}
+
+function QuickReorder({ orders, products }: { orders?: Order[]; products?: Product[] }) {
+  const { addToCart } = useCart();
+  const { toast } = useToast();
+  
+  const recentProducts = useMemo(() => {
+    if (!orders || !products) return [];
+    const productCounts = new Map<string, number>();
+    orders.forEach(o => {
+      productCounts.set(o.productId, (productCounts.get(o.productId) || 0) + 1);
+    });
+    
+    return Array.from(productCounts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([productId]) => products.find(p => p.id === productId))
+      .filter(Boolean) as Product[];
+  }, [orders, products]);
+
+  const handleReorder = (product: Product) => {
+    addToCart({
+      productId: product.id,
+      name: product.name,
+      price: Number(product.price),
+      quantity: 1,
+      dosage: product.dosageOptions?.[0] || "10mg",
+    });
+    toast({
+      title: "Added to Cart",
+      description: `${product.name} has been added to your cart.`,
+    });
+  };
+
+  if (recentProducts.length === 0) return null;
+
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center gap-2 text-sm">
+          <RefreshCw className="h-4 w-4 text-[#21d8ff]" />
+          Quick Reorder
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {recentProducts.map(product => (
+          <div 
+            key={product.id}
+            className="flex items-center justify-between p-2 rounded-lg border hover-elevate"
+          >
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">{product.name}</p>
+              <p className="text-xs text-muted-foreground">${Number(product.price).toFixed(2)}</p>
+            </div>
+            <Button 
+              size="sm" 
+              variant="outline"
+              onClick={() => handleReorder(product)}
+              data-testid={`button-reorder-${product.id}`}
+            >
+              <Plus className="h-3 w-3 mr-1" />
+              Add
+            </Button>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
+function RecommendedStacks({ orders, products }: { orders?: Order[]; products?: Product[] }) {
+  const purchasedProductNames = useMemo(() => {
+    if (!orders || !products) return new Set<string>();
+    return new Set(
+      orders.map(o => products.find(p => p.id === o.productId)?.name).filter(Boolean)
+    );
+  }, [orders, products]);
+
+  const recommendations = useMemo(() => {
+    return BUNDLES.filter(bundle => {
+      const hasAny = bundle.products.some(p => purchasedProductNames.has(p));
+      const hasAll = bundle.products.every(p => purchasedProductNames.has(p));
+      return hasAny && !hasAll;
+    }).slice(0, 2);
+  }, [purchasedProductNames]);
+
+  if (recommendations.length === 0) return null;
+
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center gap-2 text-sm">
+          <Boxes className="h-4 w-4 text-[#9d4edd]" />
+          Recommended Stacks
+        </CardTitle>
+        <CardDescription>Based on your research history</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {recommendations.map(bundle => (
+          <Link key={bundle.id} href={`/bundles/${bundle.id}`}>
+            <div className="p-3 rounded-lg border hover-elevate cursor-pointer">
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-medium text-sm">{bundle.name}</span>
+                <Badge variant="secondary" className="text-[10px] bg-green-500/10 text-green-500">
+                  Save {bundle.savings}%
+                </Badge>
+              </div>
+              <p className="text-xs text-muted-foreground mb-2">{bundle.products.join(" + ")}</p>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-bold">${bundle.bundlePrice}</span>
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              </div>
+            </div>
+          </Link>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
+function WishlistWidget({ products }: { products?: Product[] }) {
+  const [wishlist, setWishlist] = useState<string[]>([]);
+  const { addToCart } = useCart();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const saved = localStorage.getItem('wishlist');
+    if (saved) setWishlist(JSON.parse(saved));
+  }, []);
+
+  const wishlistProducts = useMemo(() => {
+    if (!products) return [];
+    return wishlist.map(id => products.find(p => p.id === id)).filter(Boolean) as Product[];
+  }, [wishlist, products]);
+
+  const removeFromWishlist = (productId: string) => {
+    const updated = wishlist.filter(id => id !== productId);
+    setWishlist(updated);
+    localStorage.setItem('wishlist', JSON.stringify(updated));
+  };
+
+  const handleAddToCart = (product: Product) => {
+    addToCart({
+      productId: product.id,
+      name: product.name,
+      price: Number(product.price),
+      quantity: 1,
+      dosage: product.dosageOptions?.[0] || "10mg",
+    });
+    toast({
+      title: "Added to Cart",
+      description: `${product.name} has been added to your cart.`,
+    });
+  };
+
+  if (wishlistProducts.length === 0) {
+    return (
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-sm">
+            <Heart className="h-4 w-4 text-[#ec4899]" />
+            Wishlist
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-4">
+            <Bookmark className="h-8 w-8 mx-auto text-muted-foreground/50 mb-2" />
+            <p className="text-xs text-muted-foreground">No items saved yet</p>
+            <Link href="/products">
+              <Button variant="outline" size="sm" className="mt-2">
+                Browse Products
+              </Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center justify-between">
+          <span className="flex items-center gap-2 text-sm">
+            <Heart className="h-4 w-4 text-[#ec4899]" />
+            Wishlist
+          </span>
+          <Badge variant="secondary">{wishlistProducts.length}</Badge>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {wishlistProducts.slice(0, 3).map(product => (
+          <div 
+            key={product.id}
+            className="flex items-center gap-2 p-2 rounded-lg border"
+          >
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">{product.name}</p>
+              <p className="text-xs text-muted-foreground">${Number(product.price).toFixed(2)}</p>
+            </div>
+            <Button 
+              size="icon" 
+              variant="ghost"
+              className="h-7 w-7"
+              onClick={() => handleAddToCart(product)}
+            >
+              <Plus className="h-3 w-3" />
+            </Button>
+            <Button 
+              size="icon" 
+              variant="ghost"
+              className="h-7 w-7 text-muted-foreground"
+              onClick={() => removeFromWishlist(product.id)}
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
+function MyCOAs({ orders, products }: { orders?: Order[]; products?: Product[] }) {
+  const { data: coas } = useQuery<Coa[]>({
+    queryKey: ["/api/coas"],
+  });
+
+  const myCoas = useMemo(() => {
+    if (!orders || !coas) return [];
+    const productIds = new Set(orders.map(o => o.productId));
+    return coas.filter(coa => productIds.has(coa.productId)).slice(0, 3);
+  }, [orders, coas]);
+
+  if (myCoas.length === 0) return null;
+
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center gap-2 text-sm">
+          <FileCheck className="h-4 w-4 text-[#21d8ff]" />
+          My COAs
+        </CardTitle>
+        <CardDescription>Certificates for your products</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {myCoas.map(coa => (
+          <Link key={coa.id} href={`/coa?batch=${coa.batchNumber}`}>
+            <div className="flex items-center justify-between p-2 rounded-lg border hover-elevate cursor-pointer">
+              <div>
+                <p className="text-sm font-medium">{coa.productName}</p>
+                <p className="text-xs text-muted-foreground">Batch: {coa.batchNumber}</p>
+              </div>
+              <div className="flex items-center gap-1 text-green-500">
+                <Shield className="h-3 w-3" />
+                <span className="text-xs">{coa.purity}</span>
+              </div>
+            </div>
+          </Link>
+        ))}
+        <Link href="/coa">
+          <Button variant="outline" size="sm" className="w-full mt-2">
+            View All COAs
+            <ArrowRight className="h-3 w-3 ml-1" />
+          </Button>
+        </Link>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ResearchTimeline({ orders, products }: { orders?: Order[]; products?: Product[] }) {
+  const timeline = useMemo(() => {
+    if (!orders || !products) return [];
+    return orders
+      .slice(0, 5)
+      .map(order => ({
+        id: order.id,
+        date: new Date(order.createdAt || new Date()),
+        productName: products.find(p => p.id === order.productId)?.name || "Product",
+        amount: Number(order.totalAmount),
+        status: order.status,
+      }))
+      .sort((a, b) => b.date.getTime() - a.date.getTime());
+  }, [orders, products]);
+
+  if (timeline.length === 0) return null;
+
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center gap-2 text-sm">
+          <History className="h-4 w-4 text-[#9d4edd]" />
+          Research Timeline
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="relative">
+          <div className="absolute left-3 top-0 bottom-0 w-px bg-border" />
+          <div className="space-y-4">
+            {timeline.map((event, i) => (
+              <div key={event.id} className="relative pl-8">
+                <div 
+                  className="absolute left-0 w-6 h-6 rounded-full flex items-center justify-center"
+                  style={{
+                    backgroundColor: event.status === 'delivered' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(33, 216, 255, 0.2)',
+                    borderColor: event.status === 'delivered' ? '#22c55e' : '#21d8ff',
+                    borderWidth: '2px',
+                  }}
+                >
+                  {event.status === 'delivered' ? (
+                    <CheckCircle className="h-3 w-3 text-green-500" />
+                  ) : (
+                    <Package className="h-3 w-3 text-[#21d8ff]" />
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm font-medium">{event.productName}</p>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span>{event.date.toLocaleDateString()}</span>
+                    <span>•</span>
+                    <span>${event.amount.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ActivityFeed({ orders, products }: { orders?: Order[]; products?: Product[] }) {
+  const activities = useMemo(() => {
+    if (!orders) return [];
+    
+    const items = orders.slice(0, 8).map(order => ({
+      id: order.id,
+      type: 'order' as const,
+      title: `Ordered ${products?.find(p => p.id === order.productId)?.name || 'Product'}`,
+      date: new Date(order.createdAt || new Date()),
+      icon: Package,
+      color: '#21d8ff',
+    }));
+
+    return items.sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 5);
+  }, [orders, products]);
+
+  if (activities.length === 0) return null;
+
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center gap-2 text-sm">
+          <Clock className="h-4 w-4" />
+          Recent Activity
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {activities.map(activity => {
+            const Icon = activity.icon;
+            return (
+              <div key={activity.id} className="flex items-center gap-3">
+                <div 
+                  className="p-1.5 rounded-lg"
+                  style={{ backgroundColor: `${activity.color}20` }}
+                >
+                  <Icon className="h-3 w-3" style={{ color: activity.color }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm truncate">{activity.title}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {activity.date.toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
 
 export default function Dashboard() {
@@ -185,10 +865,12 @@ export default function Dashboard() {
     });
   };
 
+  const totalSpent = orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0;
+
   if (authLoading) {
     return (
       <main className="min-h-screen pt-32 md:pt-40 pb-24">
-        <div className="container mx-auto px-4 max-w-6xl">
+        <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex items-center gap-4 mb-8">
             <Skeleton className="h-16 w-16 rounded-full" />
             <div>
@@ -196,8 +878,8 @@ export default function Dashboard() {
               <Skeleton className="h-4 w-32" />
             </div>
           </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {[...Array(3)].map((_, i) => (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {[...Array(4)].map((_, i) => (
               <Skeleton key={i} className="h-32" />
             ))}
           </div>
@@ -222,7 +904,7 @@ export default function Dashboard() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <div className="container mx-auto px-4 max-w-6xl">
+      <div className="container mx-auto px-4 max-w-7xl">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -276,7 +958,7 @@ export default function Dashboard() {
             </a>
           </motion.div>
 
-          <motion.div variants={itemVariants} className="grid gap-6 md:grid-cols-3 mb-8">
+          <motion.div variants={itemVariants} className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
                 <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
@@ -299,9 +981,7 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold" data-testid="text-total-spent">
-                  ${ordersLoading
-                    ? "..."
-                    : orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0).toFixed(2) || "0.00"}
+                  ${ordersLoading ? "..." : totalSpent.toFixed(2)}
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Lifetime value
@@ -321,10 +1001,16 @@ export default function Dashboard() {
                 </p>
               </CardContent>
             </Card>
+
+            <SavingsSummary orders={orders} products={products} />
           </motion.div>
 
-          <motion.div variants={itemVariants} className="grid gap-6 lg:grid-cols-3">
-            <div className="lg:col-span-2">
+          <motion.div variants={itemVariants} className="mb-8">
+            <CustomerAchievements orders={orders} totalSpent={totalSpent} />
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="grid gap-6 lg:grid-cols-3 mb-8">
+            <div className="lg:col-span-2 space-y-6">
               <Card>
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -412,7 +1098,7 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="mt-6">
+              <Card>
                 <CardHeader>
                   <div className="flex items-center justify-between gap-2">
                     <div>
@@ -504,6 +1190,14 @@ export default function Dashboard() {
             </div>
 
             <div className="space-y-6">
+              <LoyaltyProgress totalSpent={totalSpent} />
+              <QuickReorder orders={orders} products={products} />
+              <RecommendedStacks orders={orders} products={products} />
+              <WishlistWidget products={products} />
+              <MyCOAs orders={orders} products={products} />
+              <ResearchTimeline orders={orders} products={products} />
+              <ActivityFeed orders={orders} products={products} />
+
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -556,8 +1250,8 @@ export default function Dashboard() {
                     </div>
                   </div>
                   
-                  <div className="bg-black/20 backdrop-blur-sm rounded-lg p-4 mb-4 border border-white/30">
-                    <ul className="space-y-2 text-sm text-white/95">
+                  <div className="mb-4">
+                    <ul className="space-y-2 text-sm text-white/90">
                       <li className="flex items-start gap-2">
                         <span className="text-[#E7FB10] font-bold text-lg leading-none mt-0.5">✓</span>
                         <span>10% commission on direct sales</span>
