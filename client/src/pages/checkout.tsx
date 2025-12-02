@@ -354,7 +354,7 @@ export default function Checkout() {
               animate={{ opacity: 1, x: 0 }}
               className="mb-8"
             >
-              <Link href="/cart">
+              <Link href="/cart" onClick={() => sessionStorage.removeItem('checkoutRuoAcknowledged')}>
                 <Button variant="ghost" className="gap-2 -ml-4" data-testid="button-back-cart">
                   <ArrowLeft className="h-4 w-4" />
                   Back to Cart
