@@ -119,6 +119,38 @@ function Router() {
   );
 }
 
+function PreventScrollbarHiding() {
+  useEffect(() => {
+    // Prevent Radix UI from hiding scrollbars when dropdowns/modals open
+    const observer = new MutationObserver(() => {
+      const html = document.documentElement;
+      const body = document.body;
+      
+      if (html.style.overflow === 'hidden' || body.style.overflow === 'hidden') {
+        html.style.overflow = 'auto';
+        html.style.overflowY = 'auto';
+        html.style.overflowX = 'auto';
+        body.style.overflow = 'auto';
+        body.style.overflowY = 'auto';
+        body.style.overflowX = 'auto';
+      }
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['style'],
+    });
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['style'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return null;
+}
+
 function App() {
   useEffect(() => {
     if (!import.meta.env.VITE_GA_MEASUREMENT_ID) {
@@ -133,6 +165,7 @@ function App() {
       <ThemeProvider defaultTheme="dark" storageKey="revive-theme">
         <CartProvider>
           <TooltipProvider>
+            <PreventScrollbarHiding />
             <AgeVerificationModal />
             <AffiliateTracker />
             <ScrollToTop />

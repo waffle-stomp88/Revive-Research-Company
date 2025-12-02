@@ -5,19 +5,22 @@
 @layer base {
   html {
     scrollbar-gutter: stable;
-    overflow: visible !important;
-  }
-
-  /* Prevent Radix UI from hiding scrollbars when dropdowns open */
-  body {
-    overflow: visible !important;
     overflow-y: auto !important;
     overflow-x: auto !important;
   }
 
-  /* Force visible overflow for all scroll states */
+  /* Prevent Radix UI from hiding scrollbars when dropdowns/popovers open */
+  html[style] {
+    overflow-y: auto !important;
+    overflow-x: auto !important;
+  }
+
+  body {
+    overflow-y: auto !important;
+    overflow-x: auto !important;
+  }
+
   body[style] {
-    overflow: visible !important;
     overflow-y: auto !important;
     overflow-x: auto !important;
   }
