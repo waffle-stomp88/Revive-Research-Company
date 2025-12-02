@@ -599,7 +599,7 @@ export default function Products() {
                   <Link href={`/products/${saleProduct.id}`}>
                     <div className="sale-glow-pulse rounded-xl">
                     <Card className="p-5 md:p-6 border-2 border-red-500 bg-gradient-to-br from-red-950/40 via-background to-background transition-all cursor-pointer group">
-                      <div className="flex flex-col gap-5 items-center">
+                      <div className="flex flex-col md:flex-row gap-5 items-center justify-center">
                         <div className="w-28 h-28 md:w-36 md:h-36 bg-muted/50 rounded-lg overflow-hidden flex-shrink-0 border border-red-500/20">
                           <img 
                             src={productImage} 
