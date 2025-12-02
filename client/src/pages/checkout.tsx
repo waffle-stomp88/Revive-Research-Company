@@ -368,9 +368,9 @@ export default function Checkout() {
                 </h3>
                 <div className="grid grid-cols-2 gap-2">
                   <Link href="/buyer-checklist">
-                    <div className="flex items-center gap-2 p-2 rounded-lg border border-border hover:border-[#9d4edd] transition-all duration-300 cursor-pointer group" style={{ boxShadow: '0 0 0 2px rgba(157, 78, 221, 0.1)' }} onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 0 12px rgba(157, 78, 221, 0.6), 0 0 24px rgba(157, 78, 221, 0.3)'} onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 0 0 2px rgba(157, 78, 221, 0.1)'} data-testid="link-buyer-checklist">
-                      <CheckCircle className="h-3.5 w-3.5 text-[#9d4edd]" />
-                      <span className="text-xs font-medium">Vendor Checklist</span>
+                    <div className="flex items-center gap-2 p-2 rounded-lg border border-border hover:border-[#E7FB10] transition-all duration-300 cursor-pointer group" style={{ boxShadow: '0 0 0 2px rgba(231, 251, 16, 0.1)' }} onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 0 12px rgba(231, 251, 16, 0.6), 0 0 24px rgba(231, 251, 16, 0.3)'} onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 0 0 2px rgba(231, 251, 16, 0.1)'} data-testid="link-buyer-checklist">
+                      <CheckCircle className="h-3.5 w-3.5 text-[#E7FB10]" />
+                      <span className="text-xs font-medium text-[#E7FB10]">Vendor Checklist</span>
                     </div>
                   </Link>
                   <Link href="/quality-process">
@@ -547,9 +547,9 @@ export default function Checkout() {
                 </h3>
                 <div className="grid grid-cols-2 gap-2">
                   <Link href="/buyer-checklist">
-                    <div className="flex items-center gap-2 p-2 rounded-lg border border-border hover:border-[#9d4edd] transition-all duration-300 cursor-pointer group" style={{ boxShadow: '0 0 0 2px rgba(157, 78, 221, 0.1)' }} onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 0 12px rgba(157, 78, 221, 0.6), 0 0 24px rgba(157, 78, 221, 0.3)'} onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 0 0 2px rgba(157, 78, 221, 0.1)'} data-testid="link-buyer-checklist">
-                      <CheckCircle className="h-3.5 w-3.5 text-[#9d4edd]" />
-                      <span className="text-xs font-medium">Vendor Checklist</span>
+                    <div className="flex items-center gap-2 p-2 rounded-lg border border-border hover:border-[#E7FB10] transition-all duration-300 cursor-pointer group" style={{ boxShadow: '0 0 0 2px rgba(231, 251, 16, 0.1)' }} onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 0 12px rgba(231, 251, 16, 0.6), 0 0 24px rgba(231, 251, 16, 0.3)'} onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 0 0 2px rgba(231, 251, 16, 0.1)'} data-testid="link-buyer-checklist">
+                      <CheckCircle className="h-3.5 w-3.5 text-[#E7FB10]" />
+                      <span className="text-xs font-medium text-[#E7FB10]">Vendor Checklist</span>
                     </div>
                   </Link>
                   <Link href="/quality-process">
@@ -744,9 +744,9 @@ export default function Checkout() {
               </h3>
               <div className="grid grid-cols-2 gap-2">
                 <Link href="/buyer-checklist">
-                  <div className="flex items-center gap-2 p-2 rounded-lg border border-border hover:border-[#9d4edd]/40 transition-colors cursor-pointer group" data-testid="link-buyer-checklist">
-                    <CheckCircle className="h-3.5 w-3.5 text-[#9d4edd]" />
-                    <span className="text-xs font-medium">Vendor Checklist</span>
+                  <div className="flex items-center gap-2 p-2 rounded-lg border border-border hover:border-[#E7FB10] transition-colors cursor-pointer group" data-testid="link-buyer-checklist">
+                    <CheckCircle className="h-3.5 w-3.5 text-[#E7FB10]" />
+                    <span className="text-xs font-medium text-[#E7FB10]">Vendor Checklist</span>
                   </div>
                 </Link>
                 <Link href="/quality-process">
