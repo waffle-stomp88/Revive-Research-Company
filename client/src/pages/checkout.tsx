@@ -362,10 +362,11 @@ export default function Checkout() {
 
               {/* Compact Trust & Verification Links */}
               <Card className="p-4 border-[#9d4edd]/20 bg-gradient-to-br from-[#9d4edd]/5 to-transparent">
-                <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                <h3 className="text-sm font-semibold mb-1 flex items-center gap-2">
                   <ClipboardCheck className="h-4 w-4 text-[#9d4edd]" />
                   Buying With Confidence
                 </h3>
+                <p className="text-xs text-muted-foreground mb-3">Review our standards and quality assurance before you purchase</p>
                 <div className="grid grid-cols-2 gap-2">
                   <Link href="/buyer-checklist">
                     <div className="flex items-center gap-2 p-2 rounded-lg border border-border hover:border-[#E7FB10] transition-all duration-300 cursor-pointer group" style={{ boxShadow: '0 0 0 2px rgba(231, 251, 16, 0.1)' }} onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 0 12px rgba(231, 251, 16, 0.6), 0 0 24px rgba(231, 251, 16, 0.3)'} onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 0 0 2px rgba(231, 251, 16, 0.1)'} data-testid="link-buyer-checklist">
@@ -541,10 +542,11 @@ export default function Checkout() {
 
               {/* Compact Trust & Verification Links - Bundle */}
               <Card className="p-4 border-[#9d4edd]/20 bg-gradient-to-br from-[#9d4edd]/5 to-transparent">
-                <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                <h3 className="text-sm font-semibold mb-1 flex items-center gap-2">
                   <ClipboardCheck className="h-4 w-4 text-[#9d4edd]" />
                   Buying With Confidence
                 </h3>
+                <p className="text-xs text-muted-foreground mb-3">Review our standards and quality assurance before you purchase</p>
                 <div className="grid grid-cols-2 gap-2">
                   <Link href="/buyer-checklist">
                     <div className="flex items-center gap-2 p-2 rounded-lg border border-border hover:border-[#E7FB10] transition-all duration-300 cursor-pointer group" style={{ boxShadow: '0 0 0 2px rgba(231, 251, 16, 0.1)' }} onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 0 12px rgba(231, 251, 16, 0.6), 0 0 24px rgba(231, 251, 16, 0.3)'} onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 0 0 2px rgba(231, 251, 16, 0.1)'} data-testid="link-buyer-checklist">
@@ -738,10 +740,11 @@ export default function Checkout() {
 
             {/* Compact Trust & Verification Links - Product */}
             <Card className="p-4 border-[#9d4edd]/20 bg-gradient-to-br from-[#9d4edd]/5 to-transparent">
-              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+              <h3 className="text-sm font-semibold mb-1 flex items-center gap-2">
                 <ClipboardCheck className="h-4 w-4 text-[#9d4edd]" />
                 Buying With Confidence
               </h3>
+              <p className="text-xs text-muted-foreground mb-3">Review our standards and quality assurance before you purchase</p>
               <div className="grid grid-cols-2 gap-2">
                 <Link href="/buyer-checklist">
                   <div className="flex items-center gap-2 p-2 rounded-lg border border-border hover:border-[#E7FB10] transition-colors cursor-pointer group" data-testid="link-buyer-checklist">
