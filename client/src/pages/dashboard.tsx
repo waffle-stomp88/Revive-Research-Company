@@ -51,6 +51,7 @@ import {
   Plus,
   ExternalLink,
   ChevronRight,
+  ChevronDown,
   History,
   Timer,
   Boxes,
@@ -124,6 +125,7 @@ const getBadgeStyles = (color: string, earned: boolean) => {
 };
 
 function CustomerAchievements({ orders, totalSpent }: { orders?: Order[]; totalSpent: number }) {
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const orderCount = orders?.length || 0;
   const uniqueProducts = new Set(orders?.map(o => o.productId) || []).size;
   
@@ -196,77 +198,96 @@ function CustomerAchievements({ orders, totalSpent }: { orders?: Order[]; totalS
     <Card className="border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 via-transparent to-[#9d4edd]/5">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center justify-between">
-          <span className="flex items-center gap-2">
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="flex items-center gap-2 hover-elevate active-elevate-2 rounded-md px-2 py-1"
+            data-testid="button-achievements-toggle"
+          >
             <Trophy className="h-5 w-5 text-[#E7FB10]" />
             Achievements
-          </span>
+            <ChevronDown 
+              className="h-4 w-4 transition-transform"
+              style={{ transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }}
+            />
+          </button>
           <Badge variant="secondary" className="bg-[#E7FB10]/10 text-[#E7FB10] border border-[#E7FB10]/30">
             {earnedCount}/{badges.length}
           </Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {badges.map((badge) => {
-            const Icon = badge.icon;
-            const badgeStyles = getBadgeStyles(badge.color, badge.earned);
-            const r = parseInt(badge.color.slice(1, 3), 16);
-            const g = parseInt(badge.color.slice(3, 5), 16);
-            const b = parseInt(badge.color.slice(5, 7), 16);
-            
-            return (
-              <motion.div
-                key={badge.id}
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                whileHover={{ scale: 1.02 }}
-                className="relative p-3 rounded-lg transition-all"
-                style={badge.earned ? badgeStyles : {
-                  background: `linear-gradient(135deg, rgba(${r},${g},${b},0.05) 0%, transparent 100%)`,
-                  borderColor: `rgba(${r},${g},${b},0.2)`,
-                  borderWidth: '1px',
-                  borderStyle: 'solid',
-                }}
-                data-testid={`customer-badge-${badge.id}`}
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <div
-                    className="p-1.5 rounded-lg"
-                    style={{ 
-                      backgroundColor: badge.earned ? `rgba(${r},${g},${b},0.2)` : `rgba(${r},${g},${b},0.1)`,
-                      color: badge.earned ? badge.color : `rgba(${r},${g},${b},0.5)`
-                    }}
-                  >
-                    <Icon className="h-4 w-4" />
-                  </div>
-                  {badge.earned && (
-                    <Sparkles className="h-3 w-3 animate-pulse" style={{ color: badge.color }} />
-                  )}
-                </div>
-                <span 
-                  className="text-xs font-semibold block"
-                  style={{ color: badge.earned ? badge.color : `rgba(${r},${g},${b},0.6)` }}
-                >
-                  {badge.title}
-                </span>
-                <span className="text-[10px] text-muted-foreground mt-0.5 block">{badge.description}</span>
-                {!badge.earned && badge.progress !== undefined && badge.target && (
-                  <div className="mt-2">
-                    <Progress 
-                      value={(badge.progress / badge.target) * 100} 
-                      className="h-1"
-                      style={{ ['--progress-background' as string]: `rgba(${r},${g},${b},0.3)` }}
-                    />
-                    <span className="text-[9px] mt-1 block" style={{ color: `rgba(${r},${g},${b},0.6)` }}>
-                      {badge.id === "big-spender" ? `$${badge.progress.toFixed(0)}` : badge.progress}/{badge.id === "big-spender" ? `$${badge.target}` : badge.target}
-                    </span>
-                  </div>
-                )}
-              </motion.div>
-            );
-          })}
-        </div>
-      </CardContent>
+      <AnimatePresence>
+        {!isCollapsed && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {badges.map((badge) => {
+                  const Icon = badge.icon;
+                  const badgeStyles = getBadgeStyles(badge.color, badge.earned);
+                  const r = parseInt(badge.color.slice(1, 3), 16);
+                  const g = parseInt(badge.color.slice(3, 5), 16);
+                  const b = parseInt(badge.color.slice(5, 7), 16);
+                  
+                  return (
+                    <motion.div
+                      key={badge.id}
+                      initial={{ scale: 0.9, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      whileHover={{ scale: 1.02 }}
+                      className="relative p-3 rounded-lg transition-all"
+                      style={badge.earned ? badgeStyles : {
+                        background: `linear-gradient(135deg, rgba(${r},${g},${b},0.05) 0%, transparent 100%)`,
+                        borderColor: `rgba(${r},${g},${b},0.2)`,
+                        borderWidth: '1px',
+                        borderStyle: 'solid',
+                      }}
+                      data-testid={`customer-badge-${badge.id}`}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <div
+                          className="p-1.5 rounded-lg"
+                          style={{ 
+                            backgroundColor: badge.earned ? `rgba(${r},${g},${b},0.2)` : `rgba(${r},${g},${b},0.1)`,
+                            color: badge.earned ? badge.color : `rgba(${r},${g},${b},0.5)`
+                          }}
+                        >
+                          <Icon className="h-4 w-4" />
+                        </div>
+                        {badge.earned && (
+                          <Sparkles className="h-3 w-3 animate-pulse" style={{ color: badge.color }} />
+                        )}
+                      </div>
+                      <span 
+                        className="text-xs font-semibold block"
+                        style={{ color: badge.earned ? badge.color : `rgba(${r},${g},${b},0.6)` }}
+                      >
+                        {badge.title}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground mt-0.5 block">{badge.description}</span>
+                      {!badge.earned && badge.progress !== undefined && badge.target && (
+                        <div className="mt-2">
+                          <Progress 
+                            value={(badge.progress / badge.target) * 100} 
+                            className="h-1"
+                            style={{ ['--progress-background' as string]: `rgba(${r},${g},${b},0.3)` }}
+                          />
+                          <span className="text-[9px] mt-1 block" style={{ color: `rgba(${r},${g},${b},0.6)` }}>
+                            {badge.id === "big-spender" ? `$${badge.progress.toFixed(0)}` : badge.progress}/{badge.id === "big-spender" ? `$${badge.target}` : badge.target}
+                          </span>
+                        </div>
+                      )}
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Card>
   );
 }
