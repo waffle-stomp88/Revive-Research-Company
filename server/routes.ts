@@ -945,6 +945,54 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Get products with dosage stock information
+  app.get("/api/admin/products-with-stock", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const products = await storage.getAllProductsWithDosageStock();
+      res.json(products);
+    } catch (error) {
+      console.error("Error fetching products with stock:", error);
+      res.status(500).json({ error: "Failed to fetch products with stock" });
+    }
+  });
+
+  // Admin: Get dosage stocks for a specific product
+  app.get("/api/admin/products/:id/dosage-stocks", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const dosageStocks = await storage.getProductDosageStocks(req.params.id);
+      res.json(dosageStocks);
+    } catch (error) {
+      console.error("Error fetching dosage stocks:", error);
+      res.status(500).json({ error: "Failed to fetch dosage stocks" });
+    }
+  });
+
+  // Admin: Sync dosage stocks for a product
+  app.post("/api/admin/products/:id/dosage-stocks", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { dosageStocks } = req.body;
+      if (!Array.isArray(dosageStocks)) {
+        return res.status(400).json({ error: "dosageStocks must be an array" });
+      }
+      const results = await storage.syncProductDosageStocks(req.params.id, dosageStocks);
+      res.json(results);
+    } catch (error) {
+      console.error("Error syncing dosage stocks:", error);
+      res.status(500).json({ error: "Failed to sync dosage stocks" });
+    }
+  });
+
+  // Admin: Initialize dosage stocks from product settings
+  app.post("/api/admin/products/:id/initialize-dosage-stocks", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const results = await storage.initializeDosageStocksFromProduct(req.params.id);
+      res.json(results);
+    } catch (error) {
+      console.error("Error initializing dosage stocks:", error);
+      res.status(500).json({ error: "Failed to initialize dosage stocks" });
+    }
+  });
+
   // Admin: Get all COAs
   app.get("/api/admin/coas", isAuthenticated, isAdmin, async (req, res) => {
     try {
