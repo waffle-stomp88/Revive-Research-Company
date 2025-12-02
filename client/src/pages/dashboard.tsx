@@ -1314,36 +1314,34 @@ export default function Dashboard() {
             </div>
 
             <div className="space-y-6">
-              <LoyaltyProgress totalSpent={totalSpent} />
-              <QuickReorder orders={orders} products={products} />
-              <RecommendedStacks orders={orders} products={products} />
+              <div className="space-y-4">
+                <LoyaltyProgress totalSpent={totalSpent} />
+                <QuickReorder orders={orders} products={products} />
+                <RecommendedStacks orders={orders} products={products} />
+              </div>
+              
               <WishlistWidget products={products} />
               <MyCOAs orders={orders} products={products} />
-              <ResearchTimeline orders={orders} products={products} />
-              <ActivityFeed orders={orders} products={products} />
 
               <Card className="border-[#21d8ff]/30 bg-gradient-to-br from-[#21d8ff]/5 to-transparent">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <div className="h-7 w-7 rounded-full bg-[#21d8ff]/15 flex items-center justify-center">
-                      <FileCheck className="h-4 w-4 text-[#21d8ff]" />
-                    </div>
-                    COA Verification
+                  <CardTitle className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <div className="h-7 w-7 rounded-full bg-[#21d8ff]/15 flex items-center justify-center">
+                        <FileCheck className="h-4 w-4 text-[#21d8ff]" />
+                      </div>
+                      Quick Actions
+                    </span>
                   </CardTitle>
-                  <CardDescription>
-                    Verify product authenticity with batch numbers
-                  </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Each product comes with a Certificate of Authenticity. Verify your batch number to ensure you have genuine Revive Research products.
-                  </p>
-                  <Link href="/coa">
-                    <Button className="w-full bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90" data-testid="link-verify-coa">
+                <CardContent className="space-y-3">
+                  <Link href="/coa" className="block">
+                    <Button className="w-full bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90 h-9" data-testid="link-verify-coa">
+                      <FileCheck className="h-4 w-4 mr-2" />
                       Verify Batch Number
-                      <ArrowRight className="h-4 w-4 ml-2" />
                     </Button>
                   </Link>
+                  <p className="text-xs text-muted-foreground text-center">Verify product authenticity with batch numbers</p>
                 </CardContent>
               </Card>
               <motion.div variants={itemVariants} className="mb-0">
