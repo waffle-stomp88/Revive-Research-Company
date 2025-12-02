@@ -292,8 +292,8 @@ export default function Checkout() {
           </div>
           
           {/* Acknowledgment Checkboxes */}
-          <div className="space-y-3 pt-2" onPointerDown={(e) => e.stopPropagation()}>
-            <label className="flex items-start gap-3 cursor-pointer group">
+          <div className="space-y-3 pt-2" onPointerDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
+            <label className="flex items-start gap-3 cursor-pointer group" onClick={(e) => e.stopPropagation()}>
               <Checkbox 
                 checked={ruoAcknowledged}
                 onCheckedChange={(checked) => setRuoAcknowledged(checked === true)}
@@ -305,7 +305,7 @@ export default function Checkout() {
               </span>
             </label>
             
-            <label className="flex items-start gap-3 cursor-pointer group">
+            <label className="flex items-start gap-3 cursor-pointer group" onClick={(e) => e.stopPropagation()}>
               <Checkbox 
                 checked={ageConfirmed}
                 onCheckedChange={(checked) => setAgeConfirmed(checked === true)}
