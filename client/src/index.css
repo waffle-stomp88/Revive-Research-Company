@@ -369,7 +369,7 @@
   }
 
   .glow-pulse {
-    animation: glow-pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation: glow-pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   /* Yellow Glow Animation for Neon Yellow Buttons */
@@ -411,7 +411,7 @@
   }
 
   .animate-pulse-subtle {
-    animation: ruo-pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation: ruo-pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   /* Sale of the Week Red Glow Pulse - Subtle effect */
@@ -425,7 +425,7 @@
   }
 
   .sale-glow-pulse {
-    animation: sale-glow-pulse 4s ease-in-out infinite;
+    animation: sale-glow-pulse 8s ease-in-out infinite;
   }
 
   /* Yellow Border Glow & Pulse Animation */
@@ -441,7 +441,7 @@
   }
 
   .animate-\[pulse-glow-yellow_5s_ease-in-out_infinite\] {
-    animation: pulse-glow-yellow 6s ease-in-out infinite;
+    animation: pulse-glow-yellow 10s ease-in-out infinite;
   }
 
   /* Cyan Border Glow & Pulse Animation */
@@ -457,7 +457,7 @@
   }
 
   .animate-\[pulse-glow-cyan_5s_ease-in-out_infinite\] {
-    animation: pulse-glow-cyan 6s ease-in-out infinite;
+    animation: pulse-glow-cyan 10s ease-in-out infinite;
   }
 
   /* Custom Scrollbar Styling */
