@@ -245,26 +245,31 @@ export default function Education() {
 
               <Separator className="my-6" />
 
-              <div className="p-4 rounded-lg bg-gradient-to-br from-[#ec4899]/10 to-[#9d4edd]/10 border border-[#ec4899]/20">
-                <div className="flex items-center gap-2 mb-2">
-                  <Sparkles className="h-4 w-4 text-[#ec4899]" />
-                  <span className="text-sm font-semibold">New to Research?</span>
+              <div className="p-5 rounded-lg bg-gradient-to-br from-[#ec4899]/15 via-[#9d4edd]/10 to-[#ec4899]/5 border border-[#ec4899]/30 overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#ec4899]/0 via-[#ec4899]/5 to-[#ec4899]/0 pointer-events-none" />
+                <div className="relative z-10">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Sparkles className="h-5 w-5 text-[#ec4899]" />
+                    <span className="text-sm font-semibold">New to Research?</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Start with our 5-part onboarding course
+                  </p>
+                  <Button 
+                    className="w-full bg-gradient-to-r from-[#ec4899] to-[#c2185b] hover:shadow-lg hover:shadow-[#ec4899]/40 text-white font-semibold transition-all duration-200 group"
+                    onClick={() => {
+                      setActiveCategory('basics');
+                      setExpandedArticle(null);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    data-testid="button-start-learning"
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      Start Learning
+                      <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </span>
+                  </Button>
                 </div>
-                <p className="text-xs text-muted-foreground mb-3">
-                  Start with our 5-part onboarding course
-                </p>
-                <Button 
-                  size="sm" 
-                  className="w-full bg-[#ec4899] hover:bg-[#ec4899]/90 text-white"
-                  onClick={() => {
-                    setActiveCategory('basics');
-                    setExpandedArticle(null);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                  data-testid="button-start-learning"
-                >
-                  Start Learning
-                </Button>
               </div>
 
               <Separator className="my-6" />
