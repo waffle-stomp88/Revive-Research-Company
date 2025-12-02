@@ -361,18 +361,18 @@
     animation: ruo-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
-  /* Sale of the Week Red Glow Pulse - Using drop-shadow to bypass overflow:hidden clipping */
+  /* Sale of the Week Red Glow Pulse - Subtle effect */
   @keyframes sale-glow-pulse {
     0%, 100% {
-      filter: drop-shadow(0 0 8px rgba(220, 38, 38, 0.6)) drop-shadow(0 0 16px rgba(220, 38, 38, 0.4));
+      filter: drop-shadow(0 0 4px rgba(220, 38, 38, 0.4));
     }
     50% {
-      filter: drop-shadow(0 0 16px rgba(220, 38, 38, 1)) drop-shadow(0 0 32px rgba(220, 38, 38, 0.8)) drop-shadow(0 0 48px rgba(220, 38, 38, 0.5));
+      filter: drop-shadow(0 0 8px rgba(220, 38, 38, 0.6));
     }
   }
 
   .sale-glow-pulse {
-    animation: sale-glow-pulse 1.5s ease-in-out infinite;
+    animation: sale-glow-pulse 2s ease-in-out infinite;
   }
 
   /* Custom Scrollbar Styling */
