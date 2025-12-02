@@ -296,8 +296,8 @@ function ProductShowcase() {
               viewport={{ once: true }}
               className="mb-8 cursor-pointer"
             >
-              <div className="sale-glow-pulse rounded-xl hover-elevate">
-                <Card className="border-2 border-red-500 bg-gradient-to-r from-red-500/10 via-background to-background overflow-hidden">
+              <div className="sale-glow-pulse rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(239,68,68,0.6)]">
+                <Card className="border-2 border-red-500 bg-gradient-to-r from-red-500/10 via-background to-background overflow-hidden transition-colors duration-300 hover:border-red-400">
                   <div className="flex flex-col md:flex-row items-center gap-4 p-4">
                     <div className="flex items-center gap-3">
                       <div className="w-16 h-16 bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center flex-shrink-0">
