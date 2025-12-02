@@ -372,7 +372,13 @@ export default function Education() {
                 </div>
 
                 {activeCategory === 'all' && (
-                  <div className="mb-10">
+                  <div className="mb-12">
+                    <div className="mb-6">
+                      <h3 className="text-xl font-bold mb-1">Your Learning Path</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Complete our guided 5-part onboarding course to master the fundamentals
+                      </p>
+                    </div>
                     <LearningRoadmap 
                       onModuleClick={(slug: string) => {
                         const article = articles.find(a => a.slug === slug);
