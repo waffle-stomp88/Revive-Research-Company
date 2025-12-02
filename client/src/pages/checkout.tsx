@@ -291,31 +291,43 @@ export default function Checkout() {
           
           {/* Acknowledgment Checkboxes */}
           <div className="space-y-3 pt-2">
-            <label className="flex items-start gap-3 cursor-pointer group">
-              <input 
-                type="checkbox"
-                checked={ruoAcknowledged}
-                onChange={(e) => setRuoAcknowledged(e.target.checked)}
-                className="mt-0.5 w-4 h-4 rounded border-red-500/50 accent-red-500 cursor-pointer"
-                data-testid="checkbox-ruo-acknowledge"
-              />
-              <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+            <div className="flex items-start gap-3 cursor-pointer group" onClick={() => setRuoAcknowledged(!ruoAcknowledged)}>
+              <div 
+                className={`mt-0.5 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors duration-200 flex-shrink-0 ${
+                  ruoAcknowledged 
+                    ? 'bg-red-500 border-red-500' 
+                    : 'border-red-500/50'
+                }`}
+              >
+                {ruoAcknowledged && (
+                  <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+              </div>
+              <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors" data-testid="checkbox-ruo-acknowledge">
                 I understand these products are for <span className="text-red-400 font-medium">research purposes only</span> and not for human use
               </span>
-            </label>
+            </div>
             
-            <label className="flex items-start gap-3 cursor-pointer group">
-              <input 
-                type="checkbox"
-                checked={ageConfirmed}
-                onChange={(e) => setAgeConfirmed(e.target.checked)}
-                className="mt-0.5 w-4 h-4 rounded border-[#E7FB10]/50 accent-[#E7FB10] cursor-pointer"
-                data-testid="checkbox-age-confirm"
-              />
-              <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+            <div className="flex items-start gap-3 cursor-pointer group" onClick={() => setAgeConfirmed(!ageConfirmed)}>
+              <div 
+                className={`mt-0.5 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors duration-200 flex-shrink-0 ${
+                  ageConfirmed 
+                    ? 'bg-[#E7FB10] border-[#E7FB10]' 
+                    : 'border-[#E7FB10]/50'
+                }`}
+              >
+                {ageConfirmed && (
+                  <svg className="w-3 h-3 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+              </div>
+              <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors" data-testid="checkbox-age-confirm">
                 I confirm I am <span className="text-[#E7FB10] font-medium">21 years of age or older</span>
               </span>
-            </label>
+            </div>
           </div>
         </div>
         
