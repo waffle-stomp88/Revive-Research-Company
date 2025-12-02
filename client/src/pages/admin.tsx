@@ -3764,8 +3764,7 @@ function PricingOptimizerTab() {
                 <h3 className="font-medium text-[#21d8ff]">Market Insights</h3>
                 <p className="text-sm text-muted-foreground mt-1">{pricingData.marketInsights}</p>
                 {pricingData.totalPotentialRevenue && (
-                  <p className="text-sm mt-2">
-                    <span className="text-muted-foreground">Potential Revenue Impact:</span>{" "}
+                  <p className="text-sm mt-2 text-muted-foreground">
                     <span className="text-[#E7FB10] font-semibold">{pricingData.totalPotentialRevenue}</span>
                   </p>
                 )}
