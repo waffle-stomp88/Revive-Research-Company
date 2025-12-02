@@ -577,7 +577,7 @@ export default function Dashboard() {
                     </ul>
                   </div>
 
-                  <Link href="/affiliate-apply">
+                  <Link href="/affiliate">
                     <Button 
                       className="w-full font-semibold text-base glow-yellow"
                       style={{
