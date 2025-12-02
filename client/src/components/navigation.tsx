@@ -40,6 +40,7 @@ export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isCartHoverOpen, setIsCartHoverOpen] = useState(false);
   const [location] = useLocation();
   const { user, isAuthenticated, isLoading } = useAuth();
   const { items, getItemCount, getSubtotal } = useCart();
@@ -59,6 +60,7 @@ export function Navigation() {
   useEffect(() => {
     setIsMobileMenuOpen(false);
     setIsDropdownOpen(false);
+    setIsCartHoverOpen(false);
   }, [location]);
 
   const getInitials = () => {
@@ -201,7 +203,7 @@ export function Navigation() {
               </div>
 
               <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
-                <HoverCard openDelay={100} closeDelay={200}>
+                <HoverCard openDelay={100} closeDelay={200} open={isCartHoverOpen} onOpenChange={setIsCartHoverOpen}>
                   <HoverCardTrigger asChild>
                     <Link href="/cart">
                       <Button 
