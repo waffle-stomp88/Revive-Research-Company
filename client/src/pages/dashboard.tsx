@@ -387,12 +387,21 @@ function QuickReorder({ orders, products }: { orders?: Order[]; products?: Produ
   }, [orders, products]);
 
   const handleReorder = (product: Product) => {
+    const dosage = product.dosageOptions?.[0];
+    if (!dosage) {
+      toast({
+        title: "Cannot Add",
+        description: "This product has no available dosage options.",
+        variant: "destructive",
+      });
+      return;
+    }
     addToCart({
       productId: product.id,
       name: product.name,
       price: Number(product.price),
       quantity: 1,
-      dosage: product.dosageOptions?.[0] || "10mg",
+      dosage,
     });
     toast({
       title: "Added to Cart",
@@ -411,26 +420,30 @@ function QuickReorder({ orders, products }: { orders?: Order[]; products?: Produ
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
-        {recentProducts.map(product => (
-          <div 
-            key={product.id}
-            className="flex items-center justify-between p-2 rounded-lg border hover-elevate"
-          >
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{product.name}</p>
-              <p className="text-xs text-muted-foreground">${Number(product.price).toFixed(2)}</p>
-            </div>
-            <Button 
-              size="sm" 
-              variant="outline"
-              onClick={() => handleReorder(product)}
-              data-testid={`button-reorder-${product.id}`}
+        {recentProducts.map(product => {
+          const hasDosage = product.dosageOptions && product.dosageOptions.length > 0;
+          return (
+            <div 
+              key={product.id}
+              className="flex items-center justify-between p-2 rounded-lg border hover-elevate"
             >
-              <Plus className="h-3 w-3 mr-1" />
-              Add
-            </Button>
-          </div>
-        ))}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{product.name}</p>
+                <p className="text-xs text-muted-foreground">${Number(product.price).toFixed(2)}</p>
+              </div>
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={() => handleReorder(product)}
+                disabled={!hasDosage}
+                data-testid={`button-reorder-${product.id}`}
+              >
+                <Plus className="h-3 w-3 mr-1" />
+                Add
+              </Button>
+            </div>
+          );
+        })}
       </CardContent>
     </Card>
   );
@@ -508,12 +521,21 @@ function WishlistWidget({ products }: { products?: Product[] }) {
   };
 
   const handleAddToCart = (product: Product) => {
+    const dosage = product.dosageOptions?.[0];
+    if (!dosage) {
+      toast({
+        title: "Cannot Add",
+        description: "This product has no available dosage options.",
+        variant: "destructive",
+      });
+      return;
+    }
     addToCart({
       productId: product.id,
       name: product.name,
       price: Number(product.price),
       quantity: 1,
-      dosage: product.dosageOptions?.[0] || "10mg",
+      dosage,
     });
     toast({
       title: "Added to Cart",
@@ -557,33 +579,37 @@ function WishlistWidget({ products }: { products?: Product[] }) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
-        {wishlistProducts.slice(0, 3).map(product => (
-          <div 
-            key={product.id}
-            className="flex items-center gap-2 p-2 rounded-lg border"
-          >
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{product.name}</p>
-              <p className="text-xs text-muted-foreground">${Number(product.price).toFixed(2)}</p>
+        {wishlistProducts.slice(0, 3).map(product => {
+          const hasDosage = product.dosageOptions && product.dosageOptions.length > 0;
+          return (
+            <div 
+              key={product.id}
+              className="flex items-center gap-2 p-2 rounded-lg border"
+            >
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{product.name}</p>
+                <p className="text-xs text-muted-foreground">${Number(product.price).toFixed(2)}</p>
+              </div>
+              <Button 
+                size="icon" 
+                variant="ghost"
+                className="h-7 w-7"
+                onClick={() => handleAddToCart(product)}
+                disabled={!hasDosage}
+              >
+                <Plus className="h-3 w-3" />
+              </Button>
+              <Button 
+                size="icon" 
+                variant="ghost"
+                className="h-7 w-7 text-muted-foreground"
+                onClick={() => removeFromWishlist(product.id)}
+              >
+                <X className="h-3 w-3" />
+              </Button>
             </div>
-            <Button 
-              size="icon" 
-              variant="ghost"
-              className="h-7 w-7"
-              onClick={() => handleAddToCart(product)}
-            >
-              <Plus className="h-3 w-3" />
-            </Button>
-            <Button 
-              size="icon" 
-              variant="ghost"
-              className="h-7 w-7 text-muted-foreground"
-              onClick={() => removeFromWishlist(product.id)}
-            >
-              <X className="h-3 w-3" />
-            </Button>
-          </div>
-        ))}
+          );
+        })}
       </CardContent>
     </Card>
   );
@@ -641,14 +667,20 @@ function ResearchTimeline({ orders, products }: { orders?: Order[]; products?: P
   const timeline = useMemo(() => {
     if (!orders || !products) return [];
     return orders
+      .filter(order => order.createdAt && order.status)
       .slice(0, 5)
-      .map(order => ({
-        id: order.id,
-        date: new Date(order.createdAt || new Date()),
-        productName: products.find(p => p.id === order.productId)?.name || "Product",
-        amount: Number(order.totalAmount),
-        status: order.status,
-      }))
+      .map(order => {
+        const parsedDate = new Date(order.createdAt!);
+        const isValidDate = !isNaN(parsedDate.getTime());
+        return {
+          id: order.id,
+          date: isValidDate ? parsedDate : new Date(),
+          dateString: isValidDate ? parsedDate.toLocaleDateString() : "Recent",
+          productName: products.find(p => p.id === order.productId)?.name || "Product",
+          amount: Number(order.totalAmount) || 0,
+          status: order.status || "pending",
+        };
+      })
       .sort((a, b) => b.date.getTime() - a.date.getTime());
   }, [orders, products]);
 
@@ -685,7 +717,7 @@ function ResearchTimeline({ orders, products }: { orders?: Order[]; products?: P
                 <div>
                   <p className="text-sm font-medium">{event.productName}</p>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>{event.date.toLocaleDateString()}</span>
+                    <span>{event.dateString}</span>
                     <span>•</span>
                     <span>${event.amount.toFixed(2)}</span>
                   </div>
