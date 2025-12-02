@@ -74,6 +74,8 @@ export default {
           foreground: "hsl(var(--sidebar-accent-foreground) / <alpha-value>)",
           border: "var(--sidebar-accent-border)"
         },
+        cyan: "hsl(var(--cyan) / <alpha-value>)",
+        yellow: "hsl(var(--yellow) / <alpha-value>)",
         status: {
           online: "rgb(34 197 94)",
           away: "rgb(245 158 11)",

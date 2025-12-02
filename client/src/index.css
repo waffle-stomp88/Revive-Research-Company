@@ -102,7 +102,8 @@
   --opaque-button-border-intensity: -8;
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
-  --neon-yellow: #E7FB10;
+  --cyan: 191 100% 50%;
+  --yellow: 54 100% 49.2%;
   --background: 0 0% 100%;
   --foreground: 0 0% 9%;
   --border: 0 0% 89%;
@@ -168,6 +169,8 @@
   --opaque-button-border-intensity: 8;
   --elevate-1: rgba(255, 255, 255, .03);
   --elevate-2: rgba(255, 255, 255, .08);
+  --cyan: 191 100% 50%;
+  --yellow: 54 100% 49.2%;
   --background: 240 9% 11.2%;
   --foreground: 0 0% 98%;
   --border: 0 0% 14%;

@@ -98,11 +98,11 @@ export function ChatBot() {
             transition={{ duration: 0.2 }}
             className="fixed bottom-24 right-4 md:right-6 z-50 w-[calc(100vw-2rem)] md:w-[400px] max-w-[400px]"
           >
-            <Card className="border-2 border-[#21d8ff]/50 shadow-[0_0_30px_rgba(33,216,255,0.3)] overflow-hidden">
-              <div className="bg-gradient-to-r from-[#21d8ff]/20 to-[#E7FB10]/10 border-b border-border p-4 flex items-center justify-between">
+            <Card className="border-2 border-cyan/50 shadow-[0_0_30px_rgba(33,216,255,0.3)] overflow-hidden">
+              <div className="bg-gradient-to-r from-cyan/20 to-yellow/10 border-b border-border p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#21d8ff]/20 border border-[#21d8ff]/50 flex items-center justify-center">
-                    <Bot className="h-5 w-5 text-[#21d8ff]" />
+                  <div className="w-10 h-10 rounded-full bg-cyan/20 border border-cyan/50 flex items-center justify-center">
+                    <Bot className="h-5 w-5 text-cyan" />
                   </div>
                   <div>
                     <h3 className="font-display font-bold text-sm">Revive Assistant</h3>
@@ -134,14 +134,14 @@ export function ChatBot() {
                       className={`flex gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}
                     >
                       {message.role === "assistant" && (
-                        <div className="w-8 h-8 rounded-full bg-[#21d8ff]/20 border border-[#21d8ff]/50 flex items-center justify-center flex-shrink-0">
-                          <Sparkles className="h-4 w-4 text-[#21d8ff]" />
+                        <div className="w-8 h-8 rounded-full bg-cyan/20 border border-cyan/50 flex items-center justify-center flex-shrink-0">
+                          <Sparkles className="h-4 w-4 text-cyan" />
                         </div>
                       )}
                       <div
                         className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm ${
                           message.role === "user"
-                            ? "bg-[#E7FB10] text-black rounded-br-sm"
+                            ? "bg-yellow text-black rounded-br-sm"
                             : "bg-muted rounded-bl-sm"
                         }`}
                         data-testid={`message-${message.role}-${index}`}
@@ -149,8 +149,8 @@ export function ChatBot() {
                         {message.content}
                       </div>
                       {message.role === "user" && (
-                        <div className="w-8 h-8 rounded-full bg-[#E7FB10]/20 border border-[#E7FB10]/50 flex items-center justify-center flex-shrink-0">
-                          <User className="h-4 w-4 text-[#E7FB10]" />
+                        <div className="w-8 h-8 rounded-full bg-yellow/20 border border-yellow/50 flex items-center justify-center flex-shrink-0">
+                          <User className="h-4 w-4 text-yellow" />
                         </div>
                       )}
                     </motion.div>
@@ -161,14 +161,14 @@ export function ChatBot() {
                       animate={{ opacity: 1, y: 0 }}
                       className="flex gap-3 justify-start"
                     >
-                      <div className="w-8 h-8 rounded-full bg-[#21d8ff]/20 border border-[#21d8ff]/50 flex items-center justify-center flex-shrink-0">
-                        <Sparkles className="h-4 w-4 text-[#21d8ff]" />
+                      <div className="w-8 h-8 rounded-full bg-cyan/20 border border-cyan/50 flex items-center justify-center flex-shrink-0">
+                        <Sparkles className="h-4 w-4 text-cyan" />
                       </div>
                       <div className="bg-muted rounded-2xl rounded-bl-sm px-4 py-3">
                         <div className="flex items-center gap-1">
-                          <span className="w-2 h-2 rounded-full bg-[#21d8ff] animate-bounce" style={{ animationDelay: "0ms" }} />
-                          <span className="w-2 h-2 rounded-full bg-[#21d8ff] animate-bounce" style={{ animationDelay: "150ms" }} />
-                          <span className="w-2 h-2 rounded-full bg-[#21d8ff] animate-bounce" style={{ animationDelay: "300ms" }} />
+                          <span className="w-2 h-2 rounded-full bg-cyan animate-bounce" style={{ animationDelay: "0ms" }} />
+                          <span className="w-2 h-2 rounded-full bg-cyan animate-bounce" style={{ animationDelay: "150ms" }} />
+                          <span className="w-2 h-2 rounded-full bg-cyan animate-bounce" style={{ animationDelay: "300ms" }} />
                         </div>
                       </div>
                     </motion.div>
@@ -192,7 +192,7 @@ export function ChatBot() {
                   <Button
                     onClick={sendMessage}
                     disabled={!input.trim() || isLoading}
-                    className="bg-[#21d8ff] text-black"
+                    className="bg-cyan text-black"
                     data-testid="button-send-message"
                   >
                     {isLoading ? (
@@ -222,7 +222,7 @@ export function ChatBot() {
           className={`h-14 w-14 rounded-full shadow-lg transition-all duration-300 ${
             isOpen 
               ? "bg-muted" 
-              : "bg-[#21d8ff] shadow-[0_0_20px_rgba(33,216,255,0.5)] hover:shadow-[0_0_30px_rgba(33,216,255,0.7)]"
+              : "bg-cyan shadow-[0_0_20px_rgba(33,216,255,0.5)] hover:shadow-[0_0_30px_rgba(33,216,255,0.7)]"
           }`}
           data-testid="button-toggle-chat"
         >
@@ -259,8 +259,8 @@ export function ChatBot() {
             className="absolute -top-2 -right-1"
           >
             <span className="flex h-4 w-4">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E7FB10] opacity-75" />
-              <span className="relative inline-flex rounded-full h-4 w-4 bg-[#E7FB10]" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow opacity-75" />
+              <span className="relative inline-flex rounded-full h-4 w-4 bg-yellow" />
             </span>
           </motion.div>
         )}
