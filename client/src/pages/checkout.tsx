@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -6,6 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useCart } from "@/contexts/CartContext";
@@ -29,6 +37,8 @@ import {
   ClipboardCheck,
   ExternalLink,
   Target,
+  AlertTriangle,
+  Beaker,
 } from "lucide-react";
 import type { Product, User as UserType } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
@@ -49,6 +59,26 @@ const intervalLabels: { [key: string]: string } = {
 export default function Checkout() {
   const { toast } = useToast();
   const { items: cartItems, getSubtotal, clearCart } = useCart();
+  
+  // RUO/Age reminder state - shown once per session on checkout
+  const [showRuoReminder, setShowRuoReminder] = useState(false);
+  const [ruoAcknowledged, setRuoAcknowledged] = useState(false);
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
+  
+  // Check if user has already acknowledged the RUO reminder this session
+  useEffect(() => {
+    const hasAcknowledged = sessionStorage.getItem('checkoutRuoAcknowledged');
+    if (!hasAcknowledged) {
+      setShowRuoReminder(true);
+    }
+  }, []);
+  
+  const handleRuoAcknowledge = () => {
+    if (ruoAcknowledged && ageConfirmed) {
+      sessionStorage.setItem('checkoutRuoAcknowledged', 'true');
+      setShowRuoReminder(false);
+    }
+  };
 
   const searchParams = new URLSearchParams(window.location.search);
   const productId = searchParams.get("productId");
@@ -219,31 +249,115 @@ export default function Checkout() {
     );
   }
 
+  // RUO/Age Reminder Dialog Component
+  const RuoReminderDialog = () => (
+    <Dialog open={showRuoReminder} onOpenChange={() => {}}>
+      <DialogContent className="max-w-md" onPointerDownOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
+        <DialogHeader className="text-center">
+          <div className="mx-auto mb-3 w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
+            <AlertTriangle className="h-6 w-6 text-red-500" />
+          </div>
+          <DialogTitle className="font-display text-xl">Before You Continue</DialogTitle>
+          <DialogDescription className="text-muted-foreground">
+            Please confirm you understand the following
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="space-y-4 py-4">
+          {/* Research Use Only Notice */}
+          <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 animate-pulse-subtle">
+            <div className="flex items-start gap-3">
+              <Beaker className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
+              <div className="space-y-1">
+                <p className="font-semibold text-sm text-red-400">Research Use Only</p>
+                <p className="text-xs text-muted-foreground">
+                  These products are sold exclusively for scientific research purposes. 
+                  They are not intended for human consumption, therapeutic use, or any other purpose.
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Age Requirement Notice */}
+          <div className="bg-[#E7FB10]/10 border border-[#E7FB10]/30 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <ShieldCheck className="h-5 w-5 text-[#E7FB10] mt-0.5 flex-shrink-0" />
+              <div className="space-y-1">
+                <p className="font-semibold text-sm text-[#E7FB10]">Age Requirement</p>
+                <p className="text-xs text-muted-foreground">
+                  You must be 21 years or older to purchase research compounds from Revive Research.
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Acknowledgment Checkboxes */}
+          <div className="space-y-3 pt-2">
+            <label className="flex items-start gap-3 cursor-pointer group">
+              <Checkbox 
+                checked={ruoAcknowledged}
+                onCheckedChange={(checked) => setRuoAcknowledged(checked === true)}
+                className="mt-0.5 border-red-500/50 data-[state=checked]:bg-red-500 data-[state=checked]:border-red-500"
+                data-testid="checkbox-ruo-acknowledge"
+              />
+              <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                I understand these products are for <span className="text-red-400 font-medium">research purposes only</span> and not for human use
+              </span>
+            </label>
+            
+            <label className="flex items-start gap-3 cursor-pointer group">
+              <Checkbox 
+                checked={ageConfirmed}
+                onCheckedChange={(checked) => setAgeConfirmed(checked === true)}
+                className="mt-0.5 border-[#E7FB10]/50 data-[state=checked]:bg-[#E7FB10] data-[state=checked]:border-[#E7FB10]"
+                data-testid="checkbox-age-confirm"
+              />
+              <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                I confirm I am <span className="text-[#E7FB10] font-medium">21 years of age or older</span>
+              </span>
+            </label>
+          </div>
+        </div>
+        
+        <Button 
+          onClick={handleRuoAcknowledge}
+          disabled={!ruoAcknowledged || !ageConfirmed}
+          className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 disabled:opacity-50"
+          data-testid="button-confirm-ruo"
+        >
+          Continue to Checkout
+        </Button>
+      </DialogContent>
+    </Dialog>
+  );
+
   if (fromCart) {
     return (
-      <main className="min-h-screen pt-32 md:pt-40 pb-24">
-        <div className="max-w-4xl mx-auto px-4 md:px-8">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="mb-8"
-          >
-            <Link href="/cart">
-              <Button variant="ghost" className="gap-2 -ml-4" data-testid="button-back-cart">
-                <ArrowLeft className="h-4 w-4" />
-                Back to Cart
-              </Button>
-            </Link>
-          </motion.div>
+      <>
+        <RuoReminderDialog />
+        <main className="min-h-screen pt-32 md:pt-40 pb-24">
+          <div className="max-w-4xl mx-auto px-4 md:px-8">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="mb-8"
+            >
+              <Link href="/cart">
+                <Button variant="ghost" className="gap-2 -ml-4" data-testid="button-back-cart">
+                  <ArrowLeft className="h-4 w-4" />
+                  Back to Cart
+                </Button>
+              </Link>
+            </motion.div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="font-display text-3xl md:text-4xl font-bold mb-8"
-            data-testid="text-checkout-title"
-          >
-            Checkout
-          </motion.h1>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="font-display text-3xl md:text-4xl font-bold mb-8"
+              data-testid="text-checkout-title"
+            >
+              Checkout
+            </motion.h1>
 
           <div className="grid md:grid-cols-2 gap-12">
             <motion.div
@@ -471,6 +585,7 @@ export default function Checkout() {
           </div>
         </div>
       </main>
+      </>
     );
   }
 
@@ -483,6 +598,8 @@ export default function Checkout() {
     const bundleTotal = bundleSubtotal + bundleShipping;
 
     return (
+      <>
+      <RuoReminderDialog />
       <main className="min-h-screen pt-32 md:pt-40 pb-24">
         <div className="max-w-4xl mx-auto px-4 md:px-8">
           <motion.div
@@ -670,6 +787,7 @@ export default function Checkout() {
           </div>
         </div>
       </main>
+      </>
     );
   }
 
@@ -681,6 +799,8 @@ export default function Checkout() {
   const total = subtotal + shipping;
 
   return (
+    <>
+    <RuoReminderDialog />
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
       <div className="max-w-4xl mx-auto px-4 md:px-8">
         <motion.div
@@ -884,5 +1004,6 @@ export default function Checkout() {
         </div>
       </div>
     </main>
+    </>
   );
 }
