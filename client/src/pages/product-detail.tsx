@@ -395,9 +395,6 @@ export default function ProductDetail() {
               </div>
             </Card>
 
-            {/* Spacer to push education section down */}
-            <div className="flex-1" />
-
             {/* Learn About This Peptide - Right Under RUO */}
             {relatedArticles.length > 0 && (
               <motion.section
