@@ -100,10 +100,10 @@ export function OrderingJourney() {
       </motion.div>
 
       {/* Vertical Timeline */}
-      <div className="max-w-3xl mx-auto">
-        <div className="relative">
-          {/* Vertical line with gradient */}
-          <div className="absolute left-6 top-0 bottom-0 w-1 bg-border/30">
+      <div className="max-w-2xl mx-auto">
+        <div className="relative pb-12">
+          {/* Vertical line with gradient - ends at last step */}
+          <div className="absolute left-6 top-0 h-[calc(100%-3rem)] w-1 bg-border/30">
             <motion.div
               className="absolute inset-x-0 top-0 w-full rounded-full"
               style={{
@@ -116,7 +116,7 @@ export function OrderingJourney() {
           </div>
 
           {/* Steps */}
-          <div className="space-y-8 relative z-10">
+          <div className="space-y-5 relative z-10">
             {journeySteps.map((step, index) => {
               const Icon = step.icon;
               const isActive = activeStep === step.id;
@@ -151,7 +151,7 @@ export function OrderingJourney() {
 
                   {/* Card */}
                   <motion.div
-                    className="ml-24 bg-card border-2 rounded-xl p-5 cursor-pointer overflow-hidden transition-all duration-300"
+                    className="ml-24 bg-card border-2 rounded-xl p-3 cursor-pointer overflow-hidden transition-all duration-300"
                     style={{ 
                       borderColor: isActive ? step.color : 'rgba(255,255,255,0.1)',
                       boxShadow: isActive ? `0 0 30px ${step.color}40, inset 0 0 20px ${step.color}10` : 'none'
@@ -171,17 +171,17 @@ export function OrderingJourney() {
                     
                     <div className="relative">
                       {/* Header with title and step number */}
-                      <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-start justify-between gap-2 mb-2">
                         <div>
-                          <h4 className="font-display font-bold text-lg" style={{ color: step.color }}>
+                          <h4 className="font-display font-bold text-base" style={{ color: step.color }}>
                             {step.title}
                           </h4>
-                          <p className="text-sm text-muted-foreground mt-1">
+                          <p className="text-xs text-muted-foreground mt-0.5">
                             {step.shortDesc}
                           </p>
                         </div>
                         <span 
-                          className="text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap ml-3 flex-shrink-0"
+                          className="text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap flex-shrink-0"
                           style={{ 
                             backgroundColor: `${step.color}20`,
                             color: step.color
@@ -192,7 +192,7 @@ export function OrderingJourney() {
                       </div>
                       
                       {/* Timeline indicator */}
-                      <div className="text-xs text-muted-foreground/70 mb-3 font-medium flex items-center gap-1.5">
+                      <div className="text-[11px] text-muted-foreground/70 mb-2 font-medium flex items-center gap-1">
                         <Clock className="h-3 w-3" />
                         {step.timeline}
                       </div>
@@ -207,16 +207,16 @@ export function OrderingJourney() {
                         transition={{ duration: 0.3 }}
                         className="overflow-hidden"
                       >
-                        <ul className="space-y-2 pt-3 border-t border-border/30">
+                        <ul className="space-y-1 pt-2 border-t border-border/30">
                           {step.details.map((detail, i) => (
                             <motion.li
                               key={i}
-                              className="text-sm text-muted-foreground flex items-start gap-2"
+                              className="text-xs text-muted-foreground flex items-start gap-1.5"
                               initial={{ opacity: 0, x: -10 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: i * 0.05 }}
                             >
-                              <ChevronRight className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: step.color }} />
+                              <ChevronRight className="h-3 w-3 mt-0.5 flex-shrink-0" style={{ color: step.color }} />
                               <span>{detail}</span>
                             </motion.li>
                           ))}
