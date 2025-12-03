@@ -89,7 +89,7 @@ export function SupportStatus({ variant = "inline", showAll = false }: SupportSt
       </div>
       <div className="flex items-center gap-1 text-xs text-muted-foreground">
         <Clock className="h-3 w-3" />
-        <span>Response: 2-4 hours</span>
+        <span>Response: {responseTime}</span>
       </div>
       {showAll && (
         <div className="flex items-center gap-1 text-xs text-muted-foreground">
