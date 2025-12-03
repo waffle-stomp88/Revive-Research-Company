@@ -829,13 +829,13 @@ function CTASection() {
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
-            <Link href="/coa">
+            <Link href="/affiliate">
               <Button 
                 size="lg" 
                 variant="outline"
                 className="font-display text-base px-8 bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
               >
-                Verify COA
+                Join Affiliate Program
               </Button>
             </Link>
           </div>
