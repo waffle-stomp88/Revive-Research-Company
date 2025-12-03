@@ -341,6 +341,7 @@ export default function ProductDetail() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
+            className="flex flex-col"
           >
             {product.model3dUrl ? (
               <div className="sticky top-24">
@@ -393,6 +394,9 @@ export default function ProductDetail() {
                 </div>
               </div>
             </Card>
+
+            {/* Spacer to push education section down */}
+            <div className="flex-1" />
 
             {/* Learn About This Peptide - Right Under RUO */}
             {relatedArticles.length > 0 && (
