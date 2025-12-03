@@ -20,8 +20,80 @@ export function PriceTrendBadge({ productId, className = "", variant = "default"
     return null;
   }
 
+  // Show "Stable" indicator for products without price history
   if (!trend) {
-    return null;
+    if (variant === "compact") {
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Badge 
+              className={`cursor-help font-mono text-xs px-2 py-0.5 border bg-neutral-500/20 text-neutral-400 border-neutral-500/30 ${className}`}
+              data-testid={`badge-price-trend-stable-${productId}`}
+            >
+              <span className="mr-1">→</span>
+              Stable
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent 
+            side="top" 
+            className="max-w-[280px] bg-[#1a1a1f] border border-neutral-700 p-3"
+          >
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-neutral-400" />
+                <span className="font-medium text-neutral-200">Price unchanged</span>
+              </div>
+              <div className="text-sm text-neutral-400">
+                No price adjustments in the past 30 days
+              </div>
+              <div className="text-xs text-[#21d8ff]/70 flex items-center gap-1">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#21d8ff]" />
+                Radical pricing transparency
+              </div>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      );
+    }
+
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div 
+            className={`inline-flex items-center gap-1.5 cursor-help ${className}`}
+            data-testid={`badge-price-trend-stable-${productId}`}
+          >
+            <Badge 
+              className="font-mono text-sm px-2.5 py-1 border flex items-center gap-1.5 bg-neutral-500/20 text-neutral-400 border-neutral-500/30"
+            >
+              <Minus className="w-3.5 h-3.5" />
+              <span>Stable</span>
+            </Badge>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent 
+          side="top" 
+          className="max-w-[320px] bg-[#1a1a1f] border border-neutral-700 p-4"
+        >
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-neutral-400" />
+              <span className="font-medium text-neutral-200">Price unchanged</span>
+            </div>
+            <div className="text-sm text-neutral-400">
+              No price adjustments in the past 30 days
+            </div>
+            <div className="text-xs text-neutral-500 pt-1 border-t border-neutral-700">
+              We maintain stable, transparent pricing
+            </div>
+            <div className="text-xs text-[#21d8ff]/70 flex items-center gap-1">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#21d8ff]" />
+              Radical pricing transparency
+            </div>
+          </div>
+        </TooltipContent>
+      </Tooltip>
+    );
   }
 
   const isIncrease = trend.direction === "up";

@@ -33,6 +33,14 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **Legal Compliance**: Footer contains consolidated sections for FDA & Regulatory Compliance and Researcher Responsibility, with "Research Use Only" disclaimers across all pages.
 - **Cart & Checkout UX**: Cart items (both products and bundles) are clickable and navigate back to their detail pages. Checkout page shows an account section with login option for unauthenticated users, displaying benefits like order tracking and verified reviews.
 - **Discount Code System**: Cart page includes discount code input with validation API supporting affiliate codes (Basic Referral 10%, Personal 20%) and promotional codes.
+- **Price Transparency System**: Stock exchange-style pricing transparency showing price trends on all products.
+  - Database table: `price_history` tracks all price changes with old_price, new_price, change_percent, reason, notes, effective_date
+  - 30-day minimum between price changes enforced for stability
+  - PriceTrendBadge component shows: green ↓ badges for price decreases, red ↑ badges for increases, gray "Stable" badges for unchanged prices
+  - Tooltips explain the reason for each price change (e.g., "Bulk purchasing discount passed to customers")
+  - Compact variant for product cards, full variant for product detail pages
+  - API endpoints: `GET /api/products/:id/price-trend`, `GET /api/products/:id/price-history`, `POST /api/admin/products/:id/price-change`
+  - All products display a price indicator for radical pricing transparency
 
 ### Recent Implementation (Session 6-8)
 - **Google Analytics Integration**: GA4 tracking implemented with automatic page view tracking, custom event tracking for hero CTA clicks, product clicks, and newsletter signups. Requires VITE_GA_MEASUREMENT_ID environment variable.
