@@ -642,15 +642,19 @@ export default function Checkout() {
                       <span className="text-sm font-semibold text-blue-400">
                         +${COLD_PACK_FEE}.00
                       </span>
-                      <Button
-                        size="sm"
-                        variant={hasColdPackShipping ? "default" : "outline"}
-                        className={hasColdPackShipping ? "bg-blue-600 hover:bg-blue-700 text-white" : "border-blue-500/50"}
-                        onClick={() => setHasColdPackShipping(!hasColdPackShipping)}
-                        data-testid="button-cold-pack-shipping"
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                       >
-                        {hasColdPackShipping ? "✓ Added" : "Add Cold Pack"}
-                      </Button>
+                        <Button
+                          size="sm"
+                          className={`transition-all duration-300 ${hasColdPackShipping ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-[#21d8ff] text-black font-semibold hover:shadow-[0_0_15px_rgba(33,216,255,0.5)]"}`}
+                          onClick={() => setHasColdPackShipping(!hasColdPackShipping)}
+                          data-testid="button-cold-pack-shipping"
+                        >
+                          {hasColdPackShipping ? "✓ Added" : "Add Cold Pack"}
+                        </Button>
+                      </motion.div>
                     </div>
                   </motion.div>
                 )}
