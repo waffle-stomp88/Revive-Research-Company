@@ -51,7 +51,6 @@ const intervalLabels: { [key: string]: string } = {
 export default function Checkout() {
   const { toast } = useToast();
   const { items: cartItems, getSubtotal, clearCart, addToCart } = useCart();
-  const [showBacUpsell, setShowBacUpsell] = useState(true);
   const [hasColdPackShipping, setHasColdPackShipping] = useState(false);
   
   // RUO/Age reminder state - shown once per session on checkout
@@ -71,13 +70,13 @@ export default function Checkout() {
 
   const bacWater = bacWaterProducts?.find(p => p.name.toLowerCase().includes("bacteriostatic"));
   
-  // Check if cart has peptides but no BAC water
+  // Check if cart has peptides and BAC water
   const hasPeptides = cartItems.some(item => !item.name.toLowerCase().includes("bacteriostatic") && !item.name.toLowerCase().includes("supplies"));
   const hasBacWater = cartItems.some(item => item.name.toLowerCase().includes("bacteriostatic"));
-  const shouldShowBacUpsell = showBacUpsell && hasPeptides && !hasBacWater && bacWater;
+  const shouldShowBacUpsell = hasPeptides && bacWater;
 
   const handleAddBacWater = () => {
-    if (bacWater) {
+    if (bacWater && !hasBacWater) {
       addToCart({
         productId: bacWater.id,
         name: bacWater.name,
@@ -86,7 +85,6 @@ export default function Checkout() {
         dosage: bacWater.dosageOptions?.[0] || "30ML",
         image: productImage,
       });
-      setShowBacUpsell(false);
       toast({
         title: "Added to cart",
         description: `${bacWater.name} added to your cart.`,
@@ -611,16 +609,17 @@ export default function Checkout() {
                         ${Number(bacWater.price).toFixed(2)}
                       </span>
                       <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                        whileHover={!hasBacWater ? { scale: 1.05 } : {}}
+                        whileTap={!hasBacWater ? { scale: 0.95 } : {}}
                       >
                         <Button
                           size="sm"
-                          className="bg-[#21d8ff] text-black font-semibold transition-all duration-300 hover:shadow-[0_0_15px_rgba(33,216,255,0.5)]"
+                          className={`font-semibold transition-all duration-300 ${hasBacWater ? "bg-green-600 text-white" : "bg-[#21d8ff] text-black hover:shadow-[0_0_15px_rgba(33,216,255,0.5)]"}`}
                           onClick={handleAddBacWater}
+                          disabled={hasBacWater}
                           data-testid="button-add-bac-water"
                         >
-                          Add to Cart
+                          {hasBacWater ? "✓ Added" : "Add to Cart"}
                         </Button>
                       </motion.div>
                     </div>
