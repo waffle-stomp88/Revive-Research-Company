@@ -152,6 +152,51 @@ export default function EthicalPricing() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mb-12"
+        >
+          <Card className="p-8 border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 to-transparent">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-[#E7FB10]/20 flex items-center justify-center">
+                <TrendingUp className="h-7 w-7 text-[#E7FB10]" />
+              </div>
+              <div>
+                <h2 className="font-display text-xl font-bold mb-3">Market Pricing Analysis & Stability</h2>
+                <div className="space-y-3 text-muted-foreground">
+                  <p>
+                    We continuously analyze the market for pricing trends across the research compound landscape. 
+                    This analysis helps us understand competitive positioning, spot anomalies in the market, and 
+                    ensure our pricing remains fair and aligned with the true value we deliver.
+                  </p>
+                  <p>
+                    However, we recognize that <strong className="text-foreground">constant price fluctuations create uncertainty</strong> for 
+                    our research partners. To balance market responsiveness with stability, we implement a 
+                    deliberate pricing policy:
+                  </p>
+                  <div className="bg-background/50 border border-[#E7FB10]/20 rounded-lg p-4 mt-4">
+                    <p className="font-semibold text-foreground mb-2">Price updates occur only on the first of each month</p>
+                    <p className="text-sm">
+                      This 30-day minimum window between price changes gives you predictability in your research 
+                      budgeting. You know that prices won't suddenly shift mid-project, allowing you to plan your 
+                      compound purchases with confidence.
+                    </p>
+                  </div>
+                  <p className="mt-4">
+                    When we do adjust pricing based on market analysis, it's always justified by clear factors: 
+                    supply chain changes, testing cost adjustments, or significant inventory shifts. Every price 
+                    change is documented with a reason you can view—pure transparency.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+
+        <Separator className="my-12" />
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
           className="mb-12"
         >
