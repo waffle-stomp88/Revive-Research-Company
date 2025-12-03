@@ -4,6 +4,15 @@ import { Mail, MapPin, AlertTriangle, Shield, Scale, FileCheck, Clock } from "lu
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import logoImage from "@assets/REVIVE-11_1764290805698.png";
+import { useEffect, useState } from "react";
+
+function getResponseTimeByTimeZone(): string {
+  const now = new Date();
+  const ctTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Chicago" }));
+  const ctHour = ctTime.getHours();
+  const isOffHours = ctHour >= 17 || ctHour < 9;
+  return isOffHours ? "12 hours" : "2-4 hours";
+}
 
 const footerLinks = {
   shop: [
@@ -35,6 +44,16 @@ const footerLinks = {
 };
 
 export function Footer() {
+  const [responseTime, setResponseTime] = useState("2-4 hours");
+
+  useEffect(() => {
+    setResponseTime(getResponseTimeByTimeZone());
+    const interval = setInterval(() => {
+      setResponseTime(getResponseTimeByTimeZone());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <footer className="bg-card border-t border-border">
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24">
@@ -66,7 +85,7 @@ export function Footer() {
               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
               <div className="text-sm">
                 <span className="text-muted-foreground">Support: </span>
-                <span className="text-green-400 font-medium">2-4 hour response</span>
+                <span className="text-green-400 font-medium">{responseTime} response</span>
               </div>
             </div>
           </div>
