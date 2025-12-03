@@ -110,6 +110,25 @@ const sampleProducts = [
     usage: "For laboratory research applications. Store frozen. Handle according to established protocols.",
     imageUrl: "/attached_assets/image_1764717908257.png",
   },
+  {
+    name: "Bacteriostatic Water 30ML",
+    description: "Bacteriostatic Water (BAC Water) is sterile water containing 0.9% benzyl alcohol as a preservative. This research-grade solution is commonly used in laboratory settings for reconstituting lyophilized peptide compounds. The benzyl alcohol preservative allows for multiple uses from a single vial while maintaining sterility.",
+    shortDescription: "Sterile water with 0.9% benzyl alcohol for peptide reconstitution",
+    price: "12.99",
+    originalPrice: null,
+    category: "Supplies",
+    inStock: true,
+    featured: false,
+    benefits: [
+      "USP-grade sterile water",
+      "0.9% benzyl alcohol preservative",
+      "30ML multi-use vial",
+      "Ideal for peptide reconstitution",
+      "Extended shelf life after opening"
+    ],
+    usage: "For laboratory research use only. Store at room temperature. Use aseptic technique when withdrawing solution.",
+    imageUrl: null,
+  },
 ];
 
 async function seed() {
