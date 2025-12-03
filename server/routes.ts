@@ -2157,6 +2157,20 @@ Return ONLY valid JSON in this exact format:
         parsedResponse = { suggestions: [], marketInsights: "Unable to generate insights at this time.", totalPotentialRevenue: "$0" };
       }
 
+      // Map productIds back to actual UUIDs using product names
+      if (parsedResponse.suggestions && Array.isArray(parsedResponse.suggestions)) {
+        const productNameToId = new Map(products.map(p => [p.name.toLowerCase(), p.id]));
+        
+        parsedResponse.suggestions = parsedResponse.suggestions.map((suggestion: any) => {
+          const productName = suggestion.productName?.toLowerCase() || "";
+          const actualId = productNameToId.get(productName);
+          return {
+            ...suggestion,
+            productId: actualId || suggestion.productId
+          };
+        });
+      }
+
       res.json(parsedResponse);
     } catch (error) {
       console.error("Error generating pricing suggestions:", error);
