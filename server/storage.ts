@@ -1,7 +1,7 @@
 import { 
   users, products, coas, orders, contacts, affiliateApplications, affiliates, affiliateSales, affiliatePayouts, reviews,
   batches, productStorageProfiles, legalDocuments, faqEntries, educationArticles, coaGlossaryTerms, stockNotifications, discountCodes, newsletterSubscribers,
-  productDosageStock,
+  productDosageStock, priceHistory, priceChangeReasons,
   type User, type UpsertUser,
   type Product, type InsertProduct,
   type ProductDosageStock, type InsertProductDosageStock, type ProductWithDosageStock,
@@ -22,7 +22,8 @@ import {
   type CoaGlossaryTerm, type InsertCoaGlossaryTerm,
   type StockNotification, type InsertStockNotification,
   type DiscountCode, type InsertDiscountCode,
-  type NewsletterSubscriber, type InsertNewsletterSubscriber
+  type NewsletterSubscriber, type InsertNewsletterSubscriber,
+  type PriceHistory, type InsertPriceHistory, type PriceTrend, type PriceChangeReason
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, ilike, or, desc, sql, gte, and, lt, count, sum } from "drizzle-orm";
@@ -214,6 +215,12 @@ export interface IStorage {
   deleteDosageStock(id: string): Promise<boolean>;
   syncProductDosageStocks(productId: string, dosageStocks: Array<{ dosage: string; stockAmount: number; inStock: boolean }>): Promise<ProductDosageStock[]>;
   initializeDosageStocksFromProduct(productId: string): Promise<ProductDosageStock[]>;
+  
+  // Price History (Stock Exchange Style Transparency)
+  recordPriceChange(productId: string, newPrice: number, reason: PriceChangeReason, notes?: string): Promise<{ success: boolean; priceHistory?: PriceHistory; error?: string }>;
+  getProductPriceTrend(productId: string): Promise<PriceTrend | null>;
+  getProductPriceHistory(productId: string, months?: number): Promise<PriceHistory[]>;
+  canChangePrice(productId: string): Promise<{ canChange: boolean; daysUntilAllowed?: number; lastChangeDate?: Date }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1324,6 +1331,119 @@ export class DatabaseStorage implements IStorage {
     }
     
     return results;
+  }
+
+  // Price History Methods (Stock Exchange Style Transparency)
+  async canChangePrice(productId: string): Promise<{ canChange: boolean; daysUntilAllowed?: number; lastChangeDate?: Date }> {
+    const [lastChange] = await db.select()
+      .from(priceHistory)
+      .where(eq(priceHistory.productId, productId))
+      .orderBy(desc(priceHistory.effectiveDate))
+      .limit(1);
+    
+    if (!lastChange) {
+      return { canChange: true };
+    }
+    
+    const lastDate = new Date(lastChange.effectiveDate);
+    const now = new Date();
+    const daysSinceLastChange = Math.floor((now.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+    const minDays = 30;
+    
+    if (daysSinceLastChange >= minDays) {
+      return { canChange: true, lastChangeDate: lastDate };
+    }
+    
+    return { 
+      canChange: false, 
+      daysUntilAllowed: minDays - daysSinceLastChange,
+      lastChangeDate: lastDate
+    };
+  }
+
+  async recordPriceChange(
+    productId: string, 
+    newPrice: number, 
+    reason: PriceChangeReason, 
+    notes?: string
+  ): Promise<{ success: boolean; priceHistory?: PriceHistory; error?: string }> {
+    // Check if we can change the price (30-day rule)
+    const canChange = await this.canChangePrice(productId);
+    if (!canChange.canChange) {
+      return { 
+        success: false, 
+        error: `Price can only be changed once per month. ${canChange.daysUntilAllowed} days remaining until next change allowed.`
+      };
+    }
+    
+    // Get current product price
+    const product = await this.getProduct(productId);
+    if (!product) {
+      return { success: false, error: "Product not found" };
+    }
+    
+    const oldPrice = parseFloat(product.price);
+    if (oldPrice === newPrice) {
+      return { success: false, error: "New price is the same as current price" };
+    }
+    
+    // Calculate percentage change
+    const changePercent = ((newPrice - oldPrice) / oldPrice) * 100;
+    
+    // Get the reason description
+    const reasonDescription = priceChangeReasons[reason];
+    
+    // Record the price change
+    const [record] = await db.insert(priceHistory).values({
+      productId,
+      oldPrice: oldPrice.toString(),
+      newPrice: newPrice.toString(),
+      changePercent: changePercent.toFixed(2),
+      reason: reasonDescription,
+      notes,
+      effectiveDate: new Date()
+    }).returning();
+    
+    // Update the product price
+    await db.update(products).set({ price: newPrice.toString() }).where(eq(products.id, productId));
+    
+    return { success: true, priceHistory: record };
+  }
+
+  async getProductPriceTrend(productId: string): Promise<PriceTrend | null> {
+    const [lastChange] = await db.select()
+      .from(priceHistory)
+      .where(eq(priceHistory.productId, productId))
+      .orderBy(desc(priceHistory.effectiveDate))
+      .limit(1);
+    
+    if (!lastChange) {
+      return null;
+    }
+    
+    const percentChange = parseFloat(lastChange.changePercent);
+    
+    return {
+      direction: percentChange > 0 ? "up" : percentChange < 0 ? "down" : "stable",
+      percentChange: Math.abs(percentChange),
+      lastChangeDate: new Date(lastChange.effectiveDate),
+      reason: lastChange.reason,
+      reasonDescription: lastChange.reason,
+      notes: lastChange.notes || undefined
+    };
+  }
+
+  async getProductPriceHistory(productId: string, months: number = 6): Promise<PriceHistory[]> {
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - months);
+    
+    return db.select()
+      .from(priceHistory)
+      .where(and(
+        eq(priceHistory.productId, productId),
+        gte(priceHistory.effectiveDate, startDate)
+      ))
+      .orderBy(desc(priceHistory.effectiveDate));
   }
 }
 
