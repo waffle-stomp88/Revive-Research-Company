@@ -1228,6 +1228,130 @@ Always match purity grade to your research requirements.`,
         sortOrder: 1
       },
       {
+        slug: "reconstitution-101",
+        title: "Reconstitution 101: How to Prepare Lyophilized Peptides",
+        category: "basics",
+        summary: "A practical guide to properly reconstituting lyophilized peptide compounds using bacteriostatic water for research applications.",
+        content: `# Reconstitution 101: How to Prepare Lyophilized Peptides
+
+Lyophilized (freeze-dried) peptides must be properly reconstituted before use in research applications. This guide covers the essential steps, calculations, and best practices for preparing your peptides correctly.
+
+## What You Will Need
+
+Before beginning, gather these materials:
+- Lyophilized peptide vial
+- Bacteriostatic water (BAC water) with 0.9% benzyl alcohol
+- Sterile syringes (1mL insulin syringes work well)
+- Alcohol swabs for sanitization
+- Clean work surface
+
+## Why Bacteriostatic Water?
+
+Bacteriostatic water contains 0.9% benzyl alcohol, which serves as a preservative. This is critical because:
+- **Prevents bacterial growth** after multiple withdrawals from the vial
+- **Extends shelf life** of reconstituted peptides to 2-4 weeks refrigerated
+- **Allows multi-use** - you can draw from the same vial multiple times safely
+
+**Note:** Plain sterile water should only be used for single-use applications, as it has no preservative to prevent contamination.
+
+## Step-by-Step Reconstitution Process
+
+### Step 1: Prepare Your Workspace
+- Clean your work surface with alcohol
+- Wash hands thoroughly or wear sterile gloves
+- Allow refrigerated BAC water to reach room temperature (10-15 minutes)
+
+### Step 2: Sanitize the Vial Tops
+- Wipe the rubber stopper of both the peptide vial and BAC water vial with alcohol swabs
+- Allow to air dry for 10-15 seconds
+
+### Step 3: Withdraw BAC Water
+- Using a sterile syringe, draw your desired volume of BAC water
+- Remove any air bubbles by tapping the syringe and pushing them out
+
+### Step 4: Add BAC Water to Peptide
+- Insert the needle through the rubber stopper at a slight angle
+- **Critical:** Aim the stream at the glass wall of the vial, NOT directly at the powder
+- Slowly release the water, letting it run gently down the side
+- This prevents damaging the peptide structure
+
+### Step 5: Allow to Dissolve
+- Let the vial sit for 2-3 minutes
+- **Do NOT shake the vial** - this can denature the peptide
+- Gently roll the vial between your palms if needed
+- The solution should become clear with no visible particles
+
+## Calculating Reconstitution Volume
+
+Choose your volume based on desired concentration:
+
+| Amount of Peptide | BAC Water Added | Concentration |
+|-------------------|-----------------|---------------|
+| 5mg | 1mL | 5mg/mL (5000mcg/mL) |
+| 5mg | 2mL | 2.5mg/mL (2500mcg/mL) |
+| 10mg | 2mL | 5mg/mL (5000mcg/mL) |
+| 10mg | 5mL | 2mg/mL (2000mcg/mL) |
+
+**Example calculation:**
+If you have 5mg peptide and add 2mL BAC water:
+- Concentration = 5mg / 2mL = 2.5mg per mL
+- Each 0.1mL (10 units on insulin syringe) = 250mcg
+
+## Storage After Reconstitution
+
+Once reconstituted, peptides have a limited shelf life:
+
+- **Refrigerated (2-8C):** 2-4 weeks with BAC water
+- **Frozen (-20C):** Not recommended for reconstituted peptides
+- **Room temperature:** Use within 24-48 hours maximum
+
+**Best practices:**
+- Store upright in the refrigerator
+- Keep away from light
+- Note the reconstitution date on the vial
+- Discard if solution becomes cloudy or discolored
+
+## Common Mistakes to Avoid
+
+**1. Spraying water directly on the powder**
+This can damage peptide bonds. Always aim at the glass wall.
+
+**2. Shaking the vial**
+Gentle rolling is fine; vigorous shaking can denature the peptide.
+
+**3. Using tap or distilled water**
+Only use sterile bacteriostatic water to prevent contamination.
+
+**4. Storing at room temperature**
+Reconstituted peptides degrade quickly without refrigeration.
+
+**5. Reusing syringes**
+Always use a fresh, sterile syringe for each withdrawal.
+
+## Signs of Degradation
+
+Discard reconstituted peptides if you observe:
+- Cloudiness or particles in solution
+- Color changes
+- Unusual odor
+- Solution was stored incorrectly
+
+## Summary
+
+Proper reconstitution ensures your research compounds maintain integrity and provide consistent results. The key points to remember:
+
+1. Use bacteriostatic water for multi-use reconstitution
+2. Add water gently to the vial wall
+3. Never shake - roll gently if needed
+4. Refrigerate immediately after reconstitution
+5. Use within 2-4 weeks
+
+Following these guidelines will help ensure the quality and consistency of your research applications.`,
+        readTime: 6,
+        isPublished: true,
+        sortOrder: 2
+      },
+      {
         slug: "proper-peptide-storage",
         title: "Proper Peptide Storage and Handling",
         category: "storage",
