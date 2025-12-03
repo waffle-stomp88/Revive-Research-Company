@@ -13,6 +13,7 @@ interface PriceTrendBadgeProps {
 export function PriceTrendBadge({ productId, className = "", variant = "default" }: PriceTrendBadgeProps) {
   const { data: trend, isLoading } = useQuery<PriceTrend | null>({
     queryKey: ['/api/products', productId, 'price-trend'],
+    staleTime: 1000 * 60 * 5, // Refetch every 5 minutes for price updates
   });
 
   if (isLoading) {
