@@ -38,6 +38,7 @@ import {
   TrendingUp,
   AlertTriangle
 } from "lucide-react";
+import { PriceTrendIndicator } from "@/components/price-trend-badge";
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { BUNDLES } from "@/lib/bundles";
@@ -787,7 +788,7 @@ export default function Products() {
                                 <p className="text-xs text-muted-foreground mb-2 line-clamp-2 min-h-[2rem]">
                                   {product.shortDescription}
                                 </p>
-                                <div className="flex items-center justify-between mt-auto pt-2 border-t border-border">
+                                <div className="flex items-center justify-between mt-auto pt-2 border-t border-border flex-wrap gap-2">
                                   <div className="flex items-baseline gap-1.5">
                                     <span className="font-display text-lg font-bold text-[#E7FB10]">
                                       ${Number(product.price).toFixed(2)}
@@ -798,7 +799,10 @@ export default function Products() {
                                       </span>
                                     )}
                                   </div>
-                                  <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-[#E7FB10] transition-colors" />
+                                  <div className="flex items-center gap-2 ml-auto">
+                                    <PriceTrendIndicator productId={product.id} />
+                                    <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-[#E7FB10] transition-colors" />
+                                  </div>
                                 </div>
                               </div>
                             </Card>

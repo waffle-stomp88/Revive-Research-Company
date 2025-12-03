@@ -1,7 +1,7 @@
 import { 
   users, products, coas, orders, contacts, affiliateApplications, affiliates, affiliateSales, affiliatePayouts, reviews,
   batches, productStorageProfiles, legalDocuments, faqEntries, educationArticles, coaGlossaryTerms, stockNotifications, discountCodes, newsletterSubscribers,
-  productDosageStock, priceHistory, priceChangeReasons,
+  productDosageStock, priceHistory,
   type User, type UpsertUser,
   type Product, type InsertProduct,
   type ProductDosageStock, type InsertProductDosageStock, type ProductWithDosageStock,
@@ -23,7 +23,8 @@ import {
   type StockNotification, type InsertStockNotification,
   type DiscountCode, type InsertDiscountCode,
   type NewsletterSubscriber, type InsertNewsletterSubscriber,
-  type PriceHistory, type InsertPriceHistory, type PriceTrend, type PriceChangeReason
+  type PriceHistory, type InsertPriceHistory, type PriceTrend, type PriceChangeReason,
+  priceChangeReasons
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, ilike, or, desc, sql, gte, and, lt, count, sum } from "drizzle-orm";
