@@ -959,7 +959,23 @@ export async function registerRoutes(
   // Admin: Update product
   app.patch("/api/admin/products/:id", isAuthenticated, isAdmin, async (req, res) => {
     try {
-      const product = await storage.updateProduct(req.params.id, req.body);
+      let productId = req.params.id;
+      
+      // Check if ID is a slug format (not a UUID) and resolve to actual UUID
+      const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (!uuidPattern.test(productId)) {
+        // This looks like a slug, try to find product by name
+        const products = await storage.getAllProducts();
+        const matchedProduct = products.find(p => 
+          p.name.toLowerCase().replace(/\s+/g, '-') === productId.toLowerCase() ||
+          p.name.toLowerCase() === productId.toLowerCase().replace(/-/g, ' ')
+        );
+        if (matchedProduct) {
+          productId = matchedProduct.id;
+        }
+      }
+      
+      const product = await storage.updateProduct(productId, req.body);
       if (!product) {
         return res.status(404).json({ error: "Product not found" });
       }
