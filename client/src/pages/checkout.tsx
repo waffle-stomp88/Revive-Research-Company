@@ -610,14 +610,19 @@ export default function Checkout() {
                       <span className="text-sm font-semibold text-[#21d8ff]">
                         ${Number(bacWater.price).toFixed(2)}
                       </span>
-                      <Button
-                        size="sm"
-                        className="bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90"
-                        onClick={handleAddBacWater}
-                        data-testid="button-add-bac-water"
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                       >
-                        Add to Cart
-                      </Button>
+                        <Button
+                          size="sm"
+                          className="bg-[#21d8ff] text-black font-semibold transition-all duration-300 hover:shadow-[0_0_15px_rgba(33,216,255,0.5)]"
+                          onClick={handleAddBacWater}
+                          data-testid="button-add-bac-water"
+                        >
+                          Add to Cart
+                        </Button>
+                      </motion.div>
                     </div>
                   </motion.div>
                 )}
