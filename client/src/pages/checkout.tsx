@@ -614,7 +614,7 @@ export default function Checkout() {
                       >
                         <Button
                           size="sm"
-                          className={`font-semibold transition-all duration-300 ${hasBacWater ? "bg-green-600 text-white" : "bg-[#21d8ff] text-black hover:shadow-[0_0_15px_rgba(33,216,255,0.5)]"}`}
+                          className={`font-semibold transition-all duration-300 ${hasBacWater ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-[#21d8ff] text-black hover:shadow-[0_0_15px_rgba(33,216,255,0.5)]"}`}
                           onClick={handleAddBacWater}
                           disabled={hasBacWater}
                           data-testid="button-add-bac-water"
