@@ -18,7 +18,7 @@ const sampleProducts = [
       "Lyophilized powder form for stability"
     ],
     usage: "For laboratory research use only. Store at -20°C. Reconstitute with bacteriostatic water before use.",
-    imageUrl: null,
+    imageUrl: "/attached_assets/image_1764731697645.png",
   },
   {
     name: "TB-500",
@@ -36,7 +36,7 @@ const sampleProducts = [
       "Stable lyophilized formulation"
     ],
     usage: "For laboratory research purposes only. Store frozen at -20°C. Handle according to standard peptide protocols.",
-    imageUrl: null,
+    imageUrl: "/attached_assets/image_1764720544229.png",
   },
   {
     name: "GHK-Cu",
@@ -54,7 +54,7 @@ const sampleProducts = [
       "Research-ready formulation"
     ],
     usage: "For research applications only. Store in cool, dry conditions. Follow standard laboratory handling procedures.",
-    imageUrl: null,
+    imageUrl: "/attached_assets/image_1764722986424.png",
   },
   {
     name: "Epithalon",
@@ -72,7 +72,7 @@ const sampleProducts = [
       "Complete documentation included"
     ],
     usage: "For laboratory research only. Store at recommended temperature. Handle with appropriate precautions.",
-    imageUrl: null,
+    imageUrl: "/attached_assets/image_1764723493346.png",
   },
   {
     name: "Ipamorelin",
@@ -90,7 +90,7 @@ const sampleProducts = [
       "Lyophilized for stability"
     ],
     usage: "For research purposes only. Maintain proper storage conditions. Follow standard peptide handling protocols.",
-    imageUrl: null,
+    imageUrl: "/attached_assets/image_1764720456218.png",
   },
   {
     name: "Semax",
@@ -108,7 +108,7 @@ const sampleProducts = [
       "Suitable for neuroscience research"
     ],
     usage: "For laboratory research applications. Store frozen. Handle according to established protocols.",
-    imageUrl: null,
+    imageUrl: "/attached_assets/image_1764717908257.png",
   },
 ];
 
