@@ -55,6 +55,7 @@ import { Input } from "@/components/ui/input";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { ModelViewer3D } from "@/components/model-viewer-3d";
+import { PriceTrendBadge } from "@/components/price-trend-badge";
 import type { Product, Review, ProductStorageProfile, Batch, Coa, EducationArticle } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 
@@ -473,7 +474,7 @@ export default function ProductDetail() {
               {product.name}
             </h1>
 
-            <div className="flex items-baseline gap-3 mb-3">
+            <div className="flex items-baseline gap-3 mb-3 flex-wrap">
               <span className="font-display text-3xl font-bold text-[#E7FB10]" data-testid="text-product-price">
                 ${getBasePrice().toFixed(2)}
               </span>
@@ -487,6 +488,7 @@ export default function ProductDetail() {
                   +{((getDosageMultiplier() - 1) * 100).toFixed(0)}% for {selectedDosage}
                 </Badge>
               )}
+              <PriceTrendBadge productId={product.id} />
             </div>
 
             <p className="text-sm text-muted-foreground leading-relaxed mb-4" data-testid="text-product-description">
