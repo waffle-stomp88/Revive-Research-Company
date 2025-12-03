@@ -52,6 +52,7 @@ export default function Checkout() {
   const { toast } = useToast();
   const { items: cartItems, getSubtotal, clearCart, addToCart } = useCart();
   const [showBacUpsell, setShowBacUpsell] = useState(true);
+  const [hasColdPackShipping, setHasColdPackShipping] = useState(false);
   
   // RUO/Age reminder state - shown once per session on checkout
   const [showRuoReminder, setShowRuoReminder] = useState(false);
@@ -203,8 +204,11 @@ export default function Checkout() {
 
   const FREE_SHIPPING_THRESHOLD = 175;
   const FLAT_RATE_SHIPPING = 20;
+  const COLD_PACK_FEE = 10;
   const cartSubtotal = getSubtotal();
-  const cartShipping = cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING;
+  const baseShipping = cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING;
+  const coldPackFee = hasColdPackShipping ? COLD_PACK_FEE : 0;
+  const cartShipping = baseShipping + coldPackFee;
   const cartTotal = cartSubtotal + cartShipping;
 
   if (fromCart && cartItems.length === 0) {
@@ -591,7 +595,7 @@ export default function Checkout() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="mb-6 p-4 rounded-lg bg-gradient-to-r from-[#21d8ff]/10 to-[#9d4edd]/10 border border-[#21d8ff]/30"
+                    className="mb-4 p-4 rounded-lg bg-gradient-to-r from-[#21d8ff]/10 to-[#9d4edd]/10 border border-[#21d8ff]/30"
                   >
                     <div className="flex items-start gap-3 mb-3">
                       <Beaker className="h-5 w-5 text-[#21d8ff] flex-shrink-0 mt-0.5" />
@@ -618,6 +622,39 @@ export default function Checkout() {
                   </motion.div>
                 )}
 
+                {/* Cold Pack Shipping Upsell */}
+                {hasPeptides && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-6 p-4 rounded-lg bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/30"
+                  >
+                    <div className="flex items-start gap-3 mb-3">
+                      <Package className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-display font-semibold text-sm">Protect Your Order: Next-Day Cold Pack Shipping</h4>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Ensure optimal stability with insulated cold packs. Recommended for peptide orders.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-sm font-semibold text-blue-400">
+                        +${COLD_PACK_FEE}.00
+                      </span>
+                      <Button
+                        size="sm"
+                        variant={hasColdPackShipping ? "default" : "outline"}
+                        className={hasColdPackShipping ? "bg-blue-600 hover:bg-blue-700 text-white" : "border-blue-500/50"}
+                        onClick={() => setHasColdPackShipping(!hasColdPackShipping)}
+                        data-testid="button-cold-pack-shipping"
+                      >
+                        {hasColdPackShipping ? "✓ Added" : "Add Cold Pack"}
+                      </Button>
+                    </div>
+                  </motion.div>
+                )}
+
                 <Separator className="my-6" />
 
                 <div className="space-y-3 text-sm">
@@ -627,10 +664,16 @@ export default function Checkout() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Shipping</span>
-                    <span className={cartShipping === 0 ? "text-green-500" : ""}>
-                      {cartShipping === 0 ? "FREE" : `$${cartShipping.toFixed(2)}`}
+                    <span className={baseShipping === 0 ? "text-green-500" : ""}>
+                      {baseShipping === 0 ? "FREE" : `$${baseShipping.toFixed(2)}`}
                     </span>
                   </div>
+                  {hasColdPackShipping && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Cold Pack Shipping</span>
+                      <span className="text-blue-400">+${COLD_PACK_FEE}.00</span>
+                    </div>
+                  )}
                 </div>
 
                 <Separator className="my-6" />
