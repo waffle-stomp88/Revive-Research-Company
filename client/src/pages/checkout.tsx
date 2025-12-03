@@ -50,12 +50,48 @@ const intervalLabels: { [key: string]: string } = {
 
 export default function Checkout() {
   const { toast } = useToast();
-  const { items: cartItems, getSubtotal, clearCart } = useCart();
+  const { items: cartItems, getSubtotal, clearCart, addToCart } = useCart();
+  const [showBacUpsell, setShowBacUpsell] = useState(true);
   
   // RUO/Age reminder state - shown once per session on checkout
   const [showRuoReminder, setShowRuoReminder] = useState(false);
   const [ruoAcknowledged, setRuoAcknowledged] = useState(false);
   const [ageConfirmed, setAgeConfirmed] = useState(false);
+
+  // Query for BAC water product
+  const { data: bacWaterProducts } = useQuery<Product[]>({
+    queryKey: ["/api/products"],
+    queryFn: async () => {
+      const res = await fetch("/api/products");
+      if (!res.ok) throw new Error("Failed to fetch products");
+      return res.json();
+    },
+  });
+
+  const bacWater = bacWaterProducts?.find(p => p.name.toLowerCase().includes("bacteriostatic"));
+  
+  // Check if cart has peptides but no BAC water
+  const hasPeptides = cartItems.some(item => !item.name.toLowerCase().includes("bacteriostatic") && !item.name.toLowerCase().includes("supplies"));
+  const hasBacWater = cartItems.some(item => item.name.toLowerCase().includes("bacteriostatic"));
+  const shouldShowBacUpsell = showBacUpsell && hasPeptides && !hasBacWater && bacWater;
+
+  const handleAddBacWater = () => {
+    if (bacWater) {
+      addToCart({
+        productId: bacWater.id,
+        name: bacWater.name,
+        price: Number(bacWater.price),
+        quantity: 1,
+        dosage: bacWater.dosageOptions?.[0] || "30ML",
+        image: productImage,
+      });
+      setShowBacUpsell(false);
+      toast({
+        title: "Added to cart",
+        description: `${bacWater.name} added to your cart.`,
+      });
+    }
+  };
   
   // Check if user has already acknowledged the RUO reminder this session
   useEffect(() => {
@@ -548,6 +584,39 @@ export default function Checkout() {
                     </div>
                   ))}
                 </div>
+
+                {/* BAC Water Upsell */}
+                {shouldShowBacUpsell && bacWater && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="mb-6 p-4 rounded-lg bg-gradient-to-r from-[#21d8ff]/10 to-[#9d4edd]/10 border border-[#21d8ff]/30"
+                  >
+                    <div className="flex items-start gap-3 mb-3">
+                      <Beaker className="h-5 w-5 text-[#21d8ff] flex-shrink-0 mt-0.5" />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-display font-semibold text-sm">Don't Forget: Reconstitution Supplies</h4>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Add bacteriostatic water to reconstitute your peptides properly and extend shelf life.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-sm font-semibold text-[#21d8ff]">
+                        ${Number(bacWater.price).toFixed(2)}
+                      </span>
+                      <Button
+                        size="sm"
+                        className="bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90"
+                        onClick={handleAddBacWater}
+                        data-testid="button-add-bac-water"
+                      >
+                        Add to Cart
+                      </Button>
+                    </div>
+                  </motion.div>
+                )}
 
                 <Separator className="my-6" />
 
