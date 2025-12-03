@@ -26,13 +26,15 @@ export function PriceTrendBadge({ productId, className = "", variant = "default"
       return (
         <Tooltip>
           <TooltipTrigger asChild>
-            <Badge 
-              className={`cursor-help font-mono text-xs px-2 py-0.5 border bg-neutral-500/20 text-neutral-400 border-neutral-500/30 ${className}`}
-              data-testid={`badge-price-trend-stable-${productId}`}
-            >
-              <span className="mr-1">→</span>
-              Stable
-            </Badge>
+            <div className="cursor-help">
+              <Badge 
+                className={`font-mono text-xs px-2 py-0.5 border bg-neutral-500/20 text-neutral-400 border-neutral-500/30 ${className}`}
+                data-testid={`badge-price-trend-stable-${productId}`}
+              >
+                <span className="mr-1">→</span>
+                Stable
+              </Badge>
+            </div>
           </TooltipTrigger>
           <TooltipContent 
             side="top" 
@@ -127,13 +129,15 @@ export function PriceTrendBadge({ productId, className = "", variant = "default"
     return (
       <Tooltip>
         <TooltipTrigger asChild>
-          <Badge 
-            className={`cursor-help font-mono text-xs px-2 py-0.5 border ${badgeColors} ${className}`}
-            data-testid={`badge-price-trend-${productId}`}
-          >
-            <span className="mr-1">{arrowSymbol}</span>
-            {percentDisplay}%
-          </Badge>
+          <div className="cursor-help">
+            <Badge 
+              className={`font-mono text-xs px-2 py-0.5 border ${badgeColors} ${className}`}
+              data-testid={`badge-price-trend-${productId}`}
+            >
+              <span className="mr-1">{arrowSymbol}</span>
+              {percentDisplay}%
+            </Badge>
+          </div>
         </TooltipTrigger>
         <TooltipContent 
           side="top" 
