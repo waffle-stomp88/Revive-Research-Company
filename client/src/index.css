@@ -487,4 +487,14 @@
   .sidebar-scroll:hover {
     scrollbar-color: rgba(33, 216, 255, 0.6) transparent;
   }
+
+  /* Hide scrollbar but keep scrolling */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+  }
 }

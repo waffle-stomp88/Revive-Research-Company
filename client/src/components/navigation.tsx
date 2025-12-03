@@ -229,7 +229,7 @@ export function Navigation() {
                       </div>
                     ) : (
                       <>
-                        <div className="max-h-64 overflow-y-auto">
+                        <div className="max-h-64 overflow-y-auto scrollbar-hide">
                           {regularItems.slice(0, 3).map((item) => (
                             <div key={`${item.productId}-${item.dosage}`} className="flex items-center gap-3 p-3 border-b border-border/50 last:border-0">
                               <div className="w-10 h-10 rounded-lg bg-muted/50 flex-shrink-0 overflow-hidden border border-border/50">
