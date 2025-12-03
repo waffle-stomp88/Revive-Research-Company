@@ -1947,6 +1947,7 @@ export async function registerRoutes(
 2. Order questions and shipping (24hr standard shipping, same-day if ordered before 12:00 CT, flat rate $20 or free over $175)
 3. COA (Certificate of Authenticity) verification
 4. General questions about peptide research compounds
+5. Affiliate program inquiries
 
 Important policies:
 - All sales are FINAL - NO REFUNDS due to the nature of research compounds
@@ -1954,10 +1955,23 @@ Important policies:
 - Age requirement: 21+
 - Free shipping on orders over $175
 
+Affiliate Program Information:
+Revive Research has a two-tier affiliate program that offers multiple ways to earn:
+- Direct commission: 10% of sales from your direct referrals
+- Customer discount: 10% discount for your referred customers
+- Team override: 10% commission on sales from affiliates you recruit (second tier only)
+- Total earnings cap: 20% per order (to maintain program sustainability)
+- Cookie window: 30 days for tracking referrals
+- Minimum payout: $100
+- Payout frequency: Monthly
+- Personal use discount: Approved affiliates receive a private 20% discount code for personal use
+- Application: Affiliates apply through the /affiliate page with a brief description
+- Important: This is NOT an MLM. Commission structure stops at two tiers - no ranks, no forced purchases, no recruitment requirements. Affiliates can earn without recruiting anyone.
+
 Current product catalog:
 ${productInfo}
 
-Be friendly, professional, and helpful. If you don't know something specific about an order, direct customers to contact support. Keep responses concise but informative.`;
+Be friendly, professional, and helpful. If you don't know something specific about an order, direct customers to contact support. Keep responses concise but informative. For affiliate program details, you can answer general questions about how it works, commissions, payouts, and the application process. Direct specific account or payment questions to support.`;
 
       const completion = await openaiClient.chat.completions.create({
         model: "gpt-4o-mini",
