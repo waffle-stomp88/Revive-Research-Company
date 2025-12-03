@@ -89,9 +89,73 @@ const getCategoryLabel = (categoryId: string) => {
   return cat?.label || categoryId;
 };
 
+const parseMarkdownTable = (tableText: string): { headers: string[]; rows: string[][] } | null => {
+  const lines = tableText.trim().split('\n').filter(line => line.trim());
+  if (lines.length < 2) return null;
+  
+  const parseRow = (line: string): string[] => {
+    return line.split('|')
+      .map(cell => cell.trim())
+      .filter((cell, idx, arr) => idx > 0 && idx < arr.length - 1 || (idx === 0 && cell) || (idx === arr.length - 1 && cell));
+  };
+  
+  const headers = parseRow(lines[0]);
+  if (headers.length === 0) return null;
+  
+  // Skip separator line (line with dashes)
+  const dataStartIdx = lines[1]?.match(/^[\|\s\-:]+$/) ? 2 : 1;
+  
+  const rows: string[][] = [];
+  for (let i = dataStartIdx; i < lines.length; i++) {
+    const row = parseRow(lines[i]);
+    if (row.length > 0) rows.push(row);
+  }
+  
+  return { headers, rows };
+};
+
+const renderTable = (table: { headers: string[]; rows: string[][] }): string => {
+  const headerCells = table.headers
+    .map(h => `<th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-[#21d8ff] border-b border-[#21d8ff]/30">${h}</th>`)
+    .join('');
+  
+  const bodyRows = table.rows
+    .map((row, rowIdx) => {
+      const cells = row
+        .map((cell, cellIdx) => {
+          const isFirstCol = cellIdx === 0;
+          const cellClass = isFirstCol 
+            ? 'px-4 py-3 text-sm font-medium text-foreground whitespace-nowrap'
+            : 'px-4 py-3 text-sm text-muted-foreground';
+          return `<td class="${cellClass}">${cell}</td>`;
+        })
+        .join('');
+      const rowClass = rowIdx % 2 === 0 ? 'bg-[#21d8ff]/5' : 'bg-transparent';
+      return `<tr class="${rowClass} hover:bg-[#21d8ff]/10 transition-colors">${cells}</tr>`;
+    })
+    .join('');
+  
+  // Return on single line to avoid paragraph wrapping from renderMarkdown
+  return `<div class="my-6 overflow-hidden rounded-lg border border-[#21d8ff]/30 bg-gradient-to-br from-[#21d8ff]/5 to-transparent shadow-[0_0_15px_rgba(33,216,255,0.1)]"><table class="min-w-full divide-y divide-[#21d8ff]/20"><thead class="bg-[#21d8ff]/10"><tr>${headerCells}</tr></thead><tbody class="divide-y divide-border/50">${bodyRows}</tbody></table></div>`;
+};
+
 const renderMarkdown = (content: string) => {
-  return content
-    .replace(/^\|?-+\|(-+\|)+\s*$/gm, '') // Remove markdown table separator lines
+  // First, find and replace markdown tables with styled HTML tables
+  // Allow optional leading whitespace and handle tables at end of document
+  const tableRegex = /(^\s*\|[^\n]+\|[ \t]*\n?)+/gm;
+  let processedContent = content.replace(tableRegex, (match) => {
+    const table = parseMarkdownTable(match);
+    if (table && table.headers.length > 0 && table.rows.length > 0) {
+      return renderTable(table);
+    }
+    return match; // Return original if parsing fails
+  });
+  
+  // Remove any remaining table separator lines that weren't part of valid tables
+  processedContent = processedContent.replace(/^\s*\|?[\s\-:]+\|[\s\-:|]+\s*$/gm, '');
+  
+  // Then apply other markdown transformations
+  return processedContent
     .replace(/^### (.*$)/gim, '<h3 class="text-lg font-bold mt-6 mb-3 text-foreground">$1</h3>')
     .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold mt-8 mb-4 text-foreground">$1</h2>')
     .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mt-8 mb-4 text-foreground">$1</h1>')
@@ -100,7 +164,7 @@ const renderMarkdown = (content: string) => {
     .replace(/^- (.*$)/gim, '<li class="ml-4 list-disc">$1</li>')
     .replace(/^(\d+)\. (.*$)/gim, '<li class="ml-4 list-decimal">$1. $2</li>')
     .replace(/\n\n/g, '</p><p class="mb-4">')
-    .replace(/^(?!<[hul])/gm, '<p class="mb-4">');
+    .replace(/^(?!\s*<)/gm, '<p class="mb-4">'); // Skip lines starting with HTML tags (with optional whitespace)
 };
 
 export default function Education() {
