@@ -772,10 +772,29 @@ function FAQSection() {
           className="text-center mt-8"
         >
           <Link href="/faq">
-            <Button size="lg" variant="outline" className="font-display gap-2" data-testid="button-view-full-faq">
-              Explore Full FAQ
-              <ArrowRight className="h-4 w-4" />
-            </Button>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Button 
+                size="lg" 
+                className="font-display gap-2 bg-gradient-to-r from-[#21d8ff] to-[#E7FB10] text-black hover:shadow-[0_0_20px_rgba(33,216,255,0.5)] transition-all duration-300 border-0"
+                data-testid="button-view-full-faq"
+              >
+                <motion.span
+                  animate={{ x: [0, 4, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  Explore Full FAQ
+                </motion.span>
+                <motion.div
+                  animate={{ x: [0, 6, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity, delay: 0.1 }}
+                >
+                  <ArrowRight className="h-4 w-4" />
+                </motion.div>
+              </Button>
+            </motion.div>
           </Link>
         </motion.div>
       </div>
