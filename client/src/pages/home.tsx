@@ -820,23 +820,33 @@ function CTASection() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/products">
-              <Button 
-                size="lg" 
-                variant="secondary"
-                className="font-display text-base px-8 gap-2"
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                Browse Products
-                <ArrowRight className="h-4 w-4" />
-              </Button>
+                <Button 
+                  size="lg" 
+                  variant="secondary"
+                  className="font-display text-base px-8 gap-2 transition-all duration-300 hover:shadow-[0_0_20px_rgba(33,216,255,0.4)]"
+                >
+                  Browse Products
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </motion.div>
             </Link>
             <Link href="/affiliate">
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="font-display text-base px-8 bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                Join Affiliate Program
-              </Button>
+                <Button 
+                  size="lg"
+                  className="font-display text-base px-8 bg-transparent border-2 border-primary-foreground text-primary-foreground transition-all duration-300 hover:shadow-[0_0_30px_rgba(33,216,255,0.5),0_0_20px_rgba(157,78,221,0.3)] relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700"
+                  data-testid="button-join-affiliate"
+                >
+                  Join Affiliate Program
+                </Button>
+              </motion.div>
             </Link>
           </div>
         </motion.div>
