@@ -685,25 +685,30 @@ export default function Checkout() {
                   </span>
                 </div>
 
-                <Button
-                  size="lg"
-                  className="w-full font-display text-lg gap-2 bg-[#E7FB10] hover:bg-[#E7FB10]/90"
-                  onClick={handleCheckout}
-                  disabled={checkoutMutation.isPending}
-                  data-testid="button-checkout"
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  {checkoutMutation.isPending ? (
-                    <>
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                      Redirecting...
-                    </>
-                  ) : (
-                    <>
-                      <ShieldCheck className="h-5 w-5" />
-                      Proceed to Payment
-                    </>
-                  )}
-                </Button>
+                  <Button
+                    size="lg"
+                    className="w-full font-display text-lg gap-2 bg-[#E7FB10] hover:bg-[#E7FB10]/90 transition-all duration-300 hover:shadow-[0_0_30px_rgba(231,251,16,0.6)]"
+                    onClick={handleCheckout}
+                    disabled={checkoutMutation.isPending}
+                    data-testid="button-checkout"
+                  >
+                    {checkoutMutation.isPending ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        Redirecting...
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck className="h-5 w-5" />
+                        Proceed to Payment
+                      </>
+                    )}
+                  </Button>
+                </motion.div>
 
                 <p className="text-xs text-muted-foreground text-center mt-4">
                   By proceeding, you agree to our terms of service and privacy policy.
