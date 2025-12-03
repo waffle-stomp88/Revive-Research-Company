@@ -114,6 +114,45 @@ export async function registerRoutes(
     }
   });
 
+  // Get price trend for a product (public - for transparency display)
+  app.get("/api/products/:id/price-trend", async (req, res) => {
+    try {
+      const trend = await storage.getProductPriceTrend(req.params.id);
+      res.json(trend);
+    } catch (error) {
+      console.error("Error fetching price trend:", error);
+      res.status(500).json({ error: "Failed to fetch price trend" });
+    }
+  });
+
+  // Get price history for a product (public - for transparency)
+  app.get("/api/products/:id/price-history", async (req, res) => {
+    try {
+      const months = parseInt(req.query.months as string) || 6;
+      const history = await storage.getProductPriceHistory(req.params.id, months);
+      res.json(history);
+    } catch (error) {
+      console.error("Error fetching price history:", error);
+      res.status(500).json({ error: "Failed to fetch price history" });
+    }
+  });
+
+  // Check if price can be changed (admin)
+  app.get("/api/products/:id/can-change-price", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ error: "Admin access required" });
+      }
+      const result = await storage.canChangePrice(req.params.id);
+      res.json(result);
+    } catch (error) {
+      console.error("Error checking price change eligibility:", error);
+      res.status(500).json({ error: "Failed to check price change eligibility" });
+    }
+  });
+
   // Get COA by batch number
   app.get("/api/coa/:batchNumber", async (req, res) => {
     try {
@@ -990,6 +1029,32 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error initializing dosage stocks:", error);
       res.status(500).json({ error: "Failed to initialize dosage stocks" });
+    }
+  });
+
+  // Admin: Record price change (with 30-day minimum interval)
+  app.post("/api/admin/products/:id/price-change", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { newPrice, reason, notes } = req.body;
+      
+      if (!newPrice || typeof newPrice !== 'number' || newPrice <= 0) {
+        return res.status(400).json({ error: "Valid price is required" });
+      }
+      
+      if (!reason) {
+        return res.status(400).json({ error: "Price change reason is required" });
+      }
+      
+      const result = await storage.recordPriceChange(req.params.id, newPrice, reason, notes);
+      
+      if (!result.success) {
+        return res.status(400).json({ error: result.error });
+      }
+      
+      res.json({ success: true, priceHistory: result.priceHistory });
+    } catch (error) {
+      console.error("Error recording price change:", error);
+      res.status(500).json({ error: "Failed to record price change" });
     }
   });
 
