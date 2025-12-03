@@ -2160,10 +2160,26 @@ Return ONLY valid JSON in this exact format:
       // Map productIds back to actual UUIDs using product names
       if (parsedResponse.suggestions && Array.isArray(parsedResponse.suggestions)) {
         const productNameToId = new Map(products.map(p => [p.name.toLowerCase(), p.id]));
+        const productSlugToId = new Map(products.map(p => [
+          p.name.toLowerCase().replace(/\s+/g, '-'),
+          p.id
+        ]));
         
         parsedResponse.suggestions = parsedResponse.suggestions.map((suggestion: any) => {
           const productName = suggestion.productName?.toLowerCase() || "";
-          const actualId = productNameToId.get(productName);
+          let actualId = productNameToId.get(productName);
+          
+          // Try slug format if exact name match fails
+          if (!actualId) {
+            const slug = productName.replace(/\s+/g, '-');
+            actualId = productSlugToId.get(slug);
+          }
+          
+          // If still no match and suggestion has a slug-like productId, try to find by that
+          if (!actualId && suggestion.productId?.includes('-')) {
+            actualId = productSlugToId.get(suggestion.productId.toLowerCase());
+          }
+          
           return {
             ...suggestion,
             productId: actualId || suggestion.productId
