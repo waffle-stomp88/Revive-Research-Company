@@ -2433,6 +2433,262 @@ function ContactsTab() {
   );
 }
 
+interface ReviewWithProduct {
+  id: string;
+  productId: string;
+  userId: string;
+  orderId: string;
+  rating: number;
+  title: string | null;
+  comment: string;
+  isApproved: boolean | null;
+  createdAt: Date | string | null;
+  productName: string;
+  productImageUrl: string | null;
+}
+
+function ReviewsTab() {
+  const { toast } = useToast();
+  const [filter, setFilter] = useState<"all" | "approved" | "pending" | "rejected">("all");
+
+  const { data: reviews, isLoading } = useQuery<ReviewWithProduct[]>({
+    queryKey: ["/api/admin/reviews"],
+  });
+
+  const approveMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest("PATCH", `/api/admin/reviews/${id}/approve`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/reviews"] });
+      toast({ title: "Review approved" });
+    },
+    onError: () => {
+      toast({ title: "Failed to approve review", variant: "destructive" });
+    }
+  });
+
+  const rejectMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest("PATCH", `/api/admin/reviews/${id}/reject`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/reviews"] });
+      toast({ title: "Review rejected" });
+    },
+    onError: () => {
+      toast({ title: "Failed to reject review", variant: "destructive" });
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest("DELETE", `/api/admin/reviews/${id}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/reviews"] });
+      toast({ title: "Review deleted" });
+    },
+    onError: () => {
+      toast({ title: "Failed to delete review", variant: "destructive" });
+    }
+  });
+
+  const formatDate = (date: Date | string | null) => {
+    if (!date) return "N/A";
+    return new Date(date).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const filteredReviews = reviews?.filter(review => {
+    if (filter === "all") return true;
+    if (filter === "approved") return review.isApproved === true;
+    if (filter === "pending") return review.isApproved === null;
+    if (filter === "rejected") return review.isApproved === false;
+    return true;
+  }) || [];
+
+  const pendingCount = reviews?.filter(r => r.isApproved === null).length || 0;
+  const approvedCount = reviews?.filter(r => r.isApproved === true).length || 0;
+  const rejectedCount = reviews?.filter(r => r.isApproved === false).length || 0;
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        {[1, 2, 3].map(i => (
+          <Skeleton key={i} className="h-32 w-full" />
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between gap-4">
+        <h2 className="text-xl font-semibold flex items-center gap-2">
+          <Star className="h-5 w-5 text-[#E7FB10]" />
+          Customer Reviews ({reviews?.length || 0})
+        </h2>
+        <div className="flex items-center gap-2">
+          <Badge 
+            variant={filter === "all" ? "default" : "outline"}
+            className="cursor-pointer"
+            onClick={() => setFilter("all")}
+          >
+            All ({reviews?.length || 0})
+          </Badge>
+          <Badge 
+            variant={filter === "pending" ? "default" : "outline"}
+            className={`cursor-pointer ${filter === "pending" ? "bg-yellow-500" : ""}`}
+            onClick={() => setFilter("pending")}
+          >
+            Pending ({pendingCount})
+          </Badge>
+          <Badge 
+            variant={filter === "approved" ? "default" : "outline"}
+            className={`cursor-pointer ${filter === "approved" ? "bg-green-500" : ""}`}
+            onClick={() => setFilter("approved")}
+          >
+            Approved ({approvedCount})
+          </Badge>
+          <Badge 
+            variant={filter === "rejected" ? "default" : "outline"}
+            className={`cursor-pointer ${filter === "rejected" ? "bg-red-500" : ""}`}
+            onClick={() => setFilter("rejected")}
+          >
+            Rejected ({rejectedCount})
+          </Badge>
+        </div>
+      </div>
+
+      {filteredReviews.length > 0 ? (
+        <div className="space-y-4">
+          {filteredReviews.map((review) => (
+            <Card key={review.id} className="p-4">
+              <div className="flex items-start gap-4">
+                {review.productImageUrl ? (
+                  <img 
+                    src={review.productImageUrl} 
+                    alt={review.productName}
+                    className="w-16 h-16 object-cover rounded-lg bg-muted"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center">
+                    <Package className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-4 mb-2">
+                    <div>
+                      <p className="font-medium text-sm text-muted-foreground">{review.productName}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="flex">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star 
+                              key={star} 
+                              className={`h-4 w-4 ${star <= review.rating ? "text-[#E7FB10] fill-[#E7FB10]" : "text-muted"}`}
+                            />
+                          ))}
+                        </div>
+                        {review.title && (
+                          <span className="font-semibold">{review.title}</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge 
+                        variant={review.isApproved === true ? "default" : review.isApproved === false ? "destructive" : "secondary"}
+                        className={review.isApproved === true ? "bg-green-500" : ""}
+                      >
+                        {review.isApproved === true ? "Approved" : review.isApproved === false ? "Rejected" : "Pending"}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">{formatDate(review.createdAt)}</span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">{review.comment}</p>
+                  <div className="flex items-center gap-2">
+                    {review.isApproved !== true && (
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        className="text-green-500 border-green-500/50 hover:bg-green-500/10"
+                        onClick={() => approveMutation.mutate(review.id)}
+                        disabled={approveMutation.isPending}
+                        data-testid={`btn-approve-review-${review.id}`}
+                      >
+                        <Check className="h-4 w-4 mr-1" />
+                        Approve
+                      </Button>
+                    )}
+                    {review.isApproved !== false && (
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        className="text-red-500 border-red-500/50 hover:bg-red-500/10"
+                        onClick={() => rejectMutation.mutate(review.id)}
+                        disabled={rejectMutation.isPending}
+                        data-testid={`btn-reject-review-${review.id}`}
+                      >
+                        <X className="h-4 w-4 mr-1" />
+                        Reject
+                      </Button>
+                    )}
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          className="text-muted-foreground hover:text-red-500"
+                          data-testid={`btn-delete-review-${review.id}`}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Review?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will permanently delete this review. This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            className="bg-red-500 hover:bg-red-600"
+                            onClick={() => deleteMutation.mutate(review.id)}
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <Card className="p-12 text-center">
+          <Star className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+          <h3 className="font-medium mb-2">No Reviews {filter !== "all" ? `(${filter})` : ""}</h3>
+          <p className="text-sm text-muted-foreground">
+            {filter === "all" 
+              ? "Customer reviews will appear here once submitted."
+              : `No ${filter} reviews found.`}
+          </p>
+        </Card>
+      )}
+    </div>
+  );
+}
+
 interface StockNotificationWithProduct {
   id: string;
   email: string;
@@ -4275,7 +4531,7 @@ export default function Admin() {
 
           <motion.div variants={itemVariants}>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full max-w-6xl grid-cols-9">
+              <TabsList className="grid w-full max-w-6xl grid-cols-10">
                 <TabsTrigger value="overview" className="flex items-center gap-2" data-testid="tab-overview">
                   <LayoutDashboard className="h-4 w-4" />
                   <span className="hidden sm:inline">Overview</span>
@@ -4295,6 +4551,10 @@ export default function Admin() {
                 <TabsTrigger value="orders" className="flex items-center gap-2" data-testid="tab-orders">
                   <ShoppingBag className="h-4 w-4" />
                   <span className="hidden sm:inline">Orders</span>
+                </TabsTrigger>
+                <TabsTrigger value="reviews" className="flex items-center gap-2" data-testid="tab-reviews">
+                  <Star className="h-4 w-4" />
+                  <span className="hidden sm:inline">Reviews</span>
                 </TabsTrigger>
                 <TabsTrigger value="contacts" className="flex items-center gap-2" data-testid="tab-contacts">
                   <Mail className="h-4 w-4" />
@@ -4339,6 +4599,12 @@ export default function Admin() {
               <TabsContent value="orders">
                 <Card className="p-6">
                   <OrdersTab />
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="reviews">
+                <Card className="p-6">
+                  <ReviewsTab />
                 </Card>
               </TabsContent>
 

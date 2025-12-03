@@ -1222,6 +1222,70 @@ export async function registerRoutes(
     }
   });
 
+  // === ADMIN REVIEW ROUTES ===
+
+  // Admin: Get all reviews
+  app.get("/api/admin/reviews", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const allReviews = await storage.getAllReviews();
+      const products = await storage.getAllProducts();
+      const productMap = new Map(products.map(p => [p.id, p]));
+      
+      const reviewsWithProducts = allReviews.map(review => ({
+        ...review,
+        productName: productMap.get(review.productId)?.name || "Unknown Product",
+        productImageUrl: productMap.get(review.productId)?.imageUrl
+      }));
+      
+      res.json(reviewsWithProducts);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+      res.status(500).json({ error: "Failed to fetch reviews" });
+    }
+  });
+
+  // Admin: Approve review
+  app.patch("/api/admin/reviews/:id/approve", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const review = await storage.updateReviewApproval(req.params.id, true);
+      if (!review) {
+        return res.status(404).json({ error: "Review not found" });
+      }
+      res.json(review);
+    } catch (error) {
+      console.error("Error approving review:", error);
+      res.status(500).json({ error: "Failed to approve review" });
+    }
+  });
+
+  // Admin: Reject review (set isApproved to false)
+  app.patch("/api/admin/reviews/:id/reject", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const review = await storage.updateReviewApproval(req.params.id, false);
+      if (!review) {
+        return res.status(404).json({ error: "Review not found" });
+      }
+      res.json(review);
+    } catch (error) {
+      console.error("Error rejecting review:", error);
+      res.status(500).json({ error: "Failed to reject review" });
+    }
+  });
+
+  // Admin: Delete review
+  app.delete("/api/admin/reviews/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const deleted = await storage.deleteReview(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ error: "Review not found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting review:", error);
+      res.status(500).json({ error: "Failed to delete review" });
+    }
+  });
+
   // === ADMIN AFFILIATE ROUTES ===
 
   // Admin: Get all affiliate applications
