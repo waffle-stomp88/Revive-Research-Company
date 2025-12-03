@@ -740,7 +740,7 @@ export default function Products() {
                             <Card 
                               className={`group p-3 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 hover:scale-[1.03] relative overflow-hidden ${
                                 isOutOfStock
-                                  ? "border-[#21d8ff]/40 hover:border-[#21d8ff] hover:shadow-[0_0_30px_rgba(33,216,255,0.5),0_0_60px_rgba(33,216,255,0.2)]"
+                                  ? "border-red-500/60 hover:border-red-500 hover:shadow-[0_0_30px_rgba(239,68,68,0.5),0_0_60px_rgba(239,68,68,0.2)]"
                                   : "border-[#21d8ff]/40 hover:border-[#21d8ff] hover:shadow-[0_0_30px_rgba(33,216,255,0.5),0_0_60px_rgba(33,216,255,0.2)]"
                               }`}
                               data-testid={`card-product-${product.id}`}
