@@ -3930,12 +3930,29 @@ function PricingOptimizerTab() {
   };
 
   const updateProductMutation = useMutation({
-    mutationFn: async ({ id, price }: { id: string; price: string }) => {
+    mutationFn: async ({ id, price, currentPrice }: { id: string; price: string; currentPrice?: number }) => {
+      // Update the product price
       const response = await apiRequest("PATCH", `/api/admin/products/${id}`, { price });
+      
+      // Record the price change in history
+      if (currentPrice && Number(price) !== currentPrice) {
+        try {
+          await apiRequest("POST", `/api/admin/products/${id}/price-change`, {
+            newPrice: Number(price),
+            reason: "AI Pricing Suggestion",
+            notes: `Updated via AI pricing optimization (from $${currentPrice.toFixed(2)} to $${price})`
+          });
+        } catch (error) {
+          console.error("Failed to record price change:", error);
+          // Don't fail the mutation if history recording fails
+        }
+      }
+      
       return response.json();
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] }); // Refetch for trend indicators
       markPriceAsUpdated(variables.id);
       setAppliedSuggestions(prev => [...prev, variables.id]);
       toast({
@@ -4352,6 +4369,7 @@ function PricingOptimizerTab() {
                         onClick={() => updateProductMutation.mutate({
                           id: suggestion.productId,
                           price: suggestion.suggestedPrice.toFixed(2),
+                          currentPrice: suggestion.currentPrice,
                         })}
                         disabled={updateProductMutation.isPending}
                         className="border-[#E7FB10]/50 hover:bg-[#E7FB10]/10"
