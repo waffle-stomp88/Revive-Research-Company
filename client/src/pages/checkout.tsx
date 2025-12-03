@@ -595,7 +595,7 @@ export default function Checkout() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="mb-4 p-4 rounded-lg bg-gradient-to-r from-[#21d8ff]/10 to-[#9d4edd]/10 border border-[#21d8ff]/30"
+                    className="mb-4 p-4 rounded-lg bg-gradient-to-r from-[#21d8ff]/10 to-[#9d4edd]/10 border border-[#21d8ff]/30 shadow-[0_0_20px_rgba(33,216,255,0.2)] animate-pulse-glow-upsell"
                   >
                     <div className="flex items-start gap-3 mb-3">
                       <Beaker className="h-5 w-5 text-[#21d8ff] flex-shrink-0 mt-0.5" />
@@ -632,7 +632,7 @@ export default function Checkout() {
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-6 p-4 rounded-lg bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/30"
+                    className="mb-6 p-4 rounded-lg bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/30 shadow-[0_0_20px_rgba(33,216,255,0.2)] animate-pulse-glow-upsell"
                   >
                     <div className="flex items-start gap-3 mb-3">
                       <Package className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />

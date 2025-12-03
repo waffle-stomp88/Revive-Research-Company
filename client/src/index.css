@@ -460,6 +460,20 @@
     animation: pulse-glow-cyan 10s ease-in-out infinite;
   }
 
+  /* Upsell Box Pulse & Glow Animation */
+  @keyframes pulse-glow-upsell {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(33, 216, 255, 0.2), 0 0 40px rgba(33, 216, 255, 0.05);
+    }
+    50% {
+      box-shadow: 0 0 35px rgba(33, 216, 255, 0.4), 0 0 60px rgba(33, 216, 255, 0.15);
+    }
+  }
+
+  .animate-pulse-glow-upsell {
+    animation: pulse-glow-upsell 3s ease-in-out infinite;
+  }
+
   /* Custom Scrollbar Styling */
   .sidebar-scroll::-webkit-scrollbar {
     width: 8px;
