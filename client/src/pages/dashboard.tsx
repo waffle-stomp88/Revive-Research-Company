@@ -479,6 +479,7 @@ function QuickReorder({ orders, products }: { orders?: Order[]; products?: Produ
       price: Number(product.price),
       quantity: 1,
       dosage,
+      image: product.imageUrl || undefined,
     });
     toast({
       title: "Added to Cart",
@@ -613,6 +614,7 @@ function WishlistWidget({ products }: { products?: Product[] }) {
       price: Number(product.price),
       quantity: 1,
       dosage,
+      image: product.imageUrl || undefined,
     });
     toast({
       title: "Added to Cart",

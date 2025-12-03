@@ -272,6 +272,7 @@ export default function ProductDetail() {
         originalPrice: product.originalPrice ? Number(product.originalPrice) * getDosageMultiplier() : undefined,
         quantity,
         dosage: selectedDosage,
+        image: productImage,
       });
       toast({
         title: "Added to cart",

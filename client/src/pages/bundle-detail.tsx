@@ -92,6 +92,7 @@ export default function BundleDetail() {
         quantity,
         dosage: "Bundle",
         isBundle: true,
+        image: productImage,
       });
       toast({
         title: "Added to cart",
