@@ -1368,13 +1368,15 @@ export class DatabaseStorage implements IStorage {
     reason: PriceChangeReason, 
     notes?: string
   ): Promise<{ success: boolean; priceHistory?: PriceHistory; error?: string }> {
-    // Check if we can change the price (30-day rule)
-    const canChange = await this.canChangePrice(productId);
-    if (!canChange.canChange) {
-      return { 
-        success: false, 
-        error: `Price can only be changed once per month. ${canChange.daysUntilAllowed} days remaining until next change allowed.`
-      };
+    // Check if we can change the price (30-day rule) - but allow AI pricing suggestions to bypass
+    if (reason !== "AI Pricing Suggestion") {
+      const canChange = await this.canChangePrice(productId);
+      if (!canChange.canChange) {
+        return { 
+          success: false, 
+          error: `Price can only be changed once per month. ${canChange.daysUntilAllowed} days remaining until next change allowed.`
+        };
+      }
     }
     
     // Get current product price
