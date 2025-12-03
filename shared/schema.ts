@@ -394,3 +394,46 @@ export const newsletterSubscribers = pgTable("newsletter_subscribers", {
 export const insertNewsletterSubscriberSchema = createInsertSchema(newsletterSubscribers).omit({ id: true, status: true, createdAt: true });
 export type InsertNewsletterSubscriber = z.infer<typeof insertNewsletterSubscriberSchema>;
 export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
+
+// Price history table - Track price changes for transparency (like a stock exchange)
+export const priceHistory = pgTable("price_history", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  productId: varchar("product_id").notNull().references(() => products.id, { onDelete: "cascade" }),
+  oldPrice: decimal("old_price", { precision: 10, scale: 2 }).notNull(),
+  newPrice: decimal("new_price", { precision: 10, scale: 2 }).notNull(),
+  changePercent: decimal("change_percent", { precision: 6, scale: 2 }).notNull(), // e.g., -5.50 or +12.30
+  reason: text("reason").notNull(), // Predefined reason category
+  notes: text("notes"), // Optional additional explanation
+  effectiveDate: timestamp("effective_date").notNull().defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertPriceHistorySchema = createInsertSchema(priceHistory).omit({ id: true, createdAt: true });
+export type InsertPriceHistory = z.infer<typeof insertPriceHistorySchema>;
+export type PriceHistory = typeof priceHistory.$inferSelect;
+
+// Price change reason categories for transparency
+export const priceChangeReasons = {
+  RAW_MATERIAL_COST: "Raw material cost adjustment",
+  BULK_PURCHASING: "Bulk purchasing discount passed to customers",
+  MARKET_ADJUSTMENT: "Market price alignment",
+  SUPPLY_CHAIN: "Supply chain optimization",
+  QUALITY_UPGRADE: "Enhanced quality/purity standards",
+  SEASONAL: "Seasonal adjustment",
+  PROMOTIONAL: "Limited time promotional pricing",
+  DEMAND: "Demand-based adjustment",
+  INFLATION: "Inflation adjustment",
+  NEW_SUPPLIER: "New supplier partnership",
+} as const;
+
+export type PriceChangeReason = keyof typeof priceChangeReasons;
+
+// Type for price trend display (used in frontend)
+export type PriceTrend = {
+  direction: "up" | "down" | "stable";
+  percentChange: number;
+  lastChangeDate: Date;
+  reason: string;
+  reasonDescription: string;
+  notes?: string;
+};
