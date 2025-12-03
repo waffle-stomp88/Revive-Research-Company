@@ -820,23 +820,48 @@ function CTASection() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/products">
-              <Button 
-                size="lg" 
-                variant="secondary"
-                className="font-display text-base px-8 gap-2"
+              <motion.div
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.95 }}
               >
-                Browse Products
-                <ArrowRight className="h-4 w-4" />
-              </Button>
+                <Button 
+                  size="lg" 
+                  className="font-display text-base px-8 gap-2 bg-gradient-to-br from-neutral-800 to-neutral-900 text-white border border-[#21d8ff]/40 hover:border-[#21d8ff] hover:shadow-[0_0_30px_rgba(33,216,255,0.4)] transition-all duration-300"
+                  data-testid="button-browse-products-cta"
+                >
+                  <motion.span
+                    whileHover={{ x: -2 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    Browse Products
+                  </motion.span>
+                  <motion.div
+                    whileHover={{ x: 3 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ArrowRight className="h-4 w-4" />
+                  </motion.div>
+                </Button>
+              </motion.div>
             </Link>
             <Link href="/coa">
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="font-display text-base px-8 bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
+              <motion.div
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.95 }}
               >
-                Verify COA
-              </Button>
+                <Button 
+                  size="lg"
+                  className="font-display text-base px-8 bg-transparent border-2 border-black text-black hover:border-[#21d8ff] hover:shadow-[0_0_25px_rgba(33,216,255,0.3)] transition-all duration-300 hover:bg-black/5"
+                  data-testid="button-verify-coa-cta"
+                >
+                  <motion.span
+                    whileHover={{ y: -2 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    Verify COA
+                  </motion.span>
+                </Button>
+              </motion.div>
             </Link>
           </div>
         </motion.div>
