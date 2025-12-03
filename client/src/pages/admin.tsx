@@ -3952,7 +3952,8 @@ function PricingOptimizerTab() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/products"] }); // Refetch for trend indicators
+      // Invalidate price-trend cache for this product so badge updates
+      queryClient.invalidateQueries({ queryKey: ['/api/products', variables.id, 'price-trend'] });
       markPriceAsUpdated(variables.id);
       setAppliedSuggestions(prev => [...prev, variables.id]);
       toast({
