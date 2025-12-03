@@ -463,10 +463,10 @@
   /* Upsell Box Pulse & Glow Animation */
   @keyframes pulse-glow-upsell {
     0%, 100% {
-      box-shadow: 0 0 20px rgba(33, 216, 255, 0.2), 0 0 40px rgba(33, 216, 255, 0.05);
+      box-shadow: 0 0 15px rgba(33, 216, 255, 0.1), 0 0 30px rgba(33, 216, 255, 0.02);
     }
     50% {
-      box-shadow: 0 0 35px rgba(33, 216, 255, 0.4), 0 0 60px rgba(33, 216, 255, 0.15);
+      box-shadow: 0 0 25px rgba(33, 216, 255, 0.2), 0 0 40px rgba(33, 216, 255, 0.08);
     }
   }
 
