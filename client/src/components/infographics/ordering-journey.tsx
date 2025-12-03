@@ -7,7 +7,8 @@ import {
   Package,
   Truck,
   Home,
-  ChevronRight
+  ChevronRight,
+  Clock
 } from "lucide-react";
 
 const journeySteps = [
