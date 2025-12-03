@@ -311,22 +311,6 @@ export default function Contact() {
                 </CardContent>
               </Card>
 
-              <Card className="border-[#E7FB10]/30">
-                <CardContent className="pt-6">
-                  <div className="flex items-start gap-4">
-                    <div className="h-10 w-10 rounded-full bg-[#E7FB10]/20 flex items-center justify-center shrink-0">
-                      <Mail className="h-5 w-5 text-[#E7FB10]" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium mb-1">Email Us Directly</h3>
-                      <p className="text-sm text-muted-foreground">
-                        support@reviveresearch.com
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
               <Card className="border-red-500/40 bg-red-950/20 shadow-[0_0_15px_rgba(239,68,68,0.15)] animate-pulse-subtle">
                 <CardContent className="pt-6">
                   <div className="flex items-start gap-4">
