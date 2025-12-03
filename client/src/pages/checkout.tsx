@@ -202,7 +202,7 @@ export default function Checkout() {
 
   const FREE_SHIPPING_THRESHOLD = 175;
   const FLAT_RATE_SHIPPING = 20;
-  const COLD_PACK_FEE = 10;
+  const COLD_PACK_FEE = 14.99;
   const cartSubtotal = getSubtotal();
   const baseShipping = cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING;
   const coldPackFee = hasColdPackShipping ? COLD_PACK_FEE : 0;
@@ -643,7 +643,7 @@ export default function Checkout() {
                     </div>
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-sm font-semibold text-blue-400">
-                        +${COLD_PACK_FEE}.00
+                        +${COLD_PACK_FEE.toFixed(2)}
                       </span>
                       <motion.div
                         whileHover={{ scale: 1.05 }}
@@ -678,7 +678,7 @@ export default function Checkout() {
                   {hasColdPackShipping && (
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Cold Pack Shipping</span>
-                      <span className="text-blue-400">+${COLD_PACK_FEE}.00</span>
+                      <span className="text-blue-400">+${COLD_PACK_FEE.toFixed(2)}</span>
                     </div>
                   )}
                 </div>
