@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import type { EducationArticle } from "@shared/schema";
 import { LearningRoadmap } from "@/components/infographics/learning-roadmap";
+import { OrderingJourney } from "@/components/infographics/ordering-journey";
 import { 
   COAAnatomyDiagram, 
   HPLCExplainer, 
@@ -40,6 +41,7 @@ import {
 } from "@/components/education";
 
 const articleVisuals: Record<string, () => JSX.Element> = {
+  "ordering-expectations": () => <OrderingJourney />,
   "how-to-read-coas": () => <COAAnatomyDiagram />,
   "understanding-peptide-purity": () => <HPLCExplainer />,
   "storage-101": () => <StorageTemperatureGuide />,
