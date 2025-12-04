@@ -190,8 +190,8 @@ export function Footer() {
             <div>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 <span className="font-semibold text-[#E7FB10]">Researcher Responsibility:</span> All content on ReviveResearch.com is for{" "}
-                <span className="font-semibold">educational and informational purposes only</span>. These materials are{" "}
-                <span className="font-semibold">not intended for human or veterinary use</span> and are not classified as drugs, supplements, or food products under applicable law. 
+                <span className="font-semibold text-[#E7FB10]">educational and informational purposes only</span>. These materials are{" "}
+                <span className="font-semibold text-[#E7FB10]">not intended for human or veterinary use</span> and are not classified as drugs, supplements, or food products under applicable law. 
                 By purchasing, you acknowledge full responsibility for use in accordance with all applicable laws and regulations. 
                 Nothing on this site constitutes medical advice or a recommendation for use.
               </p>
