@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -80,7 +80,6 @@ function HeroSection() {
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
   const scale = useTransform(scrollY, [0, 500], [1, 1.1]);
   const imageOpacity = useTransform(scrollY, [0, 400], [1, 0.3]);
-  const prefersReducedMotion = useReducedMotion();
 
   const handleScrollClick = () => {
     const productsSection = document.getElementById('products');
@@ -101,18 +100,18 @@ function HeroSection() {
           className="w-full h-full object-cover object-center"
         />
       </motion.div>
-      <div className={`absolute inset-0 z-[1] overflow-hidden pointer-events-none ${prefersReducedMotion ? 'opacity-20' : ''}`}>
+      <div className="absolute inset-0 z-[1] overflow-hidden pointer-events-none">
         <motion.div
           className="absolute -left-1/4 bottom-0 w-[150%] h-[60%] opacity-40"
           style={{
             background: "radial-gradient(ellipse at center, rgba(100,100,120,0.4) 0%, transparent 70%)",
             filter: "blur(40px)",
           }}
-          animate={prefersReducedMotion ? undefined : {
+          animate={{
             x: ["-10%", "10%", "-10%"],
             y: ["0%", "-5%", "0%"],
           }}
-          transition={prefersReducedMotion ? undefined : {
+          transition={{
             duration: 20,
             repeat: Infinity,
             ease: "easeInOut",
@@ -124,11 +123,11 @@ function HeroSection() {
             background: "radial-gradient(ellipse at center, rgba(80,90,110,0.5) 0%, transparent 65%)",
             filter: "blur(50px)",
           }}
-          animate={prefersReducedMotion ? undefined : {
+          animate={{
             x: ["10%", "-15%", "10%"],
             y: ["0%", "-8%", "0%"],
           }}
-          transition={prefersReducedMotion ? undefined : {
+          transition={{
             duration: 25,
             repeat: Infinity,
             ease: "easeInOut",
@@ -136,86 +135,6 @@ function HeroSection() {
           }}
         />
       </div>
-      
-      {/* Atmospheric Fog/Haze Overlay */}
-      <div className={`absolute inset-0 z-[1] overflow-hidden pointer-events-none ${prefersReducedMotion ? 'opacity-30' : ''}`}>
-        {/* Primary fog cloud - drifts from left */}
-        <motion.div
-          className="absolute -left-[20%] bottom-0 w-[140%] h-[70%]"
-          style={{
-            background: "radial-gradient(ellipse 80% 60% at 30% 80%, rgba(255,255,255,0.12) 0%, rgba(200,200,220,0.06) 40%, transparent 70%)",
-            filter: "blur(60px)",
-          }}
-          animate={prefersReducedMotion ? undefined : {
-            x: ["-5%", "15%", "-5%"],
-            y: ["0%", "-8%", "0%"],
-            scale: [1, 1.08, 1],
-          }}
-          transition={prefersReducedMotion ? undefined : {
-            duration: 35,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        {/* Secondary fog cloud - drifts from right */}
-        <motion.div
-          className="absolute -right-[15%] bottom-[10%] w-[130%] h-[55%]"
-          style={{
-            background: "radial-gradient(ellipse 70% 50% at 70% 70%, rgba(220,220,235,0.10) 0%, rgba(180,180,200,0.04) 45%, transparent 75%)",
-            filter: "blur(70px)",
-          }}
-          animate={prefersReducedMotion ? undefined : {
-            x: ["5%", "-12%", "5%"],
-            y: ["0%", "-6%", "0%"],
-            scale: [1.05, 1, 1.05],
-          }}
-          transition={prefersReducedMotion ? undefined : {
-            duration: 40,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 5,
-          }}
-        />
-        {/* Upper wispy fog - subtle top layer */}
-        <motion.div
-          className="absolute left-[10%] top-[20%] w-[80%] h-[40%]"
-          style={{
-            background: "radial-gradient(ellipse 100% 40% at 50% 50%, rgba(255,255,255,0.06) 0%, transparent 60%)",
-            filter: "blur(80px)",
-            opacity: prefersReducedMotion ? 0.5 : undefined,
-          }}
-          animate={prefersReducedMotion ? undefined : {
-            x: ["-8%", "8%", "-8%"],
-            opacity: [0.4, 0.7, 0.4],
-          }}
-          transition={prefersReducedMotion ? undefined : {
-            duration: 28,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 3,
-          }}
-        />
-        {/* Low-lying ground fog */}
-        <motion.div
-          className="absolute -left-[10%] bottom-0 w-[120%] h-[35%]"
-          style={{
-            background: "linear-gradient(to top, rgba(200,200,220,0.15) 0%, rgba(220,220,240,0.08) 30%, transparent 100%)",
-            filter: "blur(30px)",
-            opacity: prefersReducedMotion ? 0.5 : undefined,
-          }}
-          animate={prefersReducedMotion ? undefined : {
-            x: ["0%", "5%", "-3%", "0%"],
-            opacity: [0.5, 0.7, 0.5],
-          }}
-          transition={prefersReducedMotion ? undefined : {
-            duration: 22,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1,
-          }}
-        />
-      </div>
-      
       <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-[2]" />
       <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-background z-[2]" />
       <div className="absolute inset-0 overflow-hidden z-[3] pointer-events-none">
