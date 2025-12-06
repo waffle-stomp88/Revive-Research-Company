@@ -24,7 +24,7 @@ export function HPLCExplainer() {
     { x: 10, y: 90, label: "Solvent" },
     { x: 25, y: 85, label: "Minor impurity" },
     { x: 40, y: 70, label: "Related peptide" },
-    { x: 60, y: 10, label: "Target peptide (98.5%)", isMain: true },
+    { x: 60, y: 15, label: "Target peptide (98.5%)", isMain: true },
     { x: 80, y: 88, label: "Truncated form" },
   ];
 
@@ -60,134 +60,136 @@ export function HPLCExplainer() {
             </span>
           </div>
 
-          <div className="relative h-48 bg-background/50 rounded-lg overflow-hidden">
-            <div className="absolute bottom-0 left-0 right-0 h-px bg-muted-foreground/30" />
-            <div className="absolute bottom-0 left-0 top-0 w-px bg-muted-foreground/30" />
-            
-            <div className="absolute bottom-2 left-2 text-xs text-muted-foreground">0</div>
-            <div className="absolute bottom-2 right-2 text-xs text-muted-foreground">Time →</div>
-            <div className="absolute top-2 left-2 text-xs text-muted-foreground rotate-[-90deg] origin-left">Signal ↑</div>
+          <div className="relative w-full" style={{ paddingBottom: "66.67%" }}>
+            <div className="absolute inset-0 bg-background/50 rounded-lg overflow-hidden">
+              <div className="absolute bottom-0 left-0 right-0 h-px bg-muted-foreground/30" />
+              <div className="absolute bottom-0 left-0 top-0 w-px bg-muted-foreground/30" />
+              
+              <div className="absolute bottom-2 left-2 text-xs text-muted-foreground">0</div>
+              <div className="absolute bottom-2 right-2 text-xs text-muted-foreground">Time →</div>
+              <div className="absolute top-2 left-2 text-xs font-semibold text-muted-foreground">Signal</div>
 
-            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="peakGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#21d8ff" stopOpacity="0.5" />
-                  <stop offset="100%" stopColor="#21d8ff" stopOpacity="0" />
-                </linearGradient>
-                <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#21d8ff" stopOpacity="0" />
-                  <stop offset="50%" stopColor="#21d8ff" stopOpacity="1" />
-                  <stop offset="100%" stopColor="#21d8ff" stopOpacity="0" />
-                </linearGradient>
-                <mask id="waveMask">
-                  <motion.rect
-                    x="-20"
-                    y="0"
-                    width="30"
-                    height="100"
-                    fill="white"
-                    animate={{ x: ["-20", "120"] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "linear", repeatDelay: 1 }}
-                  />
-                </mask>
-              </defs>
-
-              <motion.path
-                d={`
-                  M 0 95
-                  Q 8 95 10 ${chromatogramPoints[0].y}
-                  Q 12 95 20 95
-                  Q 23 95 25 ${chromatogramPoints[1].y}
-                  Q 27 95 35 95
-                  Q 38 95 40 ${chromatogramPoints[2].y}
-                  Q 42 95 50 95
-                  Q 55 95 60 ${chromatogramPoints[3].y}
-                  Q 65 95 70 95
-                  Q 78 95 80 ${chromatogramPoints[4].y}
-                  Q 82 95 100 95
-                `}
-                fill="url(#peakGradient)"
-                initial={{ opacity: 0 }}
-                animate={isInView ? { opacity: 1 } : {}}
-                transition={{ duration: 1, delay: 0.5 }}
-              />
-
-              <motion.path
-                d={`
-                  M 0 95
-                  Q 8 95 10 ${chromatogramPoints[0].y}
-                  Q 12 95 20 95
-                  Q 23 95 25 ${chromatogramPoints[1].y}
-                  Q 27 95 35 95
-                  Q 38 95 40 ${chromatogramPoints[2].y}
-                  Q 42 95 50 95
-                  Q 55 95 60 ${chromatogramPoints[3].y}
-                  Q 65 95 70 95
-                  Q 78 95 80 ${chromatogramPoints[4].y}
-                  Q 82 95 100 95
-                `}
-                fill="none"
-                stroke="#21d8ff"
-                strokeWidth="0.5"
-                initial={{ pathLength: 0 }}
-                animate={isInView ? { pathLength: 1 } : {}}
-                transition={{ duration: 2, delay: 0.5 }}
-              />
-
-              <path
-                d={`
-                  M 0 95
-                  Q 8 95 10 ${chromatogramPoints[0].y}
-                  Q 12 95 20 95
-                  Q 23 95 25 ${chromatogramPoints[1].y}
-                  Q 27 95 35 95
-                  Q 38 95 40 ${chromatogramPoints[2].y}
-                  Q 42 95 50 95
-                  Q 55 95 60 ${chromatogramPoints[3].y}
-                  Q 65 95 70 95
-                  Q 78 95 80 ${chromatogramPoints[4].y}
-                  Q 82 95 100 95
-                `}
-                fill="none"
-                stroke="#21d8ff"
-                strokeWidth="2"
-                mask="url(#waveMask)"
-                style={{ filter: "drop-shadow(0 0 4px #21d8ff)" }}
-              />
-            </svg>
-
-            {chromatogramPoints.map((point, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 10 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 1 + i * 0.15 }}
-                className="absolute"
-                style={{ 
-                  left: `${point.x}%`, 
-                  top: `${point.y}%`,
-                  transform: "translate(-50%, -50%)"
-                }}
-              >
-                {point.isMain ? (
-                  <div className="relative flex flex-col items-center">
-                    <motion.div
-                      animate={{ scale: [1, 1.3, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      className="w-4 h-4 rounded-full bg-[#22c55e] shadow-lg"
-                      style={{ boxShadow: "0 0 12px #22c55e, 0 0 24px #22c55e50" }}
+              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="peakGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#21d8ff" stopOpacity="0.5" />
+                    <stop offset="100%" stopColor="#21d8ff" stopOpacity="0" />
+                  </linearGradient>
+                  <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#21d8ff" stopOpacity="0" />
+                    <stop offset="50%" stopColor="#21d8ff" stopOpacity="1" />
+                    <stop offset="100%" stopColor="#21d8ff" stopOpacity="0" />
+                  </linearGradient>
+                  <mask id="waveMask">
+                    <motion.rect
+                      x="-20"
+                      y="0"
+                      width="30"
+                      height="100"
+                      fill="white"
+                      animate={{ x: ["-20", "120"] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: "linear", repeatDelay: 1 }}
                     />
-                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-                      <span className="text-xs font-bold text-[#22c55e] bg-background/90 px-2 py-1 rounded border border-[#22c55e]/30">
-                        {point.label}
-                      </span>
+                  </mask>
+                </defs>
+
+                <motion.path
+                  d={`
+                    M 0 95
+                    Q 8 95 10 ${chromatogramPoints[0].y}
+                    Q 12 95 20 95
+                    Q 23 95 25 ${chromatogramPoints[1].y}
+                    Q 27 95 35 95
+                    Q 38 95 40 ${chromatogramPoints[2].y}
+                    Q 42 95 50 95
+                    Q 55 95 60 ${chromatogramPoints[3].y}
+                    Q 65 95 70 95
+                    Q 78 95 80 ${chromatogramPoints[4].y}
+                    Q 82 95 100 95
+                  `}
+                  fill="url(#peakGradient)"
+                  initial={{ opacity: 0 }}
+                  animate={isInView ? { opacity: 1 } : {}}
+                  transition={{ duration: 1, delay: 0.5 }}
+                />
+
+                <motion.path
+                  d={`
+                    M 0 95
+                    Q 8 95 10 ${chromatogramPoints[0].y}
+                    Q 12 95 20 95
+                    Q 23 95 25 ${chromatogramPoints[1].y}
+                    Q 27 95 35 95
+                    Q 38 95 40 ${chromatogramPoints[2].y}
+                    Q 42 95 50 95
+                    Q 55 95 60 ${chromatogramPoints[3].y}
+                    Q 65 95 70 95
+                    Q 78 95 80 ${chromatogramPoints[4].y}
+                    Q 82 95 100 95
+                  `}
+                  fill="none"
+                  stroke="#21d8ff"
+                  strokeWidth="1"
+                  initial={{ pathLength: 0 }}
+                  animate={isInView ? { pathLength: 1 } : {}}
+                  transition={{ duration: 2, delay: 0.5 }}
+                />
+
+                <path
+                  d={`
+                    M 0 95
+                    Q 8 95 10 ${chromatogramPoints[0].y}
+                    Q 12 95 20 95
+                    Q 23 95 25 ${chromatogramPoints[1].y}
+                    Q 27 95 35 95
+                    Q 38 95 40 ${chromatogramPoints[2].y}
+                    Q 42 95 50 95
+                    Q 55 95 60 ${chromatogramPoints[3].y}
+                    Q 65 95 70 95
+                    Q 78 95 80 ${chromatogramPoints[4].y}
+                    Q 82 95 100 95
+                  `}
+                  fill="none"
+                  stroke="#21d8ff"
+                  strokeWidth="1.5"
+                  mask="url(#waveMask)"
+                  style={{ filter: "drop-shadow(0 0 4px #21d8ff)" }}
+                />
+              </svg>
+
+              {chromatogramPoints.map((point, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: 1 + i * 0.15 }}
+                  className="absolute"
+                  style={{ 
+                    left: `${point.x}%`, 
+                    top: `${point.y}%`,
+                    transform: "translate(-50%, -50%)"
+                  }}
+                >
+                  {point.isMain ? (
+                    <div className="relative flex flex-col items-center">
+                      <motion.div
+                        animate={{ scale: [1, 1.3, 1] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="w-4 h-4 rounded-full bg-[#22c55e] shadow-lg"
+                        style={{ boxShadow: "0 0 12px #22c55e, 0 0 24px #22c55e50" }}
+                      />
+                      <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+                        <span className="text-xs font-bold text-[#22c55e] bg-background/95 px-2 py-1 rounded border border-[#22c55e]/30">
+                          {point.label}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#21d8ff] shadow-md" style={{ boxShadow: "0 0 6px #21d8ff, 0 0 12px #21d8ff40" }} />
-                )}
-              </motion.div>
-            ))}
+                  ) : (
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#21d8ff] shadow-md" style={{ boxShadow: "0 0 6px #21d8ff, 0 0 12px #21d8ff40" }} />
+                  )}
+                </motion.div>
+              ))}
+            </div>
           </div>
 
           <motion.div
