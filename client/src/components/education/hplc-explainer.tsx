@@ -184,7 +184,7 @@ export function HPLCExplainer() {
                     </div>
                   </div>
                 ) : (
-                  <div className="w-2 h-2 rounded-full bg-muted-foreground/60" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#21d8ff] shadow-md" style={{ boxShadow: "0 0 6px #21d8ff, 0 0 12px #21d8ff40" }} />
                 )}
               </motion.div>
             ))}
@@ -201,7 +201,7 @@ export function HPLCExplainer() {
               <span>Target peptide (main peak)</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-muted-foreground/50" />
+              <div className="w-2 h-2 rounded-full bg-[#21d8ff]" />
               <span>Impurities (minor peaks)</span>
             </div>
           </motion.div>
