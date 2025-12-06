@@ -18,15 +18,28 @@ const purityGrades: PurityGrade[] = [
 export function HPLCExplainer() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
-  const [showDetails, setShowDetails] = useState(false);
 
   const chromatogramPoints = [
     { x: 10, y: 90, label: "Solvent" },
     { x: 25, y: 85, label: "Minor impurity" },
     { x: 40, y: 70, label: "Related peptide" },
-    { x: 60, y: 15, label: "Target peptide (98.5%)", isMain: true },
+    { x: 60, y: 20, label: "Target peptide (98.5%)", isMain: true },
     { x: 80, y: 88, label: "Truncated form" },
   ];
+
+  const pathData = `
+    M 0 95
+    Q 8 95 10 ${chromatogramPoints[0].y}
+    Q 12 95 20 95
+    Q 23 95 25 ${chromatogramPoints[1].y}
+    Q 27 95 35 95
+    Q 38 95 40 ${chromatogramPoints[2].y}
+    Q 42 95 50 95
+    Q 55 95 60 ${chromatogramPoints[3].y}
+    Q 65 95 70 95
+    Q 78 95 80 ${chromatogramPoints[4].y}
+    Q 82 95 100 95
+  `;
 
   return (
     <div ref={ref} className="py-8" data-testid="hplc-explainer">
@@ -60,136 +73,168 @@ export function HPLCExplainer() {
             </span>
           </div>
 
-          <div className="relative w-full" style={{ paddingBottom: "66.67%" }}>
-            <div className="absolute inset-0 bg-background/50 rounded-lg overflow-hidden">
-              <div className="absolute bottom-0 left-0 right-0 h-px bg-muted-foreground/30" />
-              <div className="absolute bottom-0 left-0 top-0 w-px bg-muted-foreground/30" />
-              
-              <div className="absolute bottom-2 left-2 text-xs text-muted-foreground">0</div>
-              <div className="absolute bottom-2 right-2 text-xs text-muted-foreground">Time →</div>
-              <div className="absolute top-2 left-2 text-xs font-semibold text-muted-foreground">Signal</div>
+          <div className="relative bg-background/50 rounded-lg overflow-visible p-4">
+            <div className="text-xs text-muted-foreground mb-2">Signal</div>
+            
+            <svg 
+              className="w-full" 
+              viewBox="0 0 100 60" 
+              preserveAspectRatio="xMidYMid meet"
+              style={{ height: "200px" }}
+            >
+              <defs>
+                <linearGradient id="peakGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#21d8ff" stopOpacity="0.4" />
+                  <stop offset="100%" stopColor="#21d8ff" stopOpacity="0" />
+                </linearGradient>
+                <mask id="waveMask">
+                  <motion.rect
+                    x="-20"
+                    y="0"
+                    width="30"
+                    height="60"
+                    fill="white"
+                    animate={{ x: ["-20", "120"] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "linear", repeatDelay: 1 }}
+                  />
+                </mask>
+              </defs>
 
-              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                <defs>
-                  <linearGradient id="peakGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#21d8ff" stopOpacity="0.5" />
-                    <stop offset="100%" stopColor="#21d8ff" stopOpacity="0" />
-                  </linearGradient>
-                  <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#21d8ff" stopOpacity="0" />
-                    <stop offset="50%" stopColor="#21d8ff" stopOpacity="1" />
-                    <stop offset="100%" stopColor="#21d8ff" stopOpacity="0" />
-                  </linearGradient>
-                  <mask id="waveMask">
-                    <motion.rect
-                      x="-20"
-                      y="0"
-                      width="30"
-                      height="100"
-                      fill="white"
-                      animate={{ x: ["-20", "120"] }}
-                      transition={{ duration: 3, repeat: Infinity, ease: "linear", repeatDelay: 1 }}
-                    />
-                  </mask>
-                </defs>
+              <line x1="5" y1="55" x2="95" y2="55" stroke="rgba(255,255,255,0.2)" strokeWidth="0.3" />
+              <line x1="5" y1="55" x2="5" y2="5" stroke="rgba(255,255,255,0.2)" strokeWidth="0.3" />
 
-                <motion.path
-                  d={`
-                    M 0 95
-                    Q 8 95 10 ${chromatogramPoints[0].y}
-                    Q 12 95 20 95
-                    Q 23 95 25 ${chromatogramPoints[1].y}
-                    Q 27 95 35 95
-                    Q 38 95 40 ${chromatogramPoints[2].y}
-                    Q 42 95 50 95
-                    Q 55 95 60 ${chromatogramPoints[3].y}
-                    Q 65 95 70 95
-                    Q 78 95 80 ${chromatogramPoints[4].y}
-                    Q 82 95 100 95
-                  `}
-                  fill="url(#peakGradient)"
-                  initial={{ opacity: 0 }}
-                  animate={isInView ? { opacity: 1 } : {}}
-                  transition={{ duration: 1, delay: 0.5 }}
+              <motion.path
+                d={`
+                  M 5 55
+                  Q 9 55 10 50
+                  Q 11 55 18 55
+                  Q 22 55 24 47
+                  Q 26 55 33 55
+                  Q 37 55 40 38
+                  Q 43 55 48 55
+                  Q 53 55 58 12
+                  Q 63 55 68 55
+                  Q 75 55 78 48
+                  Q 81 55 95 55
+                `}
+                fill="url(#peakGradient)"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+                transition={{ duration: 1, delay: 0.5 }}
+              />
+
+              <motion.path
+                d={`
+                  M 5 55
+                  Q 9 55 10 50
+                  Q 11 55 18 55
+                  Q 22 55 24 47
+                  Q 26 55 33 55
+                  Q 37 55 40 38
+                  Q 43 55 48 55
+                  Q 53 55 58 12
+                  Q 63 55 68 55
+                  Q 75 55 78 48
+                  Q 81 55 95 55
+                `}
+                fill="none"
+                stroke="#21d8ff"
+                strokeWidth="0.8"
+                initial={{ pathLength: 0 }}
+                animate={isInView ? { pathLength: 1 } : {}}
+                transition={{ duration: 2, delay: 0.5 }}
+              />
+
+              <path
+                d={`
+                  M 5 55
+                  Q 9 55 10 50
+                  Q 11 55 18 55
+                  Q 22 55 24 47
+                  Q 26 55 33 55
+                  Q 37 55 40 38
+                  Q 43 55 48 55
+                  Q 53 55 58 12
+                  Q 63 55 68 55
+                  Q 75 55 78 48
+                  Q 81 55 95 55
+                `}
+                fill="none"
+                stroke="#21d8ff"
+                strokeWidth="0.8"
+                mask="url(#waveMask)"
+                style={{ filter: "drop-shadow(0 0 2px #21d8ff)" }}
+              />
+
+              <motion.circle
+                cx="10" cy="50" r="1.5"
+                fill="#21d8ff"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+                transition={{ delay: 1.2 }}
+              />
+              <motion.circle
+                cx="24" cy="47" r="1.5"
+                fill="#21d8ff"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+                transition={{ delay: 1.35 }}
+              />
+              <motion.circle
+                cx="40" cy="38" r="1.5"
+                fill="#21d8ff"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+                transition={{ delay: 1.5 }}
+              />
+              <motion.circle
+                cx="78" cy="48" r="1.5"
+                fill="#21d8ff"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+                transition={{ delay: 1.8 }}
+              />
+
+              <motion.circle
+                cx="58" cy="12" r="2.5"
+                fill="#22c55e"
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={isInView ? { opacity: 1, scale: [1, 1.3, 1] } : {}}
+                transition={{ 
+                  opacity: { delay: 1.65, duration: 0.3 },
+                  scale: { delay: 1.65, duration: 2, repeat: Infinity }
+                }}
+                style={{ filter: "drop-shadow(0 0 3px #22c55e)" }}
+              />
+
+              <motion.g
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+                transition={{ delay: 1.65 }}
+              >
+                <rect 
+                  x="32" y="1" 
+                  width="52" height="8" 
+                  rx="1.5" 
+                  fill="rgba(0,0,0,0.8)" 
+                  stroke="#22c55e" 
+                  strokeWidth="0.3"
+                  strokeOpacity="0.5"
                 />
-
-                <motion.path
-                  d={`
-                    M 0 95
-                    Q 8 95 10 ${chromatogramPoints[0].y}
-                    Q 12 95 20 95
-                    Q 23 95 25 ${chromatogramPoints[1].y}
-                    Q 27 95 35 95
-                    Q 38 95 40 ${chromatogramPoints[2].y}
-                    Q 42 95 50 95
-                    Q 55 95 60 ${chromatogramPoints[3].y}
-                    Q 65 95 70 95
-                    Q 78 95 80 ${chromatogramPoints[4].y}
-                    Q 82 95 100 95
-                  `}
-                  fill="none"
-                  stroke="#21d8ff"
-                  strokeWidth="1"
-                  initial={{ pathLength: 0 }}
-                  animate={isInView ? { pathLength: 1 } : {}}
-                  transition={{ duration: 2, delay: 0.5 }}
-                />
-
-                <path
-                  d={`
-                    M 0 95
-                    Q 8 95 10 ${chromatogramPoints[0].y}
-                    Q 12 95 20 95
-                    Q 23 95 25 ${chromatogramPoints[1].y}
-                    Q 27 95 35 95
-                    Q 38 95 40 ${chromatogramPoints[2].y}
-                    Q 42 95 50 95
-                    Q 55 95 60 ${chromatogramPoints[3].y}
-                    Q 65 95 70 95
-                    Q 78 95 80 ${chromatogramPoints[4].y}
-                    Q 82 95 100 95
-                  `}
-                  fill="none"
-                  stroke="#21d8ff"
-                  strokeWidth="1.5"
-                  mask="url(#waveMask)"
-                  style={{ filter: "drop-shadow(0 0 4px #21d8ff)" }}
-                />
-              </svg>
-
-              {chromatogramPoints.map((point, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: 1 + i * 0.15 }}
-                  className="absolute"
-                  style={{ 
-                    left: `${point.x}%`, 
-                    top: `${point.y}%`,
-                    transform: "translate(-50%, -50%)"
-                  }}
+                <text 
+                  x="58" y="6.5" 
+                  textAnchor="middle" 
+                  fill="#22c55e" 
+                  fontSize="4" 
+                  fontWeight="bold"
                 >
-                  {point.isMain ? (
-                    <div className="relative flex flex-col items-center">
-                      <motion.div
-                        animate={{ scale: [1, 1.3, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                        className="w-4 h-4 rounded-full bg-[#22c55e] shadow-lg"
-                        style={{ boxShadow: "0 0 12px #22c55e, 0 0 24px #22c55e50" }}
-                      />
-                      <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-                        <span className="text-xs font-bold text-[#22c55e] bg-background/95 px-2 py-1 rounded border border-[#22c55e]/30">
-                          {point.label}
-                        </span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#21d8ff] shadow-md" style={{ boxShadow: "0 0 6px #21d8ff, 0 0 12px #21d8ff40" }} />
-                  )}
-                </motion.div>
-              ))}
-            </div>
+                  Target peptide (98.5%)
+                </text>
+              </motion.g>
+
+              <text x="5" y="59" fill="rgba(255,255,255,0.5)" fontSize="3">0</text>
+              <text x="90" y="59" fill="rgba(255,255,255,0.5)" fontSize="3">Time →</text>
+            </svg>
           </div>
 
           <motion.div
