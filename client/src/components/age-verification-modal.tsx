@@ -38,16 +38,18 @@ export function AgeVerificationModal() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-4"
+        className="fixed inset-0 z-[100] overflow-y-auto bg-black/90 backdrop-blur-md"
         data-testid="modal-age-verification"
+        onTouchMove={(e) => e.stopPropagation()}
       >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.4 }}
-          className="w-full max-w-2xl bg-card border border-border rounded-lg shadow-2xl overflow-hidden"
-        >
-          <div className="p-8 md:p-10">
+        <div className="min-h-full flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.4 }}
+            className="w-full max-w-2xl bg-card border border-border rounded-lg shadow-2xl"
+          >
+            <div className="p-6 sm:p-8 md:p-10">
             <div className="flex items-center justify-center gap-4 mb-8">
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
                 <FlaskConical className="h-8 w-8 text-primary" />
