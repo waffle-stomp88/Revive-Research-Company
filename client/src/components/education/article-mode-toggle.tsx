@@ -13,6 +13,7 @@ export function ArticleModeToggle({ mode, onModeChange }: ArticleModeToggleProps
     <div className="flex items-center gap-2 p-1 rounded-lg bg-muted/50 border border-border" data-testid="article-mode-toggle">
       <button
         onClick={() => onModeChange("quick-breakdown")}
+        aria-pressed={mode === "quick-breakdown"}
         className={`relative flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
           mode === "quick-breakdown"
             ? "text-foreground"
@@ -36,6 +37,7 @@ export function ArticleModeToggle({ mode, onModeChange }: ArticleModeToggleProps
       
       <button
         onClick={() => onModeChange("deep-dive")}
+        aria-pressed={mode === "deep-dive"}
         className={`relative flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
           mode === "deep-dive"
             ? "text-foreground"
