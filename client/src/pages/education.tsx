@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,10 @@ import {
   AlertTriangle,
   Sparkles,
   ArrowLeft,
+  Zap,
 } from "lucide-react";
+import { ArticleModeToggle, BeginnerBadge } from "@/components/education/article-mode-toggle";
+import { BeginnerArticleContent, WhatIsPeptideSection } from "@/components/education/beginner-content";
 import type { EducationArticle } from "@shared/schema";
 import { LearningRoadmap } from "@/components/infographics/learning-roadmap";
 import { OrderingJourney } from "@/components/infographics/ordering-journey";
@@ -169,10 +172,13 @@ const renderMarkdown = (content: string) => {
     .replace(/^(?!\s*<)/gm, '<p class="mb-4">'); // Skip lines starting with HTML tags (with optional whitespace)
 };
 
+type ArticleMode = "deep-dive" | "quick-breakdown";
+
 export default function Education() {
   const params = useParams<{ slug?: string }>();
   const [activeCategory, setActiveCategory] = useState("all");
   const [expandedArticle, setExpandedArticle] = useState<string | null>(null);
+  const [articleMode, setArticleMode] = useState<ArticleMode>("quick-breakdown");
 
   const { data: articles = [], isLoading } = useQuery<EducationArticle[]>({
     queryKey: ["/api/education"],
@@ -402,24 +408,57 @@ export default function Education() {
                         <h1 className="font-display text-2xl md:text-3xl font-bold mb-3" style={{ color: catColor }}>
                           {article.title}
                         </h1>
-                        <p className="text-muted-foreground">
+                        <p className="text-muted-foreground mb-4">
                           {article.summary}
                         </p>
+                        
+                        <div className="flex flex-wrap items-center gap-3">
+                          <ArticleModeToggle 
+                            mode={articleMode} 
+                            onModeChange={setArticleMode} 
+                          />
+                          {articleMode === "quick-breakdown" && <BeginnerBadge />}
+                        </div>
                       </div>
 
                       <div className="p-6">
-                        {article.slug && articleVisuals[article.slug] && (
-                          <div className="mb-8">
-                            {articleVisuals[article.slug]()}
-                          </div>
-                        )}
+                        <AnimatePresence mode="wait">
+                          {articleMode === "quick-breakdown" ? (
+                            <motion.div
+                              key="beginner"
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              transition={{ duration: 0.3 }}
+                            >
+                              <BeginnerArticleContent 
+                                slug={article.slug || ""} 
+                                title={article.title} 
+                              />
+                            </motion.div>
+                          ) : (
+                            <motion.div
+                              key="deepdive"
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              transition={{ duration: 0.3 }}
+                            >
+                              {article.slug && articleVisuals[article.slug] && (
+                                <div className="mb-8">
+                                  {articleVisuals[article.slug]()}
+                                </div>
+                              )}
 
-                        {article.content && (
-                          <div 
-                            className="prose prose-invert max-w-none text-muted-foreground"
-                            dangerouslySetInnerHTML={{ __html: renderMarkdown(article.content) }}
-                          />
-                        )}
+                              {article.content && (
+                                <div 
+                                  className="prose prose-invert max-w-none text-muted-foreground"
+                                  dangerouslySetInnerHTML={{ __html: renderMarkdown(article.content) }}
+                                />
+                              )}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
                     </Card>
                   );
