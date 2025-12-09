@@ -203,13 +203,13 @@ function HeroSection() {
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <Link href="/peptides" onClick={() => trackEvent('hero_cta_click', 'engagement', 'shop_peptides')}>
-            <Button size="lg" className="font-display text-base px-8 gap-2 bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_30px_rgba(231,251,16,0.4)] hover:shadow-[0_0_50px_rgba(231,251,16,0.6)] transition-all duration-300" data-testid="button-hero-shop">
+            <Button size="lg" className="font-display text-lg px-10 gap-2 bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_30px_rgba(231,251,16,0.4)] hover:shadow-[0_0_50px_rgba(231,251,16,0.6)] transition-all duration-300" data-testid="button-hero-shop">
               Shop Peptides
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
           <Link href="/coa">
-            <Button size="lg" variant="outline" className="font-display text-base px-8 bg-black/30 backdrop-blur-sm border-white/30 text-white transition-all duration-300 hover:bg-[#21d8ff] hover:text-black hover:border-[#21d8ff]" data-testid="button-hero-coa">
+            <Button size="lg" variant="outline" className="font-display text-lg px-10 bg-black/30 backdrop-blur-sm border-white/30 text-white transition-all duration-300 hover:bg-[#21d8ff] hover:text-black hover:border-[#21d8ff]" data-testid="button-hero-coa">
               Verify COA
             </Button>
           </Link>
@@ -222,7 +222,7 @@ function HeroSection() {
           className="mt-8"
         >
           <Link href="/education" onClick={() => trackEvent('hero_cta_click', 'engagement', 'learn_peptides')}>
-            <Button size="lg" variant="outline" className="font-display text-base px-8 bg-transparent border-[#ec4899]/50 text-[#ec4899] hover:bg-[#ec4899]/10 hover:border-[#ec4899] transition-all duration-300" data-testid="button-hero-learn">
+            <Button size="lg" variant="outline" className="font-display text-lg px-10 bg-transparent border-[#ec4899]/50 text-[#ec4899] hover:bg-[#ec4899]/10 hover:border-[#ec4899] transition-all duration-300" data-testid="button-hero-learn">
               New to Peptides? Start Here
               <ArrowRight className="h-4 w-4" />
             </Button>
