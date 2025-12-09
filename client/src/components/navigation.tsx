@@ -160,7 +160,7 @@ export function Navigation() {
                   }}>
                     <DropdownMenuTrigger asChild>
                       <button
-                        className={`flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer bg-transparent border-0 outline-none ${
+                        className={`flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer bg-transparent border-0 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 [&:focus]:outline-none [&:focus-visible]:ring-0 ${
                           productLinks.some(p => location === p.href || location.startsWith(p.href + "/"))
                             ? "text-[#E7FB10] drop-shadow-[0_0_12px_rgba(231,251,16,0.8)]"
                             : "text-muted-foreground hover:text-[#E7FB10] hover:drop-shadow-[0_0_12px_rgba(231,251,16,0.5)]"
@@ -199,12 +199,12 @@ export function Navigation() {
                   </DropdownMenu>
                   {productLinks.some(p => location === p.href || location.startsWith(p.href + "/")) && (
                     <motion.div
-                      className="absolute inset-0 bg-[#E7FB10]/10 rounded-md border border-[#E7FB10]/40 shadow-[0_0_16px_rgba(231,251,16,0.3)]"
+                      className="absolute inset-0 bg-[#E7FB10]/10 rounded-md border border-[#E7FB10]/40 shadow-[0_0_16px_rgba(231,251,16,0.3)] pointer-events-none"
                       layoutId="products-highlight"
                     />
                   )}
                   <motion.div
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#E7FB10] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#E7FB10] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full pointer-events-none"
                   />
                 </div>
                 
@@ -216,7 +216,7 @@ export function Navigation() {
                   }}>
                     <DropdownMenuTrigger asChild>
                       <button
-                        className={`flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer bg-transparent border-0 outline-none ${
+                        className={`flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer bg-transparent border-0 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 [&:focus]:outline-none [&:focus-visible]:ring-0 ${
                           location === "/resources" || resourceLinks.some(r => location === r.href)
                             ? "text-[#9d4edd] drop-shadow-[0_0_8px_rgba(157,78,221,0.6)]"
                             : "text-muted-foreground hover:text-[#9d4edd]"
@@ -249,12 +249,12 @@ export function Navigation() {
                   </DropdownMenu>
                   {(location === "/resources" || resourceLinks.some(r => location === r.href)) && (
                     <motion.div
-                      className="absolute inset-0 bg-[#9d4edd]/10 rounded-md border border-[#9d4edd]/30"
+                      className="absolute inset-0 bg-[#9d4edd]/10 rounded-md border border-[#9d4edd]/30 pointer-events-none"
                       layoutId="resource-highlight"
                     />
                   )}
                   <motion.div
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#9d4edd] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#9d4edd] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full pointer-events-none"
                   />
                 </div>
               </div>
