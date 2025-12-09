@@ -485,23 +485,25 @@ export default function ProductDetail() {
               {product.name}
             </h1>
 
-            <div className="flex items-baseline gap-3 mb-3 flex-wrap">
-              <div className="flex items-baseline gap-2 whitespace-nowrap">
-                <span className="font-display text-3xl font-bold text-[#E7FB10]" data-testid="text-product-price">
+            <div className="mb-3">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="font-display text-4xl font-bold text-[#E7FB10]" data-testid="text-product-price">
                   ${getBasePrice().toFixed(2)}
                 </span>
                 <PriceTrendBadge productId={product.id} variant="compact" />
               </div>
-              {product.originalPrice && (
-                <span className="text-lg text-muted-foreground line-through">
-                  ${(Number(product.originalPrice) * getDosageMultiplier()).toFixed(2)}
-                </span>
-              )}
-              {selectedDosage !== "10mg" && (
-                <Badge variant="outline" className="text-xs">
-                  +{((getDosageMultiplier() - 1) * 100).toFixed(0)}% for {selectedDosage}
-                </Badge>
-              )}
+              <div className="flex items-center gap-3 flex-wrap">
+                {product.originalPrice && (
+                  <span className="text-lg text-muted-foreground line-through">
+                    ${(Number(product.originalPrice) * getDosageMultiplier()).toFixed(2)}
+                  </span>
+                )}
+                {selectedDosage !== "10mg" && (
+                  <Badge variant="outline" className="text-xs">
+                    +{((getDosageMultiplier() - 1) * 100).toFixed(0)}% for {selectedDosage}
+                  </Badge>
+                )}
+              </div>
             </div>
 
             <p className="text-sm text-muted-foreground leading-relaxed mb-4" data-testid="text-product-description">
