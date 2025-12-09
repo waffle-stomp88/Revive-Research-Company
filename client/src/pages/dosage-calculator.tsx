@@ -439,7 +439,7 @@ function PremiumFormulaCard({ step, title, description, example, color, icon }: 
       
       {/* Card */}
       <div 
-        className="relative bg-gradient-to-b from-[#1c1c22] to-[#141418] rounded-2xl border overflow-hidden"
+        className="relative bg-gradient-to-b from-[#1c1c22] to-[#141418] rounded-2xl border overflow-hidden flex flex-col min-h-[320px]"
         style={{ borderColor: `${color}25` }}
       >
         {/* Top accent line */}
@@ -448,7 +448,7 @@ function PremiumFormulaCard({ step, title, description, example, color, icon }: 
           style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
         />
         
-        <div className="p-5">
+        <div className="p-5 flex flex-col flex-1">
           {/* Step badge */}
           <div className="flex items-center justify-center mb-4">
             <div className="relative">
@@ -484,7 +484,7 @@ function PremiumFormulaCard({ step, title, description, example, color, icon }: 
           </h4>
           
           {/* Description */}
-          <p className="text-gray-400 text-xs leading-relaxed text-center mb-4">
+          <p className="text-gray-400 text-xs leading-relaxed text-center mb-4 flex-1">
             {description}
           </p>
           
