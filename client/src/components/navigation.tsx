@@ -31,8 +31,8 @@ const productLinks = [
 ];
 
 const resourceLinks = [
-  { href: "/coa-library", label: "COA Library", icon: FileCheck, description: "Browse verified certifications", color: "#9d4edd" },
   { href: "/education", label: "Education Center", icon: GraduationCap, description: "Learn about peptides & research", color: "#9d4edd" },
+  { href: "/coa-library", label: "COA Library", icon: FileCheck, description: "Browse verified certifications", color: "#9d4edd" },
   { href: "/legal", label: "Legal & Compliance", icon: Scale, description: "Regulatory information & policies", color: "#9d4edd" },
   { href: "/what-we-dont-do", label: "What We Don't Do", icon: BookOpen, description: "Our ethical boundaries", color: "#9d4edd" },
   { href: "/faq", label: "FAQ", icon: BookOpen, description: "Common questions answered", color: "#9d4edd" },
