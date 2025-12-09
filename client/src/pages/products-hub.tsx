@@ -51,7 +51,6 @@ const productCategories = [
     description: "Research essentials",
     details: "Everything you need for proper peptide handling. Bacteriostatic water, syringes, alcohol swabs, and storage supplies.",
     features: ["Bac water", "Syringes", "Storage supplies"],
-    comingSoon: true,
   },
   {
     href: "/wholesale",
@@ -142,9 +141,7 @@ export default function ProductsHub() {
               <motion.a 
                 key={category.href} 
                 href={category.href}
-                className={`block p-6 cursor-pointer border-2 group rounded-lg bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
-                  category.comingSoon ? 'opacity-70' : ''
-                }`}
+                className="block p-6 cursor-pointer border-2 group rounded-lg bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 style={{ borderColor: `${category.color}40` }}
                 data-testid={`link-category-${category.label.toLowerCase().replace(/ /g, "-")}`}
                 whileHover={{ 
@@ -166,9 +163,6 @@ export default function ProductsHub() {
                       <h3 className="font-display text-xl font-bold" style={{ color: category.color }}>
                         {category.label}
                       </h3>
-                      {category.comingSoon && (
-                        <Badge variant="secondary" className="text-xs">Coming Soon</Badge>
-                      )}
                     </div>
                     <p className="text-sm text-muted-foreground mb-3">
                       {category.details}
