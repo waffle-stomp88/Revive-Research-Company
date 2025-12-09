@@ -256,12 +256,14 @@ export default function ResearchStackDetail() {
           </Button>
         </Link>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="flex flex-col"
           >
-            <Card className="overflow-hidden border-[#2a2a32]">
+            <Card className="overflow-hidden border-[#2a2a32] sticky top-24">
               <div 
                 className="relative aspect-square bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10] flex items-center justify-center"
                 style={{
@@ -305,44 +307,32 @@ export default function ResearchStackDetail() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
             className="space-y-6"
           >
             <div>
-              <p className="text-sm font-medium mb-1" style={{ color: stack.color }} data-testid="text-stack-subtitle">
-                {stack.subtitle}
-              </p>
-              <h1 className="font-display text-3xl md:text-4xl font-bold text-white mb-3" data-testid="text-stack-name">
+              <Badge variant="secondary" className="text-xs uppercase tracking-wider mb-3">
+                Research Stack
+              </Badge>
+              <h1 className="font-display text-2xl md:text-3xl font-bold mb-2" data-testid="text-stack-name">
                 {stack.name}
               </h1>
-              <p className="text-muted-foreground" data-testid="text-stack-description">
+              <p className="text-sm text-muted-foreground leading-relaxed mb-4" data-testid="text-stack-description">
                 {stack.longDescription}
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              {stack.peptides.map((peptide) => (
-                <Badge
-                  key={peptide.name}
-                  variant="outline"
-                  className="border-[#3a3a42] text-gray-300 px-3 py-1.5"
-                  data-testid={`badge-peptide-${peptide.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}
-                >
-                  <FlaskConical className="h-3.5 w-3.5 mr-1.5" style={{ color: stack.color }} />
-                  {peptide.name}
-                </Badge>
-              ))}
-            </div>
 
-            <Card className="p-5 bg-[#0d0d10] border-[#2a2a32]">
-              <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div className="space-y-2">
+            <Card className="p-6 bg-[#0d0d10] border-[#2a2a32]">
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div className="space-y-3">
                   <div className="text-sm text-muted-foreground">
                     Retail Value: <span className="line-through" data-testid="text-stack-retail-value">${stack.retailValue}</span>
                   </div>
                   <div className="flex items-baseline gap-3">
-                    <span className="text-3xl font-bold" style={{ color: stack.color }} data-testid="text-stack-price">
+                    <span className="font-display text-4xl font-bold" style={{ color: stack.color }} data-testid="text-stack-price">
                       ${stack.launchPrice}
                     </span>
                     <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-[#21d8ff]/10 text-[#21d8ff]" data-testid="badge-launch-price">
@@ -364,6 +354,7 @@ export default function ResearchStackDetail() {
                     backgroundColor: stack.color,
                     color: stack.color === "#E7FB10" || stack.color === "#f59e0b" || stack.color === "#22c55e" ? "black" : "white",
                   }}
+                  className="min-h-11"
                   data-testid="button-add-to-cart"
                 >
                   <ShoppingCart className="h-4 w-4 mr-2" />
@@ -372,22 +363,22 @@ export default function ResearchStackDetail() {
               </div>
             </Card>
 
-            <div className="p-4 rounded-xl bg-[#21d8ff]/10 border border-[#21d8ff]/20">
-              <div className="flex items-start gap-3">
-                <Package className="h-5 w-5 text-[#21d8ff] mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="text-sm font-medium text-[#21d8ff]">What's Included</p>
-                  <ul className="mt-2 space-y-1">
-                    {stack.peptides.map((peptide) => (
-                      <li key={peptide.name} className="text-sm text-gray-300 flex items-center gap-2">
-                        <CheckCircle2 className="h-3 w-3 text-[#21d8ff]" />
-                        {peptide.name}
-                      </li>
-                    ))}
-                  </ul>
+            <Card className="p-5 border-[#2a2a32] bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10]" data-testid="card-whats-included">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 rounded-lg" style={{ backgroundColor: `${stack.color}20` }}>
+                  <Package className="h-5 w-5" style={{ color: stack.color }} />
                 </div>
+                <h3 className="font-display text-lg font-bold">What's Included</h3>
               </div>
-            </div>
+              <ul className="space-y-2">
+                {stack.peptides.map((peptide) => (
+                  <li key={peptide.name} className="text-sm text-gray-300 flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4" style={{ color: stack.color }} />
+                    {peptide.name}
+                  </li>
+                ))}
+              </ul>
+            </Card>
 
             <Card className="p-5 border-[#2a2a32] bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10]" data-testid="card-synergy">
               <div className="flex items-center justify-between mb-4">
