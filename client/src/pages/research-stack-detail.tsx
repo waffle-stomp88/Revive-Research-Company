@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { useRoute, Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, FlaskConical, ShoppingCart, Sparkles, CheckCircle2, AlertTriangle, Info, Package, GraduationCap, Beaker } from "lucide-react";
+import {
+  ArrowLeft, FlaskConical, ShoppingCart, Sparkles, CheckCircle2, AlertTriangle, Info, Package, GraduationCap, Beaker, Shield, FileCheck, Truck, RefreshCw, ShoppingBag, Repeat, CheckCircle, Minus, Plus, BookOpen, ChevronRight, Clock, ExternalLink
+} from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
@@ -21,7 +25,10 @@ interface ResearchStack {
   description: string;
   longDescription: string;
   peptides: { name: string; description: string }[];
+  keyBenefits: string[];
   researchApplications: string[];
+  storageGuide: string;
+  educationLinks: { peptideName: string; articleUrl: string; articleTitle: string }[];
   icon: string;
   color: string;
   badge?: string;
@@ -31,6 +38,15 @@ interface ResearchStack {
   launchPrice: number;
   synergy: SynergyCopy;
 }
+
+type PurchaseType = "one-time" | "subscription";
+type SubscriptionInterval = "weekly" | "biweekly" | "monthly";
+
+const subscriptionOptions: { value: SubscriptionInterval; label: string; discount: number }[] = [
+  { value: "weekly", label: "Weekly", discount: 15 },
+  { value: "biweekly", label: "Every 2 Weeks", discount: 12 },
+  { value: "monthly", label: "Monthly", discount: 10 },
+];
 
 const researchStacksData: Record<string, ResearchStack> = {
   "recovery-tissue-stack": {
@@ -43,11 +59,22 @@ const researchStacksData: Record<string, ResearchStack> = {
       { name: "BPC-157", description: "Extensively studied for tissue mechanism pathways and cellular signaling research" },
       { name: "TB-500", description: "Research focus on thymosin beta-4 derived sequences and tissue modeling" },
     ],
+    keyBenefits: [
+      "Dual pathway tissue regeneration support",
+      "Synergistic peptide interaction research",
+      "Comprehensive cellular repair mechanisms",
+      "Blood vessel growth and tissue perfusion support",
+    ],
     researchApplications: [
       "Tissue mechanism pathway studies",
       "Synergistic peptide interaction research",
       "Cellular signaling model development",
       "Regenerative mechanism investigations",
+    ],
+    storageGuide: "Store between 2-8°C (36-46°F) in original packaging. Protect from light and excessive heat.",
+    educationLinks: [
+      { peptideName: "BPC-157", articleUrl: "/education/bpc-157-guide", articleTitle: "BPC-157: Comprehensive Research Guide" },
+      { peptideName: "TB-500", articleUrl: "/education/tb-500-mechanisms", articleTitle: "TB-500: Mechanism of Action Overview" },
     ],
     icon: "Heart",
     color: "#22c55e",
@@ -71,11 +98,22 @@ const researchStacksData: Record<string, ResearchStack> = {
       { name: "MOTS-C", description: "Mitochondrial-derived peptide studied for cellular energy metabolism pathways" },
       { name: "Retatrutide", description: "Triple-agonist compound for incretin and glucagon receptor pathway research" },
     ],
+    keyBenefits: [
+      "Multi-target metabolic pathway investigation",
+      "Mitochondrial energy optimization research",
+      "Triple-agonist receptor signaling",
+      "Comprehensive metabolic model development",
+    ],
     researchApplications: [
       "Incretin signaling pathway investigations",
       "Mitochondrial function studies",
       "Metabolic regulation mechanism research",
       "Multi-receptor interaction models",
+    ],
+    storageGuide: "Maintain 2-8°C (36-46°F) for optimal stability. Store away from direct sunlight.",
+    educationLinks: [
+      { peptideName: "MOTS-C", articleUrl: "/education/mots-c-guide", articleTitle: "MOTS-C: Mitochondrial Pathway Research" },
+      { peptideName: "Retatrutide", articleUrl: "/education/retatrutide-mechanisms", articleTitle: "Retatrutide: Triple Agonist Overview" },
     ],
     icon: "Zap",
     color: "#E7FB10",
@@ -99,11 +137,22 @@ const researchStacksData: Record<string, ResearchStack> = {
       { name: "GHK-Cu (100mg)", description: "Copper peptide studied for cellular signaling and matrix protein pathway research" },
       { name: "MOTS-C", description: "Mitochondrial-derived peptide for energy pathway and cellular optimization studies" },
     ],
+    keyBenefits: [
+      "Copper peptide signaling research support",
+      "Cellular energy optimization",
+      "Gene expression modulation research",
+      "Comprehensive cellular health model development",
+    ],
     researchApplications: [
       "Copper peptide mechanism research",
       "Mitochondrial pathway studies",
       "Cellular longevity model development",
       "Signal transduction investigations",
+    ],
+    storageGuide: "Keep refrigerated at 2-8°C (36-46°F). Copper peptides are sensitive to temperature fluctuations.",
+    educationLinks: [
+      { peptideName: "GHK-Cu", articleUrl: "/education/ghk-cu-guide", articleTitle: "GHK-Cu: Copper Peptide Research Guide" },
+      { peptideName: "MOTS-C", articleUrl: "/education/mots-c-mechanisms", articleTitle: "MOTS-C: Cellular Energy Pathways" },
     ],
     icon: "Sparkles",
     color: "#a855f7",
@@ -125,11 +174,22 @@ const researchStacksData: Record<string, ResearchStack> = {
       { name: "BPC-157", description: "Well-documented peptide for tissue mechanism and cellular signaling studies" },
       { name: "MOTS-C", description: "Extensively researched mitochondrial peptide with established protocols" },
     ],
+    keyBenefits: [
+      "Well-characterized research compounds",
+      "Established research protocols",
+      "Multi-domain pathway exploration",
+      "Ideal for new research programs",
+    ],
     researchApplications: [
       "Protocol development and standardization",
       "Baseline mechanism studies",
       "Introduction to peptide research methodologies",
       "Multi-pathway preliminary investigations",
+    ],
+    storageGuide: "Refrigerate at 2-8°C (36-46°F). These are research-grade compounds requiring proper storage.",
+    educationLinks: [
+      { peptideName: "BPC-157", articleUrl: "/education/bpc-157-starter", articleTitle: "BPC-157: Starter's Guide to Tissue Pathways" },
+      { peptideName: "MOTS-C", articleUrl: "/education/mots-c-starter", articleTitle: "MOTS-C: Introduction to Mitochondrial Research" },
     ],
     icon: "Star",
     color: "#21d8ff",
@@ -153,11 +213,22 @@ const researchStacksData: Record<string, ResearchStack> = {
       { name: "GHK-Cu", description: "Copper peptide for collagen pathway and matrix protein research" },
       { name: "BPC-157", description: "Tissue mechanism peptide complementing dermal pathway studies" },
     ],
+    keyBenefits: [
+      "Collagen synthesis pathway support",
+      "Dermal tissue mechanism research",
+      "Extracellular matrix optimization",
+      "Comprehensive dermal health modeling",
+    ],
     researchApplications: [
       "Collagen synthesis pathway studies",
       "Dermal tissue mechanism research",
       "Extracellular matrix protein interactions",
       "Wound healing model development",
+    ],
+    storageGuide: "Store at 2-8°C (36-46°F). Keep both compounds protected from light and temperature variation.",
+    educationLinks: [
+      { peptideName: "GHK-Cu", articleUrl: "/education/ghk-cu-collagen", articleTitle: "GHK-Cu: Collagen and Matrix Research" },
+      { peptideName: "BPC-157", articleUrl: "/education/bpc-157-dermal", articleTitle: "BPC-157: Tissue Mechanisms in Skin Research" },
     ],
     icon: "Leaf",
     color: "#ec4899",
@@ -180,11 +251,23 @@ const researchStacksData: Record<string, ResearchStack> = {
       { name: "MOTS-C", description: "Mitochondrial peptide for cellular energy and metabolism studies" },
       { name: "BPC-157", description: "Extensively documented peptide for tissue mechanism research" },
     ],
+    keyBenefits: [
+      "Triple-pathway multi-target research",
+      "Metabolic and mitochondrial optimization",
+      "Comprehensive tissue regeneration support",
+      "Advanced peptide interaction modeling",
+    ],
     researchApplications: [
       "Multi-pathway synergy investigations",
       "Advanced metabolic mechanism studies",
       "Comprehensive tissue pathway research",
       "Complex peptide interaction modeling",
+    ],
+    storageGuide: "Maintain 2-8°C (36-46°F) storage conditions for all three compounds. Handle with appropriate research protocols.",
+    educationLinks: [
+      { peptideName: "Retatrutide", articleUrl: "/education/retatrutide-advanced", articleTitle: "Retatrutide: Advanced Multi-Target Research" },
+      { peptideName: "MOTS-C", articleUrl: "/education/mots-c-advanced", articleTitle: "MOTS-C: Advanced Metabolic Pathways" },
+      { peptideName: "BPC-157", articleUrl: "/education/bpc-157-advanced", articleTitle: "BPC-157: Advanced Tissue Mechanisms" },
     ],
     icon: "Crown",
     color: "#f59e0b",
@@ -205,6 +288,9 @@ export default function ResearchStackDetail() {
   const { addToCart } = useCart();
   const { toast } = useToast();
   const [synergyMode, setSynergyMode] = useState<"beginner" | "expert">("beginner");
+  const [quantity, setQuantity] = useState(1);
+  const [purchaseType, setPurchaseType] = useState<PurchaseType>("one-time");
+  const [subscriptionInterval, setSubscriptionInterval] = useState<SubscriptionInterval>("monthly");
 
   if (!match || !params?.id) {
     return null;
@@ -229,13 +315,35 @@ export default function ResearchStackDetail() {
     );
   }
 
+  const getBasePrice = () => stack.launchPrice;
+
+  const getSelectedDiscount = () => {
+    if (purchaseType === "one-time") return 0;
+    const option = subscriptionOptions.find(o => o.value === subscriptionInterval);
+    return option?.discount || 0;
+  };
+
+  const getDiscountedPrice = () => {
+    const basePrice = getBasePrice();
+    const discount = getSelectedDiscount();
+    return basePrice * (1 - discount / 100);
+  };
+
+  const getTotalPrice = () => {
+    return getDiscountedPrice() * quantity;
+  };
+
+  const handleQuantityChange = (delta: number) => {
+    setQuantity(prev => Math.max(1, Math.min(10, prev + delta)));
+  };
+
   const handleAddToCart = () => {
     addToCart({
       productId: stack.id,
       bundleId: stack.id,
       name: stack.name,
-      price: stack.launchPrice,
-      quantity: 1,
+      price: getBasePrice(),
+      quantity,
       dosage: "Research Stack",
       image: productImage,
       isBundle: true,
@@ -244,6 +352,11 @@ export default function ResearchStackDetail() {
       title: "Added to Cart",
       description: `${stack.name} has been added to your cart.`,
     });
+  };
+
+  const handleBuyNow = () => {
+    // Navigate to checkout with stack parameters
+    window.location.href = `/checkout?stackId=${stack.id}&quantity=${quantity}${purchaseType === "subscription" ? `&subscription=true&interval=${subscriptionInterval}` : ""}`;
   };
 
   return (
@@ -308,6 +421,47 @@ export default function ResearchStackDetail() {
                 </div>
               </div>
             </Card>
+
+            {stack.educationLinks.length > 0 && (
+              <motion.section
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.12 }}
+                className="mt-6"
+                data-testid="section-education"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <GraduationCap className="h-5 w-5" style={{ color: stack.color }} />
+                  <h3 className="font-display text-lg font-bold">Learn About These Peptides</h3>
+                </div>
+
+                <div className="space-y-2">
+                  {stack.educationLinks.map((link) => (
+                    <a key={link.peptideName} href={link.articleUrl} target="_blank" rel="noopener noreferrer">
+                      <Card
+                        className="p-4 border-[#ec4899]/20 hover:border-[#ec4899]/40 transition-all duration-300 cursor-pointer group hover:scale-[1.02]"
+                        data-testid={`card-article-${link.peptideName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="p-2 rounded-lg bg-[#ec4899]/10 flex-shrink-0">
+                            <BookOpen className="h-5 w-5 text-[#ec4899]" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Badge variant="outline" className="border-[#ec4899]/50 text-[#ec4899] text-xs">
+                                Research Guide
+                              </Badge>
+                            </div>
+                            <h4 className="font-display text-sm font-bold group-hover:text-[#ec4899] transition-colors">{link.articleTitle}</h4>
+                          </div>
+                          <ExternalLink className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                        </div>
+                      </Card>
+                    </a>
+                  ))}
+                </div>
+              </motion.section>
+            )}
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}>
@@ -321,118 +475,207 @@ export default function ResearchStackDetail() {
               {stack.name}
             </h1>
 
-            <p className="text-sm text-muted-foreground leading-relaxed mb-6" data-testid="text-stack-description">
+            <div className="flex items-baseline gap-3 mb-3 flex-wrap">
+              <span className="font-display text-3xl font-bold text-[#E7FB10]" data-testid="text-stack-price">
+                ${getBasePrice().toFixed(2)}
+              </span>
+              <span className="text-lg text-muted-foreground line-through" data-testid="text-stack-retail-value">
+                ${stack.retailValue}
+              </span>
+            </div>
+
+            <p className="text-sm text-muted-foreground leading-relaxed mb-4" data-testid="text-stack-description">
               {stack.longDescription}
             </p>
 
-            <Card className="p-5 bg-[#0d0d10] border-[#2a2a32] mb-6">
-              <div className="space-y-3">
-                <div className="text-sm text-muted-foreground">
-                  Retail Value: <span className="line-through" data-testid="text-stack-retail-value">${stack.retailValue}</span>
-                </div>
-                <div className="flex items-baseline gap-3">
-                  <span className="font-display text-4xl font-bold" style={{ color: stack.color }} data-testid="text-stack-price">
-                    ${stack.launchPrice}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div>
+                <Label className="text-xs font-medium mb-1.5 block text-muted-foreground">Quantity</Label>
+                <div className="flex items-center border rounded-md h-9 border-border">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9"
+                    onClick={() => handleQuantityChange(-1)}
+                    disabled={quantity <= 1}
+                    data-testid="button-quantity-minus"
+                  >
+                    <Minus className="h-3 w-3" />
+                  </Button>
+                  <span className="flex-1 text-center font-medium text-sm" data-testid="text-quantity">
+                    {quantity}
                   </span>
-                  <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-[#21d8ff]/10 text-[#21d8ff]" data-testid="badge-launch-price">
-                    Launch Price
-                  </span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9"
+                    onClick={() => handleQuantityChange(1)}
+                    disabled={quantity >= 10}
+                    data-testid="button-quantity-plus"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  Stack Price: <span className="text-gray-400">${stack.stackPrice}</span>
-                </div>
-                <Badge variant="outline" className="border-[#21d8ff]/50 text-[#21d8ff]" data-testid="badge-savings">
-                  <Sparkles className="h-3 w-3 mr-1" />
-                  Curated Research Combination
-                </Badge>
               </div>
-            </Card>
+            </div>
 
-            <div className="flex gap-3 mb-6">
+            <div className="mb-4">
+              <Label className="text-xs font-medium mb-1.5 block text-muted-foreground">Purchase Option</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <div
+                  className={`relative flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                    purchaseType === "one-time" ? "border-[#E7FB10] bg-[#E7FB10]/5" : "border-border hover:border-border/80"
+                  }`}
+                  onClick={() => setPurchaseType("one-time")}
+                  data-testid="option-one-time"
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-1.5">
+                      <ShoppingCart className="h-3.5 w-3.5" />
+                      <span className="font-medium text-sm">One-time</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">${getBasePrice().toFixed(2)}</p>
+                  </div>
+                </div>
+
+                <div
+                  className={`relative flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                    purchaseType === "subscription" ? "border-[#21d8ff] bg-[#21d8ff]/5" : "border-border hover:border-border/80"
+                  }`}
+                  onClick={() => setPurchaseType("subscription")}
+                  data-testid="option-subscription"
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-1.5">
+                      <Repeat className="h-3.5 w-3.5" />
+                      <span className="font-medium text-sm">Subscribe</span>
+                      <Badge className="bg-[#21d8ff] text-[10px] px-1 py-0">15% off</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">Auto-delivery</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {purchaseType === "subscription" && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-4"
+              >
+                <Label className="text-xs font-medium mb-1.5 block text-muted-foreground">Delivery Frequency</Label>
+                <div className="grid grid-cols-3 gap-2">
+                  {subscriptionOptions.map((option) => {
+                    const discountedPrice = getBasePrice() * (1 - option.discount / 100);
+                    return (
+                      <div
+                        key={option.value}
+                        className={`relative flex flex-col items-center p-2 rounded-lg border cursor-pointer transition-all ${
+                          subscriptionInterval === option.value ? "border-[#21d8ff] bg-[#21d8ff]/5" : "border-border hover:border-border/80"
+                        }`}
+                        onClick={() => setSubscriptionInterval(option.value)}
+                        data-testid={`option-interval-${option.value}`}
+                      >
+                        <span className="font-medium text-xs">{option.label}</span>
+                        <span className="text-[10px] text-[#21d8ff]">{option.discount}% off</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+
+            <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">
+              <span className="flex items-center gap-1">
+                <CheckCircle className="h-3 w-3 text-green-500" />
+                In Stock
+              </span>
+              <div className="flex items-center gap-3">
+                <span className="flex items-center gap-1">
+                  <Shield className="h-3 w-3" /> Lab Tested
+                </span>
+                <span className="flex items-center gap-1">
+                  <Truck className="h-3 w-3" /> Fast Ship
+                </span>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mb-4">
               <Button
                 size="lg"
+                variant="outline"
+                className="flex-1 font-display gap-2 border-2"
                 onClick={handleAddToCart}
-                style={{
-                  backgroundColor: stack.color,
-                  color: stack.color === "#E7FB10" || stack.color === "#f59e0b" || stack.color === "#22c55e" ? "black" : "white",
-                }}
-                className="flex-1"
                 data-testid="button-add-to-cart"
               >
-                <ShoppingCart className="h-4 w-4 mr-2" />
+                <ShoppingBag className="h-5 w-5" />
                 Add to Cart
+              </Button>
+              <Button
+                size="lg"
+                className={`flex-1 font-display gap-2 transition-shadow duration-300 text-black ${
+                  purchaseType === "subscription"
+                    ? "bg-[#21d8ff] border-[#21d8ff] hover:bg-[#21d8ff]/90 shadow-[0_0_20px_rgba(33,216,255,0.4)]"
+                    : "bg-[#E7FB10] border-[#E7FB10] hover:bg-[#E7FB10]/90 shadow-[0_0_20px_rgba(231,251,16,0.4)]"
+                }`}
+                onClick={handleBuyNow}
+                data-testid="button-buy-now"
+              >
+                {purchaseType === "subscription" ? (
+                  <>
+                    <Repeat className="h-5 w-5" />
+                    Subscribe
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart className="h-5 w-5" />
+                    Buy Now
+                  </>
+                )}
               </Button>
             </div>
 
-            <Card className="p-5 border-[#2a2a32] bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10] mb-6" data-testid="card-whats-included">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 rounded-lg" style={{ backgroundColor: `${stack.color}20` }}>
-                  <Package className="h-5 w-5" style={{ color: stack.color }} />
-                </div>
-                <h3 className="font-display text-base font-bold uppercase tracking-wider">What's Included</h3>
-              </div>
-              <ul className="space-y-2">
-                {stack.peptides.map((peptide) => (
-                  <li key={peptide.name} className="text-sm text-gray-300 flex items-center gap-2">
-                    <CheckCircle2 className="h-3 w-3" style={{ color: stack.color }} />
-                    {peptide.name}
-                  </li>
-                ))}
-              </ul>
-            </Card>
+            {purchaseType === "subscription" && (
+              <p className="text-[10px] text-center text-muted-foreground mb-4">
+                Save ${((getBasePrice() - getDiscountedPrice()) * quantity).toFixed(2)} per order • Cancel anytime
+              </p>
+            )}
 
-            <Card className="p-5 border-[#2a2a32] bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10]" data-testid="card-synergy">
-              <div className="flex items-center justify-between mb-4 gap-2">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg" style={{ backgroundColor: `${stack.color}20` }}>
-                    <Sparkles className="h-5 w-5" style={{ color: stack.color }} />
-                  </div>
-                  <h3 className="font-display text-base font-bold uppercase tracking-wider">Why These Peptides Work Together</h3>
-                </div>
-                <div className="flex items-center gap-1 p-1 rounded-lg bg-[#0d0d10] border border-[#2a2a32] flex-shrink-0">
-                  <button
-                    onClick={() => setSynergyMode("beginner")}
-                    className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all ${
-                      synergyMode === "beginner" ? "bg-[#21d8ff]/20 text-[#21d8ff]" : "text-muted-foreground hover:text-white"
-                    }`}
-                    data-testid="button-synergy-beginner"
-                  >
-                    <GraduationCap className="h-3 w-3" />
-                    Quick
-                  </button>
-                  <button
-                    onClick={() => setSynergyMode("expert")}
-                    className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all ${
-                      synergyMode === "expert" ? "bg-[#a855f7]/20 text-[#a855f7]" : "text-muted-foreground hover:text-white"
-                    }`}
-                    data-testid="button-synergy-expert"
-                  >
-                    <Beaker className="h-3 w-3" />
-                    Deep
-                  </button>
-                </div>
+            <Separator className="my-6" />
+
+            <div className="grid grid-cols-4 gap-2 text-center mb-6">
+              <div className="flex flex-col items-center gap-1">
+                <Shield className="h-4 w-4 text-[#21d8ff]" />
+                <span className="text-[10px] text-muted-foreground">3rd Party Tested</span>
               </div>
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={synergyMode}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
-                  className="p-3 rounded-lg bg-[#0d0d10] border border-[#2a2a32]"
-                >
-                  <p className={`text-xs leading-relaxed ${synergyMode === "beginner" ? "text-gray-300" : "text-gray-400"}`} data-testid={`text-synergy-${synergyMode}`}>
-                    {synergyMode === "beginner" ? stack.synergy.beginner : stack.synergy.expert}
-                  </p>
-                  {synergyMode === "expert" && (
-                    <div className="mt-2 pt-2 border-t border-[#2a2a32] flex items-center gap-2 text-xs text-muted-foreground">
-                      <Info className="h-3 w-3 flex-shrink-0" />
-                      <span>Pathway-level mechanistic overview</span>
-                    </div>
-                  )}
-                </motion.div>
-              </AnimatePresence>
-            </Card>
+              <div className="flex flex-col items-center gap-1">
+                <FileCheck className="h-4 w-4 text-[#21d8ff]" />
+                <span className="text-[10px] text-muted-foreground">COA Included</span>
+              </div>
+              <div className="flex flex-col items-center gap-1">
+                <Truck className="h-4 w-4 text-[#21d8ff]" />
+                <span className="text-[10px] text-muted-foreground">Fast Shipping</span>
+              </div>
+              <div className="flex flex-col items-center gap-1">
+                <RefreshCw className="h-4 w-4 text-[#21d8ff]" />
+                <span className="text-[10px] text-muted-foreground">Guaranteed</span>
+              </div>
+            </div>
+
+            {stack.keyBenefits.length > 0 && (
+              <div className="mb-8">
+                <h3 className="font-display font-semibold text-lg mb-4">Key Benefits</h3>
+                <ul className="space-y-3">
+                  {stack.keyBenefits.map((benefit, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <CheckCircle className="h-5 w-5 text-[#E7FB10] mt-0.5 flex-shrink-0" />
+                      <span className="text-muted-foreground">{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </motion.div>
         </div>
 
@@ -462,19 +705,61 @@ export default function ResearchStackDetail() {
                 <div className="p-2 rounded-lg" style={{ backgroundColor: `${stack.color}20` }}>
                   <Sparkles className="h-5 w-5" style={{ color: stack.color }} />
                 </div>
-                <h3 className="font-display text-xl font-bold">Research Applications</h3>
+                <h3 className="font-display text-xl font-bold">Why These Work Together</h3>
               </div>
-              <ul className="space-y-3">
-                {stack.researchApplications.map((application, index) => (
-                  <li key={index} className="flex items-start gap-3 text-muted-foreground">
-                    <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>{application}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 p-2 rounded-lg bg-[#0d0d10] border border-[#2a2a32]">
+                  <button
+                    onClick={() => setSynergyMode("beginner")}
+                    className={`flex-1 px-3 py-1.5 rounded text-xs font-medium transition-all ${
+                      synergyMode === "beginner" ? "bg-[#21d8ff]/20 text-[#21d8ff]" : "text-muted-foreground hover:text-white"
+                    }`}
+                    data-testid="button-synergy-beginner"
+                  >
+                    <GraduationCap className="h-3 w-3 inline mr-1" />
+                    Quick Breakdown
+                  </button>
+                  <button
+                    onClick={() => setSynergyMode("expert")}
+                    className={`flex-1 px-3 py-1.5 rounded text-xs font-medium transition-all ${
+                      synergyMode === "expert" ? "bg-[#a855f7]/20 text-[#a855f7]" : "text-muted-foreground hover:text-white"
+                    }`}
+                    data-testid="button-synergy-expert"
+                  >
+                    <Beaker className="h-3 w-3 inline mr-1" />
+                    Deep Dive
+                  </button>
+                </div>
+                <AnimatePresence mode="wait">
+                  <motion.div key={synergyMode} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="p-3 rounded-lg bg-[#0d0d10] border border-[#2a2a32]">
+                    <p className={`text-xs leading-relaxed ${synergyMode === "beginner" ? "text-gray-300" : "text-gray-400"}`} data-testid={`text-synergy-${synergyMode}`}>
+                      {synergyMode === "beginner" ? stack.synergy.beginner : stack.synergy.expert}
+                    </p>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
             </Card>
           </motion.div>
         </div>
+
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="mt-12">
+          <Card className="p-6 border-[#2a2a32] bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10]">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 rounded-lg" style={{ backgroundColor: `${stack.color}20` }}>
+                <BookOpen className="h-5 w-5" style={{ color: stack.color }} />
+              </div>
+              <h3 className="font-display text-xl font-bold">Storage Information</h3>
+            </div>
+            <p className="text-muted-foreground mb-4">{stack.storageGuide}</p>
+            <Link href="/education/storage-101">
+              <Button className="gap-2 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold hover:shadow-[0_0_20px_rgba(33,216,255,0.6)] transition-shadow" data-testid="link-learn-storage">
+                <BookOpen className="h-4 w-4" />
+                Learn More: Storage Best Practices
+                <ChevronRight className="h-3 w-3" />
+              </Button>
+            </Link>
+          </Card>
+        </motion.div>
       </div>
     </main>
   );
