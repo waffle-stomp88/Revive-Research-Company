@@ -439,7 +439,7 @@ function PremiumFormulaCard({ step, title, description, example, color, icon }: 
       
       {/* Card */}
       <div 
-        className="relative bg-gradient-to-b from-[#1c1c22] to-[#141418] rounded-2xl border overflow-hidden flex flex-col min-h-[320px]"
+        className="relative bg-gradient-to-b from-[#1c1c22] to-[#141418] rounded-2xl border overflow-hidden flex flex-col min-h-[280px]"
         style={{ borderColor: `${color}25` }}
       >
         {/* Top accent line */}
