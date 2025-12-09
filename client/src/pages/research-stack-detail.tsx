@@ -440,13 +440,21 @@ export default function ResearchStackDetail() {
                 className="mt-6"
                 data-testid="section-education"
               >
-                <div className="flex items-center gap-3 mb-4">
-                  <GraduationCap className="h-5 w-5" style={{ color: stack.color }} />
-                  <h3 className="font-display text-lg font-bold">Learn About These Peptides</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <GraduationCap className="h-5 w-5" style={{ color: stack.color }} />
+                    <h3 className="font-display text-lg font-bold">Learn About These Peptides</h3>
+                  </div>
+                  <Link href="/education">
+                    <Button variant="outline" size="sm" className="border-[#ec4899]/30 hover:border-[#ec4899]" data-testid="link-view-all-education">
+                      All Articles
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </Link>
                 </div>
 
                 <div className="space-y-2">
-                  {stack.educationLinks.map((link) => (
+                  {stack.educationLinks.slice(0, 1).map((link) => (
                     <a key={link.peptideName} href={link.articleUrl} target="_blank" rel="noopener noreferrer">
                       <Card
                         className="p-4 border-[#ec4899]/20 hover:border-[#ec4899]/40 transition-all duration-300 cursor-pointer group hover:scale-[1.02]"
@@ -685,12 +693,12 @@ export default function ResearchStackDetail() {
             </div>
 
             {stack.keyBenefits.length > 0 && (
-              <div className="mb-3">
-                <h3 className="font-display font-semibold text-base mb-3">Key Benefits</h3>
-                <ul className="space-y-2">
+              <div className="mb-8">
+                <h3 className="font-display font-semibold text-lg mb-4">Key Benefits</h3>
+                <ul className="space-y-3">
                   {stack.keyBenefits.map((benefit, index) => (
-                    <li key={index} className="flex items-start gap-2 text-sm">
-                      <CheckCircle className="h-4 w-4 text-[#E7FB10] mt-0.5 flex-shrink-0" />
+                    <li key={index} className="flex items-start gap-3">
+                      <CheckCircle className="h-5 w-5 text-[#E7FB10] mt-0.5 flex-shrink-0" />
                       <span className="text-muted-foreground">{benefit}</span>
                     </li>
                   ))}
@@ -698,14 +706,10 @@ export default function ResearchStackDetail() {
               </div>
             )}
 
-            <div className="space-y-3">
-              <Card className="p-5 border-[#2a2a32] bg-gradient-to-br from-[#0d0d10]/50 to-[#1a1a1f]/30">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 rounded-lg" style={{ backgroundColor: `${stack.color}20` }}>
-                    <Sparkles className="h-5 w-5" style={{ color: stack.color }} />
-                  </div>
-                  <h3 className="font-display text-lg font-bold">Why These Work Together</h3>
-                </div>
+            {/* Why These Work Together */}
+            <div className="mb-8">
+              <h3 className="font-display font-semibold text-lg mb-4">Why These Work Together</h3>
+              <Card className="p-4 border-[#2a2a32]">
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 p-2 rounded-lg bg-[#0d0d10] border border-[#2a2a32]">
                     <button
@@ -738,23 +742,29 @@ export default function ResearchStackDetail() {
                   </AnimatePresence>
                 </div>
               </Card>
+            </div>
 
-              <Card className="p-3 border-[#2a2a32] bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10]">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="p-1.5 rounded-lg" style={{ backgroundColor: `${stack.color}20` }}>
-                    <BookOpen className="h-4 w-4" style={{ color: stack.color }} />
-                  </div>
-                  <h3 className="font-display text-sm font-bold">Storage Information</h3>
-                </div>
-                <p className="text-xs text-muted-foreground mb-2">{stack.storageGuide}</p>
-                <Link href="/education/storage-101">
-                  <Button size="sm" className="gap-1 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold hover:shadow-[0_0_20px_rgba(33,216,255,0.6)] transition-shadow w-full text-xs py-1 h-auto" data-testid="link-learn-storage">
-                    <BookOpen className="h-3 w-3" />
-                    Learn Storage Best Practices
+            {/* Storage Information - Matching Product Page Style */}
+            <div>
+              <h3 className="font-display font-semibold text-lg mb-4">Storage Information</h3>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                {stack.storageGuide}
+              </p>
+              <Link href="/education/storage-101">
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Button 
+                    className="gap-2 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold hover:shadow-[0_0_20px_rgba(33,216,255,0.6)] transition-shadow" 
+                    data-testid="link-learn-storage"
+                  >
+                    <BookOpen className="h-4 w-4" />
+                    Learn More: Storage Best Practices
                     <ChevronRight className="h-3 w-3" />
                   </Button>
-                </Link>
-              </Card>
+                </motion.div>
+              </Link>
             </div>
           </motion.div>
         </div>
