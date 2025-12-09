@@ -120,7 +120,7 @@ export function Navigation() {
                         whileTap={{ scale: 0.98 }}
                       >
                         <span
-                          className={`text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer relative z-10 block group-hover:drop-shadow-lg`}
+                          className={`text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer relative z-10 block`}
                           style={{
                             color: isActive ? color : undefined,
                             textShadow: isActive ? `0 0 12px ${color}cc` : undefined,
@@ -155,12 +155,13 @@ export function Navigation() {
                           />
                         )}
                         <motion.div
-                          className="absolute bottom-0 left-0 right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
+                          className="absolute bottom-0 left-0 right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full pointer-events-none"
                           style={{
                             background: `linear-gradient(to right, transparent, ${color}, transparent)`,
+                            transformOrigin: 'center',
                           }}
                           initial={{ scaleX: 0 }}
-                          whileHover={{ scaleX: 1 }}
+                          animate={{ scaleX: 1 }}
                           transition={{ duration: 0.4 }}
                         />
                         <motion.div
