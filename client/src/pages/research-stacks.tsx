@@ -188,18 +188,21 @@ export default function ResearchStacks() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
+                whileHover={{ scale: 1.05 }}
                 onMouseEnter={() => setHoveredStack(stack.id)}
                 onMouseLeave={() => setHoveredStack(null)}
               >
                 <Card
-                  className={`relative overflow-hidden h-full transition-all duration-300 ${
+                  className={`relative overflow-hidden h-full transition-all duration-300 cursor-pointer ${
                     isHovered
                       ? "border-2 shadow-lg"
                       : "border border-[#2a2a32]"
                   }`}
                   style={{
                     borderColor: isHovered ? stack.color : undefined,
-                    boxShadow: isHovered ? `0 0 30px ${stack.color}30` : undefined,
+                    boxShadow: isHovered 
+                      ? `0 0 40px ${stack.color}60, 0 0 20px ${stack.color}40` 
+                      : undefined,
                   }}
                   data-testid={`card-stack-${stack.id}`}
                 >
