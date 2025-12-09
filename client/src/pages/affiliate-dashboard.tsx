@@ -689,7 +689,7 @@ function PayoutCountdown({ stats, payouts }: { stats?: AffiliateStats; payouts?:
 
   const recentPayouts = payouts?.filter(p => p.status === "processed").slice(0, 3) || [];
   const pendingBalance = stats?.pendingBalance || 0;
-  const progressToMinimum = Math.min((pendingBalance / 50) * 100, 100);
+  const progressToMinimum = Math.min((pendingBalance / 100) * 100, 100);
 
   return (
     <Card className="border-[#E7FB10]/20 overflow-visible">
@@ -723,11 +723,11 @@ function PayoutCountdown({ stats, payouts }: { stats?: AffiliateStats; payouts?:
 
         <div className="space-y-2 mb-4">
           <div className="flex justify-between text-xs">
-            <span className="text-muted-foreground">Progress to $50 minimum</span>
+            <span className="text-muted-foreground">Progress to $100 minimum</span>
             <span className="font-medium">${pendingBalance.toFixed(2)}</span>
           </div>
           <Progress value={progressToMinimum} className="h-2" />
-          {pendingBalance >= 50 && (
+          {pendingBalance >= 100 && (
             <p className="text-xs text-green-500 flex items-center gap-1">
               <CheckCircle className="h-3 w-3" /> Ready for payout!
             </p>

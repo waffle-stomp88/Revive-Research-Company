@@ -669,7 +669,7 @@ export async function registerRoutes(
       }
 
       const pendingBalance = parseFloat(affiliate.pendingBalance || "0");
-      const minimumPayout = 50;
+      const minimumPayout = 100;
 
       if (pendingBalance < minimumPayout) {
         return res.status(400).json({ error: `Minimum payout is $${minimumPayout}. Your current balance is $${pendingBalance.toFixed(2)}` });
