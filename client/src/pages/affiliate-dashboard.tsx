@@ -1561,14 +1561,14 @@ export default function AffiliateDashboard() {
                         Payout History
                       </CardTitle>
                       <CardDescription>
-                        Minimum payout: $50 | Your balance: ${stats?.pendingBalance?.toFixed(2) || "0.00"}
+                        Minimum payout: $100 | Your balance: ${stats?.pendingBalance?.toFixed(2) || "0.00"}
                       </CardDescription>
                     </div>
                     <Button
                       onClick={() => requestPayoutMutation.mutate()}
                       disabled={
                         requestPayoutMutation.isPending ||
-                        (stats?.pendingBalance || 0) < 50
+                        (stats?.pendingBalance || 0) < 100
                       }
                       className="bg-[#E7FB10] hover:bg-[#E7FB10]/90"
                       data-testid="button-request-payout"
@@ -1622,7 +1622,7 @@ export default function AffiliateDashboard() {
                     ) : (
                       <div className="text-center py-8 text-muted-foreground">
                         <Wallet className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                        <p>No payouts yet. Build up your balance to $50 to request a payout.</p>
+                        <p>No payouts yet. Build up your balance to $100 to request a payout.</p>
                       </div>
                     )}
                   </CardContent>
