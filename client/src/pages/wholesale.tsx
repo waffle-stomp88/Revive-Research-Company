@@ -29,14 +29,14 @@ const wholesaleFormSchema = z.object({
 type WholesaleFormData = z.infer<typeof wholesaleFormSchema>;
 
 const pricingTiers = [
-  { range: "50-99 vials", discount: "20% OFF", color: "border-[#21d8ff]" },
-  { range: "100-249 vials", discount: "25% OFF", color: "border-[#E7FB10]" },
-  { range: "250-499 vials", discount: "30% OFF", color: "border-purple-500" },
-  { range: "500+ vials", discount: "Custom Pricing", color: "border-green-500" },
+  { range: "100-249 vials", discount: "20% OFF", color: "border-[#21d8ff]" },
+  { range: "250-499 vials", discount: "25% OFF", color: "border-[#E7FB10]" },
+  { range: "500-999 vials", discount: "30% OFF", color: "border-purple-500" },
+  { range: "1000+ vials", discount: "35% Custom", color: "border-green-500" },
 ];
 
 const benefits = [
-  { icon: Package, title: "Minimum Order: 50 Vials", description: "Flexible ordering across multiple products" },
+  { icon: Package, title: "Minimum Order: 100 Vials", description: "Flexible ordering across multiple products" },
   { icon: FileText, title: "Full COA Access", description: "Batch-specific certificates for every order" },
   { icon: Truck, title: "Priority Shipping", description: "Expedited fulfillment for all wholesale orders" },
   { icon: Users, title: "Dedicated Account Manager", description: "Direct line to your personal rep" },
@@ -55,10 +55,10 @@ const businessTypes = [
 ];
 
 const volumeOptions = [
-  "50-99 vials/month",
   "100-249 vials/month",
   "250-499 vials/month",
-  "500+ vials/month",
+  "500-999 vials/month",
+  "1000+ vials/month",
 ];
 
 export default function Wholesale() {

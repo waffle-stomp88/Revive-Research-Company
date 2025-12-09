@@ -48,6 +48,7 @@ import Troubleshooting from "@/pages/troubleshooting";
 import BatchArchive from "@/pages/batch-archive";
 import LabNotes from "@/pages/lab-notes";
 import ResourcesHub from "@/pages/resources";
+import ProductsHub from "@/pages/products-hub";
 import NotFound from "@/pages/not-found";
 
 function ScrollToTop() {
@@ -84,6 +85,7 @@ function Router() {
       <AnalyticsTracker />
       <Switch>
         <Route path="/" component={Home} />
+      <Route path="/shop" component={ProductsHub} />
       <Route path="/peptides" component={Products} />
       <Route path="/peptides/:id" component={ProductDetail} />
       <Route path="/products" component={Products} />

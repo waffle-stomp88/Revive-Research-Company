@@ -23,10 +23,11 @@ const navLinks = [
 ];
 
 const productLinks = [
-  { href: "/peptides", label: "Peptides", icon: FlaskConical, description: "Individual vials" },
-  { href: "/bulk-packs", label: "Bulk Packs", icon: Boxes, description: "5-packs, 10-packs" },
-  { href: "/supplies", label: "Supplies", icon: Droplets, description: "Bac water, syringes" },
-  { href: "/wholesale", label: "Wholesale Program", icon: Building2, description: "Clinics & resellers" },
+  { href: "/shop", label: "Shop All", icon: Package, description: "Browse all categories", color: "#ffffff" },
+  { href: "/peptides", label: "Peptides", icon: FlaskConical, description: "Individual vials", color: "#E7FB10" },
+  { href: "/bulk-packs", label: "Bulk Packs", icon: Boxes, description: "5-packs, 10-packs", color: "#21d8ff" },
+  { href: "/supplies", label: "Supplies", icon: Droplets, description: "Bac water, syringes", color: "#9d4edd" },
+  { href: "/wholesale", label: "Wholesale Program", icon: Building2, description: "Clinics & resellers", color: "#22c55e" },
 ];
 
 const resourceLinks = [
@@ -42,6 +43,8 @@ export function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [productsDropdownOpen, setProductsDropdownOpen] = useState(false);
+  const [resourcesDropdownOpen, setResourcesDropdownOpen] = useState(false);
   const [location] = useLocation();
   const { user, isAuthenticated, isLoading } = useAuth();
   const { items, getItemCount, getSubtotal } = useCart();
@@ -62,6 +65,8 @@ export function Navigation() {
     setIsMobileMenuOpen(false);
     setIsDropdownOpen(false);
     setIsCartOpen(false);
+    setProductsDropdownOpen(false);
+    setResourcesDropdownOpen(false);
   }, [location]);
 
   const getInitials = () => {
@@ -149,7 +154,10 @@ export function Navigation() {
                 
                 {/* Products Dropdown */}
                 <div className="relative px-4 py-2 rounded-md group cursor-pointer">
-                  <DropdownMenu>
+                  <DropdownMenu open={productsDropdownOpen} onOpenChange={(open) => {
+                    setProductsDropdownOpen(open);
+                    if (open) setResourcesDropdownOpen(false);
+                  }}>
                     <DropdownMenuTrigger asChild>
                       <button
                         className={`flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer bg-transparent border-0 outline-none ${
@@ -164,24 +172,27 @@ export function Navigation() {
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="center" className="w-64">
-                      {productLinks.map((link) => {
+                      {productLinks.map((link, index) => {
                         const Icon = link.icon;
                         const isActive = location === link.href || location.startsWith(link.href + "/");
                         return (
-                          <DropdownMenuItem key={link.href} asChild>
-                            <Link 
-                              href={link.href} 
-                              className={`cursor-pointer flex items-start gap-3 py-2 ${isActive ? "text-[#E7FB10]" : ""}`}
-                              data-testid={`link-product-${link.label.toLowerCase().replace(/ /g, "-")}`}
-                              onClick={() => window.scrollTo(0, 0)}
-                            >
-                              <Icon className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                              <div>
-                                <div className="font-medium">{link.label}</div>
-                                <div className="text-xs text-muted-foreground">{link.description}</div>
-                              </div>
-                            </Link>
-                          </DropdownMenuItem>
+                          <div key={link.href}>
+                            <DropdownMenuItem asChild>
+                              <Link 
+                                href={link.href} 
+                                className="cursor-pointer flex items-start gap-3 py-2"
+                                data-testid={`link-product-${link.label.toLowerCase().replace(/ /g, "-")}`}
+                                onClick={() => window.scrollTo(0, 0)}
+                              >
+                                <Icon className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: link.color }} />
+                                <div>
+                                  <div className="font-medium" style={{ color: isActive ? link.color : undefined }}>{link.label}</div>
+                                  <div className="text-xs text-muted-foreground">{link.description}</div>
+                                </div>
+                              </Link>
+                            </DropdownMenuItem>
+                            {index === 0 && <DropdownMenuSeparator />}
+                          </div>
                         );
                       })}
                     </DropdownMenuContent>
@@ -197,60 +208,55 @@ export function Navigation() {
                   />
                 </div>
                 
-                <Link href="/resources" onClick={() => window.scrollTo(0, 0)}>
-                  <motion.div
-                    className="relative px-4 py-2 rounded-md group cursor-pointer"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <span
-                      className={`flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 ${
-                        location === "/resources" || resourceLinks.some(r => location === r.href)
-                          ? "text-[#9d4edd] drop-shadow-[0_0_8px_rgba(157,78,221,0.6)]"
-                          : "text-muted-foreground group-hover:text-[#9d4edd]"
-                      }`}
-                      data-testid="link-nav-resources"
-                    >
-                      Resources
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                          <ChevronDown className="h-4 w-4 cursor-pointer" />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="center" className="w-56">
-                          {resourceLinks.map((link) => {
-                            const Icon = link.icon;
-                            const isActive = location === link.href;
-                            return (
-                              <DropdownMenuItem key={link.href} asChild>
-                                <Link 
-                                  href={link.href} 
-                                  className={`cursor-pointer ${isActive ? "text-[#9d4edd]" : ""}`}
-                                  data-testid={`link-resource-${link.label.toLowerCase().replace(/ /g, "-")}`}
-                                  onClick={() => window.scrollTo(0, 0)}
-                                >
-                                  <Icon className="h-4 w-4 mr-2" />
-                                  {link.label}
-                                </Link>
-                              </DropdownMenuItem>
-                            );
-                          })}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </span>
-                    {(location === "/resources" || resourceLinks.some(r => location === r.href)) && (
-                      <motion.div
-                        className="absolute inset-0 bg-[#9d4edd]/10 rounded-md border border-[#9d4edd]/30"
-                        layoutId="resource-highlight"
-                      />
-                    )}
+                {/* Resources Dropdown */}
+                <div className="relative px-4 py-2 rounded-md group cursor-pointer">
+                  <DropdownMenu open={resourcesDropdownOpen} onOpenChange={(open) => {
+                    setResourcesDropdownOpen(open);
+                    if (open) setProductsDropdownOpen(false);
+                  }}>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        className={`flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer bg-transparent border-0 outline-none ${
+                          location === "/resources" || resourceLinks.some(r => location === r.href)
+                            ? "text-[#9d4edd] drop-shadow-[0_0_8px_rgba(157,78,221,0.6)]"
+                            : "text-muted-foreground hover:text-[#9d4edd]"
+                        }`}
+                        data-testid="link-nav-resources"
+                      >
+                        Resources
+                        <ChevronDown className="h-4 w-4" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="center" className="w-56">
+                      {resourceLinks.map((link) => {
+                        const Icon = link.icon;
+                        const isActive = location === link.href;
+                        return (
+                          <DropdownMenuItem key={link.href} asChild>
+                            <Link 
+                              href={link.href} 
+                              className={`cursor-pointer ${isActive ? "text-[#9d4edd]" : ""}`}
+                              data-testid={`link-resource-${link.label.toLowerCase().replace(/ /g, "-")}`}
+                              onClick={() => window.scrollTo(0, 0)}
+                            >
+                              <Icon className="h-4 w-4 mr-2" />
+                              {link.label}
+                            </Link>
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  {(location === "/resources" || resourceLinks.some(r => location === r.href)) && (
                     <motion.div
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#9d4edd] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
-                      initial={{ scaleX: 0 }}
-                      whileHover={{ scaleX: 1 }}
-                      transition={{ duration: 0.4 }}
+                      className="absolute inset-0 bg-[#9d4edd]/10 rounded-md border border-[#9d4edd]/30"
+                      layoutId="resource-highlight"
                     />
-                  </motion.div>
-                </Link>
+                  )}
+                  <motion.div
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#9d4edd] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
+                  />
+                </div>
               </div>
 
               <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
