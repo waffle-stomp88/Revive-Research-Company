@@ -299,39 +299,77 @@ export default function DosageCalculator() {
             </AnimatePresence>
           </motion.div>
 
-          {/* Formula Reference */}
+          {/* Formula Reference - Premium Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mt-6"
+            className="mt-8"
           >
-            <h3 className="text-white text-sm font-medium mb-3 flex items-center gap-2">
-              <Beaker className="h-4 w-4 text-[#21d8ff]" />
-              How the Math Works
-            </h3>
-            <div className="grid md:grid-cols-3 gap-4">
-              <FormulaCard
-                step="1"
-                title="Find Concentration"
-                description="Divide peptide amount by water volume to get how much peptide is in each mL"
-                example="5mg ÷ 2mL = 2.5 mg/mL"
-                color="#E7FB10"
-              />
-              <FormulaCard
-                step="2"
-                title="Calculate Volume"
-                description="Divide your desired dose by the concentration to find how much liquid to draw"
-                example="0.25mg ÷ 2.5 = 0.1 mL"
-                color="#21d8ff"
-              />
-              <FormulaCard
-                step="3"
-                title="Convert to Units"
-                description="Multiply mL by 100 to get syringe units (the marks on your insulin syringe)"
-                example="0.1 mL × 100 = 10 units"
-                color="#a855f7"
-              />
+            <div className="text-center mb-6">
+              <h3 className="text-white text-lg font-semibold mb-1 flex items-center justify-center gap-2">
+                <Beaker className="h-5 w-5 text-[#21d8ff]" />
+                How the Math Works
+              </h3>
+              <p className="text-gray-500 text-xs">Follow these three simple steps</p>
+            </div>
+            
+            {/* Timeline Connector */}
+            <div className="relative">
+              {/* Animated connector line - desktop only */}
+              <div className="hidden md:block absolute top-12 left-[16.66%] right-[16.66%] h-0.5 z-0">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#a855f7] rounded-full" />
+                <motion.div 
+                  className="absolute inset-0 bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#a855f7] rounded-full blur-sm"
+                  animate={{ opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+              </div>
+              
+              <div className="grid md:grid-cols-3 gap-4 relative z-10">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <PremiumFormulaCard
+                    step="1"
+                    title="CONCENTRATION"
+                    description="Divide peptide amount by water volume to get how much peptide is in each mL"
+                    example="5mg ÷ 2mL = 2.5 mg/mL"
+                    color="#E7FB10"
+                    icon={<FlaskConical className="h-4 w-4" />}
+                  />
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <PremiumFormulaCard
+                    step="2"
+                    title="VOLUME"
+                    description="Divide your desired dose by the concentration to find how much liquid to draw"
+                    example="0.25mg ÷ 2.5 = 0.1 mL"
+                    color="#21d8ff"
+                    icon={<Droplet className="h-4 w-4" />}
+                  />
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <PremiumFormulaCard
+                    step="3"
+                    title="UNITS"
+                    description="Multiply mL by 100 to get syringe units (the marks on your insulin syringe)"
+                    example="0.1 mL × 100 = 10 units"
+                    color="#a855f7"
+                    icon={<Syringe className="h-4 w-4" />}
+                  />
+                </motion.div>
+              </div>
             </div>
           </motion.div>
 
@@ -379,38 +417,93 @@ function ResultCard({ label, value, unit, subtext, color, testId }: {
   );
 }
 
-function FormulaCard({ step, title, description, example, color }: {
+function PremiumFormulaCard({ step, title, description, example, color, icon }: {
   step: string;
   title: string;
   description: string;
   example: string;
   color: string;
+  icon: React.ReactNode;
 }) {
   return (
-    <div 
-      className="bg-[#18181c] rounded-xl border p-4"
-      style={{ borderColor: `${color}30` }}
+    <motion.div 
+      className="relative group"
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.2 }}
     >
-      <div className="flex items-start gap-3">
+      {/* Glow effect */}
+      <div 
+        className="absolute -inset-0.5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md"
+        style={{ background: `linear-gradient(135deg, ${color}40, transparent)` }}
+      />
+      
+      {/* Card */}
+      <div 
+        className="relative bg-gradient-to-b from-[#1c1c22] to-[#141418] rounded-2xl border overflow-hidden"
+        style={{ borderColor: `${color}25` }}
+      >
+        {/* Top accent line */}
         <div 
-          className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold"
-          style={{ backgroundColor: `${color}20`, color }}
-        >
-          {step}
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="text-white text-sm font-medium mb-1">{title}</div>
-          <p className="text-gray-400 text-xs leading-relaxed mb-2">{description}</p>
-          <div 
-            className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs"
-            style={{ backgroundColor: `${color}10`, color }}
+          className="h-0.5 w-full"
+          style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
+        />
+        
+        <div className="p-5">
+          {/* Step badge */}
+          <div className="flex items-center justify-center mb-4">
+            <div className="relative">
+              <div 
+                className="w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold border-2"
+                style={{ 
+                  backgroundColor: `${color}15`,
+                  borderColor: `${color}50`,
+                  color,
+                  boxShadow: `0 0 20px ${color}30`
+                }}
+              >
+                {step}
+              </div>
+              {/* Icon badge */}
+              <div 
+                className="absolute -right-1 -bottom-1 w-5 h-5 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: color }}
+              >
+                <div className="text-black">
+                  {icon}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Title */}
+          <h4 
+            className="text-center text-sm font-bold tracking-wider mb-3"
+            style={{ color }}
           >
-            <span className="opacity-60">Example:</span>
-            <code className="font-mono">{example}</code>
+            {title}
+          </h4>
+          
+          {/* Description */}
+          <p className="text-gray-400 text-xs leading-relaxed text-center mb-4">
+            {description}
+          </p>
+          
+          {/* Example box */}
+          <div 
+            className="rounded-lg p-3 text-center"
+            style={{ backgroundColor: `${color}08`, border: `1px solid ${color}20` }}
+          >
+            <div className="text-gray-500 text-[10px] uppercase tracking-wider mb-1">Example</div>
+            <code 
+              className="font-mono text-sm font-medium"
+              style={{ color }}
+            >
+              {example}
+            </code>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
