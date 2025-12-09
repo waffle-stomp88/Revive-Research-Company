@@ -668,7 +668,7 @@ export default function Products() {
                       <div className="flex flex-col md:flex-row gap-5 items-center">
                         <div className="w-40 h-40 md:w-48 md:h-48 bg-muted/50 rounded-lg overflow-hidden flex-shrink-0 border border-red-500/20">
                           <img 
-                            src={productImage} 
+                            src={saleProduct.imageUrl || productImage} 
                             alt={saleProduct.name}
                             className="w-full h-full object-contain p-3 group-hover:scale-110 transition-transform"
                           />
@@ -820,7 +820,7 @@ export default function Products() {
                               )}
                               <div className="relative aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 rounded-md mb-3 overflow-hidden">
                                 <img 
-                                  src={productImage} 
+                                  src={product.imageUrl || productImage} 
                                   alt={product.name}
                                   className="w-full h-full object-contain transition-transform duration-300 p-3 group-hover:scale-105"
                                 />

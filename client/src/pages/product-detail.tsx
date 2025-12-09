@@ -273,7 +273,7 @@ export default function ProductDetail() {
         originalPrice: product.originalPrice ? Number(product.originalPrice) * getDosageMultiplier() : undefined,
         quantity,
         dosage: selectedDosage,
-        image: productImage,
+        image: product.imageUrl || productImage,
       });
       toast({
         title: "Added to cart",
@@ -354,7 +354,7 @@ export default function ProductDetail() {
             ) : (
               <div className={`relative aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center sticky top-24 overflow-hidden ${isOutOfStock ? 'border-2 border-red-500' : ''}`}>
                 <img 
-                  src={productImage} 
+                  src={product.imageUrl || productImage} 
                   alt={product.name}
                   className={`w-full h-full object-contain p-6 ${isOutOfStock ? 'opacity-60' : ''}`}
                 />
