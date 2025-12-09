@@ -50,6 +50,8 @@ import LabNotes from "@/pages/lab-notes";
 import ResourcesHub from "@/pages/resources";
 import ProductsHub from "@/pages/products-hub";
 import DosageCalculator from "@/pages/dosage-calculator";
+import ResearchStacks from "@/pages/research-stacks";
+import ResearchStackDetail from "@/pages/research-stack-detail";
 import NotFound from "@/pages/not-found";
 
 function ScrollToTop() {
@@ -94,6 +96,8 @@ function Router() {
       <Route path="/bulk-packs" component={BulkPacks} />
       <Route path="/wholesale" component={Wholesale} />
       <Route path="/supplies" component={Supplies} />
+      <Route path="/research-stacks" component={ResearchStacks} />
+      <Route path="/research-stacks/:id" component={ResearchStackDetail} />
       <Route path="/bundles/:id" component={BundleDetail} />
       <Route path="/cart" component={Cart} />
       <Route path="/checkout" component={Checkout} />
