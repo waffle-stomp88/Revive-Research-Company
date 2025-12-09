@@ -120,10 +120,22 @@ export function Navigation() {
                         whileTap={{ scale: 0.98 }}
                       >
                         <span
-                          className={`text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer relative z-10 block`}
+                          className={`text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer relative z-10 block group-hover:drop-shadow-lg`}
                           style={{
                             color: isActive ? color : undefined,
                             textShadow: isActive ? `0 0 12px ${color}cc` : undefined,
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!isActive) {
+                              e.currentTarget.style.color = color;
+                              e.currentTarget.style.textShadow = `0 0 12px ${color}80`;
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!isActive) {
+                              e.currentTarget.style.color = 'white';
+                              e.currentTarget.style.textShadow = 'none';
+                            }
                           }}
                           data-testid={`link-nav-${link.label.toLowerCase().replace(" ", "-")}`}
                         >
