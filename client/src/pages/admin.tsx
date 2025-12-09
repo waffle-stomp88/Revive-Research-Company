@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
@@ -955,7 +955,7 @@ function ProductsTab() {
     setDosageStocks(prev => prev.map(ds => ({ ...ds, inStock: false, stockAmount: 0 })));
   };
 
-  const handleProductImageUpload = async () => {
+  const handleProductImageUpload = useCallback(async () => {
     try {
       const response = await apiRequest("POST", "/api/objects/upload");
       const { uploadURL } = await response.json();
@@ -964,7 +964,7 @@ function ProductsTab() {
       console.error("Failed to get upload URL:", error);
       throw error;
     }
-  };
+  }, []);
 
   const handleProductImageComplete = async (result: any) => {
     try {
@@ -1731,7 +1731,7 @@ function CoasTab() {
     setIsDialogOpen(true);
   };
 
-  const handleCoaImageUpload = async () => {
+  const handleCoaImageUpload = useCallback(async () => {
     try {
       const response = await apiRequest("POST", "/api/objects/upload");
       const { uploadURL } = await response.json();
@@ -1740,7 +1740,7 @@ function CoasTab() {
       console.error("Failed to get upload URL:", error);
       throw error;
     }
-  };
+  }, []);
 
   const handleCoaImageComplete = async (result: any) => {
     try {
