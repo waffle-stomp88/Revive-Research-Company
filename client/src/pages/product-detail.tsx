@@ -422,7 +422,7 @@ export default function ProductDetail() {
                   {relatedArticles.slice(0, 1).map((article) => (
                     <Link key={article.id} href={`/education/${article.slug}`}>
                       <Card 
-                        className="p-4 border-[#ec4899]/20 hover:border-[#ec4899]/40 transition-colors cursor-pointer group"
+                        className="p-4 border-[#ec4899]/20 hover:border-[#ec4899]/40 transition-all duration-300 cursor-pointer group hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(236,72,153,0.3)]"
                         data-testid={`card-article-${article.id}`}
                       >
                         <div className="flex items-start gap-3">
