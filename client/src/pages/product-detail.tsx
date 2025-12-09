@@ -485,12 +485,12 @@ export default function ProductDetail() {
               {product.name}
             </h1>
 
-            <div className="flex items-baseline gap-3 mb-3">
-              <div className="flex items-baseline gap-2 flex-wrap">
+            <div className="flex items-baseline gap-3 mb-3 flex-wrap">
+              <div className="flex items-baseline gap-2 whitespace-nowrap">
                 <span className="font-display text-3xl font-bold text-[#E7FB10]" data-testid="text-product-price">
                   ${getBasePrice().toFixed(2)}
                 </span>
-                <PriceTrendBadge productId={product.id} />
+                <PriceTrendBadge productId={product.id} variant="compact" />
               </div>
               {product.originalPrice && (
                 <span className="text-lg text-muted-foreground line-through">
