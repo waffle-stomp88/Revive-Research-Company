@@ -139,14 +139,20 @@ export default function ProductsHub() {
           {productCategories.map((category, index) => {
             const Icon = category.icon;
             return (
-              <a 
+              <motion.a 
                 key={category.href} 
                 href={category.href}
-                className={`block p-6 cursor-pointer transition-all duration-300 border-2 hover:scale-[1.02] group rounded-lg bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                className={`block p-6 cursor-pointer border-2 group rounded-lg bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
                   category.comingSoon ? 'opacity-70' : ''
                 }`}
                 style={{ borderColor: `${category.color}40` }}
                 data-testid={`link-category-${category.label.toLowerCase().replace(/ /g, "-")}`}
+                whileHover={{ 
+                  scale: 1.02,
+                  boxShadow: `0 0 30px ${category.color}40, 0 0 60px ${category.color}20, inset 0 0 20px ${category.color}10`,
+                  borderColor: `${category.color}80`,
+                }}
+                transition={{ duration: 0.3 }}
               >
                 <div className="flex items-start gap-4">
                   <div 
@@ -185,7 +191,7 @@ export default function ProductsHub() {
                     style={{ color: category.color }}
                   />
                 </div>
-              </a>
+              </motion.a>
             );
           })}
         </motion.div>
