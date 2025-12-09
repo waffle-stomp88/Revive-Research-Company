@@ -31,11 +31,11 @@ const productLinks = [
 ];
 
 const resourceLinks = [
-  { href: "/coa-library", label: "COA Library", icon: FileCheck },
-  { href: "/education", label: "Education Center", icon: GraduationCap },
-  { href: "/legal", label: "Legal & Compliance", icon: Scale },
-  { href: "/what-we-dont-do", label: "What We Don't Do", icon: BookOpen },
-  { href: "/faq", label: "FAQ", icon: BookOpen },
+  { href: "/coa-library", label: "COA Library", icon: FileCheck, description: "Browse verified certifications", color: "#9d4edd" },
+  { href: "/education", label: "Education Center", icon: GraduationCap, description: "Learn about peptides & research", color: "#9d4edd" },
+  { href: "/legal", label: "Legal & Compliance", icon: Scale, description: "Regulatory information & policies", color: "#9d4edd" },
+  { href: "/what-we-dont-do", label: "What We Don't Do", icon: BookOpen, description: "Our ethical boundaries", color: "#9d4edd" },
+  { href: "/faq", label: "FAQ", icon: BookOpen, description: "Common questions answered", color: "#9d4edd" },
 ];
 
 export function Navigation() {
@@ -208,8 +208,8 @@ export function Navigation() {
                       <button
                         className={`flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer bg-transparent border-0 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 [&:focus]:outline-none [&:focus-visible]:ring-0 ${
                           location === "/resources" || resourceLinks.some(r => location === r.href)
-                            ? "text-[#9d4edd] drop-shadow-[0_0_8px_rgba(157,78,221,0.6)]"
-                            : "text-muted-foreground hover:text-[#9d4edd]"
+                            ? "text-[#9d4edd] drop-shadow-[0_0_12px_rgba(157,78,221,0.8)]"
+                            : "text-muted-foreground hover:text-[#9d4edd] hover:drop-shadow-[0_0_12px_rgba(157,78,221,0.5)]"
                         }`}
                         data-testid="link-nav-resources"
                       >
@@ -217,22 +217,28 @@ export function Navigation() {
                         <ChevronDown className="h-4 w-4" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="center" className="w-56 z-[100]">
-                      {resourceLinks.map((link) => {
+                    <DropdownMenuContent align="center" className="w-72 z-[100]">
+                      {resourceLinks.map((link, index) => {
                         const Icon = link.icon;
                         const isActive = location === link.href;
                         return (
-                          <DropdownMenuItem key={link.href} asChild>
-                            <Link 
-                              href={link.href} 
-                              className={`cursor-pointer ${isActive ? "text-[#9d4edd]" : ""}`}
-                              data-testid={`link-resource-${link.label.toLowerCase().replace(/ /g, "-")}`}
-                              onClick={() => window.scrollTo(0, 0)}
-                            >
-                              <Icon className="h-4 w-4 mr-2" />
-                              {link.label}
-                            </Link>
-                          </DropdownMenuItem>
+                          <div key={link.href}>
+                            <DropdownMenuItem asChild>
+                              <Link 
+                                href={link.href} 
+                                className="cursor-pointer flex items-start gap-3 py-2"
+                                data-testid={`link-resource-${link.label.toLowerCase().replace(/ /g, "-")}`}
+                                onClick={() => window.scrollTo(0, 0)}
+                              >
+                                <Icon className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: link.color }} />
+                                <div>
+                                  <div className="font-medium" style={{ color: isActive ? link.color : undefined }}>{link.label}</div>
+                                  <div className="text-xs text-muted-foreground">{link.description}</div>
+                                </div>
+                              </Link>
+                            </DropdownMenuItem>
+                            {index === 0 && <DropdownMenuSeparator />}
+                          </div>
                         );
                       })}
                     </DropdownMenuContent>
