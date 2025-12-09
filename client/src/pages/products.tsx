@@ -883,18 +883,20 @@ export default function Products() {
                                   {product.shortDescription}
                                 </p>
                                 <div className="flex items-center justify-between mt-auto pt-2 border-t border-border flex-wrap gap-2">
-                                  <div className="flex items-baseline gap-1.5">
-                                    <span className="font-display text-lg font-bold text-[#E7FB10]">
-                                      ${Number(product.price).toFixed(2)}
-                                    </span>
-                                    {product.originalPrice && (
-                                      <span className="text-[10px] text-muted-foreground line-through">
-                                        ${Number(product.originalPrice).toFixed(2)}
+                                  <div className="flex items-center gap-1.5">
+                                    <div className="flex items-baseline gap-1.5">
+                                      <span className="font-display text-lg font-bold text-[#E7FB10]">
+                                        ${Number(product.price).toFixed(2)}
                                       </span>
-                                    )}
+                                      {product.originalPrice && (
+                                        <span className="text-[10px] text-muted-foreground line-through">
+                                          ${Number(product.originalPrice).toFixed(2)}
+                                        </span>
+                                      )}
+                                    </div>
+                                    <PriceTrendIndicator productId={product.id} />
                                   </div>
                                   <div className="flex items-center gap-1 ml-auto">
-                                    <PriceTrendIndicator productId={product.id} />
                                     <Button
                                       variant="ghost"
                                       size="icon"
