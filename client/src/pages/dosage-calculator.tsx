@@ -304,26 +304,35 @@ export default function DosageCalculator() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mt-6 grid grid-cols-3 gap-3"
+            className="mt-6"
           >
-            <FormulaCard
-              step="1"
-              title="Concentration"
-              formula="Peptide ÷ Water"
-              color="#E7FB10"
-            />
-            <FormulaCard
-              step="2"
-              title="Volume"
-              formula="Dose ÷ Concentration"
-              color="#21d8ff"
-            />
-            <FormulaCard
-              step="3"
-              title="Units"
-              formula="Volume × 100"
-              color="#a855f7"
-            />
+            <h3 className="text-white text-sm font-medium mb-3 flex items-center gap-2">
+              <Beaker className="h-4 w-4 text-[#21d8ff]" />
+              How the Math Works
+            </h3>
+            <div className="grid md:grid-cols-3 gap-4">
+              <FormulaCard
+                step="1"
+                title="Find Concentration"
+                description="Divide peptide amount by water volume to get how much peptide is in each mL"
+                example="5mg ÷ 2mL = 2.5 mg/mL"
+                color="#E7FB10"
+              />
+              <FormulaCard
+                step="2"
+                title="Calculate Volume"
+                description="Divide your desired dose by the concentration to find how much liquid to draw"
+                example="0.25mg ÷ 2.5 = 0.1 mL"
+                color="#21d8ff"
+              />
+              <FormulaCard
+                step="3"
+                title="Convert to Units"
+                description="Multiply mL by 100 to get syringe units (the marks on your insulin syringe)"
+                example="0.1 mL × 100 = 10 units"
+                color="#a855f7"
+              />
+            </div>
           </motion.div>
 
           {/* Disclaimer */}
@@ -370,22 +379,37 @@ function ResultCard({ label, value, unit, subtext, color, testId }: {
   );
 }
 
-function FormulaCard({ step, title, formula, color }: {
+function FormulaCard({ step, title, description, example, color }: {
   step: string;
   title: string;
-  formula: string;
+  description: string;
+  example: string;
   color: string;
 }) {
   return (
-    <div className="bg-[#18181c] rounded-xl border border-[#2a2a32] p-3 text-center">
-      <div 
-        className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold mb-2"
-        style={{ backgroundColor: `${color}20`, color }}
-      >
-        {step}
+    <div 
+      className="bg-[#18181c] rounded-xl border p-4"
+      style={{ borderColor: `${color}30` }}
+    >
+      <div className="flex items-start gap-3">
+        <div 
+          className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold"
+          style={{ backgroundColor: `${color}20`, color }}
+        >
+          {step}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="text-white text-sm font-medium mb-1">{title}</div>
+          <p className="text-gray-400 text-xs leading-relaxed mb-2">{description}</p>
+          <div 
+            className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs"
+            style={{ backgroundColor: `${color}10`, color }}
+          >
+            <span className="opacity-60">Example:</span>
+            <code className="font-mono">{example}</code>
+          </div>
+        </div>
       </div>
-      <div className="text-white text-xs font-medium mb-1">{title}</div>
-      <code className="text-[10px] px-2 py-0.5 rounded bg-[#0d0d10] text-gray-400">{formula}</code>
     </div>
   );
 }
