@@ -9,13 +9,18 @@ import type { UploadResult } from "@uppy/core";
 import { Button } from "@/components/ui/button";
 
 const uppyModalStyles = `
+  .uppy-Dashboard--modal {
+    z-index: 9999 !important;
+  }
   .uppy-Dashboard--modal .uppy-Dashboard-overlay {
     background: rgba(0, 0, 0, 0.7) !important;
+    z-index: 9998 !important;
   }
   .uppy-Dashboard-inner {
     background: hsl(var(--card)) !important;
     border: 1px solid hsl(var(--border)) !important;
     border-radius: 0.5rem !important;
+    z-index: 9999 !important;
   }
   .uppy-Dashboard-AddFiles {
     border: 2px dashed hsl(var(--border)) !important;
