@@ -291,7 +291,9 @@ export default function Education() {
 
   const groupedArticles = categories.slice(1).map(cat => ({
     ...cat,
-    articles: articles.filter(a => a.category === cat.id)
+    articles: articles
+      .filter(a => a.category === cat.id)
+      .sort((a, b) => a.title.localeCompare(b.title))
   })).filter(cat => cat.articles.length > 0);
 
   return (
