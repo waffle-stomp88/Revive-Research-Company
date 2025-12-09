@@ -285,16 +285,15 @@ export function Navigation() {
                   <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
                       {(() => {
-                        const activeResource = resourceLinks.find(r => location === r.href);
-                        const activeColor = activeResource?.color || "#a855f7";
+                        const resourcesColor = "#a855f7";
                         const isActive = location === "/resources" || resourceLinks.some(r => location === r.href);
                         
                         return (
                           <button
                             className="flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer bg-transparent border-0 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 [&:focus]:outline-none [&:focus-visible]:ring-0 text-white"
                             style={{
-                              color: isActive ? activeColor : undefined,
-                              textShadow: isActive ? `0 0 12px ${activeColor}cc` : undefined,
+                              color: isActive ? resourcesColor : undefined,
+                              textShadow: isActive ? `0 0 12px ${resourcesColor}cc` : undefined,
                             }}
                             data-testid="link-nav-resources"
                           >
@@ -331,17 +330,16 @@ export function Navigation() {
                     </DropdownMenuContent>
                   </DropdownMenu>
                   {(() => {
-                    const activeResource = resourceLinks.find(r => location === r.href);
-                    const activeColor = activeResource?.color || "#a855f7";
+                    const resourcesColor = "#a855f7";
                     const isActive = location === "/resources" || resourceLinks.some(r => location === r.href);
                     
                     return isActive ? (
                       <motion.div
                         className="absolute inset-0 rounded-md border pointer-events-none"
                         style={{
-                          backgroundColor: `${activeColor}1a`,
-                          borderColor: `${activeColor}66`,
-                          boxShadow: `0 0 16px ${activeColor}4d`,
+                          backgroundColor: `${resourcesColor}1a`,
+                          borderColor: `${resourcesColor}66`,
+                          boxShadow: `0 0 16px ${resourcesColor}4d`,
                         }}
                         layoutId="resource-highlight"
                       />
@@ -350,11 +348,7 @@ export function Navigation() {
                   <motion.div
                     className="absolute bottom-0 left-0 right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full pointer-events-none"
                     style={{
-                      background: (() => {
-                        const activeResource = resourceLinks.find(r => location === r.href);
-                        const activeColor = activeResource?.color || "#21d8ff";
-                        return `linear-gradient(to right, transparent, ${activeColor}, transparent)`;
-                      })(),
+                      background: `linear-gradient(to right, transparent, #a855f7, transparent)`,
                     }}
                   />
                 </div>
