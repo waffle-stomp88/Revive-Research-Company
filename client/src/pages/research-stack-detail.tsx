@@ -480,6 +480,38 @@ export default function ResearchStackDetail() {
                 </div>
               </motion.section>
             )}
+
+            {/* Storage Information - Left Column */}
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.14 }}
+              className="mt-6"
+              data-testid="section-storage"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <BookOpen className="h-5 w-5" style={{ color: stack.color }} />
+                <h3 className="font-display text-lg font-bold">Storage Information</h3>
+              </div>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                {stack.storageGuide}
+              </p>
+              <Link href="/education/storage-101">
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Button 
+                    className="gap-2 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold hover:shadow-[0_0_20px_rgba(33,216,255,0.6)] transition-shadow" 
+                    data-testid="link-learn-storage"
+                  >
+                    <BookOpen className="h-4 w-4" />
+                    Learn More: Storage Best Practices
+                    <ChevronRight className="h-3 w-3" />
+                  </Button>
+                </motion.div>
+              </Link>
+            </motion.section>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}>
@@ -742,29 +774,6 @@ export default function ResearchStackDetail() {
                   </AnimatePresence>
                 </div>
               </Card>
-            </div>
-
-            {/* Storage Information - Matching Product Page Style */}
-            <div>
-              <h3 className="font-display font-semibold text-lg mb-4">Storage Information</h3>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                {stack.storageGuide}
-              </p>
-              <Link href="/education/storage-101">
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Button 
-                    className="gap-2 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold hover:shadow-[0_0_20px_rgba(33,216,255,0.6)] transition-shadow" 
-                    data-testid="link-learn-storage"
-                  >
-                    <BookOpen className="h-4 w-4" />
-                    Learn More: Storage Best Practices
-                    <ChevronRight className="h-3 w-3" />
-                  </Button>
-                </motion.div>
-              </Link>
             </div>
           </motion.div>
         </div>
