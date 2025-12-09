@@ -18,7 +18,6 @@ import logoImage from "@assets/REVIVE-11_1764290805698.png";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/coa", label: "COA Verification" },
   { href: "/affiliate", label: "Affiliates" },
 ];
 
@@ -30,12 +29,16 @@ const productLinks = [
   { href: "/wholesale", label: "Wholesale Program", icon: Building2, description: "Clinics & resellers", color: "#22c55e" },
 ];
 
+const coaLinks = [
+  { href: "/coa", label: "COA Verification", icon: FileCheck, description: "Verify product authenticity", color: "#21d8ff" },
+  { href: "/coa-library", label: "COA Library", icon: FileCheck, description: "Browse verified certifications", color: "#21d8ff" },
+];
+
 const resourceLinks = [
-  { href: "/education", label: "Education Center", icon: GraduationCap, description: "Learn about peptides & research", color: "#9d4edd" },
-  { href: "/coa-library", label: "COA Library", icon: FileCheck, description: "Browse verified certifications", color: "#9d4edd" },
-  { href: "/legal", label: "Legal & Compliance", icon: Scale, description: "Regulatory information & policies", color: "#9d4edd" },
-  { href: "/what-we-dont-do", label: "What We Don't Do", icon: BookOpen, description: "Our ethical boundaries", color: "#9d4edd" },
-  { href: "/faq", label: "FAQ", icon: BookOpen, description: "Common questions answered", color: "#9d4edd" },
+  { href: "/education", label: "Education Center", icon: GraduationCap, description: "Learn about peptides & research", color: "#21d8ff" },
+  { href: "/legal", label: "Legal & Compliance", icon: Scale, description: "Regulatory information & policies", color: "#22c55e" },
+  { href: "/what-we-dont-do", label: "What We Don't Do", icon: BookOpen, description: "Our ethical boundaries", color: "#EF4444" },
+  { href: "/faq", label: "FAQ", icon: BookOpen, description: "Common questions answered", color: "#E7FB10" },
 ];
 
 export function Navigation() {
@@ -200,6 +203,59 @@ export function Navigation() {
                     className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#E7FB10] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full pointer-events-none"
                   />
                 </div>
+
+                {/* COA Dropdown */}
+                <div className="relative px-4 py-2 rounded-md group cursor-pointer">
+                  <DropdownMenu modal={false}>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        className={`flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer bg-transparent border-0 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 [&:focus]:outline-none [&:focus-visible]:ring-0 ${
+                          coaLinks.some(c => location === c.href || location.startsWith(c.href + "/"))
+                            ? "text-[#21d8ff] drop-shadow-[0_0_12px_rgba(33,216,255,0.8)]"
+                            : "text-muted-foreground hover:text-[#21d8ff] hover:drop-shadow-[0_0_12px_rgba(33,216,255,0.5)]"
+                        }`}
+                        data-testid="link-nav-coa"
+                      >
+                        COA Verification
+                        <ChevronDown className="h-4 w-4" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="center" className="w-64 z-[100]">
+                      {coaLinks.map((link, index) => {
+                        const Icon = link.icon;
+                        const isActive = location === link.href || location.startsWith(link.href + "/");
+                        return (
+                          <div key={link.href}>
+                            <DropdownMenuItem asChild>
+                              <Link 
+                                href={link.href} 
+                                className="cursor-pointer flex items-start gap-3 py-2"
+                                data-testid={`link-coa-${link.label.toLowerCase().replace(/ /g, "-")}`}
+                                onClick={() => window.scrollTo(0, 0)}
+                              >
+                                <Icon className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: link.color }} />
+                                <div>
+                                  <div className="font-medium" style={{ color: isActive ? link.color : undefined }}>{link.label}</div>
+                                  <div className="text-xs text-muted-foreground">{link.description}</div>
+                                </div>
+                              </Link>
+                            </DropdownMenuItem>
+                            {index === 0 && <DropdownMenuSeparator />}
+                          </div>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  {coaLinks.some(c => location === c.href || location.startsWith(c.href + "/")) && (
+                    <motion.div
+                      className="absolute inset-0 bg-[#21d8ff]/10 rounded-md border border-[#21d8ff]/40 shadow-[0_0_16px_rgba(33,216,255,0.3)] pointer-events-none"
+                      layoutId="coa-highlight"
+                    />
+                  )}
+                  <motion.div
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#21d8ff] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full pointer-events-none"
+                  />
+                </div>
                 
                 {/* Resources Dropdown */}
                 <div className="relative px-4 py-2 rounded-md group cursor-pointer">
@@ -208,8 +264,8 @@ export function Navigation() {
                       <button
                         className={`flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer bg-transparent border-0 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 [&:focus]:outline-none [&:focus-visible]:ring-0 ${
                           location === "/resources" || resourceLinks.some(r => location === r.href)
-                            ? "text-[#9d4edd] drop-shadow-[0_0_12px_rgba(157,78,221,0.8)]"
-                            : "text-muted-foreground hover:text-[#9d4edd] hover:drop-shadow-[0_0_12px_rgba(157,78,221,0.5)]"
+                            ? "text-[#21d8ff] drop-shadow-[0_0_12px_rgba(33,216,255,0.8)]"
+                            : "text-muted-foreground hover:text-[#21d8ff] hover:drop-shadow-[0_0_12px_rgba(33,216,255,0.5)]"
                         }`}
                         data-testid="link-nav-resources"
                       >
@@ -245,12 +301,12 @@ export function Navigation() {
                   </DropdownMenu>
                   {(location === "/resources" || resourceLinks.some(r => location === r.href)) && (
                     <motion.div
-                      className="absolute inset-0 bg-[#9d4edd]/10 rounded-md border border-[#9d4edd]/30 pointer-events-none"
+                      className="absolute inset-0 bg-[#21d8ff]/10 rounded-md border border-[#21d8ff]/40 shadow-[0_0_16px_rgba(33,216,255,0.3)] pointer-events-none"
                       layoutId="resource-highlight"
                     />
                   )}
                   <motion.div
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#9d4edd] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full pointer-events-none"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#21d8ff] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full pointer-events-none"
                   />
                 </div>
               </div>
