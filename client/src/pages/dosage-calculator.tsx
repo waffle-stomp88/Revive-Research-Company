@@ -74,8 +74,10 @@ export default function DosageCalculator() {
     <div className="min-h-screen bg-[#0d0d10] pt-20">
       {/* Background Effects */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#E7FB10]/5 rounded-full blur-[120px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-[#21d8ff]/5 rounded-full blur-[100px]" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#E7FB10]/8 rounded-full blur-[120px]" />
+        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-[#21d8ff]/8 rounded-full blur-[100px]" />
+        <div className="absolute top-1/2 right-1/3 w-72 h-72 bg-[#a855f7]/6 rounded-full blur-[100px]" />
+        <div className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-[#22c55e]/5 rounded-full blur-[90px]" />
       </div>
 
       <div className="container mx-auto px-4 py-8 relative z-10">
@@ -107,10 +109,10 @@ export default function DosageCalculator() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-gradient-to-b from-[#18181c] to-[#131316] rounded-2xl border border-[#2a2a32] overflow-hidden shadow-2xl"
+            className="bg-gradient-to-b from-[#18181c] to-[#131316] rounded-2xl border border-[#E7FB10]/20 overflow-hidden shadow-2xl shadow-[#E7FB10]/5"
           >
             {/* Input Section */}
-            <div className="p-6 border-b border-[#2a2a32]">
+            <div className="p-6 border-b border-[#2a2a32] bg-gradient-to-r from-[#E7FB10]/5 via-transparent to-[#21d8ff]/5">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {/* Dose Input */}
                 <div className="space-y-2">
@@ -329,14 +331,14 @@ export default function DosageCalculator() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="mt-6 flex items-start gap-3 bg-[#18181c] rounded-xl border border-[#2a2a32] p-4"
+            className="mt-6 flex items-start gap-3 bg-red-500/10 rounded-xl border border-red-500/30 p-4"
           >
-            <div className="p-2 rounded-lg bg-amber-500/10">
-              <AlertTriangle className="h-4 w-4 text-amber-400" />
+            <div className="p-2 rounded-lg bg-red-500/20">
+              <AlertTriangle className="h-4 w-4 text-red-400" />
             </div>
             <div>
-              <h4 className="text-white text-sm font-medium mb-1">Research Use Only</h4>
-              <p className="text-gray-500 text-xs leading-relaxed">
+              <h4 className="text-red-400 text-sm font-medium mb-1">Research Use Only</h4>
+              <p className="text-red-300/70 text-xs leading-relaxed">
                 This calculator is for research and educational purposes only. All peptides are strictly for laboratory research.
               </p>
             </div>
