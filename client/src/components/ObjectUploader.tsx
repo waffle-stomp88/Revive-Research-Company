@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import type { ReactNode } from "react";
 import Uppy from "@uppy/core";
 import DashboardModal from "@uppy/react/dashboard-modal";
@@ -9,13 +9,37 @@ import type { UploadResult } from "@uppy/core";
 import { Button } from "@/components/ui/button";
 
 const uppyModalStyles = `
-  .uppy-Dashboard--modal .uppy-Dashboard-inner {
-    max-width: 400px !important;
-    max-height: 350px !important;
-    width: 90vw !important;
+  .uppy-Dashboard--modal .uppy-Dashboard-overlay {
+    background: rgba(0, 0, 0, 0.7) !important;
   }
-  .uppy-Dashboard--modal .uppy-Dashboard-innerWrap {
-    max-height: 300px !important;
+  .uppy-Dashboard-inner {
+    background: hsl(var(--card)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+    border-radius: 0.5rem !important;
+  }
+  .uppy-Dashboard-AddFiles {
+    border: 2px dashed hsl(var(--border)) !important;
+    background: hsl(var(--muted)) !important;
+  }
+  .uppy-Dashboard-AddFiles-title {
+    color: hsl(var(--foreground)) !important;
+  }
+  .uppy-Dashboard-browse {
+    color: #E7FB10 !important;
+  }
+  .uppy-DashboardContent-bar {
+    background: hsl(var(--card)) !important;
+    border-bottom: 1px solid hsl(var(--border)) !important;
+  }
+  .uppy-StatusBar {
+    background: hsl(var(--card)) !important;
+  }
+  .uppy-StatusBar-actionBtn--upload {
+    background: #E7FB10 !important;
+    color: black !important;
+  }
+  .uppy-Dashboard-close {
+    color: hsl(var(--foreground)) !important;
   }
 `;
 
@@ -61,24 +85,41 @@ export function ObjectUploader({
     }
   }, []);
   
-  const [uppy] = useState(() =>
-    new Uppy({
+  const uppy = useMemo(() => {
+    const instance = new Uppy({
       restrictions: {
         maxNumberOfFiles,
         maxFileSize,
         allowedFileTypes,
       },
       autoProceed: false,
-    })
-      .use(AwsS3, {
-        shouldUseMultipart: false,
-        getUploadParameters: onGetUploadParameters,
-      })
-      .on("complete", (result) => {
-        onComplete?.(result);
-        setShowModal(false);
-      })
-  );
+    });
+    
+    instance.use(AwsS3, {
+      shouldUseMultipart: false,
+      getUploadParameters: onGetUploadParameters,
+    });
+    
+    return instance;
+  }, [maxNumberOfFiles, maxFileSize, allowedFileTypes, onGetUploadParameters]);
+
+  useEffect(() => {
+    const handleComplete = (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+      onComplete?.(result);
+      setShowModal(false);
+      uppy.cancelAll();
+    };
+    
+    uppy.on("complete", handleComplete);
+    return () => {
+      uppy.off("complete", handleComplete);
+    };
+  }, [uppy, onComplete]);
+
+  const handleClose = useCallback(() => {
+    uppy.cancelAll();
+    setShowModal(false);
+  }, [uppy]);
 
   return (
     <div>
@@ -89,18 +130,21 @@ export function ObjectUploader({
         variant={buttonVariant}
         size={buttonSize}
         disabled={disabled}
+        data-testid="button-upload-trigger"
       >
         {children}
       </Button>
 
-      {showModal && (
-        <DashboardModal
-          uppy={uppy}
-          open={showModal}
-          onRequestClose={() => setShowModal(false)}
-          proudlyDisplayPoweredByUppy={false}
-        />
-      )}
+      <DashboardModal
+        uppy={uppy}
+        open={showModal}
+        onRequestClose={handleClose}
+        proudlyDisplayPoweredByUppy={false}
+        note="Images only, up to 10 MB"
+        browserBackButtonClose={true}
+        closeModalOnClickOutside={true}
+        disablePageScrollWhenModalOpen={true}
+      />
     </div>
   );
 }
