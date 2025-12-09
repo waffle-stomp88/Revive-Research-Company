@@ -9,6 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ImageLoader } from "@/components/image-loader";
+import { QuickViewModal } from "@/components/quick-view-modal";
+import { CompareButton, CompareBar } from "@/components/comparison-tool";
+import { RecentlyViewed } from "@/components/recently-viewed";
 import {
   Select,
   SelectContent,
@@ -37,7 +40,9 @@ import {
   PanelLeftClose,
   PanelLeft,
   TrendingUp,
-  AlertTriangle
+  AlertTriangle,
+  Eye,
+  Scale
 } from "lucide-react";
 import { PriceTrendIndicator } from "@/components/price-trend-badge";
 import type { Product } from "@shared/schema";
@@ -186,6 +191,9 @@ export default function Products() {
   const [productsOpen, setProductsOpen] = useState(true);
   const [bundlesOpen, setBundlesOpen] = useState(true);
   const [bulkOpen, setBulkOpen] = useState(true);
+  
+  // Quick view modal state
+  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
   const dealsRef = useRef<HTMLDivElement>(null);
   const bundlesRef = useRef<HTMLDivElement>(null);
@@ -885,9 +893,24 @@ export default function Products() {
                                       </span>
                                     )}
                                   </div>
-                                  <div className="flex items-center gap-2 ml-auto">
+                                  <div className="flex items-center gap-1 ml-auto">
                                     <PriceTrendIndicator productId={product.id} />
-                                    <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-[#E7FB10] transition-colors" />
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setQuickViewProduct(product);
+                                      }}
+                                      data-testid={`button-quickview-${product.id}`}
+                                    >
+                                      <Eye className="h-3.5 w-3.5" />
+                                    </Button>
+                                    <div onClick={(e) => e.preventDefault()}>
+                                      <CompareButton productId={product.id} size="sm" />
+                                    </div>
                                   </div>
                                 </div>
                               </div>
@@ -1069,6 +1092,19 @@ export default function Products() {
           </div>
         </div>
       </div>
+      
+      {/* Quick View Modal */}
+      <QuickViewModal 
+        product={quickViewProduct}
+        isOpen={!!quickViewProduct}
+        onClose={() => setQuickViewProduct(null)}
+      />
+      
+      {/* Compare Bar */}
+      {products && <CompareBar products={products} />}
+      
+      {/* Recently Viewed Section */}
+      <RecentlyViewed variant="section" />
     </main>
   );
 }

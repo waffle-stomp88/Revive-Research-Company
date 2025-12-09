@@ -304,20 +304,18 @@ export default function ResearchStacks() {
                         </Badge>
                       </div>
 
-                      <Link href={`/research-stacks/${stack.id}`}>
-                        <Button
-                          size="sm"
-                          className="group"
-                          style={{
-                            backgroundColor: stack.color,
-                            color: stack.color === "#E7FB10" || stack.color === "#f59e0b" || stack.color === "#22c55e" ? "black" : "white",
-                          }}
-                          data-testid={`button-view-stack-${stack.id}`}
-                        >
-                          View Stack
-                          <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
-                        </Button>
-                      </Link>
+                      <Button
+                        size="sm"
+                        className="group"
+                        style={{
+                          backgroundColor: stack.color,
+                          color: stack.color === "#E7FB10" || stack.color === "#f59e0b" || stack.color === "#22c55e" ? "black" : "white",
+                        }}
+                        data-testid={`button-view-stack-${stack.id}`}
+                      >
+                        View Stack
+                        <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
+                      </Button>
                     </div>
                   </div>
                 </Card>

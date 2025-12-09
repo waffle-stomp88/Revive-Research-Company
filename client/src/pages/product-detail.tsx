@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { ImageLoader } from "@/components/image-loader";
+import { addToRecentlyViewed, RecentlyViewed } from "@/components/recently-viewed";
+import { CompareButton } from "@/components/comparison-tool";
 import {
   Select,
   SelectContent,
@@ -225,6 +227,13 @@ export default function ProductDetail() {
       setSelectedDosage(product.dosageOptions[0]);
     }
   }, [product]);
+
+  // Track recently viewed products
+  useEffect(() => {
+    if (params.id) {
+      addToRecentlyViewed(params.id);
+    }
+  }, [params.id]);
 
   const handleQuantityChange = (delta: number) => {
     setQuantity(prev => Math.max(1, Math.min(10, prev + delta)));
@@ -696,6 +705,11 @@ export default function ProductDetail() {
                     Save ${((getBasePrice() - getDiscountedPrice()) * quantity).toFixed(2)} per order • Cancel anytime
                   </p>
                 )}
+                
+                {/* Compare Button */}
+                <div className="mt-3 flex justify-center">
+                  <CompareButton productId={product.id} />
+                </div>
               </>
             ) : (
               /* Out of Stock - Show prominent notification signup */
@@ -1114,6 +1128,9 @@ export default function ProductDetail() {
           )}
         </motion.section>
       </div>
+      
+      {/* Recently Viewed Sidebar */}
+      <RecentlyViewed currentProductId={params.id} variant="sidebar" />
     </main>
   );
 }

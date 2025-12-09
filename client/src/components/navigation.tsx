@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, User, LogIn, LogOut, Shield, ShoppingCart, ChevronDown, FileCheck, GraduationCap, Scale, BookOpen, Package, FlaskConical, Boxes, Building2, Droplets, Calculator, Layers } from "lucide-react";
+import { Menu, X, User, LogIn, LogOut, Shield, ShoppingCart, ChevronDown, FileCheck, GraduationCap, Scale, BookOpen, Package, FlaskConical, Boxes, Building2, Droplets, Calculator, Layers, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -14,6 +14,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/contexts/CartContext";
+import { SearchAutocomplete } from "@/components/search-autocomplete";
 import logoImage from "@assets/REVIVE-11_1764290805698.png";
 
 const navLinks = [
@@ -357,6 +358,11 @@ export function Navigation() {
               </div>
 
               <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
+                {/* Search Autocomplete - Desktop */}
+                <div className="hidden lg:block w-48 xl:w-64">
+                  <SearchAutocomplete />
+                </div>
+                
                 <DropdownMenu open={isCartOpen} onOpenChange={setIsCartOpen}>
                   <DropdownMenuTrigger asChild>
                     <Button 
@@ -581,7 +587,23 @@ export function Navigation() {
             className="fixed inset-0 z-40 bg-background/95 backdrop-blur-lg md:hidden"
             style={{ paddingTop: 'calc(var(--banner-height, 40px) + 80px)' }}
           >
-            <nav className="flex flex-col items-center justify-center h-full gap-6 overflow-y-auto py-8">
+            <nav className="flex flex-col items-center justify-start h-full gap-3 overflow-y-auto py-4 px-6">
+              {/* Mobile Search Bar */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05 }}
+                className="w-full max-w-sm"
+              >
+                <SearchAutocomplete className="w-full" />
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.3 }}
+                transition={{ delay: 0.08 }}
+                className="w-24 h-px bg-[#E7FB10]/50"
+              />
               {navLinks.map((link, index) => {
                 const isActive = location === link.href;
                 return (
