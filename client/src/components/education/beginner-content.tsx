@@ -1,23 +1,27 @@
 import { motion } from "framer-motion";
 import { 
   Lightbulb, 
-  BookOpen,
   Beaker,
   ThermometerSnowflake,
   FileCheck,
   FlaskConical,
-  Shield,
-  BookMarked,
   AlertTriangle,
-  Sparkles
+  Zap,
+  Heart,
+  Brain,
+  Sparkles,
+  Flame,
+  Activity,
+  Clock,
+  Target,
+  Dna,
+  Droplets
 } from "lucide-react";
 import { 
-  WhatIsPeptideVisual, 
   SimplePurityMeter, 
   COASimplified, 
   StorageBasics,
-  ResearchOnlyExplainer,
-  OrderingJourneySimple
+  WhatIsPeptideVisual
 } from "./beginner-infographics";
 
 interface BeginnerContentProps {
@@ -38,6 +42,783 @@ interface BeginnerArticle {
 }
 
 const beginnerArticles: Record<string, BeginnerArticle> = {
+  // ==========================================
+  // PEPTIDE PROFILE ARTICLES - Beginner Versions
+  // ==========================================
+
+  "bpc-157-research-guide": {
+    icon: Heart,
+    iconColor: "#22c55e",
+    intro: `BPC-157 is one of the most popular peptides in research today. The name stands for "Body Protection Compound," and it comes from a protein naturally found in your stomach's digestive juices. Scientists created a synthetic version with just 15 amino acids so they could study its fascinating effects on tissue repair.`,
+    sections: [
+      {
+        title: "What Makes BPC-157 Special",
+        content: `Your body is constantly repairing itself - healing cuts, mending strained muscles, fixing damaged tissue. BPC-157 is interesting to researchers because it seems to be involved in how your body coordinates these repair processes.
+
+Think of your body's healing system like a construction crew. BPC-157 acts like a project manager that helps organize the workers, bring in the right materials, and make sure everything happens in the right order. It doesn't do the building itself - it helps coordinate the process.
+
+What's particularly interesting is that this peptide is naturally present in your digestive system, where the environment is pretty harsh (acid, enzymes, constant movement). The fact that it survives there suggests it's quite stable compared to other peptides.`
+      },
+      {
+        title: "How It Works (Simply Explained)",
+        content: `BPC-157 appears to work through several pathways that scientists are still mapping out:
+
+**Blood Vessel Formation** - When tissue needs repair, it needs blood supply. BPC-157 seems to help with the formation of new blood vessels, which brings nutrients and oxygen to damaged areas.
+
+**Growth Factor Activity** - Your body uses chemical messengers called growth factors to signal cells to grow and repair. BPC-157 appears to influence how these growth factors work.
+
+**Nitric Oxide System** - This is a signaling system in your body that affects blood flow and healing. BPC-157 interacts with this system in ways that researchers find significant.
+
+The key point is that BPC-157 doesn't force anything to happen - it seems to support and enhance your body's natural repair mechanisms.`
+      },
+      {
+        title: "What Researchers Study It For",
+        content: `Scientists investigate BPC-157 in various contexts:
+
+**Connective Tissue** - Tendons, ligaments, and muscle tissue are all subjects of BPC-157 research. These tissues often heal slowly, making them interesting targets.
+
+**Gut Health** - Given that BPC-157 originates from gastric juice, there's natural interest in how it might affect digestive system tissue.
+
+**Protective Effects** - Some research examines whether BPC-157 has protective properties when tissues are stressed or damaged.
+
+Most of this research is still in early stages, primarily involving cell cultures and animal studies. Scientists are working to understand the mechanisms before drawing broader conclusions.`
+      }
+    ],
+    takeaway: "BPC-157 is a 15-amino-acid peptide derived from a stomach protein. Researchers study it for its potential role in supporting tissue repair processes through effects on blood vessel formation, growth factors, and the nitric oxide system."
+  },
+
+  "tb-500-research-guide": {
+    icon: Activity,
+    iconColor: "#21d8ff",
+    intro: `TB-500 is the synthetic version of a peptide called Thymosin Beta-4, which is found naturally in almost every cell of your body. With 43 amino acids, it's a medium-sized peptide that researchers study for its apparent role in how cells move, heal, and regenerate.`,
+    sections: [
+      {
+        title: "What TB-500 Actually Is",
+        content: `Thymosin Beta-4 (the natural version of TB-500) is one of the most abundant peptides in your body. It's found in virtually every cell type except red blood cells. This widespread presence hints at its fundamental importance.
+
+What makes TB-500 interesting to researchers is its role in something called "actin regulation." Actin is a protein that forms the internal scaffolding of your cells - think of it like the skeleton that gives cells their shape and lets them move.
+
+When TB-500 interacts with actin, it affects how cells can migrate to where they're needed. This is crucial during healing, when cells need to move to a wound site to do their repair work.`
+      },
+      {
+        title: "The Science in Plain Terms",
+        content: `Here's how TB-500 seems to work:
+
+**Cell Movement** - By interacting with actin (the cell's internal framework), TB-500 helps cells become more mobile. Imagine cells as workers who need to travel to a construction site - TB-500 helps them pack up and move.
+
+**Blood Vessel Development** - Like BPC-157, TB-500 also appears to support the formation of new blood vessels. Damaged tissue needs blood supply to heal.
+
+**Inflammation Modulation** - TB-500 may influence the inflammatory response. Inflammation is necessary for healing, but too much can be problematic. TB-500 seems to help regulate this balance.
+
+**Small Size Advantage** - Despite being 43 amino acids, TB-500 is still small enough to travel easily through tissue, potentially reaching areas that larger molecules can't.`
+      },
+      {
+        title: "Research Focus Areas",
+        content: `Scientists study TB-500 in several contexts:
+
+**Tissue Repair** - Given its role in cell movement and blood vessel formation, tissue repair is a primary research interest.
+
+**Heart Research** - The heart's limited regenerative capacity makes it an interesting subject for TB-500 research.
+
+**Hair and Skin** - Thymosin Beta-4 is naturally present in hair follicle cells, leading to research in this area.
+
+**Comparative Studies** - Researchers often compare TB-500 with BPC-157 since both are studied for regenerative properties, though they work through different mechanisms.
+
+Understanding exactly how TB-500 works is still an active area of research, with scientists mapping out its various pathways and effects.`
+      }
+    ],
+    takeaway: "TB-500 is a synthetic version of Thymosin Beta-4, a naturally occurring peptide found in nearly all your cells. It works by regulating actin (cell structure), which affects how cells move and migrate during healing processes."
+  },
+
+  "semaglutide-research-guide": {
+    icon: Target,
+    iconColor: "#E7FB10",
+    intro: `Semaglutide is a GLP-1 receptor agonist - a peptide that mimics a hormone your body naturally produces after eating. The natural hormone (GLP-1) breaks down in just minutes, but scientists modified semaglutide to last much longer, making it valuable for metabolic research.`,
+    sections: [
+      {
+        title: "Understanding GLP-1",
+        content: `When you eat a meal, your gut releases a hormone called GLP-1 (glucagon-like peptide-1). This hormone does several things:
+
+**Tells your pancreas to release insulin** - Insulin helps your cells absorb sugar from your bloodstream.
+
+**Signals fullness to your brain** - GLP-1 communicates with appetite centers, helping you feel satisfied after eating.
+
+**Slows stomach emptying** - Food stays in your stomach longer, contributing to that "full" feeling.
+
+The problem for researchers was that natural GLP-1 breaks down in just 1-2 minutes. That's too fast to study effectively. Semaglutide was designed to resist this breakdown, lasting about a week instead of minutes.`
+      },
+      {
+        title: "How Semaglutide Was Designed",
+        content: `Scientists made specific modifications to create semaglutide:
+
+**Amino Acid Changes** - They swapped out certain amino acids that the body's enzymes typically target for breakdown.
+
+**Fatty Acid Addition** - They attached a fatty acid chain to the peptide. This fatty acid binds to a protein in your blood called albumin, which acts like a protective taxi, shielding the peptide from breakdown.
+
+**The Result** - These modifications extended the half-life from minutes to about a week, allowing once-weekly research protocols.
+
+This is a great example of how understanding a molecule's structure lets scientists engineer improved versions for research purposes.`
+      },
+      {
+        title: "What Researchers Investigate",
+        content: `Semaglutide has become one of the most-studied peptides in metabolic research:
+
+**Glucose Regulation** - How GLP-1 receptor activation affects blood sugar control is a major research focus.
+
+**Appetite and Satiety** - Scientists study how activation of brain GLP-1 receptors influences eating behavior and feelings of fullness.
+
+**Cardiovascular Effects** - There's research into how GLP-1 agonists might affect heart and blood vessel function.
+
+**Comparative Studies** - Researchers compare semaglutide with newer dual and triple agonists (like tirzepatide and retatrutide) to understand how targeting additional receptors changes the response.
+
+The extensive research on semaglutide has made it a foundational peptide for understanding incretin-based metabolic pathways.`
+      }
+    ],
+    takeaway: "Semaglutide mimics GLP-1, a natural gut hormone that affects insulin release, appetite, and digestion. It's been engineered to last about a week instead of minutes, making it valuable for metabolic research."
+  },
+
+  "tirzepatide-research-guide": {
+    icon: Zap,
+    iconColor: "#9d4edd",
+    intro: `Tirzepatide takes the GLP-1 concept a step further - it's a dual agonist that activates both GLP-1 and GIP receptors. GIP is another gut hormone that works alongside GLP-1 in regulating metabolism. By targeting both, researchers can study what happens when you activate two complementary pathways simultaneously.`,
+    sections: [
+      {
+        title: "Why Two Receptors?",
+        content: `Your gut produces multiple hormones after you eat, and they work together like a team:
+
+**GLP-1** (which semaglutide targets) - Promotes insulin release, slows digestion, signals fullness to the brain.
+
+**GIP** (glucose-dependent insulinotropic polypeptide) - Also promotes insulin release, and has effects on fat tissue and bone health.
+
+For years, researchers focused mainly on GLP-1. But GIP was actually discovered first, and scientists wondered: what if you could activate both systems at once? Would the effects be additive? Synergistic? That's what tirzepatide was designed to explore.`
+      },
+      {
+        title: "How Tirzepatide Works",
+        content: `Tirzepatide is sometimes called a "twincretin" because it activates two incretin receptors:
+
+**Unbalanced Agonism** - Interestingly, tirzepatide doesn't activate both receptors equally. It has stronger GIP activity relative to its GLP-1 activity. Researchers study how this ratio affects outcomes.
+
+**Long-Acting Design** - Like semaglutide, tirzepatide has a fatty acid attached that extends its duration in the body to about 5 days, allowing once-weekly dosing in research settings.
+
+**Complementary Pathways** - By activating both GIP and GLP-1 receptors, tirzepatide engages two related but distinct signaling pathways. Researchers study whether this dual activation produces effects different from single-receptor activation.`
+      },
+      {
+        title: "Research Directions",
+        content: `Tirzepatide has opened new avenues for metabolic research:
+
+**Comparative Studies** - How do results differ between single GLP-1 agonists and dual GLP-1/GIP agonists? This is a key research question.
+
+**Mechanism Exploration** - Scientists work to understand how GIP and GLP-1 signals interact at the cellular level.
+
+**Fat Tissue Effects** - GIP has specific effects on adipose (fat) tissue that pure GLP-1 agonists lack. Researchers explore these differences.
+
+**Dosing Optimization** - Finding optimal ratios of GIP to GLP-1 activity is an ongoing research interest.
+
+Tirzepatide represents a shift from single-target to multi-target approaches in metabolic peptide research.`
+      }
+    ],
+    takeaway: "Tirzepatide activates two gut hormone receptors (GLP-1 and GIP) instead of just one. This dual approach lets researchers study how these complementary metabolic pathways work together."
+  },
+
+  "retatrutide-research-guide": {
+    icon: Flame,
+    iconColor: "#f97316",
+    intro: `Retatrutide is the newest generation of metabolic peptides - a triple agonist that activates GLP-1, GIP, AND glucagon receptors. While semaglutide targets one receptor and tirzepatide targets two, retatrutide targets three, representing the cutting edge of incretin research.`,
+    sections: [
+      {
+        title: "Why Add Glucagon?",
+        content: `You might know glucagon as insulin's "opposite" - it raises blood sugar when it gets too low. So why would you want to activate glucagon receptors in metabolic research?
+
+It turns out glucagon does more than just raise blood sugar:
+
+**Energy Expenditure** - Glucagon appears to increase how many calories your body burns at rest.
+
+**Fat Breakdown** - It promotes the breakdown of stored fat for energy.
+
+**Appetite Effects** - Glucagon may also affect satiety and food intake.
+
+By adding controlled glucagon receptor activation to GLP-1 and GIP activation, researchers can study a more complete picture of metabolic regulation.`
+      },
+      {
+        title: "The Triple Agonist Approach",
+        content: `Retatrutide activates three receptors with carefully balanced activity:
+
+**GLP-1** - The familiar pathway affecting insulin, appetite, and digestion.
+
+**GIP** - The additional incretin pathway with effects on fat tissue.
+
+**Glucagon** - The energy expenditure and fat breakdown pathway.
+
+The challenge for scientists was designing a single molecule that could engage all three receptors appropriately. Too much glucagon activity could cause problems; too little would negate the benefits of adding it.
+
+Retatrutide represents years of molecular engineering to achieve a specific activity profile across all three targets.`
+      },
+      {
+        title: "Current Research Focus",
+        content: `As the newest of the incretin agonists, retatrutide research is actively expanding:
+
+**Comparative Studies** - How do triple agonist effects compare to dual and single agonists? Early research suggests potentially additive benefits.
+
+**Safety Research** - With three receptor targets, understanding the full effect profile is crucial.
+
+**Mechanism Studies** - Scientists work to understand how the three pathways interact at cellular and systemic levels.
+
+**Optimization** - Finding the right balance of activity at each receptor remains an active area of investigation.
+
+Retatrutide represents where the field of incretin research is heading - toward multi-target approaches that address metabolism from multiple angles simultaneously.`
+      }
+    ],
+    takeaway: "Retatrutide is a triple agonist targeting GLP-1, GIP, and glucagon receptors. Adding glucagon brings energy expenditure and fat breakdown pathways into the research picture, creating a more comprehensive metabolic research tool."
+  },
+
+  "cjc-1295-research-guide": {
+    icon: Activity,
+    iconColor: "#21d8ff",
+    intro: `CJC-1295 is a synthetic version of GHRH (growth hormone-releasing hormone) - the signal your brain uses to tell your pituitary gland to release growth hormone. The natural signal is very short-lived, but CJC-1295 was engineered to last much longer, making it valuable for growth hormone axis research.`,
+    sections: [
+      {
+        title: "The Growth Hormone System",
+        content: `Your body's growth hormone system works like a chain of command:
+
+**Step 1:** Your hypothalamus (a part of your brain) releases GHRH.
+**Step 2:** GHRH travels to your pituitary gland (a pea-sized gland at the base of your brain).
+**Step 3:** The pituitary releases growth hormone into your bloodstream.
+**Step 4:** Growth hormone affects tissues throughout your body.
+
+Natural GHRH only lasts a few minutes before it's broken down. This makes it hard to study. CJC-1295 was designed to mimic GHRH but resist breakdown, allowing researchers to study growth hormone release over longer periods.`
+      },
+      {
+        title: "How CJC-1295 Works",
+        content: `CJC-1295 includes several modifications to extend its lifespan:
+
+**Amino Acid Substitutions** - Four amino acids were changed at key positions to resist enzymes that normally break down GHRH.
+
+**DAC Technology (optional)** - Some versions include a "Drug Affinity Complex" - a modification that binds to albumin in blood, dramatically extending duration to over a week.
+
+**Without DAC** - Versions without DAC last several hours instead of minutes, which is still much longer than natural GHRH.
+
+Both versions allow researchers to study sustained GHRH receptor activation, which produces a different pattern of growth hormone release than natural, pulsatile GHRH.`
+      },
+      {
+        title: "Research Applications",
+        content: `Scientists study CJC-1295 to understand growth hormone physiology:
+
+**Sustained vs. Pulsatile Release** - Natural growth hormone comes in pulses. CJC-1295 produces more sustained release. Researchers compare these patterns.
+
+**Combination Studies** - CJC-1295 is often studied alongside GHRPs (growth hormone-releasing peptides like ipamorelin) to examine synergistic effects.
+
+**Age-Related Changes** - Growth hormone production naturally declines with age. CJC-1295 helps researchers study this axis at different life stages.
+
+**IGF-1 Effects** - Growth hormone triggers the liver to produce IGF-1. Researchers use CJC-1295 to study this downstream pathway.
+
+CJC-1295 has become a standard research tool for anyone studying the GHRH/GH/IGF-1 axis.`
+      }
+    ],
+    takeaway: "CJC-1295 is a long-lasting version of GHRH, the hormone that tells your pituitary to release growth hormone. It's used to study the growth hormone axis because it lasts hours or days instead of minutes."
+  },
+
+  "ipamorelin-research-guide": {
+    icon: Target,
+    iconColor: "#22c55e",
+    intro: `Ipamorelin is a growth hormone secretagogue - it triggers growth hormone release, but through a different pathway than CJC-1295. While CJC-1295 mimics GHRH, ipamorelin mimics ghrelin (the "hunger hormone"). This different approach gives researchers another tool for studying growth hormone regulation.`,
+    sections: [
+      {
+        title: "A Different Trigger for Growth Hormone",
+        content: `Your body has multiple ways to trigger growth hormone release:
+
+**GHRH Pathway** - The hypothalamus releases GHRH, which tells the pituitary to release growth hormone. CJC-1295 works here.
+
+**Ghrelin Pathway** - Ghrelin (produced mainly in the stomach) can also trigger growth hormone release. Ipamorelin works here.
+
+**Why Does This Matter?** - These pathways can work together synergistically. By having research tools for both pathways, scientists can study them separately or in combination.
+
+Ipamorelin is particularly interesting because it's highly selective - it triggers growth hormone release without significantly affecting other hormones like cortisol or prolactin.`
+      },
+      {
+        title: "What Makes Ipamorelin Selective",
+        content: `Earlier ghrelin-mimicking peptides (called GHRPs) had a problem: they also affected cortisol and prolactin levels, which complicated research.
+
+Ipamorelin was designed to be cleaner:
+
+**Targets Ghrelin Receptors** - It binds to the same receptors as ghrelin (also called GHS-R or growth hormone secretagogue receptors).
+
+**Minimal Cortisol Effect** - Unlike earlier GHRPs, ipamorelin produces little to no increase in cortisol.
+
+**Minimal Prolactin Effect** - Similarly, it doesn't significantly raise prolactin levels.
+
+**Clean Data** - This selectivity makes research results easier to interpret. When you see effects, you can be more confident they're from growth hormone, not confounding hormone changes.`
+      },
+      {
+        title: "How Researchers Use It",
+        content: `Ipamorelin serves several research purposes:
+
+**Growth Hormone Studies** - Its selectivity makes it ideal for studying pure growth hormone effects.
+
+**Synergy Research** - Scientists often combine ipamorelin with CJC-1295 to study how the GHRH and ghrelin pathways interact.
+
+**Pulsatile Release** - Ipamorelin produces growth hormone pulses similar to natural patterns, unlike the more sustained release from CJC-1295 with DAC.
+
+**Comparative Studies** - Researchers compare ipamorelin's effects to other secretagogues to understand structure-activity relationships.
+
+The selectivity and predictable response make ipamorelin a clean research tool for growth hormone axis studies.`
+      }
+    ],
+    takeaway: "Ipamorelin triggers growth hormone release by mimicking ghrelin (the hunger hormone), not GHRH. It's valued for being selective - it affects growth hormone without significantly changing cortisol or prolactin levels."
+  },
+
+  "tesamorelin-research-guide": {
+    icon: Zap,
+    iconColor: "#E7FB10",
+    intro: `Tesamorelin is another GHRH analog like CJC-1295, but with a different modification strategy. It uses a unique chemical group attached to its structure that helps it resist breakdown. Researchers study tesamorelin particularly for its effects on body composition.`,
+    sections: [
+      {
+        title: "Tesamorelin's Design",
+        content: `Natural GHRH is a 44-amino-acid peptide that your hypothalamus releases to trigger growth hormone. Like natural GHRH, tesamorelin has 44 amino acids, but with a key modification:
+
+**The Modification** - A chemical group called trans-3-hexenoic acid is attached to the front of the peptide. This helps protect it from enzymes that would normally break it down.
+
+**Extended Duration** - This modification dramatically increases how long tesamorelin lasts in the body compared to natural GHRH.
+
+**Receptor Binding** - Despite the modification, tesamorelin still binds well to GHRH receptors, maintaining its ability to trigger growth hormone release.`
+      },
+      {
+        title: "How It Differs from CJC-1295",
+        content: `Both tesamorelin and CJC-1295 are GHRH analogs, but they use different strategies:
+
+**CJC-1295** - Uses multiple amino acid substitutions and optionally albumin binding (DAC) for extended duration.
+
+**Tesamorelin** - Uses a single chemical modification at the front of the peptide.
+
+**Research Implications** - Different modification strategies can produce different pharmacokinetic profiles (how the peptide is absorbed, distributed, and eliminated). Researchers compare these to understand which approaches work best for different applications.`
+      },
+      {
+        title: "Research Focus",
+        content: `Tesamorelin research has focused on several areas:
+
+**Body Composition** - How GHRH analog administration affects the distribution of fat tissue, particularly visceral (deep belly) fat.
+
+**Growth Hormone Pulsatility** - Studying the pattern of growth hormone release - does it more closely mimic natural pulsatile release?
+
+**Lipodystrophy Research** - Scientists have studied tesamorelin in the context of fat distribution abnormalities.
+
+**IGF-1 Response** - Like all GHRH analogs, tesamorelin's downstream effects on IGF-1 are of research interest.
+
+Tesamorelin provides researchers with another tool for studying the growth hormone axis, with its own unique characteristics.`
+      }
+    ],
+    takeaway: "Tesamorelin is a 44-amino-acid GHRH analog with a chemical modification that helps it resist breakdown. It's studied for growth hormone axis research with particular interest in body composition effects."
+  },
+
+  "epithalon-research-guide": {
+    icon: Clock,
+    iconColor: "#9d4edd",
+    intro: `Epithalon is a small tetrapeptide (just 4 amino acids: Ala-Glu-Asp-Gly) that emerged from Russian research on the pineal gland. It's studied for its potential effects on telomerase, an enzyme involved in cellular aging. This makes it one of the most interesting peptides in longevity research.`,
+    sections: [
+      {
+        title: "Understanding Telomeres and Aging",
+        content: `To understand epithalon, you first need to understand telomeres:
+
+**Telomeres are protective caps** at the ends of your chromosomes, like the plastic tips on shoelaces. They prevent your DNA from fraying or sticking to other chromosomes.
+
+**Every time a cell divides, telomeres get shorter.** After many divisions, telomeres become too short, and the cell can no longer divide properly. This is one mechanism of cellular aging.
+
+**Telomerase is an enzyme** that can rebuild telomeres. Most adult cells don't produce much telomerase, so their telomeres gradually shorten over time.
+
+This is where epithalon comes in - researchers study whether it might affect telomerase activity.`
+      },
+      {
+        title: "What Research Shows",
+        content: `Studies on epithalon have explored several areas:
+
+**Telomerase Activation** - Cell culture studies have examined whether epithalon can activate telomerase in cells that normally don't produce much of it.
+
+**Telomere Length** - Some research has measured whether telomere length changes with epithalon exposure.
+
+**Pineal Gland Connection** - Epithalon was originally derived from pineal gland extracts. Researchers explore connections between pineal function, melatonin, and epithalon's effects.
+
+**Cellular Lifespan** - Scientists have studied whether epithalon affects how many times cells can divide before reaching their limit (the Hayflick limit).
+
+This research is still evolving, and scientists continue to investigate the mechanisms involved.`
+      },
+      {
+        title: "Why It's Interesting for Longevity Research",
+        content: `Epithalon attracts attention in aging research for several reasons:
+
+**Small and Stable** - At just 4 amino acids, epithalon is very small and relatively stable compared to larger peptides.
+
+**Specific Target** - If epithalon truly affects telomerase, it targets one of the fundamental mechanisms of cellular aging.
+
+**Research History** - Decades of research, particularly from Russian scientists, provide a foundation for ongoing investigation.
+
+**Comparatively Safe Profile** - The peptide's small size and specificity are characteristics researchers value.
+
+While much research remains to be done, epithalon represents an approach to aging research focused on one of the most fundamental cellular processes.`
+      }
+    ],
+    takeaway: "Epithalon is a tiny 4-amino-acid peptide studied for its potential effects on telomerase, an enzyme that helps maintain telomeres (the protective caps on your chromosomes that shorten with age)."
+  },
+
+  "semax-research-guide": {
+    icon: Brain,
+    iconColor: "#21d8ff",
+    intro: `Semax is a synthetic peptide derived from ACTH, a hormone your pituitary gland produces. Scientists took a small fragment of ACTH (amino acids 4-7) and added a stabilizing tail to create semax. The result is a peptide that researchers study for cognitive and neuroprotective effects - without the hormonal effects of full ACTH.`,
+    sections: [
+      {
+        title: "From Hormone Fragment to Research Peptide",
+        content: `ACTH (adrenocorticotropic hormone) is a 39-amino-acid hormone that primarily tells your adrenal glands to produce cortisol. But researchers noticed that just a small piece of ACTH - amino acids 4 through 7 - seemed to have interesting effects on the brain without affecting cortisol.
+
+The problem was that this fragment broke down too quickly to study effectively. So scientists added a stabilizing "tail" (Pro-Gly-Pro) to protect it from enzymes.
+
+The result is semax: a 7-amino-acid peptide that:
+- Lasts 20-24 hours instead of minutes
+- Has no hormonal effects on cortisol
+- Can be studied for its effects on brain function`
+      },
+      {
+        title: "What Researchers Study",
+        content: `Semax research focuses on several brain-related areas:
+
+**BDNF Effects** - BDNF (brain-derived neurotrophic factor) is a protein that supports neuron health and growth. Research examines whether semax affects BDNF levels.
+
+**Cognitive Function** - Scientists study semax in relation to memory, learning, and attention processes.
+
+**Neuroprotection** - Research explores whether semax might have protective effects on neurons under stress conditions.
+
+**Neurotransmitter Systems** - Studies examine how semax interacts with dopamine, serotonin, and other brain signaling systems.
+
+Because it can be administered intranasally (through the nose), semax offers a convenient route of administration for brain-related research.`
+      },
+      {
+        title: "Why It's Unique",
+        content: `Several characteristics make semax interesting for neuroscience research:
+
+**No Hormonal Effects** - Unlike full ACTH, semax doesn't stimulate cortisol production. This "clean" profile makes it easier to study brain effects in isolation.
+
+**Long Half-Life** - The stabilizing tail extends duration to about a day, allowing sustained research protocols.
+
+**CNS Access** - Intranasal administration may allow direct access to the brain, bypassing the blood-brain barrier to some degree.
+
+**Melanocortin Connection** - Semax interacts with melanocortin receptors, which are involved in various brain functions beyond just pigmentation.
+
+Semax represents a creative approach: taking a small piece of a larger hormone and engineering it for specific research applications.`
+      }
+    ],
+    takeaway: "Semax is a modified fragment of ACTH (a pituitary hormone) engineered for brain research. It has effects on BDNF and other neurological factors without affecting cortisol, making it useful for cognitive research."
+  },
+
+  "ghk-cu-research-guide": {
+    icon: Sparkles,
+    iconColor: "#ec4899",
+    intro: `GHK-Cu is one of the simplest and most studied peptides - just three amino acids (Glycine-Histidine-Lysine) bound to a copper ion. Despite its tiny size, it's remarkably bioactive. Your body naturally produces GHK, and levels decrease significantly as you age. Researchers study it for its effects on skin, wound healing, and tissue remodeling.`,
+    sections: [
+      {
+        title: "Why Copper Matters",
+        content: `GHK is a tripeptide that naturally binds copper ions very strongly. This copper binding isn't just a coincidence - it's central to how GHK-Cu works:
+
+**Copper Transport** - GHK-Cu may help deliver copper to cells and tissues. Copper is essential for many enzymes involved in tissue repair and maintenance.
+
+**Enzyme Activation** - Many copper-dependent enzymes are involved in collagen production, antioxidant defense, and wound healing.
+
+**Age-Related Decline** - GHK levels in your blood drop dramatically with age:
+  - Age 20: About 200 ng/mL
+  - Age 60: About 80 ng/mL
+
+This decline correlates with reduced skin elasticity, slower wound healing, and other age-related changes, making GHK-Cu interesting for aging research.`
+      },
+      {
+        title: "What Research Has Explored",
+        content: `GHK-Cu has been studied for decades across multiple areas:
+
+**Skin Research** - Studies examine effects on collagen, elastin, and overall skin structure. GHK-Cu is one of the few peptides with extensive skin research.
+
+**Wound Healing** - Research explores whether GHK-Cu accelerates the wound healing process and improves healing quality.
+
+**Gene Expression** - Interestingly, GHK-Cu appears to influence the expression of many genes. Studies have identified over 4,000 genes that respond to GHK-Cu exposure.
+
+**Anti-Inflammatory Effects** - Research suggests GHK-Cu may help modulate inflammatory responses.
+
+The small size of GHK-Cu (just 3 amino acids plus copper) makes it easy to work with and relatively stable compared to larger peptides.`
+      },
+      {
+        title: "Delivery Methods",
+        content: `GHK-Cu research uses various delivery approaches:
+
+**Topical Application** - Because of interest in skin effects, topical formulations are commonly studied. The small molecular size may allow penetration into skin layers.
+
+**Injectable** - For systemic research, GHK-Cu can be administered by injection.
+
+**Stability Considerations** - The copper binding adds stability, but formulation still matters for maintaining activity.
+
+GHK-Cu represents one of the more accessible peptides for research - it's small, relatively stable, well-characterized, and has decades of published research to build upon.`
+      }
+    ],
+    takeaway: "GHK-Cu is a copper-binding tripeptide that decreases with age. Researchers study it for tissue remodeling, skin health, and wound healing, with the copper ion being essential to its biological activity."
+  },
+
+  "glow-peptide-complex-research-guide": {
+    icon: Sparkles,
+    iconColor: "#E7FB10",
+    intro: `GLOW Peptide Complex represents a multi-peptide approach to skin research. Rather than using a single peptide, it combines several bioactive peptides that work through different pathways. The idea is that targeting multiple mechanisms simultaneously might produce more comprehensive effects than any single peptide alone.`,
+    sections: [
+      {
+        title: "The Multi-Peptide Approach",
+        content: `Single peptides typically work through one or two main mechanisms. A peptide complex combines several peptides to address multiple pathways:
+
+**Signal Peptides** - These tell cells to produce more structural proteins like collagen. They're like messengers carrying "build more" instructions.
+
+**Carrier Peptides** - These deliver essential elements (like copper in GHK-Cu) to cells where they're needed for enzymatic processes.
+
+**Enzyme-Inhibiting Peptides** - These may slow down processes that break down collagen and elastin.
+
+**Matrikines** - These are fragments of matrix proteins that signal cells to remodel and repair.
+
+By combining peptides from different categories, researchers can study how multiple mechanisms work together.`
+      },
+      {
+        title: "Why Combinations Matter",
+        content: `Skin health involves many processes happening simultaneously:
+
+**Collagen Production** - New collagen must be made to maintain skin structure.
+**Collagen Protection** - Existing collagen shouldn't be broken down too fast.
+**Cell Renewal** - Old cells need to be replaced with new ones.
+**Antioxidant Defense** - Free radicals must be neutralized.
+**Hydration** - Skin needs to maintain moisture.
+
+No single peptide addresses all of these. By combining complementary peptides, researchers can study:
+- Whether effects are additive (1+1=2)
+- Whether effects are synergistic (1+1=3)
+- Whether any interactions are negative
+- What ratios produce optimal results`
+      },
+      {
+        title: "Research Considerations",
+        content: `Working with peptide complexes adds complexity to research:
+
+**Attribution Challenges** - When you see an effect, which peptide (or combination) caused it?
+
+**Concentration Balancing** - Each peptide may have a different optimal concentration.
+
+**Stability Issues** - Different peptides may have different stability requirements.
+
+**Quality Control** - Each component needs verification.
+
+Despite these challenges, multi-peptide research reflects how the body actually works - through coordinated systems rather than single molecules.`
+      }
+    ],
+    takeaway: "GLOW Peptide Complex combines multiple peptides (signal, carrier, enzyme-inhibiting) to target different skin health pathways simultaneously, allowing research into synergistic effects."
+  },
+
+  "igf-1-lr3-research-guide": {
+    icon: Dna,
+    iconColor: "#22c55e",
+    intro: `IGF-1 LR3 is a modified version of IGF-1 (Insulin-like Growth Factor 1), an important signaling molecule your liver produces in response to growth hormone. The "LR3" modifications make it more potent and longer-lasting than natural IGF-1, making it valuable for growth factor research.`,
+    sections: [
+      {
+        title: "Understanding IGF-1",
+        content: `IGF-1 sits at a crucial point in your body's growth hormone system:
+
+**The Chain of Command:**
+1. Pituitary releases growth hormone
+2. Growth hormone signals the liver
+3. Liver produces IGF-1
+4. IGF-1 circulates and affects tissues
+
+IGF-1 is actually responsible for many of the effects people attribute to growth hormone itself. It promotes cell growth, protein synthesis, and various metabolic effects.
+
+**The Challenge:** Natural IGF-1 binds tightly to carrier proteins in your blood (called IGFBPs). Only a small fraction is "free" to interact with receptors at any given time.`
+      },
+      {
+        title: "What the LR3 Modifications Do",
+        content: `IGF-1 LR3 includes two key modifications:
+
+**13 Extra Amino Acids** - Added to the front of the molecule, extending it from 70 to 83 amino acids.
+
+**Arginine Substitution** - Glutamic acid at position 3 is replaced with arginine.
+
+**The Result:** These changes dramatically reduce binding to IGFBPs. More of the peptide stays "free" and active.
+
+**Research Implications:**
+- Higher potency (more free IGF-1 available)
+- Longer half-life (not sequestered by binding proteins)
+- Different tissue distribution (not held in blood by proteins)
+
+This makes IGF-1 LR3 a powerful research tool for studying IGF-1 receptor activation.`
+      },
+      {
+        title: "Research Applications",
+        content: `Scientists use IGF-1 LR3 to study growth factor biology:
+
+**Cell Growth Studies** - IGF-1 promotes cell proliferation. LR3's enhanced potency makes effects easier to observe.
+
+**Muscle Research** - IGF-1 plays important roles in muscle development and maintenance.
+
+**Metabolic Studies** - IGF-1 has insulin-like effects on glucose metabolism.
+
+**Cancer Research** - Understanding IGF-1's growth-promoting effects is relevant to cancer biology.
+
+**Comparative Studies** - Researchers compare IGF-1 LR3 with natural IGF-1 to understand how binding protein interactions affect biology.
+
+The enhanced properties of IGF-1 LR3 make it particularly useful when researchers need sustained, potent IGF-1 receptor activation.`
+      }
+    ],
+    takeaway: "IGF-1 LR3 is a modified version of IGF-1 (a growth factor your liver makes in response to growth hormone). The modifications prevent it from binding to carrier proteins, making more available to interact with receptors."
+  },
+
+  "mots-c-research-guide": {
+    icon: Flame,
+    iconColor: "#f97316",
+    intro: `MOTS-c is a unique peptide - it's encoded by your mitochondria, not your regular DNA. Discovered in 2015, this 16-amino-acid peptide is sometimes called an "exercise mimetic" because it seems to produce some effects similar to exercise. It's at the forefront of mitochondrial and metabolic research.`,
+    sections: [
+      {
+        title: "What Makes MOTS-c Unique",
+        content: `Most peptides come from genes in your cell's nucleus. MOTS-c is different:
+
+**Mitochondrial Origin** - It's encoded by a gene in your mitochondria (the energy-producing organelles in your cells). This makes it a "mitochondrial-derived peptide" or MDP.
+
+**Mitokine Function** - MOTS-c acts as a "mitokine" - a hormone that mitochondria use to communicate with the rest of the cell and even other organs.
+
+**Evolutionary Conservation** - MOTS-c is found across many species, suggesting it serves important functions.
+
+This mitochondrial origin connects MOTS-c to energy metabolism in a fundamental way, since mitochondria are the cell's power plants.`
+      },
+      {
+        title: "How MOTS-c Relates to Exercise",
+        content: `Researchers call MOTS-c an "exercise mimetic" because it activates similar pathways:
+
+**AMPK Activation** - MOTS-c activates AMPK (AMP-activated protein kinase), the same energy-sensing pathway that exercise activates. AMPK is sometimes called the "metabolic master switch."
+
+**Metabolic Effects** - Through AMPK and other pathways, MOTS-c influences how cells handle glucose and produce energy.
+
+**Muscle Connection** - MOTS-c levels increase in muscle tissue after exercise, suggesting it plays a role in exercise adaptation.
+
+**Mitochondrial Biogenesis** - MOTS-c may promote the creation of new mitochondria, similar to how regular exercise does.
+
+This doesn't mean MOTS-c replaces exercise, but it might work through some overlapping mechanisms.`
+      },
+      {
+        title: "Research Directions",
+        content: `MOTS-c research is expanding rapidly:
+
+**Aging Research** - Mitochondrial function declines with age. MOTS-c offers a way to study mitochondrial signaling in aging contexts.
+
+**Metabolic Syndrome** - Scientists study MOTS-c's effects on glucose handling and metabolic health markers.
+
+**Exercise Science** - Understanding how MOTS-c relates to exercise adaptation is an active research area.
+
+**Mitochondrial Communication** - MOTS-c is helping scientists understand how mitochondria communicate with the rest of the cell.
+
+As a relatively new discovery, MOTS-c represents an exciting frontier in understanding the connection between mitochondria, metabolism, and exercise.`
+      }
+    ],
+    takeaway: "MOTS-c is a mitochondria-encoded peptide that activates AMPK, the same energy-sensing pathway triggered by exercise. It's studied for metabolic effects and its role in mitochondrial communication."
+  },
+
+  "nad-precursor-research-guide": {
+    icon: Zap,
+    iconColor: "#9d4edd",
+    intro: `NAD+ (Nicotinamide Adenine Dinucleotide) isn't a peptide - it's a coenzyme found in every cell of your body. It's essential for energy production, DNA repair, and many other processes. NAD+ precursors are compounds your body converts into NAD+, and they're central to aging and metabolic research.`,
+    sections: [
+      {
+        title: "Why NAD+ Matters",
+        content: `NAD+ is involved in hundreds of processes in your cells:
+
+**Energy Production** - NAD+ shuttles electrons in your mitochondria during energy production. Without it, you couldn't convert food into usable energy.
+
+**DNA Repair** - Enzymes called PARPs use NAD+ to fix DNA damage. This is crucial for preventing mutations.
+
+**Sirtuin Activation** - Sirtuins are proteins linked to longevity and metabolism. They require NAD+ to function.
+
+**Cell Signaling** - NAD+ is consumed by various signaling processes in cells.
+
+**The Problem:** NAD+ levels decline significantly with age - by some estimates, 50% between youth and middle age. This decline is associated with many age-related changes.`
+      },
+      {
+        title: "How NAD+ Precursors Work",
+        content: `Your body can make NAD+ from several different starting materials (precursors):
+
+**NMN (Nicotinamide Mononucleotide)** - A direct precursor that's just one step away from NAD+.
+
+**NR (Nicotinamide Riboside)** - Another precursor that converts to NMN, then to NAD+.
+
+**Niacin (Vitamin B3)** - An older pathway that's less efficient but well-established.
+
+**Tryptophan** - Your body can make NAD+ from this amino acid, but it's a longer pathway.
+
+Research examines which precursors most effectively raise NAD+ levels in different tissues and conditions.`
+      },
+      {
+        title: "Current Research Focus",
+        content: `NAD+ precursor research is one of the most active areas in aging science:
+
+**Aging and Longevity** - Scientists study whether raising NAD+ levels can address aspects of aging.
+
+**Metabolic Health** - NAD+ is crucial for metabolism. Research examines effects on glucose handling and energy regulation.
+
+**Neurological Research** - Brain cells are particularly energy-dependent, making NAD+ relevant to neuroscience.
+
+**Comparative Studies** - Which precursor works best? This depends on tissue, age, and other factors that researchers are sorting out.
+
+**Safety Research** - Understanding the full effects of chronically elevated NAD+ levels is ongoing.
+
+NAD+ precursor research bridges chemistry, metabolism, and aging science in ways that attract significant research attention.`
+      }
+    ],
+    takeaway: "NAD+ is a coenzyme essential for energy production, DNA repair, and sirtuin function. NAD+ precursors (like NMN and NR) are studied because NAD+ levels decline significantly with age."
+  },
+
+  "hcg-research-guide": {
+    icon: Droplets,
+    iconColor: "#21d8ff",
+    intro: `HCG (Human Chorionic Gonadotropin) is a glycoprotein hormone composed of 237 amino acids. It's best known as the "pregnancy hormone" because it's produced during pregnancy, but researchers study it for its effects on the reproductive system and hormonal regulation.`,
+    sections: [
+      {
+        title: "What HCG Is",
+        content: `HCG is made of two subunits:
+
+**Alpha Subunit** - 92 amino acids. This part is identical to the alpha subunit of several other hormones (LH, FSH, TSH).
+
+**Beta Subunit** - 145 amino acids. This part is unique to HCG and gives it its specific properties.
+
+In pregnancy, the placenta produces HCG to maintain the corpus luteum, which produces progesterone needed to sustain early pregnancy. The beta subunit is what pregnancy tests detect.
+
+Because HCG shares structural similarities with LH (luteinizing hormone), it can activate LH receptors, which is why researchers study it beyond pregnancy contexts.`
+      },
+      {
+        title: "LH Receptor Activation",
+        content: `The key to understanding HCG research is its relationship to LH:
+
+**LH's Normal Role:** In males, LH signals the testes to produce testosterone. In females, LH triggers ovulation and progesterone production.
+
+**HCG Mimics LH:** Because of structural similarities, HCG activates the same receptors that LH does.
+
+**Why This Matters:** This allows researchers to study LH receptor activation using HCG, which is more readily available and more stable than LH itself.
+
+**Duration:** HCG has a longer half-life than LH, providing more sustained receptor activation for research purposes.`
+      },
+      {
+        title: "Research Applications",
+        content: `Scientists study HCG across several areas:
+
+**Reproductive Research** - Understanding how hormones regulate reproduction is a core application.
+
+**Testosterone Production** - In male research subjects, HCG stimulates the same cells that LH normally stimulates, making it useful for studying testosterone regulation.
+
+**Fertility Science** - HCG plays important roles in fertility research for both sexes.
+
+**Leydig Cell Studies** - These testosterone-producing cells in the testes have LH/HCG receptors and are a focus of endocrine research.
+
+**Comparative Studies** - Researchers compare HCG with LH to understand receptor activation kinetics and downstream effects.
+
+HCG is a well-characterized hormone with decades of research, making it a valuable tool for reproductive endocrinology studies.`
+      }
+    ],
+    takeaway: "HCG is a pregnancy hormone that activates the same receptors as LH (luteinizing hormone). Researchers use it to study reproductive biology, hormonal regulation, and testosterone production."
+  },
+
+  // ==========================================
+  // NON-PEPTIDE ARTICLES - Keep the existing ones
+  // ==========================================
+
   "understanding-peptide-purity": {
     icon: Beaker,
     iconColor: "#21d8ff",
@@ -69,14 +850,6 @@ Every legitimate peptide vendor should provide an HPLC test result on the Certif
 **95-97% (Research Grade)** - Good for general research and initial studies. More affordable, but may have slightly more variability in results.
 
 For most researchers just starting out, 98%+ purity is an excellent choice. It provides great quality without breaking the bank.`
-      },
-      {
-        title: "Why This Matters for Your Research",
-        content: `Imagine you're trying to study how a specific peptide affects cells in a lab dish. If your peptide is only 90% pure, you don't really know if the effects you're seeing are from the peptide itself, or from that other 10% of mystery compounds.
-
-Higher purity means cleaner data. When something interesting happens in your research, you can be confident it's because of the peptide - not contamination. This makes your work more reproducible and your conclusions more trustworthy.
-
-It's like cooking with fresh ingredients versus canned - both might work, but one gives you cleaner, more predictable results.`
       }
     ],
     takeaway: "Always check the purity percentage on your COA before starting any research. For most applications, look for 98% or higher purity to ensure reliable, reproducible results."
@@ -85,31 +858,17 @@ It's like cooking with fresh ingredients versus canned - both might work, but on
   "reconstitution-101": {
     icon: FlaskConical,
     iconColor: "#22c55e",
-    intro: `When your peptide order arrives, you'll notice it's a dry powder - not a liquid. This is intentional! Peptides stay stable much longer as a freeze-dried powder than as a liquid. "Reconstitution" is just a fancy word for mixing that powder with water to create a usable solution. It's easier than it sounds, and this guide will walk you through everything you need to know.`,
+    intro: `When your peptide order arrives, you'll notice it's a dry powder - not a liquid. This is intentional! Peptides stay stable much longer as a freeze-dried powder than as a liquid. "Reconstitution" is just a fancy word for mixing that powder with water to create a usable solution.`,
     sections: [
       {
         title: "Why Peptides Come as Powder",
         content: `Peptides are delicate molecules. When they're dissolved in water, they start to slowly break down over time - especially if they get warm or are exposed to light. But when they're freeze-dried (the scientific term is "lyophilized"), they can stay stable for months or even years.
 
-Think of it like instant coffee versus brewed coffee. Instant coffee (the powder) can sit in your pantry for ages. But once you add water, you've got a limited window to enjoy it before it goes stale. Peptides work the same way.
-
-This is actually a good thing for researchers! It means your peptides arrive in peak condition, and you control exactly when to activate them by adding water.`,
+Think of it like instant coffee versus brewed coffee. Instant coffee (the powder) can sit in your pantry for ages. But once you add water, you've got a limited window to enjoy it before it goes stale. Peptides work the same way.`,
         visual: () => <WhatIsPeptideVisual />
       },
       {
-        title: "What You'll Need",
-        content: `Before you start, gather these supplies:
-
-**Bacteriostatic Water** - This is sterile water with a tiny amount of benzyl alcohol (0.9%) added as a preservative. The preservative helps prevent bacteria from growing in your solution, extending its usable life. This is what most researchers use.
-
-**Sterile Syringes** - You'll need these to measure and transfer the water. Use a new, sterile syringe each time.
-
-**Alcohol Wipes** - For cleaning the rubber stopper on your vials before puncturing them. This prevents contamination.
-
-**A Clean Workspace** - Work on a clean, sanitized surface. The cleaner your environment, the better your results will be.`
-      },
-      {
-        title: "The Reconstitution Process",
+        title: "The Basic Process",
         content: `Here's the step-by-step process in plain language:
 
 **Step 1:** Clean the rubber stopper on your peptide vial with an alcohol wipe. Let it dry for a moment.
@@ -120,30 +879,16 @@ This is actually a good thing for researchers! It means your peptides arrive in 
 
 **Step 4:** Push the water out SLOWLY. Let it trickle down the glass wall and gently flow over the powder. Don't blast the powder directly - this can damage the peptide molecules.
 
-**Step 5:** Once all the water is in, gently swirl the vial. Don't shake it vigorously! Just rotate it slowly until the powder is fully dissolved. This might take a minute or two.
-
-**Step 6:** Your peptide is now ready for research use. Store it in the refrigerator and note the date you reconstituted it.`
-      },
-      {
-        title: "Common Mistakes to Avoid",
-        content: `**Don't shake the vial** - Vigorous shaking can damage peptide bonds. Gentle swirling is all you need.
-
-**Don't inject water directly onto the powder** - The force can break apart the peptide molecules. Always aim for the vial wall.
-
-**Don't use regular water** - Tap water or even distilled water lacks the preservative that keeps bacteria from growing. Always use bacteriostatic water.
-
-**Don't leave reconstituted peptides at room temperature** - Once mixed, peptides need refrigeration. Get them into the fridge as soon as you're done.
-
-**Don't freeze reconstituted peptides** - Freezing and thawing can damage the peptide structure. Only freeze the original powder form.`
+**Step 5:** Once all the water is in, gently swirl the vial. Don't shake it vigorously! Just rotate it slowly until the powder is fully dissolved.`
       }
     ],
-    takeaway: "Reconstitution is simple once you understand the basics: use bacteriostatic water, inject slowly along the vial wall, swirl gently, and refrigerate immediately. Take your time and work cleanly for the best results."
+    takeaway: "Reconstitution is simple: use bacteriostatic water, inject slowly along the vial wall, swirl gently, and refrigerate immediately."
   },
 
-  "proper-peptide-storage": {
+  "storage-101": {
     icon: ThermometerSnowflake,
     iconColor: "#9d4edd",
-    intro: `Proper storage is one of the most important factors in maintaining peptide quality - yet it's often overlooked. The good news? It's not complicated. Understanding a few key principles will help you keep your research materials in optimal condition for as long as possible.`,
+    intro: `Proper storage is one of the most important factors in maintaining peptide quality - yet it's often overlooked. The good news? It's not complicated. Understanding a few key principles will help you keep your research materials in optimal condition.`,
     sections: [
       {
         title: "The Two Storage States",
@@ -151,388 +896,109 @@ This is actually a good thing for researchers! It means your peptides arrive in 
 
 **Lyophilized (Powder Form)** - This is how your peptides arrive. In this freeze-dried state, they're very stable. Store these in your freezer at -20°C (-4°F) or colder. At this temperature, most peptides remain stable for 1-2 years or even longer.
 
-**Reconstituted (Mixed with Water)** - Once you've added bacteriostatic water, the clock starts ticking. Store these in your refrigerator at 2-8°C (36-46°F). Most reconstituted peptides remain stable for 4-6 weeks under proper refrigeration.
-
-The key difference is that water accelerates degradation. That's why powder lasts so much longer than liquid.`,
+**Reconstituted (Mixed with Water)** - Once you've added bacteriostatic water, the clock starts ticking. Store these in your refrigerator at 2-8°C (36-46°F). Most reconstituted peptides remain stable for 4-6 weeks under proper refrigeration.`,
         visual: () => <StorageBasics />
       },
       {
         title: "The Three Enemies of Peptides",
         content: `Peptides are sensitive molecules, and three things in particular can damage them:
 
-**Heat** - Warmth speeds up chemical reactions, including the ones that break down peptides. This is why refrigeration is essential. Even a few hours at room temperature can reduce potency.
+**Heat** - Warmth speeds up chemical reactions, including the ones that break down peptides. This is why refrigeration is essential.
 
-**Light** - UV light from the sun (and some indoor lighting) can break chemical bonds in peptide molecules. This is why many peptides come in amber or opaque vials. If yours doesn't, consider storing it in a dark container or wrapping it in foil.
+**Light** - UV light from the sun (and some indoor lighting) can break chemical bonds in peptide molecules. Store in dark containers or wrap in foil.
 
-**Moisture** - For lyophilized peptides, humidity is the enemy. Moisture can start the degradation process even before you officially reconstitute. Keep sealed vials in airtight containers with desiccant packets if possible.`
-      },
-      {
-        title: "Practical Storage Tips",
-        content: `**When your order arrives:** Immediately place lyophilized vials in the freezer. Don't leave them sitting in a mailbox or on a counter.
-
-**Only reconstitute what you need:** If you have multiple vials, keep most of them frozen and only mix one at a time. This maximizes the overall shelf life of your supply.
-
-**Label everything:** Write the reconstitution date on each vial. It's easy to lose track, and you don't want to use a peptide that's been sitting for months.
-
-**Minimize freeze-thaw cycles:** Each time you freeze and thaw a reconstituted peptide, you risk damaging it. If you need small amounts over time, consider dividing your reconstituted solution into smaller aliquots.
-
-**Keep a dedicated fridge section:** Store peptides away from frequently accessed areas. Every time the fridge door opens, temperature fluctuates. A spot in the back or a dedicated research fridge is ideal.`
-      },
-      {
-        title: "Signs of Degraded Peptides",
-        content: `How do you know if storage conditions have compromised your peptide? Here are some warning signs:
-
-**Color changes** - Most peptides are white or off-white. Yellowing or browning can indicate degradation.
-
-**Clumping or unusual texture** - Lyophilized peptides should be a fine, fluffy powder. Clumps or wet-looking areas suggest moisture exposure.
-
-**Cloudiness after reconstitution** - A properly reconstituted peptide should produce a clear solution. Cloudiness might indicate contamination or aggregation.
-
-**Reduced effectiveness** - If your research results suddenly become inconsistent when using an older vial, degradation could be the cause.
-
-When in doubt, it's better to use a fresh vial than risk compromised results.`
+**Moisture** - For lyophilized peptides, humidity is the enemy. Keep sealed vials in airtight containers with desiccant packets if possible.`
       }
     ],
-    takeaway: "Store powder in the freezer, store reconstituted solutions in the fridge, and protect everything from light and moisture. Label your vials with dates and use the oldest ones first."
+    takeaway: "Store powder in the freezer, store reconstituted solutions in the fridge, and protect everything from light and moisture."
   },
 
-  "reading-coa-documents": {
+  "how-to-read-coas": {
     icon: FileCheck,
     iconColor: "#E7FB10",
-    intro: `A Certificate of Analysis (COA) is essentially a report card for your peptide. It's third-party proof that what's in the vial is actually what the label says, and that it meets quality standards. Learning to read a COA is an essential skill for any researcher - and it's not as complicated as it might look at first glance.`,
+    intro: `A Certificate of Analysis (COA) is essentially a report card for your peptide. It's third-party proof that what's in the vial is actually what the label says, and that it meets quality standards. Learning to read a COA is an essential skill for any researcher.`,
     sections: [
       {
         title: "Why COAs Matter",
         content: `In the peptide research world, you can't just take a vendor's word that their products are high-quality. Anyone can put a label on a vial. The COA is what separates legitimate research suppliers from questionable ones.
 
-A proper COA comes from an independent, third-party laboratory - not the company selling the peptide. This independence is crucial. It means an unbiased lab has actually tested the product and is putting their reputation on the line by certifying the results.
-
-Think of it like getting your car inspected by an independent mechanic rather than the dealership trying to sell it to you. Both might be honest, but the independent opinion carries more weight.`,
+A proper COA comes from an independent, third-party laboratory - not the company selling the peptide. This independence is crucial. It means an unbiased lab has actually tested the product and is putting their reputation on the line by certifying the results.`,
         visual: () => <COASimplified />
       },
       {
-        title: "Key Sections of a COA",
+        title: "Key Sections to Check",
         content: `Every COA should contain several essential pieces of information:
 
-**Product Identity** - This confirms the peptide is what it claims to be. Methods like mass spectrometry verify that the molecular structure matches the expected peptide sequence. If you ordered BPC-157, this section confirms you got BPC-157.
+**Product Identity** - This confirms the peptide is what it claims to be. Methods like mass spectrometry verify the molecular structure.
 
-**Purity Analysis** - Usually shown as a percentage from HPLC testing. This tells you how much of the sample is your target peptide versus impurities. Look for 95% or higher for research-grade quality.
+**Purity Analysis** - Usually shown as a percentage from HPLC testing. Look for 95% or higher for research-grade quality.
 
-**Batch/Lot Number** - This unique identifier links your specific vial to this specific test. If you ever have questions about your product, this number is how you trace it.
+**Batch/Lot Number** - This unique identifier links your specific vial to this specific test.
 
-**Test Date** - When was this batch actually tested? You want to see a relatively recent date. A COA from years ago might not reflect the current product's condition.
+**Test Date** - When was this batch actually tested? You want to see a relatively recent date.
 
-**Appearance** - A simple but important check. The document should note that the peptide looks correct (typically "white lyophilized powder").`
-      },
-      {
-        title: "How to Verify a COA",
-        content: `Not all COAs are created equal. Here's how to spot a trustworthy one:
-
-**Check for a third-party lab name** - The COA should clearly identify which independent laboratory performed the testing. You should be able to look up that lab and verify they exist.
-
-**Look for actual data, not just claims** - A good COA includes the actual HPLC chromatogram (the graph showing the peaks), not just a number. The raw data is harder to fake.
-
-**Match the batch number** - The batch number on your COA should match the batch number on your product vial. If they don't match, the COA might be from a different batch.
-
-**Verify the testing date makes sense** - The test date should be recent relative to when the product was manufactured. A COA dated three years before your purchase is suspicious.
-
-**Be wary of perfect numbers** - Ironically, a COA showing exactly 100.00% purity should raise eyebrows. Real lab tests have minor variations. Something like 99.2% is more believable than a suspiciously round 100%.`
-      },
-      {
-        title: "Red Flags to Watch For",
-        content: `Some warning signs that a COA might not be legitimate:
-
-**No lab identification** - If the document doesn't name a specific testing laboratory, it could be self-generated.
-
-**Missing or blurry data** - Legitimate labs produce clear, professional documentation. Fuzzy images or missing sections are concerning.
-
-**No batch number** - Without a batch number, you can't verify the COA matches your specific product.
-
-**Generic templates** - If every product from a vendor has identical-looking COAs with just the product name changed, they might be using a template rather than actual testing.
-
-**Vendor won't provide COA** - If a company can't or won't provide a COA for their products, that's a major red flag. Walk away.
-
-A legitimate research supplier will happily provide COAs and answer questions about their testing procedures. Transparency is a sign of quality.`
+**Laboratory Name** - The COA should identify which independent lab performed the testing.`
       }
     ],
-    takeaway: "Always request and review the COA before using any research peptide. Check for third-party lab verification, matching batch numbers, and recent test dates. A quality vendor will provide this documentation readily."
-  },
-
-  "peptide-research-applications": {
-    icon: Sparkles,
-    iconColor: "#ec4899",
-    intro: `Peptides are fascinating molecules that serve as messengers throughout biological systems. They're essentially short chains of amino acids - the same building blocks that make up proteins, just in smaller packages. Scientists study peptides to understand how cells communicate, how the body regulates itself, and how these processes might be influenced. This guide introduces you to the world of peptide research in accessible terms.`,
-    sections: [
-      {
-        title: "What Exactly Are Peptides?",
-        content: `To understand peptides, let's start with the basics. Your body is made of proteins, and proteins are made of amino acids. Think of amino acids as individual LEGO bricks. When you connect just a few bricks together (2-50 or so), you have a peptide. When you connect hundreds or thousands, you have a protein.
-
-Peptides are like the body's text messages - short, specific signals that tell cells what to do. Some peptides tell your body to release growth hormone. Others signal cells to start repairing tissue. Some influence appetite and metabolism. The variety is enormous.
-
-Scientists study synthetic versions of these peptides to understand how these signaling systems work. By observing what happens when a specific peptide is introduced in a controlled laboratory setting, researchers can learn about the underlying biology.`,
-        visual: () => <WhatIsPeptideVisual />
-      },
-      {
-        title: "Major Categories of Research Peptides",
-        content: `Research peptides are often grouped by what systems they interact with:
-
-**Growth Hormone Research** - Peptides like CJC-1295, Ipamorelin, and Tesamorelin are studied for their interactions with the growth hormone axis. Researchers examine how they influence the release of growth hormone and related factors.
-
-**Metabolic Research** - GLP-1 agonists like Semaglutide and dual/triple agonists like Tirzepatide and Retatrutide are studied for their effects on metabolic pathways, appetite signaling, and glucose regulation.
-
-**Tissue Repair Research** - Peptides like BPC-157 and TB-500 are investigated for their potential roles in tissue healing and regeneration pathways.
-
-**Neuropeptides** - Compounds like Semax and Selank are studied for their interactions with brain chemistry and cognitive processes.
-
-**Longevity Research** - Peptides like Epithalon are examined for potential effects on cellular aging markers like telomere length.
-
-Each category represents an active area of scientific inquiry, with researchers working to understand the mechanisms involved.`
-      },
-      {
-        title: "How Peptide Research Works",
-        content: `Laboratory peptide research typically follows a structured approach:
-
-**In Vitro Studies** - Scientists first study peptides in controlled environments like cell cultures. They can observe direct effects on cells without the complexity of a whole organism.
-
-**Mechanism Investigation** - Researchers work to understand exactly how a peptide produces its effects. Which receptors does it bind to? What cellular pathways does it activate?
-
-**Dosage Studies** - Finding optimal concentrations is crucial. Too little might show no effect; too much might trigger unintended responses.
-
-**Comparative Analysis** - Scientists often compare similar peptides to understand structure-function relationships. Why does changing one amino acid dramatically alter a peptide's behavior?
-
-All of this work builds the scientific foundation for understanding how these molecules work in biological systems.`
-      },
-      {
-        title: "The Importance of Quality in Research",
-        content: `Why does peptide purity and quality matter so much in research? Because conclusions are only as good as the materials used to reach them.
-
-If a researcher is studying how a specific peptide affects cells, but their peptide sample is contaminated with other compounds, they can't be certain what's actually causing the observed effects. Was it the peptide? Was it a contaminant? This uncertainty undermines the entire study.
-
-This is why reputable research relies on high-purity peptides with verified COAs. It's also why storage and handling matter - a degraded peptide might not produce the same results as a fresh one.
-
-For meaningful research, you need to know exactly what you're working with. There's no shortcut around quality.`
-      }
-    ],
-    takeaway: "Peptides are small signaling molecules that researchers study to understand biological processes. Different peptide categories interact with different body systems. Quality materials and proper handling are essential for producing reliable research results."
-  },
-
-  "lab-safety-guidelines": {
-    icon: Shield,
-    iconColor: "#f97316",
-    intro: `Working with research peptides requires following basic laboratory safety practices. These guidelines aren't just bureaucratic rules - they protect both you and your research materials. A contaminated sample or an accidental exposure can ruin weeks of work. Taking a few simple precautions makes everything run more smoothly.`,
-    sections: [
-      {
-        title: "Setting Up Your Workspace",
-        content: `Before handling any research materials, prepare your workspace:
-
-**Clean and sanitize your work surface.** Wipe down with appropriate disinfectant and let it dry completely. Dust, bacteria, and other contaminants can compromise your materials.
-
-**Gather all supplies before you start.** Having to hunt for a syringe or alcohol wipe mid-procedure increases the risk of contamination or mistakes.
-
-**Ensure good lighting.** You need to clearly see what you're doing, especially when working with small vials and precise measurements.
-
-**Minimize distractions.** Turn off your phone notifications. Ask others not to interrupt. Focused work is safer work.
-
-**Work away from food and drink.** This should go without saying, but never eat or drink in the same area where you're handling research materials.`,
-        visual: () => <ResearchOnlyExplainer />
-      },
-      {
-        title: "Personal Protective Equipment",
-        content: `The basics of personal protection when handling peptides:
-
-**Gloves** - Always wear nitrile or latex gloves when handling vials or syringes. Change them if they become contaminated or torn. Never touch your face while wearing gloves.
-
-**Lab coat or dedicated clothing** - While not always necessary for basic peptide handling, it's good practice to have clothes you don't mind getting chemicals on.
-
-**Eye protection** - If you're working with larger quantities or doing any procedures that could splash, safety glasses are wise.
-
-**Closed-toe shoes** - If you drop a vial or needle, you don't want exposed feet.
-
-The goal is simple: create a barrier between the research materials and yourself.`
-      },
-      {
-        title: "Handling Sharps Safely",
-        content: `Syringes and needles require special attention:
-
-**Use each needle only once.** Reusing needles increases contamination risk and can damage the rubber stoppers on your vials.
-
-**Never recap needles by hand.** If you must recap, use a one-handed "scoop" technique or a needle recapping device. Two-handed recapping is how needlestick injuries happen.
-
-**Dispose of sharps properly.** Use a designated sharps container - never throw needles in regular trash. If you don't have a sharps container, a thick plastic bottle with a secure lid (like a laundry detergent bottle) works in a pinch.
-
-**Keep sharps containers accessible.** Place them close to where you're working so you're not carrying exposed needles across the room.
-
-**Know what to do if stuck.** If you accidentally stick yourself, wash the area immediately with soap and water. Consider seeking medical advice depending on what you were working with.`
-      },
-      {
-        title: "Contamination Prevention",
-        content: `Keeping your materials pure requires consistent practices:
-
-**Always wipe vial stoppers with alcohol before puncturing.** This is one of the most important steps. It takes three seconds and prevents countless contamination issues.
-
-**Use aseptic technique.** This means working in a way that minimizes exposure to environmental contaminants - keeping vials covered when not in use, not touching sterile surfaces, etc.
-
-**Store reconstituted peptides properly.** Get them into the refrigerator promptly. Label them with the date.
-
-**Don't combine old and new batches.** Using up one vial before opening another prevents cross-contamination and confusion.
-
-**If something seems wrong, don't use it.** Cloudy solution? Unusual color? Compromised seal? When in doubt, throw it out.`
-      }
-    ],
-    takeaway: "Good lab safety is about creating habits: clean workspace, proper gloves, careful sharps handling, and consistent contamination prevention. These practices protect both you and the integrity of your research."
-  },
-
-  "peptide-research-glossary": {
-    icon: BookMarked,
-    iconColor: "#21d8ff",
-    intro: `Every field has its jargon, and peptide research is no exception. When you're just starting out, the terminology can feel overwhelming. This glossary covers the essential terms you'll encounter, explained in plain language. Bookmark this page - you'll probably find yourself coming back to it.`,
-    sections: [
-      {
-        title: "Basic Terms",
-        content: `**Amino Acid** - The basic building blocks of peptides and proteins. There are 20 standard amino acids that combine in different sequences to create different peptides.
-
-**Peptide** - A chain of amino acids, typically containing 2-50 amino acids linked together. Larger chains are usually called proteins.
-
-**Protein** - A larger molecule made of one or more long chains of amino acids. Proteins are essentially very long peptides.
-
-**Sequence** - The specific order of amino acids in a peptide. The sequence determines the peptide's structure and function. Even a single amino acid change can dramatically alter behavior.
-
-**Synthetic Peptide** - A peptide made in a laboratory rather than extracted from natural sources. Most research peptides are synthetic.`
-      },
-      {
-        title: "Preparation Terms",
-        content: `**Lyophilized** (lie-OFF-ill-ized) - Freeze-dried. This is the powder form that peptides are shipped in. The water is removed through a process that helps preserve the peptide's structure.
-
-**Reconstitute** - To add water (usually bacteriostatic water) to lyophilized powder to create a usable solution.
-
-**Bacteriostatic Water** - Sterile water containing 0.9% benzyl alcohol as a preservative. The alcohol inhibits bacterial growth, extending the usable life of reconstituted peptides.
-
-**Aliquot** - A portion of a solution divided out for separate use. Researchers often divide reconstituted peptides into smaller aliquots to avoid repeatedly accessing the main vial.
-
-**Vial** - The small glass container peptides come in. Usually sealed with a rubber stopper that allows needle access while maintaining sterility.`
-      },
-      {
-        title: "Quality Terms",
-        content: `**Purity** - The percentage of your sample that is actually the target peptide, versus impurities or other compounds.
-
-**HPLC** (High-Performance Liquid Chromatography) - The standard method for measuring peptide purity. It separates molecules by size and counts them.
-
-**Mass Spectrometry (MS)** - A technique that identifies molecules by their mass. Used to confirm peptide identity and structure.
-
-**COA** (Certificate of Analysis) - A document from a testing laboratory verifying a peptide's identity, purity, and other quality metrics.
-
-**Batch/Lot Number** - A unique identifier for a specific production run. Links your vial to specific test results.
-
-**Third-Party Testing** - Testing performed by an independent laboratory, not the company selling the product. Considered more reliable than in-house testing.`
-      },
-      {
-        title: "Research Terms",
-        content: `**In Vitro** - "In glass" - research conducted in a controlled environment outside a living organism, like cell cultures in a lab dish.
-
-**In Vivo** - "In life" - research conducted in living organisms.
-
-**Receptor** - A protein on cell surfaces that peptides can bind to, triggering specific cellular responses.
-
-**Agonist** - A compound that activates a receptor. Many research peptides are agonists for specific receptors.
-
-**Half-Life** - How long it takes for half of a substance to be eliminated or degraded. Peptides with longer half-lives remain active longer.
-
-**Bioavailability** - The proportion of a substance that enters circulation when introduced to the body and can have an active effect.
-
-**Protocol** - A detailed plan for conducting research, including concentrations, timing, and procedures.`
-      }
-    ],
-    takeaway: "Don't be intimidated by the terminology. Most terms describe straightforward concepts - it's just a matter of learning the vocabulary. Refer back to this glossary whenever you encounter unfamiliar jargon."
+    takeaway: "Always request and review the COA before using any research peptide. Check for third-party lab verification, matching batch numbers, and recent test dates."
   }
 };
 
-const defaultBeginnerArticle: BeginnerArticle = {
-  icon: BookOpen,
-  iconColor: "#9d4edd",
-  intro: `Welcome to this education article. We've written this guide specifically for those who are new to peptide research and want to understand the fundamentals without getting lost in technical jargon. Whether you're just curious or starting your research journey, we're here to help you build a solid foundation.`,
-  sections: [
-    {
-      title: "Understanding the Basics",
-      content: `Peptide research can seem intimidating at first - there's a lot of specialized vocabulary and technical concepts. But at its core, it's about understanding how these small signaling molecules work in biological systems.
+export function BeginnerContent({ slug, title }: BeginnerContentProps) {
+  const article = beginnerArticles[slug];
+  
+  if (!article) {
+    return (
+      <div className="p-6 bg-muted/30 rounded-lg border border-border">
+        <p className="text-muted-foreground">
+          Quick breakdown coming soon for this article.
+        </p>
+      </div>
+    );
+  }
 
-Peptides are essentially short chains of amino acids, the same building blocks that make up proteins. They act as messengers in the body, telling cells what to do. Scientists study synthetic versions of these peptides to understand the underlying biology and explore potential applications.
-
-The key to getting started is not trying to learn everything at once. Focus on understanding the fundamentals - what peptides are, how to handle them properly, and how to verify quality - and build from there.`
-    },
-    {
-      title: "Quality and Safety First",
-      content: `Two principles should guide all peptide research: quality and safety.
-
-Quality means using verified, high-purity research materials from reputable sources. Always check the Certificate of Analysis (COA) that should come with every peptide. This document proves the product was tested by an independent lab and meets quality standards.
-
-Safety means following basic laboratory practices - clean workspace, proper protective equipment, careful handling of sharps, and correct storage procedures. These habits protect both you and the integrity of your research.
-
-Neither of these areas is complicated, but they both require attention and consistency.`
-    },
-    {
-      title: "Keep Learning",
-      content: `The best researchers are always learning. Don't hesitate to:
-
-• Switch to "Deep Dive" mode for the full technical version of any article
-• Explore other articles in our Education Center
-• Reach out with questions - there's no such thing as a dumb question when you're learning
-• Take your time - understanding comes with patience and practice
-
-Every expert was once a beginner. The fact that you're here, reading and learning, means you're on the right track.`
-    }
-  ],
-  takeaway: "For the complete technical breakdown of this topic, switch to Deep Dive mode using the toggle above. We're here to support your learning journey at whatever level you need."
-};
-
-export function BeginnerArticleContent({ slug, title }: BeginnerContentProps) {
-  const article = beginnerArticles[slug] || defaultBeginnerArticle;
-  const IconComponent = article.icon;
+  const Icon = article.icon;
 
   return (
     <div className="space-y-8" data-testid="beginner-article-content">
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-start gap-4"
+        className="flex gap-4 items-start"
       >
         <div 
-          className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+          className="p-3 rounded-lg flex-shrink-0"
           style={{ backgroundColor: `${article.iconColor}20` }}
         >
-          <IconComponent className="h-6 w-6" style={{ color: article.iconColor }} />
+          <Icon className="h-6 w-6" style={{ color: article.iconColor }} />
         </div>
-        <div>
-          <p className="text-muted-foreground leading-relaxed text-base">
-            {article.intro}
-          </p>
-        </div>
+        <p className="text-muted-foreground leading-relaxed">
+          {article.intro}
+        </p>
       </motion.div>
 
       {article.sections.map((section, index) => (
         <motion.div
           key={index}
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 + index * 0.1 }}
+          transition={{ delay: 0.1 * (index + 1) }}
           className="space-y-4"
         >
-          <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-            <span 
-              className="w-1.5 h-6 rounded-full"
-              style={{ backgroundColor: article.iconColor }}
-            />
+          <h2 className="text-xl font-bold text-foreground flex items-center gap-3">
+            <div className="w-1 h-6 rounded-full" style={{ backgroundColor: article.iconColor }} />
             {section.title}
           </h2>
           
           {section.visual && (
-            <div className="p-4 rounded-xl bg-card border border-border">
-              <section.visual />
+            <div className="my-6">
+              {section.visual()}
             </div>
           )}
           
-          <div className="text-muted-foreground leading-relaxed whitespace-pre-line text-base">
+          <div className="text-muted-foreground leading-relaxed whitespace-pre-line">
             {section.content.split('\n\n').map((paragraph, pIndex) => (
-              <p key={pIndex} className="mb-4 last:mb-0">
+              <p key={pIndex} className="mb-4">
                 {paragraph.split('**').map((part, partIndex) => 
                   partIndex % 2 === 1 ? (
                     <strong key={partIndex} className="text-foreground font-semibold">{part}</strong>
@@ -547,20 +1013,16 @@ export function BeginnerArticleContent({ slug, title }: BeginnerContentProps) {
       ))}
 
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="p-5 rounded-xl border-2"
-        style={{ 
-          backgroundColor: `${article.iconColor}10`,
-          borderColor: `${article.iconColor}40`
-        }}
+        className="p-4 rounded-xl bg-[#21d8ff]/10 border border-[#21d8ff]/30"
       >
         <div className="flex items-start gap-3">
-          <Lightbulb className="h-5 w-5 mt-0.5 flex-shrink-0" style={{ color: article.iconColor }} />
+          <Target className="h-5 w-5 text-[#21d8ff] mt-0.5 flex-shrink-0" />
           <div>
-            <h3 className="font-bold text-foreground mb-2">Key Takeaway</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">{article.takeaway}</p>
+            <h3 className="font-semibold text-[#21d8ff] mb-1">Key Takeaway</h3>
+            <p className="text-sm text-muted-foreground">{article.takeaway}</p>
           </div>
         </div>
       </motion.div>
@@ -583,18 +1045,18 @@ export function BeginnerArticleContent({ slug, title }: BeginnerContentProps) {
   );
 }
 
+export const BeginnerArticleContent = BeginnerContent;
+
 export function WhatIsPeptideSection() {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="p-6 rounded-xl bg-card border border-[#ec4899]/30 mb-8"
-    >
-      <div className="flex items-center gap-2 mb-4">
-        <Sparkles className="h-5 w-5 text-[#ec4899]" />
-        <h3 className="font-bold text-foreground">New to Peptides?</h3>
-      </div>
-      <WhatIsPeptideVisual />
-    </motion.div>
+    <div className="p-6 bg-gradient-to-br from-[#21d8ff]/10 to-[#9d4edd]/10 rounded-xl border border-[#21d8ff]/20">
+      <h3 className="text-lg font-semibold text-foreground mb-3">What Are Peptides?</h3>
+      <p className="text-muted-foreground text-sm leading-relaxed">
+        Peptides are short chains of amino acids - the same building blocks that make up proteins, 
+        just in smaller packages. Think of amino acids as individual LEGO bricks. When you connect 
+        just a few bricks together (2-50 or so), you have a peptide. Scientists study synthetic 
+        versions of these peptides to understand how biological signaling systems work.
+      </p>
+    </div>
   );
 }
