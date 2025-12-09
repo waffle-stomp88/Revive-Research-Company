@@ -28,7 +28,7 @@ export function FreeShippingBanner() {
           <span className="font-bold text-red-500" style={{ animation: 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}>FREE SHIPPING</span> on orders over ${FREE_SHIPPING_THRESHOLD}
           <span className="hidden sm:inline"> • Same day shipping on orders placed before 12:00 PM CT</span>
         </span>
-        <Link href="/products" className="ml-2 underline hover:no-underline font-semibold">
+        <Link href="/peptides" className="ml-2 underline hover:no-underline font-semibold">
           Shop Now
         </Link>
       </div>

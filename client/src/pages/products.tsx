@@ -140,7 +140,7 @@ const SALE_OF_THE_WEEK = {
 };
 
 const CATEGORIES = [
-  { id: "all", name: "All Products", icon: Grid3X3 },
+  { id: "all", name: "All Peptides", icon: Grid3X3 },
   { id: "peptides", name: "Research Peptides", icon: FlaskConical },
   { id: "research-compounds", name: "Research Compounds", icon: FlaskConical },
 ];
@@ -362,7 +362,7 @@ export default function Products() {
           transition={{ duration: 0.5 }}
           className="mb-8"
         >
-          <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">Shop</h1>
+          <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">Peptides</h1>
           <p className="text-lg text-muted-foreground max-w-2xl">
             Premium research compounds, curated bundles, and volume pricing for your laboratory needs.
           </p>
@@ -473,7 +473,7 @@ export default function Products() {
                         data-testid="nav-sidebar-products"
                       >
                         <Grid3X3 className="h-4 w-4 text-[#E7FB10]" />
-                        All Products
+                        All Peptides
                         {products && <Badge variant="secondary" className="ml-auto text-xs px-1.5 py-0">{products.length}</Badge>}
                       </Button>
                       <Button
@@ -513,7 +513,7 @@ export default function Products() {
                         onClick={() => setSelectedCategory("all")}
                         data-testid="filter-category-all"
                       >
-                        <span>All Products</span>
+                        <span>All Peptides</span>
                         <span className="text-muted-foreground">{products?.length || 0}</span>
                       </Button>
                       {uniqueCategories.map((cat) => (
@@ -662,7 +662,7 @@ export default function Products() {
                       className="mb-12"
                       data-testid="section-sale-of-week"
                     >
-                  <Link href={`/products/${saleProduct.id}`}>
+                  <Link href={`/peptides/${saleProduct.id}`}>
                     <div className="sale-glow-pulse rounded-xl">
                     <Card className="p-5 md:p-6 border-2 border-red-500 bg-gradient-to-br from-red-950/40 via-background to-background transition-all duration-300 cursor-pointer group hover:scale-105 hover:shadow-[0_0_30px_rgba(239,68,68,0.6)] hover:border-red-400">
                       <div className="flex flex-col md:flex-row gap-5 items-center">
@@ -718,7 +718,7 @@ export default function Products() {
                 <CollapsibleTrigger asChild>
                   <div className="cursor-pointer flex items-center gap-3 mb-3">
                     <Grid3X3 className="h-6 w-6 text-[#E7FB10]" />
-                    <h2 className="font-display font-bold text-2xl md:text-3xl">All Products</h2>
+                    <h2 className="font-display font-bold text-2xl md:text-3xl">All Peptides</h2>
                     {products && <Badge variant="secondary">{filteredAndSortedProducts.length} of {products.length} items</Badge>}
                     <ChevronDown className={`h-5 w-5 ml-auto transition-transform ${productsOpen ? "" : "-rotate-90"}`} />
                   </div>
@@ -797,7 +797,7 @@ export default function Products() {
                       variants={fadeInUp}
                       className="h-full"
                     >
-                      <Link href={`/products/${product.id}`} className="h-full block">
+                      <Link href={`/peptides/${product.id}`} className="h-full block">
                         {/* Check if product is out of stock (either inStock=false OR stockAmount<=0) */}
                         {(() => {
                           const isOutOfStock = !product.inStock || (product.stockAmount !== null && product.stockAmount <= 0);
@@ -899,7 +899,7 @@ export default function Products() {
                 ) : (
                   <Card className="p-12 text-center">
                     <FlaskConical className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-                    <h3 className="font-display text-xl font-semibold mb-2">No Products Found</h3>
+                    <h3 className="font-display text-xl font-semibold mb-2">No Peptides Found</h3>
                     <p className="text-muted-foreground mb-4">
                       {searchQuery
                         ? `No products match "${searchQuery}". Try a different search term.`

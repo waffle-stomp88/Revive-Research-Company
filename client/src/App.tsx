@@ -15,6 +15,9 @@ import { initGA } from "@/lib/analytics";
 import { useAnalytics } from "@/hooks/use-analytics";
 import Home from "@/pages/home";
 import Products from "@/pages/products";
+import BulkPacks from "@/pages/bulk-packs";
+import Wholesale from "@/pages/wholesale";
+import Supplies from "@/pages/supplies";
 import ProductDetail from "@/pages/product-detail";
 import BundleDetail from "@/pages/bundle-detail";
 import Cart from "@/pages/cart";
@@ -81,8 +84,13 @@ function Router() {
       <AnalyticsTracker />
       <Switch>
         <Route path="/" component={Home} />
+      <Route path="/peptides" component={Products} />
+      <Route path="/peptides/:id" component={ProductDetail} />
       <Route path="/products" component={Products} />
       <Route path="/products/:id" component={ProductDetail} />
+      <Route path="/bulk-packs" component={BulkPacks} />
+      <Route path="/wholesale" component={Wholesale} />
+      <Route path="/supplies" component={Supplies} />
       <Route path="/bundles/:id" component={BundleDetail} />
       <Route path="/cart" component={Cart} />
       <Route path="/checkout" component={Checkout} />

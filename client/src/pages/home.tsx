@@ -202,9 +202,9 @@ function HeroSection() {
           transition={{ duration: 0.8, delay: 0.7 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <Link href="/products" onClick={() => trackEvent('hero_cta_click', 'engagement', 'shop_products')}>
+          <Link href="/peptides" onClick={() => trackEvent('hero_cta_click', 'engagement', 'shop_peptides')}>
             <Button size="lg" className="font-display text-base px-8 gap-2 bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_30px_rgba(231,251,16,0.4)] hover:shadow-[0_0_50px_rgba(231,251,16,0.6)] transition-all duration-300" data-testid="button-hero-shop">
-              Shop Products
+              Shop Peptides
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
@@ -267,10 +267,10 @@ function useCountdown() {
 
 // Product categories for quick links
 const categories = [
-  { name: "Tissue Repair", icon: Zap, color: "cyan", href: "/products?category=tissue" },
-  { name: "Metabolic", icon: Flame, color: "yellow", href: "/products?category=metabolic" },
-  { name: "Anti-Aging", icon: Sparkles, color: "purple", href: "/products?category=aging" },
-  { name: "Growth Hormone", icon: TrendingUp, color: "cyan", href: "/products?category=gh" },
+  { name: "Tissue Repair", icon: Zap, color: "cyan", href: "/peptides?category=tissue" },
+  { name: "Metabolic", icon: Flame, color: "yellow", href: "/peptides?category=metabolic" },
+  { name: "Anti-Aging", icon: Sparkles, color: "purple", href: "/peptides?category=aging" },
+  { name: "Growth Hormone", icon: TrendingUp, color: "cyan", href: "/peptides?category=gh" },
 ];
 
 function ProductShowcase() {
@@ -393,7 +393,7 @@ function ProductShowcase() {
         >
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-display text-xl md:text-2xl font-bold">Best Sellers</h2>
-            <Link href="/products">
+            <Link href="/peptides">
               <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground hover:text-foreground" data-testid="button-view-all-products">
                 View All <ArrowRight className="h-3 w-3" />
               </Button>
@@ -420,7 +420,7 @@ function ProductShowcase() {
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.03 }}
                 >
-                  <Link href={`/products/${product.id}`} onClick={() => trackEvent('product_click', 'best_sellers', product.name)}>
+                  <Link href={`/peptides/${product.id}`} onClick={() => trackEvent('product_click', 'best_sellers', product.name)}>
                     <Card 
                       className="group cursor-pointer transition-all duration-300 border border-[#21d8ff]/30 hover:border-[#21d8ff] hover:scale-105 hover:shadow-[0_0_25px_rgba(33,216,255,0.6)] overflow-hidden"
                       data-testid={`card-bestseller-${product.id}`}
@@ -541,7 +541,7 @@ function ProductShowcase() {
       >
         <div className="relative">
           <div className="absolute inset-0 bg-gradient-to-r from-[#E7FB10]/20 via-[#21d8ff]/20 to-[#E7FB10]/20 rounded-lg blur-lg" />
-          <Link href="/products">
+          <Link href="/peptides">
             <Button 
               size="lg" 
               className="relative font-display text-lg gap-2 border-2 border-[#E7FB10] bg-transparent hover:bg-[#E7FB10]/10 text-[#E7FB10]"
@@ -819,7 +819,7 @@ function CTASection() {
             Join researchers worldwide who trust Revive for premium quality compounds backed by rigorous testing and verification.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/products">
+            <Link href="/peptides">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -829,7 +829,7 @@ function CTASection() {
                   variant="secondary"
                   className="font-display text-base px-8 gap-2 transition-all duration-300 hover:shadow-[0_0_20px_rgba(33,216,255,0.4)]"
                 >
-                  Browse Products
+                  Browse Peptides
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </motion.div>

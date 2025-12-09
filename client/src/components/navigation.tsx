@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, User, LogIn, LogOut, Shield, ShoppingCart, ChevronDown, FileCheck, GraduationCap, Scale, BookOpen, Package } from "lucide-react";
+import { Menu, X, User, LogIn, LogOut, Shield, ShoppingCart, ChevronDown, FileCheck, GraduationCap, Scale, BookOpen, Package, FlaskConical, Boxes, Building2, Droplets } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -18,9 +18,15 @@ import logoImage from "@assets/REVIVE-11_1764290805698.png";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/products", label: "Products" },
   { href: "/coa", label: "COA Verification" },
   { href: "/affiliate", label: "Affiliates" },
+];
+
+const productLinks = [
+  { href: "/peptides", label: "Peptides", icon: FlaskConical, description: "Individual vials" },
+  { href: "/bulk-packs", label: "Bulk Packs", icon: Boxes, description: "5-packs, 10-packs" },
+  { href: "/supplies", label: "Supplies", icon: Droplets, description: "Bac water, syringes" },
+  { href: "/wholesale", label: "Wholesale Program", icon: Building2, description: "Clinics & resellers" },
 ];
 
 const resourceLinks = [
@@ -140,6 +146,56 @@ export function Navigation() {
                     </Link>
                   );
                 })}
+                
+                {/* Products Dropdown */}
+                <div className="relative px-4 py-2 rounded-md group cursor-pointer">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        className={`flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer bg-transparent border-0 outline-none ${
+                          productLinks.some(p => location === p.href || location.startsWith(p.href + "/"))
+                            ? "text-[#E7FB10] drop-shadow-[0_0_12px_rgba(231,251,16,0.8)]"
+                            : "text-muted-foreground hover:text-[#E7FB10] hover:drop-shadow-[0_0_12px_rgba(231,251,16,0.5)]"
+                        }`}
+                        data-testid="link-nav-products"
+                      >
+                        Products
+                        <ChevronDown className="h-4 w-4" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="center" className="w-64">
+                      {productLinks.map((link) => {
+                        const Icon = link.icon;
+                        const isActive = location === link.href || location.startsWith(link.href + "/");
+                        return (
+                          <DropdownMenuItem key={link.href} asChild>
+                            <Link 
+                              href={link.href} 
+                              className={`cursor-pointer flex items-start gap-3 py-2 ${isActive ? "text-[#E7FB10]" : ""}`}
+                              data-testid={`link-product-${link.label.toLowerCase().replace(/ /g, "-")}`}
+                              onClick={() => window.scrollTo(0, 0)}
+                            >
+                              <Icon className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                              <div>
+                                <div className="font-medium">{link.label}</div>
+                                <div className="text-xs text-muted-foreground">{link.description}</div>
+                              </div>
+                            </Link>
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  {productLinks.some(p => location === p.href || location.startsWith(p.href + "/")) && (
+                    <motion.div
+                      className="absolute inset-0 bg-[#E7FB10]/10 rounded-md border border-[#E7FB10]/40 shadow-[0_0_16px_rgba(231,251,16,0.3)]"
+                      layoutId="products-highlight"
+                    />
+                  )}
+                  <motion.div
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#E7FB10] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
+                  />
+                </div>
                 
                 <Link href="/resources" onClick={() => window.scrollTo(0, 0)}>
                   <motion.div
@@ -385,12 +441,12 @@ export function Navigation() {
                   </DropdownMenu>
                 )}
                 
-                <Link href="/products">
+                <Link href="/peptides">
                   <Button
                     className="hidden md:inline-flex font-display bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_15px_rgba(231,251,16,0.3)] hover:shadow-[0_0_25px_rgba(231,251,16,0.5)] hover:bg-[#E7FB10] transition-all duration-300"
                     data-testid="button-shop-products"
                   >
-                    Shop Products
+                    Shop Peptides
                   </Button>
                 </Link>
                 <Button
@@ -448,17 +504,61 @@ export function Navigation() {
                 );
               })}
               
+              {/* Products Section - Mobile */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 0.5 }}
-                transition={{ delay: 0.4 }}
+                transition={{ delay: 0.3 }}
+                className="w-24 h-px bg-[#E7FB10]/50 my-2"
+              />
+              
+              <motion.span
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.35 }}
+                className="text-sm font-medium text-[#E7FB10]"
+              >
+                Products
+              </motion.span>
+              
+              {productLinks.map((link, index) => {
+                const isActive = location === link.href || location.startsWith(link.href + "/");
+                const Icon = link.icon;
+                return (
+                  <motion.div
+                    key={link.href}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 + index * 0.05 }}
+                  >
+                    <Link href={link.href}>
+                      <span
+                        className={`flex items-center gap-2 text-xl font-display font-medium tracking-wide cursor-pointer transition-all duration-300 ${
+                          isActive
+                            ? "text-[#E7FB10] drop-shadow-[0_0_12px_rgba(231,251,16,0.6)]"
+                            : "text-muted-foreground hover:text-[#E7FB10]"
+                        }`}
+                        data-testid={`link-mobile-${link.label.toLowerCase().replace(/ /g, "-")}`}
+                      >
+                        <Icon className="h-5 w-5" />
+                        {link.label}
+                      </span>
+                    </Link>
+                  </motion.div>
+                );
+              })}
+              
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.5 }}
+                transition={{ delay: 0.6 }}
                 className="w-24 h-px bg-[#9d4edd]/50 my-2"
               />
               
               <motion.span
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.45 }}
+                transition={{ delay: 0.65 }}
                 className="text-sm font-medium text-[#9d4edd]"
               >
                 Resources
@@ -540,13 +640,13 @@ export function Navigation() {
                 transition={{ delay: 0.4 }}
                 className="flex flex-col items-center gap-4 mt-4"
               >
-                <Link href="/products">
+                <Link href="/peptides">
                   <Button 
                     size="lg" 
                     className="font-display bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_20px_rgba(231,251,16,0.4)] hover:shadow-[0_0_30px_rgba(231,251,16,0.6)] transition-all duration-300" 
                     data-testid="button-mobile-shop"
                   >
-                    Shop Products
+                    Shop Peptides
                   </Button>
                 </Link>
                 
