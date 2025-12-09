@@ -1,12 +1,18 @@
+import { useState } from "react";
 import { useRoute, Link } from "wouter";
-import { motion } from "framer-motion";
-import { ArrowLeft, FlaskConical, ShoppingCart, Shield, Layers, Sparkles, CheckCircle2, AlertTriangle, Info, Package } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, FlaskConical, ShoppingCart, Shield, Layers, Sparkles, CheckCircle2, AlertTriangle, Info, Package, GraduationCap, Beaker, ChevronDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
+
+interface SynergyCopy {
+  beginner: string;
+  expert: string;
+}
 
 interface ResearchStack {
   id: string;
@@ -20,8 +26,10 @@ interface ResearchStack {
   color: string;
   badge?: string;
   badgeColor?: string;
-  price: number;
-  originalPrice: number;
+  retailValue: number;
+  stackPrice: number;
+  launchPrice: number;
+  synergy: SynergyCopy;
 }
 
 const researchStacksData: Record<string, ResearchStack> = {
@@ -45,8 +53,13 @@ const researchStacksData: Record<string, ResearchStack> = {
     color: "#22c55e",
     badge: "Most Popular",
     badgeColor: "#E7FB10",
-    price: 89.99,
-    originalPrice: 109.98,
+    retailValue: 189,
+    stackPrice: 149,
+    launchPrice: 129,
+    synergy: {
+      beginner: "BPC-157 helps cells repair faster while TB-500 helps the body build new blood vessels to deliver nutrients. Together, they create a 'repair + rebuild' combination that researchers find works better than either compound alone.",
+      expert: "BPC-157 upregulates growth hormone receptors and VEGF expression while TB-500 (Thymosin Beta-4) promotes actin polymerization and angiogenesis. The dual-pathway activation creates synergistic tissue regeneration signaling through complementary GH/IGF-1 axis and cytoskeletal remodeling mechanisms."
+    }
   },
   "metabolic-pathway-stack": {
     id: "metabolic-pathway-stack",
@@ -68,8 +81,13 @@ const researchStacksData: Record<string, ResearchStack> = {
     color: "#E7FB10",
     badge: "Hot Research",
     badgeColor: "#ef4444",
-    price: 299.99,
-    originalPrice: 379.98,
+    retailValue: 449,
+    stackPrice: 379,
+    launchPrice: 329,
+    synergy: {
+      beginner: "MOTS-C helps cells produce energy more efficiently at the mitochondrial level, while Retatrutide signals the body to use stored fat for fuel. Together, they target metabolism from two different angles—one at the cellular power plant, one at the hormonal control center.",
+      expert: "MOTS-C activates AMPK pathways and enhances mitochondrial biogenesis, while Retatrutide acts as a triple agonist (GLP-1/GIP/Glucagon receptors) modulating incretin signaling. This creates multi-target metabolic pathway activation: mitochondrial efficiency + peripheral insulin sensitivity + hepatic gluconeogenesis modulation."
+    }
   },
   "cellular-optimization-stack": {
     id: "cellular-optimization-stack",
@@ -89,8 +107,13 @@ const researchStacksData: Record<string, ResearchStack> = {
     ],
     icon: "Sparkles",
     color: "#a855f7",
-    price: 149.99,
-    originalPrice: 189.98,
+    retailValue: 249,
+    stackPrice: 199,
+    launchPrice: 169,
+    synergy: {
+      beginner: "GHK-Cu is a copper peptide that helps cells 'clean house' and produce healthy proteins, while MOTS-C improves how cells generate energy. Think of it as upgrading both the maintenance crew and the power supply at the cellular level.",
+      expert: "GHK-Cu modulates gene expression for tissue remodeling (collagen, decorin, metalloproteinases) while MOTS-C enhances mitochondrial function via AMPK activation. The combination creates parallel signaling for extracellular matrix optimization and intracellular energy metabolism—addressing both structural and functional cellular pathways."
+    }
   },
   "starter-research-stack": {
     id: "starter-research-stack",
@@ -112,8 +135,13 @@ const researchStacksData: Record<string, ResearchStack> = {
     color: "#21d8ff",
     badge: "Best for Beginners",
     badgeColor: "#21d8ff",
-    price: 119.99,
-    originalPrice: 149.98,
+    retailValue: 199,
+    stackPrice: 159,
+    launchPrice: 139,
+    synergy: {
+      beginner: "BPC-157 is one of the most studied repair peptides, helping tissues heal and regenerate. MOTS-C supports energy production at the cellular level. Together, they give researchers a solid foundation covering two fundamental areas: tissue repair and cellular energy.",
+      expert: "BPC-157's cytoprotective and pro-angiogenic properties complement MOTS-C's mitochondrial biogenesis activation. This pairing covers two primary research domains—tissue regeneration signaling (BPC-157 via NO/GH pathways) and metabolic optimization (MOTS-C via AMPK/PGC-1α)—making it ideal for establishing baseline assays before advancing to more complex protocols."
+    }
   },
   "collagen-skin-stack": {
     id: "collagen-skin-stack",
@@ -133,8 +161,13 @@ const researchStacksData: Record<string, ResearchStack> = {
     ],
     icon: "Leaf",
     color: "#ec4899",
-    price: 99.99,
-    originalPrice: 129.98,
+    retailValue: 179,
+    stackPrice: 149,
+    launchPrice: 119,
+    synergy: {
+      beginner: "GHK-Cu directly stimulates collagen production and skin cell turnover, while BPC-157 supports the blood vessel growth needed to deliver nutrients to healing tissue. Together, they work on both the 'building blocks' and the 'supply chain' for skin and tissue research.",
+      expert: "GHK-Cu upregulates collagen I, III, and elastin synthesis while modulating TGF-β signaling for controlled tissue remodeling. BPC-157 enhances angiogenesis via VEGF upregulation and provides cytoprotection. The combination creates synergistic dermal pathway activation: structural protein synthesis (GHK-Cu) + vascularization and tissue protection (BPC-157)."
+    }
   },
   "elite-triple-stack": {
     id: "elite-triple-stack",
@@ -157,8 +190,13 @@ const researchStacksData: Record<string, ResearchStack> = {
     color: "#f59e0b",
     badge: "Premium",
     badgeColor: "#f59e0b",
-    price: 349.99,
-    originalPrice: 449.97,
+    retailValue: 549,
+    stackPrice: 449,
+    launchPrice: 399,
+    synergy: {
+      beginner: "This triple stack covers three major research areas: Retatrutide for metabolic hormone signaling, MOTS-C for cellular energy production, and BPC-157 for tissue repair. It's designed for advanced researchers who want to study how these different systems interact and influence each other.",
+      expert: "This triple-compound stack enables multi-pathway investigation: Retatrutide (GLP-1/GIP/GCGR triple agonist) for incretin and hepatic signaling, MOTS-C for mitochondrial biogenesis and AMPK activation, and BPC-157 for tissue regeneration via NO/GH pathways. The combination allows researchers to study cross-talk between metabolic, energetic, and regenerative signaling cascades in a single protocol."
+    }
   },
 };
 
@@ -166,6 +204,7 @@ export default function ResearchStackDetail() {
   const [match, params] = useRoute("/research-stacks/:id");
   const { addToCart } = useCart();
   const { toast } = useToast();
+  const [synergyMode, setSynergyMode] = useState<"beginner" | "expert">("beginner");
 
   if (!match || !params?.id) {
     return null;
@@ -190,14 +229,12 @@ export default function ResearchStackDetail() {
     );
   }
 
-  const savings = Math.round(((stack.originalPrice - stack.price) / stack.originalPrice) * 100);
-
   const handleAddToCart = () => {
     addToCart({
       productId: stack.id,
       bundleId: stack.id,
       name: stack.name,
-      price: stack.price,
+      price: stack.launchPrice,
       quantity: 1,
       dosage: "Research Stack",
       image: productImage,
@@ -298,21 +335,26 @@ export default function ResearchStackDetail() {
               ))}
             </div>
 
-            <Card className="p-4 bg-[#0d0d10] border-[#2a2a32]">
-              <div className="flex items-end justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">Stack Price</p>
+            <Card className="p-5 bg-[#0d0d10] border-[#2a2a32]">
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div className="space-y-2">
+                  <div className="text-sm text-muted-foreground">
+                    Retail Value: <span className="line-through" data-testid="text-stack-retail-value">${stack.retailValue}</span>
+                  </div>
                   <div className="flex items-baseline gap-3">
                     <span className="text-3xl font-bold" style={{ color: stack.color }} data-testid="text-stack-price">
-                      ${stack.price.toFixed(2)}
+                      ${stack.launchPrice}
                     </span>
-                    <span className="text-lg text-muted-foreground line-through" data-testid="text-stack-original-price">
-                      ${stack.originalPrice.toFixed(2)}
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-[#21d8ff]/10 text-[#21d8ff]" data-testid="badge-launch-price">
+                      Launch Price
                     </span>
                   </div>
-                  <Badge variant="outline" className="mt-2 border-green-500/50 text-green-500" data-testid="badge-savings">
-                    <CheckCircle2 className="h-3 w-3 mr-1" />
-                    Save {savings}% vs individual purchase
+                  <div className="text-xs text-muted-foreground">
+                    Stack Price: <span className="text-gray-400">${stack.stackPrice}</span>
+                  </div>
+                  <Badge variant="outline" className="border-[#21d8ff]/50 text-[#21d8ff]" data-testid="badge-savings">
+                    <Sparkles className="h-3 w-3 mr-1" />
+                    Curated Research Combination
                   </Badge>
                 </div>
                 <Button
@@ -346,6 +388,66 @@ export default function ResearchStackDetail() {
                 </div>
               </div>
             </div>
+
+            <Card className="p-5 border-[#2a2a32] bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10]" data-testid="card-synergy">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg" style={{ backgroundColor: `${stack.color}20` }}>
+                    <Sparkles className="h-5 w-5" style={{ color: stack.color }} />
+                  </div>
+                  <h3 className="font-display text-lg font-bold">Why These Peptides Work Together</h3>
+                </div>
+                <div className="flex items-center gap-1 p-1 rounded-lg bg-[#0d0d10] border border-[#2a2a32]">
+                  <button
+                    onClick={() => setSynergyMode("beginner")}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                      synergyMode === "beginner"
+                        ? "bg-[#21d8ff]/20 text-[#21d8ff]"
+                        : "text-muted-foreground hover:text-white"
+                    }`}
+                    data-testid="button-synergy-beginner"
+                  >
+                    <GraduationCap className="h-3.5 w-3.5" />
+                    Quick Breakdown
+                  </button>
+                  <button
+                    onClick={() => setSynergyMode("expert")}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                      synergyMode === "expert"
+                        ? "bg-[#a855f7]/20 text-[#a855f7]"
+                        : "text-muted-foreground hover:text-white"
+                    }`}
+                    data-testid="button-synergy-expert"
+                  >
+                    <Beaker className="h-3.5 w-3.5" />
+                    Deep Dive
+                  </button>
+                </div>
+              </div>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={synergyMode}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="p-4 rounded-lg bg-[#0d0d10] border border-[#2a2a32]"
+                >
+                  <p 
+                    className={`text-sm leading-relaxed ${synergyMode === "beginner" ? "text-gray-300" : "text-gray-400"}`}
+                    data-testid={`text-synergy-${synergyMode}`}
+                  >
+                    {synergyMode === "beginner" ? stack.synergy.beginner : stack.synergy.expert}
+                  </p>
+                  {synergyMode === "expert" && (
+                    <div className="mt-3 pt-3 border-t border-[#2a2a32] flex items-center gap-2 text-xs text-muted-foreground">
+                      <Info className="h-3.5 w-3.5" />
+                      <span>Pathway-level mechanistic overview for advanced researchers</span>
+                    </div>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </Card>
           </motion.div>
         </div>
 

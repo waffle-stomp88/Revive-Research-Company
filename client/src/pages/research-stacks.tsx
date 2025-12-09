@@ -7,6 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 
+interface SynergyCopy {
+  beginner: string;
+  expert: string;
+}
+
 interface ResearchStack {
   id: string;
   name: string;
@@ -17,8 +22,10 @@ interface ResearchStack {
   color: string;
   badge?: string;
   badgeColor?: string;
-  price: number;
-  originalPrice: number;
+  retailValue: number;
+  stackPrice: number;
+  launchPrice: number;
+  synergy: SynergyCopy;
 }
 
 const researchStacks: ResearchStack[] = [
@@ -32,8 +39,13 @@ const researchStacks: ResearchStack[] = [
     color: "#22c55e",
     badge: "Most Popular",
     badgeColor: "#E7FB10",
-    price: 89.99,
-    originalPrice: 109.98,
+    retailValue: 189,
+    stackPrice: 149,
+    launchPrice: 129,
+    synergy: {
+      beginner: "BPC-157 helps cells repair faster while TB-500 helps the body build new blood vessels to deliver nutrients. Together, they create a 'repair + rebuild' combination that researchers find works better than either compound alone.",
+      expert: "BPC-157 upregulates growth hormone receptors and VEGF expression while TB-500 (Thymosin Beta-4) promotes actin polymerization and angiogenesis. The dual-pathway activation creates synergistic tissue regeneration signaling through complementary GH/IGF-1 axis and cytoskeletal remodeling mechanisms."
+    }
   },
   {
     id: "metabolic-pathway-stack",
@@ -45,8 +57,13 @@ const researchStacks: ResearchStack[] = [
     color: "#E7FB10",
     badge: "Hot Research",
     badgeColor: "#ef4444",
-    price: 299.99,
-    originalPrice: 379.98,
+    retailValue: 449,
+    stackPrice: 379,
+    launchPrice: 329,
+    synergy: {
+      beginner: "MOTS-C helps cells produce energy more efficiently at the mitochondrial level, while Retatrutide signals the body to use stored fat for fuel. Together, they target metabolism from two different angles—one at the cellular power plant, one at the hormonal control center.",
+      expert: "MOTS-C activates AMPK pathways and enhances mitochondrial biogenesis, while Retatrutide acts as a triple agonist (GLP-1/GIP/Glucagon receptors) modulating incretin signaling. This creates multi-target metabolic pathway activation: mitochondrial efficiency + peripheral insulin sensitivity + hepatic gluconeogenesis modulation."
+    }
   },
   {
     id: "cellular-optimization-stack",
@@ -56,8 +73,13 @@ const researchStacks: ResearchStack[] = [
     peptides: ["GHK-Cu (100mg)", "MOTS-C"],
     icon: Sparkles,
     color: "#a855f7",
-    price: 149.99,
-    originalPrice: 189.98,
+    retailValue: 249,
+    stackPrice: 199,
+    launchPrice: 169,
+    synergy: {
+      beginner: "GHK-Cu is a copper peptide that helps cells 'clean house' and produce healthy proteins, while MOTS-C improves how cells generate energy. Think of it as upgrading both the maintenance crew and the power supply at the cellular level.",
+      expert: "GHK-Cu modulates gene expression for tissue remodeling (collagen, decorin, metalloproteinases) while MOTS-C enhances mitochondrial function via AMPK activation. The combination creates parallel signaling for extracellular matrix optimization and intracellular energy metabolism—addressing both structural and functional cellular pathways."
+    }
   },
   {
     id: "starter-research-stack",
@@ -69,8 +91,13 @@ const researchStacks: ResearchStack[] = [
     color: "#21d8ff",
     badge: "Best for Beginners",
     badgeColor: "#21d8ff",
-    price: 119.99,
-    originalPrice: 149.98,
+    retailValue: 199,
+    stackPrice: 159,
+    launchPrice: 139,
+    synergy: {
+      beginner: "BPC-157 is one of the most studied repair peptides, helping tissues heal and regenerate. MOTS-C supports energy production at the cellular level. Together, they give researchers a solid foundation covering two fundamental areas: tissue repair and cellular energy.",
+      expert: "BPC-157's cytoprotective and pro-angiogenic properties complement MOTS-C's mitochondrial biogenesis activation. This pairing covers two primary research domains—tissue regeneration signaling (BPC-157 via NO/GH pathways) and metabolic optimization (MOTS-C via AMPK/PGC-1α)—making it ideal for establishing baseline assays before advancing to more complex protocols."
+    }
   },
   {
     id: "collagen-skin-stack",
@@ -80,8 +107,13 @@ const researchStacks: ResearchStack[] = [
     peptides: ["GHK-Cu", "BPC-157"],
     icon: Leaf,
     color: "#ec4899",
-    price: 99.99,
-    originalPrice: 129.98,
+    retailValue: 179,
+    stackPrice: 149,
+    launchPrice: 119,
+    synergy: {
+      beginner: "GHK-Cu directly stimulates collagen production and skin cell turnover, while BPC-157 supports the blood vessel growth needed to deliver nutrients to healing tissue. Together, they work on both the 'building blocks' and the 'supply chain' for skin and tissue research.",
+      expert: "GHK-Cu upregulates collagen I, III, and elastin synthesis while modulating TGF-β signaling for controlled tissue remodeling. BPC-157 enhances angiogenesis via VEGF upregulation and provides cytoprotection. The combination creates synergistic dermal pathway activation: structural protein synthesis (GHK-Cu) + vascularization and tissue protection (BPC-157)."
+    }
   },
   {
     id: "elite-triple-stack",
@@ -93,8 +125,13 @@ const researchStacks: ResearchStack[] = [
     color: "#f59e0b",
     badge: "Premium",
     badgeColor: "#f59e0b",
-    price: 349.99,
-    originalPrice: 449.97,
+    retailValue: 549,
+    stackPrice: 449,
+    launchPrice: 399,
+    synergy: {
+      beginner: "This triple stack covers three major research areas: Retatrutide for metabolic hormone signaling, MOTS-C for cellular energy production, and BPC-157 for tissue repair. It's designed for advanced researchers who want to study how these different systems interact and influence each other.",
+      expert: "This triple-compound stack enables multi-pathway investigation: Retatrutide (GLP-1/GIP/GCGR triple agonist) for incretin and hepatic signaling, MOTS-C for mitochondrial biogenesis and AMPK activation, and BPC-157 for tissue regeneration via NO/GH pathways. The combination allows researchers to study cross-talk between metabolic, energetic, and regenerative signaling cascades in a single protocol."
+    }
   },
 ];
 
@@ -144,7 +181,6 @@ export default function ResearchStacks() {
           {researchStacks.map((stack, index) => {
             const Icon = stack.icon;
             const isHovered = hoveredStack === stack.id;
-            const savings = Math.round(((stack.originalPrice - stack.price) / stack.originalPrice) * 100);
 
             return (
               <motion.div
@@ -248,17 +284,20 @@ export default function ResearchStacks() {
                     </p>
 
                     <div className="flex items-end justify-between pt-2 border-t border-[#2a2a32]">
-                      <div>
+                      <div className="space-y-1">
+                        <div className="text-xs text-muted-foreground">
+                          Retail Value: <span className="line-through">${stack.retailValue}</span>
+                        </div>
                         <div className="flex items-baseline gap-2">
                           <span className="text-2xl font-bold" style={{ color: stack.color }}>
-                            ${stack.price.toFixed(2)}
+                            ${stack.launchPrice}
                           </span>
-                          <span className="text-sm text-muted-foreground line-through">
-                            ${stack.originalPrice.toFixed(2)}
+                          <span className="text-xs text-[#21d8ff] font-medium">
+                            Launch Price
                           </span>
                         </div>
-                        <Badge variant="outline" className="mt-1 border-green-500/50 text-green-500 text-xs">
-                          Save {savings}%
+                        <Badge variant="outline" className="border-[#21d8ff]/50 text-[#21d8ff] text-xs">
+                          Curated Stack
                         </Badge>
                       </div>
 
