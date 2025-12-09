@@ -145,6 +145,27 @@ const CATEGORIES = [
   { id: "research-compounds", name: "Research Compounds", icon: FlaskConical },
 ];
 
+const peptideGroups = [
+  { id: "all", label: "All Peptides", color: "#ec4899" },
+  { id: "metabolic", label: "Metabolic / GLP-1", color: "#E7FB10", names: ["semaglutide", "tirzepatide", "retatrutide"] },
+  { id: "growth-hormone", label: "Growth Hormone", color: "#21d8ff", names: ["cjc-1295", "ipamorelin", "tesamorelin", "igf-1 lr3"] },
+  { id: "tissue-repair", label: "Tissue Repair", color: "#22c55e", names: ["bpc-157", "tb-500"] },
+  { id: "skin-regeneration", label: "Skin & Regeneration", color: "#ec4899", names: ["ghk-cu", "glow"] },
+  { id: "longevity", label: "Longevity & Cellular", color: "#9d4edd", names: ["epithalon", "mots-c", "nad+"] },
+  { id: "cognitive", label: "Cognitive / Neuro", color: "#f97316", names: ["semax"] },
+  { id: "hormonal", label: "Hormonal", color: "#21d8ff", names: ["hcg"] },
+];
+
+const getPeptideGroup = (productName: string): { id: string; label: string; color: string } | null => {
+  const lowerName = productName.toLowerCase();
+  for (const group of peptideGroups) {
+    if (group.names?.some(n => lowerName.includes(n))) {
+      return { id: group.id, label: group.label, color: group.color };
+    }
+  }
+  return null;
+};
+
 type ShopSection = "deals" | "bundles" | "products" | "bulk";
 
 export default function Products() {
@@ -154,8 +175,10 @@ export default function Products() {
   const [activeSection, setActiveSection] = useState<ShopSection>("deals");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [peptideGroupFilter, setPeptideGroupFilter] = useState<string>("all");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 300]);
   const [categoriesExpanded, setCategoriesExpanded] = useState(true);
+  const [peptideGroupsExpanded, setPeptideGroupsExpanded] = useState(true);
   
   // Collapsible section states
   const [dealsOpen, setDealsOpen] = useState(true);
@@ -276,10 +299,15 @@ export default function Products() {
         selectedCategory === "all" ||
         product.category.toLowerCase().replace(/\s+/g, "-") === selectedCategory;
 
+      const peptideGroup = getPeptideGroup(product.name);
+      const matchesPeptideGroup =
+        peptideGroupFilter === "all" ||
+        (peptideGroup?.id === peptideGroupFilter);
+
       const productPrice = Number(product.price);
       const matchesPrice = productPrice >= priceRange[0] && productPrice <= priceRange[1];
 
-      return matchesSearch && matchesStock && matchesCategory && matchesPrice;
+      return matchesSearch && matchesStock && matchesCategory && matchesPeptideGroup && matchesPrice;
     });
 
     switch (sortBy) {
@@ -301,17 +329,18 @@ export default function Products() {
     }
 
     return filtered;
-  }, [products, searchQuery, sortBy, stockFilter, selectedCategory, priceRange]);
+  }, [products, searchQuery, sortBy, stockFilter, selectedCategory, peptideGroupFilter, priceRange]);
 
   const clearFilters = () => {
     setSearchQuery("");
     setSortBy("featured");
     setStockFilter("all");
     setSelectedCategory("all");
+    setPeptideGroupFilter("all");
     setPriceRange([priceStats.min, priceStats.max]);
   };
 
-  const hasActiveFilters = searchQuery !== "" || sortBy !== "featured" || stockFilter !== "all" || selectedCategory !== "all" || priceRange[0] !== priceStats.min || priceRange[1] !== priceStats.max;
+  const hasActiveFilters = searchQuery !== "" || sortBy !== "featured" || stockFilter !== "all" || selectedCategory !== "all" || peptideGroupFilter !== "all" || priceRange[0] !== priceStats.min || priceRange[1] !== priceStats.max;
 
   const uniqueCategories = useMemo(() => {
     if (!products) return [];
@@ -499,6 +528,42 @@ export default function Products() {
                           <span className="text-muted-foreground">{cat.count}</span>
                         </Button>
                       ))}
+                    </CollapsibleContent>
+                  </Collapsible>
+
+                  {/* Peptide Groups */}
+                  <Collapsible open={peptideGroupsExpanded} onOpenChange={setPeptideGroupsExpanded}>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" className="w-full justify-between px-0 h-8 hover:bg-transparent">
+                        <span className="text-sm font-medium">Peptide Groups</span>
+                        {peptideGroupsExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="space-y-1 pt-2">
+                      {peptideGroups.map((group) => {
+                        const count = products?.filter(p => {
+                          const pg = getPeptideGroup(p.name);
+                          return pg?.id === group.id;
+                        }).length || 0;
+                        return (
+                          <Button
+                            key={group.id}
+                            variant={peptideGroupFilter === group.id ? "secondary" : "ghost"}
+                            className="w-full justify-between h-8 text-sm"
+                            onClick={() => setPeptideGroupFilter(group.id)}
+                            data-testid={`filter-peptide-group-${group.id}`}
+                          >
+                            <span className="flex items-center gap-2">
+                              <div 
+                                className="w-2 h-2 rounded-full" 
+                                style={{ backgroundColor: group.color }}
+                              />
+                              {group.label}
+                            </span>
+                            <span className="text-muted-foreground">{count}</span>
+                          </Button>
+                        );
+                      })}
                     </CollapsibleContent>
                   </Collapsible>
 
@@ -779,8 +844,27 @@ export default function Products() {
                               </div>
                               
                               <div className="flex-1 flex flex-col min-h-0">
-                                <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
-                                  {product.category}
+                                <div className="mb-2">
+                                  {(() => {
+                                    const peptideGroup = getPeptideGroup(product.name);
+                                    return peptideGroup ? (
+                                      <Badge 
+                                        variant="outline"
+                                        className="text-[10px] font-semibold border-2 px-2 py-0.5"
+                                        style={{ 
+                                          borderColor: peptideGroup.color,
+                                          color: peptideGroup.color 
+                                        }}
+                                        data-testid={`badge-peptide-group-${peptideGroup.id}`}
+                                      >
+                                        {peptideGroup.label}
+                                      </Badge>
+                                    ) : (
+                                      <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                                        {product.category}
+                                      </span>
+                                    );
+                                  })()}
                                 </div>
                                 <h3 className="font-display md:text-lg font-bold mb-1 group-hover:text-[#E7FB10] transition-colors line-clamp-1 text-center text-[20px]">
                                   {product.name}
