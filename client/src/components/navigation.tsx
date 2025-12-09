@@ -129,19 +129,6 @@ export function Navigation() {
                         >
                           {link.label}
                         </span>
-                        {isActive && (
-                          <motion.div
-                            layoutId="nav-highlight"
-                            style={{
-                              backgroundColor: `${color}1a`,
-                              borderColor: `${color}66`,
-                              boxShadow: `0 0 16px ${color}4d`,
-                            }}
-                            className="absolute inset-0 rounded-md border"
-                            initial={false}
-                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                          />
-                        )}
                         <motion.div
                           className="absolute bottom-0 left-0 right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
                           style={{
