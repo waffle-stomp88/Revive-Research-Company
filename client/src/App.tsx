@@ -11,6 +11,7 @@ import { Footer } from "@/components/footer";
 import { AgeVerificationModal } from "@/components/age-verification-modal";
 import { FreeShippingBanner } from "@/components/free-shipping-banner";
 import { ChatBot } from "@/components/chatbot";
+import { BackToTopButton } from "@/components/back-to-top-button";
 import { initGA } from "@/lib/analytics";
 import { useAnalytics } from "@/hooks/use-analytics";
 import Home from "@/pages/home";
@@ -194,6 +195,7 @@ function App() {
               <Footer />
             </div>
             <ChatBot />
+            <BackToTopButton />
             <Toaster />
           </TooltipProvider>
         </CartProvider>
