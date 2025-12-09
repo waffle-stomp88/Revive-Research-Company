@@ -183,29 +183,29 @@ export default function ResearchStacks() {
             const isHovered = hoveredStack === stack.id;
 
             return (
-              <motion.div
-                key={stack.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ scale: 1.05 }}
-                onMouseEnter={() => setHoveredStack(stack.id)}
-                onMouseLeave={() => setHoveredStack(null)}
-              >
-                <Card
-                  className={`relative overflow-hidden h-full transition-all duration-300 cursor-pointer ${
-                    isHovered
-                      ? "border-2 shadow-lg"
-                      : "border border-[#2a2a32]"
-                  }`}
-                  style={{
-                    borderColor: isHovered ? stack.color : undefined,
-                    boxShadow: isHovered 
-                      ? `0 0 40px ${stack.color}60, 0 0 20px ${stack.color}40` 
-                      : undefined,
-                  }}
-                  data-testid={`card-stack-${stack.id}`}
+              <Link href={`/research-stacks/${stack.id}`} key={stack.id}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ scale: 1.05 }}
+                  onMouseEnter={() => setHoveredStack(stack.id)}
+                  onMouseLeave={() => setHoveredStack(null)}
                 >
+                  <Card
+                    className={`relative overflow-hidden h-full transition-all duration-300 cursor-pointer ${
+                      isHovered
+                        ? "border-2 shadow-lg"
+                        : "border border-[#2a2a32]"
+                    }`}
+                    style={{
+                      borderColor: isHovered ? stack.color : undefined,
+                      boxShadow: isHovered 
+                        ? `0 0 40px ${stack.color}60, 0 0 20px ${stack.color}40` 
+                        : undefined,
+                    }}
+                    data-testid={`card-stack-${stack.id}`}
+                  >
                   {stack.badge && (
                     <Badge
                       className="absolute top-3 right-3 z-10"
@@ -321,7 +321,8 @@ export default function ResearchStacks() {
                     </div>
                   </div>
                 </Card>
-              </motion.div>
+                </motion.div>
+              </Link>
             );
           })}
         </div>
