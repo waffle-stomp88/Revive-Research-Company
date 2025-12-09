@@ -17,8 +17,8 @@ import { useCart } from "@/contexts/CartContext";
 import logoImage from "@assets/REVIVE-11_1764290805698.png";
 
 const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/affiliate", label: "Affiliates" },
+  { href: "/", label: "Home", color: "#E7FB10" },
+  { href: "/affiliate", label: "Affiliates", color: "#22c55e" },
 ];
 
 const productLinks = [
@@ -111,6 +111,7 @@ export function Navigation() {
               <div className="hidden md:flex items-center gap-3 flex-shrink-0">
                 {navLinks.map((link) => {
                   const isActive = location === link.href;
+                  const color = link.color;
                   return (
                     <Link key={link.href} href={link.href} onClick={() => window.scrollTo(0, 0)}>
                       <motion.div
@@ -119,11 +120,11 @@ export function Navigation() {
                         whileTap={{ scale: 0.98 }}
                       >
                         <span
-                          className={`text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer relative z-10 block ${
-                            isActive
-                              ? "text-[#E7FB10] drop-shadow-[0_0_12px_rgba(231,251,16,0.8)]"
-                              : "text-muted-foreground group-hover:text-[#E7FB10] group-hover:drop-shadow-[0_0_12px_rgba(231,251,16,0.5)]"
-                          }`}
+                          className={`text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer relative z-10 block`}
+                          style={{
+                            color: isActive ? color : undefined,
+                            textShadow: isActive ? `0 0 12px ${color}cc` : undefined,
+                          }}
                           data-testid={`link-nav-${link.label.toLowerCase().replace(" ", "-")}`}
                         >
                           {link.label}
@@ -131,19 +132,28 @@ export function Navigation() {
                         {isActive && (
                           <motion.div
                             layoutId="nav-highlight"
-                            className="absolute inset-0 bg-[#E7FB10]/10 rounded-md border border-[#E7FB10]/40 shadow-[0_0_16px_rgba(231,251,16,0.3)]"
+                            style={{
+                              backgroundColor: `${color}1a`,
+                              borderColor: `${color}66`,
+                              boxShadow: `0 0 16px ${color}4d`,
+                            }}
+                            className="absolute inset-0 rounded-md border"
                             initial={false}
                             transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                           />
                         )}
                         <motion.div
-                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#E7FB10] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
+                          className="absolute bottom-0 left-0 right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"
+                          style={{
+                            background: `linear-gradient(to right, transparent, ${color}, transparent)`,
+                          }}
                           initial={{ scaleX: 0 }}
                           whileHover={{ scaleX: 1 }}
                           transition={{ duration: 0.4 }}
                         />
                         <motion.div
-                          className="absolute inset-0 bg-[#E7FB10]/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                          className="absolute inset-0 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                          style={{ backgroundColor: `${color}0d` }}
                           whileHover={{ opacity: 1 }}
                         />
                       </motion.div>
@@ -261,17 +271,25 @@ export function Navigation() {
                 <div className="relative px-4 py-2 rounded-md group cursor-pointer">
                   <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
-                      <button
-                        className={`flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer bg-transparent border-0 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 [&:focus]:outline-none [&:focus-visible]:ring-0 ${
-                          location === "/resources" || resourceLinks.some(r => location === r.href)
-                            ? "text-[#21d8ff] drop-shadow-[0_0_12px_rgba(33,216,255,0.8)]"
-                            : "text-muted-foreground hover:text-[#21d8ff] hover:drop-shadow-[0_0_12px_rgba(33,216,255,0.5)]"
-                        }`}
-                        data-testid="link-nav-resources"
-                      >
-                        Resources
-                        <ChevronDown className="h-4 w-4" />
-                      </button>
+                      {(() => {
+                        const activeResource = resourceLinks.find(r => location === r.href);
+                        const activeColor = activeResource?.color || "#21d8ff";
+                        const isActive = location === "/resources" || resourceLinks.some(r => location === r.href);
+                        
+                        return (
+                          <button
+                            className="flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer bg-transparent border-0 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 [&:focus]:outline-none [&:focus-visible]:ring-0"
+                            style={{
+                              color: isActive ? activeColor : undefined,
+                              textShadow: isActive ? `0 0 12px ${activeColor}cc` : undefined,
+                            }}
+                            data-testid="link-nav-resources"
+                          >
+                            Resources
+                            <ChevronDown className="h-4 w-4" />
+                          </button>
+                        );
+                      })()}
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="center" className="w-72 z-[100]">
                       {resourceLinks.map((link, index) => {
@@ -299,14 +317,32 @@ export function Navigation() {
                       })}
                     </DropdownMenuContent>
                   </DropdownMenu>
-                  {(location === "/resources" || resourceLinks.some(r => location === r.href)) && (
-                    <motion.div
-                      className="absolute inset-0 bg-[#21d8ff]/10 rounded-md border border-[#21d8ff]/40 shadow-[0_0_16px_rgba(33,216,255,0.3)] pointer-events-none"
-                      layoutId="resource-highlight"
-                    />
-                  )}
+                  {(() => {
+                    const activeResource = resourceLinks.find(r => location === r.href);
+                    const activeColor = activeResource?.color || "#21d8ff";
+                    const isActive = location === "/resources" || resourceLinks.some(r => location === r.href);
+                    
+                    return isActive ? (
+                      <motion.div
+                        className="absolute inset-0 rounded-md border pointer-events-none"
+                        style={{
+                          backgroundColor: `${activeColor}1a`,
+                          borderColor: `${activeColor}66`,
+                          boxShadow: `0 0 16px ${activeColor}4d`,
+                        }}
+                        layoutId="resource-highlight"
+                      />
+                    ) : null;
+                  })()}
                   <motion.div
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#21d8ff] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full pointer-events-none"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full pointer-events-none"
+                    style={{
+                      background: (() => {
+                        const activeResource = resourceLinks.find(r => location === r.href);
+                        const activeColor = activeResource?.color || "#21d8ff";
+                        return `linear-gradient(to right, transparent, ${activeColor}, transparent)`;
+                      })(),
+                    }}
                   />
                 </div>
               </div>
