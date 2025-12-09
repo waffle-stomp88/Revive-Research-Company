@@ -963,7 +963,13 @@ export default function ProductDetail() {
                       )}
                     </div>
                     <Link href={`/batch?batch=${batch.batchNumber}`}>
-                      <Button variant="ghost" size="sm" className="text-[#9d4edd] h-8" data-testid={`button-verify-batch-${batch.id}`}>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="border-2 border-[#9d4edd] text-[#9d4edd] font-semibold hover:bg-[#9d4edd]/10 hover:border-[#9d4edd] h-9 gap-2 px-3" 
+                        data-testid={`button-verify-batch-${batch.id}`}
+                      >
+                        <Eye className="h-4 w-4" />
                         Verify
                       </Button>
                     </Link>
