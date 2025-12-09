@@ -286,7 +286,7 @@ export function Navigation() {
                     <DropdownMenuTrigger asChild>
                       {(() => {
                         const activeResource = resourceLinks.find(r => location === r.href);
-                        const activeColor = activeResource?.color || "#21d8ff";
+                        const activeColor = activeResource?.color || "#a855f7";
                         const isActive = location === "/resources" || resourceLinks.some(r => location === r.href);
                         
                         return (
@@ -332,7 +332,7 @@ export function Navigation() {
                   </DropdownMenu>
                   {(() => {
                     const activeResource = resourceLinks.find(r => location === r.href);
-                    const activeColor = activeResource?.color || "#21d8ff";
+                    const activeColor = activeResource?.color || "#a855f7";
                     const isActive = location === "/resources" || resourceLinks.some(r => location === r.href);
                     
                     return isActive ? (
