@@ -17,13 +17,13 @@ import { useCart } from "@/contexts/CartContext";
 import logoImage from "@assets/REVIVE-11_1764290805698.png";
 
 const navLinks = [
-  { href: "/", label: "Home", color: "#E7FB10" },
+  { href: "/", label: "Home", color: "#ec4899" },
   { href: "/affiliate", label: "Affiliates", color: "#22c55e" },
 ];
 
 const productLinks = [
   { href: "/shop", label: "Shop All", icon: Package, description: "Browse all categories", color: "#ffffff" },
-  { href: "/peptides", label: "Peptides", icon: FlaskConical, description: "Individual vials", color: "#E7FB10" },
+  { href: "/peptides", label: "Peptides", icon: FlaskConical, description: "Individual vials", color: "#a855f7" },
   { href: "/bulk-packs", label: "Bulk Packs", icon: Boxes, description: "5-packs, 10-packs", color: "#21d8ff" },
   { href: "/supplies", label: "Supplies", icon: Droplets, description: "Bac water, syringes", color: "#9d4edd" },
   { href: "/wholesale", label: "Wholesale Program", icon: Building2, description: "Clinics & resellers", color: "#22c55e" },
@@ -35,10 +35,10 @@ const coaLinks = [
 ];
 
 const resourceLinks = [
-  { href: "/education", label: "Education Center", icon: GraduationCap, description: "Learn about peptides & research", color: "#21d8ff" },
+  { href: "/education", label: "Education Center", icon: GraduationCap, description: "Learn about peptides & research", color: "#ec4899" },
   { href: "/legal", label: "Legal & Compliance", icon: Scale, description: "Regulatory information & policies", color: "#22c55e" },
   { href: "/what-we-dont-do", label: "What We Don't Do", icon: BookOpen, description: "Our ethical boundaries", color: "#EF4444" },
-  { href: "/faq", label: "FAQ", icon: BookOpen, description: "Common questions answered", color: "#E7FB10" },
+  { href: "/faq", label: "FAQ", icon: BookOpen, description: "Common questions answered", color: "#a855f7" },
 ];
 
 export function Navigation() {
