@@ -469,6 +469,17 @@ export default function ResearchStackDetail() {
               <Badge variant="secondary" className="text-xs uppercase tracking-wider">
                 Research Stack
               </Badge>
+              {stack.peptides.map((peptide) => (
+                <Badge
+                  key={peptide.name}
+                  variant="outline"
+                  className="text-xs"
+                  style={{ borderColor: stack.color, color: stack.color }}
+                  data-testid={`badge-peptide-${peptide.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}
+                >
+                  {peptide.name}
+                </Badge>
+              ))}
             </div>
 
             <h1 className="font-display text-2xl md:text-3xl font-bold mb-2" data-testid="text-stack-name">
@@ -738,26 +749,6 @@ export default function ResearchStackDetail() {
           </motion.div>
         </div>
 
-        <div className="mt-8">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <Card className="p-4 border-[#2a2a32]">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="p-1.5 rounded-lg" style={{ backgroundColor: `${stack.color}20` }}>
-                  <FlaskConical className="h-4 w-4" style={{ color: stack.color }} />
-                </div>
-                <h3 className="font-display text-base font-bold">Included Peptides</h3>
-              </div>
-              <div className="space-y-2">
-                {stack.peptides.map((peptide) => (
-                  <div key={peptide.name} className="p-3 rounded-lg bg-[#0d0d10] border border-[#2a2a32]">
-                    <h4 className="font-medium text-white text-sm mb-0.5">{peptide.name}</h4>
-                    <p className="text-xs text-muted-foreground">{peptide.description}</p>
-                  </div>
-                ))}
-              </div>
-            </Card>
-          </motion.div>
-        </div>
       </div>
     </main>
   );
