@@ -105,10 +105,10 @@ export default function WhatWeDontDo() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="mb-16"
         >
-          <Card className="p-8 border-[#9d4edd]/20 bg-gradient-to-br from-[#9d4edd]/5 to-transparent">
+          <Card className="p-8 border-red-500/30 bg-gradient-to-br from-red-500/5 to-transparent">
             <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-[#9d4edd]/20 flex items-center justify-center">
-                <AlertTriangle className="h-6 w-6 text-[#9d4edd]" />
+              <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-red-500/20 flex items-center justify-center">
+                <AlertTriangle className="h-6 w-6 text-red-400" />
               </div>
               <div>
                 <h2 className="font-display text-2xl font-bold mb-2">
@@ -203,7 +203,7 @@ export default function WhatWeDontDo() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
         >
-          <Card className="p-8 border-[#9d4edd]/30 bg-[#9d4edd]/5">
+          <Card className="p-8 border-red-500/30 bg-red-500/5">
             <div className="text-center max-w-2xl mx-auto">
               <h2 className="font-display text-2xl font-bold mb-4">
                 Questions About Our Standards?
@@ -215,7 +215,7 @@ export default function WhatWeDontDo() {
               <div className="flex flex-wrap justify-center gap-4">
                 <Link href="/coa-library">
                   <Button
-                    className="bg-[#9d4edd] hover:bg-[#9d4edd]/90"
+                    className="bg-red-500 hover:bg-red-500/90"
                     data-testid="button-view-coas"
                   >
                     View Our COA Library
@@ -225,7 +225,7 @@ export default function WhatWeDontDo() {
                 <Link href="/contact">
                   <Button
                     variant="outline"
-                    className="border-[#9d4edd]/30 hover:border-[#9d4edd]"
+                    className="border-red-500/30 hover:border-red-500"
                     data-testid="button-contact-us"
                   >
                     Contact Us
@@ -242,7 +242,7 @@ export default function WhatWeDontDo() {
           transition={{ duration: 0.6, delay: 0.7 }}
           className="mt-16 text-center"
         >
-          <Card className="inline-block p-6 border-primary/30 bg-primary/5">
+          <Card className="inline-block p-6 border-red-500/30 bg-red-500/5">
             <p className="text-sm text-muted-foreground max-w-2xl">
               <strong className="text-foreground">Disclaimer:</strong> All products are sold
               strictly for laboratory research use only. Not for human consumption, veterinary use,
