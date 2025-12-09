@@ -101,7 +101,7 @@ export function ObjectUploader({
     });
     
     return instance;
-  }, [maxNumberOfFiles, maxFileSize, allowedFileTypes, onGetUploadParameters]);
+  }, [maxNumberOfFiles, maxFileSize, allowedFileTypes]);
 
   useEffect(() => {
     const handleComplete = (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
@@ -115,6 +115,15 @@ export function ObjectUploader({
       uppy.off("complete", handleComplete);
     };
   }, [uppy, onComplete]);
+
+  useEffect(() => {
+    const awsS3 = uppy.getPlugin("AwsS3");
+    if (awsS3) {
+      awsS3.setOptions({
+        getUploadParameters: onGetUploadParameters,
+      });
+    }
+  }, [uppy, onGetUploadParameters]);
 
   const handleClose = useCallback(() => {
     uppy.cancelAll();
