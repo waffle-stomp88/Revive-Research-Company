@@ -64,12 +64,10 @@ function AnimatedCounter({
         const progress = Math.min((timestamp - startTime) / (duration * 1000), 1);
         
         const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-        setDisplayValue(Math.floor(easeOutQuart * value));
+        setDisplayValue(Math.round(easeOutQuart * value));
         
         if (progress < 1) {
           animationFrame = requestAnimationFrame(animate);
-        } else {
-          setDisplayValue(value);
         }
       };
       
