@@ -395,7 +395,7 @@ export default function CartPage() {
                     What to Expect
                   </h4>
                   <div className="space-y-2 text-xs text-muted-foreground">
-                    <p>Your order ships with cold packs to maintain optimal temperature during transit.</p>
+                    <p>Add cold packs during checkout to maintain optimal temperature during transit (optional).</p>
                     <Link href="/package-warm">
                       <div className="flex items-center gap-1.5 text-[#21d8ff] hover:underline cursor-pointer mt-2" data-testid="link-package-warm">
                         <span>If your package arrives warm, don't worry</span>

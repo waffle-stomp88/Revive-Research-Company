@@ -54,7 +54,7 @@ const journeySteps = [
     icon: Package,
     color: "#f97316",
     shortDesc: "Quality checked",
-    details: ["Products verified", "Cold packs added", "Tamper seals applied", "QR label attached"],
+    details: ["Products verified", "Optional cold packs added if selected", "Tamper seals applied", "QR label attached"],
     timeline: "24 hours"
   },
   {
@@ -243,7 +243,7 @@ export function OrderingJourney() {
           <span className="text-[#E7FB10] font-bold">24-48 hours</span> from checkout to your door with free shipping on orders over <span className="text-[#21d8ff] font-bold">$175</span>
         </p>
         <p className="text-xs text-muted-foreground">
-          All orders include cold packs, QR-verified authenticity, and full tracking. Your package integrity is guaranteed.
+          Every order includes QR-verified authenticity and full tracking. Cold packs available as an optional add-on. Your package integrity is guaranteed.
         </p>
       </motion.div>
     </div>

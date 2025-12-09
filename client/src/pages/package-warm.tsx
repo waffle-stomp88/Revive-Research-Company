@@ -71,8 +71,8 @@ export default function PackageWarm() {
               <h2 className="font-display text-xl font-bold">Why Cold Packs Melt</h2>
             </div>
             <p className="text-muted-foreground mb-4">
-              Cold packs are included as an extra precaution, but they're designed to 
-              maintain temperature for 24-48 hours in transit. Several factors can cause them to thaw:
+              Cold packs are available as an optional add-on and are designed to 
+              maintain temperature for 24-48 hours in transit if selected. Several factors can cause them to thaw:
             </p>
             <ul className="space-y-2">
               {[
