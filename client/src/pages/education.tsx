@@ -23,7 +23,19 @@ import {
   Sparkles,
   ArrowLeft,
   Zap,
+  ArrowUpDown,
+  SortAsc,
+  SortDesc,
+  Filter,
+  X,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ArticleModeToggle, BeginnerBadge } from "@/components/education/article-mode-toggle";
 import { BeginnerArticleContent, WhatIsPeptideSection } from "@/components/education/beginner-content";
 import type { EducationArticle } from "@shared/schema";
@@ -75,6 +87,28 @@ const categories = [
   { id: "safety", label: "Lab Safety", icon: AlertTriangle, color: "#ef4444" },
   { id: "glossary", label: "Terminology", icon: Info, color: "#22c55e" },
 ];
+
+const peptideGroups = [
+  { id: "all", label: "All Peptides", color: "#ec4899" },
+  { id: "metabolic", label: "Metabolic / GLP-1", color: "#E7FB10", slugs: ["semaglutide", "tirzepatide", "retatrutide"] },
+  { id: "growth-hormone", label: "Growth Hormone", color: "#21d8ff", slugs: ["cjc-1295", "ipamorelin", "tesamorelin", "igf-1-lr3"] },
+  { id: "tissue-repair", label: "Tissue Repair", color: "#22c55e", slugs: ["bpc-157", "tb-500"] },
+  { id: "skin-regeneration", label: "Skin & Regeneration", color: "#ec4899", slugs: ["ghk-cu", "glow-peptide-complex"] },
+  { id: "longevity", label: "Longevity & Cellular", color: "#9d4edd", slugs: ["epithalon", "mots-c", "nad-precursor"] },
+  { id: "cognitive", label: "Cognitive / Neuro", color: "#f97316", slugs: ["semax"] },
+  { id: "hormonal", label: "Hormonal", color: "#21d8ff", slugs: ["hcg"] },
+];
+
+type SortOption = "a-z" | "z-a";
+
+const getPeptideGroup = (slug: string): string => {
+  for (const group of peptideGroups) {
+    if (group.slugs?.some(s => slug.includes(s))) {
+      return group.id;
+    }
+  }
+  return "all";
+};
 
 const onboardingCourse = [
   { step: 1, title: "Research Use Only", slug: "research-use-only-explained", description: "Understanding the legal framework" },
@@ -179,10 +213,17 @@ export default function Education() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [expandedArticle, setExpandedArticle] = useState<string | null>(null);
   const [articleMode, setArticleMode] = useState<ArticleMode>("quick-breakdown");
+  const [peptideSort, setPeptideSort] = useState<SortOption>("a-z");
+  const [peptideGroupFilter, setPeptideGroupFilter] = useState<string>("all");
 
   const { data: articles = [], isLoading } = useQuery<EducationArticle[]>({
     queryKey: ["/api/education"],
   });
+
+  const handleOpenArticle = (articleId: string) => {
+    setExpandedArticle(articleId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   useEffect(() => {
     if (params.slug && articles.length > 0) {
@@ -200,10 +241,34 @@ export default function Education() {
     }
   }, [params.slug, articles]);
 
-  const filteredArticles =
-    activeCategory === "all"
+  const filteredArticles = (() => {
+    let result = activeCategory === "all"
       ? articles
       : articles.filter((a) => a.category === activeCategory);
+    
+    // Apply peptide group filter if in peptides category
+    if (activeCategory === "peptides" && peptideGroupFilter !== "all") {
+      result = result.filter((a) => {
+        const group = getPeptideGroup(a.slug || "");
+        return group === peptideGroupFilter;
+      });
+    }
+    
+    // Apply sorting for peptides category (alphabetical by default)
+    if (activeCategory === "peptides") {
+      result = [...result].sort((a, b) => {
+        const nameA = a.title.toLowerCase();
+        const nameB = b.title.toLowerCase();
+        if (peptideSort === "a-z") {
+          return nameA.localeCompare(nameB);
+        } else {
+          return nameB.localeCompare(nameA);
+        }
+      });
+    }
+    
+    return result;
+  })();
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
@@ -531,7 +596,7 @@ export default function Education() {
                                 id={`article-${article.id}`}
                                 className="p-4 cursor-pointer hover:bg-muted/30 transition-all group"
                                 style={{ borderColor: `${group.color}20` }}
-                                onClick={() => setExpandedArticle(article.id)}
+                                onClick={() => handleOpenArticle(article.id)}
                                 data-testid={`card-article-${article.slug || article.id}`}
                               >
                                 <div className="flex items-center justify-between gap-4">
@@ -561,7 +626,66 @@ export default function Education() {
                     })}
                   </div>
                 ) : (
-                  <div className="grid gap-3">
+                  <div className="space-y-4">
+                    {activeCategory === "peptides" && (
+                      <div className="flex flex-wrap items-center gap-3 p-4 rounded-lg bg-muted/30 border border-border">
+                        <div className="flex items-center gap-2">
+                          <Filter className="h-4 w-4 text-muted-foreground" />
+                          <Select value={peptideGroupFilter} onValueChange={setPeptideGroupFilter}>
+                            <SelectTrigger className="w-[180px] h-9" data-testid="select-peptide-group">
+                              <SelectValue placeholder="Filter by group" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {peptideGroups.map((group) => (
+                                <SelectItem key={group.id} value={group.id} data-testid={`option-group-${group.id}`}>
+                                  <span style={{ color: group.color }}>{group.label}</span>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
+                          <Select value={peptideSort} onValueChange={(v) => setPeptideSort(v as SortOption)}>
+                            <SelectTrigger className="w-[130px] h-9" data-testid="select-peptide-sort">
+                              <SelectValue placeholder="Sort by" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="a-z" data-testid="option-sort-az">
+                                <span className="flex items-center gap-2">
+                                  <SortAsc className="h-3 w-3" /> A to Z
+                                </span>
+                              </SelectItem>
+                              <SelectItem value="z-a" data-testid="option-sort-za">
+                                <span className="flex items-center gap-2">
+                                  <SortDesc className="h-3 w-3" /> Z to A
+                                </span>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {peptideGroupFilter !== "all" && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setPeptideGroupFilter("all")}
+                            className="h-9 px-3 text-muted-foreground hover:text-foreground"
+                            data-testid="button-clear-filter"
+                          >
+                            <X className="h-3 w-3 mr-1" />
+                            Clear filter
+                          </Button>
+                        )}
+                        
+                        <span className="text-sm text-muted-foreground ml-auto">
+                          {filteredArticles.length} peptide{filteredArticles.length !== 1 ? 's' : ''}
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="grid gap-3">
                     {filteredArticles.length > 0 ? (
                       filteredArticles.map((article) => {
                         const catColor = getCategoryColor(article.category);
@@ -572,7 +696,7 @@ export default function Education() {
                             id={`article-${article.id}`}
                             className="p-4 cursor-pointer hover:bg-muted/30 transition-all group"
                             style={{ borderColor: `${catColor}20` }}
-                            onClick={() => setExpandedArticle(article.id)}
+                            onClick={() => handleOpenArticle(article.id)}
                             data-testid={`card-article-${article.slug || article.id}`}
                           >
                             <div className="flex items-center justify-between gap-4">
@@ -585,6 +709,18 @@ export default function Education() {
                                 </p>
                               </div>
                               <div className="flex items-center gap-3 flex-shrink-0">
+                                {activeCategory === "peptides" && article.slug && (
+                                  <Badge 
+                                    variant="outline" 
+                                    className="text-xs hidden sm:inline-flex"
+                                    style={{ 
+                                      borderColor: `${peptideGroups.find(g => g.id === getPeptideGroup(article.slug || ""))?.color || catColor}50`,
+                                      color: peptideGroups.find(g => g.id === getPeptideGroup(article.slug || ""))?.color || catColor
+                                    }}
+                                  >
+                                    {peptideGroups.find(g => g.id === getPeptideGroup(article.slug || ""))?.label || "Other"}
+                                  </Badge>
+                                )}
                                 <span className="text-xs text-muted-foreground">
                                   {article.readTimeMinutes} min
                                 </span>
@@ -606,6 +742,7 @@ export default function Education() {
                         </p>
                       </Card>
                     )}
+                    </div>
                   </div>
                 )}
               </div>
