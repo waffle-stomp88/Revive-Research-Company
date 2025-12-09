@@ -43,8 +43,6 @@ export function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [productsDropdownOpen, setProductsDropdownOpen] = useState(false);
-  const [resourcesDropdownOpen, setResourcesDropdownOpen] = useState(false);
   const [location] = useLocation();
   const { user, isAuthenticated, isLoading } = useAuth();
   const { items, getItemCount, getSubtotal } = useCart();
@@ -65,8 +63,6 @@ export function Navigation() {
     setIsMobileMenuOpen(false);
     setIsDropdownOpen(false);
     setIsCartOpen(false);
-    setProductsDropdownOpen(false);
-    setResourcesDropdownOpen(false);
   }, [location]);
 
   const getInitials = () => {
@@ -154,10 +150,7 @@ export function Navigation() {
                 
                 {/* Products Dropdown */}
                 <div className="relative px-4 py-2 rounded-md group cursor-pointer">
-                  <DropdownMenu open={productsDropdownOpen} onOpenChange={(open) => {
-                    setProductsDropdownOpen(open);
-                    if (open) setResourcesDropdownOpen(false);
-                  }}>
+                  <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
                       <button
                         className={`flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer bg-transparent border-0 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 [&:focus]:outline-none [&:focus-visible]:ring-0 ${
@@ -171,7 +164,7 @@ export function Navigation() {
                         <ChevronDown className="h-4 w-4" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="center" className="w-64">
+                    <DropdownMenuContent align="center" className="w-64 z-[100]">
                       {productLinks.map((link, index) => {
                         const Icon = link.icon;
                         const isActive = location === link.href || location.startsWith(link.href + "/");
@@ -210,10 +203,7 @@ export function Navigation() {
                 
                 {/* Resources Dropdown */}
                 <div className="relative px-4 py-2 rounded-md group cursor-pointer">
-                  <DropdownMenu open={resourcesDropdownOpen} onOpenChange={(open) => {
-                    setResourcesDropdownOpen(open);
-                    if (open) setProductsDropdownOpen(false);
-                  }}>
+                  <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
                       <button
                         className={`flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer bg-transparent border-0 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 [&:focus]:outline-none [&:focus-visible]:ring-0 ${
@@ -227,7 +217,7 @@ export function Navigation() {
                         <ChevronDown className="h-4 w-4" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="center" className="w-56">
+                    <DropdownMenuContent align="center" className="w-56 z-[100]">
                       {resourceLinks.map((link) => {
                         const Icon = link.icon;
                         const isActive = location === link.href;
