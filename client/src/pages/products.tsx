@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ImageLoader } from "@/components/image-loader";
 import {
   Select,
   SelectContent,
@@ -818,11 +819,12 @@ export default function Products() {
                                   }}
                                 />
                               )}
-                              <div className="relative aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 rounded-md mb-3 overflow-hidden">
-                                <img 
+                              <div className="relative aspect-[4/3] mb-3 rounded-md overflow-hidden">
+                                <ImageLoader 
                                   src={product.imageUrl || productImage} 
                                   alt={product.name}
                                   className="w-full h-full object-contain transition-transform duration-300 p-3 group-hover:scale-105"
+                                  containerClassName="relative w-full h-full bg-gradient-to-br from-muted to-muted/50 overflow-hidden rounded-md"
                                 />
                                 {/* Smart badge system - max 2 badges, positioned top-left */}
                                 {(() => {
