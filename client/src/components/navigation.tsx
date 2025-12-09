@@ -587,13 +587,13 @@ export function Navigation() {
             className="fixed inset-0 z-40 bg-background/95 backdrop-blur-lg md:hidden"
             style={{ paddingTop: 'calc(var(--banner-height, 40px) + 80px)' }}
           >
-            <nav className="flex flex-col items-center justify-start h-full gap-3 overflow-y-auto py-4 px-6">
+            <nav className="flex flex-col items-center justify-start h-full gap-1.5 overflow-y-auto py-3 px-6">
               {/* Mobile Search Bar */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.05 }}
-                className="w-full max-w-sm"
+                className="w-full max-w-sm mb-1"
               >
                 <SearchAutocomplete className="w-full" />
               </motion.div>
@@ -602,7 +602,7 @@ export function Navigation() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 0.3 }}
                 transition={{ delay: 0.08 }}
-                className="w-24 h-px bg-[#E7FB10]/50"
+                className="w-20 h-px bg-[#E7FB10]/50 my-0.5"
               />
               {navLinks.map((link, index) => {
                 const isActive = location === link.href;
@@ -611,11 +611,11 @@ export function Navigation() {
                     key={link.href}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
+                    transition={{ delay: index * 0.05 }}
                   >
                     <Link href={link.href}>
                       <span
-                        className={`text-2xl font-display font-medium tracking-wide cursor-pointer transition-all duration-300 ${
+                        className={`text-lg font-display font-medium tracking-wide cursor-pointer transition-all duration-300 ${
                           isActive
                             ? "text-[#E7FB10] drop-shadow-[0_0_12px_rgba(231,251,16,0.6)]"
                             : "text-muted-foreground hover:text-[#E7FB10]"
@@ -633,15 +633,15 @@ export function Navigation() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 0.5 }}
-                transition={{ delay: 0.3 }}
-                className="w-24 h-px bg-[#E7FB10]/50 my-2"
+                transition={{ delay: 0.2 }}
+                className="w-20 h-px bg-[#E7FB10]/50 my-0.5"
               />
               
               <motion.span
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 }}
-                className="text-sm font-medium text-[#E7FB10]"
+                transition={{ delay: 0.25 }}
+                className="text-xs font-medium text-[#E7FB10]"
               >
                 Products
               </motion.span>
@@ -654,19 +654,19 @@ export function Navigation() {
                     key={link.href}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 + index * 0.05 }}
+                    transition={{ delay: 0.3 + index * 0.03 }}
                   >
                     <Link href={link.href}>
                       <span
-                        className={`flex items-center gap-2 text-xl font-display font-medium tracking-wide cursor-pointer transition-all duration-300 ${
+                        className={`flex items-center gap-1.5 text-sm font-display font-medium tracking-wide cursor-pointer transition-all duration-300 ${
                           isActive
                             ? "text-[#E7FB10] drop-shadow-[0_0_12px_rgba(231,251,16,0.6)]"
                             : "text-muted-foreground hover:text-[#E7FB10]"
                         }`}
                         data-testid={`link-mobile-${link.label.toLowerCase().replace(/ /g, "-")}`}
                       >
-                        <Icon className="h-5 w-5" />
-                        {link.label}
+                        <Icon className="h-4 w-4" />
+                        <span className="text-xs">{link.label}</span>
                       </span>
                     </Link>
                   </motion.div>
@@ -676,15 +676,15 @@ export function Navigation() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 0.5 }}
-                transition={{ delay: 0.6 }}
-                className="w-24 h-px bg-[#9d4edd]/50 my-2"
+                transition={{ delay: 0.45 }}
+                className="w-20 h-px bg-[#9d4edd]/50 my-0.5"
               />
               
               <motion.span
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.65 }}
-                className="text-sm font-medium text-[#9d4edd]"
+                transition={{ delay: 0.5 }}
+                className="text-xs font-medium text-[#9d4edd]"
               >
                 Resources
               </motion.span>
@@ -697,19 +697,19 @@ export function Navigation() {
                     key={link.href}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 + index * 0.05 }}
+                    transition={{ delay: 0.55 + index * 0.03 }}
                   >
                     <Link href={link.href}>
                       <span
-                        className={`flex items-center gap-2 text-xl font-display font-medium tracking-wide cursor-pointer transition-all duration-300 ${
+                        className={`flex items-center gap-1.5 text-sm font-display font-medium tracking-wide cursor-pointer transition-all duration-300 ${
                           isActive
                             ? "text-[#9d4edd] drop-shadow-[0_0_12px_rgba(157,78,221,0.6)]"
                             : "text-muted-foreground hover:text-[#9d4edd]"
                         }`}
                         data-testid={`link-mobile-${link.label.toLowerCase().replace(/ /g, "-")}`}
                       >
-                        <Icon className="h-5 w-5" />
-                        {link.label}
+                        <Icon className="h-4 w-4" />
+                        <span className="text-xs">{link.label}</span>
                       </span>
                     </Link>
                   </motion.div>
@@ -721,11 +721,11 @@ export function Navigation() {
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
+                    transition={{ delay: 0.65 }}
                   >
                     <Link href="/dashboard">
                       <span
-                        className={`text-2xl font-display font-medium tracking-wide cursor-pointer transition-all duration-300 ${
+                        className={`text-sm font-display font-medium tracking-wide cursor-pointer transition-all duration-300 ${
                           location === "/dashboard"
                             ? "text-[#E7FB10] drop-shadow-[0_0_12px_rgba(231,251,16,0.6)]"
                             : "text-muted-foreground hover:text-[#E7FB10]"
@@ -740,11 +740,11 @@ export function Navigation() {
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.35 }}
+                      transition={{ delay: 0.7 }}
                     >
                       <Link href="/admin">
                         <span
-                          className={`text-2xl font-display font-medium tracking-wide cursor-pointer transition-all duration-300 ${
+                          className={`text-sm font-display font-medium tracking-wide cursor-pointer transition-all duration-300 ${
                             location === "/admin"
                               ? "text-[#E7FB10] drop-shadow-[0_0_12px_rgba(231,251,16,0.6)]"
                               : "text-muted-foreground hover:text-[#E7FB10]"
@@ -762,13 +762,13 @@ export function Navigation() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="flex flex-col items-center gap-4 mt-4"
+                transition={{ delay: 0.75 }}
+                className="flex flex-col items-center gap-2 mt-2"
               >
                 <Link href="/peptides">
                   <Button 
-                    size="lg" 
-                    className="font-display bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_20px_rgba(231,251,16,0.4)] hover:shadow-[0_0_30px_rgba(231,251,16,0.6)] transition-all duration-300" 
+                    size="sm" 
+                    className="font-display bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_20px_rgba(231,251,16,0.4)] hover:shadow-[0_0_30px_rgba(231,251,16,0.6)] transition-all duration-300 text-xs" 
                     data-testid="button-mobile-shop"
                   >
                     Shop Peptides
@@ -779,11 +779,11 @@ export function Navigation() {
                   <a href="/api/login">
                     <Button 
                       variant="outline" 
-                      size="lg" 
-                      className="border-[#E7FB10]/50 text-[#E7FB10] hover:bg-[#E7FB10]/10 hover:border-[#E7FB10]"
+                      size="sm" 
+                      className="border-[#E7FB10]/50 text-[#E7FB10] hover:bg-[#E7FB10]/10 hover:border-[#E7FB10] text-xs"
                       data-testid="button-mobile-sign-in"
                     >
-                      <LogIn className="h-4 w-4 mr-2" />
+                      <LogIn className="h-3 w-3 mr-1" />
                       Sign In
                     </Button>
                   </a>
@@ -791,8 +791,8 @@ export function Navigation() {
                 
                 {!isLoading && isAuthenticated && (
                   <a href="/api/logout">
-                    <Button variant="outline" size="lg" data-testid="button-mobile-logout">
-                      <LogOut className="h-4 w-4 mr-2" />
+                    <Button variant="outline" size="sm" data-testid="button-mobile-logout" className="text-xs">
+                      <LogOut className="h-3 w-3 mr-1" />
                       Sign Out
                     </Button>
                   </a>
