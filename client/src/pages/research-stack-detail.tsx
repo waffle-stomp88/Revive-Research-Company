@@ -408,15 +408,15 @@ export default function ResearchStackDetail() {
               </div>
             </Card>
 
-            <Card className="p-6 bg-red-950/30 border-2 border-red-500/50 animate-pulse-subtle mt-6" data-testid="card-ruo-disclaimer">
-              <div className="flex items-start gap-4">
-                <div className="p-3 rounded-full bg-red-500/20 border border-red-500/30">
-                  <AlertTriangle className="h-6 w-6 text-red-400" />
+            <Card className="p-2.5 bg-red-950/30 border border-red-500/50 animate-pulse-subtle mt-3" data-testid="card-ruo-disclaimer">
+              <div className="flex items-start gap-2">
+                <div className="p-1 rounded bg-red-500/20 flex-shrink-0">
+                  <AlertTriangle className="h-3 w-3 text-red-400" />
                 </div>
-                <div>
-                  <h4 className="font-display font-bold text-red-400 uppercase tracking-wider text-lg mb-2">Research Use Only</h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    This product is sold for research purposes only and is not intended for human consumption. By purchasing, you confirm you are a qualified researcher and will use this product in accordance with all applicable federal and state laws and regulations.
+                <div className="min-w-0">
+                  <h4 className="font-display font-bold text-red-400 uppercase tracking-wider text-xs mb-0.5">Research Use Only</h4>
+                  <p className="text-xs text-muted-foreground leading-tight">
+                    For research purposes only. Not for human consumption.
                   </p>
                 </div>
               </div>
@@ -664,7 +664,7 @@ export default function ResearchStackDetail() {
             </div>
 
             {stack.keyBenefits.length > 0 && (
-              <div>
+              <div className="mb-3">
                 <h3 className="font-display font-semibold text-base mb-3">Key Benefits</h3>
                 <ul className="space-y-2">
                   {stack.keyBenefits.map((benefit, index) => (
@@ -676,12 +676,71 @@ export default function ResearchStackDetail() {
                 </ul>
               </div>
             )}
+
+            <div className="space-y-3">
+              <Card className="p-3 border-[#2a2a32]">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="p-1.5 rounded-lg" style={{ backgroundColor: `${stack.color}20` }}>
+                    <Sparkles className="h-4 w-4" style={{ color: stack.color }} />
+                  </div>
+                  <h3 className="font-display text-sm font-bold">Why These Work Together</h3>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-1 p-1.5 rounded-lg bg-[#0d0d10] border border-[#2a2a32]">
+                    <button
+                      onClick={() => setSynergyMode("beginner")}
+                      className={`flex-1 px-2 py-1 rounded text-xs font-medium transition-all ${
+                        synergyMode === "beginner" ? "bg-[#21d8ff]/20 text-[#21d8ff]" : "text-muted-foreground hover:text-white"
+                      }`}
+                      data-testid="button-synergy-beginner"
+                    >
+                      <GraduationCap className="h-3 w-3 inline mr-0.5" />
+                      Quick
+                    </button>
+                    <button
+                      onClick={() => setSynergyMode("expert")}
+                      className={`flex-1 px-2 py-1 rounded text-xs font-medium transition-all ${
+                        synergyMode === "expert" ? "bg-[#a855f7]/20 text-[#a855f7]" : "text-muted-foreground hover:text-white"
+                      }`}
+                      data-testid="button-synergy-expert"
+                    >
+                      <Beaker className="h-3 w-3 inline mr-0.5" />
+                      Deep
+                    </button>
+                  </div>
+                  <AnimatePresence mode="wait">
+                    <motion.div key={synergyMode} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="p-2 rounded-lg bg-[#0d0d10] border border-[#2a2a32]">
+                      <p className={`text-xs leading-relaxed ${synergyMode === "beginner" ? "text-gray-300" : "text-gray-400"}`} data-testid={`text-synergy-${synergyMode}`}>
+                        {synergyMode === "beginner" ? stack.synergy.beginner : stack.synergy.expert}
+                      </p>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              </Card>
+
+              <Card className="p-3 border-[#2a2a32] bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10]">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="p-1.5 rounded-lg" style={{ backgroundColor: `${stack.color}20` }}>
+                    <BookOpen className="h-4 w-4" style={{ color: stack.color }} />
+                  </div>
+                  <h3 className="font-display text-sm font-bold">Storage Information</h3>
+                </div>
+                <p className="text-xs text-muted-foreground mb-2">{stack.storageGuide}</p>
+                <Link href="/education/storage-101">
+                  <Button size="sm" className="gap-1 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold hover:shadow-[0_0_20px_rgba(33,216,255,0.6)] transition-shadow w-full text-xs py-1 h-auto" data-testid="link-learn-storage">
+                    <BookOpen className="h-3 w-3" />
+                    Learn Storage Best Practices
+                    <ChevronRight className="h-3 w-3" />
+                  </Button>
+                </Link>
+              </Card>
+            </div>
           </motion.div>
         </div>
 
-        <div className="mt-8 grid md:grid-cols-2 gap-4">
+        <div className="mt-8">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <Card className="p-4 h-full border-[#2a2a32]">
+            <Card className="p-4 border-[#2a2a32]">
               <div className="flex items-center gap-2 mb-3">
                 <div className="p-1.5 rounded-lg" style={{ backgroundColor: `${stack.color}20` }}>
                   <FlaskConical className="h-4 w-4" style={{ color: stack.color }} />
@@ -698,68 +757,7 @@ export default function ResearchStackDetail() {
               </div>
             </Card>
           </motion.div>
-
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-            <Card className="p-4 h-full border-[#2a2a32]">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="p-1.5 rounded-lg" style={{ backgroundColor: `${stack.color}20` }}>
-                  <Sparkles className="h-4 w-4" style={{ color: stack.color }} />
-                </div>
-                <h3 className="font-display text-base font-bold">Why These Work Together</h3>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center gap-1 p-1.5 rounded-lg bg-[#0d0d10] border border-[#2a2a32]">
-                  <button
-                    onClick={() => setSynergyMode("beginner")}
-                    className={`flex-1 px-2 py-1 rounded text-xs font-medium transition-all ${
-                      synergyMode === "beginner" ? "bg-[#21d8ff]/20 text-[#21d8ff]" : "text-muted-foreground hover:text-white"
-                    }`}
-                    data-testid="button-synergy-beginner"
-                  >
-                    <GraduationCap className="h-3 w-3 inline mr-0.5" />
-                    Quick
-                  </button>
-                  <button
-                    onClick={() => setSynergyMode("expert")}
-                    className={`flex-1 px-2 py-1 rounded text-xs font-medium transition-all ${
-                      synergyMode === "expert" ? "bg-[#a855f7]/20 text-[#a855f7]" : "text-muted-foreground hover:text-white"
-                    }`}
-                    data-testid="button-synergy-expert"
-                  >
-                    <Beaker className="h-3 w-3 inline mr-0.5" />
-                    Deep
-                  </button>
-                </div>
-                <AnimatePresence mode="wait">
-                  <motion.div key={synergyMode} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="p-2 rounded-lg bg-[#0d0d10] border border-[#2a2a32]">
-                    <p className={`text-xs leading-relaxed ${synergyMode === "beginner" ? "text-gray-300" : "text-gray-400"}`} data-testid={`text-synergy-${synergyMode}`}>
-                      {synergyMode === "beginner" ? stack.synergy.beginner : stack.synergy.expert}
-                    </p>
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-            </Card>
-          </motion.div>
         </div>
-
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="mt-8">
-          <Card className="p-4 border-[#2a2a32] bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10]">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="p-1.5 rounded-lg" style={{ backgroundColor: `${stack.color}20` }}>
-                <BookOpen className="h-4 w-4" style={{ color: stack.color }} />
-              </div>
-              <h3 className="font-display text-base font-bold">Storage Information</h3>
-            </div>
-            <p className="text-xs text-muted-foreground mb-3">{stack.storageGuide}</p>
-            <Link href="/education/storage-101">
-              <Button size="sm" className="gap-1 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold hover:shadow-[0_0_20px_rgba(33,216,255,0.6)] transition-shadow w-full" data-testid="link-learn-storage">
-                <BookOpen className="h-3 w-3" />
-                Learn Storage Best Practices
-                <ChevronRight className="h-3 w-3" />
-              </Button>
-            </Link>
-          </Card>
-        </motion.div>
       </div>
     </main>
   );
