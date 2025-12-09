@@ -528,7 +528,7 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl }: {
                 <stop offset="50%" stopColor="#2a2a32" />
                 <stop offset="100%" stopColor="#1a1a1f" />
               </linearGradient>
-              <linearGradient id="liquidFill" x1="0%" y1="0%" x2="100%" y2="0%">
+              <linearGradient id="liquidFill" x1="100%" y1="0%" x2="0%" y2="0%">
                 <stop offset="0%" stopColor={isOverflow ? "#ef4444" : "#E7FB10"} stopOpacity="0.9" />
                 <stop offset="100%" stopColor={isOverflow ? "#dc2626" : "#21d8ff"} stopOpacity="0.9" />
               </linearGradient>
@@ -551,7 +551,7 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl }: {
             
             {/* Liquid Fill */}
             <motion.rect
-              x="34"
+              x={256 - Math.max((clampedFill / 100) * 222, 0)}
               y="19"
               height="22"
               rx="2"
