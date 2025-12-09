@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, User, LogIn, LogOut, Shield, ShoppingCart, ChevronDown, FileCheck, GraduationCap, Scale, BookOpen, Package, FlaskConical, Boxes, Building2, Droplets } from "lucide-react";
+import { Menu, X, User, LogIn, LogOut, Shield, ShoppingCart, ChevronDown, FileCheck, GraduationCap, Scale, BookOpen, Package, FlaskConical, Boxes, Building2, Droplets, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -36,6 +36,7 @@ const coaLinks = [
 
 const resourceLinks = [
   { href: "/education", label: "Education Center", icon: GraduationCap, description: "Learn about peptides & research", color: "#ec4899" },
+  { href: "/dosage-calculator", label: "Dosage Calculator", icon: Calculator, description: "Calculate peptide dosing volumes", color: "#E7FB10" },
   { href: "/legal", label: "Legal & Compliance", icon: Scale, description: "Regulatory information & policies", color: "#22c55e" },
   { href: "/what-we-dont-do", label: "What We Don't Do", icon: BookOpen, description: "Our ethical boundaries", color: "#EF4444" },
   { href: "/faq", label: "FAQ", icon: BookOpen, description: "Common questions answered", color: "#a855f7" },

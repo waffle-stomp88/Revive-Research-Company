@@ -49,6 +49,7 @@ import BatchArchive from "@/pages/batch-archive";
 import LabNotes from "@/pages/lab-notes";
 import ResourcesHub from "@/pages/resources";
 import ProductsHub from "@/pages/products-hub";
+import DosageCalculator from "@/pages/dosage-calculator";
 import NotFound from "@/pages/not-found";
 
 function ScrollToTop() {
@@ -122,6 +123,7 @@ function Router() {
       <Route path="/troubleshooting" component={Troubleshooting} />
       <Route path="/batch-archive" component={BatchArchive} />
       <Route path="/lab-notes" component={LabNotes} />
+      <Route path="/dosage-calculator" component={DosageCalculator} />
       <Route path="/resources" component={ResourcesHub} />
       <Route component={NotFound} />
     </Switch>
