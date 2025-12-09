@@ -169,7 +169,7 @@ export function Navigation() {
                         className={`flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer bg-transparent border-0 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 [&:focus]:outline-none [&:focus-visible]:ring-0 ${
                           productLinks.some(p => location === p.href || location.startsWith(p.href + "/"))
                             ? "text-[#E7FB10] drop-shadow-[0_0_12px_rgba(231,251,16,0.8)]"
-                            : "text-muted-foreground hover:text-[#E7FB10] hover:drop-shadow-[0_0_12px_rgba(231,251,16,0.5)]"
+                            : "text-white hover:text-[#E7FB10] hover:drop-shadow-[0_0_12px_rgba(231,251,16,0.5)]"
                         }`}
                         data-testid="link-nav-products"
                       >
@@ -222,7 +222,7 @@ export function Navigation() {
                         className={`flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer bg-transparent border-0 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 [&:focus]:outline-none [&:focus-visible]:ring-0 ${
                           coaLinks.some(c => location === c.href || location.startsWith(c.href + "/"))
                             ? "text-[#21d8ff] drop-shadow-[0_0_12px_rgba(33,216,255,0.8)]"
-                            : "text-muted-foreground hover:text-[#21d8ff] hover:drop-shadow-[0_0_12px_rgba(33,216,255,0.5)]"
+                            : "text-white hover:text-[#21d8ff] hover:drop-shadow-[0_0_12px_rgba(33,216,255,0.5)]"
                         }`}
                         data-testid="link-nav-coa"
                       >
@@ -278,7 +278,7 @@ export function Navigation() {
                         
                         return (
                           <button
-                            className="flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer bg-transparent border-0 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 [&:focus]:outline-none [&:focus-visible]:ring-0"
+                            className="flex items-center gap-1 text-sm font-medium tracking-wide transition-all duration-300 cursor-pointer bg-transparent border-0 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 [&:focus]:outline-none [&:focus-visible]:ring-0 text-white"
                             style={{
                               color: isActive ? activeColor : undefined,
                               textShadow: isActive ? `0 0 12px ${activeColor}cc` : undefined,
