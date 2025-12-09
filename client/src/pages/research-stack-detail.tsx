@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useRoute, Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, FlaskConical, ShoppingCart, Shield, Layers, Sparkles, CheckCircle2, AlertTriangle, Info, Package, GraduationCap, Beaker, ChevronDown } from "lucide-react";
+import { ArrowLeft, FlaskConical, ShoppingCart, Sparkles, CheckCircle2, AlertTriangle, Info, Package, GraduationCap, Beaker } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -248,23 +248,20 @@ export default function ResearchStackDetail() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-12">
-      <div className="max-w-6xl mx-auto px-4 md:px-8">
-        <Link href="/research-stacks">
-          <Button variant="ghost" className="mb-6 text-muted-foreground hover:text-white" data-testid="button-back-stacks">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Research Stacks
-          </Button>
-        </Link>
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-4">
+          <Link href="/research-stacks">
+            <Button variant="ghost" className="gap-2 -ml-4" data-testid="button-back-stacks">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Research Stacks
+            </Button>
+          </Link>
+        </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="flex flex-col"
-          >
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="flex flex-col">
             <Card className="overflow-hidden border-[#2a2a32] sticky top-24">
-              <div 
+              <div
                 className="relative aspect-square bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10] flex items-center justify-center"
                 style={{
                   background: `radial-gradient(circle at 50% 50%, ${stack.color}15, transparent 70%), linear-gradient(135deg, #1a1a1f, #0d0d10)`,
@@ -283,97 +280,101 @@ export default function ResearchStackDetail() {
                   </Badge>
                 )}
                 <div className="text-center">
-                  <div
-                    className="w-32 h-32 rounded-3xl mx-auto flex items-center justify-center mb-4"
-                    style={{ backgroundColor: `${stack.color}20` }}
-                  >
-                    <Layers className="h-16 w-16" style={{ color: stack.color }} />
+                  <div className="w-32 h-32 rounded-3xl mx-auto flex items-center justify-center mb-4" style={{ backgroundColor: `${stack.color}20` }}>
+                    <Package className="h-16 w-16" style={{ color: stack.color }} />
                   </div>
                   <div className="flex justify-center gap-2 mt-4">
                     {stack.peptides.map((peptide, i) => (
-                      <div
-                        key={i}
-                        className="w-4 h-4 rounded-full border-2 border-[#1a1a1f]"
-                        style={{ backgroundColor: stack.color }}
-                      />
+                      <div key={i} className="w-4 h-4 rounded-full border-2 border-[#1a1a1f]" style={{ backgroundColor: stack.color }} />
                     ))}
                   </div>
                   <p className="text-sm text-muted-foreground mt-2">
-                    {stack.peptides.length} peptide{stack.peptides.length > 1 ? 's' : ''} included
+                    {stack.peptides.length} peptide{stack.peptides.length > 1 ? "s" : ""} included
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-6 bg-red-950/30 border-2 border-red-500/50 animate-pulse-subtle mt-6" data-testid="card-ruo-disclaimer">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-full bg-red-500/20 border border-red-500/30">
+                  <AlertTriangle className="h-6 w-6 text-red-400" />
+                </div>
+                <div>
+                  <h4 className="font-display font-bold text-red-400 uppercase tracking-wider text-lg mb-2">Research Use Only</h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    This product is sold for research purposes only and is not intended for human consumption. By purchasing, you confirm you are a qualified researcher and will use this product in accordance with all applicable federal and state laws and regulations.
                   </p>
                 </div>
               </div>
             </Card>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-            className="space-y-6"
-          >
-            <div>
-              <Badge variant="secondary" className="text-xs uppercase tracking-wider mb-3">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}>
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              <Badge variant="secondary" className="text-xs uppercase tracking-wider">
                 Research Stack
               </Badge>
-              <h1 className="font-display text-2xl md:text-3xl font-bold mb-2" data-testid="text-stack-name">
-                {stack.name}
-              </h1>
-              <p className="text-sm text-muted-foreground leading-relaxed mb-4" data-testid="text-stack-description">
-                {stack.longDescription}
-              </p>
             </div>
 
+            <h1 className="font-display text-2xl md:text-3xl font-bold mb-2" data-testid="text-stack-name">
+              {stack.name}
+            </h1>
 
-            <Card className="p-6 bg-[#0d0d10] border-[#2a2a32]">
-              <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div className="space-y-3">
-                  <div className="text-sm text-muted-foreground">
-                    Retail Value: <span className="line-through" data-testid="text-stack-retail-value">${stack.retailValue}</span>
-                  </div>
-                  <div className="flex items-baseline gap-3">
-                    <span className="font-display text-4xl font-bold" style={{ color: stack.color }} data-testid="text-stack-price">
-                      ${stack.launchPrice}
-                    </span>
-                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-[#21d8ff]/10 text-[#21d8ff]" data-testid="badge-launch-price">
-                      Launch Price
-                    </span>
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    Stack Price: <span className="text-gray-400">${stack.stackPrice}</span>
-                  </div>
-                  <Badge variant="outline" className="border-[#21d8ff]/50 text-[#21d8ff]" data-testid="badge-savings">
-                    <Sparkles className="h-3 w-3 mr-1" />
-                    Curated Research Combination
-                  </Badge>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-6" data-testid="text-stack-description">
+              {stack.longDescription}
+            </p>
+
+            <Card className="p-5 bg-[#0d0d10] border-[#2a2a32] mb-6">
+              <div className="space-y-3">
+                <div className="text-sm text-muted-foreground">
+                  Retail Value: <span className="line-through" data-testid="text-stack-retail-value">${stack.retailValue}</span>
                 </div>
-                <Button
-                  size="lg"
-                  onClick={handleAddToCart}
-                  style={{
-                    backgroundColor: stack.color,
-                    color: stack.color === "#E7FB10" || stack.color === "#f59e0b" || stack.color === "#22c55e" ? "black" : "white",
-                  }}
-                  className="min-h-11"
-                  data-testid="button-add-to-cart"
-                >
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  Add to Cart
-                </Button>
+                <div className="flex items-baseline gap-3">
+                  <span className="font-display text-4xl font-bold" style={{ color: stack.color }} data-testid="text-stack-price">
+                    ${stack.launchPrice}
+                  </span>
+                  <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-[#21d8ff]/10 text-[#21d8ff]" data-testid="badge-launch-price">
+                    Launch Price
+                  </span>
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  Stack Price: <span className="text-gray-400">${stack.stackPrice}</span>
+                </div>
+                <Badge variant="outline" className="border-[#21d8ff]/50 text-[#21d8ff]" data-testid="badge-savings">
+                  <Sparkles className="h-3 w-3 mr-1" />
+                  Curated Research Combination
+                </Badge>
               </div>
             </Card>
 
-            <Card className="p-5 border-[#2a2a32] bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10]" data-testid="card-whats-included">
+            <div className="flex gap-3 mb-6">
+              <Button
+                size="lg"
+                onClick={handleAddToCart}
+                style={{
+                  backgroundColor: stack.color,
+                  color: stack.color === "#E7FB10" || stack.color === "#f59e0b" || stack.color === "#22c55e" ? "black" : "white",
+                }}
+                className="flex-1"
+                data-testid="button-add-to-cart"
+              >
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                Add to Cart
+              </Button>
+            </div>
+
+            <Card className="p-5 border-[#2a2a32] bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10] mb-6" data-testid="card-whats-included">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 rounded-lg" style={{ backgroundColor: `${stack.color}20` }}>
                   <Package className="h-5 w-5" style={{ color: stack.color }} />
                 </div>
-                <h3 className="font-display text-lg font-bold">What's Included</h3>
+                <h3 className="font-display text-base font-bold uppercase tracking-wider">What's Included</h3>
               </div>
               <ul className="space-y-2">
                 {stack.peptides.map((peptide) => (
                   <li key={peptide.name} className="text-sm text-gray-300 flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4" style={{ color: stack.color }} />
+                    <CheckCircle2 className="h-3 w-3" style={{ color: stack.color }} />
                     {peptide.name}
                   </li>
                 ))}
@@ -381,37 +382,33 @@ export default function ResearchStackDetail() {
             </Card>
 
             <Card className="p-5 border-[#2a2a32] bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10]" data-testid="card-synergy">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-4 gap-2">
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg" style={{ backgroundColor: `${stack.color}20` }}>
                     <Sparkles className="h-5 w-5" style={{ color: stack.color }} />
                   </div>
-                  <h3 className="font-display text-lg font-bold">Why These Peptides Work Together</h3>
+                  <h3 className="font-display text-base font-bold uppercase tracking-wider">Why These Peptides Work Together</h3>
                 </div>
-                <div className="flex items-center gap-1 p-1 rounded-lg bg-[#0d0d10] border border-[#2a2a32]">
+                <div className="flex items-center gap-1 p-1 rounded-lg bg-[#0d0d10] border border-[#2a2a32] flex-shrink-0">
                   <button
                     onClick={() => setSynergyMode("beginner")}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                      synergyMode === "beginner"
-                        ? "bg-[#21d8ff]/20 text-[#21d8ff]"
-                        : "text-muted-foreground hover:text-white"
+                    className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all ${
+                      synergyMode === "beginner" ? "bg-[#21d8ff]/20 text-[#21d8ff]" : "text-muted-foreground hover:text-white"
                     }`}
                     data-testid="button-synergy-beginner"
                   >
-                    <GraduationCap className="h-3.5 w-3.5" />
-                    Quick Breakdown
+                    <GraduationCap className="h-3 w-3" />
+                    Quick
                   </button>
                   <button
                     onClick={() => setSynergyMode("expert")}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                      synergyMode === "expert"
-                        ? "bg-[#a855f7]/20 text-[#a855f7]"
-                        : "text-muted-foreground hover:text-white"
+                    className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all ${
+                      synergyMode === "expert" ? "bg-[#a855f7]/20 text-[#a855f7]" : "text-muted-foreground hover:text-white"
                     }`}
                     data-testid="button-synergy-expert"
                   >
-                    <Beaker className="h-3.5 w-3.5" />
-                    Deep Dive
+                    <Beaker className="h-3 w-3" />
+                    Deep
                   </button>
                 </div>
               </div>
@@ -422,18 +419,15 @@ export default function ResearchStackDetail() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
-                  className="p-4 rounded-lg bg-[#0d0d10] border border-[#2a2a32]"
+                  className="p-3 rounded-lg bg-[#0d0d10] border border-[#2a2a32]"
                 >
-                  <p 
-                    className={`text-sm leading-relaxed ${synergyMode === "beginner" ? "text-gray-300" : "text-gray-400"}`}
-                    data-testid={`text-synergy-${synergyMode}`}
-                  >
+                  <p className={`text-xs leading-relaxed ${synergyMode === "beginner" ? "text-gray-300" : "text-gray-400"}`} data-testid={`text-synergy-${synergyMode}`}>
                     {synergyMode === "beginner" ? stack.synergy.beginner : stack.synergy.expert}
                   </p>
                   {synergyMode === "expert" && (
-                    <div className="mt-3 pt-3 border-t border-[#2a2a32] flex items-center gap-2 text-xs text-muted-foreground">
-                      <Info className="h-3.5 w-3.5" />
-                      <span>Pathway-level mechanistic overview for advanced researchers</span>
+                    <div className="mt-2 pt-2 border-t border-[#2a2a32] flex items-center gap-2 text-xs text-muted-foreground">
+                      <Info className="h-3 w-3 flex-shrink-0" />
+                      <span>Pathway-level mechanistic overview</span>
                     </div>
                   )}
                 </motion.div>
@@ -443,11 +437,7 @@ export default function ResearchStackDetail() {
         </div>
 
         <div className="mt-12 grid md:grid-cols-2 gap-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
             <Card className="p-6 h-full border-[#2a2a32]">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 rounded-lg" style={{ backgroundColor: `${stack.color}20` }}>
@@ -456,7 +446,7 @@ export default function ResearchStackDetail() {
                 <h3 className="font-display text-xl font-bold">Included Peptides</h3>
               </div>
               <div className="space-y-4">
-                {stack.peptides.map((peptide, index) => (
+                {stack.peptides.map((peptide) => (
                   <div key={peptide.name} className="p-4 rounded-lg bg-[#0d0d10] border border-[#2a2a32]">
                     <h4 className="font-medium text-white mb-1">{peptide.name}</h4>
                     <p className="text-sm text-muted-foreground">{peptide.description}</p>
@@ -466,11 +456,7 @@ export default function ResearchStackDetail() {
             </Card>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
             <Card className="p-6 h-full border-[#2a2a32]">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 rounded-lg" style={{ backgroundColor: `${stack.color}20` }}>
@@ -489,26 +475,6 @@ export default function ResearchStackDetail() {
             </Card>
           </motion.div>
         </div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="mt-8 p-4 rounded-xl bg-red-500/5 border border-red-500/20"
-        >
-          <div className="flex items-start gap-3">
-            <Shield className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-red-400">Research Use Only</p>
-              <p className="text-xs text-gray-400">
-                This research stack is sold for laboratory and scientific research purposes only. 
-                It is not intended for human consumption, therapeutic use, or any application 
-                in humans or animals. By purchasing, you confirm you are a qualified researcher 
-                and will use these compounds solely for legitimate research purposes.
-              </p>
-            </div>
-          </div>
-        </motion.div>
       </div>
     </main>
   );
