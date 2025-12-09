@@ -699,39 +699,39 @@ export default function ResearchStackDetail() {
             )}
 
             <div className="space-y-3">
-              <Card className="p-3 border-[#2a2a32]">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="p-1.5 rounded-lg" style={{ backgroundColor: `${stack.color}20` }}>
-                    <Sparkles className="h-4 w-4" style={{ color: stack.color }} />
+              <Card className="p-5 border-[#2a2a32] bg-gradient-to-br from-[#0d0d10]/50 to-[#1a1a1f]/30">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 rounded-lg" style={{ backgroundColor: `${stack.color}20` }}>
+                    <Sparkles className="h-5 w-5" style={{ color: stack.color }} />
                   </div>
-                  <h3 className="font-display text-sm font-bold">Why These Work Together</h3>
+                  <h3 className="font-display text-lg font-bold">Why These Work Together</h3>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-1 p-1.5 rounded-lg bg-[#0d0d10] border border-[#2a2a32]">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 p-2 rounded-lg bg-[#0d0d10] border border-[#2a2a32]">
                     <button
                       onClick={() => setSynergyMode("beginner")}
-                      className={`flex-1 px-2 py-1 rounded text-xs font-medium transition-all ${
+                      className={`flex-1 px-3 py-1.5 rounded text-sm font-medium transition-all ${
                         synergyMode === "beginner" ? "bg-[#21d8ff]/20 text-[#21d8ff]" : "text-muted-foreground hover:text-white"
                       }`}
                       data-testid="button-synergy-beginner"
                     >
-                      <GraduationCap className="h-3 w-3 inline mr-0.5" />
-                      Quick
+                      <GraduationCap className="h-4 w-4 inline mr-1" />
+                      Quick Breakdown
                     </button>
                     <button
                       onClick={() => setSynergyMode("expert")}
-                      className={`flex-1 px-2 py-1 rounded text-xs font-medium transition-all ${
+                      className={`flex-1 px-3 py-1.5 rounded text-sm font-medium transition-all ${
                         synergyMode === "expert" ? "bg-[#a855f7]/20 text-[#a855f7]" : "text-muted-foreground hover:text-white"
                       }`}
                       data-testid="button-synergy-expert"
                     >
-                      <Beaker className="h-3 w-3 inline mr-0.5" />
-                      Deep
+                      <Beaker className="h-4 w-4 inline mr-1" />
+                      Deep Dive
                     </button>
                   </div>
                   <AnimatePresence mode="wait">
-                    <motion.div key={synergyMode} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="p-2 rounded-lg bg-[#0d0d10] border border-[#2a2a32]">
-                      <p className={`text-xs leading-relaxed ${synergyMode === "beginner" ? "text-gray-300" : "text-gray-400"}`} data-testid={`text-synergy-${synergyMode}`}>
+                    <motion.div key={synergyMode} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="p-4 rounded-lg bg-[#0d0d10] border border-[#2a2a32]">
+                      <p className={`text-sm leading-relaxed ${synergyMode === "beginner" ? "text-gray-200" : "text-gray-300"}`} data-testid={`text-synergy-${synergyMode}`}>
                         {synergyMode === "beginner" ? stack.synergy.beginner : stack.synergy.expert}
                       </p>
                     </motion.div>
