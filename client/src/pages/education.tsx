@@ -201,7 +201,7 @@ const renderMarkdown = (content: string) => {
     .replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground font-semibold">$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
     .replace(/^- (.*$)/gim, '<li class="ml-4 list-disc">$1</li>')
-    .replace(/^(\d+)\. (.*$)/gim, '<li class="ml-4 list-decimal">$1. $2</li>')
+    .replace(/^(\d+)\. (.*$)/gim, '<li class="ml-4 list-decimal">$2</li>')
     .replace(/\n\n/g, '</p><p class="mb-4">')
     .replace(/^(?!\s*<)/gm, '<p class="mb-4">'); // Skip lines starting with HTML tags (with optional whitespace)
 };
