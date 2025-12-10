@@ -862,7 +862,7 @@ export default function Products() {
                                     return peptideGroup ? (
                                       <Badge 
                                         variant="outline"
-                                        className="text-[9px] px-1.5 py-0.5 opacity-60"
+                                        className="text-[11px] px-2 py-1 opacity-70"
                                         style={{ 
                                           borderColor: `${peptideGroup.color}40`,
                                           color: peptideGroup.color 
@@ -878,7 +878,7 @@ export default function Products() {
                                     );
                                   })()}
                                 </div>
-                                <h3 className="font-display text-2xl md:text-3xl font-black mb-2 group-hover:text-[#E7FB10] transition-colors line-clamp-2 text-center">
+                                <h3 className="font-display text-lg md:text-2xl font-black mb-2 group-hover:text-[#E7FB10] transition-colors line-clamp-2 text-center">
                                   {product.name}
                                 </h3>
                                 <p className="text-xs text-muted-foreground mb-2 line-clamp-2 min-h-[2rem]">
@@ -897,7 +897,7 @@ export default function Products() {
                                       )}
                                     </div>
                                     {/* Price Trend Arrow - Show based on sale status */}
-                                    {product.originalPrice && product.price < Number(product.originalPrice) && (
+                                    {product.originalPrice && Number(product.price) < Number(product.originalPrice) && (
                                       <TrendingDown className="h-4 w-4 text-red-500" data-testid={`icon-price-down-${product.id}`} />
                                     )}
                                   </div>
