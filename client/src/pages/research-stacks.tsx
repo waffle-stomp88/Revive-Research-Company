@@ -136,8 +136,6 @@ const researchStacks: ResearchStack[] = [
 ];
 
 export default function ResearchStacks() {
-  const [hoveredStack, setHoveredStack] = useState<string | null>(null);
-
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-12">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
@@ -180,7 +178,6 @@ export default function ResearchStacks() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {researchStacks.map((stack, index) => {
             const Icon = stack.icon;
-            const isHovered = hoveredStack === stack.id;
 
             return (
               <Link href={`/research-stacks/${stack.id}`} key={stack.id}>
@@ -189,16 +186,12 @@ export default function ResearchStacks() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   whileHover={{ scale: 1.05 }}
-                  onMouseEnter={() => setHoveredStack(stack.id)}
-                  onMouseLeave={() => setHoveredStack(null)}
+                  className="group"
                 >
                   <Card
-                    className="relative overflow-hidden h-full transition-all duration-200 cursor-pointer border-2"
+                    className="relative overflow-hidden h-full transition-all duration-200 cursor-pointer border-2 group-hover:shadow-lg"
                     style={{
-                      borderColor: isHovered ? stack.color : "#2a2a32",
-                      boxShadow: isHovered 
-                        ? `0 0 40px ${stack.color}60, 0 0 20px ${stack.color}40` 
-                        : "none",
+                      borderColor: "#2a2a32",
                     }}
                     data-testid={`card-stack-${stack.id}`}
                   >
@@ -216,7 +209,7 @@ export default function ResearchStacks() {
 
                   <div className="relative h-40 bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10] overflow-hidden">
                     <div
-                      className="absolute inset-0 opacity-20"
+                      className="absolute inset-0 opacity-20 group-hover:opacity-40 transition-opacity duration-200"
                       style={{
                         background: `radial-gradient(circle at 50% 100%, ${stack.color}40, transparent 70%)`,
                       }}
@@ -227,7 +220,7 @@ export default function ResearchStacks() {
                           scale: 1.1,
                           rotate: 5,
                         }}
-                        transition={{ duration: 0.2 }}
+                        transition={{ duration: 0.15, type: "tween" }}
                         className="relative"
                       >
                         <div
