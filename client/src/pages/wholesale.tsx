@@ -38,40 +38,40 @@ const pricingTiers = [
   { 
     range: "100–249 vials", 
     discount: "Up to 20% off", 
-    savings: "Thousands per order",
-    details: "MOQ: 100 | Ships in 3–5 days",
-    proof: "Best for small clinics / local resellers",
+    discountNote: "Discount varies by compound",
+    whoFor: "Best for small clinics / first-time bulk buyers",
     margin: "Avg reseller margin: 38–52%",
+    perks: "Ships in 3–5 days",
     mixMatch: true,
     color: "#21d8ff" 
   },
   { 
     range: "250–499 vials", 
     discount: "Up to 25% off", 
-    savings: "Significant reduction for labs",
-    details: "MOQ: 250 | Priority allocation",
-    proof: "Most profitable tier for growing businesses",
+    discountNote: "Discount varies by compound",
+    whoFor: "Ideal for scaling resellers building recurring customer volume",
     margin: "Avg reseller margin: 45–58%",
+    perks: "Priority allocation + same-week restocks",
     mixMatch: true,
     color: "#E7FB10" 
   },
   { 
     range: "500–999 vials", 
     discount: "Up to 30% off", 
-    savings: "Major cost efficiency",
-    details: "MOQ: 500 | Free domestic shipping",
-    proof: "Distribution pricing unlocks",
+    discountNote: "Discount varies by compound",
+    whoFor: "For distributors needing consistent inventory across multiple compounds",
     margin: "Avg reseller margin: 50–65%",
+    perks: "Free domestic shipping + reserved batch access",
     mixMatch: true,
     color: "#a855f7" 
   },
   { 
     range: "1000+ vials", 
     discount: "Custom Pricing", 
-    savings: "Enterprise-level discounts available",
-    details: "MOQ: 1000 | Custom labeling available",
-    proof: "Dedicated account + priority support",
+    discountNote: "Enterprise rates available",
+    whoFor: "For companies seeking private label, large recurring orders, or regional distribution",
     margin: "Margins negotiated per contract",
+    perks: "Custom labeling | Private inventory | Contract pricing",
     mixMatch: true,
     color: "#22c55e" 
   },
@@ -584,10 +584,11 @@ ${data.additionalInfo || "None provided"}`.trim(),
                       >
                         {tier.discount}
                       </p>
+                      <p className="text-[10px] text-muted-foreground italic mt-1">{tier.discountNote}</p>
                       <div className="space-y-2 text-left mt-4 pt-4 border-t border-[#2a2a32]">
-                        <p className="text-xs text-white/90 font-medium">{tier.proof}</p>
+                        <p className="text-xs text-white/90 font-medium leading-tight">{tier.whoFor}</p>
                         <p className="text-xs font-semibold" style={{ color: tier.color }}>{tier.margin}</p>
-                        <p className="text-[10px] text-muted-foreground">{tier.details}</p>
+                        <p className="text-[10px] text-muted-foreground">{tier.perks}</p>
                         {tier.mixMatch && (
                           <Badge variant="outline" className="text-[10px] border-[#22c55e]/50 text-[#22c55e]">
                             Mix & match allowed
@@ -598,6 +599,15 @@ ${data.additionalInfo || "None provided"}`.trim(),
                 </div>
               </motion.div>
             ))}
+          </div>
+          
+          <div className="mt-6 text-center space-y-1">
+            <p className="text-[11px] text-muted-foreground">
+              Margin ranges based on typical reseller pricing across common compounds.
+            </p>
+            <p className="text-[11px] text-muted-foreground font-medium">
+              Discounts apply up to each compound's wholesale price floor. Final pricing provided upon approval.
+            </p>
           </div>
         </motion.div>
 
