@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
-import { Search, X, FlaskConical, Package, ArrowRight, Loader2, BookOpen, FileCheck, Calculator, Scale, Settings } from "lucide-react";
+import { Search, X, FlaskConical, Package, ArrowRight, Loader2, BookOpen, FileCheck, Calculator, Scale, Settings, Filter, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface SearchResult {
   id: string;
@@ -37,6 +38,10 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [typeFilter, setTypeFilter] = useState<"all" | "product" | "article" | "page">("all");
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+  const [inStockOnly, setInStockOnly] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -50,8 +55,17 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
 
   const isLoading = productsLoading || articlesLoading;
 
+  // Extract unique categories from products
+  const productCategories = Array.from(
+    new Set(products?.map(p => p.category || "Other").filter(Boolean) || [])
+  ).sort();
+
   // Filter products - match at word boundaries to avoid substring matches
   const filteredProducts = products?.filter(product => {
+    if (typeFilter !== "all" && typeFilter !== "product") return false;
+    if (categoryFilter && product.category !== categoryFilter) return false;
+    if (inStockOnly && !product.inStock) return false;
+
     const searchStr = query.toLowerCase();
     const name = product.name.toLowerCase();
     const description = product.shortDescription?.toLowerCase() || "";
@@ -63,6 +77,8 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
 
   // Filter articles - only match title or summary (not full content to avoid false matches)
   const filteredArticles = articles?.filter(article => {
+    if (typeFilter !== "all" && typeFilter !== "article") return false;
+
     const searchStr = query.toLowerCase();
     const titleMatch = article.title?.toLowerCase().includes(searchStr);
     const summaryMatch = article.summary?.toLowerCase().includes(searchStr);
@@ -77,10 +93,11 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
   })).slice(0, 4) || [];
 
   const filteredPages = siteResources
-    .filter(page =>
-      page.title.toLowerCase().includes(query.toLowerCase()) ||
-      page.category?.toLowerCase().includes(query.toLowerCase())
-    )
+    .filter(page => {
+      if (typeFilter !== "all" && typeFilter !== "page") return false;
+      return page.title.toLowerCase().includes(query.toLowerCase()) ||
+        page.category?.toLowerCase().includes(query.toLowerCase());
+    })
     .map((p, idx) => ({ ...p, id: `page-${idx}` }))
     .slice(0, 2);
 
@@ -160,22 +177,99 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
           className="pl-10 pr-8 bg-[#1a1a1f] border-[#2a2a32] focus:border-[#E7FB10] transition-colors text-sm"
           data-testid="input-search-autocomplete"
         />
-        {query && (
+        <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-1">
           <Button
             variant="ghost"
             size="icon"
-            className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6"
-            onClick={() => {
-              setQuery("");
-              setIsOpen(false);
-              inputRef.current?.focus();
-            }}
-            data-testid="button-clear-search"
+            className="h-6 w-6"
+            onClick={() => setShowFilters(!showFilters)}
+            data-testid="button-toggle-filters"
+            title="Toggle filters"
           >
-            <X className="h-3 w-3" />
+            <Filter className="h-3.5 w-3.5" />
           </Button>
-        )}
+          {query && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6"
+              onClick={() => {
+                setQuery("");
+                setIsOpen(false);
+                inputRef.current?.focus();
+              }}
+              data-testid="button-clear-search"
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          )}
+        </div>
       </div>
+
+      {showFilters && (
+        <div className="mt-2 p-3 bg-[#1a1a1f] border border-[#2a2a32] rounded-lg space-y-3">
+          <div>
+            <p className="text-xs font-semibold text-muted-foreground mb-2">Type</p>
+            <div className="flex flex-wrap gap-2">
+              {(["all", "product", "article", "page"] as const).map(type => (
+                <Button
+                  key={type}
+                  variant={typeFilter === type ? "default" : "outline"}
+                  size="sm"
+                  className="text-xs h-7"
+                  onClick={() => setTypeFilter(type)}
+                  data-testid={`filter-type-${type}`}
+                >
+                  {type === "all" ? "All" : type.charAt(0).toUpperCase() + type.slice(1)}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          {(typeFilter === "all" || typeFilter === "product") && productCategories.length > 0 && (
+            <div>
+              <p className="text-xs font-semibold text-muted-foreground mb-2">Category</p>
+              <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto">
+                <Button
+                  variant={categoryFilter === null ? "default" : "outline"}
+                  size="sm"
+                  className="text-xs h-7"
+                  onClick={() => setCategoryFilter(null)}
+                  data-testid="filter-category-all"
+                >
+                  All
+                </Button>
+                {productCategories.map(category => (
+                  <Button
+                    key={category}
+                    variant={categoryFilter === category ? "default" : "outline"}
+                    size="sm"
+                    className="text-xs h-7"
+                    onClick={() => setCategoryFilter(category)}
+                    data-testid={`filter-category-${category}`}
+                  >
+                    {category}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {(typeFilter === "all" || typeFilter === "product") && (
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="in-stock-only"
+                checked={inStockOnly}
+                onCheckedChange={(checked) => setInStockOnly(checked as boolean)}
+                data-testid="checkbox-in-stock-only"
+              />
+              <label htmlFor="in-stock-only" className="text-xs font-medium cursor-pointer">
+                In stock only
+              </label>
+            </div>
+          )}
+        </div>
+      )}
 
       <AnimatePresence>
         {isOpen && (
