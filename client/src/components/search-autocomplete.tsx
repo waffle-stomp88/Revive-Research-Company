@@ -206,71 +206,6 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
         </div>
       </div>
 
-      {showFilters && (
-        <div className="mt-2 p-3 bg-[#1a1a1f] border border-[#2a2a32] rounded-lg space-y-3">
-          <div>
-            <p className="text-xs font-semibold text-muted-foreground mb-2">Type</p>
-            <div className="flex flex-wrap gap-2">
-              {(["all", "product", "article", "page"] as const).map(type => (
-                <Button
-                  key={type}
-                  variant={typeFilter === type ? "default" : "outline"}
-                  size="sm"
-                  className="text-xs h-7"
-                  onClick={() => setTypeFilter(type)}
-                  data-testid={`filter-type-${type}`}
-                >
-                  {type === "all" ? "All" : type.charAt(0).toUpperCase() + type.slice(1)}
-                </Button>
-              ))}
-            </div>
-          </div>
-
-          {(typeFilter === "all" || typeFilter === "product") && productCategories.length > 0 && (
-            <div>
-              <p className="text-xs font-semibold text-muted-foreground mb-2">Category</p>
-              <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto">
-                <Button
-                  variant={categoryFilter === null ? "default" : "outline"}
-                  size="sm"
-                  className="text-xs h-7"
-                  onClick={() => setCategoryFilter(null)}
-                  data-testid="filter-category-all"
-                >
-                  All
-                </Button>
-                {productCategories.map(category => (
-                  <Button
-                    key={category}
-                    variant={categoryFilter === category ? "default" : "outline"}
-                    size="sm"
-                    className="text-xs h-7"
-                    onClick={() => setCategoryFilter(category)}
-                    data-testid={`filter-category-${category}`}
-                  >
-                    {category}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {(typeFilter === "all" || typeFilter === "product") && (
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="in-stock-only"
-                checked={inStockOnly}
-                onCheckedChange={(checked) => setInStockOnly(checked as boolean)}
-                data-testid="checkbox-in-stock-only"
-              />
-              <label htmlFor="in-stock-only" className="text-xs font-medium cursor-pointer">
-                In stock only
-              </label>
-            </div>
-          )}
-        </div>
-      )}
-
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -278,9 +213,74 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-full left-0 mt-2 bg-[#1a1a1f] border border-[#2a2a32] rounded-lg shadow-xl overflow-hidden z-50 min-w-[320px]"
+            className="absolute top-full left-0 mt-2 bg-[#1a1a1f] border border-[#2a2a32] rounded-lg shadow-xl overflow-hidden z-50 w-[400px]"
             data-testid="dropdown-search-results"
           >
+            {showFilters && (
+              <div className="p-4 border-b border-[#2a2a32] space-y-4">
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground mb-2">Filter by Type</p>
+                  <div className="flex flex-wrap gap-2">
+                    {(["all", "product", "article", "page"] as const).map(type => (
+                      <Button
+                        key={type}
+                        variant={typeFilter === type ? "default" : "outline"}
+                        size="sm"
+                        className="text-xs"
+                        onClick={() => setTypeFilter(type)}
+                        data-testid={`filter-type-${type}`}
+                      >
+                        {type === "all" ? "All Types" : type === "product" ? "Products" : type === "article" ? "Articles" : "Pages"}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                {(typeFilter === "all" || typeFilter === "product") && productCategories.length > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold text-muted-foreground mb-2">Product Category</p>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        variant={categoryFilter === null ? "default" : "outline"}
+                        size="sm"
+                        className="text-xs"
+                        onClick={() => setCategoryFilter(null)}
+                        data-testid="filter-category-all"
+                      >
+                        All Categories
+                      </Button>
+                      {productCategories.map(category => (
+                        <Button
+                          key={category}
+                          variant={categoryFilter === category ? "default" : "outline"}
+                          size="sm"
+                          className="text-xs"
+                          onClick={() => setCategoryFilter(category)}
+                          data-testid={`filter-category-${category}`}
+                        >
+                          {category}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {(typeFilter === "all" || typeFilter === "product") && (
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="in-stock-only"
+                      checked={inStockOnly}
+                      onCheckedChange={(checked) => setInStockOnly(checked as boolean)}
+                      data-testid="checkbox-in-stock-only"
+                    />
+                    <label htmlFor="in-stock-only" className="text-sm font-medium cursor-pointer">
+                      In stock only
+                    </label>
+                  </div>
+                )}
+              </div>
+            )}
+
             {isLoading ? (
               <div className="p-4 flex items-center justify-center gap-2 text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" />
