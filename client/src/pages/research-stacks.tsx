@@ -136,8 +136,6 @@ const researchStacks: ResearchStack[] = [
 ];
 
 export default function ResearchStacks() {
-  const [hoveredStack, setHoveredStack] = useState<string | null>(null);
-
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-12">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
@@ -180,7 +178,6 @@ export default function ResearchStacks() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {researchStacks.map((stack, index) => {
             const Icon = stack.icon;
-            const isHovered = hoveredStack === stack.id;
 
             return (
               <Link href={`/research-stacks/${stack.id}`} key={stack.id}>
@@ -189,76 +186,73 @@ export default function ResearchStacks() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   whileHover={{ scale: 1.05 }}
-                  onHoverStart={() => setHoveredStack(stack.id)}
-                  onHoverEnd={() => setHoveredStack(null)}
                   className="group"
                 >
-                  <Card
-                    className={`relative overflow-hidden h-full transition-all duration-200 cursor-pointer ${
-                      isHovered
-                        ? "border-2 shadow-lg"
-                        : "border border-[#2a2a32]"
-                    }`}
-                    style={{
-                      borderColor: isHovered ? stack.color : undefined,
-                      boxShadow: isHovered 
-                        ? `0 0 40px ${stack.color}60, 0 0 20px ${stack.color}40` 
-                        : undefined,
+                  <motion.div
+                    initial={{ borderColor: "#2a2a32", boxShadow: "none" }}
+                    whileHover={{ 
+                      borderColor: stack.color,
+                      boxShadow: `0 0 40px ${stack.color}60, 0 0 20px ${stack.color}40`
                     }}
+                    transition={{ duration: 0.2, type: "tween" }}
+                    className="relative overflow-hidden h-full cursor-pointer border-2 rounded-lg"
                     data-testid={`card-stack-${stack.id}`}
                   >
-                  {stack.badge && (
-                    <Badge
-                      className="absolute top-3 right-3 z-10"
-                      style={{
-                        backgroundColor: stack.badgeColor,
-                        color: stack.badgeColor === "#E7FB10" || stack.badgeColor === "#f59e0b" ? "black" : "white",
-                      }}
-                    >
-                      {stack.badge}
-                    </Badge>
-                  )}
-
-                  <div className="relative h-40 bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10] overflow-hidden">
-                    <div
-                      className="absolute inset-0 opacity-20 transition-opacity duration-200"
-                      style={{
-                        background: `radial-gradient(circle at 50% 100%, ${stack.color}40, transparent 70%)`,
-                        opacity: isHovered ? 0.4 : 0.2,
-                      }}
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <motion.div
-                        whileHover={{
-                          scale: 1.1,
-                          rotate: 5,
+                    <div className="absolute inset-0 bg-card" />
+                    {stack.badge && (
+                      <Badge
+                        className="absolute top-3 right-3 z-10"
+                        style={{
+                          backgroundColor: stack.badgeColor,
+                          color: stack.badgeColor === "#E7FB10" || stack.badgeColor === "#f59e0b" ? "black" : "white",
                         }}
-                        transition={{ duration: 0.15, type: "tween" }}
-                        className="relative pointer-events-auto"
                       >
-                        <div
-                          className="w-20 h-20 rounded-2xl flex items-center justify-center"
-                          style={{ backgroundColor: `${stack.color}20` }}
-                        >
-                          <Icon
-                            className="h-10 w-10"
-                            style={{ color: stack.color }}
-                          />
-                        </div>
-                        <div className="absolute -bottom-1 -right-1 flex gap-0.5">
-                          {stack.peptides.map((_, i) => (
-                            <div
-                              key={i}
-                              className="w-3 h-3 rounded-full border-2 border-[#1a1a1f]"
-                              style={{ backgroundColor: stack.color }}
-                            />
-                          ))}
-                        </div>
-                      </motion.div>
-                    </div>
-                  </div>
+                        {stack.badge}
+                      </Badge>
+                    )}
 
-                  <div className="p-5 space-y-4">
+                    <div className="relative h-40 bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10] overflow-hidden">
+                      <motion.div
+                        initial={{ opacity: 0.2 }}
+                        whileHover={{ opacity: 0.4 }}
+                        transition={{ duration: 0.2, type: "tween" }}
+                        className="absolute inset-0"
+                        style={{
+                          background: `radial-gradient(circle at 50% 100%, ${stack.color}40, transparent 70%)`,
+                        }}
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <motion.div
+                          whileHover={{
+                            scale: 1.1,
+                            rotate: 5,
+                          }}
+                          transition={{ duration: 0.15, type: "tween" }}
+                          className="relative pointer-events-auto"
+                        >
+                          <div
+                            className="w-20 h-20 rounded-2xl flex items-center justify-center"
+                            style={{ backgroundColor: `${stack.color}20` }}
+                          >
+                            <Icon
+                              className="h-10 w-10"
+                              style={{ color: stack.color }}
+                            />
+                          </div>
+                          <div className="absolute -bottom-1 -right-1 flex gap-0.5">
+                            {stack.peptides.map((_, i) => (
+                              <div
+                                key={i}
+                                className="w-3 h-3 rounded-full border-2 border-[#1a1a1f]"
+                                style={{ backgroundColor: stack.color }}
+                              />
+                            ))}
+                          </div>
+                        </motion.div>
+                      </div>
+                    </div>
+
+                    <div className="p-5 space-y-4">
                     <div>
                       <p
                         className="text-xs font-medium mb-1"
@@ -319,8 +313,8 @@ export default function ResearchStacks() {
                         <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
                       </Button>
                     </div>
-                  </div>
-                </Card>
+                    </div>
+                  </motion.div>
                 </motion.div>
               </Link>
             );
