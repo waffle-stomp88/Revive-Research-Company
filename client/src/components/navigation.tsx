@@ -358,7 +358,7 @@ export function Navigation() {
 
               <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
                 {/* Search Autocomplete - Desktop */}
-                <div className="hidden lg:block w-48 xl:w-64">
+                <div className="hidden lg:block w-40">
                   <SearchAutocomplete />
                 </div>
                 

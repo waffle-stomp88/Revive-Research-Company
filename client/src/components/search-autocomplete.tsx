@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
-import { Search, X, FlaskConical, Package, ArrowRight, Loader2 } from "lucide-react";
+import { Search, X, FlaskConical, Package, ArrowRight, Loader2, BookOpen, FileCheck, Calculator, Scale, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,10 +9,29 @@ import { useQuery } from "@tanstack/react-query";
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 
+interface SearchResult {
+  id: string;
+  type: "product" | "page";
+  title: string;
+  href: string;
+  icon: typeof FlaskConical;
+  category?: string;
+  price?: string;
+}
+
 interface SearchAutocompleteProps {
   onProductSelect?: (product: Product) => void;
   className?: string;
 }
+
+// Site-wide resources for search
+const siteResources: Omit<SearchResult, "id">[] = [
+  { type: "page", title: "Education Center", href: "/education", icon: BookOpen, category: "Learning" },
+  { type: "page", title: "Dosage Calculator", href: "/dosage-calculator", icon: Calculator, category: "Tools" },
+  { type: "page", title: "COA Verification", href: "/coa", icon: FileCheck, category: "Verification" },
+  { type: "page", title: "Legal & Compliance", href: "/legal", icon: Scale, category: "Info" },
+  { type: "page", title: "FAQ", href: "/faq", icon: BookOpen, category: "Help" },
+];
 
 export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAutocompleteProps) {
   const [query, setQuery] = useState("");
@@ -25,11 +44,22 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
     queryKey: ["/api/products"],
   });
 
+  // Filter products and pages together
   const filteredProducts = products?.filter(product => 
     product.name.toLowerCase().includes(query.toLowerCase()) ||
     product.category?.toLowerCase().includes(query.toLowerCase()) ||
     product.shortDescription?.toLowerCase().includes(query.toLowerCase())
-  ).slice(0, 6) || [];
+  ).map(p => ({ ...p, id: p.id, type: "product" as const })).slice(0, 5) || [];
+
+  const filteredPages = siteResources
+    .filter(page =>
+      page.title.toLowerCase().includes(query.toLowerCase()) ||
+      page.category?.toLowerCase().includes(query.toLowerCase())
+    )
+    .map((p, idx) => ({ ...p, id: `page-${idx}` }))
+    .slice(0, 5);
+
+  const allResults = [...filteredProducts, ...filteredPages];
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (!isOpen) return;
@@ -38,7 +68,7 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
       case "ArrowDown":
         e.preventDefault();
         setSelectedIndex(prev => 
-          prev < filteredProducts.length - 1 ? prev + 1 : prev
+          prev < allResults.length - 1 ? prev + 1 : prev
         );
         break;
       case "ArrowUp":
@@ -47,8 +77,13 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
         break;
       case "Enter":
         e.preventDefault();
-        if (selectedIndex >= 0 && filteredProducts[selectedIndex]) {
-          handleSelectProduct(filteredProducts[selectedIndex]);
+        if (selectedIndex >= 0 && allResults[selectedIndex]) {
+          if (allResults[selectedIndex].type === "product") {
+            handleSelectProduct(allResults[selectedIndex] as any);
+          } else {
+            setQuery("");
+            setIsOpen(false);
+          }
         }
         break;
       case "Escape":
@@ -57,7 +92,7 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
         inputRef.current?.blur();
         break;
     }
-  }, [isOpen, selectedIndex, filteredProducts]);
+  }, [isOpen, selectedIndex, allResults]);
 
   const handleSelectProduct = (product: Product) => {
     setQuery("");
@@ -92,12 +127,12 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           ref={inputRef}
-          placeholder="Search peptides..."
+          placeholder="Search..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => query.length > 0 && setIsOpen(true)}
-          className="pl-10 pr-8 bg-[#1a1a1f] border-[#2a2a32] focus:border-[#E7FB10] transition-colors"
+          className="pl-10 pr-8 bg-[#1a1a1f] border-[#2a2a32] focus:border-[#E7FB10] transition-colors text-sm"
           data-testid="input-search-autocomplete"
         />
         {query && (
@@ -132,52 +167,71 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
                 <Loader2 className="h-4 w-4 animate-spin" />
                 <span className="text-sm">Searching...</span>
               </div>
-            ) : filteredProducts.length > 0 ? (
-              <div className="py-2">
-                {filteredProducts.map((product, index) => (
-                  <Link
-                    key={product.id}
-                    href={`/peptides/${product.id}`}
-                    onClick={() => handleSelectProduct(product)}
-                  >
-                    <div
-                      className={`flex items-center gap-3 px-3 py-2 cursor-pointer transition-colors ${
-                        index === selectedIndex 
-                          ? "bg-[#E7FB10]/10" 
-                          : "hover:bg-[#2a2a32]"
-                      }`}
-                      data-testid={`search-result-${product.id}`}
+            ) : allResults.length > 0 ? (
+              <div className="py-2 max-h-96 overflow-y-auto">
+                {allResults.map((result, index) => {
+                  const isProduct = result.type === "product";
+                  const Icon = (result as any).icon;
+                  const title = isProduct ? (result as any).name : (result as any).title;
+                  
+                  return (
+                    <Link
+                      key={result.id}
+                      href={result.type === "product" ? `/peptides/${result.id}` : (result as any).href}
+                      onClick={() => {
+                        if (result.type === "product") {
+                          handleSelectProduct(result as any);
+                        } else {
+                          setQuery("");
+                          setIsOpen(false);
+                        }
+                      }}
                     >
-                      <div className="w-10 h-10 rounded-md bg-gradient-to-br from-muted to-muted/50 overflow-hidden flex-shrink-0">
-                        <img 
-                          src={product.imageUrl || productImage} 
-                          alt={product.name}
-                          className="w-full h-full object-contain p-1"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate text-white">
-                          {product.name}
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                            {product.category}
-                          </Badge>
-                          <span className="text-xs text-[#E7FB10] font-semibold">
-                            ${Number(product.price).toFixed(2)}
-                          </span>
+                      <div
+                        className={`flex items-center gap-3 px-3 py-2 cursor-pointer transition-colors ${
+                          index === selectedIndex 
+                            ? "bg-[#E7FB10]/10" 
+                            : "hover:bg-[#2a2a32]"
+                        }`}
+                        data-testid={`search-result-${result.id}`}
+                      >
+                        {isProduct ? (
+                          <div className="w-8 h-8 rounded-md bg-gradient-to-br from-muted to-muted/50 overflow-hidden flex-shrink-0">
+                            <img 
+                              src={(result as any).imageUrl || productImage} 
+                              alt={title}
+                              className="w-full h-full object-contain p-1"
+                            />
+                          </div>
+                        ) : (
+                          <Icon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate text-white">
+                            {title}
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                              {isProduct ? (result as any).category : (result as any).category}
+                            </Badge>
+                            {isProduct && (
+                              <span className="text-xs text-[#E7FB10] font-semibold">
+                                ${Number((result as any).price).toFixed(2)}
+                              </span>
+                            )}
+                          </div>
                         </div>
+                        <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                       </div>
-                      <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  );
+                })}
               </div>
             ) : (
               <div className="p-4 text-center">
-                <FlaskConical className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
+                <Search className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
                 <p className="text-sm text-muted-foreground">
-                  No products found for "{query}"
+                  No results for "{query}"
                 </p>
               </div>
             )}
