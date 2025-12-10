@@ -10,7 +10,7 @@ import { Slider } from "@/components/ui/slider";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ImageLoader } from "@/components/image-loader";
 import { QuickViewModal } from "@/components/quick-view-modal";
-import { CompareButton, CompareBar } from "@/components/comparison-tool";
+import { CompareBar } from "@/components/comparison-tool";
 import { RecentlyViewed } from "@/components/recently-viewed";
 import {
   Select,
@@ -44,7 +44,7 @@ import {
   Eye,
   Scale
 } from "lucide-react";
-import { PriceTrendIndicator } from "@/components/price-trend-badge";
+import { isInCompare, addToCompare, removeFromCompare } from "@/components/comparison-tool";
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { BUNDLES } from "@/lib/bundles";
@@ -68,13 +68,15 @@ function getProductBadges(
 ): ProductBadge[] {
   const badges: ProductBadge[] = [];
   
-  // Priority 1: Out of Stock (highest priority)
+  // Priority 1: Out of Stock (highest priority) - ONLY show this badge when out of stock
   if (!product.inStock || (product.stockAmount !== null && product.stockAmount <= 0)) {
     badges.push({
       type: "out-of-stock",
-      label: "Out of Stock",
-      className: "bg-destructive text-destructive-foreground"
+      label: "OUT OF STOCK",
+      className: "bg-destructive text-destructive-foreground font-bold"
     });
+    // Return early - don't show any other badges when out of stock
+    return badges;
   }
   
   // Priority 2: Low Stock
@@ -860,9 +862,9 @@ export default function Products() {
                                     return peptideGroup ? (
                                       <Badge 
                                         variant="outline"
-                                        className="text-[10px] font-semibold border-2 px-2 py-0.5"
+                                        className="text-[9px] px-1.5 py-0.5 opacity-60"
                                         style={{ 
-                                          borderColor: peptideGroup.color,
+                                          borderColor: `${peptideGroup.color}40`,
                                           color: peptideGroup.color 
                                         }}
                                         data-testid={`badge-peptide-group-${peptideGroup.id}`}
@@ -876,14 +878,14 @@ export default function Products() {
                                     );
                                   })()}
                                 </div>
-                                <h3 className="font-display md:text-lg font-bold mb-1 group-hover:text-[#E7FB10] transition-colors line-clamp-1 text-center text-[20px]">
+                                <h3 className="font-display text-2xl md:text-3xl font-black mb-2 group-hover:text-[#E7FB10] transition-colors line-clamp-2 text-center">
                                   {product.name}
                                 </h3>
                                 <p className="text-xs text-muted-foreground mb-2 line-clamp-2 min-h-[2rem]">
                                   {product.shortDescription}
                                 </p>
                                 <div className="flex items-center justify-between mt-auto pt-2 border-t border-border flex-wrap gap-2">
-                                  <div className="flex items-center gap-1.5">
+                                  <div className="flex items-center gap-2">
                                     <div className="flex items-baseline gap-1.5">
                                       <span className="font-display text-lg font-bold text-[#E7FB10]">
                                         ${Number(product.price).toFixed(2)}
@@ -894,9 +896,12 @@ export default function Products() {
                                         </span>
                                       )}
                                     </div>
-                                    <PriceTrendIndicator productId={product.id} />
+                                    {/* Price Trend Arrow - Show based on sale status */}
+                                    {product.originalPrice && product.price < Number(product.originalPrice) && (
+                                      <TrendingDown className="h-4 w-4 text-red-500" data-testid={`icon-price-down-${product.id}`} />
+                                    )}
                                   </div>
-                                  <div className="flex items-center gap-1 ml-auto">
+                                  <div className="flex items-center gap-1.5 ml-auto">
                                     <Button
                                       variant="ghost"
                                       size="icon"
@@ -910,9 +915,22 @@ export default function Products() {
                                     >
                                       <Eye className="h-3.5 w-3.5" />
                                     </Button>
-                                    <div onClick={(e) => e.preventDefault()}>
-                                      <CompareButton productId={product.id} size="sm" />
-                                    </div>
+                                    <button
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        const inCompare = isInCompare(product.id);
+                                        if (inCompare) {
+                                          removeFromCompare(product.id);
+                                        } else {
+                                          addToCompare(product.id);
+                                        }
+                                      }}
+                                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                                      data-testid={`button-compare-icon-${product.id}`}
+                                    >
+                                      <Scale className="h-4 w-4 text-[#21d8ff]" />
+                                    </button>
                                   </div>
                                 </div>
                               </div>
