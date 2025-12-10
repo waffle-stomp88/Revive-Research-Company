@@ -23,7 +23,6 @@ const navLinks = [
 ];
 
 const productLinks = [
-  { href: "/shop", label: "Shop All", icon: Package, description: "Browse all categories", color: "#ffffff" },
   { href: "/peptides", label: "Peptides", icon: FlaskConical, description: "Individual vials", color: "#a855f7" },
   { href: "/research-stacks", label: "Research Stacks", icon: Layers, description: "Multi-compound combos", color: "#ec4899" },
   { href: "/bulk-packs", label: "Bulk Packs", icon: Boxes, description: "5-packs, 10-packs", color: "#21d8ff" },
