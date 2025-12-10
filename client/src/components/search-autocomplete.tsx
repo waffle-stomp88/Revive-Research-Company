@@ -50,12 +50,12 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
 
   const isLoading = productsLoading || articlesLoading;
 
-  // Filter products
-  const filteredProducts = products?.filter(product => 
-    product.name.toLowerCase().includes(query.toLowerCase()) ||
-    product.category?.toLowerCase().includes(query.toLowerCase()) ||
-    product.shortDescription?.toLowerCase().includes(query.toLowerCase())
-  ).map(p => ({ ...p, id: p.id, type: "product" as const })).slice(0, 4) || [];
+  // Filter products - only match on name and short description (not category)
+  const filteredProducts = products?.filter(product => {
+    const searchStr = query.toLowerCase();
+    return product.name.toLowerCase().includes(searchStr) ||
+           product.shortDescription?.toLowerCase().includes(searchStr);
+  }).map(p => ({ ...p, id: p.id, type: "product" as const })).slice(0, 4) || [];
 
   // Filter articles - only match title or summary (not full content to avoid false matches)
   const filteredArticles = articles?.filter(article => {
@@ -234,7 +234,7 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
                           </p>
                           <div className="flex items-center gap-2">
                             <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                              {isProduct ? (result as any).category : (result as any).category}
+                              {isArticle ? `Article - ${(result as any).category}` : (result as any).category}
                             </Badge>
                             {isProduct && (
                               <span className="text-xs text-[#E7FB10] font-semibold">
