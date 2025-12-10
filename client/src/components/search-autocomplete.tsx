@@ -57,12 +57,13 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
     product.shortDescription?.toLowerCase().includes(query.toLowerCase())
   ).map(p => ({ ...p, id: p.id, type: "product" as const })).slice(0, 4) || [];
 
-  // Filter articles
-  const filteredArticles = articles?.filter(article =>
-    article.title?.toLowerCase().includes(query.toLowerCase()) ||
-    article.summary?.toLowerCase().includes(query.toLowerCase()) ||
-    article.content?.toLowerCase().includes(query.toLowerCase())
-  ).map(a => ({ 
+  // Filter articles - only match title or summary (not full content to avoid false matches)
+  const filteredArticles = articles?.filter(article => {
+    const searchStr = query.toLowerCase();
+    const titleMatch = article.title?.toLowerCase().includes(searchStr);
+    const summaryMatch = article.summary?.toLowerCase().includes(searchStr);
+    return titleMatch || summaryMatch;
+  }).map(a => ({ 
     id: a.slug, 
     type: "article" as const,
     title: a.title,
