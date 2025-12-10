@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, User, LogIn, LogOut, Shield, ShoppingCart, ChevronDown, FileCheck, GraduationCap, Scale, BookOpen, Package, FlaskConical, Boxes, Building2, Droplets, Calculator, Layers, Search } from "lucide-react";
+import { Menu, X, User, LogIn, LogOut, Shield, ShoppingCart, ChevronDown, FileCheck, GraduationCap, Scale, BookOpen, Package, FlaskConical, Boxes, Building2, Droplets, Calculator, Layers, Search, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -48,9 +48,10 @@ export function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [hoveredCartItem, setHoveredCartItem] = useState<string | null>(null);
   const [location] = useLocation();
   const { user, isAuthenticated, isLoading } = useAuth();
-  const { items, getItemCount, getSubtotal } = useCart();
+  const { items, getItemCount, getSubtotal, removeFromCart } = useCart();
   const cartItemCount = getItemCount();
   const regularItems = items.filter(item => !item.isBundle);
   const bundleItems = items.filter(item => item.isBundle);
@@ -395,7 +396,12 @@ export function Navigation() {
                       <>
                         <div className="max-h-64 overflow-y-auto scrollbar-hide">
                           {regularItems.slice(0, 3).map((item) => (
-                            <div key={`${item.productId}-${item.dosage}`} className="flex items-center gap-3 p-3 border-b border-border/50 last:border-0">
+                            <div 
+                              key={`${item.productId}-${item.dosage}`} 
+                              className="flex items-center gap-3 p-3 border-b border-border/50 last:border-0"
+                              onMouseEnter={() => setHoveredCartItem(`${item.productId}-${item.dosage}`)}
+                              onMouseLeave={() => setHoveredCartItem(null)}
+                            >
                               <div className="w-10 h-10 rounded-lg bg-muted/50 flex-shrink-0 overflow-hidden border border-border/50">
                                 {item.image ? (
                                   <img src={item.image} alt={item.name} className="w-full h-full object-contain p-1" />
@@ -411,31 +417,63 @@ export function Navigation() {
                                   {item.dosage} × {item.quantity}
                                 </p>
                               </div>
-                              <p className="text-sm font-semibold text-[#E7FB10]">
-                                ${(item.price * item.quantity).toFixed(2)}
-                              </p>
+                              {hoveredCartItem === `${item.productId}-${item.dosage}` ? (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-red-400 hover:text-red-500 hover:bg-red-500/10 h-auto"
+                                  onClick={() => removeFromCart(item.productId, item.dosage)}
+                                  data-testid={`button-remove-cart-item-${item.productId}`}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              ) : (
+                                <p className="text-sm font-semibold text-[#E7FB10]">
+                                  ${(item.price * item.quantity).toFixed(2)}
+                                </p>
+                              )}
                             </div>
                           ))}
-                          {bundleItems.slice(0, 2).map((bundle) => (
-                            <div key={bundle.bundleId} className="flex items-center gap-3 p-3 border-b border-border/50 last:border-0">
-                              <div className="w-10 h-10 rounded-lg bg-muted/50 flex-shrink-0 overflow-hidden border border-border/50">
-                                {bundle.image ? (
-                                  <img src={bundle.image} alt={bundle.name} className="w-full h-full object-contain p-1" />
+                          {bundleItems.slice(0, 2).map((bundle) => {
+                            const bundleKey = `bundle-${bundle.bundleId}`;
+                            return (
+                              <div 
+                                key={bundle.bundleId} 
+                                className="flex items-center gap-3 p-3 border-b border-border/50 last:border-0"
+                                onMouseEnter={() => setHoveredCartItem(bundleKey)}
+                                onMouseLeave={() => setHoveredCartItem(null)}
+                              >
+                                <div className="w-10 h-10 rounded-lg bg-muted/50 flex-shrink-0 overflow-hidden border border-border/50">
+                                  {bundle.image ? (
+                                    <img src={bundle.image} alt={bundle.name} className="w-full h-full object-contain p-1" />
+                                  ) : (
+                                    <div className="flex items-center justify-center h-full bg-[#21d8ff]/10">
+                                      <Package className="h-5 w-5 text-[#21d8ff]" />
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-medium truncate">{bundle.name}</p>
+                                  <p className="text-xs text-muted-foreground">Bundle × {bundle.quantity}</p>
+                                </div>
+                                {hoveredCartItem === bundleKey ? (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-red-400 hover:text-red-500 hover:bg-red-500/10 h-auto"
+                                    onClick={() => removeFromCart(bundle.bundleId || "", "")}
+                                    data-testid={`button-remove-cart-bundle-${bundle.bundleId}`}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
                                 ) : (
-                                  <div className="flex items-center justify-center h-full bg-[#21d8ff]/10">
-                                    <Package className="h-5 w-5 text-[#21d8ff]" />
-                                  </div>
+                                  <p className="text-sm font-semibold text-[#21d8ff]">
+                                    ${(bundle.price * bundle.quantity).toFixed(2)}
+                                  </p>
                                 )}
                               </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium truncate">{bundle.name}</p>
-                                <p className="text-xs text-muted-foreground">Bundle × {bundle.quantity}</p>
-                              </div>
-                              <p className="text-sm font-semibold text-[#21d8ff]">
-                                ${(bundle.price * bundle.quantity).toFixed(2)}
-                              </p>
-                            </div>
-                          ))}
+                            );
+                          })}
                           {(regularItems.length > 3 || bundleItems.length > 2) && (
                             <div className="p-2 text-center text-xs text-muted-foreground">
                               +{Math.max(0, regularItems.length - 3) + Math.max(0, bundleItems.length - 2)} more items
