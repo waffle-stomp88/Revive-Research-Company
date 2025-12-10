@@ -50,11 +50,15 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
 
   const isLoading = productsLoading || articlesLoading;
 
-  // Filter products - only match on name and short description (not category)
+  // Filter products - match at word boundaries to avoid substring matches
   const filteredProducts = products?.filter(product => {
     const searchStr = query.toLowerCase();
-    return product.name.toLowerCase().includes(searchStr) ||
-           product.shortDescription?.toLowerCase().includes(searchStr);
+    const name = product.name.toLowerCase();
+    const description = product.shortDescription?.toLowerCase() || "";
+    
+    // Match if search term is at the start of a word (word boundary)
+    const wordBoundaryRegex = new RegExp(`\\b${searchStr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`);
+    return wordBoundaryRegex.test(name) || wordBoundaryRegex.test(description);
   }).map(p => ({ ...p, id: p.id, type: "product" as const })).slice(0, 4) || [];
 
   // Filter articles - only match title or summary (not full content to avoid false matches)
