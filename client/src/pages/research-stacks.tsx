@@ -195,10 +195,10 @@ export default function ResearchStacks() {
                       boxShadow: `0 0 40px ${stack.color}60, 0 0 20px ${stack.color}40`
                     }}
                     transition={{ duration: 0.2, type: "tween" }}
-                    className="relative overflow-hidden h-full cursor-pointer border-2 rounded-lg"
+                    className="border-2 rounded-lg"
                     data-testid={`card-stack-${stack.id}`}
                   >
-                    <div className="absolute inset-0 bg-card" />
+                    <Card className="relative overflow-hidden h-full cursor-pointer">
                     {stack.badge && (
                       <Badge
                         className="absolute top-3 right-3 z-10"
@@ -314,6 +314,7 @@ export default function ResearchStacks() {
                       </Button>
                     </div>
                     </div>
+                    </Card>
                   </motion.div>
                 </motion.div>
               </Link>
