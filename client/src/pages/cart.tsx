@@ -42,6 +42,7 @@ export default function CartPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [discountCode, setDiscountCode] = useState("");
+  const [hoveredItemId, setHoveredItemId] = useState<string | null>(null);
   const [appliedDiscount, setAppliedDiscount] = useState<AppliedDiscount | null>(() => {
     const saved = localStorage.getItem("appliedDiscount");
     return saved ? JSON.parse(saved) : null;
@@ -241,13 +242,32 @@ export default function CartPage() {
                           </Button>
                         </div>
                         
-                        <div className="text-right">
-                          <p className="font-display font-bold text-lg text-[#E7FB10]" data-testid={`cart-item-total-${item.productId}`}>
-                            ${(item.price * item.quantity).toFixed(2)}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            ${item.price.toFixed(2)} each
-                          </p>
+                        <div 
+                          className="text-right"
+                          onMouseEnter={() => setHoveredItemId(`${item.productId}-${item.dosage}`)}
+                          onMouseLeave={() => setHoveredItemId(null)}
+                        >
+                          {hoveredItemId === `${item.productId}-${item.dosage}` ? (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-400 hover:text-red-500 hover:bg-red-500/10 h-auto"
+                              onClick={() => removeFromCart(item.productId, item.dosage)}
+                              data-testid={`button-remove-from-price-${item.productId}`}
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Remove
+                            </Button>
+                          ) : (
+                            <>
+                              <p className="font-display font-bold text-lg text-[#E7FB10]" data-testid={`cart-item-total-${item.productId}`}>
+                                ${(item.price * item.quantity).toFixed(2)}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                ${item.price.toFixed(2)} each
+                              </p>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
