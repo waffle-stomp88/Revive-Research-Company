@@ -159,7 +159,7 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-full left-0 right-0 mt-2 bg-[#1a1a1f] border border-[#2a2a32] rounded-lg shadow-xl overflow-hidden z-50"
+            className="absolute top-full left-0 mt-2 bg-[#1a1a1f] border border-[#2a2a32] rounded-lg shadow-xl overflow-hidden z-50 min-w-[320px]"
             data-testid="dropdown-search-results"
           >
             {isLoading ? (
