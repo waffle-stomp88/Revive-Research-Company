@@ -35,10 +35,38 @@ const wholesaleFormSchema = z.object({
 type WholesaleFormData = z.infer<typeof wholesaleFormSchema>;
 
 const pricingTiers = [
-  { range: "100-249 vials", discount: "20%", savings: "$2,000+", color: "#21d8ff" },
-  { range: "250-499 vials", discount: "25%", savings: "$6,000+", color: "#E7FB10" },
-  { range: "500-999 vials", discount: "30%", savings: "$15,000+", color: "#a855f7" },
-  { range: "1000+ vials", discount: "35%", savings: "Custom", color: "#22c55e" },
+  { 
+    range: "100–249 vials", 
+    discount: "Up to 20% off", 
+    savings: "Thousands per order",
+    details: "MOQ: 100 | Ships in 3–5 days",
+    mixMatch: true,
+    color: "#21d8ff" 
+  },
+  { 
+    range: "250–499 vials", 
+    discount: "Up to 25% off", 
+    savings: "Significant reduction for labs",
+    details: "MOQ: 250 | Priority allocation",
+    mixMatch: true,
+    color: "#E7FB10" 
+  },
+  { 
+    range: "500–999 vials", 
+    discount: "Up to 30% off", 
+    savings: "Major cost efficiency",
+    details: "MOQ: 500 | Free domestic shipping",
+    mixMatch: true,
+    color: "#a855f7" 
+  },
+  { 
+    range: "1000+ vials", 
+    discount: "Custom Pricing", 
+    savings: "Enterprise-level discounts available",
+    details: "MOQ: 1000 | Custom labeling available",
+    mixMatch: true,
+    color: "#22c55e" 
+  },
 ];
 
 const benefits = [
@@ -493,15 +521,21 @@ ${data.additionalInfo || "None provided"}`.trim(),
                       </motion.div>
                       <p className="text-sm text-muted-foreground mb-2">{tier.range}</p>
                       <p 
-                        className="font-display text-4xl font-bold mb-1"
+                        className="font-display text-2xl font-bold mb-3"
                         style={{ color: tier.color }}
                       >
                         {tier.discount}
                       </p>
-                      <p className="text-xs text-muted-foreground">OFF RETAIL</p>
-                      <div className="mt-4 pt-4 border-t border-[#2a2a32]">
-                        <p className="text-xs text-muted-foreground">Est. Savings</p>
-                        <p className="font-bold text-[#22c55e]">{tier.savings}</p>
+                      <div className="space-y-2 text-left">
+                        <p className="text-xs text-muted-foreground">
+                          <span className="text-white/80">Est. savings:</span> {tier.savings}
+                        </p>
+                        <p className="text-xs text-muted-foreground">{tier.details}</p>
+                        {tier.mixMatch && (
+                          <Badge variant="outline" className="text-[10px] border-[#22c55e]/50 text-[#22c55e]">
+                            Mix & match allowed
+                          </Badge>
+                        )}
                       </div>
                     </Card>
                 </div>
