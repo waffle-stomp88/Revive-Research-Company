@@ -441,23 +441,14 @@ ${data.additionalInfo || "None provided"}`.trim(),
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 + index * 0.1 }}
               >
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: "tween", duration: 0.15 }}
+                <div
+                  className="border-2 rounded-xl"
+                  style={{ borderColor: tier.color }}
                 >
-                  <motion.div
-                    initial={{ borderColor: "#2a2a32", boxShadow: "none" }}
-                    whileHover={{ 
-                      borderColor: tier.color,
-                      boxShadow: `0 0 30px ${tier.color}50, 0 0 15px ${tier.color}30`
-                    }}
-                    transition={{ duration: 0.2, type: "tween" }}
-                    className="border-2 rounded-xl"
+                  <Card
+                    className="p-6 text-center h-full"
+                    data-testid={`card-tier-${index}`}
                   >
-                    <Card
-                      className="p-6 text-center h-full cursor-pointer"
-                      data-testid={`card-tier-${index}`}
-                    >
                       <div 
                         className="w-14 h-14 rounded-xl mx-auto mb-4 flex items-center justify-center"
                         style={{ backgroundColor: `${tier.color}20` }}
@@ -477,8 +468,7 @@ ${data.additionalInfo || "None provided"}`.trim(),
                         <p className="font-bold text-[#22c55e]">{tier.savings}</p>
                       </div>
                     </Card>
-                  </motion.div>
-                </motion.div>
+                </div>
               </motion.div>
             ))}
           </div>
