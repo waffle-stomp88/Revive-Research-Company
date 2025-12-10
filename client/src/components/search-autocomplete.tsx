@@ -40,16 +40,36 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const { data: products, isLoading } = useQuery<Product[]>({
+  const { data: products, isLoading: productsLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
 
-  // Filter products and pages together
+  const { data: articles, isLoading: articlesLoading } = useQuery<any[]>({
+    queryKey: ["/api/education"],
+  });
+
+  const isLoading = productsLoading || articlesLoading;
+
+  // Filter products
   const filteredProducts = products?.filter(product => 
     product.name.toLowerCase().includes(query.toLowerCase()) ||
     product.category?.toLowerCase().includes(query.toLowerCase()) ||
     product.shortDescription?.toLowerCase().includes(query.toLowerCase())
-  ).map(p => ({ ...p, id: p.id, type: "product" as const })).slice(0, 5) || [];
+  ).map(p => ({ ...p, id: p.id, type: "product" as const })).slice(0, 4) || [];
+
+  // Filter articles
+  const filteredArticles = articles?.filter(article =>
+    article.title?.toLowerCase().includes(query.toLowerCase()) ||
+    article.summary?.toLowerCase().includes(query.toLowerCase()) ||
+    article.content?.toLowerCase().includes(query.toLowerCase())
+  ).map(a => ({ 
+    id: a.slug, 
+    type: "article" as const,
+    title: a.title,
+    href: `/education/${a.slug}`,
+    icon: BookOpen,
+    category: a.category || "Article"
+  })).slice(0, 4) || [];
 
   const filteredPages = siteResources
     .filter(page =>
@@ -57,9 +77,9 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
       page.category?.toLowerCase().includes(query.toLowerCase())
     )
     .map((p, idx) => ({ ...p, id: `page-${idx}` }))
-    .slice(0, 5);
+    .slice(0, 2);
 
-  const allResults = [...filteredProducts, ...filteredPages];
+  const allResults = [...filteredProducts, ...filteredArticles, ...filteredPages];
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (!isOpen) return;
@@ -171,13 +191,14 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
               <div className="py-2 max-h-96 overflow-y-auto">
                 {allResults.map((result, index) => {
                   const isProduct = result.type === "product";
+                  const isArticle = result.type === "article";
                   const Icon = (result as any).icon;
                   const title = isProduct ? (result as any).name : (result as any).title;
                   
                   return (
                     <Link
                       key={result.id}
-                      href={result.type === "product" ? `/peptides/${result.id}` : (result as any).href}
+                      href={isProduct ? `/peptides/${result.id}` : (result as any).href}
                       onClick={() => {
                         if (result.type === "product") {
                           handleSelectProduct(result as any);
