@@ -223,11 +223,11 @@ export default function ResearchStacks() {
                     />
                     <div className="absolute inset-0 flex items-center justify-center">
                       <motion.div
-                        animate={{
-                          scale: isHovered ? 1.1 : 1,
-                          rotate: isHovered ? 5 : 0,
+                        whileHover={{
+                          scale: 1.1,
+                          rotate: 5,
                         }}
-                        transition={{ duration: 0.3 }}
+                        transition={{ duration: 0.2 }}
                         className="relative"
                       >
                         <div
