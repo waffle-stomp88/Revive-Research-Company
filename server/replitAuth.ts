@@ -119,18 +119,8 @@ export async function setupAuth(app: Express) {
       req.logIn(user, async (err) => {
         if (err) return next(err);
 
-        try {
-          // Check if user is an affiliate
-          const userId = (user as any).claims?.sub;
-          const affiliate = await storage.getAffiliateByUserId(userId);
-          
-          // Redirect to affiliate dashboard if user is an affiliate, otherwise to home
-          const redirectUrl = affiliate ? "/affiliate-dashboard" : "/";
-          res.redirect(redirectUrl);
-        } catch (error) {
-          // Default to home page if there's an error checking affiliate status
-          res.redirect("/");
-        }
+        // Redirect to user dashboard
+        res.redirect("/dashboard");
       });
     })(req, res, next);
   });
