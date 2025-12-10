@@ -193,16 +193,12 @@ export default function ResearchStacks() {
                   onMouseLeave={() => setHoveredStack(null)}
                 >
                   <Card
-                    className={`relative overflow-hidden h-full transition-all duration-300 cursor-pointer ${
-                      isHovered
-                        ? "border-2 shadow-lg"
-                        : "border border-[#2a2a32]"
-                    }`}
+                    className="relative overflow-hidden h-full transition-all duration-200 cursor-pointer border-2"
                     style={{
-                      borderColor: isHovered ? stack.color : undefined,
+                      borderColor: isHovered ? stack.color : "#2a2a32",
                       boxShadow: isHovered 
                         ? `0 0 40px ${stack.color}60, 0 0 20px ${stack.color}40` 
-                        : undefined,
+                        : "none",
                     }}
                     data-testid={`card-stack-${stack.id}`}
                   >
