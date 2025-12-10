@@ -227,14 +227,14 @@ export default function ResearchStacks() {
                         opacity: isHovered ? 0.4 : 0.2,
                       }}
                     />
-                    <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                       <motion.div
-                        animate={{
-                          scale: isHovered ? 1.1 : 1,
-                          rotate: isHovered ? 5 : 0,
+                        whileHover={{
+                          scale: 1.1,
+                          rotate: 5,
                         }}
                         transition={{ duration: 0.15, type: "tween" }}
-                        className="relative"
+                        className="relative pointer-events-auto"
                       >
                         <div
                           className="w-20 h-20 rounded-2xl flex items-center justify-center"
