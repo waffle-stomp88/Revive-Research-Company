@@ -129,7 +129,7 @@ export default function CoaVerification() {
             Certificate of Analysis
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Verify the purity and purity of your research compounds. 
+            Verify the purity and identity of your research compounds. 
             Enter your batch number below to view the complete test results.
           </p>
         </motion.div>
