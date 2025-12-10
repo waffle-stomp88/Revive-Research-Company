@@ -77,7 +77,7 @@ const faqItems = [
 function HeroSection() {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 800], [0, 200]);
-  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+  const opacity = useTransform(scrollY, [0, 700], [1, 0]);
   const scale = useTransform(scrollY, [0, 800], [1, 1.15]);
   const imageOpacity = useTransform(scrollY, [0, 400], [1, 0.3]);
   const overlayY = useTransform(scrollY, [0, 600], [0, -80]);
