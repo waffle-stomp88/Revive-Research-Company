@@ -463,52 +463,6 @@ export default function Products() {
                     </div>
                   </div>
 
-                  {/* Quick Navigation */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Quick Navigation</label>
-                    <div className="space-y-1">
-                      <Button
-                        variant={activeSection === "deals" ? "secondary" : "ghost"}
-                        className="w-full justify-start gap-2 h-9"
-                        onClick={() => scrollToSection("deals")}
-                        data-testid="nav-sidebar-deals"
-                      >
-                        <Tag className="h-4 w-4 text-red-500" />
-                        Weekly Deal
-                        <Badge variant="destructive" className="ml-auto text-xs px-1.5 py-0">HOT</Badge>
-                      </Button>
-                      <Button
-                        variant={activeSection === "products" ? "secondary" : "ghost"}
-                        className="w-full justify-start gap-2 h-9"
-                        onClick={() => scrollToSection("products")}
-                        data-testid="nav-sidebar-products"
-                      >
-                        <Grid3X3 className="h-4 w-4 text-[#E7FB10]" />
-                        All Peptides
-                        {products && <Badge variant="secondary" className="ml-auto text-xs px-1.5 py-0">{products.length}</Badge>}
-                      </Button>
-                      <Button
-                        variant={activeSection === "bundles" ? "secondary" : "ghost"}
-                        className="w-full justify-start gap-2 h-9"
-                        onClick={() => scrollToSection("bundles")}
-                        data-testid="nav-sidebar-bundles"
-                      >
-                        <Package className="h-4 w-4 text-[#21d8ff]" />
-                        Research Stacks
-                        <Badge variant="secondary" className="ml-auto text-xs px-1.5 py-0 bg-green-500/20 text-green-400">{BUNDLES.length}</Badge>
-                      </Button>
-                      <Button
-                        variant={activeSection === "bulk" ? "secondary" : "ghost"}
-                        className="w-full justify-start gap-2 h-9"
-                        onClick={() => scrollToSection("bulk")}
-                        data-testid="nav-sidebar-bulk"
-                      >
-                        <Boxes className="h-4 w-4 text-[#9d4edd]" />
-                        Bulk Orders
-                      </Button>
-                    </div>
-                  </div>
-
                   {/* Categories */}
                   <Collapsible open={categoriesExpanded} onOpenChange={setCategoriesExpanded}>
                     <CollapsibleTrigger asChild>
