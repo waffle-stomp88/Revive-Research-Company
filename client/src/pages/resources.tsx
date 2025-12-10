@@ -6,7 +6,7 @@ import { FileCheck, GraduationCap, Scale, BookOpen, ArrowRight } from "lucide-re
 const resources = [
   {
     title: "COA Library",
-    description: "Browse and verify Certificates of Analysis for all our peptide batches. Find detailed testing results, purity data, and authenticity verification.",
+    description: "Browse and verify Certificates of Analysis for all our peptide batches. Find detailed testing results, purity data, and analysis verification.",
     href: "/coa-library",
     icon: FileCheck,
     color: "#E7FB10",
@@ -34,7 +34,7 @@ const resources = [
   },
   {
     title: "FAQ",
-    description: "Frequently asked questions about ordering, shipping, product authenticity, storage, and general support.",
+    description: "Frequently asked questions about ordering, shipping, product analysis, storage, and general support.",
     href: "/faq",
     icon: BookOpen,
     color: "#f97316",
@@ -67,7 +67,7 @@ export default function ResourcesHub() {
             className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto"
             data-testid="text-resources-subheadline"
           >
-            Everything you need to understand peptide research, verify authenticity, and make informed decisions. Explore our comprehensive library of resources.
+            Everything you need to understand peptide research, verify analysis, and make informed decisions. Explore our comprehensive library of resources.
           </motion.p>
         </div>
       </section>

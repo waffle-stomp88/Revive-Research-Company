@@ -1348,7 +1348,7 @@ export default function Dashboard() {
                       Verify Batch Number
                     </Button>
                   </Link>
-                  <p className="text-xs text-muted-foreground text-center">Verify product authenticity with batch numbers</p>
+                  <p className="text-xs text-muted-foreground text-center">Verify product analysis with batch numbers</p>
                 </CardContent>
               </Card>
               <motion.div variants={itemVariants} className="mb-0">

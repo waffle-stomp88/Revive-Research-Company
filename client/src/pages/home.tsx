@@ -53,7 +53,7 @@ const faqItems = [
     answer: "Research compounds are intended exclusively for scientific research, laboratory testing, and educational purposes. They are not approved for human consumption or medical use."
   },
   {
-    question: "How do I verify the authenticity of my product?",
+    question: "How do I verify the analysis of my product?",
     answer: "Every product includes a QR code that links directly to its Certificate of Analysis (COA). Scan it to view lab-verified purity, batch information, and testing results instantly."
   },
   {

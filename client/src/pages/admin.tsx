@@ -1813,7 +1813,7 @@ function CoasTab() {
             <DialogHeader>
               <DialogTitle>{editingCoa ? "Edit COA" : "Add New COA"}</DialogTitle>
               <DialogDescription>
-                {editingCoa ? "Update the COA details below." : "Fill in the certificate of authenticity details."}
+                {editingCoa ? "Update the COA details below." : "Fill in the certificate of analysis details."}
               </DialogDescription>
             </DialogHeader>
             <Form {...form}>

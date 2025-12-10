@@ -259,7 +259,7 @@ export default function BatchArchive() {
                     Verify a Batch
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    Enter a batch number to instantly verify authenticity and view its COA.
+                    Enter a batch number to instantly verify analysis and view its COA.
                   </p>
                 </div>
               </div>

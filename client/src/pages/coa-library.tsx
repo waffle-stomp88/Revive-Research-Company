@@ -288,7 +288,7 @@ export default function CoaLibrary() {
                 <p className="text-muted-foreground mb-4">
                   {searchBatch || selectedProduct !== "all"
                     ? "No certificates match your search criteria. Try adjusting your filters."
-                    : "No certificates of authenticity are currently available."}
+                    : "No certificates of analysis are currently available."}
                 </p>
                 {(searchBatch || selectedProduct !== "all") && (
                   <Button

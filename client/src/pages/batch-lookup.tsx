@@ -129,7 +129,7 @@ export default function BatchLookup() {
             Batch Verification
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Scan the QR code on your product or enter the batch number to verify authenticity and
+            Scan the QR code on your product or enter the batch number to verify analysis and
             view the Certificate of Analysis.
           </p>
         </motion.div>

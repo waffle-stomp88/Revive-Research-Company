@@ -31,7 +31,7 @@ const productLinks = [
 ];
 
 const coaLinks = [
-  { href: "/coa", label: "COA Verification", icon: FileCheck, description: "Verify product authenticity", color: "#21d8ff" },
+  { href: "/coa", label: "COA Verification", icon: FileCheck, description: "Verify product analysis", color: "#21d8ff" },
   { href: "/coa-library", label: "COA Library", icon: FileCheck, description: "Browse verified certifications", color: "#21d8ff" },
 ];
 

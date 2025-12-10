@@ -72,7 +72,7 @@ const journeySteps = [
     icon: Home,
     color: "#06b6d4",
     shortDesc: "At your door",
-    details: ["Signature may be required", "Verify packaging integrity", "Scan QR to verify authenticity"],
+    details: ["Signature may be required", "Verify packaging integrity", "Scan QR to verify analysis"],
     timeline: "1-2 days"
   }
 ];
@@ -243,7 +243,7 @@ export function OrderingJourney() {
           <span className="text-[#E7FB10] font-bold">24-48 hours</span> from checkout to your door with free shipping on orders over <span className="text-[#21d8ff] font-bold">$175</span>
         </p>
         <p className="text-xs text-muted-foreground">
-          Every order includes QR-verified authenticity and full tracking. Cold packs available as an optional add-on. Your package integrity is guaranteed.
+          Every order includes QR-verified analysis and full tracking. Cold packs available as an optional add-on. Your package integrity is guaranteed.
         </p>
       </motion.div>
     </div>

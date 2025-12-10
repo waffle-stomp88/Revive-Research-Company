@@ -54,7 +54,7 @@ const checklistItems = [
     isWarning: true,
     items: [
       { question: "Health claims or dosing recommendations?", critical: true, explanation: "This is illegal and indicates an unethical operation." },
-      { question: "No COAs available or generic/recycled COAs?", critical: true, explanation: "Major red flag for quality and authenticity issues." },
+      { question: "No COAs available or generic/recycled COAs?", critical: true, explanation: "Major red flag for quality and quality issues." },
       { question: "Pressure tactics or fake urgency?", critical: false, explanation: "Legitimate vendors don't need these tactics." },
       { question: "Prices that seem too good to be true?", critical: true, explanation: "Quality testing and synthesis has real costs." },
     ],
