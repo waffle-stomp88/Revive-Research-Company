@@ -155,13 +155,13 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
   }, []);
 
   useEffect(() => {
-    if (query.length > 0) {
+    if (query.length > 0 || showFilters) {
       setIsOpen(true);
       setSelectedIndex(-1);
     } else {
       setIsOpen(false);
     }
-  }, [query]);
+  }, [query, showFilters]);
 
   return (
     <div ref={containerRef} className={`relative ${className}`}>
@@ -281,7 +281,14 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
               </div>
             )}
 
-            {isLoading ? (
+            {!query && showFilters ? (
+              <div className="p-4 text-center border-t border-[#2a2a32]">
+                <Search className="h-6 w-6 text-muted-foreground/50 mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">
+                  Set your filters, then start typing to search
+                </p>
+              </div>
+            ) : isLoading ? (
               <div className="p-4 flex items-center justify-center gap-2 text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 <span className="text-sm">Searching...</span>
