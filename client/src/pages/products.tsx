@@ -823,43 +823,35 @@ export default function Products() {
                                     )}
                                   </div>
                                   <div className="flex items-center gap-1.5 ml-auto">
-                                    <motion.div whileHover={{ scale: 1.15 }} transition={{ duration: 0.15 }}>
-                                      <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-8 w-8 rounded-full bg-[#21d8ff]/10 hover:bg-[#21d8ff]/20 text-[#21d8ff] transition-all"
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          e.stopPropagation();
-                                          setQuickViewProduct(product);
-                                        }}
-                                        data-testid={`button-quickview-${product.id}`}
-                                      >
-                                        <Eye className="h-4 w-4" />
-                                      </Button>
-                                    </motion.div>
-                                    <motion.div whileHover={{ scale: 1.15 }} transition={{ duration: 0.15 }}>
-                                      <motion.button
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          e.stopPropagation();
-                                          const inCompare = isInCompare(product.id);
-                                          if (inCompare) {
-                                            removeFromCompare(product.id);
-                                          } else {
-                                            addToCompare(product.id);
-                                          }
-                                        }}
-                                        className={`h-8 w-8 rounded-full flex items-center justify-center transition-all ${
-                                          isInCompare(product.id)
-                                            ? "bg-[#21d8ff] shadow-[0_0_12px_#21d8ff80]"
-                                            : "bg-[#21d8ff]/10 hover:bg-[#21d8ff]/20"
-                                        }`}
-                                        data-testid={`button-compare-icon-${product.id}`}
-                                      >
-                                        <Scale className={`h-4 w-4 ${isInCompare(product.id) ? "text-black" : "text-[#21d8ff]"}`} />
-                                      </motion.button>
-                                    </motion.div>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setQuickViewProduct(product);
+                                      }}
+                                      data-testid={`button-quickview-${product.id}`}
+                                    >
+                                      <Eye className="h-3.5 w-3.5" />
+                                    </Button>
+                                    <button
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        const inCompare = isInCompare(product.id);
+                                        if (inCompare) {
+                                          removeFromCompare(product.id);
+                                        } else {
+                                          addToCompare(product.id);
+                                        }
+                                      }}
+                                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                                      data-testid={`button-compare-icon-${product.id}`}
+                                    >
+                                      <Scale className="h-4 w-4 text-[#21d8ff]" />
+                                    </button>
                                   </div>
                                 </div>
                               </div>
