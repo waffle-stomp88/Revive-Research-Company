@@ -342,9 +342,18 @@ ${data.additionalInfo || "None provided"}`.trim(),
         >
           <div className="absolute inset-0 bg-gradient-to-br from-[#21d8ff]/20 via-[#a855f7]/10 to-[#E7FB10]/10" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_rgba(33,216,255,0.3),_transparent_50%)]" />
-          <div 
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full blur-3xl opacity-30"
+          <motion.div 
+            className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full blur-3xl"
             style={{ background: "radial-gradient(circle, #21d8ff 0%, transparent 70%)" }}
+            animate={{
+              opacity: [0.2, 0.4, 0.2],
+              scale: [1, 1.1, 1]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
           />
           
           <div className="relative z-10">
@@ -406,16 +415,29 @@ ${data.additionalInfo || "None provided"}`.trim(),
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.1 + index * 0.05 }}
               >
-                <div 
+                <motion.div 
                   className="flex items-center gap-2 px-4 py-2 rounded-full border"
                   style={{ 
                     borderColor: `${badge.color}40`,
                     backgroundColor: `${badge.color}10`
                   }}
+                  animate={{
+                    boxShadow: [
+                      `0 0 0 ${badge.color}00`,
+                      `0 0 15px ${badge.color}30`,
+                      `0 0 0 ${badge.color}00`
+                    ]
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    delay: index * 0.7,
+                    ease: "easeInOut"
+                  }}
                 >
                   <Icon className="h-4 w-4" style={{ color: badge.color }} />
                   <span className="text-sm font-medium">{badge.label}</span>
-                </div>
+                </motion.div>
               </motion.div>
             );
           })}
@@ -449,12 +471,26 @@ ${data.additionalInfo || "None provided"}`.trim(),
                     className="p-6 text-center h-full"
                     data-testid={`card-tier-${index}`}
                   >
-                      <div 
+                      <motion.div 
                         className="w-14 h-14 rounded-xl mx-auto mb-4 flex items-center justify-center"
                         style={{ backgroundColor: `${tier.color}20` }}
+                        animate={{ 
+                          y: [0, -5, 0],
+                          boxShadow: [
+                            `0 0 0 ${tier.color}00`,
+                            `0 0 20px ${tier.color}40`,
+                            `0 0 0 ${tier.color}00`
+                          ]
+                        }}
+                        transition={{ 
+                          duration: 3,
+                          repeat: Infinity,
+                          delay: index * 0.5,
+                          ease: "easeInOut"
+                        }}
                       >
                         <Package className="h-7 w-7" style={{ color: tier.color }} />
-                      </div>
+                      </motion.div>
                       <p className="text-sm text-muted-foreground mb-2">{tier.range}</p>
                       <p 
                         className="font-display text-4xl font-bold mb-1"
@@ -503,15 +539,29 @@ ${data.additionalInfo || "None provided"}`.trim(),
                   className="relative"
                 >
                   <Card className="p-6 text-center border-[#2a2a32] h-full">
-                    <div 
+                    <motion.div 
                       className="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center relative z-10"
                       style={{ 
                         backgroundColor: `${step.color}20`,
                         border: `2px solid ${step.color}`
                       }}
+                      animate={{ 
+                        scale: [1, 1.1, 1],
+                        boxShadow: [
+                          `0 0 0 0 ${step.color}00`,
+                          `0 0 0 8px ${step.color}20`,
+                          `0 0 0 0 ${step.color}00`
+                        ]
+                      }}
+                      transition={{ 
+                        duration: 2,
+                        repeat: Infinity,
+                        delay: index * 0.6,
+                        ease: "easeInOut"
+                      }}
                     >
                       <Icon className="h-5 w-5" style={{ color: step.color }} />
-                    </div>
+                    </motion.div>
                     <Badge 
                       className="mb-3"
                       style={{ 
