@@ -862,9 +862,9 @@ export default function Products() {
                                     return peptideGroup ? (
                                       <Badge 
                                         variant="outline"
-                                        className="text-[11px] px-2 py-1 opacity-70"
+                                        className="text-[11px] px-2 py-1 opacity-85"
                                         style={{ 
-                                          borderColor: `${peptideGroup.color}40`,
+                                          borderColor: `${peptideGroup.color}60`,
                                           color: peptideGroup.color 
                                         }}
                                         data-testid={`badge-peptide-group-${peptideGroup.id}`}
