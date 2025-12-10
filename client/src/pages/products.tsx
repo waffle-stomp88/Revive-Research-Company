@@ -463,39 +463,6 @@ export default function Products() {
                     </div>
                   </div>
 
-                  {/* Categories */}
-                  <Collapsible open={categoriesExpanded} onOpenChange={setCategoriesExpanded}>
-                    <CollapsibleTrigger asChild>
-                      <Button variant="ghost" className="w-full justify-between px-0 h-8 hover:bg-transparent">
-                        <span className="text-sm font-medium">Categories</span>
-                        {categoriesExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                      </Button>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="space-y-1 pt-2">
-                      <Button
-                        variant={selectedCategory === "all" ? "secondary" : "ghost"}
-                        className="w-full justify-between h-8 text-sm"
-                        onClick={() => setSelectedCategory("all")}
-                        data-testid="filter-category-all"
-                      >
-                        <span>All Peptides</span>
-                        <span className="text-muted-foreground">{products?.length || 0}</span>
-                      </Button>
-                      {uniqueCategories.map((cat) => (
-                        <Button
-                          key={cat.id}
-                          variant={selectedCategory === cat.id ? "secondary" : "ghost"}
-                          className="w-full justify-between h-8 text-sm"
-                          onClick={() => setSelectedCategory(cat.id)}
-                          data-testid={`filter-category-${cat.id}`}
-                        >
-                          <span>{cat.name}</span>
-                          <span className="text-muted-foreground">{cat.count}</span>
-                        </Button>
-                      ))}
-                    </CollapsibleContent>
-                  </Collapsible>
-
                   {/* Peptide Groups */}
                   <Collapsible open={peptideGroupsExpanded} onOpenChange={setPeptideGroupsExpanded}>
                     <CollapsibleTrigger asChild>
