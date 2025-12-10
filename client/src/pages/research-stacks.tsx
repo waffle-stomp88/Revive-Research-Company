@@ -136,6 +136,8 @@ const researchStacks: ResearchStack[] = [
 ];
 
 export default function ResearchStacks() {
+  const [hoveredStack, setHoveredStack] = useState<string | null>(null);
+
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-12">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
@@ -178,6 +180,7 @@ export default function ResearchStacks() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {researchStacks.map((stack, index) => {
             const Icon = stack.icon;
+            const isHovered = hoveredStack === stack.id;
 
             return (
               <Link href={`/research-stacks/${stack.id}`} key={stack.id}>
@@ -186,12 +189,21 @@ export default function ResearchStacks() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   whileHover={{ scale: 1.05 }}
+                  onHoverStart={() => setHoveredStack(stack.id)}
+                  onHoverEnd={() => setHoveredStack(null)}
                   className="group"
                 >
                   <Card
-                    className="relative overflow-hidden h-full transition-all duration-200 cursor-pointer border-2 group-hover:shadow-lg"
+                    className={`relative overflow-hidden h-full transition-all duration-200 cursor-pointer ${
+                      isHovered
+                        ? "border-2 shadow-lg"
+                        : "border border-[#2a2a32]"
+                    }`}
                     style={{
-                      borderColor: "#2a2a32",
+                      borderColor: isHovered ? stack.color : undefined,
+                      boxShadow: isHovered 
+                        ? `0 0 40px ${stack.color}60, 0 0 20px ${stack.color}40` 
+                        : undefined,
                     }}
                     data-testid={`card-stack-${stack.id}`}
                   >
@@ -209,16 +221,17 @@ export default function ResearchStacks() {
 
                   <div className="relative h-40 bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10] overflow-hidden">
                     <div
-                      className="absolute inset-0 opacity-20 group-hover:opacity-40 transition-opacity duration-200"
+                      className="absolute inset-0 opacity-20 transition-opacity duration-200"
                       style={{
                         background: `radial-gradient(circle at 50% 100%, ${stack.color}40, transparent 70%)`,
+                        opacity: isHovered ? 0.4 : 0.2,
                       }}
                     />
                     <div className="absolute inset-0 flex items-center justify-center">
                       <motion.div
-                        whileHover={{
-                          scale: 1.1,
-                          rotate: 5,
+                        animate={{
+                          scale: isHovered ? 1.1 : 1,
+                          rotate: isHovered ? 5 : 0,
                         }}
                         transition={{ duration: 0.15, type: "tween" }}
                         className="relative"
