@@ -736,7 +736,7 @@ export default function Products() {
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <p className="text-muted-foreground max-w-2xl mb-6">
-                    Premium research compounds, rigorously tested and verified. Each product includes a Certificate of Authenticity.
+                    Premium research compounds, rigorously tested and verified. Each product includes a Certificate of Analysis.
                   </p>
 
                   {/* Mobile Filters */}

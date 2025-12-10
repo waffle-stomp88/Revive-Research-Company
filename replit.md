@@ -1,7 +1,7 @@
 # Revive Research - E-commerce Platform for Premium Peptide Research Compounds
 
 ## Overview
-Revive Research is an e-commerce platform specializing in premium peptide research compounds. It features an Apple-inspired design, a full-stack TypeScript architecture with React and Express, and emphasizes scientific credibility through third-party lab verification and Certificates of Authenticity (COA). The platform targets researchers and professionals, offering key capabilities such as age verification, tiered affiliate programs, product bundling ("Research Stacks"), and an AI chatbot for customer support. The business vision is to provide high-quality, verifiable research compounds with a focus on legal compliance and user experience.
+Revive Research is an e-commerce platform specializing in premium peptide research compounds. It features an Apple-inspired design, a full-stack TypeScript architecture with React and Express, and emphasizes scientific credibility through third-party lab verification and Certificates of Analysis (COA). The platform targets researchers and professionals, offering key capabilities such as age verification, tiered affiliate programs, product bundling ("Research Stacks"), and an AI chatbot for customer support. The business vision is to provide high-quality, verifiable research compounds with a focus on legal compliance and user experience.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.

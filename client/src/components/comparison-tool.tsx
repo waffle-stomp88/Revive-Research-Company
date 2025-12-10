@@ -334,7 +334,7 @@ function CompareModal({ products, isOpen, onClose }: CompareModalProps) {
           <div className="flex items-start gap-2">
             <Shield className="h-4 w-4 text-[#21d8ff] flex-shrink-0 mt-0.5" />
             <p className="text-xs text-muted-foreground">
-              All products include a Certificate of Authenticity with third-party lab verification. 
+              All products include a Certificate of Analysis with third-party lab verification. 
               Free shipping on orders over $175.
             </p>
           </div>

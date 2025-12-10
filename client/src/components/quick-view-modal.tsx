@@ -105,7 +105,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                 </div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <FileCheck className="h-3.5 w-3.5 text-[#21d8ff]" />
-                  <span>Certificate of Authenticity Included</span>
+                  <span>Certificate of Analysis Included</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Truck className="h-3.5 w-3.5 text-[#21d8ff]" />

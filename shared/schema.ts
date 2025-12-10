@@ -73,7 +73,7 @@ export type ProductWithDosageStock = Product & {
   dosageStocks: ProductDosageStock[];
 };
 
-// COA (Certificate of Authenticity) table
+// COA (Certificate of Analysis) table
 export const coas = pgTable("coas", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   batchNumber: text("batch_number").notNull().unique(),

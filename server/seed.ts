@@ -14,7 +14,7 @@ const sampleProducts = [
     benefits: [
       "High purity research grade compound",
       "Third-party tested for quality assurance",
-      "Includes Certificate of Authenticity",
+      "Includes Certificate of Analysis",
       "Lyophilized powder form for stability"
     ],
     usage: "For laboratory research use only. Store at -20°C. Reconstitute with bacteriostatic water before use.",
@@ -50,7 +50,7 @@ const sampleProducts = [
     benefits: [
       "High-purity copper peptide complex",
       "Verified by independent laboratory testing",
-      "Certificate of Authenticity provided",
+      "Certificate of Analysis provided",
       "Research-ready formulation"
     ],
     usage: "For research applications only. Store in cool, dry conditions. Follow standard laboratory handling procedures.",
@@ -239,7 +239,7 @@ Every batch undergoes independent laboratory analysis including:
 - **Sterility Testing** - Microbiological analysis to confirm absence of contamination
 - **Heavy Metals Analysis** - ICP-MS testing for arsenic, lead, mercury, and cadmium
 
-Results are documented in our Certificate of Authenticity (COA) system, available for every batch.
+Results are documented in our Certificate of Analysis (COA) system, available for every batch.
 
 ### Traceability
 
@@ -419,7 +419,7 @@ All other orders ship within 24 business hours of placement.
 ### Documentation
 Each shipment includes:
 - Packing slip with order details
-- Certificate of Authenticity (COA) for each product
+- Certificate of Analysis (COA) for each product
 - Storage instructions
 
 ## Delivery Requirements
@@ -637,7 +637,7 @@ All products are labeled with:
 
 ## Documentation
 
-### Certificate of Authenticity (COA)
+### Certificate of Analysis (COA)
 Every batch includes a COA with:
 - Independent laboratory test results
 - Purity specifications
@@ -1411,14 +1411,14 @@ Following these guidelines will help ensure consistent research results.`,
         slug: "reading-coa-documents",
         title: "How to Read and Interpret COA Documents",
         category: "coa-guide",
-        summary: "A step-by-step guide to understanding Certificates of Authenticity and what each test result means.",
+        summary: "A step-by-step guide to understanding Certificates of Analysis and what each test result means.",
         content: `# How to Read and Interpret COA Documents
 
-Understanding your Certificate of Authenticity (COA) is essential for validating product quality.
+Understanding your Certificate of Analysis (COA) is essential for validating product quality.
 
 ## What is a COA?
 
-A Certificate of Authenticity documents:
+A Certificate of Analysis documents:
 - Product identity confirmation
 - Purity analysis results
 - Quality specifications
@@ -1652,7 +1652,7 @@ The conversion of the C-terminal carboxyl group to an amide, which can increase 
 **Bacteriostatic Water**
 Sterile water containing a small amount of benzyl alcohol as a preservative, commonly used for reconstituting peptides.
 
-**COA (Certificate of Authenticity)**
+**COA (Certificate of Analysis)**
 Documentation verifying the identity, purity, and quality of a peptide batch.
 
 **Cyclization**

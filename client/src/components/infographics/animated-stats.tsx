@@ -131,7 +131,7 @@ const trustStats = [
     value: 100,
     suffix: "%",
     label: "COA Included",
-    description: "Certificate of Authenticity with every order",
+    description: "Certificate of Analysis with every order",
     color: "#9d4edd",
     showProgress: true,
   },

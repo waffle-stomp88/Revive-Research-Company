@@ -127,7 +127,7 @@ export default function CoaLibrary() {
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4">
             Search and browse our complete library of third-party verified Certificates of
-            Authenticity. Every batch is tested for purity and identity.
+            Analysis. Every batch is tested for purity and identity.
           </p>
           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
             <Link href="/coa">

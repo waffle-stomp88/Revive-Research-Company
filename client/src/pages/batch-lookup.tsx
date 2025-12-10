@@ -130,7 +130,7 @@ export default function BatchLookup() {
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Scan the QR code on your product or enter the batch number to verify authenticity and
-            view the Certificate of Authenticity.
+            view the Certificate of Analysis.
           </p>
         </motion.div>
 
@@ -313,7 +313,7 @@ export default function BatchLookup() {
                 <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                   <div className="flex items-center gap-3">
                     <FileCheck className="h-6 w-6 text-[#9d4edd]" />
-                    <h3 className="font-display text-xl font-bold">Certificate of Authenticity</h3>
+                    <h3 className="font-display text-xl font-bold">Certificate of Analysis</h3>
                   </div>
                   <Badge
                     className={
@@ -402,7 +402,7 @@ export default function BatchLookup() {
                 <AlertCircle className="h-12 w-12 mx-auto text-yellow-400 mb-4" />
                 <h3 className="font-display text-xl font-bold mb-2">COA Pending</h3>
                 <p className="text-muted-foreground mb-6">
-                  The Certificate of Authenticity for this batch is currently being processed and
+                  The Certificate of Analysis for this batch is currently being processed and
                   will be available soon.
                 </p>
               </Card>

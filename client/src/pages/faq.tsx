@@ -83,8 +83,8 @@ const FAQ_CATEGORIES = [
     color: "#21d8ff",
     questions: [
       {
-        question: "What are Certificates of Authenticity (COAs)?",
-        answer: "Every product we sell is accompanied by a Certificate of Authenticity from independent third-party laboratories. COAs verify the purity, identity, and quality of each batch. You can verify your product's COA on our website using the batch number found on your product."
+        question: "What are Certificates of Analysis (COAs)?",
+        answer: "Every product we sell is accompanied by a Certificate of Analysis from independent third-party laboratories. COAs verify the purity, identity, and quality of each batch. You can verify your product's COA on our website using the batch number found on your product."
       },
       {
         question: "How do I verify my product's COA?",

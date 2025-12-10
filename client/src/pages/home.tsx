@@ -54,7 +54,7 @@ const faqItems = [
   },
   {
     question: "How do I verify the authenticity of my product?",
-    answer: "Every product includes a QR code that links directly to its Certificate of Authenticity (COA). Scan it to view lab-verified purity, batch information, and testing results instantly."
+    answer: "Every product includes a QR code that links directly to its Certificate of Analysis (COA). Scan it to view lab-verified purity, batch information, and testing results instantly."
   },
   {
     question: "What's your shipping policy?",
@@ -632,7 +632,7 @@ function QualityAndTrustSection() {
                 "Third-party laboratory verification",
                 "HPLC purity analysis",
                 "Mass spectrometry confirmation",
-                "Certificate of Authenticity included"
+                "Certificate of Analysis included"
               ].map((item, index) => (
                 <li key={index} className="flex items-center gap-3">
                   <CheckCircle className="h-5 w-5 text-[#E7FB10] flex-shrink-0" />

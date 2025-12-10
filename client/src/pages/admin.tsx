@@ -1801,7 +1801,7 @@ function CoasTab() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Certificates of Authenticity ({allCoas?.length || 0})</h2>
+        <h2 className="text-xl font-semibold">Certificates of Analysis ({allCoas?.length || 0})</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={() => handleOpenDialog()} data-testid="button-add-coa">

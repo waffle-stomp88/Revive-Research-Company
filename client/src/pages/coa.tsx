@@ -126,7 +126,7 @@ export default function CoaVerification() {
             <FileCheck className="h-8 w-8 text-foreground" />
           </div>
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-4" data-testid="text-coa-title">
-            Certificate of Authenticity
+            Certificate of Analysis
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Verify the authenticity and purity of your research compounds. 
