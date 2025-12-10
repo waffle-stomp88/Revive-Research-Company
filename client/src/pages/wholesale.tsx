@@ -40,6 +40,8 @@ const pricingTiers = [
     discount: "Up to 20% off", 
     savings: "Thousands per order",
     details: "MOQ: 100 | Ships in 3–5 days",
+    proof: "Best for small clinics / local resellers",
+    margin: "Avg reseller margin: 38–52%",
     mixMatch: true,
     color: "#21d8ff" 
   },
@@ -48,6 +50,8 @@ const pricingTiers = [
     discount: "Up to 25% off", 
     savings: "Significant reduction for labs",
     details: "MOQ: 250 | Priority allocation",
+    proof: "Most profitable tier for growing businesses",
+    margin: "Avg reseller margin: 45–58%",
     mixMatch: true,
     color: "#E7FB10" 
   },
@@ -56,6 +60,8 @@ const pricingTiers = [
     discount: "Up to 30% off", 
     savings: "Major cost efficiency",
     details: "MOQ: 500 | Free domestic shipping",
+    proof: "Distribution pricing unlocks",
+    margin: "Avg reseller margin: 50–65%",
     mixMatch: true,
     color: "#a855f7" 
   },
@@ -64,9 +70,18 @@ const pricingTiers = [
     discount: "Custom Pricing", 
     savings: "Enterprise-level discounts available",
     details: "MOQ: 1000 | Custom labeling available",
+    proof: "Dedicated account + priority support",
+    margin: "Margins negotiated per contract",
     mixMatch: true,
     color: "#22c55e" 
   },
+];
+
+const differentiators = [
+  { icon: Shield, label: "U.S. Supplier Relationships", description: "Direct partnerships with domestic manufacturers" },
+  { icon: BadgeCheck, label: "Consistent Batch Quality", description: "Rigorous QC on every production run" },
+  { icon: Award, label: "99–99.5% Purity Range", description: "Third-party verified on all compounds" },
+  { icon: Truck, label: "Fast Domestic Shipping", description: "Most orders ship within 24–48 hours" },
 ];
 
 const benefits = [
@@ -226,15 +241,19 @@ function SavingsCalculator() {
         <div className="p-4 rounded-xl bg-gradient-to-r from-[#E7FB10]/20 to-[#22c55e]/20 border border-[#E7FB10]/30">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Your Savings</p>
-              <p className="text-3xl font-bold text-[#E7FB10]">${savings.toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground">Estimated Savings</p>
+              <p className="text-3xl font-bold text-[#E7FB10]">Up to ${savings.toLocaleString()}</p>
             </div>
             <div className="text-right">
               <Badge className="bg-[#E7FB10] text-black mb-1">{tierLabel}</Badge>
-              <p className="text-lg font-bold text-[#22c55e]">{(discount * 100).toFixed(0)}% OFF</p>
+              <p className="text-lg font-bold text-[#22c55e]">Up to {(discount * 100).toFixed(0)}% OFF</p>
             </div>
           </div>
         </div>
+        
+        <p className="text-[10px] text-muted-foreground text-center mt-3 italic">
+          Discounts vary by compound based on manufacturing cost. Final pricing confirmed after application review.
+        </p>
       </div>
     </Card>
   );
@@ -471,11 +490,49 @@ ${data.additionalInfo || "None provided"}`.trim(),
           })}
         </motion.div>
 
+        {/* Why Our Wholesale is Different */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12 }}
+          className="mb-16"
+        >
+          <div className="text-center mb-6">
+            <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30 mb-3">
+              <Sparkles className="h-3 w-3 mr-1" />
+              Why Partner With Us
+            </Badge>
+            <h2 className="font-display text-2xl md:text-3xl font-bold">What Makes Our Wholesale Different</h2>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {differentiators.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <motion.div
+                  key={item.label}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 + index * 0.05 }}
+                >
+                  <Card className="p-4 text-center border-[#2a2a32] h-full">
+                    <div className="w-12 h-12 rounded-xl bg-[#22c55e]/10 flex items-center justify-center mx-auto mb-3">
+                      <Icon className="h-6 w-6 text-[#22c55e]" />
+                    </div>
+                    <h4 className="font-semibold text-sm mb-1">{item.label}</h4>
+                    <p className="text-xs text-muted-foreground">{item.description}</p>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
+        </motion.div>
+
         {/* Animated Pricing Tiers */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
+          transition={{ delay: 0.2 }}
           className="mb-16"
         >
           <div className="text-center mb-8">
@@ -526,11 +583,10 @@ ${data.additionalInfo || "None provided"}`.trim(),
                       >
                         {tier.discount}
                       </p>
-                      <div className="space-y-2 text-left">
-                        <p className="text-xs text-muted-foreground">
-                          <span className="text-white/80">Est. savings:</span> {tier.savings}
-                        </p>
-                        <p className="text-xs text-muted-foreground">{tier.details}</p>
+                      <div className="space-y-2 text-left mt-4 pt-4 border-t border-[#2a2a32]">
+                        <p className="text-xs text-white/90 font-medium">{tier.proof}</p>
+                        <p className="text-xs font-semibold" style={{ color: tier.color }}>{tier.margin}</p>
+                        <p className="text-[10px] text-muted-foreground">{tier.details}</p>
                         {tier.mixMatch && (
                           <Badge variant="outline" className="text-[10px] border-[#22c55e]/50 text-[#22c55e]">
                             Mix & match allowed

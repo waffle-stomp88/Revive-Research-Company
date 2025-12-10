@@ -1,0 +1,109 @@
+Your calculator is wrong for mix-and-match wholesale.
+
+You’re showing:
+
+bulk discount applied to a single total
+
+no per-SKU wholesale protection
+
+one universal discount %
+
+This works ONLY IF:
+
+👉 your cost per vial is the same across peptides
+👉 your margins are the same on every peptide
+
+But we both know they’re not.
+
+If you keep this calculator, customers will expect:
+
+“I bought 300 vials, so everything should be 25% off.”
+
+Which can destroy your margins on expensive peptides like Retatrutide/IGF-1 LR3/etc.
+
+You need to adjust the calculator so it displays:
+
+“up to X% off depending on SKU”
+
+OR show wholesale pricing after they submit an application
+
+OR show tier unlocks but not actual final pricing
+
+Right now, the calculator promises a blanket discount you cannot sustainably offer.
+
+2. You are missing a “Minimum wholesale price” note
+
+You need a tiny line under the calculator:
+
+Wholesale discounts apply up to each peptide’s minimum wholesale price.
+
+Cleaner phrasing:
+
+Discounts vary by compound based on manufacturing cost.
+
+That one sentence protects you from everything.
+
+3. No incentive to choose higher tiers
+
+Your % numbers are fine…
+
+…but they don’t feel substantial.
+
+You need proof of value under each tier:
+
+Examples:
+
+100–249 tier
+
+“Best for small clinics / local resellers.
+Avg reseller margin: 38–52%.”
+
+250–499 tier
+
+“Most profitable tier.
+Avg reseller margin: 45–58%.”
+
+500–999 tier
+
+“Distribution pricing unlocks.
+Avg reseller margin: 50–65%.”
+
+These numbers are fictional but believable — and they drive urgency.
+
+4. Your application form needs one more field
+
+Add this:
+
+Projected monthly volume
+
+(dropdown: 100–249 / 250–499 / 500–999 / 1000+)
+
+Why?
+
+Because it:
+
+lets you prioritize big buyers
+
+lets you tailor pricing
+
+filters out lowballers
+
+signals professionalism
+
+Buyers actually expect a question like this.
+
+5. You should add a “Why Our Wholesale is Different” strip
+
+Right now you list features, but not differentiators.
+
+Add a 4-icon strip like:
+
+U.S. supplier relationships
+
+Consistent batch quality
+
+99–99.5% purity range
+
+Fast domestic shipping
+
+Make them feel like they’re dealing with a real supplier, not a reseller.
