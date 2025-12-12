@@ -43,6 +43,7 @@ function DNAHelix() {
       <svg 
         viewBox="0 0 400 120" 
         className="w-full max-w-2xl h-auto"
+        style={{ filter: 'drop-shadow(0 0 30px rgba(231, 251, 16, 0.3)) drop-shadow(0 0 60px rgba(33, 216, 255, 0.2))' }}
       >
         <defs>
           <linearGradient id="homeStrandGradient1" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -60,7 +61,7 @@ function DNAHelix() {
             <stop offset="100%" stopColor="#21d8ff" stopOpacity="0.9" />
           </linearGradient>
           <filter id="homeGlow">
-            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
             <feMerge>
               <feMergeNode in="coloredBlur"/>
               <feMergeNode in="SourceGraphic"/>
@@ -110,7 +111,10 @@ function DNAHelix() {
                 initial={{ scaleY: 0, opacity: 0 }}
                 animate={isInView ? { scaleY: 1, opacity: 1 } : {}}
                 transition={{ duration: 0.4, delay: 1 + index * 0.1 }}
-                style={{ transformOrigin: `${x}px 60px` }}
+                style={{ 
+                  transformOrigin: `${x}px 60px`,
+                  filter: `drop-shadow(0 0 8px ${color})`
+                }}
               />
               <motion.circle
                 cx={x}
@@ -120,6 +124,7 @@ function DNAHelix() {
                 initial={{ scale: 0 }}
                 animate={isInView ? { scale: 1 } : {}}
                 transition={{ duration: 0.3, delay: 1.2 + index * 0.1, type: "spring" }}
+                style={{ filter: `drop-shadow(0 0 10px ${color})` }}
               />
               <motion.circle
                 cx={x}
@@ -129,6 +134,7 @@ function DNAHelix() {
                 initial={{ scale: 0 }}
                 animate={isInView ? { scale: 1 } : {}}
                 transition={{ duration: 0.3, delay: 1.3 + index * 0.1, type: "spring" }}
+                style={{ filter: `drop-shadow(0 0 10px ${color})` }}
               />
             </motion.g>
           );
@@ -142,7 +148,8 @@ function DNAHelix() {
           style={{ 
             top: '50%',
             left: `${10 + i * 20}%`,
-            background: ['#E7FB10', '#21d8ff', '#9d4edd', '#ec4899', '#f97316'][i]
+            background: ['#E7FB10', '#21d8ff', '#9d4edd', '#ec4899', '#f97316'][i],
+            filter: `blur(0.5px) drop-shadow(0 0 8px ${['#E7FB10', '#21d8ff', '#9d4edd', '#ec4899', '#f97316'][i]})`
           }}
           animate={{
             x: [0, 100, 200, 300],
