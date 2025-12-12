@@ -503,7 +503,7 @@ function WoundClosureVisual({ isInView, progress }: { isInView: boolean; progres
   
   return (
     <div className="relative">
-      <svg viewBox="0 0 200 80" className="w-full h-auto" style={{ maxHeight: '180px' }}>
+      <svg viewBox="0 0 220 80" className="w-full h-auto" style={{ maxHeight: '180px' }}>
         <defs>
           <linearGradient id="tissueGradient" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="#ec4899" stopOpacity="0.3" />
@@ -512,7 +512,7 @@ function WoundClosureVisual({ isInView, progress }: { isInView: boolean; progres
         </defs>
         
         <motion.rect
-          x="15" y="20" width="70" height="35" rx="2"
+          x="15" y="20" width="65" height="35" rx="2"
           fill="url(#tissueGradient)"
           stroke="#ec4899"
           strokeWidth="1"
@@ -520,25 +520,25 @@ function WoundClosureVisual({ isInView, progress }: { isInView: boolean; progres
           animate={{ x: 15 + (progress * 0.2) }}
           transition={{ duration: 0.3 }}
         />
-        <motion.text x="50" y="42" textAnchor="middle" fill="#ec4899" fontSize="6" fontWeight="500"
-          initial={{ x: 50 }}
-          animate={{ x: 50 + (progress * 0.2) }}
+        <motion.text x="48" y="42" textAnchor="middle" fill="#ec4899" fontSize="6" fontWeight="500"
+          initial={{ x: 48 }}
+          animate={{ x: 48 + (progress * 0.2) }}
         >
           Wound Edge
         </motion.text>
         
         <motion.rect
-          x="115" y="20" width="70" height="35" rx="2"
+          x="140" y="20" width="65" height="35" rx="2"
           fill="url(#tissueGradient)"
           stroke="#ec4899"
           strokeWidth="1"
-          initial={{ x: 115 }}
-          animate={{ x: 115 - (progress * 0.2) }}
+          initial={{ x: 140 }}
+          animate={{ x: 140 - (progress * 0.2) }}
           transition={{ duration: 0.3 }}
         />
-        <motion.text x="150" y="42" textAnchor="middle" fill="#ec4899" fontSize="6" fontWeight="500"
-          initial={{ x: 150 }}
-          animate={{ x: 150 - (progress * 0.2) }}
+        <motion.text x="172" y="42" textAnchor="middle" fill="#ec4899" fontSize="6" fontWeight="500"
+          initial={{ x: 172 }}
+          animate={{ x: 172 - (progress * 0.2) }}
         >
           Wound Edge
         </motion.text>
