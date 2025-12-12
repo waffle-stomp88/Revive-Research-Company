@@ -258,7 +258,7 @@ export function SemaxNeuralVisual() {
   const [activeFactor, setActiveFactor] = useState(0);
   const [progress, setProgress] = useState(0);
 
-  // Auto-cycle through factors - slow enough to read
+  // Auto-cycle through factors
   useEffect(() => {
     if (!visualInView) return;
     
@@ -266,15 +266,15 @@ export function SemaxNeuralVisual() {
     const progressInterval = setInterval(() => {
       setProgress(prev => {
         if (prev >= 100) return 0;
-        return prev + 1.43; // ~100% over 7 seconds
+        return prev + 2; // ~100% over 5 seconds
       });
     }, 100);
     
-    // Switch factor every 7 seconds
+    // Switch factor every 5 seconds
     const switchInterval = setInterval(() => {
       setActiveFactor(prev => (prev + 1) % 3);
       setProgress(0);
-    }, 7000);
+    }, 5000);
     
     return () => {
       clearInterval(progressInterval);
