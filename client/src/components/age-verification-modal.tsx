@@ -125,18 +125,39 @@ export function AgeVerificationModal() {
               </div>
 
               <div className="flex flex-col gap-2 mt-4 sm:mt-8">
-                <Button
-                  onClick={handleEnter}
-                  disabled={!agreed}
-                  className="w-full h-10 bg-[#E7FB10] text-black font-semibold hover:bg-[#E7FB10]/90 shadow-glow-sm hover:shadow-glow"
-                  style={{
-                    boxShadow: agreed ? '0 0 20px rgba(231, 251, 16, 0.5)' : 'none'
-                  }}
-                  data-testid="button-enter-site"
+                <motion.div
+                  whileHover={agreed ? { scale: 1.05, y: -2 } : {}}
+                  whileTap={agreed ? { scale: 0.98 } : {}}
+                  transition={{ duration: 0.2 }}
                 >
-                  <Zap className="h-4 w-4 mr-2" />
-                  Enter Site
-                </Button>
+                  <Button
+                    onClick={handleEnter}
+                    disabled={!agreed}
+                    className="w-full h-10 bg-[#E7FB10] text-black font-semibold"
+                    style={{
+                      boxShadow: agreed ? '0 0 20px rgba(231, 251, 16, 0.5)' : 'none',
+                      opacity: agreed ? 1 : 0.5,
+                      cursor: agreed ? 'pointer' : 'not-allowed',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (agreed) {
+                        e.currentTarget.style.boxShadow = '0 0 40px rgba(231, 251, 16, 0.8), 0 0 60px rgba(231, 251, 16, 0.5)';
+                        e.currentTarget.style.backgroundColor = 'rgb(231, 251, 16)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (agreed) {
+                        e.currentTarget.style.boxShadow = '0 0 20px rgba(231, 251, 16, 0.5)';
+                        e.currentTarget.style.backgroundColor = 'rgb(231, 251, 16)';
+                      }
+                    }}
+                    data-testid="button-enter-site"
+                  >
+                    <Zap className="h-4 w-4 mr-2" />
+                    Enter Site
+                  </Button>
+                </motion.div>
                 <Button
                   onClick={handleDecline}
                   variant="outline"
