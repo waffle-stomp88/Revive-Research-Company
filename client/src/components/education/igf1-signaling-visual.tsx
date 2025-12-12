@@ -12,7 +12,7 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
   ];
   
   return (
-    <div className="relative w-full flex items-center justify-center overflow-visible pt-4 pb-8">
+    <div className="relative w-full flex items-center justify-center overflow-visible">
       <div 
         className="absolute inset-0 rounded-xl"
         style={{
@@ -20,7 +20,7 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
         }}
       />
       
-      <svg viewBox="0 0 320 220" className="w-full" style={{ minHeight: '280px' }}>
+      <svg viewBox="0 0 320 200" className="w-full h-auto">
         <defs>
           <filter id="cascadeGlow">
             <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
