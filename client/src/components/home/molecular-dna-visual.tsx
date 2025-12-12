@@ -43,7 +43,6 @@ function DNAHelix() {
       <svg 
         viewBox="0 0 400 120" 
         className="w-full max-w-2xl h-auto"
-        style={{ filter: 'drop-shadow(0 0 30px rgba(231, 251, 16, 0.3)) drop-shadow(0 0 60px rgba(33, 216, 255, 0.2))' }}
       >
         <defs>
           <linearGradient id="homeStrandGradient1" x1="0%" y1="0%" x2="100%" y2="0%">
