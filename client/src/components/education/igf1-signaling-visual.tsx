@@ -12,7 +12,7 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
   ];
   
   return (
-    <div className="relative w-full flex items-center justify-center overflow-visible">
+    <div className="relative w-full h-72 flex items-center justify-center overflow-hidden">
       <div 
         className="absolute inset-0 rounded-xl"
         style={{
@@ -20,7 +20,7 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
         }}
       />
       
-      <svg viewBox="0 0 320 200" className="w-full h-auto">
+      <svg viewBox="0 0 320 200" className="w-full h-full">
         <defs>
           <filter id="cascadeGlow">
             <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
@@ -52,7 +52,7 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
                   markerEnd="url(#cascadeArrow)"
                   initial={{ pathLength: 0 }}
                   animate={isInView && isActive ? { pathLength: 1 } : {}}
-                  transition={{ delay: 0.8 + idx * 0.5, duration: 0.8 }}
+                  transition={{ delay: 0.5 + idx * 0.3, duration: 0.5 }}
                   style={{ filter: isActive ? `drop-shadow(0 0 4px ${step.color})` : 'none' }}
                 />
               )}
@@ -68,7 +68,7 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
                 strokeWidth={isCurrent ? 2.5 : 1.5}
                 initial={{ scale: 0, opacity: 0 }}
                 animate={isInView ? { scale: 1, opacity: 1 } : {}}
-                transition={{ delay: 0.4 + idx * 0.25, type: "spring" }}
+                transition={{ delay: 0.2 + idx * 0.15, type: "spring" }}
                 style={{ filter: isCurrent ? `drop-shadow(0 0 15px ${step.color})` : isActive ? `drop-shadow(0 0 6px ${step.color})` : 'none' }}
               />
               
@@ -81,7 +81,7 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
                 fontWeight="bold"
                 initial={{ opacity: 0 }}
                 animate={isInView ? { opacity: 1 } : {}}
-                transition={{ delay: 0.5 + idx * 0.25 }}
+                transition={{ delay: 0.3 + idx * 0.15 }}
               >
                 {step.name}
               </motion.text>
@@ -102,6 +102,51 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
           );
         })}
         
+        <motion.g
+          initial={{ opacity: 0 }}
+          animate={isInView && activeStep >= 4 ? { opacity: 1 } : {}}
+          transition={{ delay: 2 }}
+        >
+          {[45, 160, 275].map((x, i) => (
+            <motion.g key={`result-${i}`}>
+              <motion.line
+                x1="160"
+                y1="175"
+                x2={x}
+                y2="195"
+                stroke="#22c55e"
+                strokeWidth="1.5"
+                strokeDasharray="3,2"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ delay: 2.2 + i * 0.15 }}
+              />
+              <motion.rect
+                x={x - 35}
+                y="190"
+                width="70"
+                height="20"
+                rx="4"
+                fill="rgba(34, 197, 94, 0.15)"
+                stroke="#22c55e"
+                strokeWidth="1"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 2.4 + i * 0.15 }}
+              />
+              <motion.text
+                x={x}
+                y="203"
+                textAnchor="middle"
+                fill="#22c55e"
+                fontSize="7"
+                fontWeight="bold"
+              >
+                {['Muscle Growth', 'Cell Division', 'Fat Metabolism'][i]}
+              </motion.text>
+            </motion.g>
+          ))}
+        </motion.g>
         
         <motion.text x="20" y="28" fill="#E7FB10" fontSize="8" fontWeight="bold"
           initial={{ opacity: 0 }}
@@ -188,10 +233,10 @@ export function IGF1SignalingVisual() {
           clearInterval(interval);
           setTimeout(() => {
             setActiveStep(0);
-            setTimeout(runAnimationCycle, 2000);
-          }, 4000);
+            setTimeout(runAnimationCycle, 1000);
+          }, 2500);
         }
-      }, 1200);
+      }, 600);
       
       return interval;
     };
