@@ -1,5 +1,4 @@
 import { useState, memo } from "react";
-import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 
 interface ImageLoaderProps {
@@ -32,19 +31,11 @@ export const ImageLoader = memo(function ImageLoader({
   return (
     <div className={containerClassName}>
       {isLoading && (
-        <motion.div
-          className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-muted to-muted/50 backdrop-blur-sm"
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          >
+        <div className="absolute inset-0 flex items-center justify-center bg-muted">
+          <div className="animate-spin">
             <Loader2 className="h-8 w-8 text-[#E7FB10]" />
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
       
       {!hasError ? (
