@@ -1,4 +1,4 @@
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { 
   Package, 
@@ -7,7 +7,8 @@ import {
   QrCode, 
   CheckCircle2,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  X
 } from "lucide-react";
 
 const pipelineSteps = [
@@ -18,7 +19,13 @@ const pipelineSteps = [
     subtitle: "Premium Raw Materials",
     description: "Carefully selected ingredients from certified suppliers",
     color: "#E7FB10",
-    glowColor: "rgba(231, 251, 16, 0.4)"
+    glowColor: "rgba(231, 251, 16, 0.4)",
+    details: [
+      "Pharmaceutical-grade amino acids",
+      "Vetted supplier network",
+      "Batch documentation tracked",
+      "Incoming quality inspection"
+    ]
   },
   {
     id: 2,
@@ -27,7 +34,13 @@ const pipelineSteps = [
     subtitle: "Precision Manufacturing",
     description: "State-of-the-art synthesis with strict quality controls",
     color: "#21d8ff",
-    glowColor: "rgba(33, 216, 255, 0.4)"
+    glowColor: "rgba(33, 216, 255, 0.4)",
+    details: [
+      "Solid-phase peptide synthesis",
+      "Automated protocols",
+      "Real-time process monitoring",
+      "Temperature-controlled environment"
+    ]
   },
   {
     id: 3,
@@ -36,7 +49,13 @@ const pipelineSteps = [
     subtitle: "Third-Party Analysis",
     description: "Independent verification of purity and identity",
     color: "#9d4edd",
-    glowColor: "rgba(157, 78, 221, 0.4)"
+    glowColor: "rgba(157, 78, 221, 0.4)",
+    details: [
+      "HPLC purity analysis",
+      "Mass spectrometry verification",
+      "Amino acid sequencing",
+      "Endotoxin testing"
+    ]
   },
   {
     id: 4,
@@ -45,7 +64,13 @@ const pipelineSteps = [
     subtitle: "Certificate of Analysis",
     description: "Detailed documentation of all test results",
     color: "#ec4899",
-    glowColor: "rgba(236, 72, 153, 0.4)"
+    glowColor: "rgba(236, 72, 153, 0.4)",
+    details: [
+      "Unique batch identifier",
+      "Full test results documented",
+      "QR code linked to results",
+      "Downloadable PDF available"
+    ]
   },
   {
     id: 5,
@@ -54,7 +79,13 @@ const pipelineSteps = [
     subtitle: "Ready for Research",
     description: "QR-scannable proof of authenticity",
     color: "#22c55e",
-    glowColor: "rgba(34, 197, 94, 0.4)"
+    glowColor: "rgba(34, 197, 94, 0.4)",
+    details: [
+      "Scan to verify authenticity",
+      "Complete traceability",
+      "Tamper-evident packaging",
+      "Ready for your research"
+    ]
   }
 ];
 
@@ -109,24 +140,28 @@ function AnimatedConnector({ fromColor, toColor, isActive, delay }: {
   );
 }
 
-function PipelineStep({ step, index, isActive, totalSteps }: { 
+function PipelineStep({ step, index, isActive, isExpanded, onToggle, totalSteps }: { 
   step: typeof pipelineSteps[0]; 
   index: number;
   isActive: boolean;
+  isExpanded: boolean;
+  onToggle: () => void;
   totalSteps: number;
 }) {
   const Icon = step.icon;
   
   return (
     <motion.div
-      className="relative flex flex-col items-center text-center"
+      className="relative flex flex-col items-center text-center cursor-pointer"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.15, duration: 0.5 }}
+      onClick={onToggle}
+      data-testid={`pipeline-step-${index}`}
     >
       <div className="relative">
-        {isActive && (
+        {isActive && !isExpanded && (
           <motion.div
             className="absolute inset-0 w-16 h-16 md:w-20 md:h-20 rounded-2xl z-0"
             style={{ 
@@ -144,13 +179,13 @@ function PipelineStep({ step, index, isActive, totalSteps }: {
         <motion.div
           className="w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center relative z-10"
           style={{ 
-            backgroundColor: isActive ? `${step.color}40` : `${step.color}15`,
-            border: isActive ? `3px solid ${step.color}` : '3px solid transparent',
-            boxShadow: isActive 
+            backgroundColor: isActive || isExpanded ? `${step.color}40` : `${step.color}15`,
+            border: isActive || isExpanded ? `3px solid ${step.color}` : '3px solid transparent',
+            boxShadow: isActive || isExpanded
               ? `0 0 50px ${step.glowColor}, 0 0 100px ${step.glowColor}, 0 0 150px ${step.glowColor}` 
               : `0 0 20px ${step.glowColor}`
           }}
-          animate={isActive ? {
+          animate={(isActive || isExpanded) ? {
             scale: [1, 1.15, 1],
             boxShadow: [
               `0 0 50px ${step.glowColor}, 0 0 100px ${step.glowColor}`,
@@ -165,7 +200,7 @@ function PipelineStep({ step, index, isActive, totalSteps }: {
           }}
         >
           <motion.div
-            animate={isActive ? { 
+            animate={(isActive || isExpanded) ? { 
               rotate: [0, 5, -5, 0],
             } : {}}
             transition={{ 
@@ -188,7 +223,7 @@ function PipelineStep({ step, index, isActive, totalSteps }: {
             style={{ 
               background: `linear-gradient(135deg, ${step.color}30 0%, transparent 50%, ${step.color}15 100%)`,
             }}
-            animate={isActive ? {
+            animate={(isActive || isExpanded) ? {
               opacity: [0.3, 0.7, 0.3],
             } : { opacity: 0.3 }}
             transition={{
@@ -232,6 +267,15 @@ function PipelineStep({ step, index, isActive, totalSteps }: {
         {step.description}
       </p>
       
+      {/* Click hint */}
+      <motion.p 
+        className="text-[10px] text-muted-foreground/50 mt-2 hidden md:block"
+        animate={{ opacity: [0.3, 0.7, 0.3] }}
+        transition={{ duration: 2, repeat: Infinity }}
+      >
+        Click to learn more
+      </motion.p>
+      
       {index < totalSteps - 1 && (
         <motion.div 
           className="md:hidden my-3"
@@ -247,20 +291,109 @@ function PipelineStep({ step, index, isActive, totalSteps }: {
   );
 }
 
+function ExpandedStepDetails({ step, onClose }: { step: typeof pipelineSteps[0]; onClose: () => void }) {
+  const Icon = step.icon;
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -20, scale: 0.95 }}
+      transition={{ duration: 0.3 }}
+      className="mt-8 mx-auto max-w-2xl"
+    >
+      <div 
+        className="relative p-6 rounded-2xl"
+        style={{
+          background: `linear-gradient(135deg, ${step.color}10 0%, transparent 50%, ${step.color}05 100%)`,
+          border: `2px solid ${step.color}40`,
+          boxShadow: `0 0 40px ${step.glowColor}, inset 0 0 40px ${step.color}10`
+        }}
+      >
+        <button
+          onClick={(e) => { e.stopPropagation(); onClose(); }}
+          className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 transition-colors"
+          data-testid="button-close-step-details"
+        >
+          <X className="h-5 w-5 text-muted-foreground" />
+        </button>
+        
+        <div className="flex items-start gap-4">
+          <div 
+            className="p-4 rounded-xl flex-shrink-0"
+            style={{ 
+              backgroundColor: `${step.color}20`,
+              boxShadow: `0 0 20px ${step.glowColor}`
+            }}
+          >
+            <Icon className="h-8 w-8" style={{ color: step.color }} />
+          </div>
+          
+          <div className="flex-1">
+            <h3 
+              className="font-display text-xl font-bold mb-1"
+              style={{ color: step.color }}
+            >
+              {step.title}
+            </h3>
+            <p className="text-sm text-muted-foreground mb-4">{step.description}</p>
+            
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {step.details.map((detail, i) => (
+                <motion.li
+                  key={i}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  className="flex items-center gap-2 text-sm"
+                >
+                  <CheckCircle2 
+                    className="h-4 w-4 flex-shrink-0" 
+                    style={{ color: step.color }} 
+                  />
+                  <span className="text-muted-foreground">{detail}</span>
+                </motion.li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 export function TestingPipelineVisual() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
   const [activeStep, setActiveStep] = useState(0);
+  const [expandedStep, setExpandedStep] = useState<number | null>(null);
+  const [isPaused, setIsPaused] = useState(false);
   
   useEffect(() => {
-    if (!isInView) return;
+    if (!isInView || isPaused || expandedStep !== null) return;
     
     const timer = setInterval(() => {
       setActiveStep((prev) => (prev + 1) % pipelineSteps.length);
     }, 2000);
     
     return () => clearInterval(timer);
-  }, [isInView]);
+  }, [isInView, isPaused, expandedStep]);
+
+  const handleStepClick = (index: number) => {
+    if (expandedStep === index) {
+      setExpandedStep(null);
+      setIsPaused(false);
+    } else {
+      setExpandedStep(index);
+      setActiveStep(index);
+      setIsPaused(true);
+    }
+  };
+
+  const handleClose = () => {
+    setExpandedStep(null);
+    setIsPaused(false);
+  };
 
   return (
     <section ref={containerRef} className="relative py-16 md:py-24 overflow-hidden">
@@ -298,8 +431,8 @@ export function TestingPipelineVisual() {
             </span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Every product goes through our rigorous 5-step quality pipeline, 
-            ensuring complete transparency and traceability.
+            Every product goes through our rigorous 5-step quality pipeline. 
+            <span className="text-[#21d8ff] font-medium"> Click any step to learn more.</span>
           </p>
         </motion.div>
         
@@ -324,6 +457,8 @@ export function TestingPipelineVisual() {
                   step={step} 
                   index={index} 
                   isActive={activeStep === index}
+                  isExpanded={expandedStep === index}
+                  onToggle={() => handleStepClick(index)}
                   totalSteps={pipelineSteps.length}
                 />
                 
@@ -339,6 +474,16 @@ export function TestingPipelineVisual() {
             ))}
           </div>
         </div>
+        
+        {/* Expanded Details Panel */}
+        <AnimatePresence>
+          {expandedStep !== null && (
+            <ExpandedStepDetails 
+              step={pipelineSteps[expandedStep]} 
+              onClose={handleClose}
+            />
+          )}
+        </AnimatePresence>
         
         <motion.div
           className="mt-12 flex justify-center"
@@ -370,12 +515,27 @@ export function TestingPipelineVisual() {
                 backgroundColor: activeStep === index ? step.color : `${step.color}40`,
                 boxShadow: activeStep === index ? `0 0 10px ${step.color}` : 'none'
               }}
-              onClick={() => setActiveStep(index)}
+              onClick={() => {
+                setActiveStep(index);
+                setExpandedStep(null);
+                setIsPaused(false);
+              }}
               whileHover={{ scale: 1.3 }}
               data-testid={`pipeline-step-indicator-${index}`}
             />
           ))}
         </div>
+        
+        {/* Pause/Play indicator */}
+        {isPaused && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center text-xs text-muted-foreground/50 mt-4"
+          >
+            Auto-cycle paused. Click a step indicator to resume.
+          </motion.p>
+        )}
       </div>
     </section>
   );
