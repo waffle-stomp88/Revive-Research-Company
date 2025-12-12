@@ -21,25 +21,30 @@ export function SEOHead({
   useEffect(() => {
     document.title = `${title} | Revive Research`;
 
+    const head = document.head;
     const updateMetaTag = (name: string, content: string, isProperty = false) => {
-      const attribute = isProperty ? 'property' : 'name';
-      let meta = document.querySelector(`meta[${attribute}="${name}"]`) as HTMLMetaElement;
+      const selector = isProperty ? `meta[property="${name}"]` : `meta[name="${name}"]`;
+      let meta = head.querySelector(selector) as HTMLMetaElement;
       if (!meta) {
         meta = document.createElement('meta');
-        meta.setAttribute(attribute, name);
-        document.head.appendChild(meta);
+        meta.setAttribute(isProperty ? 'property' : 'name', name);
+        head.appendChild(meta);
       }
-      meta.content = content;
+      if (meta.content !== content) {
+        meta.content = content;
+      }
     };
 
     const updateLinkTag = (rel: string, href: string) => {
-      let link = document.querySelector(`link[rel="${rel}"]`) as HTMLLinkElement;
+      let link = head.querySelector(`link[rel="${rel}"]`) as HTMLLinkElement;
       if (!link) {
         link = document.createElement('link');
         link.rel = rel;
-        document.head.appendChild(link);
+        head.appendChild(link);
       }
-      link.href = href;
+      if (link.href !== href) {
+        link.href = href;
+      }
     };
 
     updateMetaTag('description', description);
@@ -55,10 +60,6 @@ export function SEOHead({
     }
 
     updateLinkTag('canonical', fullCanonicalUrl);
-
-    return () => {
-      document.title = 'Revive Research | Premium Peptide Research Compounds';
-    };
   }, [title, description, fullCanonicalUrl, ogImage]);
 
   return null;
