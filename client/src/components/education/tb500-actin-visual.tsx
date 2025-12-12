@@ -1,5 +1,5 @@
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Activity, Zap, Move, Shield, ArrowRight } from "lucide-react";
 
 function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boolean; activeMechanism: string }) {
@@ -603,21 +603,34 @@ const mechanisms = [
 
 export function TB500ActinVisual() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const woundRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-50px" });
+  const woundInView = useInView(woundRef, { margin: "-20px" });
   const [activeMechanism, setActiveMechanism] = useState<string>('actin');
-  const [healingProgress, setHealingProgress] = useState(20);
+  const [healingProgress, setHealingProgress] = useState(0);
 
-  const startHealing = () => {
-    let progress = 20;
-    const interval = setInterval(() => {
-      progress += 5;
-      setHealingProgress(progress);
-      if (progress >= 100) {
-        clearInterval(interval);
-        setTimeout(() => setHealingProgress(20), 2000);
-      }
-    }, 200);
-  };
+  useEffect(() => {
+    if (!woundInView) return;
+    
+    const runHealingCycle = () => {
+      let progress = 0;
+      setHealingProgress(0);
+      
+      const interval = setInterval(() => {
+        progress += 2;
+        setHealingProgress(progress);
+        if (progress >= 100) {
+          clearInterval(interval);
+          setTimeout(runHealingCycle, 2500);
+        }
+      }, 80);
+      
+      return interval;
+    };
+    
+    const interval = runHealingCycle();
+    return () => clearInterval(interval);
+  }, [woundInView]);
 
   return (
     <div ref={containerRef} className="relative">
@@ -715,21 +728,13 @@ export function TB500ActinVisual() {
           </motion.div>
         </div>
 
-        <div className="mt-6 pt-6 border-t" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <ArrowRight className="h-4 w-4 text-[#22c55e]" />
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                Wound Closure Simulation
-              </span>
-            </div>
-            <button
-              onClick={startHealing}
-              className="text-xs px-3 py-1 rounded-full bg-[#22c55e]/20 text-[#22c55e] border border-[#22c55e]/30 hover:bg-[#22c55e]/30 transition-all"
-              data-testid="button-start-healing"
-            >
-              Simulate Healing
-            </button>
+        <div ref={woundRef} className="mt-6 pt-6 border-t" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+          <div className="flex items-center gap-2 mb-3">
+            <ArrowRight className="h-4 w-4 text-[#22c55e]" />
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Wound Closure Simulation
+            </span>
+            <span className="ml-auto text-xs text-[#22c55e]/60 italic">Auto-plays when visible</span>
           </div>
           <WoundClosureVisual isInView={isInView} progress={healingProgress} />
         </div>
