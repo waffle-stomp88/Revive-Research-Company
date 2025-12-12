@@ -4,11 +4,11 @@ import { TrendingUp, Zap, Activity, Target, ArrowRight } from "lucide-react";
 
 function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean; activeStep: number }) {
   const cascadeSteps = [
-    { id: 0, name: 'IGF-1 LR3', y: 20, color: '#E7FB10' },
-    { id: 1, name: 'IGF-1R', y: 42, color: '#21d8ff' },
-    { id: 2, name: 'IRS-1/PI3K', y: 64, color: '#9d4edd' },
-    { id: 3, name: 'Akt/mTOR', y: 86, color: '#ec4899' },
-    { id: 4, name: 'Protein Synthesis', y: 108, color: '#22c55e' },
+    { id: 0, name: 'IGF-1 LR3', y: 25, color: '#E7FB10' },
+    { id: 1, name: 'IGF-1R', y: 55, color: '#21d8ff' },
+    { id: 2, name: 'IRS-1/PI3K', y: 90, color: '#9d4edd' },
+    { id: 3, name: 'Akt/mTOR', y: 125, color: '#ec4899' },
+    { id: 4, name: 'Protein Synthesis', y: 160, color: '#22c55e' },
   ];
   
   return (
@@ -102,51 +102,6 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
           );
         })}
         
-        <motion.g
-          initial={{ opacity: 0 }}
-          animate={isInView && activeStep >= 4 ? { opacity: 1 } : {}}
-          transition={{ delay: 2 }}
-        >
-          {[45, 160, 275].map((x, i) => (
-            <motion.g key={`result-${i}`}>
-              <motion.line
-                x1="160"
-                y1="120"
-                x2={x}
-                y2="138"
-                stroke="#22c55e"
-                strokeWidth="1.5"
-                strokeDasharray="3,2"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ delay: 2.2 + i * 0.15 }}
-              />
-              <motion.rect
-                x={x - 35}
-                y="133"
-                width="70"
-                height="20"
-                rx="4"
-                fill="rgba(34, 197, 94, 0.15)"
-                stroke="#22c55e"
-                strokeWidth="1"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 2.4 + i * 0.15 }}
-              />
-              <motion.text
-                x={x}
-                y="146"
-                textAnchor="middle"
-                fill="#22c55e"
-                fontSize="7"
-                fontWeight="bold"
-              >
-                {['Muscle Growth', 'Cell Division', 'Fat Metabolism'][i]}
-              </motion.text>
-            </motion.g>
-          ))}
-        </motion.g>
         
         <motion.text x="20" y="28" fill="#E7FB10" fontSize="8" fontWeight="bold"
           initial={{ opacity: 0 }}
