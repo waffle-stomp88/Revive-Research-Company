@@ -231,9 +231,9 @@ export function MolecularDNAVisual() {
               The Building Blocks of Innovation
             </span>
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Every compound is synthesized with exacting precision, verified through rigorous third-party testing, 
-            and delivered with complete transparency.
+          <p className="text-muted-foreground max-w-2xl mx-auto text-base md:text-lg">
+            Scan the QR. View the lab results. Know exactly what you're working with. 
+            No guesswork, no blind trust—just verifiable science.
           </p>
         </motion.div>
         
@@ -260,20 +260,20 @@ export function MolecularDNAVisual() {
                 transition={{ delay: 1.7 + index * 0.1 }}
               >
                 <motion.div
-                  className="w-14 h-14 mx-auto rounded-xl flex items-center justify-center mb-3"
+                  className="w-20 h-20 md:w-24 md:h-24 mx-auto rounded-2xl flex items-center justify-center mb-4"
                   style={{ 
-                    background: `linear-gradient(135deg, ${item.color}20 0%, ${item.color}10 100%)`,
-                    border: `1.5px solid ${item.color}40`,
-                    boxShadow: `0 0 20px ${item.color}20`
+                    background: `linear-gradient(135deg, ${item.color}25 0%, ${item.color}10 100%)`,
+                    border: `2px solid ${item.color}50`,
+                    boxShadow: `0 0 30px ${item.color}30`
                   }}
-                  whileHover={{ scale: 1.1, boxShadow: `0 0 30px ${item.color}40` }}
+                  whileHover={{ scale: 1.1, boxShadow: `0 0 50px ${item.color}50` }}
                 >
-                  <Icon className="h-6 w-6" style={{ color: item.color, filter: `drop-shadow(0 0 4px ${item.color})` }} />
+                  <Icon className="h-10 w-10 md:h-12 md:w-12" style={{ color: item.color, filter: `drop-shadow(0 0 6px ${item.color})` }} />
                 </motion.div>
-                <div className="font-display text-lg font-bold" style={{ color: item.color }}>
+                <div className="font-display text-xl md:text-2xl font-bold" style={{ color: item.color }}>
                   {item.value}
                 </div>
-                <div className="text-xs text-muted-foreground">{item.label}</div>
+                <div className="text-sm md:text-base text-muted-foreground">{item.label}</div>
               </motion.div>
             );
           })}
