@@ -503,7 +503,29 @@ function WoundClosureVisual({ isInView, progress }: { isInView: boolean; progres
   
   return (
     <div className="relative">
-      <svg viewBox="0 0 220 80" className="w-full h-auto" style={{ maxHeight: '180px' }}>
+      <div className="mb-2 text-center">
+        <motion.text 
+          className="text-xs" 
+          style={{ color: 'rgba(255,255,255,0.6)' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          {progress < 30 && "Wound open"}
+          {progress >= 30 && progress < 60 && "Cells migrating"}
+          {progress >= 60 && progress < 90 && "Gap closing"}
+          {progress >= 90 && "Healed!"}
+        </motion.text>
+        <motion.text 
+          className="text-xs font-semibold" 
+          style={{ color: '#21d8ff' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          {progress < 90 ? `${Math.round(progress)}%` : "Complete"}
+        </motion.text>
+      </div>
+
+      <svg viewBox="0 0 150 60" className="w-full h-auto" style={{ maxHeight: '140px' }}>
         <defs>
           <linearGradient id="tissueGradient" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="#ec4899" stopOpacity="0.3" />
@@ -512,117 +534,60 @@ function WoundClosureVisual({ isInView, progress }: { isInView: boolean; progres
         </defs>
         
         <motion.rect
-          x="15" y="20" width="65" height="35" rx="2"
+          x="10" y="12" width="60" height="36" rx="2"
           fill="url(#tissueGradient)"
           stroke="#ec4899"
           strokeWidth="1"
-          initial={{ x: 15 }}
-          animate={{ x: 15 + (progress * 0.2) }}
+          initial={{ x: 10 }}
+          animate={{ x: 10 + (progress * 0.15) }}
           transition={{ duration: 0.3 }}
         />
-        <motion.text x="48" y="42" textAnchor="middle" fill="#ec4899" fontSize="6" fontWeight="500"
-          initial={{ x: 48 }}
-          animate={{ x: 48 + (progress * 0.2) }}
+        <motion.text x="40" y="36" textAnchor="middle" fill="#ec4899" fontSize="7" fontWeight="600"
+          initial={{ x: 40 }}
+          animate={{ x: 40 + (progress * 0.15) }}
         >
           Wound Edge
         </motion.text>
         
         <motion.rect
-          x="140" y="20" width="65" height="35" rx="2"
-          fill="url(#tissueGradient)"
-          stroke="#ec4899"
-          strokeWidth="1"
-          initial={{ x: 140 }}
-          animate={{ x: 140 - (progress * 0.2) }}
-          transition={{ duration: 0.3 }}
-        />
-        <motion.text x="172" y="42" textAnchor="middle" fill="#ec4899" fontSize="6" fontWeight="500"
-          initial={{ x: 172 }}
-          animate={{ x: 172 - (progress * 0.2) }}
-        >
-          Wound Edge
-        </motion.text>
-        
-        <motion.rect
-          x={100 - woundGap/2}
-          y="20"
+          x={75 - woundGap/2}
+          y="12"
           width={woundGap}
-          height="35"
+          height="36"
           fill={progress < 80 ? "rgba(239, 68, 68, 0.2)" : "rgba(34, 197, 94, 0.3)"}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         />
         
-        {progress < 80 && (
-          <motion.text 
-            x="100" y="42" 
-            textAnchor="middle" 
-            fill={progress < 50 ? "#ef4444" : "#E7FB10"} 
-            fontSize="6"
-            fontWeight="bold"
-          >
-            {progress < 30 ? "GAP" : "Closing"}
-          </motion.text>
-        )}
-        
         {progress >= 80 && (
           <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <line x1="100" y1="20" x2="100" y2="55" stroke="#22c55e" strokeWidth="1.5" strokeDasharray="2,2" />
-            <motion.text x="100" y="42" textAnchor="middle" fill="#22c55e" fontSize="6" fontWeight="bold">
-              SEALED
-            </motion.text>
+            <line x1="75" y1="12" x2="75" y2="48" stroke="#22c55e" strokeWidth="1.5" strokeDasharray="2,2" />
           </motion.g>
         )}
         
-        {[0, 1, 2].map((i) => (
+        {[0, 1].map((i) => (
           <motion.circle
             key={`cell-left-${i}`}
-            r="2.5"
+            r="2"
             fill="#21d8ff"
             initial={{ opacity: 0 }}
             animate={progress > 20 ? {
-              cx: [78 + (progress * 0.2), 88 + (progress * 0.1), 100],
-              cy: [28 + i * 10, 32 + i * 8, 37 + i * 6],
+              cx: [65 + (progress * 0.15), 70 + (progress * 0.08), 75],
+              cy: [20 + i * 14, 24 + i * 10, 28 + i * 6],
               opacity: progress < 90 ? [0.3, 1, 0] : 0,
             } : {}}
             transition={{ duration: 2, delay: i * 0.3, repeat: Infinity }}
-            style={{ filter: 'drop-shadow(0 0 3px #21d8ff)' }}
+            style={{ filter: 'drop-shadow(0 0 2px #21d8ff)' }}
           />
         ))}
-        {[0, 1, 2].map((i) => (
-          <motion.circle
-            key={`cell-right-${i}`}
-            r="2.5"
-            fill="#21d8ff"
-            initial={{ opacity: 0 }}
-            animate={progress > 20 ? {
-              cx: [122 - (progress * 0.2), 112 - (progress * 0.1), 100],
-              cy: [28 + i * 10, 32 + i * 8, 37 + i * 6],
-              opacity: progress < 90 ? [0.3, 1, 0] : 0,
-            } : {}}
-            transition={{ duration: 2, delay: i * 0.3 + 0.15, repeat: Infinity }}
-            style={{ filter: 'drop-shadow(0 0 3px #21d8ff)' }}
-          />
-        ))}
-        
-        <motion.text x="100" y="68" textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="6">
-          {progress < 30 && "Wound open"}
-          {progress >= 30 && progress < 60 && "Cells migrating"}
-          {progress >= 60 && progress < 90 && "Gap closing"}
-          {progress >= 90 && "Healed!"}
-        </motion.text>
-        
-        <motion.text x="100" y="78" textAnchor="middle" fill="#21d8ff" fontSize="5" fontWeight="500">
-          {progress < 90 ? `${Math.round(progress)}%` : "Complete"}
-        </motion.text>
       </svg>
       
-      <div className="flex justify-center gap-4 mt-1.5 text-[8px] text-muted-foreground">
-        <div className="flex items-center gap-1">
+      <div className="flex justify-center gap-4 mt-2 text-[9px] text-muted-foreground">
+        <div className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded bg-[#ec4899]/40 border border-[#ec4899]"></span>
           <span>Tissue Edge</span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-[#21d8ff]" style={{ boxShadow: '0 0 3px #21d8ff' }}></span>
           <span>Cells</span>
         </div>
