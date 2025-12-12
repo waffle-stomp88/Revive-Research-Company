@@ -199,8 +199,8 @@ function App() {
             <div className="min-h-screen flex flex-col bg-background text-foreground select-none">
               <FreeShippingBanner />
               <Navigation />
-              <div className="flex-1 min-h-[60vh]">
-                <Suspense fallback={null}>
+              <div className="flex-1">
+                <Suspense fallback={<div className="min-h-[60vh]" />}>
                   <Router />
                 </Suspense>
               </div>
