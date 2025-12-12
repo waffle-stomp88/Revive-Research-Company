@@ -138,14 +138,15 @@ function PeptideSynergyAnimation({ isInView, activationLevel }: { isInView: bool
             {[0, 1, 2].map((i) => (
               <motion.path
                 key={`elastin-${i}`}
-                d={`M ${80 + i * 120} 200 Q ${75 + i * 120} 212 ${85 + i * 120} 218`}
+                d={`M ${100 + i * 100} 200 L ${100 + i * 100} 215`}
                 stroke="#f97316"
-                strokeWidth="2"
+                strokeWidth="2.5"
+                strokeLinecap="round"
                 fill="none"
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={activationLevel > 70 ? { pathLength: 1, opacity: 1 } : {}}
                 transition={{ duration: 1, delay: i * 0.2 }}
-                style={{ filter: 'drop-shadow(0 0 6px rgba(249, 115, 22, 0.6))' }}
+                style={{ filter: 'drop-shadow(0 0 6px rgba(249, 115, 22, 0.8))' }}
               />
             ))}
           </>
