@@ -630,10 +630,39 @@ const mechanisms = [
 export function TB500ActinVisual() {
   const containerRef = useRef<HTMLDivElement>(null);
   const woundRef = useRef<HTMLDivElement>(null);
+  const visualRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-50px" });
   const woundInView = useInView(woundRef, { margin: "-20px" });
+  const visualInView = useInView(visualRef, { margin: "-20px" });
   const [activeMechanism, setActiveMechanism] = useState<string>('actin');
   const [healingProgress, setHealingProgress] = useState(0);
+  const [mechanismProgress, setMechanismProgress] = useState(0);
+  const mechanismIds = ['actin', 'migration', 'differentiation', 'inflammation'];
+
+  // Auto-cycle through mechanisms
+  useEffect(() => {
+    if (!visualInView) return;
+    
+    const progressInterval = setInterval(() => {
+      setMechanismProgress(prev => {
+        if (prev >= 100) return 0;
+        return prev + 2; // ~100% over 5 seconds
+      });
+    }, 100);
+    
+    const switchInterval = setInterval(() => {
+      setActiveMechanism(prev => {
+        const currentIndex = mechanismIds.indexOf(prev);
+        return mechanismIds[(currentIndex + 1) % 4];
+      });
+      setMechanismProgress(0);
+    }, 5000);
+    
+    return () => {
+      clearInterval(progressInterval);
+      clearInterval(switchInterval);
+    };
+  }, [visualInView]);
 
   useEffect(() => {
     if (!woundInView) return;
@@ -691,6 +720,7 @@ export function TB500ActinVisual() {
       </motion.div>
 
       <div 
+        ref={visualRef}
         className="rounded-xl border p-6 mb-6"
         style={{ 
           borderColor: 'rgba(33, 216, 255, 0.3)',
@@ -699,7 +729,21 @@ export function TB500ActinVisual() {
       >
         <ActinFilamentAnimation isInView={isInView} activeMechanism={activeMechanism} />
         
-        <div className="mt-6">
+        {/* Auto-play progress bar */}
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <span className="text-[10px] text-muted-foreground">Auto-playing mechanism {mechanismIds.indexOf(activeMechanism) + 1}/4</span>
+          <div className="w-24 h-1 rounded-full bg-white/10 overflow-hidden">
+            <motion.div 
+              className="h-full rounded-full"
+              style={{ 
+                width: `${mechanismProgress}%`,
+                background: mechanisms.find(m => m.id === activeMechanism)?.color 
+              }}
+            />
+          </div>
+        </div>
+        
+        <div className="mt-2">
           <span className="text-xs text-muted-foreground uppercase tracking-wider mb-4 block">
             Mechanism of Action
           </span>
