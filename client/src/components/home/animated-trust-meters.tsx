@@ -161,7 +161,7 @@ function CircularProgress({ value, color, icon: Icon, label, size = 120, delay }
         >
           <Icon 
             className="h-6 w-6 mb-1" 
-            style={{ color, filter: `drop-shadow(0 0 4px ${color})` }} 
+            style={{ color }} 
           />
           <span className="font-display text-xl font-bold" style={{ color }}>
             <AnimatedCounter target={value} suffix="%" delay={delay + 0.5} />
