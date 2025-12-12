@@ -1,5 +1,5 @@
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Target, Check, X, Zap, Shield, Activity, Brain } from "lucide-react";
 
 function GHRPReceptorComparison({ isInView, showIpamorelin }: { isInView: boolean; showIpamorelin: boolean }) {
@@ -237,8 +237,21 @@ const comparisonPoints = [
 export function IpamorelinSelectivityVisual() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-50px" });
+  const visualRef = useRef<HTMLDivElement>(null);
+  const visualInView = useInView(visualRef, { margin: "-20px" });
   const [showIpamorelin, setShowIpamorelin] = useState(true);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
+
+  // Auto-rotate between Ipamorelin and Other GHRPs - slow enough to read
+  useEffect(() => {
+    if (!visualInView) return;
+    
+    const interval = setInterval(() => {
+      setShowIpamorelin(prev => !prev);
+    }, 8000); // 8 seconds per view
+    
+    return () => clearInterval(interval);
+  }, [visualInView]);
 
   return (
     <div ref={containerRef} className="relative">
@@ -310,7 +323,9 @@ export function IpamorelinSelectivityVisual() {
           </motion.button>
         </div>
         
-        <GHRPReceptorComparison isInView={isInView} showIpamorelin={showIpamorelin} />
+        <div ref={visualRef}>
+          <GHRPReceptorComparison isInView={isInView} showIpamorelin={showIpamorelin} />
+        </div>
         
         <div className="mt-6">
           <span className="text-xs text-muted-foreground uppercase tracking-wider mb-4 block">
