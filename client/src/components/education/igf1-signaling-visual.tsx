@@ -20,7 +20,7 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
         }}
       />
       
-      <svg viewBox="0 0 320 240" className="w-[320px] max-w-full h-auto">
+      <svg viewBox="0 0 320 240" className="w-[480px] max-w-full h-auto">
         <defs>
           <filter id="cascadeGlow">
             <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
@@ -217,7 +217,7 @@ export function IGF1SignalingVisual() {
   const cascadeInView = useInView(cascadeRef, { margin: "-20px" });
   const [activeStep, setActiveStep] = useState(0);
 
-  // Auto-play animation when visible
+  // Auto-play animation when visible - slower timing for readability
   useEffect(() => {
     if (!cascadeInView) return;
     
@@ -233,10 +233,10 @@ export function IGF1SignalingVisual() {
           clearInterval(interval);
           setTimeout(() => {
             setActiveStep(0);
-            setTimeout(runAnimationCycle, 1000);
-          }, 2500);
+            setTimeout(runAnimationCycle, 2000);
+          }, 4000);
         }
-      }, 600);
+      }, 1500);
       
       return interval;
     };
