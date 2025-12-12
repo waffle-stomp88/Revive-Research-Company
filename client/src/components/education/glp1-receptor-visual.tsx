@@ -169,13 +169,13 @@ function CellMembraneWithReceptors({ isInView, activeReceptors, peptide }: {
           return (
             <motion.g key={`peptide-${idx}`}>
               <motion.circle
-                r="8"
+                r="7"
                 fill={receptor.color}
                 initial={{ opacity: 0, cy: 10, cx: receptor.x }}
                 animate={isInView ? {
                   opacity: [0, 1, 1, 1],
-                  cy: [10, 40, 65, 65],
-                  scale: [1, 1, 1.2, 1]
+                  cy: [10, 40, 75, 75],
+                  scale: [1, 1, 1.3, 1]
                 } : {}}
                 transition={{ duration: 1.5, delay: 0.8 + idx * 0.2 }}
                 style={{ filter: `drop-shadow(0 0 8px ${receptor.color})` }}
