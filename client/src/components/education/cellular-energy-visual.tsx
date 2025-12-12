@@ -25,45 +25,65 @@ function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
   
   return (
     <div ref={containerRef} className="relative mb-8">
-      <div className="text-center mb-4">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#9d4edd]/10 border border-[#9d4edd]/30">
-          <Dna className="h-4 w-4 text-[#9d4edd]" />
-          <span className="text-xs font-medium text-[#9d4edd]">Mitochondrial DNA Origin</span>
-        </div>
+      {/* Background glow effect */}
+      <div className="absolute inset-0 h-full w-full rounded-2xl bg-gradient-to-b from-[#9d4edd]/10 to-transparent blur-3xl -z-10" />
+      
+      <div className="text-center mb-6">
+        <motion.div 
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border"
+          style={{
+            background: 'linear-gradient(135deg, rgba(157, 78, 221, 0.15) 0%, rgba(33, 216, 255, 0.05) 100%)',
+            borderColor: '#9d4edd',
+            borderWidth: '1.5px',
+            boxShadow: '0 0 20px rgba(157, 78, 221, 0.4)'
+          }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={isInView ? { opacity: 1, scale: 1 } : {}}
+          transition={{ delay: 0.2 }}
+        >
+          <Dna className="h-5 w-5 text-[#E7FB10]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+          <span className="text-sm font-bold bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent">
+            Mitochondrial DNA Origin
+          </span>
+        </motion.div>
       </div>
       
-      <div className="relative flex flex-col items-center">
+      <div className="relative flex flex-col items-center py-6">
         {/* Central DNA Double Helix */}
         <div className="relative w-full max-w-md mx-auto">
           {/* DNA Helix Visual */}
           <svg 
             viewBox="0 0 300 120" 
             className="w-full h-auto"
-            style={{ filter: 'drop-shadow(0 0 10px rgba(157, 78, 221, 0.3))' }}
+            style={{ filter: 'drop-shadow(0 0 25px rgba(231, 251, 16, 0.4)) drop-shadow(0 0 40px rgba(33, 216, 255, 0.2))' }}
           >
-            {/* Background glow */}
+            {/* Enhanced gradients with more vibrant colors */}
             <defs>
-              <linearGradient id="dnaGlow" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#9d4edd" stopOpacity="0" />
-                <stop offset="50%" stopColor="#9d4edd" stopOpacity="0.3" />
-                <stop offset="100%" stopColor="#9d4edd" stopOpacity="0" />
-              </linearGradient>
               <linearGradient id="strandGradient1" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#E7FB10" />
-                <stop offset="25%" stopColor="#21d8ff" />
-                <stop offset="50%" stopColor="#9d4edd" />
-                <stop offset="75%" stopColor="#ec4899" />
-                <stop offset="100%" stopColor="#E7FB10" />
+                <stop offset="0%" stopColor="#E7FB10" stopOpacity="1" />
+                <stop offset="20%" stopColor="#21d8ff" stopOpacity="1" />
+                <stop offset="40%" stopColor="#9d4edd" stopOpacity="1" />
+                <stop offset="60%" stopColor="#ec4899" stopOpacity="1" />
+                <stop offset="80%" stopColor="#21d8ff" stopOpacity="1" />
+                <stop offset="100%" stopColor="#E7FB10" stopOpacity="1" />
               </linearGradient>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
             </defs>
             
-            {/* DNA backbone strands */}
+            {/* DNA backbone strands - thicker and more vibrant */}
             <motion.path
               d="M 20 60 Q 50 20, 80 60 Q 110 100, 140 60 Q 170 20, 200 60 Q 230 100, 260 60 Q 290 20, 320 60"
               fill="none"
               stroke="url(#strandGradient1)"
-              strokeWidth="3"
+              strokeWidth="5"
               strokeLinecap="round"
+              filter="url(#glow)"
               initial={{ pathLength: 0 }}
               animate={isInView ? { pathLength: 1 } : {}}
               transition={{ duration: 2, ease: "easeInOut" }}
@@ -72,8 +92,9 @@ function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
               d="M 20 60 Q 50 100, 80 60 Q 110 20, 140 60 Q 170 100, 200 60 Q 230 20, 260 60 Q 290 100, 320 60"
               fill="none"
               stroke="url(#strandGradient1)"
-              strokeWidth="3"
+              strokeWidth="5"
               strokeLinecap="round"
+              filter="url(#glow)"
               initial={{ pathLength: 0 }}
               animate={isInView ? { pathLength: 1 } : {}}
               transition={{ duration: 2, ease: "easeInOut", delay: 0.2 }}
@@ -87,51 +108,85 @@ function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
               
               return (
                 <motion.g key={index}>
+                  {/* Enhanced glowing line */}
                   <motion.line
                     x1={x}
                     y1={35}
                     x2={x}
                     y2={85}
                     stroke={basePairColors[index]}
-                    strokeWidth={isActive ? 4 : 2}
+                    strokeWidth={isActive ? 6 : 3}
                     strokeLinecap="round"
                     initial={{ scaleY: 0 }}
                     animate={isInView ? { scaleY: 1 } : {}}
                     transition={{ duration: 0.5, delay: 0.8 + index * 0.15 }}
                     style={{ 
                       transformOrigin: `${x}px 60px`,
-                      filter: isActive ? `drop-shadow(0 0 8px ${basePairColors[index]})` : 'none'
+                      filter: `drop-shadow(0 0 ${isActive ? '12' : '6'}px ${basePairColors[index]})`
                     }}
                   />
+                  {/* Outer glow ring */}
                   <motion.circle
                     cx={x}
                     cy={35}
-                    r={isActive ? 6 : 4}
+                    r={isActive ? 10 : 7}
+                    fill="none"
+                    stroke={basePairColors[index]}
+                    strokeWidth="1"
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={isInView ? { scale: 1, opacity: [0.3, 0.6, 0.3] } : {}}
+                    transition={{ duration: 0.3, delay: 1.2 + index * 0.15, repeat: Infinity, repeatType: 'reverse' }}
+                    style={{ 
+                      transformOrigin: `${x}px 35px`,
+                      filter: `drop-shadow(0 0 8px ${basePairColors[index]})`
+                    }}
+                  />
+                  {/* Inner bright circle */}
+                  <motion.circle
+                    cx={x}
+                    cy={35}
+                    r={isActive ? 7 : 5}
                     fill={basePairColors[index]}
                     initial={{ scale: 0 }}
                     animate={isInView ? { scale: 1 } : {}}
                     transition={{ duration: 0.3, delay: 1.2 + index * 0.15 }}
                     style={{ 
-                      filter: isActive ? `drop-shadow(0 0 6px ${basePairColors[index]})` : 'none'
+                      filter: `drop-shadow(0 0 10px ${basePairColors[index]})`
+                    }}
+                  />
+                  {/* Bottom circle with glow */}
+                  <motion.circle
+                    cx={x}
+                    cy={85}
+                    r={isActive ? 10 : 7}
+                    fill="none"
+                    stroke={basePairColors[index]}
+                    strokeWidth="1"
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={isInView ? { scale: 1, opacity: [0.3, 0.6, 0.3] } : {}}
+                    transition={{ duration: 0.3, delay: 1.2 + index * 0.15, repeat: Infinity, repeatType: 'reverse' }}
+                    style={{ 
+                      transformOrigin: `${x}px 85px`,
+                      filter: `drop-shadow(0 0 8px ${basePairColors[index]})`
                     }}
                   />
                   <motion.circle
                     cx={x}
                     cy={85}
-                    r={isActive ? 6 : 4}
+                    r={isActive ? 7 : 5}
                     fill={basePairColors[index]}
                     initial={{ scale: 0 }}
                     animate={isInView ? { scale: 1 } : {}}
                     transition={{ duration: 0.3, delay: 1.2 + index * 0.15 }}
                     style={{ 
-                      filter: isActive ? `drop-shadow(0 0 6px ${basePairColors[index]})` : 'none'
+                      filter: `drop-shadow(0 0 10px ${basePairColors[index]})`
                     }}
                   />
                 </motion.g>
               );
             })}
             
-            {/* MOTS-c gene highlight */}
+            {/* MOTS-c gene highlight - more vibrant */}
             <motion.rect
               x={100}
               y={25}
@@ -139,61 +194,77 @@ function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
               height={70}
               rx={8}
               fill="none"
-              stroke="#9d4edd"
+              stroke="#E7FB10"
               strokeWidth="2"
               strokeDasharray="5,5"
               initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: [0, 1, 0.5, 1] } : {}}
-              transition={{ duration: 2, delay: 1.5, repeat: Infinity, repeatType: "reverse" }}
+              animate={isInView ? { opacity: [0.3, 1, 0.3], strokeDashoffset: [10, 0, 10] } : {}}
+              transition={{ duration: 2, delay: 1.5, repeat: Infinity }}
+              style={{ 
+                filter: 'drop-shadow(0 0 12px rgba(231, 251, 16, 0.6))'
+              }}
             />
             
-            {/* MOTS-c label */}
+            {/* MOTS-c label - bright and glowing */}
             <motion.text
               x={150}
-              y={18}
+              y={16}
               textAnchor="middle"
-              fill="#9d4edd"
-              fontSize="10"
-              fontWeight="bold"
+              fill="#E7FB10"
+              fontSize="11"
+              fontWeight="900"
               initial={{ opacity: 0 }}
               animate={isInView ? { opacity: 1 } : {}}
               transition={{ delay: 1.8 }}
+              style={{ 
+                textShadow: '0 0 8px rgba(231, 251, 16, 0.8)',
+                filter: 'drop-shadow(0 0 6px rgba(231, 251, 16, 0.7))'
+              }}
             >
               MOTS-c Gene
             </motion.text>
           </svg>
           
-          {/* Animated particles along DNA */}
-          <motion.div
-            className="absolute top-1/2 left-0 w-3 h-3 rounded-full bg-[#E7FB10]"
-            style={{ filter: 'blur(1px)' }}
-            animate={{
-              x: [0, 300, 0],
-              y: [-15, 15, -15, 15, -15],
-              opacity: [0, 1, 1, 1, 0]
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-          />
+          {/* Multiple animated particles along DNA */}
+          {[0, 1, 2].map((particle) => (
+            <motion.div
+              key={`particle-${particle}`}
+              className="absolute w-2 h-2 rounded-full"
+              style={{ 
+                background: ['#E7FB10', '#21d8ff', '#ec4899'][particle],
+                filter: `blur(0.5px) drop-shadow(0 0 6px ${['#E7FB10', '#21d8ff', '#ec4899'][particle]})`
+              }}
+              animate={{
+                x: [0, 280, 0],
+                y: [-15 + particle * 5, 15 - particle * 5, -15 + particle * 5],
+                opacity: [0, 1, 1, 1, 0]
+              }}
+              transition={{
+                duration: 4 + particle * 0.5,
+                repeat: Infinity,
+                ease: "linear",
+                delay: particle * 1
+              }}
+            />
+          ))}
         </div>
         
         {/* Pathway connections from DNA */}
-        <div className="mt-6 relative w-full">
+        <div className="mt-8 relative w-full px-4">
           <motion.div
-            className="flex justify-center items-center gap-2 mb-4"
+            className="flex justify-center items-center gap-2 mb-6"
             initial={{ opacity: 0, y: 10 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 2 }}
           >
-            <Atom className="h-4 w-4 text-[#9d4edd]" />
-            <span className="text-xs text-muted-foreground">Peptide activates multiple cellular pathways</span>
+            <Atom className="h-5 w-5 text-[#E7FB10]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
+            <span className="text-sm font-medium bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#ec4899] bg-clip-text text-transparent">
+              Peptide activates multiple cellular pathways
+            </span>
           </motion.div>
           
           {/* Connection lines to pathways */}
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-4 gap-3">
             {pathways.map((pathway, index) => {
               const Icon = pathway.icon;
               const isActive = activePathway === index;
@@ -208,32 +279,42 @@ function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
                   onMouseEnter={() => setActivePathway(index)}
                   onMouseLeave={() => setActivePathway(null)}
                 >
-                  {/* Vertical connection line */}
+                  {/* Animated connection line */}
                   <motion.div
-                    className="w-0.5 h-6 mb-2"
-                    style={{ backgroundColor: pathway.color }}
+                    className="w-1 h-8 mb-2 rounded-full"
+                    style={{ 
+                      background: `linear-gradient(180deg, ${pathway.color}, transparent)`,
+                      boxShadow: isActive ? `0 0 12px ${pathway.color}` : 'none'
+                    }}
                     initial={{ scaleY: 0 }}
                     animate={isInView ? { scaleY: 1 } : {}}
                     transition={{ delay: 2.4 + index * 0.1 }}
                   />
                   
-                  {/* Pathway node */}
+                  {/* Enhanced pathway node */}
                   <motion.div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center transition-all"
+                    className="w-12 h-12 rounded-xl flex items-center justify-center transition-all relative"
                     style={{ 
-                      backgroundColor: `${pathway.color}20`,
-                      border: `2px solid ${pathway.color}`,
-                      boxShadow: isActive ? `0 0 15px ${pathway.color}50` : 'none'
+                      background: `linear-gradient(135deg, ${pathway.color}30 0%, ${pathway.color}10 100%)`,
+                      border: `2.5px solid ${pathway.color}`,
+                      boxShadow: isActive 
+                        ? `0 0 25px ${pathway.color}80, inset 0 0 15px ${pathway.color}40` 
+                        : `0 0 15px ${pathway.color}40`
                     }}
-                    whileHover={{ scale: 1.1 }}
+                    whileHover={{ scale: 1.15, boxShadow: `0 0 30px ${pathway.color}` }}
+                    animate={isActive ? { scale: 1.1 } : {}}
                   >
-                    <Icon className="h-5 w-5" style={{ color: pathway.color }} />
+                    <Icon className="h-6 w-6" style={{ color: pathway.color, filter: `drop-shadow(0 0 4px ${pathway.color})` }} />
                   </motion.div>
                   
-                  {/* Pathway label */}
+                  {/* Pathway label - colorful */}
                   <span 
-                    className="text-[10px] font-medium text-center mt-1.5 leading-tight"
-                    style={{ color: isActive ? pathway.color : 'inherit' }}
+                    className="text-[11px] font-bold text-center mt-2 leading-tight"
+                    style={{ 
+                      color: pathway.color,
+                      textShadow: isActive ? `0 0 8px ${pathway.color}` : 'none',
+                      fontSize: isActive ? '12px' : '11px'
+                    }}
                   >
                     {pathway.name.split(' ')[0]}
                   </span>
@@ -244,20 +325,26 @@ function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
         </div>
       </div>
       
-      {/* Legend */}
+      {/* Enhanced Legend */}
       <motion.div
-        className="mt-6 flex justify-center"
+        className="mt-8 flex justify-center"
         initial={{ opacity: 0 }}
         animate={isInView ? { opacity: 1 } : {}}
         transition={{ delay: 2.8 }}
       >
-        <div className="inline-flex items-center gap-4 px-4 py-2 rounded-lg bg-muted/30 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-[#9d4edd]"></span>
+        <div className="inline-flex items-center gap-6 px-6 py-3 rounded-xl text-xs font-medium"
+          style={{
+            background: 'linear-gradient(135deg, rgba(157, 78, 221, 0.1) 0%, rgba(33, 216, 255, 0.05) 100%)',
+            border: '1px solid rgba(231, 251, 16, 0.3)',
+            boxShadow: '0 0 15px rgba(231, 251, 16, 0.15)'
+          }}
+        >
+          <span className="flex items-center gap-2 text-[#E7FB10]">
+            <span className="w-3 h-3 rounded-full bg-[#E7FB10]" style={{ boxShadow: '0 0 8px #E7FB10' }}></span>
             mtDNA encoded
           </span>
-          <span className="flex items-center gap-1">
-            <span className="w-6 h-0.5 bg-gradient-to-r from-[#E7FB10] to-[#ec4899]"></span>
+          <span className="flex items-center gap-2 text-[#21d8ff]">
+            <span className="w-8 h-0.5 rounded-full bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#ec4899]" style={{ boxShadow: '0 0 8px rgba(33, 216, 255, 0.6)' }}></span>
             Double helix
           </span>
         </div>
