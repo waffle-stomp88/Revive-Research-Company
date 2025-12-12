@@ -12,7 +12,6 @@ import { AgeVerificationModal } from "@/components/age-verification-modal";
 import { FreeShippingBanner } from "@/components/free-shipping-banner";
 import { initGA } from "@/lib/analytics";
 import { useAnalytics } from "@/hooks/use-analytics";
-import { Loader2 } from "lucide-react";
 
 const Home = lazy(() => import("@/pages/home"));
 const Products = lazy(() => import("@/pages/products"));
@@ -58,17 +57,9 @@ const NotFound = lazy(() => import("@/pages/not-found"));
 const ChatBot = lazy(() => import("@/components/chatbot").then(m => ({ default: m.ChatBot })));
 const BackToTopButton = lazy(() => import("@/components/back-to-top-button").then(m => ({ default: m.BackToTopButton })));
 
-function PageLoader() {
-  return (
-    <div className="min-h-[60vh] flex items-center justify-center">
-      <Loader2 className="h-8 w-8 animate-spin text-[#E7FB10]" />
-    </div>
-  );
-}
-
 function LazyRoute({ component: Component, ...props }: { component: React.LazyExoticComponent<React.ComponentType<any>> } & Record<string, any>) {
   return (
-    <Suspense fallback={<PageLoader />}>
+    <Suspense fallback={null}>
       <Component {...props} />
     </Suspense>
   );
@@ -209,7 +200,7 @@ function App() {
               <FreeShippingBanner />
               <Navigation />
               <div className="flex-1">
-                <Suspense fallback={<PageLoader />}>
+                <Suspense fallback={null}>
                   <Router />
                 </Suspense>
               </div>
