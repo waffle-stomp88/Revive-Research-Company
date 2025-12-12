@@ -1,5 +1,5 @@
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Battery, Zap, Activity, Dna, Sparkles, TrendingUp } from "lucide-react";
 
 function MitochondriaAnimation({ isInView, activePathway }: { isInView: boolean; activePathway: number }) {
@@ -221,7 +221,34 @@ const nadPathways = [
 export function NADSirtuinVisual() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-50px" });
+  const visualRef = useRef<HTMLDivElement>(null);
+  const visualInView = useInView(visualRef, { margin: "-20px" });
   const [activePathway, setActivePathway] = useState(0);
+  const [progress, setProgress] = useState(0);
+
+  // Auto-cycle through pathways - slow enough to read
+  useEffect(() => {
+    if (!visualInView) return;
+    
+    // Progress bar animation
+    const progressInterval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) return 0;
+        return prev + 1.43; // ~100% over 7 seconds (70 ticks at 100ms)
+      });
+    }, 100);
+    
+    // Switch pathway every 7 seconds
+    const switchInterval = setInterval(() => {
+      setActivePathway(prev => (prev + 1) % 4);
+      setProgress(0);
+    }, 7000);
+    
+    return () => {
+      clearInterval(progressInterval);
+      clearInterval(switchInterval);
+    };
+  }, [visualInView]);
 
   return (
     <div ref={containerRef} className="relative">
@@ -256,6 +283,7 @@ export function NADSirtuinVisual() {
       </motion.div>
 
       <div 
+        ref={visualRef}
         className="rounded-xl border p-6 mb-6"
         style={{ 
           borderColor: 'rgba(33, 216, 255, 0.3)',
@@ -263,6 +291,20 @@ export function NADSirtuinVisual() {
         }}
       >
         <MitochondriaAnimation isInView={isInView} activePathway={activePathway} />
+        
+        {/* Auto-play progress bar */}
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <span className="text-[10px] text-muted-foreground">Auto-playing pathway {activePathway + 1}/4</span>
+          <div className="w-24 h-1 rounded-full bg-white/10 overflow-hidden">
+            <motion.div 
+              className="h-full rounded-full"
+              style={{ 
+                width: `${progress}%`,
+                background: nadPathways[activePathway].color 
+              }}
+            />
+          </div>
+        </div>
         
         <div className="mt-6">
           <span className="text-xs text-muted-foreground uppercase tracking-wider mb-4 block">
