@@ -503,10 +503,10 @@ function WoundClosureVisual({ isInView, progress }: { isInView: boolean; progres
   
   return (
     <div className="relative">
-      <div className="mb-2 text-center">
-        <motion.text 
-          className="text-xs" 
-          style={{ color: 'rgba(255,255,255,0.6)' }}
+      <div className="mb-4 text-center space-y-1.5">
+        <motion.div 
+          className="text-sm font-semibold"
+          style={{ color: 'rgba(255,255,255,0.7)' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
@@ -514,15 +514,15 @@ function WoundClosureVisual({ isInView, progress }: { isInView: boolean; progres
           {progress >= 30 && progress < 60 && "Cells migrating"}
           {progress >= 60 && progress < 90 && "Gap closing"}
           {progress >= 90 && "Healed!"}
-        </motion.text>
-        <motion.text 
-          className="text-xs font-semibold" 
+        </motion.div>
+        <motion.div 
+          className="text-base font-bold" 
           style={{ color: '#21d8ff' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
           {progress < 90 ? `${Math.round(progress)}%` : "Complete"}
-        </motion.text>
+        </motion.div>
       </div>
 
       <svg viewBox="0 0 150 60" className="w-full h-auto" style={{ maxHeight: '140px' }}>
