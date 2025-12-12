@@ -525,62 +525,62 @@ function WoundClosureVisual({ isInView, progress }: { isInView: boolean; progres
         </motion.div>
       </div>
 
-      <svg viewBox="0 0 150 60" className="w-full h-auto" style={{ maxHeight: '140px' }}>
-        <defs>
-          <linearGradient id="tissueGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#ec4899" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#ec4899" stopOpacity="0.1" />
-          </linearGradient>
-        </defs>
-        
-        <motion.rect
-          x="10" y="12" width="60" height="36" rx="2"
-          fill="url(#tissueGradient)"
-          stroke="#ec4899"
-          strokeWidth="1"
-          initial={{ x: 10 }}
-          animate={{ x: 10 + (progress * 0.15) }}
-          transition={{ duration: 0.3 }}
-        />
-        <motion.text x="40" y="36" textAnchor="middle" fill="#ec4899" fontSize="7" fontWeight="600"
-          initial={{ x: 40 }}
-          animate={{ x: 40 + (progress * 0.15) }}
-        >
-          Wound Edge
-        </motion.text>
-        
-        <motion.rect
-          x={75 - woundGap/2}
-          y="12"
-          width={woundGap}
-          height="36"
-          fill={progress < 80 ? "rgba(239, 68, 68, 0.2)" : "rgba(34, 197, 94, 0.3)"}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        />
-        
-        {progress >= 80 && (
-          <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <line x1="75" y1="12" x2="75" y2="48" stroke="#22c55e" strokeWidth="1.5" strokeDasharray="2,2" />
-          </motion.g>
-        )}
-        
-        {[0, 1].map((i) => (
-          <motion.circle
-            key={`cell-left-${i}`}
-            r="2"
-            fill="#21d8ff"
-            initial={{ opacity: 0 }}
-            animate={progress > 20 ? {
-              cx: [65 + (progress * 0.15), 70 + (progress * 0.08), 75],
-              cy: [20 + i * 14, 24 + i * 10, 28 + i * 6],
-              opacity: progress < 90 ? [0.3, 1, 0] : 0,
-            } : {}}
-            transition={{ duration: 2, delay: i * 0.3, repeat: Infinity }}
-            style={{ filter: 'drop-shadow(0 0 2px #21d8ff)' }}
+      <div className="flex items-center gap-3">
+        <svg viewBox="0 0 100 60" className="flex-1 h-auto" style={{ maxHeight: '140px' }}>
+          <defs>
+            <linearGradient id="tissueGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#ec4899" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#ec4899" stopOpacity="0.1" />
+            </linearGradient>
+          </defs>
+          
+          <motion.rect
+            x="5" y="12" width="60" height="36" rx="2"
+            fill="url(#tissueGradient)"
+            stroke="#ec4899"
+            strokeWidth="1"
+            initial={{ x: 5 }}
+            animate={{ x: 5 + (progress * 0.15) }}
+            transition={{ duration: 0.3 }}
           />
-        ))}
-      </svg>
+          
+          <motion.rect
+            x={50 - woundGap/2}
+            y="12"
+            width={woundGap}
+            height="36"
+            fill={progress < 80 ? "rgba(239, 68, 68, 0.2)" : "rgba(34, 197, 94, 0.3)"}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          />
+          
+          {progress >= 80 && (
+            <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+              <line x1="50" y1="12" x2="50" y2="48" stroke="#22c55e" strokeWidth="1.5" strokeDasharray="2,2" />
+            </motion.g>
+          )}
+          
+          {[0, 1].map((i) => (
+            <motion.circle
+              key={`cell-left-${i}`}
+              r="2"
+              fill="#21d8ff"
+              initial={{ opacity: 0 }}
+              animate={progress > 20 ? {
+                cx: [45 + (progress * 0.15), 48 + (progress * 0.08), 50],
+                cy: [20 + i * 14, 24 + i * 10, 28 + i * 6],
+                opacity: progress < 90 ? [0.3, 1, 0] : 0,
+              } : {}}
+              transition={{ duration: 2, delay: i * 0.3, repeat: Infinity }}
+              style={{ filter: 'drop-shadow(0 0 2px #21d8ff)' }}
+            />
+          ))}
+        </svg>
+        
+        <div className="text-center">
+          <div className="text-sm font-semibold text-[#ec4899] mb-2">Wound Edge</div>
+        </div>
+      </div>
       
       <div className="flex justify-center gap-4 mt-2 text-[9px] text-muted-foreground">
         <div className="flex items-center gap-1.5">
