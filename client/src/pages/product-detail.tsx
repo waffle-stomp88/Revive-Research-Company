@@ -376,7 +376,7 @@ export default function ProductDetail() {
               <div className={`relative aspect-square sticky top-24 overflow-hidden rounded-lg ${isOutOfStock ? 'border-2 border-red-500' : ''}`}>
                 <ImageLoader 
                   src={product.imageUrl || productImage} 
-                  alt={product.name}
+                  alt={`${product.name} ${selectedDosage} research peptide - COA verified`}
                   className={`w-full h-full object-contain p-6 ${isOutOfStock ? 'opacity-60' : ''}`}
                   containerClassName="relative w-full h-full bg-gradient-to-br from-muted to-muted/50 overflow-hidden rounded-lg"
                 />

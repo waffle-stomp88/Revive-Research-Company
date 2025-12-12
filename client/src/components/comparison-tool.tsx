@@ -161,7 +161,7 @@ export function CompareBar({ products }: CompareBarProps) {
                 <div className="w-10 h-10 rounded-md bg-gradient-to-br from-muted to-muted/50 overflow-hidden">
                   <img 
                     src={product.imageUrl || productImage} 
-                    alt={product.name}
+                    alt={`${product.name} research peptide`}
                     className="w-full h-full object-contain p-1"
                   />
                 </div>
@@ -266,7 +266,7 @@ function CompareModal({ products, isOpen, onClose }: CompareModalProps) {
                 <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-lg overflow-hidden">
                   <img 
                     src={product.imageUrl || productImage} 
-                    alt={product.name}
+                    alt={`${product.name} research peptide - lab tested`}
                     className="w-full h-full object-contain p-4"
                   />
                 </div>

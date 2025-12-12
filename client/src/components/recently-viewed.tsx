@@ -90,7 +90,7 @@ export function RecentlyViewed({ currentProductId, variant = "sidebar" }: Recent
                 <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-md mb-2 overflow-hidden">
                   <img 
                     src={product.imageUrl || productImage} 
-                    alt={product.name}
+                    alt={`${product.name} research peptide`}
                     className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
@@ -170,7 +170,7 @@ export function RecentlyViewed({ currentProductId, variant = "sidebar" }: Recent
                       <div className="w-8 h-8 rounded bg-gradient-to-br from-muted to-muted/50 overflow-hidden flex-shrink-0">
                         <img 
                           src={product.imageUrl || productImage} 
-                          alt={product.name}
+                          alt={`${product.name} research peptide`}
                           className="w-full h-full object-contain"
                         />
                       </div>

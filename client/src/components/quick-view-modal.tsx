@@ -60,7 +60,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
           <div className="relative aspect-square bg-gradient-to-br from-muted to-muted/50 overflow-hidden">
             <ImageLoader
               src={product.imageUrl || productImage}
-              alt={product.name}
+              alt={`${product.name} research peptide - lab verified compound`}
               className="w-full h-full object-contain p-8"
               containerClassName="relative w-full h-full"
             />

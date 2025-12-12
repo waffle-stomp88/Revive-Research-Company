@@ -150,7 +150,7 @@ export default function BulkPacks() {
                       <div className="relative aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-lg mb-3 overflow-hidden">
                         <img
                           src={product.imageUrl || productImage}
-                          alt={product.name}
+                          alt={`${product.name} bulk pack research peptide`}
                           className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform"
                         />
                         <Badge className="absolute top-2 left-2 bg-green-500/90 text-white text-[10px]">

@@ -603,7 +603,7 @@ export default function Products() {
                         <div className="w-40 h-40 md:w-48 md:h-48 bg-muted/50 rounded-lg overflow-hidden flex-shrink-0 border border-red-500/20">
                           <img 
                             src={saleProduct.imageUrl || productImage} 
-                            alt={saleProduct.name}
+                            alt={`${saleProduct.name} research peptide - premium quality lab tested compound`}
                             className="w-full h-full object-contain p-3 group-hover:scale-110 transition-transform"
                           />
                         </div>
@@ -755,7 +755,7 @@ export default function Products() {
                               <div className="relative aspect-[4/3] mb-3 rounded-md overflow-hidden">
                                 <ImageLoader 
                                   src={product.imageUrl || productImage} 
-                                  alt={product.name}
+                                  alt={`${product.name} research peptide - third party lab tested`}
                                   className="w-full h-full object-contain transition-transform duration-300 p-3 group-hover:scale-105"
                                   containerClassName="relative w-full h-full bg-gradient-to-br from-muted to-muted/50 overflow-hidden rounded-md"
                                 />

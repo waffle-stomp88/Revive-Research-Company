@@ -570,7 +570,7 @@ export default function Checkout() {
                       <div className="w-16 h-16 bg-gradient-to-br from-muted to-muted/50 rounded-md flex items-center justify-center flex-shrink-0 overflow-hidden">
                         <img 
                           src={productImage} 
-                          alt={item.name}
+                          alt={`${item.name} ${item.dosage} research peptide`}
                           className="w-full h-full object-contain p-1"
                         />
                       </div>
@@ -1050,7 +1050,7 @@ export default function Checkout() {
                 <div className="w-16 h-16 bg-gradient-to-br from-muted to-muted/50 rounded-md flex items-center justify-center flex-shrink-0 overflow-hidden">
                   <img 
                     src={productImage} 
-                    alt={product!.name}
+                    alt={`${product!.name} research peptide`}
                     className="w-full h-full object-contain p-1"
                   />
                 </div>

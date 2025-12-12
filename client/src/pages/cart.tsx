@@ -186,7 +186,7 @@ export default function CartPage() {
                     >
                       <img
                         src={productImage}
-                        alt={item.name}
+                        alt={`${item.name} ${item.dosage} research peptide`}
                         className="w-full h-full object-contain p-2"
                       />
                     </Link>

@@ -446,7 +446,7 @@ function ProductShowcase() {
                       <div className="aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center relative overflow-hidden">
                         <img 
                           src={bottleImage} 
-                          alt={product.name}
+                          alt={`${product.name} research peptide - premium quality`}
                           className="h-4/5 w-4/5 object-contain p-2 group-hover:scale-110 transition-transform duration-300"
                         />
                         {product.isWeeklyDeal && (

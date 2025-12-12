@@ -404,7 +404,7 @@ export function Navigation() {
                             >
                               <div className="w-10 h-10 rounded-lg bg-muted/50 flex-shrink-0 overflow-hidden border border-border/50">
                                 {item.image ? (
-                                  <img src={item.image} alt={item.name} className="w-full h-full object-contain p-1" />
+                                  <img src={item.image} alt={`${item.name} ${item.dosage} research peptide`} className="w-full h-full object-contain p-1" />
                                 ) : (
                                   <div className="flex items-center justify-center h-full bg-[#E7FB10]/10">
                                     <Package className="h-5 w-5 text-[#E7FB10]" />
@@ -445,7 +445,7 @@ export function Navigation() {
                               >
                                 <div className="w-10 h-10 rounded-lg bg-muted/50 flex-shrink-0 overflow-hidden border border-border/50">
                                   {bundle.image ? (
-                                    <img src={bundle.image} alt={bundle.name} className="w-full h-full object-contain p-1" />
+                                    <img src={bundle.image} alt={`${bundle.name} research bundle`} className="w-full h-full object-contain p-1" />
                                   ) : (
                                     <div className="flex items-center justify-center h-full bg-[#21d8ff]/10">
                                       <Package className="h-5 w-5 text-[#21d8ff]" />
