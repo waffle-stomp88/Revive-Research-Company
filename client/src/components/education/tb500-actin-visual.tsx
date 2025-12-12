@@ -525,7 +525,7 @@ function WoundClosureVisual({ isInView, progress }: { isInView: boolean; progres
         </motion.div>
       </div>
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center justify-center gap-1">
         <svg viewBox="0 0 100 60" className="h-auto" style={{ maxHeight: '140px', maxWidth: '200px' }}>
           <defs>
             <linearGradient id="tissueGradient" x1="0%" y1="0%" x2="0%" y2="100%">
