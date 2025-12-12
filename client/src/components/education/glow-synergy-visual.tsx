@@ -289,10 +289,6 @@ export function GLOWSynergyVisual() {
         <div ref={glowRef}>
           <GLOWSynergyAnimation isInView={isInView} activationLevel={activationLevel} />
         </div>
-        
-        <div className="mt-8 text-center">
-          <span className="text-xs text-[#E7FB10]/60 italic">Animation cycles every 8 seconds</span>
-        </div>
 
         {/* Detailed explanation cards */}
         <div className="grid md:grid-cols-3 gap-4 mt-8">
