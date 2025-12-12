@@ -350,13 +350,38 @@ export default function CoaVerification() {
         </AnimatePresence>
 
         {!searchedCoa && !notFound && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="mt-16"
-          >
-            <div className="grid md:grid-cols-3 gap-6">
+          <>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="mt-12 relative"
+            >
+              <div className="absolute inset-0 -z-10">
+                <div className="absolute top-0 left-1/4 w-[300px] h-[300px] rounded-full bg-[#21d8ff]/5 blur-3xl" />
+                <div className="absolute bottom-0 right-1/4 w-[300px] h-[300px] rounded-full bg-[#9d4edd]/5 blur-3xl" />
+              </div>
+              <div className="text-center mb-6">
+                <Badge className="mb-4 bg-[#21d8ff]/10 text-[#21d8ff] border-[#21d8ff]/30 hover:bg-[#21d8ff]/20">
+                  Complete Traceability
+                </Badge>
+                <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
+                  How Verification Works
+                </h2>
+                <p className="text-muted-foreground max-w-xl mx-auto">
+                  From QR code to certified lab results in seconds
+                </p>
+              </div>
+              <VerificationJourney />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="mt-16"
+            >
+              <div className="grid md:grid-cols-3 gap-6">
               <Link href="/education/how-to-read-coas">
                 <Card className="p-6 cursor-pointer h-full border-2 border-[#ec4899]/40 hover:border-[#ec4899]/100 hover:shadow-[0_0_20px_rgba(236,72,153,0.3)] transition-all duration-300 flex flex-col items-center text-center">
                   <div className="p-4 rounded-full bg-[#ec4899]/10 mb-4">
@@ -399,32 +424,8 @@ export default function CoaVerification() {
                 </Card>
               </Link>
             </div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="mt-16 relative"
-            >
-              <div className="absolute inset-0 -z-10">
-                <div className="absolute top-0 left-1/4 w-[300px] h-[300px] rounded-full bg-[#21d8ff]/5 blur-3xl" />
-                <div className="absolute bottom-0 right-1/4 w-[300px] h-[300px] rounded-full bg-[#9d4edd]/5 blur-3xl" />
-              </div>
-              <div className="text-center mb-6">
-                <Badge className="mb-4 bg-[#21d8ff]/10 text-[#21d8ff] border-[#21d8ff]/30 hover:bg-[#21d8ff]/20">
-                  Complete Traceability
-                </Badge>
-                <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
-                  How Verification Works
-                </h2>
-                <p className="text-muted-foreground max-w-xl mx-auto">
-                  From QR code to certified lab results in seconds
-                </p>
-              </div>
-              <VerificationJourney />
             </motion.div>
-          </motion.div>
+          </>
         )}
       </div>
     </main>
