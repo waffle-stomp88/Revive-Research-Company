@@ -231,12 +231,14 @@ function MitochondrialDNAStrand({ pathways, activePathway, setActivePathway }: {
               key={`particle-${particle}`}
               className="absolute w-2 h-2 rounded-full"
               style={{ 
+                top: '50%',
+                left: '10%',
                 background: ['#E7FB10', '#21d8ff', '#ec4899'][particle],
                 filter: `blur(0.5px) drop-shadow(0 0 6px ${['#E7FB10', '#21d8ff', '#ec4899'][particle]})`
               }}
               animate={{
-                x: [0, 280, 0],
-                y: [-15 + particle * 5, 15 - particle * 5, -15 + particle * 5],
+                x: [0, 240, 0],
+                y: [-20 + particle * 8, 20 - particle * 8, -20 + particle * 8],
                 opacity: [0, 1, 1, 1, 0]
               }}
               transition={{
