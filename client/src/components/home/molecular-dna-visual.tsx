@@ -232,8 +232,8 @@ export function MolecularDNAVisual() {
             </span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-base md:text-lg">
-            Scan the QR. View the lab results. Know exactly what you're working with. 
-            No guesswork, no blind trust—just verifiable science.
+            Peptides are amino acid chains that unlock cellular potential. From tissue repair to metabolic regulation, 
+            these precision molecules are transforming what's possible in research.
           </p>
         </motion.div>
         
