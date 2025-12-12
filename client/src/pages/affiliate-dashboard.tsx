@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import { SEOHead } from "@/components/seo-head";
-import { SEO_CONFIG } from "@/lib/seo-config";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -1045,7 +1044,7 @@ export default function AffiliateDashboard() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead {...SEO_CONFIG.affiliateDashboard} canonicalPath="/affiliate-dashboard" />
+      <SEOHead title="Affiliate Dashboard" description="Track your earnings and referrals. Access promotional materials and performance analytics." canonicalPath="/affiliate-dashboard" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

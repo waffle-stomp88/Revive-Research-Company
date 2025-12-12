@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
-import { SEO_CONFIG } from "@/lib/seo-config";
 import { Card } from "@/components/ui/card";
 import { Shield, Lock } from "lucide-react";
 
@@ -9,7 +8,7 @@ const LAST_UPDATED = "November 28, 2024";
 export default function PrivacyPolicy() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead {...SEO_CONFIG.privacy} canonicalPath="/privacy" />
+      <SEOHead title="Privacy Policy" description="How we protect your data. Your privacy is important to us. Read our complete privacy policy." canonicalPath="/privacy" />
       <div className="max-w-4xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

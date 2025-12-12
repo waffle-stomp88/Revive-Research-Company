@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
-import { SEO_CONFIG } from "@/lib/seo-config";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -160,7 +159,7 @@ export default function AccountSettings() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead {...SEO_CONFIG.accountSettings} canonicalPath="/account-settings" />
+      <SEOHead title="Account Settings" description="Update your account preferences and security settings. Manage notifications and privacy." canonicalPath="/account-settings" />
       <div className="container mx-auto px-4 max-w-2xl">
         <motion.div
           variants={containerVariants}

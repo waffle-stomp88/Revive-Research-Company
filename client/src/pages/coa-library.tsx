@@ -2,7 +2,6 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
-import { SEO_CONFIG } from "@/lib/seo-config";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -111,7 +110,7 @@ export default function CoaLibrary() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead {...SEO_CONFIG.coaLibrary} canonicalPath="/coa-library" />
+      <SEOHead title="Certificate of Analysis Library" description="Access all COAs for our research compounds. Independent lab verification ensures 98%+ purity on every batch." canonicalPath="/coa-library" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

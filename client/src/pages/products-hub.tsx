@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
-import { SEO_CONFIG } from "@/lib/seo-config";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -83,7 +82,7 @@ export default function ProductsHub() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-12">
-      <SEOHead {...SEO_CONFIG.productsHub} canonicalPath="/shop" />
+      <SEOHead title="Shop All Research Products" description="Explore peptides, bulk packs, research stacks, and supplies. Premium quality compounds with verified purity and fast shipping." canonicalPath="/shop" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

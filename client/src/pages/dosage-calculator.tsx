@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
-import { SEO_CONFIG } from "@/lib/seo-config";
 import { Calculator, Droplet, Syringe, FlaskConical, AlertTriangle, Info, Beaker, Target, Sparkles, HelpCircle, GraduationCap, Zap } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -84,7 +83,7 @@ export default function DosageCalculator() {
 
   return (
     <div className="min-h-screen bg-[#0d0d10] pt-20">
-      <SEOHead {...SEO_CONFIG.dosageCalculator} canonicalPath="/dosage-calculator" />
+      <SEOHead title="Peptide Dosage Calculator" description="Calculate precise dosing for your research. Professional-grade calculator for peptide reconstitution." canonicalPath="/dosage-calculator" />
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#E7FB10]/8 rounded-full blur-[120px]" />
         <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-[#21d8ff]/8 rounded-full blur-[100px]" />

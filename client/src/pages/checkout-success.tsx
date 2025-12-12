@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useLocation } from "wouter";
 import { SEOHead } from "@/components/seo-head";
-import { SEO_CONFIG } from "@/lib/seo-config";
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -71,7 +70,7 @@ export default function CheckoutSuccess() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24 flex items-center justify-center">
-      <SEOHead {...SEO_CONFIG.checkoutSuccess} canonicalPath="/checkout/success" />
+      <SEOHead title="Order Confirmed" description="Thank you for your order. Your research compounds will ship within 24 hours with tracking provided." canonicalPath="/checkout/success" />
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}

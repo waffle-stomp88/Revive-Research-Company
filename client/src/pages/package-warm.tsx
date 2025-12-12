@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
-import { SEO_CONFIG } from "@/lib/seo-config";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,7 +19,7 @@ import {
 export default function PackageWarm() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead {...SEO_CONFIG.packageWarm} canonicalPath="/package-warm" />
+      <SEOHead title="Package Arrived Warm?" description="Guide on peptide stability and temperature. Most research peptides remain stable during shipping." canonicalPath="/package-warm" />
       <div className="max-w-4xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

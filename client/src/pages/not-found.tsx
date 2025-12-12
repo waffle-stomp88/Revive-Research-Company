@@ -1,14 +1,13 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { SEOHead } from "@/components/seo-head";
-import { SEO_CONFIG } from "@/lib/seo-config";
 import { Button } from "@/components/ui/button";
 import { Home } from "lucide-react";
 
 export default function NotFound() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24 flex items-center justify-center">
-      <SEOHead {...SEO_CONFIG.notFound} canonicalPath="/404" />
+      <SEOHead title="Page Not Found" description="The page you're looking for doesn't exist. Return to our homepage to continue browsing." canonicalPath="/404" />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

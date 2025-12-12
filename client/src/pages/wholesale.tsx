@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
-import { SEO_CONFIG } from "@/lib/seo-config";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -382,7 +381,7 @@ ${data.additionalInfo || "None provided"}`.trim(),
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-12">
-      <SEOHead {...SEO_CONFIG.wholesale} canonicalPath="/wholesale" />
+      <SEOHead title="Wholesale Program" description="Wholesale pricing for institutions and resellers. Contact us for volume discounts." canonicalPath="/wholesale" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         {/* Hero Section with Gradient */}
         <motion.div

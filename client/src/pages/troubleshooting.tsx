@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
-import { SEO_CONFIG } from "@/lib/seo-config";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -151,7 +150,7 @@ export default function Troubleshooting() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead {...SEO_CONFIG.troubleshooting} canonicalPath="/troubleshooting" />
+      <SEOHead title="Troubleshooting Guide" description="Solutions for common research peptide issues. Expert guidance on reconstitution, storage, and handling." canonicalPath="/troubleshooting" />
       <div className="max-w-4xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

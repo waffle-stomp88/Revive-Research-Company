@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { useLocation, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
-import { SEO_CONFIG } from "@/lib/seo-config";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -114,7 +113,7 @@ export default function BatchLookup() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead {...SEO_CONFIG.batchLookup} canonicalPath="/batch" />
+      <SEOHead title="Batch Lookup" description="Look up batch information and testing results. Trace your research compound from production to delivery." canonicalPath="/batch" />
       <div className="max-w-4xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

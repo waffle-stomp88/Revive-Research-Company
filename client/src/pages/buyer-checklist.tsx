@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
-import { SEO_CONFIG } from "@/lib/seo-config";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -66,7 +65,7 @@ const checklistItems = [
 export default function BuyerChecklist() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead {...SEO_CONFIG.buyerChecklist} canonicalPath="/buyer-checklist" />
+      <SEOHead title="Buyer Checklist" description="What to look for when buying research peptides. Protect your research with our quality checklist." canonicalPath="/buyer-checklist" />
       <div className="max-w-5xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

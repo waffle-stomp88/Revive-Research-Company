@@ -33,7 +33,6 @@ import { useState, useEffect } from "react";
 import { trackEvent } from "@/lib/analytics";
 import { BUNDLES } from "@/lib/bundles";
 import { SEOHead } from "@/components/seo-head";
-import { SEO_CONFIG } from "@/lib/seo-config";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 40 },
@@ -901,7 +900,7 @@ function NewsletterSection() {
 export default function Home() {
   return (
     <main>
-      <SEOHead {...SEO_CONFIG.home} canonicalPath="/" />
+      <SEOHead title="Premium Peptide Research Compounds" description="Shop third-party tested peptides for scientific research. GMP-certified compounds with Certificates of Analysis. Free shipping over $175." canonicalPath="/" />
       <HeroSection />
       <ProductShowcase />
       <QualityAndTrustSection />

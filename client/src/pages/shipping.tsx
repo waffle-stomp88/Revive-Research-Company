@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { SEOHead } from "@/components/seo-head";
-import { SEO_CONFIG } from "@/lib/seo-config";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,7 +29,7 @@ const SHIPPING_INFO = {
 export default function Shipping() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead {...SEO_CONFIG.shipping} canonicalPath="/shipping" />
+      <SEOHead title="Shipping Information" description="Free shipping over $175. Same-day dispatch before 12 PM CT. Discreet packaging with temperature protection." canonicalPath="/shipping" />
       <div className="max-w-4xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

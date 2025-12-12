@@ -2,7 +2,6 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useLocation } from "wouter";
 import { SEOHead } from "@/components/seo-head";
-import { SEO_CONFIG } from "@/lib/seo-config";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -146,7 +145,7 @@ export default function CartPage() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-12">
-      <SEOHead {...SEO_CONFIG.cart} canonicalPath="/cart" />
+      <SEOHead title="Shopping Cart" description="Review your research compound order. Free shipping on orders over $175. Secure checkout with fast processing." canonicalPath="/cart" />
       <div className="max-w-6xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, x: -20 }}

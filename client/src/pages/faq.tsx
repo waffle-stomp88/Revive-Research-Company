@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { SEOHead } from "@/components/seo-head";
-import { SEO_CONFIG } from "@/lib/seo-config";
 import {
   Accordion,
   AccordionContent,
@@ -180,7 +179,7 @@ const FAQ_CATEGORIES = [
 export default function FAQ() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead {...SEO_CONFIG.faq} canonicalPath="/faq" />
+      <SEOHead title="Frequently Asked Questions" description="Get answers about research peptides, ordering, shipping, and storage. Expert guidance for researchers." canonicalPath="/faq" />
       <div className="max-w-4xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

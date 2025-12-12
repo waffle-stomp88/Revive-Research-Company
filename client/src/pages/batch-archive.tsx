@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
-import { SEO_CONFIG } from "@/lib/seo-config";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -40,7 +39,7 @@ export default function BatchArchive() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead {...SEO_CONFIG.batchArchive} canonicalPath="/batch-archive" />
+      <SEOHead title="Batch Archive" description="Historical batch records and testing data. Full transparency on all research compounds we've produced." canonicalPath="/batch-archive" />
       <div className="max-w-6xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

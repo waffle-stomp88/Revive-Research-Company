@@ -6,7 +6,6 @@ import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { SEOHead } from "@/components/seo-head";
-import { SEO_CONFIG } from "@/lib/seo-config";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
@@ -165,7 +164,7 @@ export default function AffiliatePage() {
 
   return (
     <main className="min-h-screen overflow-hidden">
-      <SEOHead {...SEO_CONFIG.affiliate} canonicalPath="/affiliate" />
+      <SEOHead title="Affiliate Program" description="Earn commissions promoting quality research peptides. 10% commission with 30-day cookie tracking." canonicalPath="/affiliate" />
       {/* Hero Section */}
       <section className="relative pt-32 pb-10 md:pt-36 md:pb-14 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#9d4edd]/8 via-background to-background" />

@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
-import { SEO_CONFIG } from "@/lib/seo-config";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -71,7 +70,7 @@ const dontList = [
 export default function Transparency() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead {...SEO_CONFIG.transparency} canonicalPath="/transparency" />
+      <SEOHead title="Transparency" description="Full transparency on sourcing, testing, and pricing. See exactly what goes into every research compound." canonicalPath="/transparency" />
       <div className="max-w-6xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
