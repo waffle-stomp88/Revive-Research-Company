@@ -4,11 +4,11 @@ import { TrendingUp, Zap, Activity, Target, ArrowRight } from "lucide-react";
 
 function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean; activeStep: number }) {
   const cascadeSteps = [
-    { id: 0, name: 'IGF-1 LR3', y: 25, color: '#E7FB10' },
-    { id: 1, name: 'IGF-1R', y: 55, color: '#21d8ff' },
-    { id: 2, name: 'IRS-1/PI3K', y: 90, color: '#9d4edd' },
-    { id: 3, name: 'Akt/mTOR', y: 125, color: '#ec4899' },
-    { id: 4, name: 'Protein Synthesis', y: 160, color: '#22c55e' },
+    { id: 0, name: 'IGF-1 LR3', y: 20, color: '#E7FB10' },
+    { id: 1, name: 'IGF-1R', y: 42, color: '#21d8ff' },
+    { id: 2, name: 'IRS-1/PI3K', y: 64, color: '#9d4edd' },
+    { id: 3, name: 'Akt/mTOR', y: 86, color: '#ec4899' },
+    { id: 4, name: 'Protein Synthesis', y: 108, color: '#22c55e' },
   ];
   
   return (
@@ -20,7 +20,7 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
         }}
       />
       
-      <svg viewBox="0 0 320 220" className="w-full h-auto">
+      <svg viewBox="0 0 320 200" className="w-full h-auto">
         <defs>
           <filter id="cascadeGlow">
             <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
@@ -111,9 +111,9 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
             <motion.g key={`result-${i}`}>
               <motion.line
                 x1="160"
-                y1="175"
+                y1="120"
                 x2={x}
-                y2="195"
+                y2="138"
                 stroke="#22c55e"
                 strokeWidth="1.5"
                 strokeDasharray="3,2"
@@ -123,7 +123,7 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
               />
               <motion.rect
                 x={x - 35}
-                y="190"
+                y="133"
                 width="70"
                 height="20"
                 rx="4"
@@ -136,7 +136,7 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
               />
               <motion.text
                 x={x}
-                y="203"
+                y="146"
                 textAnchor="middle"
                 fill="#22c55e"
                 fontSize="7"
