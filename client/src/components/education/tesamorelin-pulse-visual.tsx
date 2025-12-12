@@ -59,11 +59,11 @@ function GHPulseWaveAnimation({ isInView, mode }: { isInView: boolean; mode: 'te
             />
             
             {[
-              { x: 55, y: 30 },
-              { x: 105, y: 25 },
-              { x: 155, y: 28 },
-              { x: 205, y: 30 },
-              { x: 255, y: 32 }
+              { x: 57, y: 55 },
+              { x: 107, y: 48 },
+              { x: 157, y: 52 },
+              { x: 207, y: 52 },
+              { x: 257, y: 56 }
             ].map((peak, i) => (
               <motion.circle
                 key={i}
