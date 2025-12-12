@@ -202,8 +202,8 @@ function GLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2 }}
           >
-            <ellipse cx="250" cy="320" rx="140" ry="35" fill="none" stroke="#E7FB10" strokeWidth="2" strokeDasharray="4,4" opacity="0.6" />
-            <text x="250" y="330" textAnchor="middle" fill="#E7FB10" fontSize="10" fontWeight="700">
+            <ellipse cx="250" cy="355" rx="140" ry="35" fill="none" stroke="#E7FB10" strokeWidth="2" strokeDasharray="4,4" opacity="0.6" />
+            <text x="250" y="365" textAnchor="middle" fill="#E7FB10" fontSize="10" fontWeight="700">
               RESULT: Firmer, More Radiant Skin
             </text>
           </motion.g>
