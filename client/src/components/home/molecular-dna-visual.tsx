@@ -26,8 +26,7 @@ function FloatingMolecule({ delay, x, size, color }: { delay: number; x: string;
         style={{ 
           width: size, 
           height: size, 
-          background: color,
-          filter: `blur(${size * 0.1}px) drop-shadow(0 0 ${size}px ${color})`
+          background: color
         }}
       />
     </motion.div>
@@ -74,7 +73,6 @@ function DNAHelix() {
           stroke="url(#homeStrandGradient1)"
           strokeWidth="4"
           strokeLinecap="round"
-          filter="url(#homeGlow)"
           initial={{ pathLength: 0, opacity: 0 }}
           animate={isInView ? { pathLength: 1, opacity: 1 } : {}}
           transition={{ duration: 2.5, ease: "easeInOut" }}
@@ -85,7 +83,6 @@ function DNAHelix() {
           stroke="url(#homeStrandGradient2)"
           strokeWidth="4"
           strokeLinecap="round"
-          filter="url(#homeGlow)"
           initial={{ pathLength: 0, opacity: 0 }}
           animate={isInView ? { pathLength: 1, opacity: 1 } : {}}
           transition={{ duration: 2.5, ease: "easeInOut", delay: 0.3 }}
@@ -110,10 +107,7 @@ function DNAHelix() {
                 initial={{ scaleY: 0, opacity: 0 }}
                 animate={isInView ? { scaleY: 1, opacity: 1 } : {}}
                 transition={{ duration: 0.4, delay: 1 + index * 0.1 }}
-                style={{ 
-                  transformOrigin: `${x}px 60px`,
-                  filter: `drop-shadow(0 0 8px ${color})`
-                }}
+                style={{ transformOrigin: `${x}px 60px` }}
               />
               <motion.circle
                 cx={x}
@@ -123,7 +117,6 @@ function DNAHelix() {
                 initial={{ scale: 0 }}
                 animate={isInView ? { scale: 1 } : {}}
                 transition={{ duration: 0.3, delay: 1.2 + index * 0.1, type: "spring" }}
-                style={{ filter: `drop-shadow(0 0 10px ${color})` }}
               />
               <motion.circle
                 cx={x}
@@ -133,7 +126,6 @@ function DNAHelix() {
                 initial={{ scale: 0 }}
                 animate={isInView ? { scale: 1 } : {}}
                 transition={{ duration: 0.3, delay: 1.3 + index * 0.1, type: "spring" }}
-                style={{ filter: `drop-shadow(0 0 10px ${color})` }}
               />
             </motion.g>
           );
@@ -147,8 +139,7 @@ function DNAHelix() {
           style={{ 
             top: '50%',
             left: `${10 + i * 20}%`,
-            background: ['#E7FB10', '#21d8ff', '#9d4edd', '#ec4899', '#f97316'][i],
-            filter: `blur(0.5px) drop-shadow(0 0 8px ${['#E7FB10', '#21d8ff', '#9d4edd', '#ec4899', '#f97316'][i]})`
+            background: ['#E7FB10', '#21d8ff', '#9d4edd', '#ec4899', '#f97316'][i]
           }}
           animate={{
             x: [0, 100, 200, 300],
