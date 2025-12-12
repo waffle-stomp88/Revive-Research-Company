@@ -119,9 +119,6 @@ function CircularProgress({ value, color, icon: Icon, label, size = 120, delay }
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-50px" });
   
-  const circumference = (size - 16) * Math.PI;
-  const strokeDashoffset = circumference - (value / 100) * circumference;
-  
   return (
     <motion.div
       ref={containerRef}
@@ -130,62 +127,45 @@ function CircularProgress({ value, color, icon: Icon, label, size = 120, delay }
       animate={isInView ? { opacity: 1, scale: 1 } : {}}
       transition={{ delay, duration: 0.5, type: "spring" }}
     >
-      <div className="relative" style={{ width: size, height: size }}>
-        <svg className="transform -rotate-90" width={size} height={size}>
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={(size - 16) / 2}
-            stroke={`${color}20`}
-            strokeWidth="8"
-            fill="none"
-          />
-          <motion.circle
-            cx={size / 2}
-            cy={size / 2}
-            r={(size - 16) / 2}
-            stroke={color}
-            strokeWidth="8"
-            fill="none"
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            initial={{ strokeDashoffset: circumference }}
-            animate={isInView ? { strokeDashoffset } : {}}
-            transition={{ delay: delay + 0.3, duration: 2, ease: "easeOut" }}
-            style={{ filter: `drop-shadow(0 0 8px ${color})` }}
-          />
-        </svg>
-        
-        <div 
-          className="absolute inset-0 flex flex-col items-center justify-center"
-        >
-          <Icon 
-            className="h-6 w-6 mb-1" 
-            style={{ color, filter: `drop-shadow(0 0 4px ${color})` }} 
-          />
-          <span className="font-display text-xl font-bold" style={{ color }}>
-            <AnimatedCounter target={value} suffix="%" delay={delay + 0.5} />
-          </span>
-        </div>
-        
+      <div className="relative flex flex-col items-center justify-center" style={{ width: size, height: size }}>
         <motion.div
-          className="absolute inset-0 rounded-full"
-          style={{
-            background: `radial-gradient(circle, ${color}10 0%, transparent 70%)`,
-          }}
           animate={{
-            opacity: [0.5, 1, 0.5],
-            scale: [1, 1.05, 1]
+            opacity: [0.3, 0.6, 0.3],
+            scale: [1, 1.1, 1]
           }}
           transition={{
             duration: 3,
             repeat: Infinity,
             ease: "easeInOut"
           }}
+        >
+          <Icon 
+            className="h-10 w-10 md:h-12 md:w-12 mb-2" 
+            style={{ color, filter: `drop-shadow(0 0 8px ${color})` }} 
+          />
+        </motion.div>
+        <span className="font-display text-2xl md:text-3xl font-bold" style={{ color, textShadow: `0 0 20px ${color}60` }}>
+          <AnimatedCounter target={value} suffix="%" delay={delay + 0.5} />
+        </span>
+        
+        <motion.div
+          className="absolute inset-0 rounded-full -z-10"
+          style={{
+            background: `radial-gradient(circle, ${color}15 0%, transparent 60%)`,
+          }}
+          animate={{
+            opacity: [0.4, 0.8, 0.4],
+            scale: [0.9, 1.1, 0.9]
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
         />
       </div>
       
-      <span className="mt-3 text-sm font-medium text-muted-foreground text-center">
+      <span className="mt-2 text-sm font-medium text-muted-foreground text-center">
         {label}
       </span>
     </motion.div>
