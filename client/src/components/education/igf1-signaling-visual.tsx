@@ -1,5 +1,5 @@
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { TrendingUp, Zap, Activity, Target, ArrowRight } from "lucide-react";
 
 function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean; activeStep: number }) {
@@ -213,7 +213,37 @@ const pathwayDetails = [
 export function IGF1SignalingVisual() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-50px" });
+  const cascadeRef = useRef<HTMLDivElement>(null);
+  const cascadeInView = useInView(cascadeRef, { margin: "-20px" });
   const [activeStep, setActiveStep] = useState(0);
+
+  // Auto-play animation when visible
+  useEffect(() => {
+    if (!cascadeInView) return;
+    
+    const runAnimationCycle = () => {
+      let step = 0;
+      setActiveStep(0);
+      
+      const interval = setInterval(() => {
+        step += 1;
+        setActiveStep(step);
+        
+        if (step >= 4) {
+          clearInterval(interval);
+          setTimeout(() => {
+            setActiveStep(0);
+            setTimeout(runAnimationCycle, 1000);
+          }, 2500);
+        }
+      }, 600);
+      
+      return interval;
+    };
+    
+    const interval = runAnimationCycle();
+    return () => clearInterval(interval);
+  }, [cascadeInView]);
 
   return (
     <div ref={containerRef} className="relative">
@@ -254,26 +284,26 @@ export function IGF1SignalingVisual() {
           background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.05) 0%, transparent 50%)'
         }}
       >
-        <SignalingCascadeAnimation isInView={isInView} activeStep={activeStep} />
+        <div ref={cascadeRef}>
+          <SignalingCascadeAnimation isInView={isInView} activeStep={activeStep} />
+        </div>
         
         <div className="mt-6">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-center mb-4">
             <span className="text-xs text-muted-foreground uppercase tracking-wider">
               Signaling Steps
             </span>
-            <div className="flex gap-1">
-              {pathwayDetails.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setActiveStep(idx)}
-                  className="w-8 h-2 rounded-full transition-all"
-                  style={{
-                    backgroundColor: activeStep >= idx ? pathwayDetails[idx].color : 'rgba(255,255,255,0.1)'
-                  }}
-                  data-testid={`step-${idx}`}
-                />
-              ))}
-            </div>
+          </div>
+          <div className="flex justify-center gap-1 mb-4">
+            {pathwayDetails.map((_, idx) => (
+              <div
+                key={idx}
+                className="w-8 h-2 rounded-full transition-all"
+                style={{
+                  backgroundColor: activeStep >= idx ? pathwayDetails[idx].color : 'rgba(255,255,255,0.1)'
+                }}
+              />
+            ))}
           </div>
           
           <motion.div
