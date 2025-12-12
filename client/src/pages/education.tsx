@@ -344,6 +344,7 @@ export default function Education() {
                       onClick={() => {
                         setActiveCategory(cat.id);
                         setExpandedArticle(null);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
                       className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all cursor-pointer ${
                         isActive 
