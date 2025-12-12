@@ -255,57 +255,71 @@ function ProductShowcase() {
     <section className="py-8 md:py-12" id="products">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         
-        {/* Sale of the Week - Compact */}
+        {/* Sale of the Week */}
         {weeklyDeal && (
           <Link href={`/products/${weeklyDeal.id}`} data-testid={`link-weekly-deal-${weeklyDeal.id}`}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="mb-8 cursor-pointer"
+              className="mb-10 cursor-pointer"
             >
-              <div className="sale-glow-pulse rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(239,68,68,0.6)]">
-                <Card className="border-2 border-red-500 bg-gradient-to-r from-red-500/10 via-background to-background overflow-hidden transition-colors duration-300 hover:border-red-400">
-                  <div className="flex flex-col md:flex-row items-center gap-4 p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-16 h-16 bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <FlaskConical className="h-8 w-8 text-red-500/50" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <Badge className="bg-[#E7FB10] text-black font-bold text-[10px] px-2 py-0.5">HOT DEAL</Badge>
-                          <span className="text-xs text-red-400 font-medium flex items-center gap-1">
-                            <Flame className="h-3 w-3 animate-pulse" />
-                            Sale of the Week
-                          </span>
-                        </div>
-                        <h3 className="font-display text-lg font-bold text-[#E7FB10]">{weeklyDeal.name}</h3>
-                      </div>
+              <div className="sale-glow-pulse rounded-2xl transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(239,68,68,0.5)]">
+                <Card className="border-2 border-red-500 bg-gradient-to-r from-red-500/15 via-red-500/5 to-background overflow-hidden transition-colors duration-300 hover:border-red-400">
+                  <div className="p-6 md:p-8">
+                    {/* Top row - Sale label */}
+                    <div className="flex items-center gap-3 mb-4">
+                      <Badge className="bg-[#E7FB10] text-black font-bold text-xs px-3 py-1">HOT DEAL</Badge>
+                      <span className="text-sm text-red-400 font-semibold flex items-center gap-2">
+                        <Flame className="h-4 w-4 animate-pulse" />
+                        Sale of the Week
+                      </span>
                     </div>
                     
-                    <div className="flex items-center gap-4 md:ml-auto">
-                      <div className="flex gap-2">
-                        {[
-                          { value: timeLeft.days, label: "D" },
-                          { value: timeLeft.hours, label: "H" },
-                          { value: timeLeft.minutes, label: "M" },
-                          { value: timeLeft.seconds, label: "S" },
-                        ].map((item, i) => (
-                          <div key={i} className="text-center">
-                            <div className="bg-red-500/20 border border-red-500/40 rounded px-2 py-1 min-w-[36px]">
-                              <span className="font-display text-sm font-bold text-red-400">
-                                {String(item.value).padStart(2, '0')}
-                              </span>
-                            </div>
-                          </div>
-                        ))}
+                    {/* Main content row */}
+                    <div className="flex flex-col lg:flex-row lg:items-center gap-6">
+                      {/* Product info */}
+                      <div className="flex items-center gap-5 flex-1">
+                        <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-muted to-muted/50 rounded-xl flex items-center justify-center flex-shrink-0 border border-red-500/30">
+                          <FlaskConical className="h-10 w-10 md:h-12 md:w-12 text-red-500/60" />
+                        </div>
+                        <div>
+                          <h3 className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10] mb-1">{weeklyDeal.name}</h3>
+                          <p className="text-muted-foreground text-sm md:text-base">Limited time offer - don't miss out!</p>
+                        </div>
                       </div>
-                      <span className="font-display text-xl font-bold text-[#E7FB10]">
-                        ${Number(weeklyDeal.price).toFixed(2)}
-                      </span>
-                      <Button size="sm" className="bg-red-500 hover:bg-red-600 text-white font-display gap-1 pointer-events-none" data-testid="button-weekly-deal">
-                        View <ArrowRight className="h-3 w-3" />
-                      </Button>
+                      
+                      {/* Countdown + Price + CTA */}
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 lg:gap-6">
+                        {/* Countdown */}
+                        <div className="flex gap-2">
+                          {[
+                            { value: timeLeft.days, label: "Days" },
+                            { value: timeLeft.hours, label: "Hrs" },
+                            { value: timeLeft.minutes, label: "Min" },
+                            { value: timeLeft.seconds, label: "Sec" },
+                          ].map((item, i) => (
+                            <div key={i} className="text-center">
+                              <div className="bg-red-500/20 border border-red-500/50 rounded-lg px-3 py-2 min-w-[48px]">
+                                <span className="font-display text-lg md:text-xl font-bold text-red-400">
+                                  {String(item.value).padStart(2, '0')}
+                                </span>
+                              </div>
+                              <span className="text-[10px] text-muted-foreground mt-1 block">{item.label}</span>
+                            </div>
+                          ))}
+                        </div>
+                        
+                        {/* Price + Button */}
+                        <div className="flex items-center gap-4">
+                          <span className="font-display text-3xl md:text-4xl font-bold text-[#E7FB10]">
+                            ${Number(weeklyDeal.price).toFixed(2)}
+                          </span>
+                          <Button size="lg" className="bg-red-500 hover:bg-red-600 text-white font-display text-base gap-2 pointer-events-none shadow-lg shadow-red-500/30" data-testid="button-weekly-deal">
+                            Shop Now <ArrowRight className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </Card>
