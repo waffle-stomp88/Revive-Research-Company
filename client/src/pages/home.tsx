@@ -21,8 +21,8 @@ import { useState, useEffect } from "react";
 import { trackEvent } from "@/lib/analytics";
 import { BUNDLES } from "@/lib/bundles";
 import { SEOHead } from "@/components/seo-head";
+import { MolecularDNAVisual } from "@/components/home/molecular-dna-visual";
 import { TestingPipelineVisual } from "@/components/home/testing-pipeline-visual";
-import { AnimatedTrustMeters } from "@/components/home/animated-trust-meters";
 import { WhyResearchersChooseUs } from "@/components/home/why-researchers-choose-us";
 
 function HeroSection() {
@@ -136,7 +136,7 @@ function HeroSection() {
           >
             The Future of
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E7FB10] via-white to-[#21d8ff]">Research Compounds</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E7FB10] via-white to-[#21d8ff] animate-pulse">Research Compounds</span>
           </h1>
         </motion.div>
 
@@ -583,9 +583,9 @@ export default function Home() {
     <main>
       <SEOHead title="Premium Peptide Research Compounds" description="Shop third-party tested peptides for scientific research. GMP-certified compounds with Certificates of Analysis. Free shipping over $175." canonicalPath="/" />
       <HeroSection />
+      <MolecularDNAVisual />
       <ProductShowcase />
       <TestingPipelineVisual />
-      <AnimatedTrustMeters />
       <WhyResearchersChooseUs />
       <CTASection />
     </main>
