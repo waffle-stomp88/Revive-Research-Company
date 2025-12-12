@@ -266,9 +266,28 @@ export function MolecularDNAVisual() {
                     border: `2px solid ${item.color}50`,
                     boxShadow: `0 0 30px ${item.color}30`
                   }}
+                  animate={{
+                    y: [0, -6, 0],
+                    boxShadow: [
+                      `0 0 30px ${item.color}30`,
+                      `0 0 45px ${item.color}50`,
+                      `0 0 30px ${item.color}30`
+                    ]
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: index * 0.4
+                  }}
                   whileHover={{ scale: 1.1, boxShadow: `0 0 50px ${item.color}50` }}
                 >
-                  <Icon className="h-10 w-10 md:h-12 md:w-12" style={{ color: item.color, filter: `drop-shadow(0 0 6px ${item.color})` }} />
+                  <motion.div
+                    animate={{ rotate: index === 1 ? [0, 360] : 0 }}
+                    transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                  >
+                    <Icon className="h-10 w-10 md:h-12 md:w-12" style={{ color: item.color, filter: `drop-shadow(0 0 6px ${item.color})` }} />
+                  </motion.div>
                 </motion.div>
                 <div className="font-display text-xl md:text-2xl font-bold" style={{ color: item.color }}>
                   {item.value}
