@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
-import { SEOHead, SEO_CONFIG } from "@/components/seo-head";
+import { SEOHead } from "@/components/seo-head";
+import { SEO_CONFIG } from "@/lib/seo-config";
 import { Button } from "@/components/ui/button";
 import { Home } from "lucide-react";
 

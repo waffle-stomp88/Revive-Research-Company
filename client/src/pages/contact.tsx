@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
-import { SEOHead, SEO_CONFIG } from "@/components/seo-head";
+import { SEOHead } from "@/components/seo-head";
+import { SEO_CONFIG } from "@/lib/seo-config";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

@@ -48,7 +48,8 @@ import { isInCompare, addToCompare, removeFromCompare } from "@/components/compa
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { BUNDLES } from "@/lib/bundles";
-import { SEOHead, SEO_CONFIG } from "@/components/seo-head";
+import { SEOHead } from "@/components/seo-head";
+import { SEO_CONFIG } from "@/lib/seo-config";
 
 // Badge priority system - max 2 badges per product
 // Priority: Out of Stock > Low Stock > Sale > Selling Fast > Featured

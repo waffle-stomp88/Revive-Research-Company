@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { SEOHead, SEO_CONFIG } from "@/components/seo-head";
+import { SEOHead } from "@/components/seo-head";
+import { SEO_CONFIG } from "@/lib/seo-config";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";

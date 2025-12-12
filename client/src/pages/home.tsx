@@ -32,7 +32,8 @@ import { NewsletterSignup } from "@/components/newsletter-signup";
 import { useState, useEffect } from "react";
 import { trackEvent } from "@/lib/analytics";
 import { BUNDLES } from "@/lib/bundles";
-import { SEOHead, SEO_CONFIG } from "@/components/seo-head";
+import { SEOHead } from "@/components/seo-head";
+import { SEO_CONFIG } from "@/lib/seo-config";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 40 },
