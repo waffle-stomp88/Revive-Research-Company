@@ -98,9 +98,14 @@ export function Footer() {
               {footerLinks.shop.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href}>
-                    <span className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
-                      {link.label}
-                    </span>
+                    <div className="inline-block px-2.5 py-1.5 rounded-md border border-transparent hover:border-[#E7FB10] transition-all duration-300 cursor-pointer" 
+                         style={{ boxShadow: '0 0 0 1px rgba(231, 251, 16, 0)' }}
+                         onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 0 8px rgba(231, 251, 16, 0.5), 0 0 16px rgba(231, 251, 16, 0.2)'}
+                         onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 0 0 1px rgba(231, 251, 16, 0)'}>
+                      <span className="text-sm text-muted-foreground hover:text-[#E7FB10] transition-colors">
+                        {link.label}
+                      </span>
+                    </div>
                   </Link>
                 </li>
               ))}
@@ -115,9 +120,14 @@ export function Footer() {
               {footerLinks.resources.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href}>
-                    <span className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
-                      {link.label}
-                    </span>
+                    <div className="inline-block px-2.5 py-1.5 rounded-md border border-transparent hover:border-[#21d8ff] transition-all duration-300 cursor-pointer"
+                         style={{ boxShadow: '0 0 0 1px rgba(33, 216, 255, 0)' }}
+                         onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 0 8px rgba(33, 216, 255, 0.5), 0 0 16px rgba(33, 216, 255, 0.2)'}
+                         onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 0 0 1px rgba(33, 216, 255, 0)'}>
+                      <span className="text-sm text-muted-foreground hover:text-[#21d8ff] transition-colors">
+                        {link.label}
+                      </span>
+                    </div>
                   </Link>
                 </li>
               ))}
@@ -132,9 +142,14 @@ export function Footer() {
               {footerLinks.support.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href}>
-                    <span className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
-                      {link.label}
-                    </span>
+                    <div className="inline-block px-2.5 py-1.5 rounded-md border border-transparent hover:border-[#E7FB10] transition-all duration-300 cursor-pointer"
+                         style={{ boxShadow: '0 0 0 1px rgba(231, 251, 16, 0)' }}
+                         onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 0 8px rgba(231, 251, 16, 0.5), 0 0 16px rgba(231, 251, 16, 0.2)'}
+                         onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 0 0 1px rgba(231, 251, 16, 0)'}>
+                      <span className="text-sm text-muted-foreground hover:text-[#E7FB10] transition-colors">
+                        {link.label}
+                      </span>
+                    </div>
                   </Link>
                 </li>
               ))}
@@ -149,9 +164,14 @@ export function Footer() {
               {footerLinks.company.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href}>
-                    <span className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
-                      {link.label}
-                    </span>
+                    <div className="inline-block px-2.5 py-1.5 rounded-md border border-transparent hover:border-[#21d8ff] transition-all duration-300 cursor-pointer"
+                         style={{ boxShadow: '0 0 0 1px rgba(33, 216, 255, 0)' }}
+                         onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 0 8px rgba(33, 216, 255, 0.5), 0 0 16px rgba(33, 216, 255, 0.2)'}
+                         onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 0 0 1px rgba(33, 216, 255, 0)'}>
+                      <span className="text-sm text-muted-foreground hover:text-[#21d8ff] transition-colors">
+                        {link.label}
+                      </span>
+                    </div>
                   </Link>
                 </li>
               ))}
