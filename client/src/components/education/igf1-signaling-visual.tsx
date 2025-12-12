@@ -12,7 +12,7 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
   ];
   
   return (
-    <div className="relative w-full flex items-center justify-center overflow-hidden" style={{ minHeight: '420px' }}>
+    <div className="relative w-full flex items-center justify-center overflow-hidden" style={{ minHeight: '300px' }}>
       <div 
         className="absolute inset-0 rounded-xl"
         style={{
