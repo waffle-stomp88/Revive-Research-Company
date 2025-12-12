@@ -271,22 +271,24 @@ function TelomereTimeline({ isInView, currentStage }: { isInView: boolean; curre
 export function EpithalonTelomeraseVisual() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-50px" });
+  const telomereRef = useRef<HTMLDivElement>(null);
+  const telomereInView = useInView(telomereRef, { margin: "-20px" });
   const [telomereLength, setTelomereLength] = useState(35);
   const [isExtending, setIsExtending] = useState(false);
   const [currentStage, setCurrentStage] = useState(2);
 
-  const activateTelomerase = () => {
+  const activateTelomerase = (length: number = telomereLength) => {
     setIsExtending(true);
-    let length = telomereLength;
+    let currentLength = length;
     const interval = setInterval(() => {
-      length += 3;
-      setTelomereLength(Math.min(length, 90));
+      currentLength += 3;
+      setTelomereLength(Math.min(currentLength, 90));
       
-      if (length >= 70) setCurrentStage(0);
-      else if (length >= 50) setCurrentStage(1);
-      else if (length >= 30) setCurrentStage(2);
+      if (currentLength >= 70) setCurrentStage(0);
+      else if (currentLength >= 50) setCurrentStage(1);
+      else if (currentLength >= 30) setCurrentStage(2);
       
-      if (length >= 90) {
+      if (currentLength >= 90) {
         clearInterval(interval);
         setTimeout(() => {
           setIsExtending(false);
@@ -296,6 +298,41 @@ export function EpithalonTelomeraseVisual() {
       }
     }, 150);
   };
+
+  useEffect(() => {
+    if (!telomereInView) return;
+    
+    const runTelomeraseCycle = () => {
+      setTelomereLength(35);
+      setCurrentStage(2);
+      setIsExtending(true);
+      
+      let length = 35;
+      const interval = setInterval(() => {
+        length += 3;
+        setTelomereLength(Math.min(length, 90));
+        
+        if (length >= 70) setCurrentStage(0);
+        else if (length >= 50) setCurrentStage(1);
+        else if (length >= 30) setCurrentStage(2);
+        
+        if (length >= 90) {
+          clearInterval(interval);
+          setTimeout(() => {
+            setIsExtending(false);
+            setTelomereLength(35);
+            setCurrentStage(2);
+            setTimeout(runTelomeraseCycle, 1500);
+          }, 2000);
+        }
+      }, 150);
+      
+      return interval;
+    };
+    
+    const interval = runTelomeraseCycle();
+    return () => clearInterval(interval);
+  }, [telomereInView]);
 
   return (
     <div ref={containerRef} className="relative">
@@ -336,27 +373,18 @@ export function EpithalonTelomeraseVisual() {
           background: 'linear-gradient(135deg, rgba(157, 78, 221, 0.05) 0%, transparent 50%)'
         }}
       >
-        <ChromosomeWithTelomeres 
-          isInView={isInView} 
-          telomereLength={telomereLength}
-          isExtending={isExtending}
-        />
+        <div ref={telomereRef}>
+          <ChromosomeWithTelomeres 
+            isInView={isInView} 
+            telomereLength={telomereLength}
+            isExtending={isExtending}
+          />
+        </div>
         
         <div className="flex justify-center mb-6">
-          <button
-            onClick={activateTelomerase}
-            disabled={isExtending}
-            className="px-6 py-2 rounded-lg font-semibold text-sm transition-all disabled:opacity-50"
-            style={{
-              backgroundColor: isExtending ? 'rgba(231, 251, 16, 0.3)' : 'rgba(157, 78, 221, 0.2)',
-              border: `1.5px solid ${isExtending ? '#E7FB10' : '#9d4edd'}`,
-              color: isExtending ? '#E7FB10' : '#9d4edd',
-              boxShadow: isExtending ? '0 0 20px rgba(231, 251, 16, 0.3)' : 'none'
-            }}
-            data-testid="button-activate-telomerase"
-          >
-            {isExtending ? '⚡ Telomerase Active...' : '🔬 Simulate Telomerase Activation'}
-          </button>
+          <span className="text-xs text-[#9d4edd]/60 italic">
+            Auto-plays when visible
+          </span>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
