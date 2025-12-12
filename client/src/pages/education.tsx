@@ -53,7 +53,10 @@ import {
   IGF1PathwayVisual,
   CellularEnergyVisual,
   NeuropeptideVisual,
-  HormonalPathwayVisual
+  HormonalPathwayVisual,
+  IpamorelinComparison,
+  CJC1295DACMechanism,
+  TesomorellinComparison
 } from "@/components/education";
 
 const articleVisuals: Record<string, () => JSX.Element> = {
@@ -65,9 +68,9 @@ const articleVisuals: Record<string, () => JSX.Element> = {
   "semaglutide-research-guide": () => <GLP1ReceptorComparison />,
   "tirzepatide-research-guide": () => <GLP1ReceptorComparison />,
   "retatrutide-research-guide": () => <GLP1ReceptorComparison />,
-  "cjc-1295-research-guide": () => <GHAxisDiagram />,
-  "ipamorelin-research-guide": () => <GHAxisDiagram />,
-  "tesamorelin-research-guide": () => <GHAxisDiagram />,
+  "cjc-1295-research-guide": () => <><GHAxisDiagram /><CJC1295DACMechanism /></>,
+  "ipamorelin-research-guide": () => <><GHAxisDiagram /><IpamorelinComparison /></>,
+  "tesamorelin-research-guide": () => <><GHAxisDiagram /><TesomorellinComparison /></>,
   "bpc-157-research-guide": () => <HealingPathwayVisual peptide="bpc-157" />,
   "tb-500-research-guide": () => <HealingPathwayVisual peptide="tb-500" />,
   "ghk-cu-research-guide": () => <HealingPathwayVisual peptide="ghk-cu" />,

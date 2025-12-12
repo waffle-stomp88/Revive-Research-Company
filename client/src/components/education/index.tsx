@@ -9,3 +9,6 @@ export { IGF1PathwayVisual } from "./igf1-pathway-visual";
 export { CellularEnergyVisual } from "./cellular-energy-visual";
 export { NeuropeptideVisual } from "./neuropeptide-visual";
 export { HormonalPathwayVisual } from "./hormonal-pathway-visual";
+export { IpamorelinComparison } from "./ipamorelin-comparison";
+export { CJC1295DACMechanism } from "./cjc1295-dac-mechanism";
+export { TesomorellinComparison } from "./tesamorelin-comparison";
