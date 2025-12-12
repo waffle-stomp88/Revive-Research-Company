@@ -58,26 +58,26 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
               )}
               
               <motion.rect
-                x="90"
-                y={step.y - 10}
-                width="140"
-                height="24"
-                rx="6"
+                x="100"
+                y={step.y - 8}
+                width="120"
+                height="18"
+                rx="5"
                 fill={isActive ? `${step.color}25` : 'rgba(255,255,255,0.03)'}
                 stroke={isActive ? step.color : 'rgba(255,255,255,0.1)'}
-                strokeWidth={isCurrent ? 2.5 : 1.5}
+                strokeWidth={isCurrent ? 2 : 1.2}
                 initial={{ scale: 0, opacity: 0 }}
                 animate={isInView ? { scale: 1, opacity: 1 } : {}}
                 transition={{ delay: 0.2 + idx * 0.15, type: "spring" }}
-                style={{ filter: isCurrent ? `drop-shadow(0 0 15px ${step.color})` : isActive ? `drop-shadow(0 0 6px ${step.color})` : 'none' }}
+                style={{ filter: isCurrent ? `drop-shadow(0 0 12px ${step.color})` : isActive ? `drop-shadow(0 0 4px ${step.color})` : 'none' }}
               />
               
               <motion.text
                 x="160"
-                y={step.y + 4}
+                y={step.y + 2}
                 textAnchor="middle"
                 fill={isActive ? step.color : 'rgba(255,255,255,0.3)'}
-                fontSize="10"
+                fontSize="8"
                 fontWeight="bold"
                 initial={{ opacity: 0 }}
                 animate={isInView ? { opacity: 1 } : {}}
@@ -148,25 +148,25 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
           ))}
         </motion.g>
         
-        <motion.text x="20" y="28" fill="#E7FB10" fontSize="8" fontWeight="bold"
+        <motion.text x="20" y="24" fill="#E7FB10" fontSize="6.5" fontWeight="bold"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
         >
           LR3 Modification:
         </motion.text>
-        <motion.text x="20" y="40" fill="rgba(255,255,255,0.5)" fontSize="7"
+        <motion.text x="20" y="34" fill="rgba(255,255,255,0.5)" fontSize="5.5"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
         >
           • Arg→Glu substitution
         </motion.text>
-        <motion.text x="20" y="52" fill="rgba(255,255,255,0.5)" fontSize="7"
+        <motion.text x="20" y="43" fill="rgba(255,255,255,0.5)" fontSize="5.5"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
         >
           • 13 AA extension
         </motion.text>
-        <motion.text x="20" y="64" fill="rgba(255,255,255,0.5)" fontSize="7"
+        <motion.text x="20" y="52" fill="rgba(255,255,255,0.5)" fontSize="5.5"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
         >
