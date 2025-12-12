@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { FlaskConical, Shield, AlertTriangle } from "lucide-react";
+import { FlaskConical, Shield, AlertTriangle, Zap } from "lucide-react";
 
 const AGE_VERIFIED_KEY = "revive-research-age-verified";
 
@@ -63,11 +63,20 @@ export function AgeVerificationModal() {
           >
             <div className="p-4 sm:p-8">
               <div className="flex items-center justify-center gap-2 sm:gap-4 mb-4 sm:mb-8">
-                <div className="w-10 h-10 sm:w-16 sm:h-16 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <FlaskConical className="h-5 w-5 sm:h-8 sm:w-8 text-primary" />
-                </div>
+                <motion.div 
+                  className="w-10 h-10 sm:w-16 sm:h-16 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.2) 0%, rgba(33, 216, 255, 0.1) 100%)',
+                    border: '2px solid #E7FB10',
+                    boxShadow: '0 0 20px rgba(231, 251, 16, 0.6)'
+                  }}
+                  animate={{ boxShadow: ['0 0 20px rgba(231, 251, 16, 0.6)', '0 0 30px rgba(231, 251, 16, 0.8)', '0 0 20px rgba(231, 251, 16, 0.6)'] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                >
+                  <FlaskConical className="h-5 w-5 sm:h-8 sm:w-8 text-[#E7FB10]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.8))' }} />
+                </motion.div>
                 <h1 className="font-display text-lg sm:text-3xl font-bold tracking-tight">
-                  REVIVE<span className="text-primary">RESEARCH</span>
+                  REVIVE<span className="text-[#E7FB10]" style={{ textShadow: '0 0 10px rgba(231, 251, 16, 0.6)' }}>RESEARCH</span>
                 </h1>
               </div>
 
@@ -77,24 +86,26 @@ export function AgeVerificationModal() {
                   pricing. No hype, no fluff—just reliable peptides for research purposes only.
                 </p>
 
-                <div className="bg-muted/50 rounded-lg p-3 space-y-2 sm:space-y-3">
-                  <div className="flex items-start gap-2">
-                    <Shield className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                <div className="space-y-2 sm:space-y-3">
+                  <div className="flex items-start gap-2 p-3 rounded-lg" style={{ background: 'linear-gradient(135deg, rgba(33, 216, 255, 0.1) 0%, rgba(33, 216, 255, 0.05) 100%)', border: '1px solid rgba(33, 216, 255, 0.3)', boxShadow: '0 0 15px rgba(33, 216, 255, 0.2)' }}>
+                    <Shield className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: '#21d8ff' }} />
                     <p className="text-xs text-muted-foreground">
                       Products are for lawful research use only—not for human or animal consumption.
                     </p>
                   </div>
 
-                  <div className="flex items-start gap-2">
-                    <AlertTriangle className="h-4 w-4 text-yellow-500 mt-0.5 flex-shrink-0" />
+                  <div className="flex items-start gap-2 p-3 rounded-lg" style={{ background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(236, 72, 153, 0.05) 100%)', border: '1px solid rgba(236, 72, 153, 0.3)', boxShadow: '0 0 15px rgba(236, 72, 153, 0.2)' }}>
+                    <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: '#ec4899' }} />
                     <p className="text-xs text-muted-foreground">
                       Purchaser assumes full responsibility for use, handling, and distribution.
                     </p>
                   </div>
                 </div>
 
-                <div 
-                  className="flex items-start gap-2 pt-2 cursor-pointer"
+                <motion.div 
+                  className="flex items-start gap-2 pt-2 px-3 py-2.5 rounded-lg cursor-pointer transition-all"
+                  style={{ background: 'rgba(157, 78, 221, 0.05)', border: '1px solid rgba(157, 78, 221, 0.2)' }}
+                  whileHover={{ background: 'rgba(157, 78, 221, 0.1)', boxShadow: '0 0 15px rgba(157, 78, 221, 0.3)' }}
                   onClick={() => setAgreed(!agreed)}
                 >
                   <Checkbox
@@ -110,22 +121,26 @@ export function AgeVerificationModal() {
                   >
                     I agree to these terms and confirm I am 21+.
                   </label>
-                </div>
+                </motion.div>
               </div>
 
               <div className="flex flex-col gap-2 mt-4 sm:mt-8">
                 <Button
                   onClick={handleEnter}
                   disabled={!agreed}
-                  className="w-full h-10"
+                  className="w-full h-10 bg-[#E7FB10] text-black font-semibold hover:bg-[#E7FB10]/90 shadow-glow-sm hover:shadow-glow"
+                  style={{
+                    boxShadow: agreed ? '0 0 20px rgba(231, 251, 16, 0.5)' : 'none'
+                  }}
                   data-testid="button-enter-site"
                 >
+                  <Zap className="h-4 w-4 mr-2" />
                   Enter Site
                 </Button>
                 <Button
                   onClick={handleDecline}
                   variant="outline"
-                  className="w-full h-10"
+                  className="w-full h-10 border-[#21d8ff]/50 text-[#21d8ff] hover:bg-[#21d8ff]/10 hover:border-[#21d8ff]"
                   data-testid="button-decline-entry"
                 >
                   Leave
