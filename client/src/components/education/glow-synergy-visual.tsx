@@ -60,20 +60,34 @@ function GLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
           <text x="420" y="150" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="6.5">Copper peptide</text>
         </motion.g>
 
-        {/* Arrows pointing down to convergence */}
+        {/* Arrows pointing down to convergence - TB-500 (pink) curves into oval */}
         {activationLevel > 20 && (
           <>
+            {activationLevel < 45 ? (
+              <motion.path
+                d="M 80 165 L 80 200"
+                stroke="#ec4899"
+                strokeWidth="2"
+                fill="none"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 0.8 }}
+              />
+            ) : (
+              <motion.path
+                d="M 80 165 Q 80 190 160 220"
+                stroke="#ec4899"
+                strokeWidth="2"
+                fill="none"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              />
+            )}
+            
+            {/* BPC-157 (cyan) straight to center */}
             <motion.path
-              d="M 80 165 L 80 200"
-              stroke="#ec4899"
-              strokeWidth="2"
-              fill="none"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 0.8 }}
-            />
-            <motion.path
-              d="M 250 165 L 250 200"
+              d="M 250 165 L 250 190"
               stroke="#21d8ff"
               strokeWidth="2"
               fill="none"
@@ -81,15 +95,29 @@ function GLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
               animate={{ pathLength: 1 }}
               transition={{ duration: 0.8 }}
             />
-            <motion.path
-              d="M 420 165 L 420 200"
-              stroke="#E7FB10"
-              strokeWidth="2"
-              fill="none"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 0.8 }}
-            />
+            
+            {/* GHK-Cu (yellow) curves into oval */}
+            {activationLevel < 45 ? (
+              <motion.path
+                d="M 420 165 L 420 200"
+                stroke="#E7FB10"
+                strokeWidth="2"
+                fill="none"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 0.8 }}
+              />
+            ) : (
+              <motion.path
+                d="M 420 165 Q 420 190 340 220"
+                stroke="#E7FB10"
+                strokeWidth="2"
+                fill="none"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              />
+            )}
           </>
         )}
 
