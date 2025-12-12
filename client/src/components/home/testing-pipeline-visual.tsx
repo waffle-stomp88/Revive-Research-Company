@@ -431,8 +431,10 @@ export function TestingPipelineVisual() {
             </span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Every product goes through our rigorous 5-step quality pipeline. 
-            <span className="text-[#21d8ff] font-medium"> Click any step to learn more.</span>
+            Every product goes through our rigorous 5-step quality pipeline.
+          </p>
+          <p className="text-[#21d8ff] font-medium mt-2">
+            Click any step to learn more.
           </p>
         </motion.div>
         
