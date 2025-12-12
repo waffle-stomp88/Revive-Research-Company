@@ -248,7 +248,7 @@ function ProductShowcase() {
   const timeLeft = useCountdown();
 
   const weeklyDeal = products?.find(p => p.isWeeklyDeal && p.inStock);
-  const bestSellers = products?.filter(p => p.inStock).slice(0, 4) || [];
+  const bestSellers = products?.filter(p => p.inStock).slice(0, 3) || [];
   const featuredBundles = BUNDLES.slice(0, 3);
 
   return (
@@ -366,64 +366,64 @@ function ProductShowcase() {
           </div>
         </motion.div>
 
-        {/* Best Sellers Section - Compact */}
+        {/* Best Sellers Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mb-8"
+          className="mb-12"
         >
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display text-xl md:text-2xl font-bold">Best Sellers</h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="font-display text-2xl md:text-3xl font-bold">Best Sellers</h2>
             <Link href="/peptides">
-              <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground hover:text-foreground" data-testid="button-view-all-products">
-                View All <ArrowRight className="h-3 w-3" />
+              <Button variant="ghost" className="gap-2 text-muted-foreground hover:text-foreground" data-testid="button-view-all-products">
+                View All <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
           </div>
           
           {isLoading ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {[1, 2, 3, 4].map((i) => (
-                <Card key={i} className="animate-pulse p-3">
-                  <div className="aspect-square bg-muted rounded-md mb-2" />
-                  <div className="h-3 bg-muted rounded w-3/4 mb-1" />
-                  <div className="h-3 bg-muted rounded w-1/2" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <Card key={i} className="animate-pulse p-4">
+                  <div className="aspect-square bg-muted rounded-lg mb-4" />
+                  <div className="h-5 bg-muted rounded w-3/4 mb-2" />
+                  <div className="h-5 bg-muted rounded w-1/2" />
                 </Card>
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {bestSellers.map((product, index) => (
                 <motion.div
                   key={product.id}
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.03 }}
+                  transition={{ delay: index * 0.05 }}
                 >
                   <Link href={`/peptides/${product.id}`} onClick={() => trackEvent('product_click', 'best_sellers', product.name)}>
                     <Card 
-                      className="group cursor-pointer transition-all duration-300 border border-[#21d8ff]/30 hover:border-[#21d8ff] hover:scale-105 hover:shadow-[0_0_25px_rgba(33,216,255,0.6)] overflow-hidden"
+                      className="group cursor-pointer transition-all duration-300 border border-[#21d8ff]/30 hover:border-[#21d8ff] hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(33,216,255,0.5)] overflow-hidden"
                       data-testid={`card-bestseller-${product.id}`}
                     >
-                      <div className="aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center relative overflow-hidden">
+                      <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center relative overflow-hidden">
                         <img 
                           src={bottleImage} 
                           alt={`${product.name} research peptide - premium quality`}
-                          className="h-4/5 w-4/5 object-contain p-2 group-hover:scale-110 transition-transform duration-300"
+                          className="h-3/4 w-3/4 object-contain group-hover:scale-110 transition-transform duration-300"
                         />
                         {product.isWeeklyDeal && (
-                          <Badge className="absolute top-1 right-1 bg-[#E7FB10] text-black text-[8px] px-1.5 py-0">DEAL</Badge>
+                          <Badge className="absolute top-3 right-3 bg-[#E7FB10] text-black text-xs px-2 py-0.5 font-bold">DEAL</Badge>
                         )}
                       </div>
-                      <div className="p-3">
-                        <h3 className="font-display text-sm font-semibold text-[#E7FB10] truncate group-hover:text-[#21d8ff] transition-colors">
+                      <div className="p-5">
+                        <h3 className="font-display text-xl md:text-2xl font-bold text-[#E7FB10] group-hover:text-[#21d8ff] transition-colors mb-2">
                           {product.name}
                         </h3>
-                        <div className="flex items-center justify-between mt-1">
-                          <span className="font-display text-base font-bold">${Number(product.price).toFixed(2)}</span>
-                          <Badge variant="outline" className="text-[8px] px-1 py-0 border-[#21d8ff]/50 text-[#21d8ff]">99%+</Badge>
+                        <div className="flex items-center justify-between">
+                          <span className="font-display text-2xl font-bold">${Number(product.price).toFixed(2)}</span>
+                          <Badge variant="outline" className="text-xs px-2 py-0.5 border-[#21d8ff]/50 text-[#21d8ff]">99%+ Pure</Badge>
                         </div>
                       </div>
                     </Card>
@@ -434,25 +434,25 @@ function ProductShowcase() {
           )}
         </motion.div>
 
-        {/* Research Stacks - Compact */}
+        {/* Research Stacks */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Package className="h-4 w-4 text-[#21d8ff]" />
-              <h2 className="font-display text-xl md:text-2xl font-bold">Research Stacks</h2>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <Package className="h-5 w-5 text-[#21d8ff]" />
+              <h2 className="font-display text-2xl md:text-3xl font-bold">Research Stacks</h2>
             </div>
             <Link href="/bundles">
-              <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground hover:text-foreground" data-testid="button-view-all-bundles">
-                View All <ArrowRight className="h-3 w-3" />
+              <Button variant="ghost" className="gap-2 text-muted-foreground hover:text-foreground" data-testid="button-view-all-bundles">
+                View All <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-3">
+          <div className="grid md:grid-cols-3 gap-6">
             {featuredBundles.map((bundle, index) => {
               const Icon = bundle.icon;
               const isCyan = bundle.color === "cyan";
@@ -467,42 +467,42 @@ function ProductShowcase() {
                 >
                   <Link href={`/bundles/${bundle.id}`} data-testid={`link-bundle-${bundle.id}`}>
                     <Card 
-                      className={`group cursor-pointer transition-all duration-300 border overflow-hidden h-full ${
+                      className={`group cursor-pointer transition-all duration-300 border overflow-hidden h-full hover:scale-[1.02] ${
                         isCyan 
-                          ? "border-[#21d8ff]/30 hover:border-[#21d8ff]" 
-                          : "border-[#E7FB10]/30 hover:border-[#E7FB10]"
+                          ? "border-[#21d8ff]/30 hover:border-[#21d8ff] hover:shadow-[0_0_25px_rgba(33,216,255,0.4)]" 
+                          : "border-[#E7FB10]/30 hover:border-[#E7FB10] hover:shadow-[0_0_25px_rgba(231,251,16,0.4)]"
                       }`}
                       data-testid={`card-bundle-${bundle.id}`}
                     >
-                      <div className="p-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <Icon className={isCyan ? "h-4 w-4 text-[#21d8ff]" : "h-4 w-4 text-[#E7FB10]"} />
-                            <h3 className={`font-display text-sm font-bold ${isCyan ? "text-[#21d8ff]" : "text-[#E7FB10]"}`}>
+                      <div className="p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <Icon className={isCyan ? "h-5 w-5 text-[#21d8ff]" : "h-5 w-5 text-[#E7FB10]"} />
+                            <h3 className={`font-display text-lg md:text-xl font-bold ${isCyan ? "text-[#21d8ff]" : "text-[#E7FB10]"}`}>
                               {bundle.name}
                             </h3>
                           </div>
-                          <Badge className={`text-[10px] ${isCyan ? "bg-[#21d8ff] text-black" : "bg-[#E7FB10] text-black"}`}>
+                          <Badge className={`text-xs font-bold px-2 py-0.5 ${isCyan ? "bg-[#21d8ff] text-black" : "bg-[#E7FB10] text-black"}`}>
                             -{bundle.savings}%
                           </Badge>
                         </div>
                         
-                        <div className="flex flex-wrap gap-1 mb-2">
+                        <div className="flex flex-wrap gap-2 mb-4">
                           {bundle.products.map((product, i) => (
-                            <Badge key={i} variant="outline" className="text-[10px] px-1.5 py-0">
+                            <Badge key={i} variant="outline" className="text-sm px-2 py-0.5">
                               {product}
                             </Badge>
                           ))}
                         </div>
                         
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground line-through">${bundle.originalPrice.toFixed(2)}</span>
-                            <span className={`font-display text-base font-bold ${isCyan ? "text-[#21d8ff]" : "text-[#E7FB10]"}`}>
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm text-muted-foreground line-through">${bundle.originalPrice.toFixed(2)}</span>
+                            <span className={`font-display text-xl md:text-2xl font-bold ${isCyan ? "text-[#21d8ff]" : "text-[#E7FB10]"}`}>
                               ${bundle.bundlePrice.toFixed(2)}
                             </span>
                           </div>
-                          <ArrowRight className={`h-4 w-4 group-hover:translate-x-1 transition-transform ${isCyan ? "text-[#21d8ff]" : "text-[#E7FB10]"}`} />
+                          <ArrowRight className={`h-5 w-5 group-hover:translate-x-1 transition-transform ${isCyan ? "text-[#21d8ff]" : "text-[#E7FB10]"}`} />
                         </div>
                       </div>
                     </Card>
