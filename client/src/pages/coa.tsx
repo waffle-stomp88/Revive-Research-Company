@@ -140,31 +140,7 @@ export default function CoaVerification() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.15 }}
-          className="mb-12 relative"
-        >
-          <div className="absolute inset-0 -z-10">
-            <div className="absolute top-0 left-1/4 w-[300px] h-[300px] rounded-full bg-[#21d8ff]/5 blur-3xl" />
-            <div className="absolute bottom-0 right-1/4 w-[300px] h-[300px] rounded-full bg-[#9d4edd]/5 blur-3xl" />
-          </div>
-          <div className="text-center mb-6">
-            <Badge className="mb-4 bg-[#21d8ff]/10 text-[#21d8ff] border-[#21d8ff]/30 hover:bg-[#21d8ff]/20">
-              Complete Traceability
-            </Badge>
-            <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
-              How Verification Works
-            </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">
-              From QR code to certified lab results in seconds
-            </p>
-          </div>
-          <VerificationJourney />
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.25 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
         >
           <Card className="p-6 md:p-8 mb-8">
             <Form {...form}>
@@ -423,6 +399,31 @@ export default function CoaVerification() {
                 </Card>
               </Link>
             </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="mt-16 relative"
+            >
+              <div className="absolute inset-0 -z-10">
+                <div className="absolute top-0 left-1/4 w-[300px] h-[300px] rounded-full bg-[#21d8ff]/5 blur-3xl" />
+                <div className="absolute bottom-0 right-1/4 w-[300px] h-[300px] rounded-full bg-[#9d4edd]/5 blur-3xl" />
+              </div>
+              <div className="text-center mb-6">
+                <Badge className="mb-4 bg-[#21d8ff]/10 text-[#21d8ff] border-[#21d8ff]/30 hover:bg-[#21d8ff]/20">
+                  Complete Traceability
+                </Badge>
+                <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
+                  How Verification Works
+                </h2>
+                <p className="text-muted-foreground max-w-xl mx-auto">
+                  From QR code to certified lab results in seconds
+                </p>
+              </div>
+              <VerificationJourney />
+            </motion.div>
           </motion.div>
         )}
       </div>
