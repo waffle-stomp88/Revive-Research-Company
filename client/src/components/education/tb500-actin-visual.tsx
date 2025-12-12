@@ -525,7 +525,7 @@ function WoundClosureVisual({ isInView, progress }: { isInView: boolean; progres
         </motion.div>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <svg viewBox="0 0 100 60" className="flex-1 h-auto" style={{ maxHeight: '140px' }}>
           <defs>
             <linearGradient id="tissueGradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -577,8 +577,8 @@ function WoundClosureVisual({ isInView, progress }: { isInView: boolean; progres
           ))}
         </svg>
         
-        <div className="text-center">
-          <div className="text-sm font-semibold text-[#ec4899] mb-2">Wound Edge</div>
+        <div className="text-center whitespace-nowrap">
+          <div className="text-sm font-semibold text-[#ec4899]">Wound Edge</div>
         </div>
       </div>
       
