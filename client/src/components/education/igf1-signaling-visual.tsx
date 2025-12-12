@@ -12,7 +12,7 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
   ];
   
   return (
-    <div className="relative w-full h-72 flex items-center justify-center overflow-hidden">
+    <div className="relative w-full flex items-center justify-center overflow-visible pt-4 pb-8">
       <div 
         className="absolute inset-0 rounded-xl"
         style={{
@@ -20,7 +20,7 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
         }}
       />
       
-      <svg viewBox="0 0 320 200" className="w-full h-full">
+      <svg viewBox="0 0 320 220" className="w-full" style={{ minHeight: '280px' }}>
         <defs>
           <filter id="cascadeGlow">
             <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
@@ -52,7 +52,7 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
                   markerEnd="url(#cascadeArrow)"
                   initial={{ pathLength: 0 }}
                   animate={isInView && isActive ? { pathLength: 1 } : {}}
-                  transition={{ delay: 0.5 + idx * 0.3, duration: 0.5 }}
+                  transition={{ delay: 0.8 + idx * 0.5, duration: 0.8 }}
                   style={{ filter: isActive ? `drop-shadow(0 0 4px ${step.color})` : 'none' }}
                 />
               )}
@@ -68,7 +68,7 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
                 strokeWidth={isCurrent ? 2.5 : 1.5}
                 initial={{ scale: 0, opacity: 0 }}
                 animate={isInView ? { scale: 1, opacity: 1 } : {}}
-                transition={{ delay: 0.2 + idx * 0.15, type: "spring" }}
+                transition={{ delay: 0.4 + idx * 0.25, type: "spring" }}
                 style={{ filter: isCurrent ? `drop-shadow(0 0 15px ${step.color})` : isActive ? `drop-shadow(0 0 6px ${step.color})` : 'none' }}
               />
               
@@ -81,7 +81,7 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
                 fontWeight="bold"
                 initial={{ opacity: 0 }}
                 animate={isInView ? { opacity: 1 } : {}}
-                transition={{ delay: 0.3 + idx * 0.15 }}
+                transition={{ delay: 0.5 + idx * 0.25 }}
               >
                 {step.name}
               </motion.text>
@@ -233,10 +233,10 @@ export function IGF1SignalingVisual() {
           clearInterval(interval);
           setTimeout(() => {
             setActiveStep(0);
-            setTimeout(runAnimationCycle, 1000);
-          }, 2500);
+            setTimeout(runAnimationCycle, 2000);
+          }, 4000);
         }
-      }, 600);
+      }, 1200);
       
       return interval;
     };
