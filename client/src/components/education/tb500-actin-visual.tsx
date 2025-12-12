@@ -2,8 +2,12 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { Activity, Zap, Move, Shield, ArrowRight } from "lucide-react";
 
-function ActinFilamentAnimation({ isInView, isActive }: { isInView: boolean; isActive: boolean }) {
+function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boolean; activeMechanism: string }) {
   const filamentColors = ['#21d8ff', '#E7FB10', '#9d4edd'];
+  const isActin = activeMechanism === 'actin';
+  const isMigration = activeMechanism === 'migration';
+  const isDifferentiation = activeMechanism === 'differentiation';
+  const isInflammation = activeMechanism === 'inflammation';
   
   return (
     <div className="relative w-full flex flex-col items-center justify-center overflow-hidden">
@@ -156,94 +160,271 @@ function ActinFilamentAnimation({ isInView, isActive }: { isInView: boolean; isA
             </marker>
           </defs>
           
-          <motion.g
-            initial={{ x: 0 }}
-            animate={isInView && isActive ? { x: [0, 80, 0] } : {}}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <motion.ellipse
-              cx="220"
-              cy="90"
-              rx="55"
-              ry="45"
-              fill="url(#cellGradient)"
-              stroke="#E7FB10"
-              strokeWidth="2"
-              strokeDasharray="5,3"
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: [0.3, 0.8, 0.3] } : {}}
-              transition={{ duration: 2, repeat: Infinity }}
-              style={{ filter: 'drop-shadow(0 0 8px rgba(231, 251, 16, 0.3))' }}
-            />
-            <motion.text
-              x="220" y="88"
-              textAnchor="middle"
-              fill="#E7FB10"
-              fontSize="7"
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : {}}
+          {isMigration && (
+            <motion.g
+              initial={{ x: 0 }}
+              animate={isInView ? { x: [0, 80, 0] } : {}}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             >
-              Future
-            </motion.text>
-            <motion.text
-              x="220" y="97"
-              textAnchor="middle"
-              fill="#E7FB10"
-              fontSize="7"
-              fontWeight="bold"
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : {}}
-            >
-              Position
-            </motion.text>
-          </motion.g>
+              <motion.ellipse
+                cx="220"
+                cy="90"
+                rx="55"
+                ry="45"
+                fill="url(#cellGradient)"
+                stroke="#E7FB10"
+                strokeWidth="2"
+                strokeDasharray="5,3"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: [0.3, 0.8, 0.3] } : {}}
+                transition={{ duration: 2, repeat: Infinity }}
+                style={{ filter: 'drop-shadow(0 0 8px rgba(231, 251, 16, 0.3))' }}
+              />
+              <motion.text
+                x="220" y="88"
+                textAnchor="middle"
+                fill="#E7FB10"
+                fontSize="7"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+              >
+                Future
+              </motion.text>
+              <motion.text
+                x="220" y="97"
+                textAnchor="middle"
+                fill="#E7FB10"
+                fontSize="7"
+                fontWeight="bold"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+              >
+                Position
+              </motion.text>
+            </motion.g>
+          )}
           
-          <motion.text
-            x="175" y="65"
-            textAnchor="middle"
-            fill="#E7FB10"
-            fontSize="7"
-            fontWeight="bold"
-            initial={{ opacity: 0 }}
-            animate={isInView ? { opacity: 1 } : {}}
-            transition={{ delay: 1.5 }}
-          >
-            Cell Migration
-          </motion.text>
-          <motion.path
-            d="M 155 85 Q 175 75 195 85"
-            stroke="#E7FB10"
-            strokeWidth="2"
-            fill="none"
-            strokeDasharray="4,2"
-            initial={{ pathLength: 0 }}
-            animate={isInView && isActive ? { pathLength: [0, 1] } : {}}
-            transition={{ duration: 1, repeat: Infinity }}
-            markerEnd="url(#arrowhead)"
-            style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }}
-          />
+          {isMigration && (
+            <>
+              <motion.text
+                x="175" y="65"
+                textAnchor="middle"
+                fill="#E7FB10"
+                fontSize="7"
+                fontWeight="bold"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+                transition={{ delay: 1.5 }}
+              >
+                Cell Migration
+              </motion.text>
+              <motion.path
+                d="M 155 85 Q 175 75 195 85"
+                stroke="#E7FB10"
+                strokeWidth="2"
+                fill="none"
+                strokeDasharray="4,2"
+                initial={{ pathLength: 0 }}
+                animate={isInView ? { pathLength: [0, 1] } : {}}
+                transition={{ duration: 1, repeat: Infinity }}
+                markerEnd="url(#arrowhead)"
+                style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }}
+              />
+              
+              {[0, 1, 2, 3].map((i) => (
+                <motion.circle
+                  key={`tb-particle-${i}`}
+                  r="5"
+                  fill="#21d8ff"
+                  initial={{ opacity: 0 }}
+                  animate={isInView ? {
+                    cx: [80, 100, 120 + i * 15],
+                    cy: [90, 85 - i * 3, 90],
+                    opacity: [0, 1, 1, 0],
+                    scale: [0.5, 1, 1, 0.5]
+                  } : {}}
+                  transition={{
+                    duration: 2.5,
+                    delay: i * 0.4,
+                    repeat: Infinity,
+                    ease: "easeOut"
+                  }}
+                  style={{ filter: 'drop-shadow(0 0 6px rgba(33, 216, 255, 0.8))' }}
+                />
+              ))}
+            </>
+          )}
           
-          {[0, 1, 2, 3].map((i) => (
-            <motion.circle
-              key={`tb-particle-${i}`}
-              r="5"
-              fill="#21d8ff"
-              initial={{ opacity: 0 }}
-              animate={isInView && isActive ? {
-                cx: [80, 100, 120 + i * 15],
-                cy: [90, 85 - i * 3, 90],
-                opacity: [0, 1, 1, 0],
-                scale: [0.5, 1, 1, 0.5]
-              } : {}}
-              transition={{
-                duration: 2.5,
-                delay: i * 0.4,
-                repeat: Infinity,
-                ease: "easeOut"
-              }}
-              style={{ filter: 'drop-shadow(0 0 6px rgba(33, 216, 255, 0.8))' }}
-            />
-          ))}
+          {isActin && (
+            <>
+              <motion.text
+                x="175" y="50"
+                textAnchor="middle"
+                fill="#21d8ff"
+                fontSize="7"
+                fontWeight="bold"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+              >
+                Actin Sequestration
+              </motion.text>
+              {[0, 1, 2, 3, 4].map((i) => (
+                <motion.circle
+                  key={`sequester-${i}`}
+                  cx={170 + (i % 3) * 25}
+                  cy={70 + Math.floor(i / 3) * 30}
+                  r="8"
+                  fill="rgba(33, 216, 255, 0.2)"
+                  stroke="#21d8ff"
+                  strokeWidth="1.5"
+                  initial={{ scale: 0 }}
+                  animate={isInView ? { 
+                    scale: [1, 1.2, 1],
+                    opacity: [0.5, 1, 0.5]
+                  } : {}}
+                  transition={{ 
+                    duration: 1.5, 
+                    delay: i * 0.2,
+                    repeat: Infinity 
+                  }}
+                  style={{ filter: 'drop-shadow(0 0 6px rgba(33, 216, 255, 0.6))' }}
+                />
+              ))}
+              <motion.text
+                x="195" y="130"
+                textAnchor="middle"
+                fill="rgba(255,255,255,0.5)"
+                fontSize="6"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+              >
+                G-actin monomers bound
+              </motion.text>
+            </>
+          )}
+          
+          {isDifferentiation && (
+            <>
+              <motion.text
+                x="210" y="50"
+                textAnchor="middle"
+                fill="#9d4edd"
+                fontSize="7"
+                fontWeight="bold"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+              >
+                Stem Cell Signaling
+              </motion.text>
+              {[0, 1, 2].map((i) => (
+                <motion.g key={`stem-${i}`}>
+                  <motion.circle
+                    cx={180 + i * 30}
+                    cy={80}
+                    r="12"
+                    fill="rgba(157, 78, 221, 0.2)"
+                    stroke="#9d4edd"
+                    strokeWidth="2"
+                    initial={{ scale: 0 }}
+                    animate={isInView ? { scale: 1 } : {}}
+                    transition={{ delay: i * 0.3 }}
+                    style={{ filter: 'drop-shadow(0 0 8px rgba(157, 78, 221, 0.6))' }}
+                  />
+                  <motion.path
+                    d={`M ${180 + i * 30} 95 L ${180 + i * 30} 115`}
+                    stroke="#9d4edd"
+                    strokeWidth="2"
+                    strokeDasharray="3,2"
+                    initial={{ pathLength: 0 }}
+                    animate={isInView ? { pathLength: 1 } : {}}
+                    transition={{ delay: i * 0.3 + 0.5, duration: 0.5 }}
+                  />
+                  <motion.text
+                    x={180 + i * 30}
+                    y={125}
+                    textAnchor="middle"
+                    fill="#9d4edd"
+                    fontSize="5"
+                    initial={{ opacity: 0 }}
+                    animate={isInView ? { opacity: 1 } : {}}
+                    transition={{ delay: i * 0.3 + 0.8 }}
+                  >
+                    {['Progenitor', 'Differentiating', 'Mature'][i]}
+                  </motion.text>
+                </motion.g>
+              ))}
+            </>
+          )}
+          
+          {isInflammation && (
+            <>
+              <motion.text
+                x="210" y="45"
+                textAnchor="middle"
+                fill="#ec4899"
+                fontSize="7"
+                fontWeight="bold"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+              >
+                Inflammatory Modulation
+              </motion.text>
+              
+              <motion.circle
+                cx="210" cy="90" r="30"
+                fill="rgba(236, 72, 153, 0.1)"
+                stroke="#ec4899"
+                strokeWidth="1.5"
+                strokeDasharray="4,2"
+                initial={{ scale: 0 }}
+                animate={isInView ? { scale: 1 } : {}}
+                style={{ filter: 'drop-shadow(0 0 10px rgba(236, 72, 153, 0.3))' }}
+              />
+              
+              {[0, 1, 2, 3].map((i) => {
+                const angle = (i * 90) * Math.PI / 180;
+                const x = 210 + Math.cos(angle) * 20;
+                const y = 90 + Math.sin(angle) * 20;
+                return (
+                  <motion.circle
+                    key={`cytokine-${i}`}
+                    cx={x}
+                    cy={y}
+                    r="5"
+                    fill={i < 2 ? "#ef4444" : "#22c55e"}
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={isInView ? { 
+                      opacity: i < 2 ? [1, 0.3, 1] : [0.3, 1, 0.3],
+                      scale: i < 2 ? [1, 0.7, 1] : [0.7, 1, 0.7]
+                    } : {}}
+                    transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
+                    style={{ filter: `drop-shadow(0 0 6px ${i < 2 ? '#ef4444' : '#22c55e'})` }}
+                  />
+                );
+              })}
+              
+              <motion.text
+                x="180" y="135"
+                textAnchor="middle"
+                fill="#ef4444"
+                fontSize="5"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+              >
+                Pro-inflammatory ↓
+              </motion.text>
+              <motion.text
+                x="240" y="135"
+                textAnchor="middle"
+                fill="#22c55e"
+                fontSize="5"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+              >
+                Anti-inflammatory ↑
+              </motion.text>
+            </>
+          )}
           
           <motion.rect
             x="75"
@@ -473,7 +654,7 @@ export function TB500ActinVisual() {
           background: 'linear-gradient(135deg, rgba(33, 216, 255, 0.05) 0%, transparent 50%)'
         }}
       >
-        <ActinFilamentAnimation isInView={isInView} isActive={activeMechanism === 'migration'} />
+        <ActinFilamentAnimation isInView={isInView} activeMechanism={activeMechanism} />
         
         <div className="mt-6">
           <span className="text-xs text-muted-foreground uppercase tracking-wider mb-4 block">
