@@ -48,6 +48,7 @@ import { isInCompare, addToCompare, removeFromCompare } from "@/components/compa
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { BUNDLES } from "@/lib/bundles";
+import { SEOHead, SEO_CONFIG } from "@/components/seo-head";
 
 // Badge priority system - max 2 badges per product
 // Priority: Out of Stock > Low Stock > Sale > Selling Fast > Featured
@@ -365,6 +366,7 @@ export default function Products() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
+      <SEOHead {...SEO_CONFIG.products} canonicalPath="/products" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         {/* Page Header */}
         <motion.div

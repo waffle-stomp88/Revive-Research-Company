@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { SEOHead, SEO_CONFIG } from "@/components/seo-head";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -64,6 +65,7 @@ const checklistItems = [
 export default function BuyerChecklist() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
+      <SEOHead {...SEO_CONFIG.buyerChecklist} canonicalPath="/buyer-checklist" />
       <div className="max-w-5xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

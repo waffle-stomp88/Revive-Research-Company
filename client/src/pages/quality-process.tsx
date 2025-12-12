@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { SEOHead, SEO_CONFIG } from "@/components/seo-head";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import { VerificationJourneyCompact } from "@/components/infographics/verificati
 export default function QualityProcess() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
+      <SEOHead {...SEO_CONFIG.qualityProcess} canonicalPath="/quality-process" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

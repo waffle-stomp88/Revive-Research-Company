@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
+import { SEOHead, SEO_CONFIG } from "@/components/seo-head";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -298,6 +299,7 @@ export default function Education() {
 
   return (
     <main className="min-h-screen bg-background pt-24 pb-16">
+      <SEOHead {...SEO_CONFIG.education} canonicalPath="/education" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

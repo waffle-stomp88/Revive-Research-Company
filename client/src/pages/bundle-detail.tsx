@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useParams, useLocation } from "wouter";
+import { SEOHead } from "@/components/seo-head";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -123,6 +124,11 @@ export default function BundleDetail() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-12">
+      <SEOHead 
+        title={`${bundle.name} | Research Bundle`}
+        description={bundle.tagline || `${bundle.name} - Premium research peptide bundle with ${bundle.savings}% savings. Contains ${bundle.products.join(", ")}.`}
+        canonicalPath={`/bundles/${bundle.id}`}
+      />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, x: -20 }}

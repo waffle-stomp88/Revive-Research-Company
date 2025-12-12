@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
+import { SEOHead, SEO_CONFIG } from "@/components/seo-head";
 import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -138,6 +139,7 @@ const researchStacks: ResearchStack[] = [
 export default function ResearchStacks() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-12">
+      <SEOHead {...SEO_CONFIG.researchStacks} canonicalPath="/research-stacks" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -61,6 +61,7 @@ import { ModelViewer3D } from "@/components/model-viewer-3d";
 import { PriceTrendBadge } from "@/components/price-trend-badge";
 import type { Product, Review, ProductStorageProfile, Batch, Coa, EducationArticle } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
+import { SEOHead } from "@/components/seo-head";
 
 // Badge priority system - max 2 badges per product
 // Priority: Out of Stock > Low Stock > Sale > Selling Fast > Featured
@@ -331,8 +332,18 @@ export default function ProductDetail() {
   // Unified out-of-stock check - considers BOTH inStock flag AND stockAmount
   const isOutOfStock = !product.inStock || (product.stockAmount !== null && product.stockAmount !== undefined && product.stockAmount <= 0);
 
+  const seoTitle = `${product.name} ${selectedDosage} - Research Peptide`;
+  const seoDescription = product.description 
+    ? `${product.description.slice(0, 120)}... Third-party tested research peptide with COA.`
+    : `Premium ${product.name} research peptide. Third-party lab tested with Certificate of Analysis. For research use only.`;
+
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-12">
+      <SEOHead 
+        title={seoTitle}
+        description={seoDescription}
+        canonicalPath={`/products/${product.id}`}
+      />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, x: -20 }}

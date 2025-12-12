@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { SEOHead, SEO_CONFIG } from "@/components/seo-head";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -101,6 +102,7 @@ const getCategoryColor = (category: string) => {
 export default function LabNotes() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
+      <SEOHead {...SEO_CONFIG.labNotes} canonicalPath="/lab-notes" />
       <div className="max-w-4xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

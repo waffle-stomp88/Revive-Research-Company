@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { SEOHead, SEO_CONFIG } from "@/components/seo-head";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -77,6 +78,7 @@ const whatWeDoInstead = [
 export default function WhatWeDontDo() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
+      <SEOHead {...SEO_CONFIG.whatWeDontDo} canonicalPath="/what-we-dont-do" />
       <div className="max-w-6xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

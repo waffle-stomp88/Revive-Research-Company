@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
+import { SEOHead, SEO_CONFIG } from "@/components/seo-head";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -1015,6 +1016,7 @@ export default function Dashboard() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
+      <SEOHead {...SEO_CONFIG.dashboard} canonicalPath="/dashboard" />
       <div className="container mx-auto px-4 max-w-7xl">
         <motion.div
           variants={containerVariants}

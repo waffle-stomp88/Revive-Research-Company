@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { SEOHead, SEO_CONFIG } from "@/components/seo-head";
 import { Droplets, Syringe, Package, AlertCircle, Clock } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ const comingSoonItems = [
 export default function Supplies() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-12">
+      <SEOHead {...SEO_CONFIG.supplies} canonicalPath="/supplies" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

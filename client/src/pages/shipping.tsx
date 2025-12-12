@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import { SEOHead, SEO_CONFIG } from "@/components/seo-head";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +29,7 @@ const SHIPPING_INFO = {
 export default function Shipping() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
+      <SEOHead {...SEO_CONFIG.shipping} canonicalPath="/shipping" />
       <div className="max-w-4xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import { SEOHead, SEO_CONFIG } from "@/components/seo-head";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -108,6 +109,7 @@ export default function Contact() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
+      <SEOHead {...SEO_CONFIG.contact} canonicalPath="/contact" />
       <div className="container mx-auto px-4 max-w-4xl">
         <motion.div
           variants={containerVariants}

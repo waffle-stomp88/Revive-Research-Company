@@ -32,6 +32,7 @@ import { NewsletterSignup } from "@/components/newsletter-signup";
 import { useState, useEffect } from "react";
 import { trackEvent } from "@/lib/analytics";
 import { BUNDLES } from "@/lib/bundles";
+import { SEOHead, SEO_CONFIG } from "@/components/seo-head";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 40 },
@@ -899,6 +900,7 @@ function NewsletterSection() {
 export default function Home() {
   return (
     <main>
+      <SEOHead {...SEO_CONFIG.home} canonicalPath="/" />
       <HeroSection />
       <ProductShowcase />
       <QualityAndTrustSection />

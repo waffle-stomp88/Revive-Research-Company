@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
+import { SEOHead, SEO_CONFIG } from "@/components/seo-head";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
@@ -163,6 +164,7 @@ export default function AffiliatePage() {
 
   return (
     <main className="min-h-screen overflow-hidden">
+      <SEOHead {...SEO_CONFIG.affiliate} canonicalPath="/affiliate" />
       {/* Hero Section */}
       <section className="relative pt-32 pb-10 md:pt-36 md:pb-14 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#9d4edd]/8 via-background to-background" />

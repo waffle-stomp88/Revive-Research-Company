@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import { SEOHead, SEO_CONFIG } from "@/components/seo-head";
 import { Card } from "@/components/ui/card";
 import { FileCheck, GraduationCap, Scale, BookOpen, ArrowRight } from "lucide-react";
 
@@ -44,6 +45,7 @@ const resources = [
 export default function ResourcesHub() {
   return (
     <main className="min-h-screen pt-32">
+      <SEOHead {...SEO_CONFIG.resourcesHub} canonicalPath="/resources" />
       {/* Hero Section */}
       <section className="relative pb-16 md:pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#9d4edd]/8 via-background to-background" />

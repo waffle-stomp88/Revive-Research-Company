@@ -1,0 +1,11 @@
+# Revive Research - Robots.txt
+# Allow full indexing of all pages
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://reviveresearch.com/sitemap.xml
+
+# Crawl-delay (optional, be polite to crawlers)
+Crawl-delay: 1

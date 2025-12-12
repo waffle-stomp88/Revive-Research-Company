@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import { SEOHead, SEO_CONFIG } from "@/components/seo-head";
 import { Boxes, Package, ShoppingCart, ArrowRight, Percent, CheckCircle2, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,7 @@ export default function BulkPacks() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-12">
+      <SEOHead {...SEO_CONFIG.bulkPacks} canonicalPath="/bulk-packs" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

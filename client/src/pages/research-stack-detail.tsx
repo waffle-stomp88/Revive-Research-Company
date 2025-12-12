@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useRoute, Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
+import { SEOHead } from "@/components/seo-head";
 import {
   ArrowLeft, FlaskConical, ShoppingCart, Sparkles, CheckCircle2, AlertTriangle, Info, Package, GraduationCap, Beaker, Shield, FileCheck, Truck, RefreshCw, ShoppingBag, Repeat, CheckCircle, Minus, Plus, BookOpen, ChevronRight, Clock, ExternalLink, Star, User
 } from "lucide-react";
@@ -372,6 +373,11 @@ export default function ResearchStackDetail() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-12">
+      <SEOHead 
+        title={`${stack.name} | Research Stack`}
+        description={stack.description}
+        canonicalPath={`/research-stacks/${stack.id}`}
+      />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-4">
           <Link href="/research-stacks">

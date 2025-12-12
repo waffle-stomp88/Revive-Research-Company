@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { SEOHead } from "@/components/seo-head";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -122,6 +123,11 @@ export default function ComingSoon() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
+      <SEOHead 
+        title="Coming Soon" 
+        description="New research products coming soon. Sign up to be notified when we launch new peptide compounds."
+        canonicalPath="/coming-soon"
+      />
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ 
