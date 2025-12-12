@@ -499,73 +499,146 @@ function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boole
 }
 
 function WoundClosureVisual({ isInView, progress }: { isInView: boolean; progress: number }) {
+  const woundGap = Math.max(0, 60 - (progress * 0.6));
+  
   return (
-    <div className="relative h-24">
-      <svg viewBox="0 0 240 80" className="w-full h-full">
+    <div className="relative">
+      <svg viewBox="0 0 280 120" className="w-full h-auto">
         <defs>
-          <linearGradient id="woundGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#ef4444" />
-            <stop offset="100%" stopColor="#22c55e" />
+          <linearGradient id="tissueGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#ec4899" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#ec4899" stopOpacity="0.1" />
+          </linearGradient>
+          <linearGradient id="healedGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#22c55e" stopOpacity="0.4" />
+            <stop offset="100%" stopColor="#22c55e" stopOpacity="0.1" />
           </linearGradient>
         </defs>
         
-        <motion.rect
-          x="20" y="25" width="200" height="30" rx="5"
-          fill="rgba(255,255,255,0.05)"
-          stroke="rgba(255,255,255,0.1)"
-          strokeWidth="1"
-        />
-        
-        <motion.rect
-          x="20" y="25" 
-          width="200"
-          height="30" 
-          rx="5"
-          fill="url(#woundGradient)"
-          initial={{ width: 0 }}
-          animate={isInView ? { width: 200 * (progress / 100) } : {}}
-          transition={{ duration: 0.5 }}
-          style={{ opacity: 0.3 }}
-        />
-        
-        <motion.line
-          x1={20 + 200 * (progress / 100) / 2}
-          y1="25"
-          x2={20 + 200 * (progress / 100) / 2}
-          y2="55"
-          stroke={progress < 50 ? "#ef4444" : progress < 80 ? "#E7FB10" : "#22c55e"}
-          strokeWidth="3"
-          strokeLinecap="round"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          style={{ 
-            filter: `drop-shadow(0 0 6px ${progress < 50 ? "#ef4444" : progress < 80 ? "#E7FB10" : "#22c55e"})`
-          }}
-        />
-        
-        <motion.text
-          x="120" y="70"
-          textAnchor="middle"
-          fill={progress < 50 ? "#ef4444" : progress < 80 ? "#E7FB10" : "#22c55e"}
-          fontSize="10"
-          fontWeight="bold"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-        >
-          {progress < 50 ? "Wound Open" : progress < 80 ? "Closing" : "Healed"}
+        <motion.text x="140" y="12" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="8">
+          Cross-section of healing tissue
         </motion.text>
         
-        {progress >= 80 && (
-          <motion.g
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3 }}
+        <motion.rect
+          x="20" y="35" width="100" height="50" rx="3"
+          fill="url(#tissueGradient)"
+          stroke="#ec4899"
+          strokeWidth="1.5"
+          initial={{ x: 20 }}
+          animate={{ x: 20 + (progress * 0.3) }}
+          transition={{ duration: 0.3 }}
+        />
+        <motion.text x="70" y="65" textAnchor="middle" fill="#ec4899" fontSize="9" fontWeight="600"
+          initial={{ x: 70 }}
+          animate={{ x: 70 + (progress * 0.3) }}
+        >
+          Left Tissue
+        </motion.text>
+        
+        <motion.rect
+          x="160" y="35" width="100" height="50" rx="3"
+          fill="url(#tissueGradient)"
+          stroke="#ec4899"
+          strokeWidth="1.5"
+          initial={{ x: 160 }}
+          animate={{ x: 160 - (progress * 0.3) }}
+          transition={{ duration: 0.3 }}
+        />
+        <motion.text x="210" y="65" textAnchor="middle" fill="#ec4899" fontSize="9" fontWeight="600"
+          initial={{ x: 210 }}
+          animate={{ x: 210 - (progress * 0.3) }}
+        >
+          Right Tissue
+        </motion.text>
+        
+        <motion.rect
+          x={140 - woundGap/2}
+          y="35"
+          width={woundGap}
+          height="50"
+          fill={progress < 80 ? "rgba(239, 68, 68, 0.2)" : "rgba(34, 197, 94, 0.3)"}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        />
+        
+        {progress < 80 && (
+          <motion.text 
+            x="140" y="62" 
+            textAnchor="middle" 
+            fill={progress < 50 ? "#ef4444" : "#E7FB10"} 
+            fontSize="8"
+            fontWeight="bold"
           >
-            <circle cx="215" cy="40" r="12" fill="rgba(34, 197, 94, 0.2)" stroke="#22c55e" strokeWidth="2" />
-            <text x="215" y="44" textAnchor="middle" fill="#22c55e" fontSize="10">✓</text>
+            {progress < 30 ? "WOUND GAP" : "Closing..."}
+          </motion.text>
+        )}
+        
+        {progress >= 80 && (
+          <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <line x1="140" y1="35" x2="140" y2="85" stroke="#22c55e" strokeWidth="2" strokeDasharray="3,2" />
+            <motion.text x="140" y="62" textAnchor="middle" fill="#22c55e" fontSize="8" fontWeight="bold">
+              SEALED
+            </motion.text>
           </motion.g>
         )}
+        
+        {[0, 1, 2].map((i) => (
+          <motion.circle
+            key={`cell-left-${i}`}
+            r="4"
+            fill="#21d8ff"
+            initial={{ opacity: 0 }}
+            animate={progress > 20 ? {
+              cx: [110 + (progress * 0.3), 125 + (progress * 0.15), 140],
+              cy: [45 + i * 15, 50 + i * 12, 55 + i * 8],
+              opacity: progress < 90 ? [0.3, 1, 0] : 0,
+            } : {}}
+            transition={{ duration: 2, delay: i * 0.3, repeat: Infinity }}
+            style={{ filter: 'drop-shadow(0 0 4px #21d8ff)' }}
+          />
+        ))}
+        {[0, 1, 2].map((i) => (
+          <motion.circle
+            key={`cell-right-${i}`}
+            r="4"
+            fill="#21d8ff"
+            initial={{ opacity: 0 }}
+            animate={progress > 20 ? {
+              cx: [170 - (progress * 0.3), 155 - (progress * 0.15), 140],
+              cy: [45 + i * 15, 50 + i * 12, 55 + i * 8],
+              opacity: progress < 90 ? [0.3, 1, 0] : 0,
+            } : {}}
+            transition={{ duration: 2, delay: i * 0.3 + 0.15, repeat: Infinity }}
+            style={{ filter: 'drop-shadow(0 0 4px #21d8ff)' }}
+          />
+        ))}
+        
+        <motion.text x="140" y="100" textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="9">
+          {progress < 30 && "Wound open — tissue edges separated"}
+          {progress >= 30 && progress < 60 && "TB-500 signals cells to migrate toward wound"}
+          {progress >= 60 && progress < 90 && "Cells bridging gap — new tissue forming"}
+          {progress >= 90 && "Wound sealed — tissue integrity restored"}
+        </motion.text>
+        
+        <motion.text x="140" y="112" textAnchor="middle" fill="#21d8ff" fontSize="8" fontWeight="500">
+          {progress < 90 ? `Healing Progress: ${Math.round(progress)}%` : "Complete!"}
+        </motion.text>
       </svg>
+      
+      <div className="flex justify-center gap-6 mt-2 text-[10px] text-muted-foreground">
+        <div className="flex items-center gap-1.5">
+          <span className="w-3 h-3 rounded bg-[#ec4899]/30 border border-[#ec4899]"></span>
+          <span>Tissue</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#21d8ff]" style={{ boxShadow: '0 0 4px #21d8ff' }}></span>
+          <span>Migrating Cells</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-3 h-3 rounded bg-[#22c55e]/30 border border-[#22c55e]"></span>
+          <span>Healed</span>
+        </div>
+      </div>
     </div>
   );
 }
