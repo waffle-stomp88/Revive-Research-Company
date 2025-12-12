@@ -393,7 +393,7 @@ function ProductShowcase() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {bestSellers.map((product, index) => (
                 <motion.div
                   key={product.id}
@@ -407,22 +407,22 @@ function ProductShowcase() {
                       className="group cursor-pointer transition-all duration-300 border border-[#21d8ff]/30 hover:border-[#21d8ff] hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(33,216,255,0.5)] overflow-hidden"
                       data-testid={`card-bestseller-${product.id}`}
                     >
-                      <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center relative overflow-hidden">
+                      <div className="aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center relative overflow-hidden">
                         <img 
                           src={bottleImage} 
                           alt={`${product.name} research peptide - premium quality`}
-                          className="h-3/4 w-3/4 object-contain group-hover:scale-110 transition-transform duration-300"
+                          className="h-[90%] w-[90%] object-contain group-hover:scale-110 transition-transform duration-300"
                         />
                         {product.isWeeklyDeal && (
-                          <Badge className="absolute top-3 right-3 bg-[#E7FB10] text-black text-xs px-2 py-0.5 font-bold">DEAL</Badge>
+                          <Badge className="absolute top-2 right-2 bg-[#E7FB10] text-black text-xs px-2 py-0.5 font-bold">DEAL</Badge>
                         )}
                       </div>
-                      <div className="p-5">
-                        <h3 className="font-display text-xl md:text-2xl font-bold text-[#E7FB10] group-hover:text-[#21d8ff] transition-colors mb-2">
+                      <div className="p-4">
+                        <h3 className="font-display text-lg md:text-xl font-bold text-[#E7FB10] group-hover:text-[#21d8ff] transition-colors mb-1">
                           {product.name}
                         </h3>
                         <div className="flex items-center justify-between">
-                          <span className="font-display text-2xl font-bold">${Number(product.price).toFixed(2)}</span>
+                          <span className="font-display text-xl font-bold">${Number(product.price).toFixed(2)}</span>
                           <Badge variant="outline" className="text-xs px-2 py-0.5 border-[#21d8ff]/50 text-[#21d8ff]">99%+ Pure</Badge>
                         </div>
                       </div>
