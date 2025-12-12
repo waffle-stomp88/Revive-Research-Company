@@ -1,5 +1,5 @@
 import { Switch, Route, useLocation } from "wouter";
-import { useEffect, useLayoutEffect, lazy, Suspense } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -68,11 +68,8 @@ function LazyRoute({ component: Component, ...props }: { component: React.LazyEx
 function ScrollToTop() {
   const [location] = useLocation();
   
-  useLayoutEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    });
-    return () => cancelAnimationFrame(frame);
+  useEffect(() => {
+    window.scrollTo(0, 0);
   }, [location]);
   
   return null;
@@ -202,7 +199,7 @@ function App() {
             <div className="min-h-screen flex flex-col bg-background text-foreground select-none">
               <FreeShippingBanner />
               <Navigation />
-              <div className="flex-1">
+              <div className="flex-1 min-h-[60vh]">
                 <Suspense fallback={null}>
                   <Router />
                 </Suspense>
