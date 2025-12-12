@@ -56,7 +56,20 @@ import {
   HormonalPathwayVisual,
   IpamorelinComparison,
   CJC1295DACMechanism,
-  TesomorellinComparison
+  TesomorellinComparison,
+  // New MOTS-C quality level infographics
+  BPC157AngiogenesisVisual,
+  TB500ActinVisual,
+  GHKCuCopperVisual,
+  EpithalonTelomeraseVisual,
+  GLP1ReceptorVisual,
+  IpamorelinSelectivityVisual,
+  CJC1295AlbuminVisual,
+  TesomorelinPulseVisual,
+  IGF1SignalingVisual,
+  SemaxNeuralVisual,
+  HCGHormonalVisual,
+  NADSirtuinVisual
 } from "@/components/education";
 
 const articleVisuals: Record<string, () => JSX.Element> = {
@@ -64,22 +77,23 @@ const articleVisuals: Record<string, () => JSX.Element> = {
   "how-to-read-coas": () => <COAAnatomyDiagram />,
   "understanding-peptide-purity": () => <HPLCExplainer />,
   "storage-101": () => <StorageTemperatureGuide />,
-  "epithalon-research-guide": () => <TelomereVisual />,
-  "semaglutide-research-guide": () => <GLP1ReceptorComparison />,
-  "tirzepatide-research-guide": () => <GLP1ReceptorComparison />,
-  "retatrutide-research-guide": () => <GLP1ReceptorComparison />,
-  "cjc-1295-research-guide": () => <><GHAxisDiagram /><CJC1295DACMechanism /></>,
-  "ipamorelin-research-guide": () => <><GHAxisDiagram /><IpamorelinComparison /></>,
-  "tesamorelin-research-guide": () => <><GHAxisDiagram /><TesomorellinComparison /></>,
-  "bpc-157-research-guide": () => <HealingPathwayVisual peptide="bpc-157" />,
-  "tb-500-research-guide": () => <HealingPathwayVisual peptide="tb-500" />,
-  "ghk-cu-research-guide": () => <HealingPathwayVisual peptide="ghk-cu" />,
+  // New MOTS-C quality level infographics - mechanism-specific visualizations
+  "epithalon-research-guide": () => <EpithalonTelomeraseVisual />,
+  "semaglutide-research-guide": () => <GLP1ReceptorVisual />,
+  "tirzepatide-research-guide": () => <GLP1ReceptorVisual />,
+  "retatrutide-research-guide": () => <GLP1ReceptorVisual />,
+  "cjc-1295-research-guide": () => <CJC1295AlbuminVisual />,
+  "ipamorelin-research-guide": () => <IpamorelinSelectivityVisual />,
+  "tesamorelin-research-guide": () => <TesomorelinPulseVisual />,
+  "bpc-157-research-guide": () => <BPC157AngiogenesisVisual />,
+  "tb-500-research-guide": () => <TB500ActinVisual />,
+  "ghk-cu-research-guide": () => <GHKCuCopperVisual />,
   "glow-peptide-complex-research-guide": () => <HealingPathwayVisual peptide="glow" />,
-  "igf-1-lr3-research-guide": () => <IGF1PathwayVisual />,
+  "igf-1-lr3-research-guide": () => <IGF1SignalingVisual />,
   "mots-c-research-guide": () => <CellularEnergyVisual peptide="mots-c" />,
-  "nad-precursor-research-guide": () => <CellularEnergyVisual peptide="nad" />,
-  "semax-research-guide": () => <NeuropeptideVisual />,
-  "hcg-research-guide": () => <HormonalPathwayVisual />,
+  "nad-precursor-research-guide": () => <NADSirtuinVisual />,
+  "semax-research-guide": () => <SemaxNeuralVisual />,
+  "hcg-research-guide": () => <HCGHormonalVisual />,
 };
 
 const categories = [

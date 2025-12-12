@@ -1,0 +1,457 @@
+import { motion, useInView } from "framer-motion";
+import { useRef, useState } from "react";
+import { Activity, Zap, Move, Shield, ArrowRight } from "lucide-react";
+
+function ActinFilamentAnimation({ isInView, isActive }: { isInView: boolean; isActive: boolean }) {
+  const filamentColors = ['#21d8ff', '#E7FB10', '#9d4edd'];
+  
+  return (
+    <div className="relative w-full h-56 flex items-center justify-center overflow-hidden">
+      <div 
+        className="absolute inset-0 rounded-xl"
+        style={{
+          background: 'radial-gradient(ellipse at center, rgba(33, 216, 255, 0.1) 0%, transparent 70%)'
+        }}
+      />
+      
+      <svg viewBox="0 0 320 180" className="w-full h-full">
+        <defs>
+          <filter id="actinGlow">
+            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+          <linearGradient id="cellGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#21d8ff" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#E7FB10" stopOpacity="0.3" />
+          </linearGradient>
+        </defs>
+        
+        <motion.ellipse
+          cx="100"
+          cy="90"
+          rx="55"
+          ry="45"
+          fill="url(#cellGradient)"
+          stroke="#21d8ff"
+          strokeWidth="2"
+          initial={{ scale: 0 }}
+          animate={isInView ? { scale: 1 } : {}}
+          transition={{ duration: 0.8 }}
+          style={{ filter: 'drop-shadow(0 0 10px rgba(33, 216, 255, 0.4))' }}
+        />
+        
+        <motion.circle
+          cx="100"
+          cy="90"
+          r="15"
+          fill="rgba(157, 78, 221, 0.3)"
+          stroke="#9d4edd"
+          strokeWidth="1.5"
+          initial={{ scale: 0 }}
+          animate={isInView ? { scale: 1 } : {}}
+          transition={{ delay: 0.3 }}
+        />
+        <motion.text
+          x="100" y="93"
+          textAnchor="middle"
+          fill="#9d4edd"
+          fontSize="7"
+          fontWeight="bold"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ delay: 0.5 }}
+        >
+          Nucleus
+        </motion.text>
+        
+        {filamentColors.map((color, idx) => {
+          const startAngle = idx * 40 - 20;
+          const endX = 100 + Math.cos((startAngle * Math.PI) / 180) * 50;
+          const endY = 90 + Math.sin((startAngle * Math.PI) / 180) * 35;
+          
+          return (
+            <motion.g key={`filament-${idx}`}>
+              {[0, 1, 2, 3, 4, 5, 6].map((segment) => {
+                const segX = 100 + ((endX - 100) / 7) * segment;
+                const segY = 90 + ((endY - 90) / 7) * segment;
+                
+                return (
+                  <motion.circle
+                    key={segment}
+                    cx={segX}
+                    cy={segY}
+                    r="4"
+                    fill={color}
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={isInView ? { scale: 1, opacity: 1 } : {}}
+                    transition={{ delay: 0.8 + idx * 0.2 + segment * 0.05 }}
+                    style={{ filter: `drop-shadow(0 0 4px ${color})` }}
+                  />
+                );
+              })}
+            </motion.g>
+          );
+        })}
+        
+        <motion.g
+          initial={{ x: 0 }}
+          animate={isInView && isActive ? { x: [0, 80, 0] } : {}}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <motion.ellipse
+            cx="220"
+            cy="90"
+            rx="55"
+            ry="45"
+            fill="url(#cellGradient)"
+            stroke="#E7FB10"
+            strokeWidth="2"
+            strokeDasharray="5,3"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: [0.3, 0.8, 0.3] } : {}}
+            transition={{ duration: 2, repeat: Infinity }}
+            style={{ filter: 'drop-shadow(0 0 8px rgba(231, 251, 16, 0.3))' }}
+          />
+          <motion.text
+            x="220" y="93"
+            textAnchor="middle"
+            fill="#E7FB10"
+            fontSize="8"
+            fontWeight="bold"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+          >
+            Migration
+          </motion.text>
+        </motion.g>
+        
+        <motion.path
+          d="M 155 85 Q 175 75 195 85"
+          stroke="#E7FB10"
+          strokeWidth="2"
+          fill="none"
+          strokeDasharray="4,2"
+          initial={{ pathLength: 0 }}
+          animate={isInView && isActive ? { pathLength: [0, 1] } : {}}
+          transition={{ duration: 1, repeat: Infinity }}
+          markerEnd="url(#arrowhead)"
+          style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }}
+        />
+        
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#E7FB10" />
+          </marker>
+        </defs>
+        
+        {[0, 1, 2, 3].map((i) => (
+          <motion.circle
+            key={`tb-particle-${i}`}
+            r="5"
+            fill="#21d8ff"
+            initial={{ opacity: 0 }}
+            animate={isInView && isActive ? {
+              cx: [80, 100, 120 + i * 15],
+              cy: [90, 85 - i * 3, 90],
+              opacity: [0, 1, 1, 0],
+              scale: [0.5, 1, 1, 0.5]
+            } : {}}
+            transition={{
+              duration: 2.5,
+              delay: i * 0.4,
+              repeat: Infinity,
+              ease: "easeOut"
+            }}
+            style={{ filter: 'drop-shadow(0 0 6px rgba(33, 216, 255, 0.8))' }}
+          />
+        ))}
+        
+        <motion.rect
+          x="75"
+          y="130"
+          width="50"
+          height="25"
+          rx="5"
+          fill="rgba(33, 216, 255, 0.15)"
+          stroke="#21d8ff"
+          strokeWidth="1.5"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ delay: 1.5 }}
+        />
+        <motion.text x="100" y="145" textAnchor="middle" fill="#21d8ff" fontSize="7" fontWeight="bold"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ delay: 1.6 }}
+        >
+          TB-500
+        </motion.text>
+        
+        <motion.path
+          d="M 100 130 L 100 110"
+          stroke="#21d8ff"
+          strokeWidth="2"
+          strokeDasharray="3,2"
+          initial={{ pathLength: 0 }}
+          animate={isInView ? { pathLength: 1 } : {}}
+          transition={{ delay: 1.8, duration: 0.5 }}
+          style={{ filter: 'drop-shadow(0 0 4px rgba(33, 216, 255, 0.6))' }}
+        />
+      </svg>
+    </div>
+  );
+}
+
+function WoundClosureVisual({ isInView, progress }: { isInView: boolean; progress: number }) {
+  return (
+    <div className="relative h-24">
+      <svg viewBox="0 0 240 80" className="w-full h-full">
+        <defs>
+          <linearGradient id="woundGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#ef4444" />
+            <stop offset="100%" stopColor="#22c55e" />
+          </linearGradient>
+        </defs>
+        
+        <motion.rect
+          x="20" y="25" width="200" height="30" rx="5"
+          fill="rgba(255,255,255,0.05)"
+          stroke="rgba(255,255,255,0.1)"
+          strokeWidth="1"
+        />
+        
+        <motion.rect
+          x="20" y="25" 
+          width="200"
+          height="30" 
+          rx="5"
+          fill="url(#woundGradient)"
+          initial={{ width: 0 }}
+          animate={isInView ? { width: 200 * (progress / 100) } : {}}
+          transition={{ duration: 0.5 }}
+          style={{ opacity: 0.3 }}
+        />
+        
+        <motion.line
+          x1={20 + 200 * (progress / 100) / 2}
+          y1="25"
+          x2={20 + 200 * (progress / 100) / 2}
+          y2="55"
+          stroke={progress < 50 ? "#ef4444" : progress < 80 ? "#E7FB10" : "#22c55e"}
+          strokeWidth="3"
+          strokeLinecap="round"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          style={{ 
+            filter: `drop-shadow(0 0 6px ${progress < 50 ? "#ef4444" : progress < 80 ? "#E7FB10" : "#22c55e"})`
+          }}
+        />
+        
+        <motion.text
+          x="120" y="70"
+          textAnchor="middle"
+          fill={progress < 50 ? "#ef4444" : progress < 80 ? "#E7FB10" : "#22c55e"}
+          fontSize="10"
+          fontWeight="bold"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+        >
+          {progress < 50 ? "Wound Open" : progress < 80 ? "Closing" : "Healed"}
+        </motion.text>
+        
+        {progress >= 80 && (
+          <motion.g
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            <circle cx="215" cy="40" r="12" fill="rgba(34, 197, 94, 0.2)" stroke="#22c55e" strokeWidth="2" />
+            <text x="215" y="44" textAnchor="middle" fill="#22c55e" fontSize="10">✓</text>
+          </motion.g>
+        )}
+      </svg>
+    </div>
+  );
+}
+
+const mechanisms = [
+  {
+    id: 'actin',
+    name: 'Actin Sequestration',
+    icon: Activity,
+    description: 'TB-500 binds G-actin monomers, preventing excessive polymerization and promoting controlled cytoskeleton reorganization',
+    color: '#21d8ff'
+  },
+  {
+    id: 'migration',
+    name: 'Cell Migration',
+    icon: Move,
+    description: 'Enhances cellular motility by regulating actin dynamics, enabling cells to move toward injury sites',
+    color: '#E7FB10'
+  },
+  {
+    id: 'differentiation',
+    name: 'Stem Cell Signaling',
+    icon: Zap,
+    description: 'Promotes progenitor cell differentiation and recruitment to damaged tissue areas',
+    color: '#9d4edd'
+  },
+  {
+    id: 'inflammation',
+    name: 'Inflammatory Modulation',
+    icon: Shield,
+    description: 'Modulates inflammatory cytokine expression to create optimal healing environment',
+    color: '#ec4899'
+  },
+];
+
+export function TB500ActinVisual() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { once: true, margin: "-50px" });
+  const [activeMechanism, setActiveMechanism] = useState<string>('actin');
+  const [healingProgress, setHealingProgress] = useState(20);
+
+  const startHealing = () => {
+    let progress = 20;
+    const interval = setInterval(() => {
+      progress += 5;
+      setHealingProgress(progress);
+      if (progress >= 100) {
+        clearInterval(interval);
+        setTimeout(() => setHealingProgress(20), 2000);
+      }
+    }, 200);
+  };
+
+  return (
+    <div ref={containerRef} className="relative">
+      <div 
+        className="absolute inset-0 h-full w-full rounded-2xl blur-3xl -z-10"
+        style={{
+          background: 'radial-gradient(ellipse at center, rgba(33, 216, 255, 0.08) 0%, transparent 70%)'
+        }}
+      />
+      
+      <motion.div
+        className="text-center mb-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+      >
+        <div 
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
+          style={{
+            background: 'linear-gradient(135deg, rgba(33, 216, 255, 0.15) 0%, rgba(231, 251, 16, 0.05) 100%)',
+            borderColor: '#21d8ff',
+            boxShadow: '0 0 20px rgba(33, 216, 255, 0.3)'
+          }}
+        >
+          <Activity className="h-5 w-5 text-[#21d8ff]" style={{ filter: 'drop-shadow(0 0 4px rgba(33, 216, 255, 0.6))' }} />
+          <span className="text-sm font-bold bg-gradient-to-r from-[#21d8ff] to-[#E7FB10] bg-clip-text text-transparent">
+            Actin Cytoskeleton Regulation
+          </span>
+        </div>
+        <p className="text-sm text-muted-foreground max-w-md mx-auto">
+          How TB-500 (Thymosin Beta-4) orchestrates cellular migration and tissue repair
+        </p>
+      </motion.div>
+
+      <div 
+        className="rounded-xl border p-6 mb-6"
+        style={{ 
+          borderColor: 'rgba(33, 216, 255, 0.3)',
+          background: 'linear-gradient(135deg, rgba(33, 216, 255, 0.05) 0%, transparent 50%)'
+        }}
+      >
+        <ActinFilamentAnimation isInView={isInView} isActive={activeMechanism === 'migration'} />
+        
+        <div className="mt-6">
+          <span className="text-xs text-muted-foreground uppercase tracking-wider mb-4 block">
+            Mechanism of Action
+          </span>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {mechanisms.map((mechanism) => {
+              const Icon = mechanism.icon;
+              const isActive = activeMechanism === mechanism.id;
+              
+              return (
+                <motion.button
+                  key={mechanism.id}
+                  onClick={() => setActiveMechanism(mechanism.id)}
+                  className="relative p-3 rounded-lg text-center transition-all cursor-pointer"
+                  style={{
+                    backgroundColor: isActive ? `${mechanism.color}20` : 'rgba(255,255,255,0.03)',
+                    border: `1.5px solid ${isActive ? mechanism.color : 'rgba(255,255,255,0.1)'}`,
+                    boxShadow: isActive ? `0 0 15px ${mechanism.color}30` : 'none'
+                  }}
+                  whileHover={{ scale: 1.02 }}
+                  data-testid={`mechanism-${mechanism.id}`}
+                >
+                  <motion.div
+                    className="w-10 h-10 rounded-lg mx-auto mb-2 flex items-center justify-center"
+                    style={{ backgroundColor: `${mechanism.color}20` }}
+                    animate={isActive ? { scale: [1, 1.1, 1] } : {}}
+                    transition={{ duration: 1.5, repeat: isActive ? Infinity : 0 }}
+                  >
+                    <Icon className="h-5 w-5" style={{ color: mechanism.color, filter: `drop-shadow(0 0 4px ${mechanism.color})` }} />
+                  </motion.div>
+                  <span className="text-[10px] font-bold" style={{ color: isActive ? mechanism.color : 'rgba(255,255,255,0.6)' }}>
+                    {mechanism.name}
+                  </span>
+                </motion.button>
+              );
+            })}
+          </div>
+          
+          <motion.div
+            key={activeMechanism}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-4 p-3 rounded-lg"
+            style={{
+              backgroundColor: `${mechanisms.find(m => m.id === activeMechanism)?.color}10`,
+              border: `1px solid ${mechanisms.find(m => m.id === activeMechanism)?.color}30`
+            }}
+          >
+            <p className="text-sm text-muted-foreground text-center">
+              {mechanisms.find(m => m.id === activeMechanism)?.description}
+            </p>
+          </motion.div>
+        </div>
+
+        <div className="mt-6 pt-6 border-t" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <ArrowRight className="h-4 w-4 text-[#22c55e]" />
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Wound Closure Simulation
+              </span>
+            </div>
+            <button
+              onClick={startHealing}
+              className="text-xs px-3 py-1 rounded-full bg-[#22c55e]/20 text-[#22c55e] border border-[#22c55e]/30 hover:bg-[#22c55e]/30 transition-all"
+              data-testid="button-start-healing"
+            >
+              Simulate Healing
+            </button>
+          </div>
+          <WoundClosureVisual isInView={isInView} progress={healingProgress} />
+        </div>
+      </div>
+
+      <motion.div
+        className="text-center text-xs text-muted-foreground"
+        initial={{ opacity: 0 }}
+        animate={isInView ? { opacity: 1 } : {}}
+        transition={{ delay: 2 }}
+      >
+        <span className="px-3 py-1 rounded-full bg-muted/30">
+          TB-500 actin regulation visualization • For research education only
+        </span>
+      </motion.div>
+    </div>
+  );
+}

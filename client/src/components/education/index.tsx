@@ -12,3 +12,17 @@ export { HormonalPathwayVisual } from "./hormonal-pathway-visual";
 export { IpamorelinComparison } from "./ipamorelin-comparison";
 export { CJC1295DACMechanism } from "./cjc1295-dac-mechanism";
 export { TesomorellinComparison } from "./tesamorelin-comparison";
+
+// New MOTS-C quality level infographics
+export { BPC157AngiogenesisVisual } from "./bpc157-angiogenesis-visual";
+export { TB500ActinVisual } from "./tb500-actin-visual";
+export { GHKCuCopperVisual } from "./ghkcu-copper-visual";
+export { EpithalonTelomeraseVisual } from "./epithalon-telomerase-visual";
+export { GLP1ReceptorVisual } from "./glp1-receptor-visual";
+export { IpamorelinSelectivityVisual } from "./ipamorelin-selectivity-visual";
+export { CJC1295AlbuminVisual } from "./cjc1295-albumin-visual";
+export { TesomorelinPulseVisual } from "./tesamorelin-pulse-visual";
+export { IGF1SignalingVisual } from "./igf1-signaling-visual";
+export { SemaxNeuralVisual } from "./semax-neural-visual";
+export { HCGHormonalVisual } from "./hcg-hormonal-visual";
+export { NADSirtuinVisual } from "./nad-sirtuin-visual";
