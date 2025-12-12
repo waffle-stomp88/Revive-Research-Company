@@ -1,5 +1,5 @@
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Brain, Zap, Activity, Sparkles, TrendingUp } from "lucide-react";
 
 function NeuralSynapseAnimation({ isInView, activeFactor }: { isInView: boolean; activeFactor: number }) {
@@ -253,7 +253,34 @@ const neurotrophicFactors = [
 export function SemaxNeuralVisual() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-50px" });
+  const visualRef = useRef<HTMLDivElement>(null);
+  const visualInView = useInView(visualRef, { margin: "-20px" });
   const [activeFactor, setActiveFactor] = useState(0);
+  const [progress, setProgress] = useState(0);
+
+  // Auto-cycle through factors - slow enough to read
+  useEffect(() => {
+    if (!visualInView) return;
+    
+    // Progress bar animation
+    const progressInterval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) return 0;
+        return prev + 1.43; // ~100% over 7 seconds
+      });
+    }, 100);
+    
+    // Switch factor every 7 seconds
+    const switchInterval = setInterval(() => {
+      setActiveFactor(prev => (prev + 1) % 3);
+      setProgress(0);
+    }, 7000);
+    
+    return () => {
+      clearInterval(progressInterval);
+      clearInterval(switchInterval);
+    };
+  }, [visualInView]);
 
   return (
     <div ref={containerRef} className="relative">
@@ -288,6 +315,7 @@ export function SemaxNeuralVisual() {
       </motion.div>
 
       <div 
+        ref={visualRef}
         className="rounded-xl border p-6 mb-6"
         style={{ 
           borderColor: 'rgba(249, 115, 22, 0.3)',
@@ -296,7 +324,21 @@ export function SemaxNeuralVisual() {
       >
         <NeuralSynapseAnimation isInView={isInView} activeFactor={activeFactor} />
         
-        <div className="mt-6">
+        {/* Auto-play progress bar */}
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <span className="text-[10px] text-muted-foreground">Auto-playing factor {activeFactor + 1}/3</span>
+          <div className="w-24 h-1 rounded-full bg-white/10 overflow-hidden">
+            <motion.div 
+              className="h-full rounded-full"
+              style={{ 
+                width: `${progress}%`,
+                background: neurotrophicFactors[activeFactor].color 
+              }}
+            />
+          </div>
+        </div>
+        
+        <div className="mt-2">
           <span className="text-xs text-muted-foreground uppercase tracking-wider mb-4 block">
             Neurotrophic Factors Enhanced by Semax
           </span>
