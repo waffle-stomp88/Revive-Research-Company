@@ -385,6 +385,17 @@ export function IpamorelinSelectivityVisual() {
             </span>
           </motion.div>
           
+          {/* Column headers */}
+          <div className="grid grid-cols-3 gap-4 mb-2 pb-2 border-b" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+            <div></div>
+            <div className="text-center">
+              <span className="text-xs font-bold text-[#E7FB10]">Ipamorelin</span>
+            </div>
+            <div className="text-center">
+              <span className="text-xs font-bold text-[#9d4edd]">Other GHRPs</span>
+            </div>
+          </div>
+          
           <div className="space-y-2">
             {comparisonPoints.map((point, idx) => {
               const Icon = point.icon;
