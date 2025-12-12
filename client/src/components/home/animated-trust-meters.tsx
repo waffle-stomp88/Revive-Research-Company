@@ -167,22 +167,6 @@ function CircularProgress({ value, color, icon: Icon, label, size = 120, delay }
             <AnimatedCounter target={value} suffix="%" delay={delay + 0.5} />
           </span>
         </div>
-        
-        <motion.div
-          className="absolute inset-0 rounded-full"
-          style={{
-            background: `radial-gradient(circle, ${color}10 0%, transparent 70%)`,
-          }}
-          animate={{
-            opacity: [0.5, 1, 0.5],
-            scale: [1, 1.05, 1]
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
       </div>
       
       <span className="mt-3 text-sm font-medium text-muted-foreground text-center">
