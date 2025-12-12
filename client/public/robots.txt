@@ -4,8 +4,15 @@
 User-agent: *
 Allow: /
 
+# Disallow private/transactional pages
+Disallow: /cart
+Disallow: /checkout
+Disallow: /account
+Disallow: /login
+Disallow: /api/
+
 # Sitemap location
-Sitemap: https://reviveresearch.com/sitemap.xml
+Sitemap: https://revive-research--graysonwillard.replit.app/sitemap.xml
 
 # Crawl-delay (optional, be polite to crawlers)
 Crawl-delay: 1
