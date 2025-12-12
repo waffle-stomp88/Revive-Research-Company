@@ -356,15 +356,34 @@ export function IpamorelinSelectivityVisual() {
         </div>
         
         <div className="mt-6">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-3">
             <span className="text-xs text-muted-foreground uppercase tracking-wider">
               Selectivity Comparison
             </span>
-            <span className="text-[10px] text-muted-foreground/70 italic flex items-center gap-1">
-              <span className="inline-block w-3 h-3 rounded border border-muted-foreground/30 text-center leading-3 text-[8px]">?</span>
-              Hover rows for details
-            </span>
           </div>
+          
+          {/* Interactive hint banner */}
+          <motion.div 
+            className="flex items-center justify-center gap-2 py-2 px-4 mb-4 rounded-lg border"
+            style={{
+              backgroundColor: 'rgba(231, 251, 16, 0.08)',
+              borderColor: 'rgba(231, 251, 16, 0.3)'
+            }}
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ delay: 1.5 }}
+          >
+            <motion.div 
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="text-[#E7FB10]"
+            >
+              👆
+            </motion.div>
+            <span className="text-sm text-[#E7FB10]/90">
+              Click or hover each row below to learn more
+            </span>
+          </motion.div>
           
           <div className="space-y-2">
             {comparisonPoints.map((point, idx) => {
