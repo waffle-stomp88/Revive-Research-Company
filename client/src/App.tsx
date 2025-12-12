@@ -1,5 +1,6 @@
 import { Switch, Route, useLocation } from "wouter";
 import { useEffect, lazy, Suspense } from "react";
+import { Loader2 } from "lucide-react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -57,9 +58,17 @@ const NotFound = lazy(() => import("@/pages/not-found"));
 const ChatBot = lazy(() => import("@/components/chatbot").then(m => ({ default: m.ChatBot })));
 const BackToTopButton = lazy(() => import("@/components/back-to-top-button").then(m => ({ default: m.BackToTopButton })));
 
+function PageLoader() {
+  return (
+    <div className="min-h-[60vh] flex items-center justify-center">
+      <Loader2 className="h-8 w-8 animate-spin text-[#E7FB10]" />
+    </div>
+  );
+}
+
 function LazyRoute({ component: Component, ...props }: { component: React.LazyExoticComponent<React.ComponentType<any>> } & Record<string, any>) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<PageLoader />}>
       <Component {...props} />
     </Suspense>
   );
@@ -200,7 +209,7 @@ function App() {
               <FreeShippingBanner />
               <Navigation />
               <div className="flex-1">
-                <Suspense fallback={<div className="min-h-[60vh]" />}>
+                <Suspense fallback={<PageLoader />}>
                   <Router />
                 </Suspense>
               </div>
