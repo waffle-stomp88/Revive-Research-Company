@@ -1,5 +1,5 @@
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { 
   Zap,
   Shield,
@@ -71,8 +71,29 @@ const peptideData = {
 export function HealingPathwayVisual({ peptide }: TissuePathwayVisualProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-50px" });
+  const pathwayRef = useRef<HTMLDivElement>(null);
+  const pathwayInView = useInView(pathwayRef, { margin: "-20px" });
   const [activePathway, setActivePathway] = useState<number | null>(null);
   const data = peptideData[peptide];
+
+  useEffect(() => {
+    if (!pathwayInView || peptide !== 'glow') return;
+    
+    const runPathwayCycle = () => {
+      let index = 0;
+      setActivePathway(0);
+      
+      const interval = setInterval(() => {
+        index = (index + 1) % data.pathways.length;
+        setActivePathway(index);
+      }, 2000);
+      
+      return interval;
+    };
+    
+    const interval = runPathwayCycle();
+    return () => clearInterval(interval);
+  }, [pathwayInView, peptide, data.pathways.length]);
 
   return (
     <div ref={containerRef} className="relative">
@@ -107,9 +128,10 @@ export function HealingPathwayVisual({ peptide }: TissuePathwayVisualProps) {
 
         <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">
           Mechanism Pathways
+          {peptide === 'glow' && <span className="ml-2 text-xs italic text-muted-foreground">(Auto-cycles)</span>}
         </h4>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <div ref={pathwayRef} className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {data.pathways.map((pathway, index) => {
             const Icon = pathway.icon;
             const isActive = activePathway === index;
@@ -127,8 +149,8 @@ export function HealingPathwayVisual({ peptide }: TissuePathwayVisualProps) {
                   border: '1px solid',
                   boxShadow: isActive ? `0 0 15px ${data.color}30` : undefined
                 }}
-                onMouseEnter={() => setActivePathway(index)}
-                onMouseLeave={() => setActivePathway(null)}
+                onMouseEnter={peptide !== 'glow' ? () => setActivePathway(index) : undefined}
+                onMouseLeave={peptide !== 'glow' ? () => setActivePathway(null) : undefined}
               >
                 <div className="flex flex-col items-center text-center">
                   <motion.div
