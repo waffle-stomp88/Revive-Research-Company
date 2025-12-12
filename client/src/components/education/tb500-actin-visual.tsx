@@ -6,201 +6,309 @@ function ActinFilamentAnimation({ isInView, isActive }: { isInView: boolean; isA
   const filamentColors = ['#21d8ff', '#E7FB10', '#9d4edd'];
   
   return (
-    <div className="relative w-full h-56 flex items-center justify-center overflow-hidden">
+    <div className="relative w-full flex flex-col items-center justify-center overflow-hidden">
       <div 
-        className="absolute inset-0 rounded-xl"
+        className="relative w-full h-56"
         style={{
           background: 'radial-gradient(ellipse at center, rgba(33, 216, 255, 0.1) 0%, transparent 70%)'
         }}
-      />
-      
-      <svg viewBox="0 0 320 180" className="w-full h-full">
-        <defs>
-          <filter id="actinGlow">
-            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          <linearGradient id="cellGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#21d8ff" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#E7FB10" stopOpacity="0.3" />
-          </linearGradient>
-        </defs>
-        
-        <motion.ellipse
-          cx="100"
-          cy="90"
-          rx="55"
-          ry="45"
-          fill="url(#cellGradient)"
-          stroke="#21d8ff"
-          strokeWidth="2"
-          initial={{ scale: 0 }}
-          animate={isInView ? { scale: 1 } : {}}
-          transition={{ duration: 0.8 }}
-          style={{ filter: 'drop-shadow(0 0 10px rgba(33, 216, 255, 0.4))' }}
-        />
-        
-        <motion.circle
-          cx="100"
-          cy="90"
-          r="15"
-          fill="rgba(157, 78, 221, 0.3)"
-          stroke="#9d4edd"
-          strokeWidth="1.5"
-          initial={{ scale: 0 }}
-          animate={isInView ? { scale: 1 } : {}}
-          transition={{ delay: 0.3 }}
-        />
-        <motion.text
-          x="100" y="93"
-          textAnchor="middle"
-          fill="#9d4edd"
-          fontSize="7"
-          fontWeight="bold"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ delay: 0.5 }}
-        >
-          Nucleus
-        </motion.text>
-        
-        {filamentColors.map((color, idx) => {
-          const startAngle = idx * 40 - 20;
-          const endX = 100 + Math.cos((startAngle * Math.PI) / 180) * 50;
-          const endY = 90 + Math.sin((startAngle * Math.PI) / 180) * 35;
+      >
+        <svg viewBox="0 0 320 180" className="w-full h-full">
+          <defs>
+            <filter id="actinGlow">
+              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+            <linearGradient id="cellGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#21d8ff" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#E7FB10" stopOpacity="0.3" />
+            </linearGradient>
+            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+              <polygon points="0 0, 10 3.5, 0 7" fill="#E7FB10" />
+            </marker>
+          </defs>
           
-          return (
-            <motion.g key={`filament-${idx}`}>
-              {[0, 1, 2, 3, 4, 5, 6].map((segment) => {
-                const segX = 100 + ((endX - 100) / 7) * segment;
-                const segY = 90 + ((endY - 90) / 7) * segment;
-                
-                return (
-                  <motion.circle
-                    key={segment}
-                    cx={segX}
-                    cy={segY}
-                    r="4"
-                    fill={color}
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={isInView ? { scale: 1, opacity: 1 } : {}}
-                    transition={{ delay: 0.8 + idx * 0.2 + segment * 0.05 }}
-                    style={{ filter: `drop-shadow(0 0 4px ${color})` }}
-                  />
-                );
-              })}
-            </motion.g>
-          );
-        })}
-        
-        <motion.g
-          initial={{ x: 0 }}
-          animate={isInView && isActive ? { x: [0, 80, 0] } : {}}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        >
+          <motion.text
+            x="100" y="20"
+            textAnchor="middle"
+            fill="rgba(255,255,255,0.6)"
+            fontSize="8"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ delay: 0.2 }}
+          >
+            CELL BODY
+          </motion.text>
+          <motion.path
+            d="M 100 25 L 100 40"
+            stroke="rgba(255,255,255,0.3)"
+            strokeWidth="1"
+            initial={{ pathLength: 0 }}
+            animate={isInView ? { pathLength: 1 } : {}}
+            transition={{ delay: 0.3 }}
+          />
+          
           <motion.ellipse
-            cx="220"
+            cx="100"
             cy="90"
             rx="55"
             ry="45"
             fill="url(#cellGradient)"
-            stroke="#E7FB10"
+            stroke="#21d8ff"
             strokeWidth="2"
-            strokeDasharray="5,3"
-            initial={{ opacity: 0 }}
-            animate={isInView ? { opacity: [0.3, 0.8, 0.3] } : {}}
-            transition={{ duration: 2, repeat: Infinity }}
-            style={{ filter: 'drop-shadow(0 0 8px rgba(231, 251, 16, 0.3))' }}
+            initial={{ scale: 0 }}
+            animate={isInView ? { scale: 1 } : {}}
+            transition={{ duration: 0.8 }}
+            style={{ filter: 'drop-shadow(0 0 10px rgba(33, 216, 255, 0.4))' }}
+          />
+          
+          <motion.circle
+            cx="100"
+            cy="90"
+            r="15"
+            fill="rgba(157, 78, 221, 0.3)"
+            stroke="#9d4edd"
+            strokeWidth="1.5"
+            initial={{ scale: 0 }}
+            animate={isInView ? { scale: 1 } : {}}
+            transition={{ delay: 0.3 }}
           />
           <motion.text
-            x="220" y="93"
+            x="100" y="93"
             textAnchor="middle"
-            fill="#E7FB10"
-            fontSize="8"
+            fill="#9d4edd"
+            fontSize="7"
             fontWeight="bold"
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
+            transition={{ delay: 0.5 }}
           >
-            Migration
+            Nucleus
           </motion.text>
-        </motion.g>
-        
-        <motion.path
-          d="M 155 85 Q 175 75 195 85"
-          stroke="#E7FB10"
-          strokeWidth="2"
-          fill="none"
-          strokeDasharray="4,2"
-          initial={{ pathLength: 0 }}
-          animate={isInView && isActive ? { pathLength: [0, 1] } : {}}
-          transition={{ duration: 1, repeat: Infinity }}
-          markerEnd="url(#arrowhead)"
-          style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }}
-        />
-        
-        <defs>
-          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-            <polygon points="0 0, 10 3.5, 0 7" fill="#E7FB10" />
-          </marker>
-        </defs>
-        
-        {[0, 1, 2, 3].map((i) => (
-          <motion.circle
-            key={`tb-particle-${i}`}
-            r="5"
+          
+          {filamentColors.map((color, idx) => {
+            const startAngle = idx * 40 - 20;
+            const endX = 100 + Math.cos((startAngle * Math.PI) / 180) * 50;
+            const endY = 90 + Math.sin((startAngle * Math.PI) / 180) * 35;
+            
+            return (
+              <motion.g key={`filament-${idx}`}>
+                {[0, 1, 2, 3, 4, 5, 6].map((segment) => {
+                  const segX = 100 + ((endX - 100) / 7) * segment;
+                  const segY = 90 + ((endY - 90) / 7) * segment;
+                  
+                  return (
+                    <motion.circle
+                      key={segment}
+                      cx={segX}
+                      cy={segY}
+                      r="4"
+                      fill={color}
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={isInView ? { scale: 1, opacity: 1 } : {}}
+                      transition={{ delay: 0.8 + idx * 0.2 + segment * 0.05 }}
+                      style={{ filter: `drop-shadow(0 0 4px ${color})` }}
+                    />
+                  );
+                })}
+              </motion.g>
+            );
+          })}
+          
+          <motion.text
+            x="35" y="70"
+            textAnchor="middle"
             fill="#21d8ff"
+            fontSize="6"
             initial={{ opacity: 0 }}
-            animate={isInView && isActive ? {
-              cx: [80, 100, 120 + i * 15],
-              cy: [90, 85 - i * 3, 90],
-              opacity: [0, 1, 1, 0],
-              scale: [0.5, 1, 1, 0.5]
-            } : {}}
-            transition={{
-              duration: 2.5,
-              delay: i * 0.4,
-              repeat: Infinity,
-              ease: "easeOut"
-            }}
-            style={{ filter: 'drop-shadow(0 0 6px rgba(33, 216, 255, 0.8))' }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ delay: 1.2 }}
+          >
+            Actin
+          </motion.text>
+          <motion.text
+            x="35" y="78"
+            textAnchor="middle"
+            fill="#21d8ff"
+            fontSize="6"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ delay: 1.2 }}
+          >
+            Filaments
+          </motion.text>
+          <motion.path
+            d="M 42 75 Q 50 80 55 75"
+            stroke="#21d8ff"
+            strokeWidth="1"
+            fill="none"
+            initial={{ pathLength: 0 }}
+            animate={isInView ? { pathLength: 1 } : {}}
+            transition={{ delay: 1.3 }}
+            markerEnd="url(#smallArrow)"
           />
-        ))}
-        
-        <motion.rect
-          x="75"
-          y="130"
-          width="50"
-          height="25"
-          rx="5"
-          fill="rgba(33, 216, 255, 0.15)"
-          stroke="#21d8ff"
-          strokeWidth="1.5"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ delay: 1.5 }}
-        />
-        <motion.text x="100" y="145" textAnchor="middle" fill="#21d8ff" fontSize="7" fontWeight="bold"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ delay: 1.6 }}
-        >
-          TB-500
-        </motion.text>
-        
-        <motion.path
-          d="M 100 130 L 100 110"
-          stroke="#21d8ff"
-          strokeWidth="2"
-          strokeDasharray="3,2"
-          initial={{ pathLength: 0 }}
-          animate={isInView ? { pathLength: 1 } : {}}
-          transition={{ delay: 1.8, duration: 0.5 }}
-          style={{ filter: 'drop-shadow(0 0 4px rgba(33, 216, 255, 0.6))' }}
-        />
-      </svg>
+          <defs>
+            <marker id="smallArrow" markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto">
+              <polygon points="0 0, 6 2, 0 4" fill="#21d8ff" />
+            </marker>
+          </defs>
+          
+          <motion.g
+            initial={{ x: 0 }}
+            animate={isInView && isActive ? { x: [0, 80, 0] } : {}}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <motion.ellipse
+              cx="220"
+              cy="90"
+              rx="55"
+              ry="45"
+              fill="url(#cellGradient)"
+              stroke="#E7FB10"
+              strokeWidth="2"
+              strokeDasharray="5,3"
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: [0.3, 0.8, 0.3] } : {}}
+              transition={{ duration: 2, repeat: Infinity }}
+              style={{ filter: 'drop-shadow(0 0 8px rgba(231, 251, 16, 0.3))' }}
+            />
+            <motion.text
+              x="220" y="88"
+              textAnchor="middle"
+              fill="#E7FB10"
+              fontSize="7"
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : {}}
+            >
+              Future
+            </motion.text>
+            <motion.text
+              x="220" y="97"
+              textAnchor="middle"
+              fill="#E7FB10"
+              fontSize="7"
+              fontWeight="bold"
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : {}}
+            >
+              Position
+            </motion.text>
+          </motion.g>
+          
+          <motion.text
+            x="175" y="65"
+            textAnchor="middle"
+            fill="#E7FB10"
+            fontSize="7"
+            fontWeight="bold"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ delay: 1.5 }}
+          >
+            Cell Migration
+          </motion.text>
+          <motion.path
+            d="M 155 85 Q 175 75 195 85"
+            stroke="#E7FB10"
+            strokeWidth="2"
+            fill="none"
+            strokeDasharray="4,2"
+            initial={{ pathLength: 0 }}
+            animate={isInView && isActive ? { pathLength: [0, 1] } : {}}
+            transition={{ duration: 1, repeat: Infinity }}
+            markerEnd="url(#arrowhead)"
+            style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }}
+          />
+          
+          {[0, 1, 2, 3].map((i) => (
+            <motion.circle
+              key={`tb-particle-${i}`}
+              r="5"
+              fill="#21d8ff"
+              initial={{ opacity: 0 }}
+              animate={isInView && isActive ? {
+                cx: [80, 100, 120 + i * 15],
+                cy: [90, 85 - i * 3, 90],
+                opacity: [0, 1, 1, 0],
+                scale: [0.5, 1, 1, 0.5]
+              } : {}}
+              transition={{
+                duration: 2.5,
+                delay: i * 0.4,
+                repeat: Infinity,
+                ease: "easeOut"
+              }}
+              style={{ filter: 'drop-shadow(0 0 6px rgba(33, 216, 255, 0.8))' }}
+            />
+          ))}
+          
+          <motion.rect
+            x="75"
+            y="140"
+            width="50"
+            height="22"
+            rx="5"
+            fill="rgba(33, 216, 255, 0.15)"
+            stroke="#21d8ff"
+            strokeWidth="1.5"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ delay: 1.5 }}
+          />
+          <motion.text x="100" y="154" textAnchor="middle" fill="#21d8ff" fontSize="7" fontWeight="bold"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ delay: 1.6 }}
+          >
+            TB-500
+          </motion.text>
+          
+          <motion.path
+            d="M 100 140 L 100 120"
+            stroke="#21d8ff"
+            strokeWidth="2"
+            strokeDasharray="3,2"
+            initial={{ pathLength: 0 }}
+            animate={isInView ? { pathLength: 1 } : {}}
+            transition={{ delay: 1.8, duration: 0.5 }}
+            style={{ filter: 'drop-shadow(0 0 4px rgba(33, 216, 255, 0.6))' }}
+          />
+          
+          <motion.text
+            x="100" y="172"
+            textAnchor="middle"
+            fill="rgba(255,255,255,0.4)"
+            fontSize="6"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ delay: 2 }}
+          >
+            Binds actin monomers to enable polymerization
+          </motion.text>
+        </svg>
+      </div>
+      
+      <div className="flex flex-wrap justify-center gap-4 mt-2 text-[10px] text-muted-foreground">
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#21d8ff]" style={{ boxShadow: '0 0 6px #21d8ff' }}></span>
+          <span>Actin Monomers</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#E7FB10]" style={{ boxShadow: '0 0 6px #E7FB10' }}></span>
+          <span>G-Actin Subunits</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#9d4edd]" style={{ boxShadow: '0 0 6px #9d4edd' }}></span>
+          <span>F-Actin Chains</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-6 h-0.5 border border-dashed border-[#E7FB10]"></span>
+          <span>Migration Direction</span>
+        </div>
+      </div>
     </div>
   );
 }
