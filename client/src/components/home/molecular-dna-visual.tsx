@@ -26,7 +26,8 @@ function FloatingMolecule({ delay, x, size, color }: { delay: number; x: string;
         style={{ 
           width: size, 
           height: size, 
-          background: color
+          background: color,
+          filter: `blur(${size * 0.1}px) drop-shadow(0 0 ${size}px ${color})`
         }}
       />
     </motion.div>
@@ -59,7 +60,7 @@ function DNAHelix() {
             <stop offset="100%" stopColor="#21d8ff" stopOpacity="0.9" />
           </linearGradient>
           <filter id="homeGlow">
-            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
             <feMerge>
               <feMergeNode in="coloredBlur"/>
               <feMergeNode in="SourceGraphic"/>
@@ -73,6 +74,7 @@ function DNAHelix() {
           stroke="url(#homeStrandGradient1)"
           strokeWidth="4"
           strokeLinecap="round"
+          filter="url(#homeGlow)"
           initial={{ pathLength: 0, opacity: 0 }}
           animate={isInView ? { pathLength: 1, opacity: 1 } : {}}
           transition={{ duration: 2.5, ease: "easeInOut" }}
@@ -83,6 +85,7 @@ function DNAHelix() {
           stroke="url(#homeStrandGradient2)"
           strokeWidth="4"
           strokeLinecap="round"
+          filter="url(#homeGlow)"
           initial={{ pathLength: 0, opacity: 0 }}
           animate={isInView ? { pathLength: 1, opacity: 1 } : {}}
           transition={{ duration: 2.5, ease: "easeInOut", delay: 0.3 }}
