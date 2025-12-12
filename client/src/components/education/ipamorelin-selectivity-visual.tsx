@@ -356,9 +356,15 @@ export function IpamorelinSelectivityVisual() {
         </div>
         
         <div className="mt-6">
-          <span className="text-xs text-muted-foreground uppercase tracking-wider mb-4 block">
-            Selectivity Comparison
-          </span>
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xs text-muted-foreground uppercase tracking-wider">
+              Selectivity Comparison
+            </span>
+            <span className="text-[10px] text-muted-foreground/70 italic flex items-center gap-1">
+              <span className="inline-block w-3 h-3 rounded border border-muted-foreground/30 text-center leading-3 text-[8px]">?</span>
+              Hover rows for details
+            </span>
+          </div>
           
           <div className="space-y-2">
             {comparisonPoints.map((point, idx) => {
