@@ -139,12 +139,12 @@ function GHRPReceptorComparison({ isInView, showIpamorelin }: { isInView: boolea
                 )}
                 {isActive ? (
                   receptor.ipaActive && showIpamorelin ? (
-                    <Check className="h-3 w-3 text-[#22c55e]" style={{ transform: `translate(${receptor.x - 6}px, 159px)` }} />
+                    <motion.text x={receptor.x} y="169" textAnchor="middle" fill="#22c55e" fontSize="12" fontWeight="bold">✓</motion.text>
                   ) : (
-                    <motion.text x={receptor.x} y="168" textAnchor="middle" fill="#ef4444" fontSize="10">!</motion.text>
+                    <motion.text x={receptor.x} y="169" textAnchor="middle" fill="#ef4444" fontSize="12" fontWeight="bold">!</motion.text>
                   )
                 ) : (
-                  <Check className="h-3 w-3 text-[#22c55e]" style={{ transform: `translate(${receptor.x - 6}px, 159px)` }} />
+                  <motion.text x={receptor.x} y="169" textAnchor="middle" fill="#22c55e" fontSize="12" fontWeight="bold">✓</motion.text>
                 )}
               </motion.g>
               
@@ -241,16 +241,30 @@ export function IpamorelinSelectivityVisual() {
   const visualInView = useInView(visualRef, { margin: "-20px" });
   const [showIpamorelin, setShowIpamorelin] = useState(true);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
+  const [progress, setProgress] = useState(0);
 
   // Auto-rotate between Ipamorelin and Other GHRPs - slow enough to read
   useEffect(() => {
     if (!visualInView) return;
     
-    const interval = setInterval(() => {
-      setShowIpamorelin(prev => !prev);
-    }, 8000); // 8 seconds per view
+    // Progress bar animation
+    const progressInterval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) return 0;
+        return prev + 1.25; // 100% over 8 seconds (80 ticks at 100ms each)
+      });
+    }, 100);
     
-    return () => clearInterval(interval);
+    // Switch view every 8 seconds
+    const switchInterval = setInterval(() => {
+      setShowIpamorelin(prev => !prev);
+      setProgress(0);
+    }, 8000);
+    
+    return () => {
+      clearInterval(progressInterval);
+      clearInterval(switchInterval);
+    };
   }, [visualInView]);
 
   return (
@@ -321,6 +335,20 @@ export function IpamorelinSelectivityVisual() {
           >
             Other GHRPs
           </motion.button>
+        </div>
+        
+        {/* Timer progress bar */}
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <span className="text-[10px] text-muted-foreground">Auto-switching in</span>
+          <div className="w-32 h-1.5 rounded-full bg-white/10 overflow-hidden">
+            <motion.div 
+              className="h-full rounded-full"
+              style={{ 
+                width: `${progress}%`,
+                backgroundColor: showIpamorelin ? '#E7FB10' : '#9d4edd'
+              }}
+            />
+          </div>
         </div>
         
         <div ref={visualRef}>
