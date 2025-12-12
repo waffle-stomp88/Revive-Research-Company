@@ -126,26 +126,42 @@ function PipelineStep({ step, index, isActive, totalSteps }: {
       transition={{ delay: index * 0.15, duration: 0.5 }}
     >
       <div className="relative">
+        {isActive && (
+          <motion.div
+            className="absolute inset-0 w-16 h-16 md:w-20 md:h-20 rounded-2xl z-0"
+            style={{ 
+              border: `3px solid ${step.color}`,
+              boxShadow: `0 0 20px ${step.color}, inset 0 0 20px ${step.color}40`
+            }}
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ 
+              scale: [1, 1.3, 1.5],
+              opacity: [1, 0.5, 0]
+            }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          />
+        )}
         <motion.div
           className="w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center relative z-10"
           style={{ 
-            backgroundColor: isActive ? `${step.color}25` : `${step.color}15`,
+            backgroundColor: isActive ? `${step.color}40` : `${step.color}15`,
+            border: isActive ? `3px solid ${step.color}` : '3px solid transparent',
             boxShadow: isActive 
-              ? `0 0 40px ${step.glowColor}, 0 0 80px ${step.glowColor}` 
+              ? `0 0 50px ${step.glowColor}, 0 0 100px ${step.glowColor}, 0 0 150px ${step.glowColor}` 
               : `0 0 20px ${step.glowColor}`
           }}
           animate={isActive ? {
-            scale: [1, 1.05, 1],
+            scale: [1, 1.15, 1],
             boxShadow: [
-              `0 0 40px ${step.glowColor}`,
-              `0 0 60px ${step.glowColor}`,
-              `0 0 40px ${step.glowColor}`
+              `0 0 50px ${step.glowColor}, 0 0 100px ${step.glowColor}`,
+              `0 0 80px ${step.glowColor}, 0 0 150px ${step.glowColor}`,
+              `0 0 50px ${step.glowColor}, 0 0 100px ${step.glowColor}`
             ]
-          } : {}}
-          transition={{ duration: 2, repeat: Infinity }}
+          } : { scale: 1 }}
+          transition={{ duration: 1.5, repeat: Infinity }}
           whileHover={{ 
-            scale: 1.1,
-            boxShadow: `0 0 50px ${step.glowColor}`
+            scale: 1.15,
+            boxShadow: `0 0 60px ${step.glowColor}`
           }}
         >
           <motion.div
