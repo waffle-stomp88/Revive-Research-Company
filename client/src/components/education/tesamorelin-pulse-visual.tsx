@@ -58,11 +58,17 @@ function GHPulseWaveAnimation({ isInView, mode }: { isInView: boolean; mode: 'te
               style={{ filter: 'drop-shadow(0 0 8px rgba(236, 72, 153, 0.5))' }}
             />
             
-            {[55, 105, 155, 205, 255].map((x, i) => (
+            {[
+              { x: 55, y: 30 },
+              { x: 105, y: 25 },
+              { x: 155, y: 28 },
+              { x: 205, y: 30 },
+              { x: 255, y: 32 }
+            ].map((peak, i) => (
               <motion.circle
                 key={i}
-                cx={x}
-                cy={28 + i * 2}
+                cx={peak.x}
+                cy={peak.y}
                 r="5"
                 fill="#ec4899"
                 initial={{ scale: 0, opacity: 0 }}
