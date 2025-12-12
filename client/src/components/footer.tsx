@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import logoImage from "@assets/REVIVE-11_1764290805698.png";
 import { useEffect, useState } from "react";
+import { NewsletterSignup } from "@/components/newsletter-signup";
 
 function getResponseTimeByTimeZone(): string {
   const now = new Date();
@@ -179,8 +180,21 @@ export function Footer() {
           </div>
         </div>
 
+        {/* Newsletter Signup - Compact */}
+        <div className="mt-12 p-6 rounded-lg bg-[#21d8ff]/5 border border-[#21d8ff]/30" data-testid="section-footer-newsletter">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="text-center md:text-left">
+              <h4 className="font-display font-bold text-lg mb-1">Stay Updated</h4>
+              <p className="text-sm text-muted-foreground">Get new compound releases and research updates.</p>
+            </div>
+            <div className="w-full md:w-auto md:min-w-[320px]">
+              <NewsletterSignup compact />
+            </div>
+          </div>
+        </div>
+
         {/* FDA & Regulatory Compliance */}
-        <div className="mt-16 p-6 rounded-lg bg-red-950/30 border-2 border-red-500/50 animate-pulse-subtle" data-testid="section-fda-disclaimer">
+        <div className="mt-8 p-6 rounded-lg bg-red-950/30 border-2 border-red-500/50 animate-pulse-subtle" data-testid="section-fda-disclaimer">
           <div className="flex items-start gap-4">
             <div className="p-3 rounded-full bg-red-500/20 border border-red-500/30 flex-shrink-0">
               <AlertTriangle className="h-6 w-6 text-red-400" />

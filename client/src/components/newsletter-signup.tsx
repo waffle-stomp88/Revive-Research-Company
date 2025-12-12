@@ -6,7 +6,11 @@ import { Mail, CheckCircle, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { trackEvent } from "@/lib/analytics";
 
-export function NewsletterSignup() {
+interface NewsletterSignupProps {
+  compact?: boolean;
+}
+
+export function NewsletterSignup({ compact = false }: NewsletterSignupProps) {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -90,9 +94,11 @@ export function NewsletterSignup() {
                 {isLoading ? "Subscribing..." : "Subscribe"}
               </Button>
             </div>
-            <p className="text-xs text-gray-400">
-              Be the first to know about product launches and lab research updates.
-            </p>
+            {!compact && (
+              <p className="text-xs text-gray-400">
+                Be the first to know about product launches and lab research updates.
+              </p>
+            )}
             {error && (
               <motion.div
                 initial={{ opacity: 0 }}

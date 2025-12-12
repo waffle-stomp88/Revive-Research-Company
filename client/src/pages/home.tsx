@@ -7,7 +7,6 @@ import {
   ArrowRight, 
   ChevronDown,
   FlaskConical,
-  ChevronDown as ChevronDownIcon,
   Flame,
   Sparkles,
   TrendingUp,
@@ -18,56 +17,13 @@ import { useQuery } from "@tanstack/react-query";
 import type { Product } from "@shared/schema";
 import heroBackground from "@assets/69bf34cc-d177-46c6-af24-c51da5ee10fa_1764382400961.png";
 import bottleImage from "@assets/reta_bottle_1764702933066.jpg";
-import { NewsletterSignup } from "@/components/newsletter-signup";
 import { useState, useEffect } from "react";
 import { trackEvent } from "@/lib/analytics";
 import { BUNDLES } from "@/lib/bundles";
 import { SEOHead } from "@/components/seo-head";
-import { MolecularDNAVisual } from "@/components/home/molecular-dna-visual";
 import { TestingPipelineVisual } from "@/components/home/testing-pipeline-visual";
 import { AnimatedTrustMeters } from "@/components/home/animated-trust-meters";
 import { WhyResearchersChooseUs } from "@/components/home/why-researchers-choose-us";
-
-const fadeInUp = {
-  initial: { opacity: 0, y: 40 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6, ease: "easeOut" }
-};
-
-const staggerContainer = {
-  animate: {
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-};
-
-const faqItems = [
-  {
-    question: "What does 'Research Use Only' mean?",
-    answer: "Research compounds are intended exclusively for scientific research, laboratory testing, and educational purposes. They are not approved for human consumption or medical use."
-  },
-  {
-    question: "How do I verify the analysis of my product?",
-    answer: "Every product includes a QR code that links directly to its Certificate of Analysis (COA). Scan it to view lab-verified purity, batch information, and testing results instantly."
-  },
-  {
-    question: "What's your shipping policy?",
-    answer: "Free shipping on orders over $175. Otherwise flat $20 shipping. We offer 24-hour standard shipping and same-day shipping for orders placed before 12:00 CT."
-  },
-  {
-    question: "Can I get a refund?",
-    answer: "No refunds—all sales are final due to the nature of research compounds. However, if there's a quality issue, contact our support team and we'll work with you on a solution."
-  },
-  {
-    question: "How should I store my compounds?",
-    answer: "Storage depends on the specific compound. Check the product page for detailed storage instructions. Generally, lyophilized peptides are stable at room temp or refrigerated (2-8°C). Reconstituted solutions should be refrigerated."
-  },
-  {
-    question: "Do you offer subscriptions?",
-    answer: "Yes! We offer weekly (15% off), bi-weekly (12% off), and monthly (10% off) subscriptions for automatic reorders. You can cancel anytime."
-  }
-];
 
 function HeroSection() {
   const { scrollY } = useScroll();
@@ -180,7 +136,7 @@ function HeroSection() {
           >
             The Future of
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E7FB10] via-white to-[#21d8ff] animate-pulse">Research Compounds</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E7FB10] via-white to-[#21d8ff]">Research Compounds</span>
           </h1>
         </motion.div>
 
@@ -569,109 +525,6 @@ function ProductShowcase() {
   );
 }
 
-function FAQSection() {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
-
-  return (
-    <section className="py-12 md:py-16">
-      <div className="max-w-3xl mx-auto px-4 md:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-10"
-        >
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-3">
-            Frequently Asked Questions
-          </h2>
-          <p className="text-base text-muted-foreground">
-            Find answers to common questions about our products and policies.
-          </p>
-        </motion.div>
-
-        <motion.div
-          initial="initial"
-          whileInView="animate"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={staggerContainer}
-          className="space-y-3"
-        >
-          {faqItems.map((item, index) => (
-            <motion.div
-              key={index}
-              variants={fadeInUp}
-            >
-              <button
-                onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full text-left p-4 rounded-lg border border-border bg-card hover:bg-card/80 transition-colors"
-                data-testid={`button-faq-${index}`}
-              >
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-sm">{item.question}</h3>
-                  <motion.div
-                    animate={{ rotate: openIndex === index ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <ChevronDownIcon className="h-5 w-5 text-muted-foreground" />
-                  </motion.div>
-                </div>
-              </button>
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ 
-                  opacity: openIndex === index ? 1 : 0,
-                  height: openIndex === index ? "auto" : 0
-                }}
-                transition={{ duration: 0.2 }}
-                className="overflow-hidden"
-              >
-                <p className="text-sm text-muted-foreground px-4 py-3">
-                  {item.answer}
-                </p>
-              </motion.div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.4 }}
-          className="text-center mt-8"
-        >
-          <Link href="/faq">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Button 
-                size="lg" 
-                className="font-display gap-2 bg-gradient-to-r from-[#21d8ff] to-[#E7FB10] text-black hover:shadow-[0_0_20px_rgba(33,216,255,0.5)] transition-all duration-300 border-0"
-                data-testid="button-view-full-faq"
-              >
-                <motion.span
-                  animate={{ x: [0, 4, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  Explore Full FAQ
-                </motion.span>
-                <motion.div
-                  animate={{ x: [0, 6, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity, delay: 0.1 }}
-                >
-                  <ArrowRight className="h-4 w-4" />
-                </motion.div>
-              </Button>
-            </motion.div>
-          </Link>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
 function CTASection() {
   return (
     <section className="py-16 md:py-20 text-primary-foreground bg-[#e7fb10]">
@@ -725,43 +578,16 @@ function CTASection() {
   );
 }
 
-function NewsletterSection() {
-  return (
-    <section className="py-16 md:py-20 bg-gradient-to-b from-background to-background/50 border-t border-border">
-      <div className="max-w-3xl mx-auto px-4 md:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-          className="text-center"
-        >
-          <h2 className="font-display text-3xl md:text-3xl font-bold mb-3">
-            Stay Updated on New Research
-          </h2>
-          <p className="text-base text-muted-foreground max-w-2xl mx-auto mb-8">
-            Get early access to new compound releases, lab research updates, and exclusive subscriber content. Join 500+ researchers in our community.
-          </p>
-          <NewsletterSignup />
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
 export default function Home() {
   return (
     <main>
       <SEOHead title="Premium Peptide Research Compounds" description="Shop third-party tested peptides for scientific research. GMP-certified compounds with Certificates of Analysis. Free shipping over $175." canonicalPath="/" />
       <HeroSection />
-      <MolecularDNAVisual />
       <ProductShowcase />
       <TestingPipelineVisual />
       <AnimatedTrustMeters />
       <WhyResearchersChooseUs />
-      <FAQSection />
       <CTASection />
-      <NewsletterSection />
     </main>
   );
 }
