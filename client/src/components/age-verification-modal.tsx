@@ -142,7 +142,7 @@ export function AgeVerificationModal() {
                     }}
                     onMouseEnter={(e) => {
                       if (agreed) {
-                        e.currentTarget.style.boxShadow = '0 0 40px rgba(231, 251, 16, 0.8), 0 0 60px rgba(231, 251, 16, 0.5)';
+                        e.currentTarget.style.boxShadow = '0 0 20px rgba(231, 251, 16, 0.8), 0 0 30px rgba(231, 251, 16, 0.5)';
                         e.currentTarget.style.backgroundColor = 'rgb(231, 251, 16)';
                       }
                     }}
