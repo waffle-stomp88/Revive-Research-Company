@@ -26,3 +26,4 @@ export { IGF1SignalingVisual } from "./igf1-signaling-visual";
 export { SemaxNeuralVisual } from "./semax-neural-visual";
 export { HCGHormonalVisual } from "./hcg-hormonal-visual";
 export { NADSirtuinVisual } from "./nad-sirtuin-visual";
+export { GLOWSynergyVisual } from "./glow-synergy-visual";

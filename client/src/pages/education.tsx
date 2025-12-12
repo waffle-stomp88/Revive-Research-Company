@@ -69,7 +69,8 @@ import {
   IGF1SignalingVisual,
   SemaxNeuralVisual,
   HCGHormonalVisual,
-  NADSirtuinVisual
+  NADSirtuinVisual,
+  GLOWSynergyVisual
 } from "@/components/education";
 
 const articleVisuals: Record<string, () => JSX.Element> = {
@@ -88,7 +89,7 @@ const articleVisuals: Record<string, () => JSX.Element> = {
   "bpc-157-research-guide": () => <BPC157AngiogenesisVisual />,
   "tb-500-research-guide": () => <TB500ActinVisual />,
   "ghk-cu-research-guide": () => <GHKCuCopperVisual />,
-  "glow-peptide-complex-research-guide": () => <HealingPathwayVisual peptide="glow" />,
+  "glow-peptide-complex-research-guide": () => <GLOWSynergyVisual />,
   "igf-1-lr3-research-guide": () => <IGF1SignalingVisual />,
   "mots-c-research-guide": () => <CellularEnergyVisual peptide="mots-c" />,
   "nad-precursor-research-guide": () => <NADSirtuinVisual />,
