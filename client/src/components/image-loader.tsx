@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 
@@ -7,9 +7,16 @@ interface ImageLoaderProps {
   alt: string;
   className?: string;
   containerClassName?: string;
+  priority?: boolean;
 }
 
-export function ImageLoader({ src, alt, className = "w-full h-full object-cover", containerClassName = "relative w-full h-full bg-muted overflow-hidden rounded-lg" }: ImageLoaderProps) {
+export const ImageLoader = memo(function ImageLoader({ 
+  src, 
+  alt, 
+  className = "w-full h-full object-cover", 
+  containerClassName = "relative w-full h-full bg-muted overflow-hidden rounded-lg",
+  priority = false
+}: ImageLoaderProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
@@ -45,6 +52,8 @@ export function ImageLoader({ src, alt, className = "w-full h-full object-cover"
           src={src}
           alt={alt}
           className={className}
+          loading={priority ? "eager" : "lazy"}
+          decoding="async"
           onLoad={handleLoadingComplete}
           onError={handleError}
         />
@@ -57,4 +66,4 @@ export function ImageLoader({ src, alt, className = "w-full h-full object-cover"
       )}
     </div>
   );
-}
+});
