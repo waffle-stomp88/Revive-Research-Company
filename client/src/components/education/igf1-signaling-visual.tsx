@@ -233,10 +233,10 @@ export function IGF1SignalingVisual() {
           clearInterval(interval);
           setTimeout(() => {
             setActiveStep(0);
-            setTimeout(runAnimationCycle, 2000);
-          }, 4000);
+            setTimeout(runAnimationCycle, 3000);
+          }, 6000);
         }
-      }, 1500);
+      }, 2500);
       
       return interval;
     };
