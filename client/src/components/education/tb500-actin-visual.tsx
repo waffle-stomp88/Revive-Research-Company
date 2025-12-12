@@ -293,8 +293,9 @@ function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boole
               <motion.text
                 x="195" y="130"
                 textAnchor="middle"
-                fill="rgba(255,255,255,0.5)"
-                fontSize="6"
+                fill="rgba(255,255,255,0.7)"
+                fontSize="9"
+                fontWeight="500"
                 initial={{ opacity: 0 }}
                 animate={isInView ? { opacity: 1 } : {}}
               >
@@ -341,15 +342,16 @@ function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boole
                   />
                   <motion.text
                     x={180 + i * 30}
-                    y={125}
+                    y={128}
                     textAnchor="middle"
                     fill="#9d4edd"
-                    fontSize="5"
+                    fontSize="8"
+                    fontWeight="600"
                     initial={{ opacity: 0 }}
                     animate={isInView ? { opacity: 1 } : {}}
                     transition={{ delay: i * 0.3 + 0.8 }}
                   >
-                    {['Progenitor', 'Differentiating', 'Mature'][i]}
+                    {['Progenitor', 'Diff.', 'Mature'][i]}
                   </motion.text>
                 </motion.g>
               ))}
@@ -404,24 +406,26 @@ function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boole
               })}
               
               <motion.text
-                x="180" y="135"
+                x="175" y="135"
                 textAnchor="middle"
                 fill="#ef4444"
-                fontSize="5"
+                fontSize="8"
+                fontWeight="600"
                 initial={{ opacity: 0 }}
                 animate={isInView ? { opacity: 1 } : {}}
               >
-                Pro-inflammatory ↓
+                Pro-inflam. ↓
               </motion.text>
               <motion.text
-                x="240" y="135"
+                x="245" y="135"
                 textAnchor="middle"
                 fill="#22c55e"
-                fontSize="5"
+                fontSize="8"
+                fontWeight="600"
                 initial={{ opacity: 0 }}
                 animate={isInView ? { opacity: 1 } : {}}
               >
-                Anti-inflammatory ↑
+                Anti-inflam. ↑
               </motion.text>
             </>
           )}
