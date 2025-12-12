@@ -102,14 +102,10 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
           );
         })}
         
-        <motion.g
-          initial={{ opacity: 0 }}
-          animate={isInView && activeStep >= 4 ? { opacity: 1 } : {}}
-          transition={{ delay: 2 }}
-        >
+        <g>
           {[45, 160, 275].map((x, i) => (
-            <motion.g key={`result-${i}`}>
-              <motion.line
+            <g key={`result-${i}`}>
+              <line
                 x1="160"
                 y1="180"
                 x2={x}
@@ -117,11 +113,8 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
                 stroke="#22c55e"
                 strokeWidth="1.5"
                 strokeDasharray="3,2"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ delay: 2.2 + i * 0.15 }}
               />
-              <motion.rect
+              <rect
                 x={x - 35}
                 y="210"
                 width="70"
@@ -130,11 +123,8 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
                 fill="rgba(34, 197, 94, 0.15)"
                 stroke="#22c55e"
                 strokeWidth="1"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 2.4 + i * 0.15 }}
               />
-              <motion.text
+              <text
                 x={x}
                 y="223"
                 textAnchor="middle"
@@ -143,10 +133,10 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
                 fontWeight="bold"
               >
                 {['Muscle Growth', 'Cell Division', 'Fat Metabolism'][i]}
-              </motion.text>
-            </motion.g>
+              </text>
+            </g>
           ))}
-        </motion.g>
+        </g>
         
         <motion.text x="20" y="24" fill="#E7FB10" fontSize="6.5" fontWeight="bold"
           initial={{ opacity: 0 }}
