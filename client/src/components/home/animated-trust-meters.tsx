@@ -195,7 +195,7 @@ function CircularProgress({ value, color, icon: Icon, label, size = 120, delay }
 const trustMetrics = [
   { 
     icon: FlaskConical, 
-    value: 99.8, 
+    value: 98.5, 
     label: "Average Purity", 
     color: "#E7FB10",
     description: "Verified via HPLC testing"
@@ -224,10 +224,10 @@ const trustMetrics = [
 ];
 
 const qualityMetrics = [
-  { label: "Peptide Purity", value: 99.8, color: "#E7FB10" },
-  { label: "Identity Confirmation", value: 100, color: "#21d8ff" },
-  { label: "Sterility Testing", value: 100, color: "#9d4edd" },
-  { label: "Endotoxin Levels", value: 99.9, color: "#22c55e" },
+  { label: "Peptide Purity", value: 98.5, color: "#E7FB10" },
+  { label: "Identity Confirmation", value: 99.2, color: "#21d8ff" },
+  { label: "Sterility Testing", value: 99.8, color: "#9d4edd" },
+  { label: "Endotoxin Levels", value: 98.9, color: "#22c55e" },
 ];
 
 export function AnimatedTrustMeters() {

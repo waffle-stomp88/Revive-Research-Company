@@ -6,15 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { 
   ArrowRight, 
   ChevronDown,
-  Shield, 
-  Beaker, 
-  Award, 
-  Truck,
-  CheckCircle,
   FlaskConical,
-  FileCheck,
   ChevronDown as ChevronDownIcon,
-  Clock,
   Flame,
   Sparkles,
   TrendingUp,
@@ -24,10 +17,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import type { Product } from "@shared/schema";
 import heroBackground from "@assets/69bf34cc-d177-46c6-af24-c51da5ee10fa_1764382400961.png";
-import researchLabImage from "@assets/generated_images/neon_peptide_research_lab.png";
 import bottleImage from "@assets/reta_bottle_1764702933066.jpg";
-import { AnimatedTrustStats } from "@/components/infographics/animated-stats";
-import { VerificationJourney } from "@/components/infographics/verification-journey";
 import { NewsletterSignup } from "@/components/newsletter-signup";
 import { useState, useEffect } from "react";
 import { trackEvent } from "@/lib/analytics";
@@ -36,6 +26,7 @@ import { SEOHead } from "@/components/seo-head";
 import { MolecularDNAVisual } from "@/components/home/molecular-dna-visual";
 import { TestingPipelineVisual } from "@/components/home/testing-pipeline-visual";
 import { AnimatedTrustMeters } from "@/components/home/animated-trust-meters";
+import { WhyResearchersChooseUs } from "@/components/home/why-researchers-choose-us";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 40 },
@@ -578,148 +569,6 @@ function ProductShowcase() {
   );
 }
 
-function QualityAndTrustSection() {
-  return (
-    <section className="py-12 md:py-16 bg-card border-y border-border relative overflow-hidden">
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-[#E7FB10]/10 blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-[#21d8ff]/10 blur-3xl" />
-      </div>
-      <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          className="text-center mb-12"
-        >
-          <h2 className="font-display md:text-4xl font-bold mb-4 text-[45px]">
-            Verified Quality & Transparency
-          </h2>
-          <p className="text-base text-muted-foreground max-w-2xl mx-auto mb-8">
-            Every compound undergoes rigorous third-party lab testing. View metrics and testing details below.
-          </p>
-        </motion.div>
-
-        <div className="grid md:grid-cols-2 gap-10 items-center mb-10">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6 }}
-            className="relative group"
-          >
-            <div className="aspect-square rounded-lg overflow-hidden relative">
-              <img 
-                src={researchLabImage} 
-                alt="Advanced peptide research laboratory" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#21d8ff]/20 via-transparent to-[#E7FB10]/10 opacity-60" />
-              <div className="absolute inset-0 rounded-lg border border-[#21d8ff]/30 shadow-[0_0_30px_rgba(33,216,255,0.2)]" />
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6 }}
-          >
-            <h3 className="font-display text-2xl md:text-3xl font-bold mb-4">
-              Rigorous Testing Standards
-            </h3>
-            <p className="text-base text-muted-foreground leading-relaxed mb-6">
-              Every batch undergoes comprehensive third-party laboratory testing with HPLC purity analysis and mass spectrometry confirmation.
-            </p>
-            <ul className="space-y-3 mb-6">
-              {[
-                "Third-party laboratory verification",
-                "HPLC purity analysis",
-                "Mass spectrometry confirmation",
-                "Certificate of Analysis included"
-              ].map((item, index) => (
-                <li key={index} className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-[#E7FB10] flex-shrink-0" />
-                  <span className="text-muted-foreground text-sm">{item}</span>
-                </li>
-              ))}
-            </ul>
-            <Link href="/coa">
-              <Button className="font-display gap-2 bg-[#E7FB10] text-black border-2 border-[#E7FB10]" data-testid="button-verify-coa">
-                Verify Your COA
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </motion.div>
-        </div>
-
-        <AnimatedTrustStats />
-      </div>
-    </section>
-  );
-}
-
-function VerificationSection() {
-  return (
-    <section className="py-12 md:py-16 relative overflow-hidden">
-      <div className="absolute inset-0">
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full bg-[#21d8ff]/5 blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full bg-[#9d4edd]/5 blur-3xl" />
-      </div>
-      
-      <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          className="text-center mb-8"
-        >
-          <motion.div
-            initial={{ scale: 0 }}
-            whileInView={{ scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ type: "spring", delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#9d4edd]/10 border border-[#9d4edd]/30 mb-4"
-          >
-            <FileCheck className="h-4 w-4 text-[#9d4edd]" />
-            <span className="text-sm font-medium text-[#9d4edd]">Complete Traceability</span>
-          </motion.div>
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-3">
-            Verify Every Product
-          </h2>
-          <p className="text-base text-muted-foreground max-w-2xl mx-auto">
-            From QR code to verified COA — trace every product back to its lab-tested origins in seconds.
-          </p>
-        </motion.div>
-        
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-        >
-          <VerificationJourney />
-        </motion.div>
-        
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.6 }}
-          className="text-center mt-8"
-        >
-          <Link href="/coa">
-            <Button size="lg" className="font-display gap-2 bg-[#21d8ff] text-black border-2 border-[#21d8ff]">
-              Try It Now
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
 function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
@@ -909,8 +758,7 @@ export default function Home() {
       <ProductShowcase />
       <TestingPipelineVisual />
       <AnimatedTrustMeters />
-      <QualityAndTrustSection />
-      <VerificationSection />
+      <WhyResearchersChooseUs />
       <FAQSection />
       <CTASection />
       <NewsletterSection />
