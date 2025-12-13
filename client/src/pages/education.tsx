@@ -39,7 +39,7 @@ import {
 } from "@/components/ui/select";
 import { ArticleModeToggle, BeginnerBadge } from "@/components/education/article-mode-toggle";
 import { BeginnerArticleContent, WhatIsPeptideSection } from "@/components/education/beginner-content";
-import type { EducationArticle } from "@shared/schema";
+import type { EducationArticle, Product } from "@shared/schema";
 import { LearningRoadmap } from "@/components/infographics/learning-roadmap";
 import { OrderingJourney } from "@/components/infographics/ordering-journey";
 import { 
@@ -260,6 +260,18 @@ export default function Education() {
   const { data: articles = [], isLoading } = useQuery<EducationArticle[]>({
     queryKey: ["/api/education"],
   });
+
+  const { data: products = [] } = useQuery<Product[]>({
+    queryKey: ["/api/products"],
+  });
+
+  // Helper to find matching product for a peptide article
+  const getMatchingProduct = (slug: string): Product | undefined => {
+    if (!slug?.endsWith('-research-guide')) return undefined;
+    const peptideName = slug.replace('-research-guide', '').replace(/-/g, ' ').toLowerCase();
+    return products.find(p => p.name.toLowerCase().includes(peptideName) || 
+      peptideName.includes(p.name.toLowerCase().replace(/[^a-z0-9]/g, ' ').trim()));
+  };
 
   const handleOpenArticle = (articleId: string) => {
     setExpandedArticle(articleId);
@@ -569,6 +581,52 @@ export default function Education() {
                             </motion.div>
                           )}
                         </AnimatePresence>
+
+                        {/* RUO Disclaimer for peptide articles */}
+                        {article.category === "peptides" && (
+                          <div className="mt-8 p-4 rounded-lg border border-red-500/30 bg-red-950/20">
+                            <div className="flex items-start gap-3">
+                              <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0 mt-0.5" />
+                              <div>
+                                <p className="text-xs font-medium text-red-400 mb-1">Research Use Only</p>
+                                <p className="text-xs text-muted-foreground leading-relaxed">
+                                  This compound is intended for laboratory research purposes only. Not for human consumption, 
+                                  veterinary use, or any therapeutic applications. All information provided is for 
+                                  educational purposes and does not constitute medical advice.
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Subtle product CTA for peptide articles */}
+                        {article.category === "peptides" && (() => {
+                          const matchingProduct = getMatchingProduct(article.slug || "");
+                          if (!matchingProduct) return null;
+                          return (
+                            <div className="mt-6 pt-6 border-t border-border/50">
+                              <div className="flex items-center justify-between gap-4 flex-wrap">
+                                <div className="flex items-center gap-3">
+                                  <FlaskConical className="h-4 w-4 text-muted-foreground" />
+                                  <span className="text-sm text-muted-foreground">
+                                    Interested in this compound for your research?
+                                  </span>
+                                </div>
+                                <Link href={`/peptides/${matchingProduct.id}`}>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    className="text-xs border-[#21d8ff]/30 text-[#21d8ff] hover:bg-[#21d8ff]/10 hover:border-[#21d8ff]"
+                                    data-testid={`button-view-product-${matchingProduct.id}`}
+                                  >
+                                    View {matchingProduct.name}
+                                    <ChevronRight className="h-3 w-3 ml-1" />
+                                  </Button>
+                                </Link>
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </div>
                     </Card>
                   );
