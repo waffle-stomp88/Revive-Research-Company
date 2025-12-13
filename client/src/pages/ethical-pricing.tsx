@@ -3,47 +3,13 @@ import { SEOHead } from "@/components/seo-head";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { PricingBreakdownInfographic } from "@/components/infographics/pricing-breakdown";
 import {
   DollarSign,
-  FlaskConical,
-  FileCheck,
-  Snowflake,
-  Beaker,
   Shield,
   TrendingUp,
   CheckCircle2,
 } from "lucide-react";
-
-const pricingFactors = [
-  {
-    icon: FlaskConical,
-    title: "Synthesis Complexity",
-    description: "Longer peptide chains and complex sequences require more sophisticated synthesis processes, specialized equipment, and higher-grade raw materials.",
-    impact: "High",
-    color: "#E7FB10",
-  },
-  {
-    icon: FileCheck,
-    title: "Third-Party Testing",
-    description: "Every batch undergoes HPLC purity analysis, mass spectrometry verification, and additional quality checks at accredited laboratories.",
-    impact: "Medium",
-    color: "#21d8ff",
-  },
-  {
-    icon: Beaker,
-    title: "Purity Requirements",
-    description: "Achieving and maintaining 98%+ purity levels requires additional purification steps, quality controls, and careful handling.",
-    impact: "High",
-    color: "#9d4edd",
-  },
-  {
-    icon: Snowflake,
-    title: "Stability & Handling",
-    description: "Proper lyophilization, temperature-controlled storage, and cold-chain shipping all contribute to maintaining product integrity.",
-    impact: "Medium",
-    color: "#22c55e",
-  },
-];
 
 const commitments = [
   "No hidden fees or surprise charges",
@@ -107,46 +73,7 @@ export default function EthicalPricing() {
           className="mb-12"
         >
           <h2 className="font-display text-2xl font-bold mb-6">What Determines Our Prices</h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            {pricingFactors.map((factor, index) => {
-              const Icon = factor.icon;
-              return (
-                <motion.div
-                  key={factor.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 + index * 0.1 }}
-                >
-                  <Card 
-                    className="p-6 h-full"
-                    style={{ borderColor: `${factor.color}30` }}
-                  >
-                    <div className="flex items-start gap-4">
-                      <div 
-                        className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
-                        style={{ backgroundColor: `${factor.color}20` }}
-                      >
-                        <Icon className="h-6 w-6" style={{ color: factor.color }} />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <h3 className="font-display text-lg font-bold">{factor.title}</h3>
-                          <Badge 
-                            variant="outline" 
-                            className="text-xs"
-                            style={{ borderColor: factor.color, color: factor.color }}
-                          >
-                            {factor.impact} Impact
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground">{factor.description}</p>
-                      </div>
-                    </div>
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </div>
+          <PricingBreakdownInfographic />
         </motion.div>
 
         <Separator className="my-12" />
