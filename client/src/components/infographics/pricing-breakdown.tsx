@@ -310,7 +310,7 @@ export function PricingBreakdownInfographic() {
                 </motion.div>
                 <div>
                   <h4 className="font-display text-lg font-bold">Transparent Pricing</h4>
-                  <p className="text-sm text-muted-foreground">Hover to explore each cost factor</p>
+                  <p className="text-sm" style={{ color: "#21d8ff" }}>Hover to explore each cost factor</p>
                 </div>
               </div>
               
