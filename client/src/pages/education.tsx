@@ -70,7 +70,15 @@ import {
   SemaxNeuralVisual,
   HCGHormonalVisual,
   NADSirtuinVisual,
-  GLOWSynergyVisual
+  GLOWSynergyVisual,
+  // Educational peptide visuals (compounds not carried by company)
+  KisspeptinVisual,
+  PT141Visual,
+  ThymosinAlpha1Visual,
+  DSIPVisual,
+  SelankVisual,
+  AOD9604Visual,
+  ThymulinVisual
 } from "@/components/education";
 
 const articleVisuals: Record<string, () => JSX.Element> = {
@@ -95,6 +103,14 @@ const articleVisuals: Record<string, () => JSX.Element> = {
   "nad-precursor-research-guide": () => <NADSirtuinVisual />,
   "semax-research-guide": () => <SemaxNeuralVisual />,
   "hcg-research-guide": () => <HCGHormonalVisual />,
+  // Educational peptides (compounds not carried by company)
+  "kisspeptin-research-guide": () => <KisspeptinVisual />,
+  "pt-141-bremelanotide-research-guide": () => <PT141Visual />,
+  "thymosin-alpha-1-research-guide": () => <ThymosinAlpha1Visual />,
+  "dsip-research-guide": () => <DSIPVisual />,
+  "selank-research-guide": () => <SelankVisual />,
+  "aod-9604-research-guide": () => <AOD9604Visual />,
+  "thymulin-research-guide": () => <ThymulinVisual />,
 };
 
 const categories = [

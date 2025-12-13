@@ -27,3 +27,6 @@ export { SemaxNeuralVisual } from "./semax-neural-visual";
 export { HCGHormonalVisual } from "./hcg-hormonal-visual";
 export { NADSirtuinVisual } from "./nad-sirtuin-visual";
 export { GLOWSynergyVisual } from "./glow-synergy-visual";
+
+// Educational peptide visuals (compounds not carried by company)
+export { KisspeptinVisual, PT141Visual, ThymosinAlpha1Visual, DSIPVisual, SelankVisual, AOD9604Visual, ThymulinVisual } from "./educational-peptide-visuals";

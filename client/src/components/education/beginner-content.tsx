@@ -15,7 +15,9 @@ import {
   Clock,
   Target,
   Dna,
-  Droplets
+  Droplets,
+  Moon,
+  Shield
 } from "lucide-react";
 import { 
   SimplePurityMeter, 
@@ -941,6 +943,289 @@ A proper COA comes from an independent, third-party laboratory - not the company
       }
     ],
     takeaway: "Always request and review the COA before using any research peptide. Check for third-party lab verification, matching batch numbers, and recent test dates."
+  },
+
+  // ==========================================
+  // EDUCATIONAL PEPTIDES - Not carried by company
+  // ==========================================
+
+  "kisspeptin-research-guide": {
+    icon: Heart,
+    iconColor: "#ec4899",
+    intro: `Kisspeptin is a neuropeptide that plays a crucial role in reproductive biology. It acts as the master switch for the body's reproductive hormone system, discovered through its role in puberty and fertility. Scientists study it to understand how the brain controls reproductive function.`,
+    sections: [
+      {
+        title: "What Kisspeptin Does",
+        content: `Kisspeptin neurons in the brain serve as the "command center" for reproduction. When they release kisspeptin, it triggers a cascade that ultimately controls sex hormone production.
+
+**The Signaling Chain** - Kisspeptin activates GnRH (gonadotropin-releasing hormone) neurons in the hypothalamus. GnRH then tells the pituitary to release LH and FSH, which control the reproductive organs.
+
+**Puberty Trigger** - The activation of kisspeptin neurons is what initiates puberty. Before this, the system is essentially "switched off."
+
+**Fertility Link** - Kisspeptin levels fluctuate with the menstrual cycle and play roles in ovulation timing.`
+      },
+      {
+        title: "How Researchers Study It",
+        content: `Scientists investigate kisspeptin to understand reproductive biology:
+
+**Hypothalamic Regulation** - How does the brain know when to start puberty or time ovulation? Kisspeptin research helps answer these questions.
+
+**Hormone Axis Studies** - Kisspeptin provides a research tool for studying the hypothalamic-pituitary-gonadal (HPG) axis.
+
+**Receptor Interactions** - Kisspeptin binds to the GPR54 receptor (also called KISS1R), and understanding this interaction reveals how biological switches work.`
+      },
+      {
+        title: "Scientific Significance",
+        content: `Kisspeptin research has transformed our understanding of reproductive endocrinology:
+
+**Discovery Story** - Kisspeptin was initially discovered in cancer research before scientists realized its crucial role in reproduction.
+
+**Multiple Forms** - There are different fragments of kisspeptin (kisspeptin-54, -14, -13, -10), each with research applications.
+
+**Cross-Species Presence** - Kisspeptin is highly conserved across species, indicating its fundamental biological importance.`
+      }
+    ],
+    takeaway: "Kisspeptin is a neuropeptide that controls the reproductive hormone cascade. It's the master switch that initiates puberty and regulates fertility, making it fundamental to reproductive biology research."
+  },
+
+  "pt-141-bremelanotide-research-guide": {
+    icon: Brain,
+    iconColor: "#9d4edd",
+    intro: `PT-141, also known as bremelanotide, is a synthetic peptide derived from melanotan II. Unlike hormones that work through the circulatory system, PT-141 works directly through the central nervous system by activating melanocortin receptors in the brain. This makes it unique among peptides studied for sexual function.`,
+    sections: [
+      {
+        title: "How PT-141 Works",
+        content: `PT-141 activates melanocortin receptors, particularly MC3R and MC4R, which are found in areas of the brain involved in sexual arousal:
+
+**Central Nervous System Action** - Unlike vascular-based approaches, PT-141 works through neural pathways. It activates brain regions associated with desire and arousal.
+
+**Melanocortin System** - The melanocortin system affects many functions including appetite, energy, and yes, sexual behavior. PT-141 specifically targets the pathways related to sexual response.
+
+**Receptor Binding** - By binding to MC3R and MC4R receptors in the hypothalamus, PT-141 initiates a cascade that affects sexual arousal circuits.`
+      },
+      {
+        title: "Origin from Melanotan II",
+        content: `PT-141 was derived from melanotan II, but researchers modified it specifically for research purposes:
+
+**Selectivity Improvement** - Scientists removed the tanning-related effects while retaining the central nervous system activity.
+
+**Cyclic Structure** - Like its parent compound, PT-141 has a cyclic structure that provides stability and receptor binding properties.
+
+**Research Evolution** - The development from melanotan II to PT-141 represents how peptide research iterates to find more targeted compounds.`
+      },
+      {
+        title: "Research Applications",
+        content: `Scientists study PT-141 in various contexts:
+
+**Neuroscience** - How does the brain regulate sexual function? PT-141 helps researchers probe these circuits.
+
+**Receptor Studies** - Understanding how melanocortin receptors affect behavior beyond their known roles in pigmentation and appetite.
+
+**Comparative Studies** - Researchers compare PT-141's mechanism to other approaches that work through different pathways.`
+      }
+    ],
+    takeaway: "PT-141 (bremelanotide) works through brain melanocortin receptors rather than vascular pathways. It's studied to understand how the central nervous system regulates sexual arousal and response."
+  },
+
+  "thymosin-alpha-1-research-guide": {
+    icon: Shield,
+    iconColor: "#22c55e",
+    intro: `Thymosin Alpha-1 (Tα1) is a 28-amino-acid peptide originally isolated from the thymus gland. The thymus is a specialized organ that trains immune cells during development. Thymosin Alpha-1 appears to be one of the key signaling molecules involved in this process, making it a significant subject for immunology research.`,
+    sections: [
+      {
+        title: "The Thymus Connection",
+        content: `The thymus gland is crucial for immune system development:
+
+**T-Cell Training Ground** - Immature immune cells migrate to the thymus, where they "learn" to distinguish self from non-self. Thymosin Alpha-1 participates in this education process.
+
+**Age-Related Decline** - The thymus shrinks with age (a process called thymic involution), and thymosin production decreases accordingly. This natural decline interests aging researchers.
+
+**Endocrine Function** - The thymus isn't just an immune organ - it functions somewhat like an endocrine gland, releasing peptides like Thymosin Alpha-1 that affect the whole body.`
+      },
+      {
+        title: "Immune System Effects",
+        content: `Thymosin Alpha-1 influences multiple aspects of immune function:
+
+**T-Cell Development** - It appears to promote the maturation and differentiation of T-lymphocytes, the immune cells that coordinate adaptive immunity.
+
+**Dendritic Cell Effects** - Thymosin Alpha-1 may also affect dendritic cells, which are responsible for presenting antigens to T-cells.
+
+**Cytokine Modulation** - Research suggests it influences the balance of pro-inflammatory and anti-inflammatory cytokines.`
+      },
+      {
+        title: "Research Significance",
+        content: `Scientists study Thymosin Alpha-1 in various contexts:
+
+**Immunomodulation** - Understanding how to support immune function through thymic pathways.
+
+**Aging Research** - Investigating whether declining thymic peptides contribute to age-related immune weakness (immunosenescence).
+
+**Toll-Like Receptor Activation** - Thymosin Alpha-1 appears to signal through TLR9, connecting it to innate immunity as well as adaptive responses.`
+      }
+    ],
+    takeaway: "Thymosin Alpha-1 is a thymus-derived peptide that influences T-cell development and immune regulation. It's studied to understand how thymic signaling affects immune competence, especially in the context of aging."
+  },
+
+  "dsip-research-guide": {
+    icon: Moon,
+    iconColor: "#6366f1",
+    intro: `DSIP (Delta Sleep-Inducing Peptide) is a small nonapeptide (9 amino acids) originally isolated from the blood of rabbits during slow-wave sleep. Despite its name, DSIP's relationship with sleep is complex, and researchers now study it for a variety of effects beyond just sleep induction.`,
+    sections: [
+      {
+        title: "What DSIP Actually Does",
+        content: `DSIP has effects across multiple systems:
+
+**Sleep Architecture** - Rather than simply inducing sleep, DSIP appears to influence the pattern and quality of sleep, particularly delta wave (slow-wave) activity.
+
+**Stress Response** - DSIP may modulate the body's response to stress by affecting the hypothalamic-pituitary-adrenal (HPA) axis.
+
+**Circadian Rhythms** - Research suggests DSIP interacts with the body's internal clock mechanisms, which may explain its sleep-related effects.
+
+**Neuroprotective Interest** - Some studies investigate whether DSIP has protective effects on neural tissue.`
+      },
+      {
+        title: "Discovery and Structure",
+        content: `DSIP has an interesting scientific history:
+
+**How It Was Found** - Scientists discovered DSIP by looking for substances in the blood of sleeping animals that might induce sleep in awake animals.
+
+**Small Size** - At just 9 amino acids (Trp-Ala-Gly-Gly-Asp-Ala-Ser-Gly-Glu), DSIP is among the smaller bioactive peptides.
+
+**Crossing Barriers** - Despite being a peptide, DSIP appears able to cross the blood-brain barrier, which is unusual and makes it interesting for neuroscience research.`
+      },
+      {
+        title: "Current Research Focus",
+        content: `Scientists study DSIP in several areas:
+
+**Sleep Physiology** - Understanding how the brain regulates different phases of sleep.
+
+**Stress and Anxiety** - Investigating DSIP's apparent calming effects and their mechanisms.
+
+**Pain Research** - Some studies suggest DSIP may affect pain perception pathways.
+
+**Opioid System Interactions** - DSIP appears to interact with endorphin systems, opening research into pain and stress modulation.`
+      }
+    ],
+    takeaway: "DSIP is a 9-amino-acid peptide that affects sleep architecture, stress response, and potentially pain pathways. It's studied to understand how peptide signals regulate states of rest and stress."
+  },
+
+  "selank-research-guide": {
+    icon: Brain,
+    iconColor: "#21d8ff",
+    intro: `Selank is a synthetic peptide developed in Russia that combines a sequence from the natural immune peptide tuftsin with additional amino acids. This design was intended to create a compound that affects both immune and neurological function, making it interesting for research on the connection between these systems.`,
+    sections: [
+      {
+        title: "The Tuftsin Connection",
+        content: `Selank is built upon tuftsin, a naturally occurring immune peptide:
+
+**Tuftsin Base** - Tuftsin (Thr-Lys-Pro-Arg) is a tetrapeptide that naturally stimulates phagocytosis - the process where immune cells engulf pathogens.
+
+**Extended Sequence** - Selank adds Pro-Gly-Pro to the tuftsin sequence, changing its properties and potentially how it affects the nervous system.
+
+**Dual System Effects** - By building on an immune peptide, selank was designed to potentially affect both immune and neurological function.`
+      },
+      {
+        title: "Neurological Research Interest",
+        content: `Scientists study selank for potential effects on the nervous system:
+
+**GABA System** - Research suggests selank may influence GABAergic signaling, the brain's primary inhibitory system that relates to calmness and anxiety.
+
+**BDNF Expression** - Some studies indicate selank might affect brain-derived neurotrophic factor, a protein important for neuron health and plasticity.
+
+**Gene Expression** - Selank appears to influence the expression of various genes related to neural function.`
+      },
+      {
+        title: "Research Applications",
+        content: `Selank is studied in various contexts:
+
+**Anxiety Models** - Scientists use selank in animal models to study anxiety-related behaviors and their biological basis.
+
+**Cognitive Research** - Some studies examine selank's effects on memory and learning processes.
+
+**Psychoneuroimmunology** - Selank helps researchers explore the connection between the immune system and brain function - how immune signals affect mood and cognition.`
+      }
+    ],
+    takeaway: "Selank is a synthetic peptide based on the immune peptide tuftsin. It's studied for potential effects on both immune function and the nervous system, particularly GABAergic signaling and anxiety-related pathways."
+  },
+
+  "aod-9604-research-guide": {
+    icon: Zap,
+    iconColor: "#f97316",
+    intro: `AOD-9604 is a modified fragment of human growth hormone (HGH). Specifically, it's amino acids 177-191 from the C-terminal end of HGH, with an added tyrosine at the beginning. This fragment was designed to capture some of growth hormone's metabolic effects without the growth-promoting activities.`,
+    sections: [
+      {
+        title: "How AOD-9604 Was Designed",
+        content: `Growth hormone has many effects, and scientists sought to isolate specific ones:
+
+**Fragment Approach** - Rather than using the full 191-amino-acid growth hormone, researchers isolated just 15 amino acids (177-191) believed responsible for certain metabolic effects.
+
+**Tyrosine Addition** - Adding tyrosine to the beginning of this fragment helped stabilize it and may affect its binding properties.
+
+**Targeted Activity** - The goal was to maintain fat metabolism effects without the insulin-resistant or growth-promoting effects of full HGH.`
+      },
+      {
+        title: "Research Focus Areas",
+        content: `Scientists study AOD-9604 for various reasons:
+
+**Fat Metabolism** - The primary research interest is how this fragment affects lipolysis (fat breakdown) and lipogenesis (fat creation).
+
+**Structure-Function Studies** - AOD-9604 helps researchers understand which parts of the GH molecule are responsible for which effects.
+
+**No IGF-1 Increase** - Unlike full HGH, AOD-9604 reportedly doesn't raise IGF-1 levels significantly, which helps isolate its specific mechanisms.`
+      },
+      {
+        title: "Mechanism of Action",
+        content: `How AOD-9604 appears to work:
+
+**Fat Cell Signaling** - AOD-9604 may affect signaling pathways within adipocytes (fat cells) that regulate the storage and release of fatty acids.
+
+**Beta-3 Adrenergic Activity** - Some research suggests it may act through or alongside beta-3 adrenergic receptor pathways.
+
+**Cartilage Research** - Beyond fat metabolism, there's also research interest in AOD-9604's potential effects on cartilage cells.`
+      }
+    ],
+    takeaway: "AOD-9604 is a fragment of growth hormone (amino acids 177-191 plus tyrosine) studied for its effects on fat metabolism. It was designed to capture specific metabolic effects without the growth-promoting activities of full HGH."
+  },
+
+  "thymulin-research-guide": {
+    icon: Shield,
+    iconColor: "#22c55e",
+    intro: `Thymulin (also called facteur thymique sérique or FTS) is a small nonapeptide hormone produced exclusively by the thymus gland. Unlike Thymosin Alpha-1, thymulin requires zinc to be biologically active, making it a unique metallopeptide. It's studied for its role in T-cell maturation and immune regulation.`,
+    sections: [
+      {
+        title: "The Zinc-Dependent Hormone",
+        content: `Thymulin has unique properties among thymic hormones:
+
+**Metal Requirement** - Thymulin only functions when bound to zinc. Without zinc, it's called FTS-like peptide and lacks biological activity.
+
+**Thymus Exclusive** - Only the thymus produces thymulin, making it a true marker of thymic function.
+
+**Small Size** - At just 9 amino acids (Glu-Ala-Lys-Ser-Gln-Gly-Gly-Ser-Asn), it's one of the smaller bioactive peptides, yet it has potent effects.`
+      },
+      {
+        title: "Immune System Role",
+        content: `Thymulin affects T-cell development and function:
+
+**T-Cell Maturation** - Thymulin promotes the differentiation of immature T-cells into functional subsets (CD4+ and CD8+ cells).
+
+**Cytokine Influence** - It appears to modulate cytokine production, affecting the overall immune response.
+
+**Neuroendocrine Connection** - Thymulin levels are influenced by hormones like growth hormone and prolactin, showing the immune system's connection to the endocrine system.`
+      },
+      {
+        title: "Research Significance",
+        content: `Scientists study thymulin in various contexts:
+
+**Aging Research** - Thymulin levels decline with age parallel to thymic involution. Researchers study whether this contributes to age-related immune decline.
+
+**Zinc Status Indicator** - Because thymulin requires zinc, it's sometimes studied as an indirect marker of zinc status.
+
+**Inflammatory Research** - Some studies investigate thymulin's potential anti-inflammatory properties and how they relate to its immune-modulating effects.
+
+**Thymic Function Assessment** - Thymulin can be measured in blood as an indicator of thymic activity.`
+      }
+    ],
+    takeaway: "Thymulin is a zinc-dependent thymic hormone essential for T-cell maturation. It's unique in requiring zinc for activity and serves as a marker of thymic function, making it valuable for immune and aging research."
   }
 };
 
