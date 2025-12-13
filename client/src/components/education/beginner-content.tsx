@@ -1027,20 +1027,6 @@ export function BeginnerContent({ slug, title }: BeginnerContentProps) {
         </div>
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
-        className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 animate-pulse-subtle"
-      >
-        <div className="flex items-start gap-3">
-          <AlertTriangle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
-          <p className="text-sm text-red-200/90">
-            <strong className="text-red-400">Research Use Only:</strong> All products and information 
-            are intended solely for laboratory and research purposes. Not for human consumption.
-          </p>
-        </div>
-      </motion.div>
     </div>
   );
 }
