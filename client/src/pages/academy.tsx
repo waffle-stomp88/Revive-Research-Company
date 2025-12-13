@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -175,6 +175,7 @@ function AchievementBadge({ achievement, unlocked }: { achievement: typeof acade
 
 export default function Academy() {
   const { user, isLoading: authLoading } = useAuth();
+  const [, navigate] = useLocation();
   const [showPersonaQuiz, setShowPersonaQuiz] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
   const [localProgress, setLocalProgress] = useState<{
@@ -231,11 +232,19 @@ export default function Academy() {
     }
   }, [serverProgress, user]);
 
+  // Track persona state for the quiz effect
+  const currentPersona = localProgress.persona;
+  
   useEffect(() => {
-    if (!localProgress.persona && !authLoading) {
-      setShowPersonaQuiz(true);
+    // Show persona quiz if user hasn't selected one yet and auth check is complete
+    // Use a small timeout to ensure component is fully mounted after age gate
+    if (!authLoading && !currentPersona) {
+      const timer = setTimeout(() => {
+        setShowPersonaQuiz(true);
+      }, 500);
+      return () => clearTimeout(timer);
     }
-  }, [localProgress.persona, authLoading]);
+  }, [currentPersona, authLoading]);
 
   const completeLesson = (lessonId: string, xp: number) => {
     if (localProgress.completedLessons.includes(lessonId)) return;
@@ -453,11 +462,9 @@ export default function Academy() {
                                   }`}
                                   onClick={() => {
                                     if (isUnlocked && !isCompleted) {
+                                      completeLesson(lesson.id, lesson.xp);
                                       if (lesson.articleSlug && article) {
-                                        completeLesson(lesson.id, lesson.xp);
-                                        window.location.href = `/education/${lesson.articleSlug}`;
-                                      } else {
-                                        completeLesson(lesson.id, lesson.xp);
+                                        navigate(`/education/${lesson.articleSlug}`);
                                       }
                                     }
                                   }}
