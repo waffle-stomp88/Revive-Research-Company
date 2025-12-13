@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { ImageLoader } from "@/components/image-loader";
 import { addToRecentlyViewed, RecentlyViewed } from "@/components/recently-viewed";
-import { CompareButton } from "@/components/comparison-tool";
 import {
   Select,
   SelectContent,
@@ -716,11 +715,6 @@ export default function ProductDetail() {
                     Save ${((getBasePrice() - getDiscountedPrice()) * quantity).toFixed(2)} per order • Cancel anytime
                   </p>
                 )}
-                
-                {/* Compare Button */}
-                <div className="mt-3 flex justify-center">
-                  <CompareButton productId={product.id} />
-                </div>
               </>
             ) : (
               /* Out of Stock - Show prominent notification signup */
