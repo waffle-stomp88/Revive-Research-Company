@@ -702,27 +702,47 @@ export default function Products() {
                 </p>
               )}
 
-              {/* Out of stock hidden message */}
-              {!searchQuery && stockFilter === "in-stock" && products && (() => {
+              {/* Stock filter info message */}
+              {!searchQuery && products && (() => {
                 const outOfStockCount = products.filter(p => !p.inStock || (p.stockAmount !== null && p.stockAmount <= 0)).length;
                 if (outOfStockCount > 0) {
-                  return (
-                    <div className="flex items-center justify-between text-sm text-muted-foreground mb-4 px-3 py-2 bg-muted/30 rounded-lg border border-border/50" data-testid="text-stock-filter-info">
-                      <span>
-                        Showing <span className="font-medium text-foreground">{filteredAndSortedProducts.length}</span> of {products.length} products
-                        <span className="text-muted-foreground/70"> · {outOfStockCount} out of stock hidden</span>
-                      </span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-xs h-7 text-[#21d8ff] hover:text-[#21d8ff]"
-                        onClick={() => setStockFilter("all")}
-                        data-testid="button-show-all-products"
-                      >
-                        Show all
-                      </Button>
-                    </div>
-                  );
+                  if (stockFilter === "in-stock") {
+                    return (
+                      <div className="flex items-center justify-between text-sm text-muted-foreground mb-4 px-3 py-2 bg-muted/30 rounded-lg border border-border/50" data-testid="text-stock-filter-info">
+                        <span>
+                          Showing <span className="font-medium text-foreground">{filteredAndSortedProducts.length}</span> of {products.length} products
+                          <span className="text-muted-foreground/70"> · {outOfStockCount} out of stock hidden</span>
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-xs h-7 text-[#21d8ff] hover:text-[#21d8ff]"
+                          onClick={() => setStockFilter("all")}
+                          data-testid="button-show-all-products"
+                        >
+                          Show all
+                        </Button>
+                      </div>
+                    );
+                  } else if (stockFilter === "all") {
+                    return (
+                      <div className="flex items-center justify-between text-sm text-muted-foreground mb-4 px-3 py-2 bg-muted/30 rounded-lg border border-border/50" data-testid="text-stock-filter-info">
+                        <span>
+                          Showing all <span className="font-medium text-foreground">{filteredAndSortedProducts.length}</span> products
+                          <span className="text-muted-foreground/70"> · including {outOfStockCount} out of stock</span>
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-xs h-7 text-[#21d8ff] hover:text-[#21d8ff]"
+                          onClick={() => setStockFilter("in-stock")}
+                          data-testid="button-hide-oos-products"
+                        >
+                          Hide out of stock
+                        </Button>
+                      </div>
+                    );
+                  }
                 }
                 return null;
               })()}
