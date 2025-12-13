@@ -180,7 +180,7 @@ type ShopSection = "deals" | "bundles" | "products" | "bulk";
 export default function Products() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("featured");
-  const [stockFilter, setStockFilter] = useState<"all" | "in-stock" | "out-of-stock">("all");
+  const [stockFilter, setStockFilter] = useState<"all" | "in-stock" | "out-of-stock">("in-stock");
   const [activeSection, setActiveSection] = useState<ShopSection>("deals");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -346,13 +346,13 @@ export default function Products() {
   const clearFilters = () => {
     setSearchQuery("");
     setSortBy("featured");
-    setStockFilter("all");
+    setStockFilter("in-stock");
     setSelectedCategory("all");
     setPeptideGroupFilter("all");
     setPriceRange([priceStats.min, priceStats.max]);
   };
 
-  const hasActiveFilters = searchQuery !== "" || sortBy !== "featured" || stockFilter !== "all" || selectedCategory !== "all" || peptideGroupFilter !== "all" || priceRange[0] !== priceStats.min || priceRange[1] !== priceStats.max;
+  const hasActiveFilters = searchQuery !== "" || sortBy !== "featured" || stockFilter !== "in-stock" || selectedCategory !== "all" || peptideGroupFilter !== "all" || priceRange[0] !== priceStats.min || priceRange[1] !== priceStats.max;
 
   const uniqueCategories = useMemo(() => {
     if (!products) return [];
