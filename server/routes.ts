@@ -2235,6 +2235,44 @@ Return ONLY valid JSON in this exact format:
     }
   });
 
+  // Academy Progress - Get or create user's academy progress
+  app.get("/api/academy/progress", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      let progress = await storage.getAcademyProgress(userId);
+      
+      if (!progress) {
+        progress = await storage.createAcademyProgress({ userId });
+      }
+      
+      res.json(progress);
+    } catch (error) {
+      console.error("Error fetching academy progress:", error);
+      res.status(500).json({ error: "Failed to fetch academy progress" });
+    }
+  });
+
+  // Academy Progress - Update user's academy progress
+  app.patch("/api/academy/progress", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const updateData = req.body;
+      
+      let progress = await storage.getAcademyProgress(userId);
+      
+      if (!progress) {
+        progress = await storage.createAcademyProgress({ userId, ...updateData });
+      } else {
+        progress = await storage.updateAcademyProgress(userId, updateData);
+      }
+      
+      res.json(progress);
+    } catch (error) {
+      console.error("Error updating academy progress:", error);
+      res.status(500).json({ error: "Failed to update academy progress" });
+    }
+  });
+
   // Delete user account
   app.post("/api/user/delete-account", isAuthenticated, async (req: any, res) => {
     try {

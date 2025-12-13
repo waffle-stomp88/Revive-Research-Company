@@ -52,6 +52,7 @@ import ProductsHub from "@/pages/products-hub";
 import DosageCalculator from "@/pages/dosage-calculator";
 import ResearchStacks from "@/pages/research-stacks";
 import ResearchStackDetail from "@/pages/research-stack-detail";
+import Academy from "@/pages/academy";
 import NotFound from "@/pages/not-found";
 
 const ChatBot = lazy(() => import("@/components/chatbot").then(m => ({ default: m.ChatBot })));
@@ -122,6 +123,7 @@ function Router() {
         <Route path="/what-we-dont-do" component={WhatWeDontDo} />
         <Route path="/education" component={Education} />
         <Route path="/education/:slug" component={Education} />
+        <Route path="/academy" component={Academy} />
         <Route path="/quality-process" component={QualityProcess} />
         <Route path="/package-warm" component={PackageWarm} />
         <Route path="/transparency" component={Transparency} />

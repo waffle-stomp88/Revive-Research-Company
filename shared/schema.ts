@@ -437,3 +437,44 @@ export type PriceTrend = {
   reasonDescription: string;
   notes?: string;
 };
+
+// Academy Progress table - Track user learning journey
+export const academyProgress = pgTable("academy_progress", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }),
+  persona: text("persona"), // beginner, intermediate, advanced
+  completedLessons: text("completed_lessons").array().default([]),
+  currentModule: integer("current_module").default(0),
+  currentLesson: integer("current_lesson").default(0),
+  achievements: text("achievements").array().default([]),
+  quizScores: jsonb("quiz_scores").default({}),
+  totalXp: integer("total_xp").default(0),
+  startedAt: timestamp("started_at").defaultNow(),
+  lastActivityAt: timestamp("last_activity_at").defaultNow(),
+});
+
+export const insertAcademyProgressSchema = createInsertSchema(academyProgress).omit({ id: true, startedAt: true, lastActivityAt: true });
+export type InsertAcademyProgress = z.infer<typeof insertAcademyProgressSchema>;
+export type AcademyProgress = typeof academyProgress.$inferSelect;
+
+// Academy persona types
+export const academyPersonas = {
+  beginner: "Complete Beginner",
+  intermediate: "Some Science Background",
+  advanced: "Experienced Researcher",
+} as const;
+
+export type AcademyPersona = keyof typeof academyPersonas;
+
+// Academy achievement definitions
+export const academyAchievements = {
+  FIRST_LESSON: { id: "first_lesson", name: "First Steps", description: "Complete your first lesson", xp: 10, icon: "Sparkles" },
+  ORIENTATION_COMPLETE: { id: "orientation_complete", name: "Oriented", description: "Complete the Orientation module", xp: 50, icon: "Compass" },
+  FOUNDATIONS_COMPLETE: { id: "foundations_complete", name: "Foundation Builder", description: "Complete Core Foundations", xp: 100, icon: "Building" },
+  SKILLS_COMPLETE: { id: "skills_complete", name: "Skilled Researcher", description: "Complete Research Skills", xp: 100, icon: "FlaskConical" },
+  LAB_READY: { id: "lab_ready", name: "Lab Ready", description: "Complete all modules", xp: 200, icon: "Award" },
+  PERFECT_QUIZ: { id: "perfect_quiz", name: "Perfect Score", description: "Get 100% on any quiz", xp: 25, icon: "Star" },
+  SCHOLAR: { id: "scholar", name: "Scholar", description: "Earn 500+ XP", xp: 0, icon: "GraduationCap" },
+} as const;
+
+export type AcademyAchievementId = keyof typeof academyAchievements;

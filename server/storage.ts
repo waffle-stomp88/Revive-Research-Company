@@ -1,7 +1,7 @@
 import { 
   users, products, coas, orders, contacts, affiliateApplications, affiliates, affiliateSales, affiliatePayouts, reviews,
   batches, productStorageProfiles, legalDocuments, faqEntries, educationArticles, coaGlossaryTerms, stockNotifications, discountCodes, newsletterSubscribers,
-  productDosageStock, priceHistory,
+  productDosageStock, priceHistory, academyProgress,
   type User, type UpsertUser,
   type Product, type InsertProduct,
   type ProductDosageStock, type InsertProductDosageStock, type ProductWithDosageStock,
@@ -24,6 +24,7 @@ import {
   type DiscountCode, type InsertDiscountCode,
   type NewsletterSubscriber, type InsertNewsletterSubscriber,
   type PriceHistory, type InsertPriceHistory, type PriceTrend, type PriceChangeReason,
+  type AcademyProgress, type InsertAcademyProgress,
   priceChangeReasons
 } from "@shared/schema";
 import { db } from "./db";
@@ -222,6 +223,11 @@ export interface IStorage {
   getProductPriceTrend(productId: string): Promise<PriceTrend | null>;
   getProductPriceHistory(productId: string, months?: number): Promise<PriceHistory[]>;
   canChangePrice(productId: string): Promise<{ canChange: boolean; daysUntilAllowed?: number; lastChangeDate?: Date }>;
+  
+  // Academy Progress
+  getAcademyProgress(userId: string): Promise<AcademyProgress | undefined>;
+  createAcademyProgress(progress: InsertAcademyProgress): Promise<AcademyProgress>;
+  updateAcademyProgress(userId: string, data: Partial<InsertAcademyProgress>): Promise<AcademyProgress | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1447,6 +1453,25 @@ export class DatabaseStorage implements IStorage {
         gte(priceHistory.effectiveDate, startDate)
       ))
       .orderBy(desc(priceHistory.effectiveDate));
+  }
+
+  // Academy Progress
+  async getAcademyProgress(userId: string): Promise<AcademyProgress | undefined> {
+    const [progress] = await db.select().from(academyProgress).where(eq(academyProgress.userId, userId));
+    return progress || undefined;
+  }
+
+  async createAcademyProgress(insertProgress: InsertAcademyProgress): Promise<AcademyProgress> {
+    const [progress] = await db.insert(academyProgress).values(insertProgress).returning();
+    return progress;
+  }
+
+  async updateAcademyProgress(userId: string, data: Partial<InsertAcademyProgress>): Promise<AcademyProgress | undefined> {
+    const [progress] = await db.update(academyProgress)
+      .set({ ...data, lastActivityAt: new Date() })
+      .where(eq(academyProgress.userId, userId))
+      .returning();
+    return progress || undefined;
   }
 }
 
