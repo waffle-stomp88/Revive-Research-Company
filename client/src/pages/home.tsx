@@ -417,14 +417,11 @@ function ProductShowcase() {
                           <Badge className="absolute top-2 right-2 bg-[#E7FB10] text-black text-xs px-2 py-0.5 font-bold">DEAL</Badge>
                         )}
                       </div>
-                      <div className="p-4">
-                        <h3 className="font-display text-lg md:text-xl font-bold text-[#E7FB10] group-hover:text-[#21d8ff] transition-colors mb-1">
+                      <div className="p-4 text-center">
+                        <h3 className="font-display text-lg md:text-xl font-bold text-[#E7FB10] group-hover:text-[#21d8ff] transition-colors mb-2">
                           {product.name}
                         </h3>
-                        <div className="flex items-center justify-between">
-                          <span className="font-display text-xl font-bold">${Number(product.price).toFixed(2)}</span>
-                          <Badge variant="outline" className="text-xs px-2 py-0.5 border-[#21d8ff]/50 text-[#21d8ff]">99%+ Pure</Badge>
-                        </div>
+                        <span className="font-display text-xl font-bold">${Number(product.price).toFixed(2)}</span>
                       </div>
                     </Card>
                   </Link>
