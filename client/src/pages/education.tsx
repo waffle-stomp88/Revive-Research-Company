@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
@@ -309,6 +309,19 @@ export default function Education() {
       }
     }
   }, [params.slug, articles]);
+
+  // Calculate peptide article counts per group for dropdown badges
+  const peptideGroupCounts = useMemo(() => {
+    const peptideArticles = articles.filter(a => a.category === "peptides");
+    const counts: Record<string, number> = { all: peptideArticles.length };
+    peptideArticles.forEach(a => {
+      const group = getPeptideGroup(a.slug || "");
+      if (group && group !== "all") {
+        counts[group] = (counts[group] || 0) + 1;
+      }
+    });
+    return counts;
+  }, [articles]);
 
   const filteredArticles = (() => {
     let result = activeCategory === "all"
@@ -751,13 +764,16 @@ export default function Education() {
                         <div className="flex items-center gap-2">
                           <Filter className="h-4 w-4 text-muted-foreground" />
                           <Select value={peptideGroupFilter} onValueChange={setPeptideGroupFilter}>
-                            <SelectTrigger className="w-[180px] h-9" data-testid="select-peptide-group">
+                            <SelectTrigger className="w-[200px] h-9" data-testid="select-peptide-group">
                               <SelectValue placeholder="Filter by group" />
                             </SelectTrigger>
                             <SelectContent>
                               {peptideGroups.map((group) => (
                                 <SelectItem key={group.id} value={group.id} data-testid={`option-group-${group.id}`}>
-                                  <span style={{ color: group.color }}>{group.label}</span>
+                                  <span className="flex items-center justify-between w-full gap-3">
+                                    <span style={{ color: group.color }}>{group.label}</span>
+                                    <Badge variant="secondary" className="ml-auto text-xs">{peptideGroupCounts[group.id] || 0}</Badge>
+                                  </span>
                                 </SelectItem>
                               ))}
                             </SelectContent>
