@@ -702,6 +702,31 @@ export default function Products() {
                 </p>
               )}
 
+              {/* Out of stock hidden message */}
+              {!searchQuery && stockFilter === "in-stock" && products && (() => {
+                const outOfStockCount = products.filter(p => !p.inStock || (p.stockAmount !== null && p.stockAmount <= 0)).length;
+                if (outOfStockCount > 0) {
+                  return (
+                    <div className="flex items-center justify-between text-sm text-muted-foreground mb-4 px-3 py-2 bg-muted/30 rounded-lg border border-border/50" data-testid="text-stock-filter-info">
+                      <span>
+                        Showing <span className="font-medium text-foreground">{filteredAndSortedProducts.length}</span> of {products.length} products
+                        <span className="text-muted-foreground/70"> · {outOfStockCount} out of stock hidden</span>
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs h-7 text-[#21d8ff] hover:text-[#21d8ff]"
+                        onClick={() => setStockFilter("all")}
+                        data-testid="button-show-all-products"
+                      >
+                        Show all
+                      </Button>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
+
               {isLoading ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
