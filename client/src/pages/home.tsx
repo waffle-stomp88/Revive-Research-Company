@@ -52,7 +52,8 @@ function HeroSection() {
           className="w-full h-full object-cover object-center"
         />
       </motion.div>
-      <div className="absolute inset-0 z-[1] overflow-hidden pointer-events-none">
+      {/* Animated overlays - hidden on mobile for performance */}
+      <div className="absolute inset-0 z-[1] overflow-hidden pointer-events-none hidden md:block">
         <motion.div
           className="absolute -left-1/4 bottom-0 w-[150%] h-[60%] opacity-40"
           style={{
@@ -91,9 +92,10 @@ function HeroSection() {
       </div>
       <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-[2]" />
       <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-background z-[2]" />
+      {/* Glow effects - smaller on mobile, full on desktop */}
       <div className="absolute inset-0 overflow-hidden z-[3] pointer-events-none">
         <motion.div 
-          className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-[#21d8ff]/10 rounded-full blur-[150px]"
+          className="absolute top-1/3 left-1/4 w-[200px] h-[200px] md:w-[500px] md:h-[500px] bg-[#21d8ff]/10 rounded-full blur-[80px] md:blur-[150px]"
           animate={{ 
             opacity: [0.3, 0.5, 0.3],
             scale: [1, 1.1, 1]
@@ -101,7 +103,7 @@ function HeroSection() {
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div 
-          className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-[#E7FB10]/10 rounded-full blur-[120px]"
+          className="absolute bottom-1/3 right-1/4 w-[150px] h-[150px] md:w-[400px] md:h-[400px] bg-[#E7FB10]/10 rounded-full blur-[60px] md:blur-[120px]"
           animate={{ 
             opacity: [0.2, 0.4, 0.2],
             scale: [1.1, 1, 1.1]

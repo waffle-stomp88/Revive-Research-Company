@@ -174,10 +174,11 @@ export function MolecularDNAVisual() {
 
   return (
     <section ref={containerRef} className="relative py-20 overflow-hidden">
+      {/* Background glow effects - simplified on mobile */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-b from-background via-[#9d4edd]/5 to-background" />
         <motion.div 
-          className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#21d8ff]/10 rounded-full blur-[150px]"
+          className="absolute top-1/4 left-1/4 w-48 h-48 md:w-96 md:h-96 bg-[#21d8ff]/10 rounded-full blur-[80px] md:blur-[150px]"
           animate={{ 
             opacity: [0.2, 0.4, 0.2],
             scale: [1, 1.2, 1]
@@ -185,15 +186,16 @@ export function MolecularDNAVisual() {
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div 
-          className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-[#E7FB10]/10 rounded-full blur-[120px]"
+          className="absolute bottom-1/4 right-1/4 w-40 h-40 md:w-80 md:h-80 bg-[#E7FB10]/10 rounded-full blur-[60px] md:blur-[120px]"
           animate={{ 
             opacity: [0.15, 0.35, 0.15],
             scale: [1.1, 1, 1.1]
           }}
           transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
         />
+        {/* Third glow - hidden on mobile */}
         <motion.div 
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-[#9d4edd]/10 rounded-full blur-[100px]"
+          className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-[#9d4edd]/10 rounded-full blur-[100px]"
           animate={{ 
             opacity: [0.1, 0.25, 0.1],
             scale: [1, 1.15, 1]
@@ -299,7 +301,8 @@ export function MolecularDNAVisual() {
         </motion.div>
       </div>
       
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {/* Floating molecules - hidden on mobile for performance */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden hidden md:block">
         {[
           { delay: 0, x: '10%', size: 6, color: '#E7FB10' },
           { delay: 2, x: '25%', size: 8, color: '#21d8ff' },
