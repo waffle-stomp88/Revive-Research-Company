@@ -348,7 +348,7 @@ export default function Products() {
     setSortBy("featured");
     setStockFilter("in-stock");
     setSelectedCategory("all");
-    setPeptideGroupFilter("all");
+    handlePeptideGroupChange("all");
     setPriceRange([priceStats.min, priceStats.max]);
   };
 
@@ -363,6 +363,33 @@ export default function Products() {
       count: products.filter(p => p.category === cat).length
     }));
   }, [products]);
+
+  // Peptide group counts for badges
+  const peptideGroupCounts = useMemo(() => {
+    if (!products) return {};
+    const counts: Record<string, number> = { all: products.length };
+    products.forEach(p => {
+      const group = getPeptideGroup(p.name);
+      if (group) {
+        counts[group.id] = (counts[group.id] || 0) + 1;
+      }
+    });
+    return counts;
+  }, [products]);
+
+  // State for showing category grid
+  const [showCategoryGrid, setShowCategoryGrid] = useState(true);
+
+  // Centralized handler for setting peptide group filter
+  const handlePeptideGroupChange = (groupId: string) => {
+    setPeptideGroupFilter(groupId);
+    // Show category grid when "all" is selected, hide when specific category selected
+    if (groupId === "all") {
+      setShowCategoryGrid(true);
+    } else {
+      setShowCategoryGrid(false);
+    }
+  };
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
@@ -380,6 +407,88 @@ export default function Products() {
             Premium research compounds, curated bundles, and volume pricing for your laboratory needs.
           </p>
         </motion.div>
+
+        {/* Category Grid - View by Category */}
+        {showCategoryGrid && peptideGroupFilter === "all" && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="mb-10"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-display text-xl font-semibold flex items-center gap-2">
+                <Grid3X3 className="h-5 w-5 text-[#E7FB10]" />
+                Browse by Category
+              </h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowCategoryGrid(false)}
+                className="text-muted-foreground"
+                data-testid="button-hide-category-grid"
+              >
+                <X className="h-4 w-4 mr-1" />
+                Hide
+              </Button>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              {peptideGroups.filter(g => g.id !== "all").map((group) => (
+                <motion.button
+                  key={group.id}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handlePeptideGroupChange(group.id)}
+                  className="group relative p-4 rounded-lg border border-border/50 bg-card/50 hover:border-[#E7FB10]/50 hover:bg-card transition-all duration-200 text-left"
+                  data-testid={`category-tile-${group.id}`}
+                >
+                  <div 
+                    className="w-3 h-3 rounded-full mb-3 transition-transform group-hover:scale-125"
+                    style={{ backgroundColor: group.color, boxShadow: `0 0 10px ${group.color}40` }}
+                  />
+                  <h3 className="font-medium text-sm mb-1">{group.label}</h3>
+                  <p className="text-xs text-muted-foreground">
+                    {peptideGroupCounts[group.id] || 0} peptide{(peptideGroupCounts[group.id] || 0) !== 1 ? 's' : ''}
+                  </p>
+                  <ArrowRight className="absolute bottom-4 right-4 h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Mobile Horizontal Scrolling Tabs for Peptide Groups */}
+        <div className="md:hidden mb-6 -mx-4 px-4">
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            <Button
+              variant={peptideGroupFilter === "all" ? "default" : "outline"}
+              size="sm"
+              onClick={() => handlePeptideGroupChange("all")}
+              className="whitespace-nowrap flex-shrink-0"
+              data-testid="mobile-tab-all"
+            >
+              All
+              <Badge variant="secondary" className="ml-1.5 text-xs">{peptideGroupCounts.all || 0}</Badge>
+            </Button>
+            {peptideGroups.filter(g => g.id !== "all").map((group) => (
+              <Button
+                key={group.id}
+                variant={peptideGroupFilter === group.id ? "default" : "outline"}
+                size="sm"
+                onClick={() => handlePeptideGroupChange(group.id)}
+                className="whitespace-nowrap flex-shrink-0 gap-1.5"
+                data-testid={`mobile-tab-${group.id}`}
+              >
+                <span 
+                  className="w-2 h-2 rounded-full" 
+                  style={{ backgroundColor: group.color }}
+                />
+                {group.label}
+                <Badge variant="secondary" className="ml-1 text-xs">{peptideGroupCounts[group.id] || 0}</Badge>
+              </Button>
+            ))}
+          </div>
+        </div>
 
         {/* Main Layout with Sidebar */}
         <div className="flex gap-6">
@@ -484,7 +593,7 @@ export default function Products() {
                             key={group.id}
                             variant={peptideGroupFilter === group.id ? "secondary" : "ghost"}
                             className="w-full justify-between h-8 text-sm"
-                            onClick={() => setPeptideGroupFilter(group.id)}
+                            onClick={() => handlePeptideGroupChange(group.id)}
                             data-testid={`filter-peptide-group-${group.id}`}
                           >
                             <span className="flex items-center gap-2">
@@ -556,17 +665,29 @@ export default function Products() {
                 </Button>
               )}
               
-              {/* Mobile Sort & Peptide Group Filter */}
-              <div className="flex-1 flex gap-3 lg:justify-end flex-wrap">
-                <Select value={peptideGroupFilter} onValueChange={setPeptideGroupFilter}>
-                  <SelectTrigger className="w-[200px]" data-testid="select-peptide-group">
+              {/* Desktop Peptide Group Filter with counts */}
+              <div className="hidden md:flex flex-1 gap-3 lg:justify-end flex-wrap">
+                <Select value={peptideGroupFilter} onValueChange={handlePeptideGroupChange}>
+                  <SelectTrigger className="w-[220px]" data-testid="select-peptide-group">
+                    <Filter className="h-4 w-4 mr-2" />
                     <SelectValue placeholder="All Peptides" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Peptides</SelectItem>
-                    {peptideGroups.map((group) => (
+                    <SelectItem value="all">
+                      <span className="flex items-center justify-between w-full gap-3">
+                        All Peptides
+                        <Badge variant="secondary" className="ml-auto text-xs">{peptideGroupCounts.all || 0}</Badge>
+                      </span>
+                    </SelectItem>
+                    {peptideGroups.filter(g => g.id !== "all").map((group) => (
                       <SelectItem key={group.id} value={group.id}>
-                        {group.label}
+                        <span className="flex items-center justify-between w-full gap-3">
+                          <span className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: group.color }} />
+                            {group.label}
+                          </span>
+                          <Badge variant="secondary" className="ml-auto text-xs">{peptideGroupCounts[group.id] || 0}</Badge>
+                        </span>
                       </SelectItem>
                     ))}
                   </SelectContent>
