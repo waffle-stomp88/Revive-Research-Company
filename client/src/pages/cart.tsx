@@ -398,8 +398,14 @@ export default function CartPage() {
                   </h4>
                   <div className="space-y-2 text-xs text-muted-foreground">
                     <p>Add cold packs during checkout to maintain optimal temperature during transit (optional).</p>
+                    <Link href="/education/ordering-expectations">
+                      <div className="flex items-center gap-1.5 text-[#21d8ff] hover:underline cursor-pointer mt-2" data-testid="link-ordering-expectations">
+                        <span>Full ordering & delivery guide</span>
+                        <ExternalLink className="h-3 w-3" />
+                      </div>
+                    </Link>
                     <Link href="/package-warm">
-                      <div className="flex items-center gap-1.5 text-[#21d8ff] hover:underline cursor-pointer mt-2" data-testid="link-package-warm">
+                      <div className="flex items-center gap-1.5 text-[#21d8ff] hover:underline cursor-pointer mt-1" data-testid="link-package-warm">
                         <span>If your package arrives warm, don't worry</span>
                         <ExternalLink className="h-3 w-3" />
                       </div>

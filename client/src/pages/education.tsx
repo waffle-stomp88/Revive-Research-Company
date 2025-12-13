@@ -212,6 +212,30 @@ const renderMarkdown = (content: string) => {
   // Remove any remaining table separator lines that weren't part of valid tables
   processedContent = processedContent.replace(/^\s*\|?[\s\-:]+\|[\s\-:|]+\s*$/gm, '');
   
+  // Wrap consecutive numbered list items in <ol> tags
+  processedContent = processedContent.replace(
+    /(^(\d+)\. .+$(\n^(\d+)\. .+$)*)/gm,
+    (match) => {
+      const items = match
+        .split('\n')
+        .map(line => line.replace(/^\d+\. (.+)$/, '<li class="ml-4">$1</li>'))
+        .join('');
+      return `<ol class="list-decimal ml-4 my-4 space-y-1">${items}</ol>`;
+    }
+  );
+  
+  // Wrap consecutive unordered list items in <ul> tags
+  processedContent = processedContent.replace(
+    /(^- .+$(\n^- .+$)*)/gm,
+    (match) => {
+      const items = match
+        .split('\n')
+        .map(line => line.replace(/^- (.+)$/, '<li class="ml-4">$1</li>'))
+        .join('');
+      return `<ul class="list-disc ml-4 my-4 space-y-1">${items}</ul>`;
+    }
+  );
+  
   // Then apply other markdown transformations
   return processedContent
     .replace(/^### (.*$)/gim, '<h3 class="text-lg font-bold mt-6 mb-3 text-foreground">$1</h3>')
@@ -219,8 +243,6 @@ const renderMarkdown = (content: string) => {
     .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mt-8 mb-4 text-foreground">$1</h1>')
     .replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground font-semibold">$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/^- (.*$)/gim, '<li class="ml-4 list-disc">$1</li>')
-    .replace(/^(\d+)\. (.*$)/gim, '<li class="ml-4 list-decimal">$2</li>')
     .replace(/\n\n/g, '</p><p class="mb-4">')
     .replace(/^(?!\s*<)/gm, '<p class="mb-4">'); // Skip lines starting with HTML tags (with optional whitespace)
 };

@@ -254,8 +254,14 @@ export default function Shipping() {
         >
           <Card className="p-8 bg-muted/30">
             <h3 className="font-display text-xl font-bold mb-3">Ready to Order?</h3>
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground mb-4">
               Browse our selection of premium research compounds with fast, reliable shipping.
+            </p>
+            <p className="text-sm text-muted-foreground mb-6">
+              New to ordering? Check out our{" "}
+              <Link href="/education/ordering-expectations" className="text-[#9d4edd] hover:underline">
+                complete ordering & delivery guide
+              </Link>.
             </p>
             <Link href="/products">
               <Button size="lg" data-testid="button-shop-now">
