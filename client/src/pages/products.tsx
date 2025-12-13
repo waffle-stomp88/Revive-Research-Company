@@ -556,8 +556,21 @@ export default function Products() {
                 </Button>
               )}
               
-              {/* Mobile Sort */}
-              <div className="flex-1 flex gap-3 lg:justify-end">
+              {/* Mobile Sort & Peptide Group Filter */}
+              <div className="flex-1 flex gap-3 lg:justify-end flex-wrap">
+                <Select value={peptideGroupFilter} onValueChange={setPeptideGroupFilter}>
+                  <SelectTrigger className="w-[200px]" data-testid="select-peptide-group">
+                    <SelectValue placeholder="All Peptides" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Peptides</SelectItem>
+                    {peptideGroups.map((group) => (
+                      <SelectItem key={group.id} value={group.id}>
+                        {group.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
                   <SelectTrigger className="w-[180px]" data-testid="select-sort">
                     <SlidersHorizontal className="h-4 w-4 mr-2" />
