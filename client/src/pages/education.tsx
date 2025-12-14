@@ -29,6 +29,7 @@ import {
   SortDesc,
   Filter,
   X,
+  Compass,
 } from "lucide-react";
 import {
   Select,
@@ -80,6 +81,19 @@ import {
   AOD9604Visual,
   ThymulinVisual
 } from "@/components/education";
+
+// Articles that are part of the Academy curriculum (for cross-linking)
+const ACADEMY_ARTICLE_SLUGS = [
+  "ordering-expectations",
+  "understanding-peptide-purity", 
+  "storage-101",
+  "complete-guide-to-peptide-reconstitution",
+  "how-to-read-coas",
+];
+
+const isAcademyArticle = (slug: string | null) => {
+  return slug ? ACADEMY_ARTICLE_SLUGS.includes(slug) : false;
+};
 
 const articleVisuals: Record<string, () => JSX.Element> = {
   "ordering-expectations": () => <OrderingJourney />,
@@ -389,14 +403,17 @@ export default function Education() {
           className="text-center mb-12"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ec4899]/10 border border-[#ec4899]/20 mb-4">
-            <GraduationCap className="h-4 w-4 text-[#ec4899]" />
-            <span className="text-sm font-medium text-[#ec4899]">Researcher Education Center</span>
+            <BookOpen className="h-4 w-4 text-[#ec4899]" />
+            <span className="text-sm font-medium text-[#ec4899]">Reference Library</span>
           </div>
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">
-            Learn Peptide Research
+            Education Center
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Everything you need to know about peptide research, from fundamentals to advanced topics.
+            Browse our open reference library for quick lookups on peptide research topics, compounds, and best practices.
+          </p>
+          <p className="text-sm text-muted-foreground/70 mt-2">
+            Looking for a structured learning path? Try our <Link href="/academy" className="text-[#21d8ff] hover:underline">Peptide Academy</Link> guided orientation.
           </p>
         </motion.div>
 
@@ -469,30 +486,27 @@ export default function Education() {
 
               <Separator className="my-6" />
 
-              <div className="p-5 rounded-lg bg-gradient-to-br from-[#ec4899]/15 via-[#9d4edd]/10 to-[#ec4899]/5 border border-[#ec4899]/30 overflow-hidden relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#ec4899]/0 via-[#ec4899]/5 to-[#ec4899]/0 pointer-events-none" />
+              <div className="p-5 rounded-lg bg-gradient-to-br from-[#21d8ff]/15 via-[#E7FB10]/10 to-[#21d8ff]/5 border border-[#21d8ff]/30 overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#21d8ff]/0 via-[#21d8ff]/5 to-[#21d8ff]/0 pointer-events-none" />
                 <div className="relative z-10">
                   <div className="flex items-center gap-2 mb-2">
-                    <Sparkles className="h-5 w-5 text-[#ec4899]" />
+                    <Compass className="h-5 w-5 text-[#21d8ff]" />
                     <span className="text-sm font-semibold">New to Research?</span>
                   </div>
                   <p className="text-xs text-muted-foreground mb-4">
-                    Start with our 5-part onboarding course
+                    Try our guided orientation with progress tracking
                   </p>
-                  <Button 
-                    className="w-full bg-gradient-to-r from-[#ec4899] to-[#c2185b] hover:shadow-lg hover:shadow-[#ec4899]/40 text-white font-semibold transition-all duration-200 group"
-                    onClick={() => {
-                      setActiveCategory('basics');
-                      setExpandedArticle(null);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                    data-testid="button-start-learning"
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      Start Learning
-                      <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    </span>
-                  </Button>
+                  <Link href="/academy">
+                    <Button 
+                      className="w-full bg-gradient-to-r from-[#21d8ff] to-[#1aa3cc] hover:shadow-lg hover:shadow-[#21d8ff]/40 text-black font-semibold transition-all duration-200 group"
+                      data-testid="button-go-to-academy"
+                    >
+                      <span className="flex items-center justify-center gap-2">
+                        Peptide Academy
+                        <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </span>
+                    </Button>
+                  </Link>
                 </div>
               </div>
 
@@ -541,7 +555,7 @@ export default function Education() {
                           Back to {getCategoryLabel(activeCategory)}
                         </button>
 
-                        <div className="flex items-center gap-2 mb-3">
+                        <div className="flex items-center gap-2 mb-3 flex-wrap">
                           <Badge
                             variant="outline"
                             className="text-xs"
@@ -554,6 +568,19 @@ export default function Education() {
                             <Clock className="h-3 w-3 mr-1" />
                             {article.readTimeMinutes} min read
                           </span>
+                          {isAcademyArticle(article.slug) && (
+                            <Link href="/academy">
+                              <Badge
+                                variant="outline"
+                                className="text-xs cursor-pointer hover:bg-[#21d8ff]/10 transition-colors"
+                                style={{ borderColor: "#21d8ff50", color: "#21d8ff" }}
+                                data-testid="badge-academy-link"
+                              >
+                                <Compass className="h-3 w-3 mr-1" />
+                                Part of Academy Orientation
+                              </Badge>
+                            </Link>
+                          )}
                         </div>
 
                         <h1 className="font-display text-2xl md:text-3xl font-bold mb-3" style={{ color: catColor }}>

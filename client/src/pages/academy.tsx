@@ -345,6 +345,19 @@ function EmbeddedLessonViewer({
           </Button>
 
           <div className="flex items-center gap-3">
+            {lesson.articleSlug && (
+              <Link href={`/education/${lesson.articleSlug}`}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-[#21d8ff]/70 hover:text-[#21d8ff] text-xs"
+                  data-testid="button-read-full-article"
+                >
+                  <BookOpen className="w-3 h-3 mr-1" />
+                  Read Full Article
+                </Button>
+              </Link>
+            )}
             {isLastSlide ? (
               isCompleted ? (
                 <Button
@@ -610,6 +623,9 @@ export default function Academy() {
               </h1>
               <p className="text-lg text-white/60 max-w-2xl mx-auto">
                 A structured introduction to peptide research. Learn the fundamentals, understand best practices, and set proper expectations before you begin.
+              </p>
+              <p className="text-sm text-white/40 mt-2">
+                Need quick reference? Visit our <Link href="/education" className="text-[#ec4899] hover:underline">Education Center</Link> reference library.
               </p>
             </motion.div>
 
