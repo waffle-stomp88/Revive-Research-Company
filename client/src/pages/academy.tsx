@@ -42,6 +42,7 @@ import {
 import type { AcademyProgress, EducationArticle } from "@shared/schema";
 import { academyPersonas, academyAchievements } from "@shared/schema";
 import { getLessonSlides } from "@/components/academy/lesson-slides";
+import { HorizontalLearningPath } from "@/components/academy/horizontal-learning-path";
 
 const CURRICULUM = [
   {
@@ -781,6 +782,21 @@ export default function Academy() {
           </div>
         </section>
 
+        <section className="py-8 px-6 -mt-8">
+          <div className="max-w-6xl mx-auto">
+            <HorizontalLearningPath
+              modules={CURRICULUM}
+              completedLessons={localProgress.completedLessons}
+              onModuleClick={(moduleId) => {
+                const element = document.getElementById(`module-section-${moduleId}`);
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }}
+            />
+          </div>
+        </section>
+
         <section className="py-16 px-6">
           <div className="max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-3 gap-8">
@@ -798,6 +814,7 @@ export default function Academy() {
                   return (
                     <motion.div
                       key={module.id}
+                      id={`module-section-${module.id}`}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: moduleIndex * 0.1 }}
