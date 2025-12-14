@@ -379,14 +379,15 @@ function PeptideChainVisual() {
 
 function MolecularSizeComparisonVisual() {
   const molecules = [
-    { name: "Amino Acid", size: 1, color: "#E7FB10", label: "~100 Da" },
-    { name: "Peptide", size: 2.5, color: "#21d8ff", label: "500-5000 Da" },
+    { name: "Amino Acid", size: 1.5, color: "#E7FB10", label: "~100 Da" },
+    { name: "Peptide", size: 3, color: "#21d8ff", label: "500-5000 Da" },
     { name: "Protein", size: 5, color: "#9d4edd", label: ">10,000 Da" },
   ];
 
   return (
-    <div className="flex flex-col items-center gap-6 w-full">
-      <div className="flex items-end justify-center gap-8">
+    <div className="flex flex-col items-center gap-8 w-full max-w-2xl">
+      <h3 className="text-xl font-semibold text-white">Size Comparison: Amino Acids vs Peptides vs Proteins</h3>
+      <div className="flex items-end justify-center gap-16">
         {molecules.map((mol, idx) => (
           <motion.div
             key={idx}
@@ -396,74 +397,76 @@ function MolecularSizeComparisonVisual() {
             className="flex flex-col items-center"
           >
             <div
-              className="rounded-full flex items-center justify-center mb-2"
+              className="rounded-full flex items-center justify-center mb-4"
               style={{ 
-                width: `${mol.size * 24}px`, 
-                height: `${mol.size * 24}px`,
+                width: `${mol.size * 32}px`, 
+                height: `${mol.size * 32}px`,
                 backgroundColor: `${mol.color}30`, 
-                border: `2px solid ${mol.color}` 
+                border: `3px solid ${mol.color}` 
               }}
             >
               <Atom className="w-1/2 h-1/2" style={{ color: mol.color }} />
             </div>
-            <span className="text-sm font-semibold text-white">{mol.name}</span>
-            <span className="text-xs text-white/50">{mol.label}</span>
+            <span className="text-lg font-semibold text-white">{mol.name}</span>
+            <span className="text-base text-white/60 mt-1">{mol.label}</span>
           </motion.div>
         ))}
       </div>
+      <p className="text-white/50 text-center mt-4">Peptides occupy a unique middle ground - larger than amino acids but smaller than proteins</p>
     </div>
   );
 }
 
 function PeptideBondFormationVisual() {
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="flex items-center gap-2">
+    <div className="flex flex-col items-center gap-6 w-full max-w-2xl">
+      <h3 className="text-xl font-semibold text-white">How Peptide Bonds Form</h3>
+      <div className="flex items-center gap-4 flex-wrap justify-center">
         <motion.div
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          className="flex items-center gap-1 p-3 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30"
+          className="flex items-center gap-2 p-5 rounded-xl bg-[#E7FB10]/10 border border-[#E7FB10]/30"
         >
-          <span className="text-[#E7FB10] font-mono text-sm">NH₂-CHR-</span>
-          <span className="text-[#ef4444] font-mono text-sm font-bold">COOH</span>
+          <span className="text-[#E7FB10] font-mono text-lg">NH₂-CHR-</span>
+          <span className="text-[#ef4444] font-mono text-lg font-bold">COOH</span>
         </motion.div>
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-white/50"
+          className="text-white/50 text-2xl font-bold"
         >
           +
         </motion.div>
         <motion.div
           initial={{ x: 20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          className="flex items-center gap-1 p-3 rounded-lg bg-[#21d8ff]/10 border border-[#21d8ff]/30"
+          className="flex items-center gap-2 p-5 rounded-xl bg-[#21d8ff]/10 border border-[#21d8ff]/30"
         >
-          <span className="text-[#22c55e] font-mono text-sm font-bold">H₂N</span>
-          <span className="text-[#21d8ff] font-mono text-sm">-CHR-COOH</span>
+          <span className="text-[#22c55e] font-mono text-lg font-bold">H₂N</span>
+          <span className="text-[#21d8ff] font-mono text-lg">-CHR-COOH</span>
         </motion.div>
       </div>
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="flex items-center gap-2"
+        className="flex items-center gap-3"
       >
-        <ArrowDown className="w-5 h-5 text-white/40" />
-        <span className="text-white/40 text-sm">-H₂O</span>
+        <ArrowDown className="w-8 h-8 text-white/50" />
+        <span className="text-white/50 text-lg">releases H₂O</span>
       </motion.div>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7 }}
-        className="p-4 rounded-lg bg-[#22c55e]/10 border border-[#22c55e]/30"
+        className="p-6 rounded-xl bg-[#22c55e]/10 border-2 border-[#22c55e]/40"
       >
-        <span className="text-[#E7FB10] font-mono text-sm">NH₂-CHR-</span>
-        <span className="text-[#22c55e] font-mono text-sm font-bold">CO-NH</span>
-        <span className="text-[#21d8ff] font-mono text-sm">-CHR-COOH</span>
+        <span className="text-[#E7FB10] font-mono text-xl">NH₂-CHR-</span>
+        <span className="text-[#22c55e] font-mono text-xl font-bold">CO-NH</span>
+        <span className="text-[#21d8ff] font-mono text-xl">-CHR-COOH</span>
       </motion.div>
-      <p className="text-sm text-white/50 text-center">Peptide bond (CO-NH) forms through dehydration synthesis</p>
+      <p className="text-base text-white/60 text-center max-w-lg">The peptide bond (CO-NH) forms through dehydration synthesis, releasing a water molecule</p>
     </div>
   );
 }
@@ -477,52 +480,59 @@ function BiologicalRolesVisual() {
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-4 w-full max-w-md">
-      {roles.map((role, idx) => (
-        <motion.div
-          key={idx}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: idx * 0.15 }}
-          className="p-4 rounded-xl border text-center"
-          style={{ backgroundColor: `${role.color}10`, borderColor: `${role.color}30` }}
-        >
-          <role.icon className="w-8 h-8 mx-auto mb-2" style={{ color: role.color }} />
-          <p className="font-semibold text-white text-sm">{role.label}</p>
-          <p className="text-xs text-white/50 mt-1">{role.example}</p>
-        </motion.div>
-      ))}
+    <div className="flex flex-col items-center gap-6 w-full max-w-2xl">
+      <h3 className="text-xl font-semibold text-white">Biological Roles of Peptides</h3>
+      <div className="grid grid-cols-2 gap-6 w-full">
+        {roles.map((role, idx) => (
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: idx * 0.15 }}
+            className="p-6 rounded-xl border text-center"
+            style={{ backgroundColor: `${role.color}10`, borderColor: `${role.color}30` }}
+          >
+            <role.icon className="w-12 h-12 mx-auto mb-3" style={{ color: role.color }} />
+            <p className="font-semibold text-white text-lg">{role.label}</p>
+            <p className="text-base text-white/60 mt-2">{role.example}</p>
+          </motion.div>
+        ))}
+      </div>
     </div>
   );
 }
 
 function RUOComplianceFlowchartVisual() {
   const steps = [
-    { icon: ShoppingCart, label: "Acquire RUO Compound", color: "#21d8ff" },
-    { icon: FileCheck, label: "Verify COA & Labels", color: "#E7FB10" },
-    { icon: Building2, label: "Use in Lab Setting Only", color: "#9d4edd" },
-    { icon: ClipboardList, label: "Document All Usage", color: "#22c55e" },
+    { icon: ShoppingCart, label: "Acquire RUO Compound", desc: "Purchase from verified supplier", color: "#21d8ff" },
+    { icon: FileCheck, label: "Verify COA & Labels", desc: "Check purity and documentation", color: "#E7FB10" },
+    { icon: Building2, label: "Use in Lab Setting Only", desc: "Never for human/animal use", color: "#9d4edd" },
+    { icon: ClipboardList, label: "Document All Usage", desc: "Maintain detailed records", color: "#22c55e" },
   ];
 
   return (
-    <div className="flex flex-col items-center gap-3 w-full">
+    <div className="flex flex-col items-center gap-4 w-full max-w-2xl">
+      <h3 className="text-xl font-semibold text-white mb-2">RUO Compliance Workflow</h3>
       {steps.map((step, idx) => (
         <motion.div
           key={idx}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: idx * 0.2 }}
-          className="flex items-center gap-4 w-full max-w-sm"
+          className="flex items-center gap-4 w-full"
         >
-          <div className="flex items-center gap-3 flex-1 p-3 rounded-xl border"
+          <div className="flex items-center gap-4 flex-1 p-4 rounded-xl border"
             style={{ backgroundColor: `${step.color}10`, borderColor: `${step.color}30` }}
           >
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center"
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center"
               style={{ backgroundColor: `${step.color}20` }}
             >
-              <step.icon className="w-5 h-5" style={{ color: step.color }} />
+              <step.icon className="w-7 h-7" style={{ color: step.color }} />
             </div>
-            <span className="text-white text-sm font-medium">{step.label}</span>
+            <div>
+              <span className="text-white text-lg font-medium block">{step.label}</span>
+              <span className="text-white/50 text-sm">{step.desc}</span>
+            </div>
           </div>
           {idx < steps.length - 1 && (
             <motion.div
@@ -616,8 +626,9 @@ function PurityScaleVisual() {
   ];
 
   return (
-    <div className="flex flex-col items-center gap-4 w-full max-w-sm">
-      <div className="relative w-full h-4 bg-white/10 rounded-full overflow-hidden">
+    <div className="flex flex-col items-center gap-8 w-full max-w-2xl px-8">
+      <h3 className="text-xl font-semibold text-white">Purity Grade Comparison</h3>
+      <div className="relative w-full h-8 bg-white/10 rounded-full overflow-hidden">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: "98%" }}
@@ -635,69 +646,78 @@ function PurityScaleVisual() {
             transition={{ delay: 0.5 + idx * 0.2 }}
             className="flex flex-col items-center"
           >
-            <span className="text-lg font-bold" style={{ color: g.color }}>{g.pct}%</span>
-            <span className="text-xs text-white/50">{g.label}</span>
+            <span className="text-3xl font-bold" style={{ color: g.color }}>{g.pct}%</span>
+            <span className="text-base text-white/60 mt-1">{g.label}</span>
           </motion.div>
         ))}
       </div>
+      <p className="text-white/50 text-center mt-4">Higher purity grades are essential for sensitive research applications</p>
     </div>
   );
 }
 
 function HPLCChromatogramVisual() {
   return (
-    <div className="flex flex-col items-center w-full max-w-md">
-      <div className="relative w-full h-32 bg-[#0a0a0f] rounded-lg border border-white/10 p-4">
-        <svg viewBox="0 0 300 80" className="w-full h-full">
-          <line x1="30" y1="70" x2="290" y2="70" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
-          <line x1="30" y1="10" x2="30" y2="70" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
-          <text x="15" y="40" fill="rgba(255,255,255,0.5)" fontSize="8" transform="rotate(-90, 15, 40)">mAU</text>
-          <text x="160" y="78" fill="rgba(255,255,255,0.5)" fontSize="8">Time (min)</text>
+    <div className="flex flex-col items-center w-full max-w-3xl px-4">
+      <h3 className="text-xl font-semibold text-white mb-6">HPLC Chromatogram Analysis</h3>
+      <div className="relative w-full h-64 bg-[#0a0a0f] rounded-xl border border-white/20 p-6">
+        <svg viewBox="0 0 400 120" className="w-full h-full">
+          <line x1="40" y1="100" x2="380" y2="100" stroke="rgba(255,255,255,0.4)" strokeWidth="2" />
+          <line x1="40" y1="10" x2="40" y2="100" stroke="rgba(255,255,255,0.4)" strokeWidth="2" />
+          <text x="20" y="60" fill="rgba(255,255,255,0.6)" fontSize="12" transform="rotate(-90, 20, 60)">mAU</text>
+          <text x="210" y="115" fill="rgba(255,255,255,0.6)" fontSize="12">Time (min)</text>
+          {[60, 120, 180, 240, 300, 360].map((x, i) => (
+            <g key={i}>
+              <line x1={x} y1="100" x2={x} y2="105" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+              <text x={x} y="115" fill="rgba(255,255,255,0.4)" fontSize="9" textAnchor="middle">{i + 1}</text>
+            </g>
+          ))}
           <motion.path
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
-            transition={{ duration: 2 }}
-            d="M 30 68 Q 50 68 60 67 Q 80 65 100 60 Q 120 55 140 15 Q 145 10 150 15 Q 170 55 190 60 Q 210 62 230 65 Q 250 67 270 68 L 290 68"
+            transition={{ duration: 2.5 }}
+            d="M 40 98 Q 80 98 100 95 Q 140 90 180 75 Q 200 50 210 15 Q 215 8 220 15 Q 240 50 260 75 Q 300 90 340 95 Q 360 97 380 98"
             fill="none"
             stroke="#22c55e"
-            strokeWidth="2"
+            strokeWidth="3"
           />
           <motion.path
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
             transition={{ duration: 2, delay: 0.5 }}
-            d="M 30 68 Q 60 68 80 66 Q 90 64 95 55 Q 100 50 105 55 Q 110 60 120 65 Q 140 68 160 68"
+            d="M 40 98 Q 80 98 100 95 Q 120 92 130 80 Q 140 70 150 80 Q 160 88 180 95 Q 200 98 220 98"
             fill="none"
             stroke="#f97316"
-            strokeWidth="1.5"
-            opacity="0.6"
+            strokeWidth="2.5"
+            opacity="0.7"
           />
           <motion.circle
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5 }}
-            cx="145" cy="12" r="3" fill="#22c55e"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 2, type: "spring" }}
+            cx="215" cy="12" r="6" fill="#22c55e"
           />
           <motion.text
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1.7 }}
-            x="155" y="15" fill="#22c55e" fontSize="7"
+            transition={{ delay: 2.2 }}
+            x="230" y="18" fill="#22c55e" fontSize="14" fontWeight="bold"
           >
             98.7%
           </motion.text>
         </svg>
       </div>
-      <div className="flex gap-4 mt-3">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-[#22c55e]" />
-          <span className="text-xs text-white/60">Target Peptide</span>
+      <div className="flex gap-8 mt-6">
+        <div className="flex items-center gap-3">
+          <div className="w-4 h-4 rounded-full bg-[#22c55e]" />
+          <span className="text-base text-white/70">Target Peptide</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-[#f97316]" />
-          <span className="text-xs text-white/60">Impurities</span>
+        <div className="flex items-center gap-3">
+          <div className="w-4 h-4 rounded-full bg-[#f97316]" />
+          <span className="text-base text-white/70">Impurities</span>
         </div>
       </div>
+      <p className="text-white/50 text-center mt-4">The main peak represents your target compound - taller and sharper peaks indicate higher purity</p>
     </div>
   );
 }
