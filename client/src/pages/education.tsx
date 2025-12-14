@@ -39,7 +39,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ArticleModeToggle, BeginnerBadge } from "@/components/education/article-mode-toggle";
-import { BeginnerArticleContent, WhatIsPeptideSection } from "@/components/education/beginner-content";
+import { BeginnerArticleContent, WhatIsPeptideSection, hasQuickBreakdown } from "@/components/education/beginner-content";
 import type { EducationArticle, Product } from "@shared/schema";
 import { ResearchOrientationMap } from "@/components/education/research-orientation-map";
 import { OrderingJourney } from "@/components/infographics/ordering-journey";
@@ -588,18 +588,20 @@ export default function Education() {
                           {article.summary}
                         </p>
                         
-                        <div className="flex flex-wrap items-center gap-3">
-                          <ArticleModeToggle 
-                            mode={articleMode} 
-                            onModeChange={setArticleMode} 
-                          />
-                          {articleMode === "quick-breakdown" && <BeginnerBadge />}
-                        </div>
+                        {hasQuickBreakdown(article.slug) && (
+                          <div className="flex flex-wrap items-center gap-3">
+                            <ArticleModeToggle 
+                              mode={articleMode} 
+                              onModeChange={setArticleMode} 
+                            />
+                            {articleMode === "quick-breakdown" && <BeginnerBadge />}
+                          </div>
+                        )}
                       </div>
 
                       <div className="p-6">
                         <AnimatePresence mode="wait">
-                          {articleMode === "quick-breakdown" ? (
+                          {hasQuickBreakdown(article.slug) && articleMode === "quick-breakdown" ? (
                             <motion.div
                               key="beginner"
                               initial={{ opacity: 0, y: 10 }}

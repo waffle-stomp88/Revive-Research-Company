@@ -1229,6 +1229,12 @@ A proper COA comes from an independent, third-party laboratory - not the company
   }
 };
 
+export const SLUGS_WITH_QUICK_BREAKDOWN = Object.keys(beginnerArticles);
+
+export function hasQuickBreakdown(slug: string | null): boolean {
+  return slug ? SLUGS_WITH_QUICK_BREAKDOWN.includes(slug) : false;
+}
+
 export function BeginnerContent({ slug, title }: BeginnerContentProps) {
   const article = beginnerArticles[slug];
   
