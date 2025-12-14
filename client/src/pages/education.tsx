@@ -87,7 +87,7 @@ const ACADEMY_ARTICLE_SLUGS = [
   "ordering-expectations",
   "understanding-peptide-purity", 
   "storage-101",
-  "complete-guide-to-peptide-reconstitution",
+  "reconstitution-101",
   "how-to-read-coas",
 ];
 
