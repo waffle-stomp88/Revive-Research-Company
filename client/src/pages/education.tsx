@@ -41,7 +41,6 @@ import {
 import { ArticleModeToggle, BeginnerBadge } from "@/components/education/article-mode-toggle";
 import { BeginnerArticleContent, WhatIsPeptideSection } from "@/components/education/beginner-content";
 import type { EducationArticle, Product } from "@shared/schema";
-import { LearningRoadmap } from "@/components/infographics/learning-roadmap";
 import { ResearchOrientationMap } from "@/components/education/research-orientation-map";
 import { OrderingJourney } from "@/components/infographics/ordering-journey";
 import { 
@@ -697,30 +696,7 @@ export default function Education() {
                   </div>
                 </div>
 
-                {activeCategory === 'all' && (
-                  <div className="mb-12 p-6 rounded-lg border border-[#9d4edd]/30 bg-gradient-to-br from-[#9d4edd]/5 to-[#ec4899]/5">
-                    <div className="mb-8">
-                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#9d4edd]/10 border border-[#9d4edd]/20 mb-3">
-                        <Sparkles className="h-3 w-3 text-[#9d4edd]" />
-                        <span className="text-xs font-semibold text-[#9d4edd]">Guided Onboarding</span>
-                      </div>
-                      <h3 className="text-2xl font-bold mb-2 text-center" style={{ color: '#9d4edd' }}>Your Learning Path</h3>
-                      <p className="text-sm text-muted-foreground text-center">
-                        Complete our guided 5-part onboarding course to master the fundamentals
-                      </p>
-                    </div>
-                    <LearningRoadmap 
-                      onModuleClick={(slug: string) => {
-                        const article = articles.find(a => a.slug === slug);
-                        if (article) {
-                          setExpandedArticle(article.id);
-                          setActiveCategory(article.category);
-                        }
-                      }}
-                    />
-                  </div>
-                )}
-
+                
                 {activeCategory === 'all' ? (
                   <div className="space-y-10">
                     {groupedArticles.map((group) => {

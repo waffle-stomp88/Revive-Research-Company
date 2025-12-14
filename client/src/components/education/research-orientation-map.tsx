@@ -55,18 +55,7 @@ const RESEARCH_DOMAINS = [
 export function ResearchOrientationMap() {
   return (
     <div className="w-full py-12">
-      <div className="text-center mb-10">
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#21d8ff]/10 border border-[#21d8ff]/30 mb-4"
-        >
-          <Map className="h-4 w-4 text-[#21d8ff]" />
-          <span className="text-sm font-medium text-[#21d8ff]">Research Orientation</span>
-        </motion.div>
-        <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3 italic">
-          Research Domains
-        </h2>
+      <div className="text-center mb-8">
         <p className="text-muted-foreground text-sm md:text-base max-w-xl mx-auto">
           A visual guide to the core research concepts. Explore any topic in any order.
         </p>
