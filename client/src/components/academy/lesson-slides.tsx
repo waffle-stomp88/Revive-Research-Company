@@ -1243,7 +1243,7 @@ function TroubleshootingFlowVisual() {
   );
 }
 
-function CertificationBadgeVisual() {
+function CompletionBadgeVisual() {
   return (
     <div className="flex flex-col items-center">
       <motion.div
@@ -1263,7 +1263,7 @@ function CertificationBadgeVisual() {
           transition={{ delay: 0.5 }}
           className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#22c55e] text-white text-xs font-bold"
         >
-          CERTIFIED
+          COMPLETE
         </motion.div>
       </motion.div>
       <motion.p
@@ -2697,84 +2697,84 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
     },
   ],
 
-  "certification": [
+  "final-review": [
     {
-      title: "Congratulations!",
+      title: "Orientation Complete!",
       content: (
         <SlideHero
           icon={Award}
-          title="Course Complete!"
-          subtitle="You've completed Peptide Academy and mastered the fundamentals of peptide research."
+          title="Orientation Complete!"
+          subtitle="You've completed the Peptide Academy orientation and built a foundation for informed research."
           color="#22c55e"
         />
       ),
     },
     {
-      title: "Your Achievement",
+      title: "Your Progress",
       content: (
-        <SlideVisual caption="You've earned your certification">
-          <CertificationBadgeVisual />
+        <SlideVisual caption="You've completed your orientation">
+          <CompletionBadgeVisual />
         </SlideVisual>
       ),
     },
     {
-      title: "What You've Mastered",
+      title: "What You've Learned",
       content: (
         <SlideInfoCard
-          title="Your New Knowledge"
+          title="Your Foundation"
           items={[
             { icon: Compass, title: "Peptide Fundamentals", description: "Structure, function, and research classification", color: "#21d8ff" },
-            { icon: Scale, title: "Legal Compliance", description: "RUO regulations and researcher responsibilities", color: "#9d4edd" },
-            { icon: FlaskConical, title: "Technical Skills", description: "Purity, storage, lyophilization, and reconstitution", color: "#E7FB10" },
-            { icon: FileCheck, title: "Quality Assurance", description: "COA interpretation and documentation practices", color: "#22c55e" },
+            { icon: Scale, title: "Legal Framework", description: "RUO regulations and researcher responsibilities", color: "#9d4edd" },
+            { icon: FlaskConical, title: "Core Techniques", description: "Purity, storage, lyophilization, and reconstitution", color: "#E7FB10" },
+            { icon: FileCheck, title: "Quality Assessment", description: "COA interpretation and documentation practices", color: "#22c55e" },
           ]}
         />
       ),
     },
     {
-      title: "Skills Summary",
+      title: "Key Takeaways",
       content: (
         <SlideInfoCard
           items={[
-            { icon: Shield, title: "Safety Protocols", description: "Lab safety, PPE requirements, and emergency procedures", color: "#22c55e" },
+            { icon: Shield, title: "Safety Awareness", description: "Lab safety, PPE requirements, and emergency procedures", color: "#22c55e" },
             { icon: Microscope, title: "Research Workflow", description: "Complete process from planning through documentation", color: "#9d4edd" },
             { icon: Wrench, title: "Troubleshooting", description: "Systematic problem-solving for common issues", color: "#f97316" },
-            { icon: Sparkles, title: "Advanced Techniques", description: "Expert practices for optimal research outcomes", color: "#E7FB10" },
+            { icon: Sparkles, title: "Best Practices", description: "Practical techniques for research success", color: "#E7FB10" },
           ]}
         />
       ),
     },
     {
-      title: "Your Commitment",
+      title: "Important Reminder",
       content: (
         <SlideText
-          title="The Researcher's Pledge"
+          title="Research Responsibility"
           paragraphs={[
-            "With knowledge comes responsibility. You now understand that peptide research requires precision, safety, and ethical conduct.",
-            "You commit to using RUO compounds only for legitimate research purposes, maintaining complete documentation, and following all applicable regulations.",
-            "You join a community of researchers advancing scientific knowledge through rigorous, responsible investigation."
+            "This orientation has prepared you with foundational knowledge, but research is an ongoing learning process.",
+            "Always use RUO compounds only for legitimate research purposes, maintain proper documentation, and follow all applicable regulations.",
+            "Continue to build your knowledge through experience, peer learning, and staying current with best practices."
           ]}
         />
       ),
     },
     {
-      title: "Continue Learning",
+      title: "Where to Go Next",
       content: (
         <SlideInfoCard
-          title="Your Next Steps"
+          title="Continue Your Learning"
           items={[
-            { icon: BookOpen, title: "Education Center", description: "Explore in-depth articles on specific peptides and techniques", color: "#21d8ff" },
-            { icon: Search, title: "Literature Database", description: "Dive into published research for your compounds of interest", color: "#E7FB10" },
-            { icon: Users, title: "Research Community", description: "Connect with other researchers to share knowledge", color: "#9d4edd" },
+            { icon: BookOpen, title: "Education Center", description: "Browse our reference library for in-depth articles on specific topics", color: "#21d8ff" },
+            { icon: Search, title: "Peptide Profiles", description: "Explore detailed guides for specific research compounds", color: "#E7FB10" },
+            { icon: Users, title: "Support Resources", description: "Our team is here to help with questions along the way", color: "#9d4edd" },
           ]}
         />
       ),
     },
     {
-      title: "Final Message",
+      title: "Ready to Begin",
       content: (
-        <SlideCallout type="tip" title="Welcome to the Community">
-          You're now part of the Revive Research community of educated researchers. Your commitment to quality and compliance elevates the entire field. We're here to support your research journey — never hesitate to reach out with questions.
+        <SlideCallout type="tip" title="You're Oriented!">
+          You now have the foundational knowledge to approach peptide research with confidence. The Education Center is always available for quick reference when you need it. Welcome to the Revive Research community.
         </SlideCallout>
       ),
     },

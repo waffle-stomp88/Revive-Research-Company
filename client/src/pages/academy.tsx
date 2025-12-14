@@ -94,7 +94,7 @@ const CURRICULUM = [
       { id: "putting-together", title: "Putting It All Together", articleSlug: null, xp: 30 },
       { id: "troubleshooting", title: "Troubleshooting Common Issues", articleSlug: null, xp: 25 },
       { id: "advanced-tips", title: "Advanced Research Tips", articleSlug: null, xp: 30 },
-      { id: "certification", title: "Certification Quiz", articleSlug: null, xp: 50 },
+      { id: "final-review", title: "Final Review & Next Steps", articleSlug: null, xp: 50 },
     ],
   },
 ];
@@ -580,7 +580,7 @@ export default function Academy() {
     <>
       <SEOHead
         title="Peptide Academy | Revive Research"
-        description="Learn peptide research fundamentals through our guided learning experience. Track your progress, earn achievements, and become a confident researcher."
+        description="Get oriented to peptide research through our guided learning path. Build research literacy, understand best practices, and set proper expectations."
       />
 
       <div className="min-h-screen bg-[#1a1a1f]">
@@ -599,17 +599,17 @@ export default function Academy() {
               className="text-center mb-12"
             >
               <Badge className="mb-4 bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30" data-testid="badge-academy">
-                <GraduationCap className="w-3 h-3 mr-1" />
-                Peptide Academy
+                <Compass className="w-3 h-3 mr-1" />
+                Guided Orientation
               </Badge>
               <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
-                Master Research{" "}
+                Peptide Research{" "}
                 <span className="bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent">
-                  Fundamentals
+                  Academy
                 </span>
               </h1>
               <p className="text-lg text-white/60 max-w-2xl mx-auto">
-                Your guided path from beginner to confident researcher. Track progress, earn achievements, and build real expertise.
+                A structured introduction to peptide research. Learn the fundamentals, understand best practices, and set proper expectations before you begin.
               </p>
             </motion.div>
 
