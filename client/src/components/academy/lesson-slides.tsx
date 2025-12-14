@@ -56,10 +56,207 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+
+export interface QuizQuestion {
+  question: string;
+  options: string[];
+  correctIndex: number;
+}
 
 export interface Slide {
   title: string;
   content: React.ReactNode;
+  quiz?: QuizQuestion[];
+}
+
+// Quiz slide component for module knowledge checks
+export function QuizSlide({ 
+  moduleTitle,
+  questions,
+  onComplete 
+}: { 
+  moduleTitle: string;
+  questions: QuizQuestion[];
+  onComplete?: (score: number, total: number) => void;
+}) {
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [selectedAnswers, setSelectedAnswers] = useState<(number | null)[]>(new Array(questions.length).fill(null));
+  const [showResults, setShowResults] = useState(false);
+  const [answered, setAnswered] = useState(false);
+
+  const handleSelectAnswer = (optionIndex: number) => {
+    if (answered) return;
+    const newAnswers = [...selectedAnswers];
+    newAnswers[currentQuestion] = optionIndex;
+    setSelectedAnswers(newAnswers);
+    setAnswered(true);
+  };
+
+  const handleNext = () => {
+    if (currentQuestion < questions.length - 1) {
+      setCurrentQuestion(currentQuestion + 1);
+      setAnswered(false);
+    } else {
+      setShowResults(true);
+      const score = selectedAnswers.filter((ans, idx) => ans === questions[idx].correctIndex).length;
+      onComplete?.(score, questions.length);
+    }
+  };
+
+  const question = questions[currentQuestion];
+  const selectedAnswer = selectedAnswers[currentQuestion];
+  const isCorrect = selectedAnswer === question.correctIndex;
+  const score = selectedAnswers.filter((ans, idx) => ans === questions[idx].correctIndex).length;
+  const isPerfect = score === questions.length;
+
+  if (showResults) {
+    return (
+      <div className="flex flex-col items-center text-center">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className={`w-24 h-24 rounded-full flex items-center justify-center mb-6 ${
+            isPerfect ? "bg-[#E7FB10]/20 border-2 border-[#E7FB10]/40" : "bg-[#21d8ff]/20 border-2 border-[#21d8ff]/40"
+          }`}
+        >
+          {isPerfect ? (
+            <Award className="w-12 h-12 text-[#E7FB10]" />
+          ) : (
+            <CheckCircle2 className="w-12 h-12 text-[#21d8ff]" />
+          )}
+        </motion.div>
+        <motion.h2
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="text-2xl font-bold text-white mb-2"
+        >
+          {isPerfect ? "Perfect Score!" : "Quiz Complete!"}
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="text-3xl font-bold mb-4"
+          style={{ color: isPerfect ? "#E7FB10" : "#21d8ff" }}
+        >
+          {score} / {questions.length}
+        </motion.p>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="text-white/60"
+        >
+          {isPerfect 
+            ? "Excellent! You've mastered this module!" 
+            : `Good effort! Review the material to improve.`}
+        </motion.p>
+        {isPerfect && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            <Badge className="mt-4 bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30">
+              <Sparkles className="w-3 h-3 mr-1" />
+              Perfect Score Achievement!
+            </Badge>
+          </motion.div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full max-w-2xl mx-auto">
+      <div className="flex items-center justify-between mb-6">
+        <Badge className="bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30">
+          <GraduationCap className="w-3 h-3 mr-1" />
+          {moduleTitle} Quiz
+        </Badge>
+        <span className="text-sm text-white/50">
+          Question {currentQuestion + 1} of {questions.length}
+        </span>
+      </div>
+
+      <motion.h3
+        key={currentQuestion}
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="text-xl font-semibold text-white mb-6"
+      >
+        {question.question}
+      </motion.h3>
+
+      <div className="space-y-3 mb-6">
+        {question.options.map((option, idx) => {
+          const isSelected = selectedAnswer === idx;
+          const isCorrectAnswer = idx === question.correctIndex;
+          let bgColor = "bg-white/5 border-white/10 hover:bg-white/10";
+          let textColor = "text-white/80";
+          
+          if (answered) {
+            if (isCorrectAnswer) {
+              bgColor = "bg-green-500/20 border-green-500/40";
+              textColor = "text-green-400";
+            } else if (isSelected && !isCorrect) {
+              bgColor = "bg-red-500/20 border-red-500/40";
+              textColor = "text-red-400";
+            }
+          } else if (isSelected) {
+            bgColor = "bg-[#21d8ff]/20 border-[#21d8ff]/40";
+            textColor = "text-[#21d8ff]";
+          }
+
+          return (
+            <motion.button
+              key={idx}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              onClick={() => handleSelectAnswer(idx)}
+              disabled={answered}
+              className={`w-full p-4 rounded-xl border text-left transition-all ${bgColor} ${answered ? "cursor-default" : "cursor-pointer"}`}
+              data-testid={`quiz-option-${idx}`}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-semibold ${textColor} bg-white/10`}>
+                  {String.fromCharCode(65 + idx)}
+                </div>
+                <span className={textColor}>{option}</span>
+                {answered && isCorrectAnswer && (
+                  <Check className="w-5 h-5 ml-auto text-green-400" />
+                )}
+                {answered && isSelected && !isCorrect && (
+                  <X className="w-5 h-5 ml-auto text-red-400" />
+                )}
+              </div>
+            </motion.button>
+          );
+        })}
+      </div>
+
+      {answered && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex justify-end"
+        >
+          <Button
+            onClick={handleNext}
+            className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
+            data-testid="button-quiz-next"
+          >
+            {currentQuestion < questions.length - 1 ? "Next Question" : "See Results"}
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
+        </motion.div>
+      )}
+    </div>
+  );
 }
 
 function SlideHero({ 
@@ -1676,6 +1873,31 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
         </SlideCallout>
       ),
     },
+    {
+      title: "Orientation Quiz",
+      content: (
+        <QuizSlide
+          moduleTitle="Orientation"
+          questions={[
+            {
+              question: "What does 'RUO' stand for?",
+              options: ["Ready for Use Only", "Research Use Only", "Registered User Option", "Retail Unit Order"],
+              correctIndex: 1,
+            },
+            {
+              question: "What should you do immediately after receiving peptides?",
+              options: ["Leave at room temperature", "Store in appropriate temperature", "Open all vials to inspect", "Mix with solvent right away"],
+              correctIndex: 1,
+            },
+            {
+              question: "Why is proper documentation important?",
+              options: ["It's optional for researchers", "To impress colleagues", "For compliance and reproducibility", "Only for large orders"],
+              correctIndex: 2,
+            },
+          ]}
+        />
+      ),
+    },
   ],
 
   "purity-basics": [
@@ -2047,6 +2269,31 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
         </SlideCallout>
       ),
     },
+    {
+      title: "Core Foundations Quiz",
+      content: (
+        <QuizSlide
+          moduleTitle="Core Foundations"
+          questions={[
+            {
+              question: "What is the minimum purity level typically recommended for research?",
+              options: ["75%", "85%", "95%", "99.9%"],
+              correctIndex: 2,
+            },
+            {
+              question: "What is the correct way to dissolve a lyophilized peptide?",
+              options: ["Shake vigorously", "Add solvent slowly down the vial wall", "Heat to boiling", "Use a vortex mixer"],
+              correctIndex: 1,
+            },
+            {
+              question: "At what temperature should reconstituted peptides typically be stored?",
+              options: ["Room temperature", "2-8°C (refrigerated)", "37°C", "-80°C"],
+              correctIndex: 1,
+            },
+          ]}
+        />
+      ),
+    },
   ],
 
   "reading-coas": [
@@ -2397,6 +2644,31 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
         <SlideCallout type="tip" title="Document in Real Time">
           Record as you work, not from memory later. Train yourself to log every action immediately. Set up templates to make documentation fast and consistent. Your future self will thank you.
         </SlideCallout>
+      ),
+    },
+    {
+      title: "Research Skills Quiz",
+      content: (
+        <QuizSlide
+          moduleTitle="Research Skills"
+          questions={[
+            {
+              question: "What does a COA (Certificate of Analysis) verify?",
+              options: ["Shipping speed", "Product quality and identity", "Payment confirmation", "Customer reviews"],
+              correctIndex: 1,
+            },
+            {
+              question: "What analytical method is commonly used to determine peptide purity?",
+              options: ["Visual inspection", "Weight measurement", "HPLC chromatography", "Color testing"],
+              correctIndex: 2,
+            },
+            {
+              question: "How long should research records typically be retained?",
+              options: ["1 week", "1 month", "1 year", "At least 5 years"],
+              correctIndex: 3,
+            },
+          ]}
+        />
       ),
     },
   ],
@@ -2776,6 +3048,36 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
         <SlideCallout type="tip" title="You're Oriented!">
           You now have the foundational knowledge to approach peptide research with confidence. The Education Center is always available for quick reference when you need it. Welcome to the Revive Research community.
         </SlideCallout>
+      ),
+    },
+    {
+      title: "Final Assessment",
+      content: (
+        <QuizSlide
+          moduleTitle="Lab Confidence"
+          questions={[
+            {
+              question: "What is the first thing you should do when a peptide doesn't dissolve?",
+              options: ["Throw it away", "Shake vigorously", "Check storage history and try gentle warming", "Add more solvent immediately"],
+              correctIndex: 2,
+            },
+            {
+              question: "Which of these is a sign of peptide degradation?",
+              options: ["White fluffy powder", "Clear solution after reconstitution", "Yellow discoloration or clumping", "No change in appearance"],
+              correctIndex: 2,
+            },
+            {
+              question: "What makes a complete research workflow?",
+              options: ["Just ordering peptides", "Planning, documentation, proper handling, and safety throughout", "Only doing experiments", "Skipping quality checks"],
+              correctIndex: 1,
+            },
+            {
+              question: "Where should you go for quick reference after completing the Academy?",
+              options: ["Random internet searches", "The Education Center reference library", "Social media", "Guessing"],
+              correctIndex: 1,
+            },
+          ]}
+        />
       ),
     },
   ],
