@@ -1490,7 +1490,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
       content: (
         <SlideHero
           icon={Compass}
-          title="Welcome to Peptide Academy"
+          title="Welcome to Research Academy"
           subtitle="Your journey to becoming a knowledgeable peptide researcher starts here."
           color="#21d8ff"
         />
@@ -2984,7 +2984,7 @@ export const LESSON_SLIDES: Record<string, Slide[]> = {
         <SlideHero
           icon={Award}
           title="Orientation Complete!"
-          subtitle="You've completed the Peptide Academy orientation and built a foundation for informed research."
+          subtitle="You've completed the Research Academy orientation and built a foundation for informed research."
           color="#22c55e"
         />
       ),

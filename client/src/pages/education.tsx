@@ -409,7 +409,7 @@ export default function Education() {
             Browse our open reference library for quick lookups on peptide research topics, compounds, and best practices.
           </p>
           <p className="text-sm text-muted-foreground/70 mt-2">
-            Looking for a structured learning path? Try our <Link href="/academy" className="text-[#21d8ff] hover:underline">Peptide Academy</Link> guided orientation.
+            Looking for a structured learning path? Try our <Link href="/academy" className="text-[#21d8ff] hover:underline">Research Academy</Link> guided orientation.
           </p>
         </motion.div>
 
@@ -500,7 +500,7 @@ export default function Education() {
                       data-testid="button-go-to-academy"
                     >
                       <span className="flex items-center justify-center gap-2">
-                        Peptide Academy
+                        Research Academy
                         <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                       </span>
                     </Button>

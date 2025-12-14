@@ -36,8 +36,8 @@ const coaLinks = [
 ];
 
 const resourceLinks = [
-  { href: "/academy", label: "Peptide Academy", icon: GraduationCap, description: "Guided learning for researchers", color: "#E7FB10" },
   { href: "/education", label: "Education Center", icon: BookOpen, description: "Learn about peptides & research", color: "#ec4899" },
+  { href: "/academy", label: "Research Academy", icon: GraduationCap, description: "Guided learning for researchers", color: "#E7FB10" },
   { href: "/dosage-calculator", label: "Dosage Calculator", icon: Calculator, description: "Calculate peptide dosing volumes", color: "#21d8ff" },
   { href: "/legal", label: "Legal & Compliance", icon: Scale, description: "Regulatory information & policies", color: "#22c55e" },
   { href: "/what-we-dont-do", label: "What We Don't Do", icon: BookOpen, description: "Our ethical boundaries", color: "#EF4444" },

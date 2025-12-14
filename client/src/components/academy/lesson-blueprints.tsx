@@ -1832,7 +1832,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
         />
 
         <Callout type="success" title="You're Almost There!">
-          Complete the final lesson to earn your Peptide Academy certification!
+          Complete the final lesson to earn your Research Academy certification!
         </Callout>
       </>
     );

@@ -708,7 +708,7 @@ export default function Academy() {
   return (
     <>
       <SEOHead
-        title="Peptide Academy | Revive Research"
+        title="Research Academy | Revive Research"
         description="Get oriented to peptide research through our guided learning path. Build research literacy, understand best practices, and set proper expectations."
       />
 
