@@ -41,7 +41,7 @@ import {
 } from "lucide-react";
 import type { AcademyProgress, EducationArticle } from "@shared/schema";
 import { academyPersonas, academyAchievements } from "@shared/schema";
-import { getVisualLesson } from "@/components/academy/lesson-blueprints";
+import { getLessonSlides } from "@/components/academy/lesson-slides";
 
 const CURRICULUM = [
   {
@@ -655,10 +655,8 @@ function EmbeddedLessonViewer({
   lessonId,
   onClose,
   onComplete,
-  onNavigate,
   completedLessons,
   totalXp,
-  article,
 }: {
   lessonId: string;
   onClose: () => void;
@@ -668,32 +666,93 @@ function EmbeddedLessonViewer({
   totalXp: number;
   article?: EducationArticle | null;
 }) {
+  const [currentSlide, setCurrentSlide] = useState(0);
+
   useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    const originalPosition = document.body.style.position;
+    const originalTop = document.body.style.top;
+    const originalWidth = document.body.style.width;
+    const scrollY = window.scrollY;
+
     document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = originalOverflow;
+      document.body.style.position = originalPosition;
+      document.body.style.top = originalTop;
+      document.body.style.width = originalWidth;
+      window.scrollTo(0, scrollY);
     };
   }, []);
 
-  const lessonContent = LESSON_CONTENT[lessonId];
   const lessonInfo = findLessonById(lessonId);
   const isCompleted = completedLessons.includes(lessonId);
-  const { prev, next } = getAdjacentLessons(lessonId, completedLessons);
+  const slides = getLessonSlides(lessonId);
 
-  if (!lessonInfo) return null;
+  if (!lessonInfo || !slides) return null;
 
   const { lesson, module } = lessonInfo;
+  const totalSlides = slides.length;
+  const isLastSlide = currentSlide === totalSlides - 1;
+  const isFirstSlide = currentSlide === 0;
+
+  const handleNext = () => {
+    if (currentSlide < totalSlides - 1) {
+      setCurrentSlide(currentSlide + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentSlide > 0) {
+      setCurrentSlide(currentSlide - 1);
+    }
+  };
+
+  const handleComplete = () => {
+    onComplete(lessonId, lesson.xp);
+    onClose();
+  };
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 bg-[#1a1a1f]/95 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8"
+      onClick={onClose}
     >
-      <div className="h-full flex flex-col lg:flex-row">
-        <div className="lg:w-80 border-b lg:border-b-0 lg:border-r border-white/10 bg-[#1a1a1f] p-6 flex-shrink-0">
-          <div className="flex items-center justify-between mb-6">
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+      
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-2xl bg-[#1a1a1f] rounded-2xl border border-white/10 shadow-2xl overflow-hidden"
+        style={{ maxHeight: "85vh" }}
+      >
+        <div className="flex items-center justify-between p-4 border-b border-white/10">
+          <div className="flex items-center gap-3">
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center"
+              style={{ backgroundColor: `${module.color}20` }}
+            >
+              <module.icon className="w-5 h-5" style={{ color: module.color }} />
+            </div>
+            <div>
+              <p className="text-xs text-white/50">{module.title}</p>
+              <h3 className="font-semibold text-white">{lesson.title}</h3>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30">
+              <Zap className="w-3 h-3 mr-1" />
+              {totalXp} XP
+            </Badge>
             <Button
               variant="ghost"
               size="icon"
@@ -703,175 +762,94 @@ function EmbeddedLessonViewer({
             >
               <X className="w-5 h-5" />
             </Button>
-            <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30">
-              <Zap className="w-3 h-3 mr-1" />
-              {totalXp} XP
-            </Badge>
           </div>
+        </div>
 
-          <div className="mb-6">
-            <div
-              className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
-              style={{ backgroundColor: `${module.color}20` }}
-            >
-              <module.icon className="w-6 h-6" style={{ color: module.color }} />
+        <div className="px-4 py-2 border-b border-white/5 bg-white/[0.02]">
+          <div className="flex items-center gap-2">
+            <div className="flex-1 flex gap-1">
+              {slides.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentSlide(idx)}
+                  className={`h-1.5 rounded-full transition-all ${
+                    idx === currentSlide 
+                      ? "flex-[2] bg-[#E7FB10]" 
+                      : idx < currentSlide 
+                        ? "flex-1 bg-[#22c55e]" 
+                        : "flex-1 bg-white/20"
+                  }`}
+                  data-testid={`button-slide-${idx}`}
+                />
+              ))}
             </div>
-            <p className="text-sm text-white/60 mb-1">{module.title}</p>
-            <h2 className="text-xl font-bold text-white">{lesson.title}</h2>
-            {isCompleted && (
-              <Badge className="mt-2 bg-green-500/20 text-green-400 border-0">
-                <CheckCircle2 className="w-3 h-3 mr-1" />
-                Completed
-              </Badge>
+            <span className="text-xs text-white/40 ml-2">
+              {currentSlide + 1} / {totalSlides}
+            </span>
+          </div>
+        </div>
+
+        <div className="p-6 md:p-8 min-h-[350px] flex items-center justify-center">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentSlide}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.2 }}
+              className="w-full"
+            >
+              {slides[currentSlide].content}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        <div className="flex items-center justify-between p-4 border-t border-white/10 bg-white/[0.02]">
+          <Button
+            variant="ghost"
+            onClick={handlePrev}
+            disabled={isFirstSlide}
+            className={`text-white/60 hover:text-white ${isFirstSlide ? "invisible" : ""}`}
+            data-testid="button-prev-slide"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back
+          </Button>
+
+          <div className="flex items-center gap-3">
+            {isLastSlide ? (
+              isCompleted ? (
+                <Button
+                  className="bg-green-500 text-white hover:bg-green-500/90"
+                  onClick={onClose}
+                  data-testid="button-finish-lesson"
+                >
+                  <CheckCircle2 className="w-4 h-4 mr-2" />
+                  Done
+                </Button>
+              ) : (
+                <Button
+                  className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
+                  onClick={handleComplete}
+                  data-testid="button-complete-lesson"
+                >
+                  <CheckCircle2 className="w-4 h-4 mr-2" />
+                  Complete (+{lesson.xp} XP)
+                </Button>
+              )
+            ) : (
+              <Button
+                className="bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90"
+                onClick={handleNext}
+                data-testid="button-next-slide"
+              >
+                Next
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
             )}
           </div>
-
-          <div className="hidden lg:block space-y-2">
-            <p className="text-xs text-white/40 uppercase tracking-wide mb-3">Module Lessons</p>
-            {module.lessons.map((l, idx) => {
-              const isCurrentLesson = l.id === lessonId;
-              const isLessonCompleted = completedLessons.includes(l.id);
-              return (
-                <div
-                  key={l.id}
-                  className={`flex items-center gap-2 p-2 rounded-lg text-sm ${
-                    isCurrentLesson
-                      ? "bg-white/10 text-white"
-                      : isLessonCompleted
-                      ? "text-green-400/60"
-                      : "text-white/40"
-                  }`}
-                >
-                  {isLessonCompleted ? (
-                    <CheckCircle2 className="w-4 h-4 text-green-500" />
-                  ) : isCurrentLesson ? (
-                    <Play className="w-4 h-4 text-[#E7FB10]" />
-                  ) : (
-                    <div className="w-4 h-4 rounded-full border border-white/20" />
-                  )}
-                  <span className="truncate">{l.title}</span>
-                </div>
-              );
-            })}
-          </div>
         </div>
-
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <ScrollArea className="flex-1 p-6 lg:p-10">
-            <div className="max-w-3xl mx-auto">
-              {(() => {
-                const VisualLesson = getVisualLesson(lessonId);
-                if (VisualLesson) {
-                  return <VisualLesson />;
-                }
-                if (article?.content) {
-                  return (
-                    <div className="prose prose-invert prose-lg max-w-none">
-                      <div dangerouslySetInnerHTML={{ __html: article.content }} />
-                    </div>
-                  );
-                }
-                if (lessonContent) {
-                  return (
-                    <div className="space-y-8">
-                      {lessonContent.sections.map((section, idx) => (
-                        <motion.div
-                          key={idx}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: idx * 0.1 }}
-                          className="space-y-4"
-                        >
-                          <h3 className="text-xl font-semibold text-white flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-lg bg-[#E7FB10]/20 flex items-center justify-center">
-                              <span className="text-sm font-bold text-[#E7FB10]">{idx + 1}</span>
-                            </div>
-                            {section.heading}
-                          </h3>
-                          <p className="text-white/70 leading-relaxed text-lg">{section.content}</p>
-                          {section.keyPoints && (
-                            <div className="bg-white/5 border border-white/10 rounded-xl p-4 mt-4">
-                              <p className="text-sm text-white/40 uppercase tracking-wide mb-3">Key Points</p>
-                              <ul className="space-y-2">
-                                {section.keyPoints.map((point, pidx) => (
-                                  <li key={pidx} className="flex items-start gap-2 text-white/80">
-                                    <CheckCircle2 className="w-4 h-4 text-[#21d8ff] mt-1 flex-shrink-0" />
-                                    <span>{point}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                        </motion.div>
-                      ))}
-                    </div>
-                  );
-                }
-                return (
-                  <div className="text-center py-20">
-                    <BookOpen className="w-16 h-16 text-white/20 mx-auto mb-4" />
-                    <p className="text-white/60">Lesson content is coming soon.</p>
-                  </div>
-                );
-              })()}
-            </div>
-          </ScrollArea>
-
-          <div className="border-t border-white/10 p-4 bg-[#1a1a1f]">
-            <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
-              <div>
-                {prev && (
-                  <Button
-                    variant="ghost"
-                    className="text-white/60 hover:text-white"
-                    onClick={() => onNavigate(prev.id)}
-                    data-testid="button-prev-lesson"
-                  >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Previous
-                  </Button>
-                )}
-              </div>
-
-              <div className="flex items-center gap-3">
-                {!isCompleted && (
-                  <Button
-                    className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
-                    onClick={() => onComplete(lessonId, lesson.xp)}
-                    data-testid="button-complete-lesson"
-                  >
-                    <CheckCircle2 className="w-4 h-4 mr-2" />
-                    Complete Lesson (+{lesson.xp} XP)
-                  </Button>
-                )}
-
-                {next && (
-                  <Button
-                    variant={isCompleted ? "default" : "outline"}
-                    className={isCompleted ? "bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90" : "border-white/20"}
-                    onClick={() => onNavigate(next.id)}
-                    data-testid="button-next-lesson"
-                  >
-                    Next Lesson
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                )}
-
-                {!next && isCompleted && (
-                  <Button
-                    className="bg-green-500 text-white hover:bg-green-500/90"
-                    onClick={onClose}
-                    data-testid="button-finish-module"
-                  >
-                    <Trophy className="w-4 h-4 mr-2" />
-                    Back to Curriculum
-                  </Button>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
