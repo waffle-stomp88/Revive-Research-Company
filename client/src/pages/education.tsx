@@ -308,11 +308,14 @@ export default function Education() {
         setExpandedArticle(article.id);
         setActiveCategory(article.category);
         setTimeout(() => {
-          const element = document.getElementById(`article-${article.id}`);
+          const element = document.getElementById('expanded-article');
           if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const headerOffset = 100;
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+            window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
           }
-        }, 100);
+        }, 200);
       }
     }
   }, [params.slug, articles]);
@@ -539,7 +542,7 @@ export default function Education() {
                   const CategoryIcon = getCategoryIcon(article.category);
 
                   return (
-                    <Card className="overflow-hidden" style={{ borderColor: `${catColor}30` }}>
+                    <Card id="expanded-article" className="overflow-hidden" style={{ borderColor: `${catColor}30` }}>
                       <div className="p-6 border-b" style={{ borderColor: `${catColor}20` }}>
                         <button
                           onClick={() => setExpandedArticle(null)}
