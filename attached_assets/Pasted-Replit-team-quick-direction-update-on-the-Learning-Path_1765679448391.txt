@@ -1,0 +1,62 @@
+Replit team — quick direction update on the “Learning Path” component on the Education Center home page.
+
+What we’re changing (important)
+
+This component is no longer a mini-course. Now that we have a full Research Academy, this element should function as an Education Map / Orientation Map inside the Education Center.
+
+Goal: Keep the visual (I love it), but change the language + behavior so it feels like a non-linear navigation map (domains/territories), not a sequential course competing with the Academy.
+
+Key rules for the Education Map
+
+No “course” language (no “complete,” “modules,” “learning path,” “start course,” etc.)
+
+No sequential framing (remove “1/5, 2/5…” and anything implying required order)
+
+CTAs should be “Explore / View” not “Start”
+
+Clicking a card should open the relevant reference overview/article (Education Center), not pull users into the Academy (Academy remains its own guided experience)
+
+Copy + title updates
+
+Please update the section to something like:
+
+Section title: “Research Orientation Map” (or “Research Domains”)
+Section subtitle: “A visual guide to the core research concepts. Explore any topic in any order.”
+
+Then update the cards as follows (titles + subtitles + CTA text):
+
+Regulatory Boundaries
+Subtitle: “Understanding the research-only context and scope”
+CTA: “Explore →”
+
+Quality Verification
+Subtitle: “COAs, third-party testing, and what to look for”
+CTA: “Explore →”
+
+Traceability
+Subtitle: “Batch numbers, lot control, and quality tracking”
+CTA: “Explore →”
+
+Storage & Stability
+Subtitle: “Handling fundamentals and stability factors”
+CTA: “Explore →”
+
+Supply Chain Flow
+Subtitle: “From sourcing to delivery—what to expect”
+CTA: “Explore →”
+
+Remove/replace the completion banner
+
+Replace “Complete all 5 modules…” with a map-style line like:
+
+“These five domains form the foundation of responsible research.”
+
+Academy positioning (for clarity)
+
+Research Academy = guided, sequential onboarding (account-based)
+
+Education Center = open reference library
+
+This map is an Education Center navigation/orientation element, not a course.
+
+Let me know if you need a spec for the click behavior, but the above should be enough to implement.

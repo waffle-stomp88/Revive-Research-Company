@@ -42,6 +42,7 @@ import { ArticleModeToggle, BeginnerBadge } from "@/components/education/article
 import { BeginnerArticleContent, WhatIsPeptideSection } from "@/components/education/beginner-content";
 import type { EducationArticle, Product } from "@shared/schema";
 import { LearningRoadmap } from "@/components/infographics/learning-roadmap";
+import { ResearchOrientationMap } from "@/components/education/research-orientation-map";
 import { OrderingJourney } from "@/components/infographics/ordering-journey";
 import { 
   COAAnatomyDiagram, 
@@ -159,13 +160,6 @@ const getPeptideGroup = (slug: string): string => {
   return "all";
 };
 
-const onboardingCourse = [
-  { step: 1, title: "Research Use Only", slug: "research-use-only-explained", description: "Understanding the legal framework" },
-  { step: 2, title: "Reading COAs", slug: "how-to-read-coas", description: "Interpreting lab certificates" },
-  { step: 3, title: "Batch Numbers", slug: "understanding-batches", description: "Traceability and quality control" },
-  { step: 4, title: "Storage 101", slug: "storage-101", description: "Proper handling fundamentals" },
-  { step: 5, title: "Ordering Expectations", slug: "ordering-expectations", description: "What to expect from checkout to delivery" },
-];
 
 const getCategoryColor = (categoryId: string) => {
   const cat = categories.find(c => c.id === categoryId);
@@ -417,7 +411,9 @@ export default function Education() {
           </p>
         </motion.div>
 
-        <div className="flex flex-col lg:flex-row gap-8">
+        <ResearchOrientationMap />
+
+        <div className="flex flex-col lg:flex-row gap-8 mt-8">
           <motion.aside
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
