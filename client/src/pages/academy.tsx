@@ -41,6 +41,7 @@ import {
 } from "lucide-react";
 import type { AcademyProgress, EducationArticle } from "@shared/schema";
 import { academyPersonas, academyAchievements } from "@shared/schema";
+import { getVisualLesson } from "@/components/academy/lesson-blueprints";
 
 const CURRICULUM = [
   {
@@ -667,6 +668,13 @@ function EmbeddedLessonViewer({
   totalXp: number;
   article?: EducationArticle | null;
 }) {
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   const lessonContent = LESSON_CONTENT[lessonId];
   const lessonInfo = findLessonById(lessonId);
   const isCompleted = completedLessons.includes(lessonId);
@@ -751,49 +759,61 @@ function EmbeddedLessonViewer({
         <div className="flex-1 flex flex-col overflow-hidden">
           <ScrollArea className="flex-1 p-6 lg:p-10">
             <div className="max-w-3xl mx-auto">
-              {article?.content ? (
-                <div className="prose prose-invert prose-lg max-w-none">
-                  <div dangerouslySetInnerHTML={{ __html: article.content }} />
-                </div>
-              ) : lessonContent ? (
-                <div className="space-y-8">
-                  {lessonContent.sections.map((section, idx) => (
-                    <motion.div
-                      key={idx}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.1 }}
-                      className="space-y-4"
-                    >
-                      <h3 className="text-xl font-semibold text-white flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-[#E7FB10]/20 flex items-center justify-center">
-                          <span className="text-sm font-bold text-[#E7FB10]">{idx + 1}</span>
-                        </div>
-                        {section.heading}
-                      </h3>
-                      <p className="text-white/70 leading-relaxed text-lg">{section.content}</p>
-                      {section.keyPoints && (
-                        <div className="bg-white/5 border border-white/10 rounded-xl p-4 mt-4">
-                          <p className="text-sm text-white/40 uppercase tracking-wide mb-3">Key Points</p>
-                          <ul className="space-y-2">
-                            {section.keyPoints.map((point, pidx) => (
-                              <li key={pidx} className="flex items-start gap-2 text-white/80">
-                                <CheckCircle2 className="w-4 h-4 text-[#21d8ff] mt-1 flex-shrink-0" />
-                                <span>{point}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </motion.div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-20">
-                  <BookOpen className="w-16 h-16 text-white/20 mx-auto mb-4" />
-                  <p className="text-white/60">Lesson content is coming soon.</p>
-                </div>
-              )}
+              {(() => {
+                const VisualLesson = getVisualLesson(lessonId);
+                if (VisualLesson) {
+                  return <VisualLesson />;
+                }
+                if (article?.content) {
+                  return (
+                    <div className="prose prose-invert prose-lg max-w-none">
+                      <div dangerouslySetInnerHTML={{ __html: article.content }} />
+                    </div>
+                  );
+                }
+                if (lessonContent) {
+                  return (
+                    <div className="space-y-8">
+                      {lessonContent.sections.map((section, idx) => (
+                        <motion.div
+                          key={idx}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: idx * 0.1 }}
+                          className="space-y-4"
+                        >
+                          <h3 className="text-xl font-semibold text-white flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-lg bg-[#E7FB10]/20 flex items-center justify-center">
+                              <span className="text-sm font-bold text-[#E7FB10]">{idx + 1}</span>
+                            </div>
+                            {section.heading}
+                          </h3>
+                          <p className="text-white/70 leading-relaxed text-lg">{section.content}</p>
+                          {section.keyPoints && (
+                            <div className="bg-white/5 border border-white/10 rounded-xl p-4 mt-4">
+                              <p className="text-sm text-white/40 uppercase tracking-wide mb-3">Key Points</p>
+                              <ul className="space-y-2">
+                                {section.keyPoints.map((point, pidx) => (
+                                  <li key={pidx} className="flex items-start gap-2 text-white/80">
+                                    <CheckCircle2 className="w-4 h-4 text-[#21d8ff] mt-1 flex-shrink-0" />
+                                    <span>{point}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </motion.div>
+                      ))}
+                    </div>
+                  );
+                }
+                return (
+                  <div className="text-center py-20">
+                    <BookOpen className="w-16 h-16 text-white/20 mx-auto mb-4" />
+                    <p className="text-white/60">Lesson content is coming soon.</p>
+                  </div>
+                );
+              })()}
             </div>
           </ScrollArea>
 
