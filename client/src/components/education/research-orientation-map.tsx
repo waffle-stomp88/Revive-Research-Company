@@ -24,7 +24,7 @@ const RESEARCH_DOMAINS = [
     subtitle: "COAs, third-party testing, and what to look for",
     icon: FileCheck,
     color: "#ec4899",
-    slug: "how-to-read-coa-documents",
+    slug: "how-to-read-coas",
   },
   {
     id: "traceability",
@@ -40,7 +40,7 @@ const RESEARCH_DOMAINS = [
     subtitle: "Handling fundamentals and stability factors",
     icon: Thermometer,
     color: "#f97316",
-    slug: "proper-peptide-storage",
+    slug: "storage-101",
   },
   {
     id: "supply-chain",
