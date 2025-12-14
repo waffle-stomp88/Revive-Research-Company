@@ -260,8 +260,8 @@ function EmbeddedLessonViewer({
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-2xl bg-[#1a1a1f] rounded-2xl border border-white/10 shadow-2xl overflow-hidden"
-        style={{ maxHeight: "85vh" }}
+        className="relative w-full max-w-4xl bg-[#1a1a1f] rounded-2xl border border-white/10 shadow-2xl overflow-hidden"
+        style={{ maxHeight: "90vh" }}
       >
         <div className="flex items-center justify-between p-4 border-b border-white/10">
           <div className="flex items-center gap-3">
@@ -317,7 +317,7 @@ function EmbeddedLessonViewer({
           </div>
         </div>
 
-        <div className="p-6 md:p-8 min-h-[350px] flex items-center justify-center">
+        <div className="p-6 md:p-10 min-h-[450px] flex items-center justify-center overflow-y-auto" style={{ maxHeight: "calc(90vh - 180px)" }}>
           <AnimatePresence mode="wait">
             <motion.div
               key={currentSlide}
