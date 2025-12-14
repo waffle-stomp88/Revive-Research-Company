@@ -32,7 +32,7 @@ const RESEARCH_DOMAINS = [
     subtitle: "Batch numbers, lot control, and quality tracking",
     icon: Hash,
     color: "#9d4edd",
-    slug: "understanding-peptide-purity",
+    slug: "understanding-batches",
   },
   {
     id: "storage",
@@ -48,7 +48,7 @@ const RESEARCH_DOMAINS = [
     subtitle: "From sourcing to delivery—what to expect",
     icon: Truck,
     color: "#E7FB10",
-    slug: "reconstitution-101",
+    slug: "ordering-expectations",
   },
 ];
 
