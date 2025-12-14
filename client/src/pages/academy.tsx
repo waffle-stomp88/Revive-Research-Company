@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
@@ -442,6 +442,7 @@ export default function Academy() {
   const [, navigate] = useLocation();
   const [showPersonaQuiz, setShowPersonaQuiz] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
+  const perfectQuizAchievedRef = useRef(false);
   const [localProgress, setLocalProgress] = useState<{
     completedLessons: string[];
     currentModule: number;
@@ -586,6 +587,20 @@ export default function Academy() {
     }
   }, [currentPersona, authLoading]);
 
+  // Listen for perfect quiz events from QuizSlide component
+  useEffect(() => {
+    const handlePerfectQuiz = () => {
+      perfectQuizAchievedRef.current = true;
+    };
+    window.addEventListener('academyPerfectQuiz', handlePerfectQuiz);
+    return () => window.removeEventListener('academyPerfectQuiz', handlePerfectQuiz);
+  }, []);
+
+  // Reset perfect quiz flag when selecting a new lesson
+  useEffect(() => {
+    perfectQuizAchievedRef.current = false;
+  }, [selectedLesson]);
+
   const completeLesson = (lessonId: string, xp: number) => {
     if (localProgress.completedLessons.includes(lessonId)) return;
 
@@ -625,6 +640,13 @@ export default function Academy() {
         !newAchievements.includes("LAB_READY")) {
       newAchievements.push("LAB_READY");
       bonusXp += academyAchievements.LAB_READY.xp;
+    }
+
+    // Check for perfect quiz achievement
+    if (perfectQuizAchievedRef.current && !newAchievements.includes("PERFECT_QUIZ")) {
+      newAchievements.push("PERFECT_QUIZ");
+      bonusXp += academyAchievements.PERFECT_QUIZ.xp;
+      perfectQuizAchievedRef.current = false; // Reset after consuming
     }
 
     const newTotalXp = localProgress.totalXp + xp + bonusXp;

@@ -57,7 +57,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export interface QuizQuestion {
   question: string;
@@ -110,6 +110,14 @@ export function QuizSlide({
   const isCorrect = selectedAnswer === question.correctIndex;
   const score = selectedAnswers.filter((ans, idx) => ans === questions[idx].correctIndex).length;
   const isPerfect = score === questions.length;
+
+  // Dispatch custom event when quiz results are shown with perfect score
+  useEffect(() => {
+    if (showResults && isPerfect) {
+      const event = new CustomEvent('academyPerfectQuiz', { detail: { score, total: questions.length } });
+      window.dispatchEvent(event);
+    }
+  }, [showResults, isPerfect, score, questions.length]);
 
   if (showResults) {
     return (
