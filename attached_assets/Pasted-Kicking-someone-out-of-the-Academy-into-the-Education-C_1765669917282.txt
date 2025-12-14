@@ -1,0 +1,204 @@
+Kicking someone out of the Academy into the Education Center breaks flow, weakens the product, and signals “this is just links,” not a system.
+
+Here’s the clean, scalable way to structure this—and it solves all of your concerns without boxing you in later.
+
+The correct mental model (anchor this)
+
+Think of the Academy as the guided experience
+and the Education Center as the reference library.
+
+Same knowledge. Different delivery.
+
+They should share content, not compete for it.
+
+The winning structure (hybrid, not either/or)
+1. Academy = Curated, Sequenced, Opinionated
+
+Lessons are embedded inside the Academy UI
+
+Content is:
+
+chunked
+
+paced
+
+contextualized
+
+Includes:
+
+checkpoints
+
+summaries
+
+progress tracking
+
+XP / achievements
+
+No outbound navigation during lessons
+
+User stays inside the Academy. Always.
+
+This is where learning happens.
+
+2. Education Center = Ungated, Flat, Reference-Only
+
+Same core articles exist here
+
+But:
+
+no XP
+
+no progress
+
+no sequencing
+
+no personalization
+
+Treated like:
+
+a wiki
+
+a glossary
+
+a library
+
+This is where people look things up, not learn deeply.
+
+How to technically connect them (important)
+Single Source of Truth (SSOT)
+
+Each topic exists once in your database.
+
+Then you render it differently:
+
+Academy view
+
+embedded
+
+lesson framing
+
+checkpoints enabled
+
+progress tracked
+
+Education Center view
+
+clean article
+
+no lesson framing
+
+no progression
+
+no XP
+
+Same content. Two skins.
+
+What happens when someone clicks a lesson?
+❌ What you have now (bad)
+
+Academy → kicks to Education Center
+→ user feels lost
+→ experience feels duct-taped
+
+✅ What you want
+
+Academy → embedded lesson view
+→ sidebar stays
+→ progress updates
+→ next lesson CTA appears
+
+No context switching.
+
+What about people who don’t want the Academy?
+
+They still get value.
+
+Here’s the tradeoff (and it’s intentional):
+
+Education Center users get:
+
+access to information
+
+zero friction
+
+zero guidance
+
+Academy users get:
+
+structure
+
+sequencing
+
+comprehension
+
+confidence
+
+You’re not withholding knowledge.
+You’re withholding guidance.
+
+That’s fair. And defensible.
+
+How this cleans up your Education Center (big win)
+
+Once you do this:
+
+Education Center becomes:
+
+leaner
+
+searchable
+
+non-duplicative
+
+Academy becomes:
+
+immersive
+
+intentional
+
+sticky
+
+You eliminate:
+
+redundant navigation
+
+repeated CTAs
+
+cognitive clutter
+
+One subtle but powerful addition
+
+On Education Center articles, add a small, non-pushy banner:
+
+“Want a guided walkthrough of this topic?
+This article is part of the Research Fundamentals Academy.”
+
+That’s it. No selling. Just orientation.
+
+Final recommendation (clear and direct)
+
+Do not:
+
+make articles Academy-only
+
+force people into courses to read
+
+keep bouncing users between systems
+
+Do:
+
+embed Academy lessons natively
+
+keep Education Center open and flat
+
+use the Academy for structure, not access control
+
+This preserves:
+
+openness
+
+trust
+
+UX quality
+
+future optionality
