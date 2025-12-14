@@ -706,13 +706,13 @@ export default function Academy() {
                                   key={lesson.id}
                                   className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
                                     isCompleted 
-                                      ? "bg-green-500/10 border border-green-500/20"
+                                      ? "bg-green-500/10 border border-green-500/20 cursor-pointer hover:border-green-500/40 hover-elevate"
                                       : isUnlocked
                                         ? "bg-white/5 border border-white/10 hover:border-white/20 cursor-pointer hover-elevate"
                                         : "bg-white/[0.02] border border-white/5 opacity-50"
                                   }`}
                                   onClick={() => {
-                                    if (isUnlocked) {
+                                    if (isUnlocked || isCompleted) {
                                       setSelectedLesson(lesson.id);
                                     }
                                   }}
