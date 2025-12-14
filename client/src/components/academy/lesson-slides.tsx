@@ -558,25 +558,28 @@ function RegulatoryPyramidVisual() {
   ];
 
   return (
-    <div className="flex flex-col items-center gap-2 w-full max-w-md">
-      {levels.map((level, idx) => (
-        <motion.div
-          key={idx}
-          initial={{ opacity: 0, scaleX: 0 }}
-          animate={{ opacity: 1, scaleX: 1 }}
-          transition={{ delay: idx * 0.15 }}
-          className="flex flex-col items-center justify-center p-3 rounded-lg border text-center"
-          style={{ 
-            width: level.width, 
-            backgroundColor: `${level.color}10`, 
-            borderColor: `${level.color}30` 
-          }}
-        >
-          <span className="text-white text-sm font-medium">{level.label}</span>
-          <span className="text-xs text-white/50">{level.status}</span>
-        </motion.div>
-      ))}
-      <p className="text-xs text-white/40 mt-2">Revive Research products are in the RUO category</p>
+    <div className="flex flex-col items-center gap-6 w-full max-w-2xl">
+      <h3 className="text-xl font-semibold text-white">Regulatory Classification Pyramid</h3>
+      <div className="flex flex-col items-center gap-3 w-full">
+        {levels.map((level, idx) => (
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, scaleX: 0 }}
+            animate={{ opacity: 1, scaleX: 1 }}
+            transition={{ delay: idx * 0.15 }}
+            className="flex flex-col items-center justify-center p-5 rounded-xl border text-center"
+            style={{ 
+              width: level.width, 
+              backgroundColor: `${level.color}10`, 
+              borderColor: `${level.color}30` 
+            }}
+          >
+            <span className="text-white text-lg font-semibold">{level.label}</span>
+            <span className="text-base text-white/60 mt-1">{level.status}</span>
+          </motion.div>
+        ))}
+      </div>
+      <p className="text-white/50 mt-2">Revive Research products are in the RUO category</p>
     </div>
   );
 }
@@ -591,29 +594,32 @@ function OrderProcessFlowVisual() {
   ];
 
   return (
-    <div className="flex items-center justify-center gap-1 w-full overflow-x-auto py-4">
-      {steps.map((step, idx) => (
-        <motion.div
-          key={idx}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: idx * 0.12 }}
-          className="flex items-center"
-        >
-          <div className="flex flex-col items-center">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-2"
-              style={{ backgroundColor: `${step.color}20`, border: `1px solid ${step.color}40` }}
-            >
-              <step.icon className="w-6 h-6" style={{ color: step.color }} />
+    <div className="flex flex-col items-center gap-6 w-full max-w-3xl">
+      <h3 className="text-xl font-semibold text-white">Order Process Flow</h3>
+      <div className="flex items-center justify-center gap-3 w-full py-4">
+        {steps.map((step, idx) => (
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.12 }}
+            className="flex items-center"
+          >
+            <div className="flex flex-col items-center">
+              <div className="w-16 h-16 rounded-xl flex items-center justify-center mb-3"
+                style={{ backgroundColor: `${step.color}20`, border: `2px solid ${step.color}40` }}
+              >
+                <step.icon className="w-8 h-8" style={{ color: step.color }} />
+              </div>
+              <span className="text-base font-semibold text-white">{step.label}</span>
+              <span className="text-sm text-white/60">{step.desc}</span>
             </div>
-            <span className="text-xs font-semibold text-white">{step.label}</span>
-            <span className="text-[10px] text-white/50">{step.desc}</span>
-          </div>
-          {idx < steps.length - 1 && (
-            <ChevronRight className="w-4 h-4 text-white/30 mx-1" />
-          )}
-        </motion.div>
-      ))}
+            {idx < steps.length - 1 && (
+              <ChevronRight className="w-6 h-6 text-white/40 mx-2" />
+            )}
+          </motion.div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -821,33 +827,36 @@ function LyophilizationDetailedVisual() {
   ];
 
   return (
-    <div className="flex flex-col gap-3 w-full max-w-md">
-      {stages.map((stage, idx) => (
-        <motion.div
-          key={idx}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: idx * 0.15 }}
-          className="flex items-center gap-4"
-        >
-          <div className="flex items-center gap-2 w-8">
-            <span className="text-white/30 text-sm font-mono">{idx + 1}</span>
-          </div>
-          <div
-            className="flex-1 flex items-center gap-3 p-3 rounded-xl border"
-            style={{ backgroundColor: `${stage.color}10`, borderColor: `${stage.color}30` }}
+    <div className="flex flex-col items-center gap-6 w-full max-w-2xl">
+      <h3 className="text-xl font-semibold text-white">Lyophilization Process Stages</h3>
+      <div className="flex flex-col gap-4 w-full">
+        {stages.map((stage, idx) => (
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: idx * 0.15 }}
+            className="flex items-center gap-5"
           >
-            <stage.icon className="w-6 h-6 flex-shrink-0" style={{ color: stage.color }} />
-            <div className="flex-1">
-              <div className="flex items-center justify-between">
-                <span className="text-white text-sm font-medium">{stage.label}</span>
-                <span className="text-xs font-mono" style={{ color: stage.color }}>{stage.temp}</span>
-              </div>
-              <p className="text-xs text-white/50">{stage.desc}</p>
+            <div className="flex items-center justify-center w-10">
+              <span className="text-white/40 text-lg font-mono">{idx + 1}</span>
             </div>
-          </div>
-        </motion.div>
-      ))}
+            <div
+              className="flex-1 flex items-center gap-5 p-5 rounded-xl border"
+              style={{ backgroundColor: `${stage.color}10`, borderColor: `${stage.color}30` }}
+            >
+              <stage.icon className="w-10 h-10 flex-shrink-0" style={{ color: stage.color }} />
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-white text-lg font-semibold">{stage.label}</span>
+                  <span className="text-base font-mono" style={{ color: stage.color }}>{stage.temp}</span>
+                </div>
+                <p className="text-base text-white/60 mt-1">{stage.desc}</p>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -861,26 +870,31 @@ function DegradationFactorsVisual() {
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 w-full max-w-md">
-      {factors.map((factor, idx) => (
-        <motion.div
-          key={idx}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: idx * 0.1 }}
-          className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10"
-        >
-          <div className="w-10 h-10 rounded-lg flex items-center justify-center"
-            style={{ backgroundColor: `${factor.color}20` }}
+    <div className="flex flex-col items-center gap-6 w-full max-w-3xl">
+      <h3 className="text-xl font-semibold text-white">Environmental Degradation Factors</h3>
+      <div className="grid grid-cols-2 gap-6 w-full">
+        {factors.map((factor, idx) => (
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: idx * 0.1 }}
+            className="flex items-center gap-5 p-6 rounded-xl border"
+            style={{ backgroundColor: `${factor.color}10`, borderColor: `${factor.color}30` }}
           >
-            <factor.icon className="w-5 h-5" style={{ color: factor.color }} />
-          </div>
-          <div>
-            <p className="text-white text-sm font-medium">{factor.label}</p>
-            <p className="text-xs text-white/50">{factor.impact}</p>
-          </div>
-        </motion.div>
-      ))}
+            <div className="w-16 h-16 rounded-xl flex items-center justify-center"
+              style={{ backgroundColor: `${factor.color}20` }}
+            >
+              <factor.icon className="w-8 h-8" style={{ color: factor.color }} />
+            </div>
+            <div>
+              <p className="text-white text-xl font-semibold">{factor.label}</p>
+              <p className="text-base text-white/60 mt-1">{factor.impact}</p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+      <p className="text-white/50 text-center mt-2">Protect your peptides from these common environmental stressors</p>
     </div>
   );
 }
@@ -894,27 +908,31 @@ function ReconstitutionStepsVisual() {
   ];
 
   return (
-    <div className="flex flex-col gap-3 w-full max-w-sm">
-      {steps.map((step, idx) => (
-        <motion.div
-          key={idx}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: idx * 0.15 }}
-          className="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/10"
-        >
-          <div
-            className="w-10 h-10 rounded-full flex items-center justify-center font-bold"
-            style={{ backgroundColor: `${step.color}20`, color: step.color }}
+    <div className="flex flex-col items-center gap-6 w-full max-w-2xl">
+      <h3 className="text-xl font-semibold text-white">Reconstitution Steps</h3>
+      <div className="flex flex-col gap-4 w-full">
+        {steps.map((step, idx) => (
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: idx * 0.15 }}
+            className="flex items-center gap-5 p-5 rounded-xl border"
+            style={{ backgroundColor: `${step.color}10`, borderColor: `${step.color}30` }}
           >
-            {step.num}
-          </div>
-          <div className="flex-1 flex items-center gap-3">
-            <step.icon className="w-5 h-5 text-white/40" />
-            <span className="text-white text-sm">{step.text}</span>
-          </div>
-        </motion.div>
-      ))}
+            <div
+              className="w-14 h-14 rounded-full flex items-center justify-center font-bold text-xl"
+              style={{ backgroundColor: `${step.color}20`, color: step.color }}
+            >
+              {step.num}
+            </div>
+            <div className="flex-1 flex items-center gap-4">
+              <step.icon className="w-7 h-7" style={{ color: step.color }} />
+              <span className="text-white text-lg">{step.text}</span>
+            </div>
+          </motion.div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -928,38 +946,42 @@ function COAAnatomyVisual() {
   ];
 
   return (
-    <div className="flex gap-6 items-start w-full max-w-md">
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        className="w-40 h-52 rounded-lg bg-white/5 border border-white/20 relative overflow-hidden"
-      >
-        <div className="absolute top-2 left-2 right-2 h-2 bg-[#E7FB10]/30 rounded" />
-        <div className="absolute top-6 left-2 right-2 space-y-1">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-1 bg-white/10 rounded" />
+    <div className="flex flex-col items-center gap-6 w-full max-w-2xl">
+      <h3 className="text-xl font-semibold text-white">Certificate of Analysis Anatomy</h3>
+      <div className="flex gap-8 items-start w-full">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="w-56 h-72 rounded-xl bg-white/5 border border-white/20 relative overflow-hidden"
+        >
+          <div className="absolute top-3 left-3 right-3 h-3 bg-[#E7FB10]/30 rounded" />
+          <div className="absolute top-8 left-3 right-3 space-y-1.5">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="h-1.5 bg-white/10 rounded" />
+            ))}
+          </div>
+          <div className="absolute top-20 left-3 right-3 h-20 bg-[#21d8ff]/10 rounded border border-[#21d8ff]/20" />
+          <div className="absolute top-44 left-3 right-3 h-12 bg-[#22c55e]/10 rounded border border-[#22c55e]/20" />
+          <div className="absolute bottom-3 left-3 right-3 h-6 bg-[#9d4edd]/20 rounded" />
+        </motion.div>
+        <div className="flex-1 space-y-4">
+          {sections.map((section, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: idx * 0.15 }}
+              className="flex items-center gap-4 p-3 rounded-lg"
+              style={{ backgroundColor: `${section.color}10` }}
+            >
+              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: section.color }} />
+              <div>
+                <span className="text-white text-lg font-medium">{section.label}</span>
+                <span className="text-white/60 text-base ml-3">{section.desc}</span>
+              </div>
+            </motion.div>
           ))}
         </div>
-        <div className="absolute top-16 left-2 right-2 h-16 bg-[#21d8ff]/10 rounded border border-[#21d8ff]/20" />
-        <div className="absolute top-36 left-2 right-2 h-8 bg-[#22c55e]/10 rounded border border-[#22c55e]/20" />
-        <div className="absolute bottom-2 left-2 right-2 h-4 bg-[#9d4edd]/20 rounded" />
-      </motion.div>
-      <div className="flex-1 space-y-3">
-        {sections.map((section, idx) => (
-          <motion.div
-            key={idx}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: idx * 0.15 }}
-            className="flex items-center gap-2"
-          >
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: section.color }} />
-            <div>
-              <span className="text-white text-sm font-medium">{section.label}</span>
-              <span className="text-white/50 text-xs ml-2">{section.desc}</span>
-            </div>
-          </motion.div>
-        ))}
       </div>
     </div>
   );
@@ -967,57 +989,58 @@ function COAAnatomyVisual() {
 
 function MassSpecVisual() {
   return (
-    <div className="w-full max-w-md">
-      <div className="relative h-32 bg-[#0a0a0f] rounded-lg border border-white/10 p-4">
-        <svg viewBox="0 0 300 80" className="w-full h-full">
-          <line x1="30" y1="70" x2="290" y2="70" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
-          <line x1="30" y1="10" x2="30" y2="70" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
-          <text x="10" y="40" fill="rgba(255,255,255,0.5)" fontSize="7" transform="rotate(-90, 10, 40)">Intensity</text>
-          <text x="160" y="78" fill="rgba(255,255,255,0.5)" fontSize="7">m/z</text>
+    <div className="flex flex-col items-center gap-6 w-full max-w-2xl">
+      <h3 className="text-xl font-semibold text-white">Mass Spectrometry Analysis</h3>
+      <div className="relative h-48 bg-[#0a0a0f] rounded-xl border border-white/10 p-6 w-full">
+        <svg viewBox="0 0 300 100" className="w-full h-full">
+          <line x1="30" y1="85" x2="290" y2="85" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+          <line x1="30" y1="10" x2="30" y2="85" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+          <text x="8" y="50" fill="rgba(255,255,255,0.5)" fontSize="9" transform="rotate(-90, 8, 50)">Intensity</text>
+          <text x="160" y="98" fill="rgba(255,255,255,0.5)" fontSize="9">m/z</text>
           
           <motion.rect
             initial={{ height: 0 }}
-            animate={{ height: 50 }}
+            animate={{ height: 60 }}
             transition={{ delay: 0.3 }}
-            x="140" y="20" width="8" fill="#22c55e"
+            x="140" y="25" width="12" fill="#22c55e"
           />
           <motion.rect
             initial={{ height: 0 }}
-            animate={{ height: 15 }}
+            animate={{ height: 20 }}
             transition={{ delay: 0.5 }}
-            x="100" y="55" width="5" fill="#E7FB10" opacity="0.7"
+            x="100" y="65" width="8" fill="#E7FB10" opacity="0.7"
           />
           <motion.rect
             initial={{ height: 0 }}
-            animate={{ height: 12 }}
+            animate={{ height: 16 }}
             transition={{ delay: 0.6 }}
-            x="180" y="58" width="5" fill="#E7FB10" opacity="0.7"
+            x="180" y="69" width="8" fill="#E7FB10" opacity="0.7"
           />
           <motion.rect
             initial={{ height: 0 }}
-            animate={{ height: 8 }}
+            animate={{ height: 10 }}
             transition={{ delay: 0.7 }}
-            x="220" y="62" width="4" fill="#f97316" opacity="0.5"
+            x="220" y="75" width="6" fill="#f97316" opacity="0.5"
           />
           
           <motion.text
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
-            x="144" y="15" fill="#22c55e" fontSize="8" textAnchor="middle"
+            x="146" y="18" fill="#22c55e" fontSize="10" textAnchor="middle"
           >
             [M+H]⁺
           </motion.text>
         </svg>
       </div>
-      <div className="flex justify-center gap-4 mt-3">
-        <span className="text-xs text-white/60">
+      <div className="flex justify-center gap-8 mt-2">
+        <span className="text-base text-white/70">
           <span className="text-[#22c55e]">●</span> Target mass
         </span>
-        <span className="text-xs text-white/60">
+        <span className="text-base text-white/70">
           <span className="text-[#E7FB10]">●</span> Adducts
         </span>
-        <span className="text-xs text-white/60">
+        <span className="text-base text-white/70">
           <span className="text-[#f97316]">●</span> Fragments
         </span>
       </div>
@@ -1064,23 +1087,26 @@ function LabSetupVisual() {
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 w-full max-w-md">
-      {zones.map((zone, idx) => (
-        <motion.div
-          key={idx}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: idx * 0.1 }}
-          className="p-3 rounded-xl border"
-          style={{ backgroundColor: `${zone.color}10`, borderColor: `${zone.color}30` }}
-        >
-          <div className="flex items-center gap-2 mb-1">
-            <zone.icon className="w-4 h-4" style={{ color: zone.color }} />
-            <span className="text-white text-sm font-medium">{zone.label}</span>
-          </div>
-          <p className="text-xs text-white/50">{zone.desc}</p>
-        </motion.div>
-      ))}
+    <div className="flex flex-col items-center gap-6 w-full max-w-2xl">
+      <h3 className="text-xl font-semibold text-white">Laboratory Zone Setup</h3>
+      <div className="grid grid-cols-2 gap-6 w-full">
+        {zones.map((zone, idx) => (
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: idx * 0.1 }}
+            className="p-6 rounded-xl border"
+            style={{ backgroundColor: `${zone.color}10`, borderColor: `${zone.color}30` }}
+          >
+            <div className="flex items-center gap-4 mb-2">
+              <zone.icon className="w-8 h-8" style={{ color: zone.color }} />
+              <span className="text-white text-xl font-semibold">{zone.label}</span>
+            </div>
+            <p className="text-base text-white/60">{zone.desc}</p>
+          </motion.div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -1095,30 +1121,34 @@ function DocumentationTemplateVisual() {
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-sm p-4 rounded-xl bg-white/5 border border-white/10"
-    >
-      <div className="flex items-center gap-2 mb-4 pb-2 border-b border-white/10">
-        <ClipboardList className="w-5 h-5 text-[#E7FB10]" />
-        <span className="text-white font-semibold">Research Log Entry</span>
-      </div>
-      <div className="space-y-2">
-        {fields.map((field, idx) => (
-          <motion.div
-            key={idx}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 + idx * 0.1 }}
-            className="flex justify-between items-center"
-          >
-            <span className="text-white/50 text-sm">{field.label}:</span>
-            <span className="text-sm font-mono" style={{ color: field.color }}>{field.value}</span>
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
+    <div className="flex flex-col items-center gap-6 w-full max-w-xl">
+      <h3 className="text-xl font-semibold text-white">Research Log Entry Template</h3>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full p-6 rounded-xl bg-white/5 border border-white/10"
+      >
+        <div className="flex items-center gap-3 mb-5 pb-3 border-b border-white/10">
+          <ClipboardList className="w-7 h-7 text-[#E7FB10]" />
+          <span className="text-white text-lg font-semibold">Research Log Entry</span>
+        </div>
+        <div className="space-y-4">
+          {fields.map((field, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 + idx * 0.1 }}
+              className="flex justify-between items-center p-3 rounded-lg"
+              style={{ backgroundColor: `${field.color}10` }}
+            >
+              <span className="text-white/70 text-base">{field.label}:</span>
+              <span className="text-lg font-mono" style={{ color: field.color }}>{field.value}</span>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+    </div>
   );
 }
 
@@ -1133,8 +1163,9 @@ function ResearchWorkflowVisual() {
   ];
 
   return (
-    <div className="w-full max-w-md">
-      <div className="flex flex-wrap justify-center gap-2">
+    <div className="flex flex-col items-center gap-6 w-full max-w-3xl">
+      <h3 className="text-xl font-semibold text-white">Complete Research Workflow</h3>
+      <div className="flex flex-wrap justify-center gap-4">
         {steps.map((step, idx) => (
           <motion.div
             key={idx}
@@ -1145,15 +1176,15 @@ function ResearchWorkflowVisual() {
           >
             <div className="flex flex-col items-center">
               <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center"
-                style={{ backgroundColor: `${step.color}20`, border: `1px solid ${step.color}40` }}
+                className="w-16 h-16 rounded-xl flex items-center justify-center"
+                style={{ backgroundColor: `${step.color}20`, border: `2px solid ${step.color}40` }}
               >
-                <step.icon className="w-6 h-6" style={{ color: step.color }} />
+                <step.icon className="w-8 h-8" style={{ color: step.color }} />
               </div>
-              <span className="text-xs text-white/60 mt-1">{step.label}</span>
+              <span className="text-base text-white/70 mt-2">{step.label}</span>
             </div>
             {idx < steps.length - 1 && (
-              <ArrowRight className="w-4 h-4 text-white/20 mx-1" />
+              <ArrowRight className="w-6 h-6 text-white/30 mx-2" />
             )}
           </motion.div>
         ))}
