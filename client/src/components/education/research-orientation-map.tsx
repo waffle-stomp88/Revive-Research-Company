@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Link } from "wouter";
+import { useLocation } from "wouter";
 import { 
   Shield, 
   FileCheck, 
@@ -53,6 +53,8 @@ const RESEARCH_DOMAINS = [
 ];
 
 export function ResearchOrientationMap() {
+  const [, navigate] = useLocation();
+  
   return (
     <div className="w-full py-12">
       <div className="text-center mb-8">
@@ -94,10 +96,10 @@ export function ResearchOrientationMap() {
                   />
                 </div>
 
-                <Link href={`/education/${domain.slug}`}>
-                  <div
+                <div
                     className="group cursor-pointer h-full transform transition-all duration-300 hover:scale-[1.03] hover:-translate-y-1"
                     data-testid={`domain-card-${domain.id}`}
+                    onClick={() => navigate(`/education/${domain.slug}`)}
                   >
                     <div
                       className="relative p-5 rounded-xl transition-all duration-300 overflow-hidden h-full flex flex-col group-hover:border-2"
@@ -160,7 +162,6 @@ export function ResearchOrientationMap() {
                       </div>
                     </div>
                   </div>
-                </Link>
               </motion.div>
             );
           })}
