@@ -496,6 +496,82 @@ export default function Academy() {
     }
   }, [serverProgress, user]);
 
+  // Retroactively calculate missing achievements for existing progress
+  useEffect(() => {
+    if (localProgress.completedLessons.length === 0) return;
+
+    const completedLessons = localProgress.completedLessons;
+    const currentAchievements = localProgress.achievements;
+    const newAchievements = [...currentAchievements];
+    let bonusXp = 0;
+    let hasChanges = false;
+
+    // First lesson achievement
+    if (completedLessons.length >= 1 && !currentAchievements.includes("FIRST_LESSON")) {
+      newAchievements.push("FIRST_LESSON");
+      bonusXp += academyAchievements.FIRST_LESSON.xp;
+      hasChanges = true;
+    }
+
+    // Module 0 - Orientation
+    const module0Lessons = CURRICULUM[0].lessons.map(l => l.id);
+    if (module0Lessons.every(id => completedLessons.includes(id)) && !currentAchievements.includes("ORIENTATION_COMPLETE")) {
+      newAchievements.push("ORIENTATION_COMPLETE");
+      bonusXp += academyAchievements.ORIENTATION_COMPLETE.xp;
+      hasChanges = true;
+    }
+
+    // Module 1 - Core Foundations
+    const module1Lessons = CURRICULUM[1].lessons.map(l => l.id);
+    if (module1Lessons.every(id => completedLessons.includes(id)) && !currentAchievements.includes("FOUNDATIONS_COMPLETE")) {
+      newAchievements.push("FOUNDATIONS_COMPLETE");
+      bonusXp += academyAchievements.FOUNDATIONS_COMPLETE.xp;
+      hasChanges = true;
+    }
+
+    // Module 2 - Research Skills
+    const module2Lessons = CURRICULUM[2].lessons.map(l => l.id);
+    if (module2Lessons.every(id => completedLessons.includes(id)) && !currentAchievements.includes("SKILLS_COMPLETE")) {
+      newAchievements.push("SKILLS_COMPLETE");
+      bonusXp += academyAchievements.SKILLS_COMPLETE.xp;
+      hasChanges = true;
+    }
+
+    // Module 3 - Lab Confidence (all modules complete)
+    const module3Lessons = CURRICULUM[3].lessons.map(l => l.id);
+    const allLessons = CURRICULUM.flatMap(m => m.lessons.map(l => l.id));
+    if (module3Lessons.every(id => completedLessons.includes(id)) && 
+        allLessons.every(id => completedLessons.includes(id)) && 
+        !currentAchievements.includes("LAB_READY")) {
+      newAchievements.push("LAB_READY");
+      bonusXp += academyAchievements.LAB_READY.xp;
+      hasChanges = true;
+    }
+
+    // Scholar achievement (500+ XP)
+    const newTotalXp = localProgress.totalXp + bonusXp;
+    if (newTotalXp >= 500 && !currentAchievements.includes("SCHOLAR")) {
+      newAchievements.push("SCHOLAR");
+      hasChanges = true;
+    }
+
+    if (hasChanges) {
+      const updatedProgress = {
+        ...localProgress,
+        achievements: newAchievements,
+        totalXp: newTotalXp,
+      };
+      setLocalProgress(updatedProgress);
+
+      if (user) {
+        updateProgressMutation.mutate({
+          achievements: newAchievements,
+          totalXp: newTotalXp,
+        });
+      }
+    }
+  }, [localProgress.completedLessons.length]); // Only run when completed lessons count changes
+
   // Track persona state for the quiz effect
   const currentPersona = localProgress.persona;
   
@@ -532,6 +608,23 @@ export default function Academy() {
     if (module1Lessons.every(id => newCompleted.includes(id)) && !newAchievements.includes("FOUNDATIONS_COMPLETE")) {
       newAchievements.push("FOUNDATIONS_COMPLETE");
       bonusXp += academyAchievements.FOUNDATIONS_COMPLETE.xp;
+    }
+
+    // Check for Research Skills module completion (module 2)
+    const module2Lessons = CURRICULUM[2].lessons.map(l => l.id);
+    if (module2Lessons.every(id => newCompleted.includes(id)) && !newAchievements.includes("SKILLS_COMPLETE")) {
+      newAchievements.push("SKILLS_COMPLETE");
+      bonusXp += academyAchievements.SKILLS_COMPLETE.xp;
+    }
+
+    // Check for Lab Confidence module completion (module 3) - all modules complete = LAB_READY
+    const module3Lessons = CURRICULUM[3].lessons.map(l => l.id);
+    const allLessons = CURRICULUM.flatMap(m => m.lessons.map(l => l.id));
+    if (module3Lessons.every(id => newCompleted.includes(id)) && 
+        allLessons.every(id => newCompleted.includes(id)) && 
+        !newAchievements.includes("LAB_READY")) {
+      newAchievements.push("LAB_READY");
+      bonusXp += academyAchievements.LAB_READY.xp;
     }
 
     const newTotalXp = localProgress.totalXp + xp + bonusXp;
