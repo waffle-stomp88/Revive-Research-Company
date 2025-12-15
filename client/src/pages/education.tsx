@@ -304,6 +304,7 @@ export default function Education() {
 
   const handleOpenArticle = (articleId: string) => {
     setExpandedArticle(articleId);
+    setArticleMode("quick-breakdown");
   };
 
   useEffect(() => {
@@ -312,6 +313,7 @@ export default function Education() {
       if (article) {
         setExpandedArticle(article.id);
         setActiveCategory(article.category);
+        setArticleMode("quick-breakdown");
         setTimeout(() => {
           const element = document.getElementById('expanded-article');
           if (element) {
