@@ -181,12 +181,9 @@ function App() {
     }
   }, []);
 
-  const auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN;
-  const auth0ClientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
-
-  if (!auth0Domain || !auth0ClientId) {
-    console.error('Missing Auth0 configuration. Please set VITE_AUTH0_DOMAIN and VITE_AUTH0_CLIENT_ID');
-  }
+  // Auth0 configuration with fallback values for production builds
+  const auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN || 'dev-5xq04wwsd1n7xn2n.us.auth0.com';
+  const auth0ClientId = import.meta.env.VITE_AUTH0_CLIENT_ID || 'yOXwbImbiTsHffDetLDjqo38XhCKXtzU';
 
   return (
     <Auth0Provider
