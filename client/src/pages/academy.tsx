@@ -782,7 +782,8 @@ export default function Academy() {
           </div>
         </section>
 
-        <section className="py-8 px-6 -mt-8">
+        {/* Learning Path - Hidden on mobile */}
+        <section className="hidden md:block py-8 px-6 -mt-8">
           <div className="max-w-6xl mx-auto">
             <HorizontalLearningPath
               modules={CURRICULUM}
