@@ -19,6 +19,9 @@ export function PriceTrendBadge({ productId, className = "", variant = "default"
   if (isLoading) {
     return null;
   }
+  
+  // Hidden on mobile - only show on desktop (md and above)
+  const mobileHiddenClass = "hidden md:inline-flex";
 
   // Show "Stable" indicator for products without price history
   if (!trend) {
@@ -26,7 +29,7 @@ export function PriceTrendBadge({ productId, className = "", variant = "default"
       return (
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="cursor-help">
+            <div className={`cursor-help ${mobileHiddenClass}`}>
               <Badge 
                 className={`font-mono text-xs px-2 py-0.5 border bg-neutral-500/20 text-neutral-400 border-neutral-500/30 ${className}`}
                 data-testid={`badge-price-trend-stable-${productId}`}
@@ -62,7 +65,7 @@ export function PriceTrendBadge({ productId, className = "", variant = "default"
       <Tooltip>
         <TooltipTrigger asChild>
           <div 
-            className={`inline-flex items-center gap-1.5 cursor-help ${className}`}
+            className={`items-center gap-1.5 cursor-help ${mobileHiddenClass} ${className}`}
             data-testid={`badge-price-trend-stable-${productId}`}
           >
             <Badge 
@@ -129,7 +132,7 @@ export function PriceTrendBadge({ productId, className = "", variant = "default"
     return (
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="cursor-help">
+          <div className={`cursor-help ${mobileHiddenClass}`}>
             <Badge 
               className={`font-mono text-xs px-2 py-0.5 border ${badgeColors} ${className}`}
               data-testid={`badge-price-trend-${productId}`}
@@ -157,7 +160,7 @@ export function PriceTrendBadge({ productId, className = "", variant = "default"
     <Tooltip>
       <TooltipTrigger asChild>
         <div 
-          className={`inline-flex items-center gap-1.5 cursor-help ${className}`}
+          className={`items-center gap-1.5 cursor-help ${mobileHiddenClass} ${className}`}
           data-testid={`badge-price-trend-${productId}`}
         >
           <Badge 

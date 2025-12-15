@@ -815,17 +815,47 @@ export default function Products() {
                     >
                   <Link href={`/peptides/${saleProduct.id}`}>
                     <div className="sale-glow-pulse rounded-xl">
-                    <Card className="p-5 md:p-6 border-2 border-red-500 bg-gradient-to-br from-red-950/40 via-background to-background transition-all duration-300 cursor-pointer group hover:scale-105 hover:shadow-[0_0_30px_rgba(239,68,68,0.6)] hover:border-red-400">
-                      <div className="flex flex-col md:flex-row gap-5 items-center">
-                        <div className="w-40 h-40 md:w-48 md:h-48 bg-muted/50 rounded-lg overflow-hidden flex-shrink-0 border border-red-500/20">
+                    <Card className="p-3 md:p-6 border-2 border-red-500 bg-gradient-to-br from-red-950/40 via-background to-background transition-all duration-300 cursor-pointer group hover:scale-[1.02] md:hover:scale-105 hover:shadow-[0_0_30px_rgba(239,68,68,0.6)] hover:border-red-400">
+                      {/* Mobile: Compact horizontal layout */}
+                      <div className="md:hidden flex items-center gap-3">
+                        <div className="w-16 h-16 bg-muted/50 rounded-lg overflow-hidden flex-shrink-0 border border-red-500/20">
+                          <img 
+                            src={saleProduct.imageUrl || productImage} 
+                            alt={`${saleProduct.name}`}
+                            className="w-full h-full object-contain p-1"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            {saleProduct.originalPrice && (
+                              <Badge variant="destructive" className="text-xs px-1.5 py-0">
+                                {Math.round(((Number(saleProduct.originalPrice) - Number(saleProduct.price)) / Number(saleProduct.originalPrice)) * 100)}% OFF
+                              </Badge>
+                            )}
+                          </div>
+                          <h3 className="font-display text-base font-bold text-[#E7FB10] truncate">
+                            {saleProduct.name}
+                          </h3>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="font-display text-lg font-bold">${Number(saleProduct.price).toFixed(2)}</span>
+                            <Button size="sm" className="h-7 text-xs gap-1 ml-auto">
+                              Shop <ArrowRight className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Desktop: Full layout */}
+                      <div className="hidden md:flex flex-row gap-5 items-center">
+                        <div className="w-48 h-48 bg-muted/50 rounded-lg overflow-hidden flex-shrink-0 border border-red-500/20">
                           <img 
                             src={saleProduct.imageUrl || productImage} 
                             alt={`${saleProduct.name} research peptide - premium quality lab tested compound`}
                             className="w-full h-full object-contain p-3 group-hover:scale-110 transition-transform"
                           />
                         </div>
-                        <div className="flex-1 text-center md:text-left">
-                          <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2">
+                        <div className="flex-1 text-left">
+                          <div className="flex flex-wrap items-center gap-2 mb-2">
                             {saleProduct.originalPrice && (
                               <Badge variant="destructive" className="text-base px-2.5 py-0.5">
                                 {Math.round(((Number(saleProduct.originalPrice) - Number(saleProduct.price)) / Number(saleProduct.originalPrice)) * 100)}% OFF
@@ -835,14 +865,14 @@ export default function Products() {
                               <span className="text-sm text-muted-foreground">Ends {saleProduct.weeklyDealEndDate}</span>
                             )}
                           </div>
-                          <h3 className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10] mb-2">
+                          <h3 className="font-display text-3xl font-bold text-[#E7FB10] mb-2">
                             {saleProduct.name}
                           </h3>
                           <p className="text-sm text-muted-foreground mb-4 max-w-lg">
                             {saleProduct.shortDescription}
                           </p>
-                          <div className="flex items-center justify-center md:justify-start gap-4">
-                            <span className="font-display text-2xl md:text-3xl font-bold">${Number(saleProduct.price).toFixed(2)}</span>
+                          <div className="flex items-center gap-4">
+                            <span className="font-display text-3xl font-bold">${Number(saleProduct.price).toFixed(2)}</span>
                             {saleProduct.originalPrice && (
                               <span className="text-lg text-muted-foreground line-through">
                                 ${Number(saleProduct.originalPrice).toFixed(2)}
