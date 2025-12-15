@@ -45,3 +45,5 @@ integrations = ["javascript_mem_db:1.0.0", "javascript_database:1.0.0", "javascr
 
 [userenv.shared]
 VITE_GA_MEASUREMENT_ID = "G-F5359467FZ"
+VITE_AUTH0_DOMAIN = "dev-5xq04wwsd1n7xn2n.us.auth0.com"
+VITE_AUTH0_CLIENT_ID = "yOXwbImbiTsHffDetLDjqo38XhCKXtzU"
