@@ -44,6 +44,90 @@ const resourceLinks = [
   { href: "/faq", label: "FAQ", icon: BookOpen, description: "Common questions answered", color: "#a855f7" },
 ];
 
+// Collapsible mobile menu section component
+function MobileMenuSection({ 
+  title, 
+  color, 
+  items, 
+  location 
+}: { 
+  title: string; 
+  color: string; 
+  items: typeof productLinks; 
+  location: string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const hasActiveItem = items.some(item => location === item.href || location.startsWith(item.href + "/"));
+  
+  return (
+    <div className="border-t border-border/50">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-5 py-4 flex items-center justify-between"
+        data-testid={`button-mobile-${title.toLowerCase()}-toggle`}
+      >
+        <span 
+          className="text-lg font-display font-semibold"
+          style={{ color: hasActiveItem ? color : undefined }}
+        >
+          {title}
+        </span>
+        <ChevronDown 
+          className={`h-5 w-5 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+          style={{ color }}
+        />
+      </button>
+      
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="px-5 pb-4 space-y-1">
+              {items.map((item) => {
+                const Icon = item.icon;
+                const isActive = location === item.href || location.startsWith(item.href + "/");
+                return (
+                  <Link key={item.href} href={item.href}>
+                    <div
+                      className={`flex items-center gap-4 py-3.5 px-4 rounded-lg transition-colors ${
+                        isActive 
+                          ? "bg-muted/50" 
+                          : "hover:bg-muted/30"
+                      }`}
+                      data-testid={`link-mobile-${item.label.toLowerCase().replace(/ /g, "-")}`}
+                    >
+                      <Icon 
+                        className="h-5 w-5 flex-shrink-0" 
+                        style={{ color: item.color }}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <span 
+                          className="text-base font-medium block"
+                          style={{ color: isActive ? item.color : undefined }}
+                        >
+                          {item.label}
+                        </span>
+                        <span className="text-sm text-muted-foreground truncate block">
+                          {item.description}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -623,191 +707,86 @@ export function Navigation() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 bg-background/95 backdrop-blur-lg md:hidden"
-            style={{ paddingTop: 'calc(var(--banner-height, 40px) + 80px)' }}
+            className="fixed inset-0 z-40 bg-background/98 backdrop-blur-lg md:hidden"
+            style={{ paddingTop: 'calc(var(--banner-height, 40px) + 64px)' }}
           >
-            <nav className="flex flex-col items-center justify-start h-full gap-1.5 overflow-y-auto py-3 px-6">
+            <nav className="flex flex-col h-full overflow-y-auto pb-8">
               {/* Mobile Search Bar */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 }}
-                className="w-full max-w-sm mb-1"
-              >
+              <div className="px-5 py-4 border-b border-border/50">
                 <SearchAutocomplete className="w-full" />
-              </motion.div>
+              </div>
               
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.3 }}
-                transition={{ delay: 0.08 }}
-                className="w-20 h-px bg-[#E7FB10]/50 my-0.5"
-              />
-              {navLinks.map((link, index) => {
-                const isActive = location === link.href;
-                return (
-                  <motion.div
-                    key={link.href}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                  >
-                    <Link href={link.href}>
-                      <span
-                        className={`text-lg font-display font-medium tracking-wide cursor-pointer transition-all duration-300 ${
-                          isActive
-                            ? "text-[#E7FB10] drop-shadow-[0_0_12px_rgba(231,251,16,0.6)]"
-                            : "text-muted-foreground hover:text-[#E7FB10]"
+              {/* Main Navigation Links */}
+              <div className="px-5 py-3">
+                {navLinks.map((link) => {
+                  const isActive = location === link.href;
+                  return (
+                    <Link key={link.href} href={link.href}>
+                      <div
+                        className={`flex items-center gap-3 py-4 border-b border-border/30 ${
+                          isActive ? "text-[#E7FB10]" : "text-foreground"
                         }`}
                         data-testid={`link-mobile-${link.label.toLowerCase().replace(" ", "-")}`}
                       >
-                        {link.label}
-                      </span>
+                        <span className="text-lg font-display font-semibold">{link.label}</span>
+                      </div>
                     </Link>
-                  </motion.div>
-                );
-              })}
-              
-              {/* Products Section - Mobile */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.5 }}
-                transition={{ delay: 0.2 }}
-                className="w-20 h-px bg-[#E7FB10]/50 my-0.5"
+                  );
+                })}
+              </div>
+
+              {/* Products Section - Collapsible */}
+              <MobileMenuSection
+                title="Products"
+                color="#E7FB10"
+                items={productLinks}
+                location={location}
               />
               
-              <motion.span
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25 }}
-                className="text-xs font-medium text-[#E7FB10]"
-              >
-                Products
-              </motion.span>
-              
-              {productLinks.map((link, index) => {
-                const isActive = location === link.href || location.startsWith(link.href + "/");
-                const Icon = link.icon;
-                return (
-                  <motion.div
-                    key={link.href}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 + index * 0.03 }}
-                  >
-                    <Link href={link.href}>
-                      <span
-                        className={`flex items-center gap-1.5 text-sm font-display font-medium tracking-wide cursor-pointer transition-all duration-300 ${
-                          isActive
-                            ? "text-[#E7FB10] drop-shadow-[0_0_12px_rgba(231,251,16,0.6)]"
-                            : "text-muted-foreground hover:text-[#E7FB10]"
-                        }`}
-                        data-testid={`link-mobile-${link.label.toLowerCase().replace(/ /g, "-")}`}
-                      >
-                        <Icon className="h-4 w-4" />
-                        <span className="text-xs">{link.label}</span>
-                      </span>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-              
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.5 }}
-                transition={{ delay: 0.45 }}
-                className="w-20 h-px bg-[#9d4edd]/50 my-0.5"
+              {/* Resources Section - Collapsible */}
+              <MobileMenuSection
+                title="Resources"
+                color="#a855f7"
+                items={resourceLinks}
+                location={location}
               />
               
-              <motion.span
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="text-xs font-medium text-[#9d4edd]"
-              >
-                Resources
-              </motion.span>
-              
-              {resourceLinks.map((link, index) => {
-                const isActive = location === link.href;
-                const Icon = link.icon;
-                return (
-                  <motion.div
-                    key={link.href}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.55 + index * 0.03 }}
-                  >
-                    <Link href={link.href}>
-                      <span
-                        className={`flex items-center gap-1.5 text-sm font-display font-medium tracking-wide cursor-pointer transition-all duration-300 ${
-                          isActive
-                            ? "text-[#9d4edd] drop-shadow-[0_0_12px_rgba(157,78,221,0.6)]"
-                            : "text-muted-foreground hover:text-[#9d4edd]"
-                        }`}
-                        data-testid={`link-mobile-${link.label.toLowerCase().replace(/ /g, "-")}`}
-                      >
-                        <Icon className="h-4 w-4" />
-                        <span className="text-xs">{link.label}</span>
-                      </span>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-              
+              {/* Account Section */}
               {isAuthenticated && (
-                <>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.65 }}
-                  >
-                    <Link href="/dashboard">
-                      <span
-                        className={`text-sm font-display font-medium tracking-wide cursor-pointer transition-all duration-300 ${
-                          location === "/dashboard"
-                            ? "text-[#E7FB10] drop-shadow-[0_0_12px_rgba(231,251,16,0.6)]"
-                            : "text-muted-foreground hover:text-[#E7FB10]"
-                        }`}
-                        data-testid="link-mobile-dashboard"
-                      >
-                        Dashboard
-                      </span>
-                    </Link>
-                  </motion.div>
-                  {user?.isAdmin && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.7 }}
+                <div className="px-5 py-3 border-t border-border/50">
+                  <Link href="/dashboard">
+                    <div
+                      className={`flex items-center gap-3 py-4 border-b border-border/30 ${
+                        location === "/dashboard" ? "text-[#21d8ff]" : "text-foreground"
+                      }`}
+                      data-testid="link-mobile-dashboard"
                     >
-                      <Link href="/admin">
-                        <span
-                          className={`text-sm font-display font-medium tracking-wide cursor-pointer transition-all duration-300 ${
-                            location === "/admin"
-                              ? "text-[#E7FB10] drop-shadow-[0_0_12px_rgba(231,251,16,0.6)]"
-                              : "text-muted-foreground hover:text-[#E7FB10]"
-                          }`}
-                          data-testid="link-mobile-admin"
-                        >
-                          Admin Panel
-                        </span>
-                      </Link>
-                    </motion.div>
+                      <User className="h-5 w-5" />
+                      <span className="text-lg font-display font-semibold">Dashboard</span>
+                    </div>
+                  </Link>
+                  {user?.isAdmin && (
+                    <Link href="/admin">
+                      <div
+                        className={`flex items-center gap-3 py-4 border-b border-border/30 ${
+                          location === "/admin" ? "text-[#21d8ff]" : "text-foreground"
+                        }`}
+                        data-testid="link-mobile-admin"
+                      >
+                        <Shield className="h-5 w-5" />
+                        <span className="text-lg font-display font-semibold">Admin Panel</span>
+                      </div>
+                    </Link>
                   )}
-                </>
+                </div>
               )}
               
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.75 }}
-                className="flex flex-col items-center gap-2 mt-2"
-              >
-                <Link href="/peptides">
+              {/* CTA Buttons */}
+              <div className="px-5 py-6 mt-auto space-y-3">
+                <Link href="/peptides" className="block">
                   <Button 
-                    size="sm" 
-                    className="font-display bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_20px_rgba(231,251,16,0.4)] hover:shadow-[0_0_30px_rgba(231,251,16,0.6)] transition-all duration-300 text-xs" 
+                    size="lg"
+                    className="w-full font-display text-base bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_20px_rgba(231,251,16,0.4)]" 
                     data-testid="button-mobile-shop"
                   >
                     Shop Peptides
@@ -817,12 +796,12 @@ export function Navigation() {
                 {!isLoading && !isAuthenticated && (
                   <Button 
                     variant="outline" 
-                    size="sm" 
-                    className="border-[#E7FB10]/50 text-[#E7FB10] hover:bg-[#E7FB10]/10 hover:border-[#E7FB10] text-xs"
+                    size="lg"
+                    className="w-full border-[#E7FB10]/50 text-[#E7FB10] text-base"
                     data-testid="button-mobile-sign-in"
                     onClick={() => login()}
                   >
-                    <LogIn className="h-3 w-3 mr-1" />
+                    <LogIn className="h-5 w-5 mr-2" />
                     Sign In
                   </Button>
                 )}
@@ -830,16 +809,16 @@ export function Navigation() {
                 {!isLoading && isAuthenticated && (
                   <Button 
                     variant="outline" 
-                    size="sm" 
+                    size="lg"
                     data-testid="button-mobile-logout" 
-                    className="text-xs"
+                    className="w-full text-base"
                     onClick={() => logout()}
                   >
-                    <LogOut className="h-3 w-3 mr-1" />
+                    <LogOut className="h-5 w-5 mr-2" />
                     Sign Out
                   </Button>
                 )}
-              </motion.div>
+              </div>
             </nav>
           </motion.div>
         )}
