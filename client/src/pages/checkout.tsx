@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/hooks/useAuth";
 import {
   ArrowLeft,
   FlaskConical,
@@ -52,6 +53,7 @@ const intervalLabels: { [key: string]: string } = {
 export default function Checkout() {
   const { toast } = useToast();
   const { items: cartItems, getSubtotal, clearCart, addToCart } = useCart();
+  const { login, logout } = useAuth();
   const [hasColdPackShipping, setHasColdPackShipping] = useState(false);
   
   // RUO/Age reminder state - shown once per session on checkout
@@ -448,7 +450,7 @@ export default function Checkout() {
                         variant="ghost"
                         size="sm"
                         className="text-muted-foreground hover:text-foreground"
-                        onClick={() => window.location.href = "/api/logout"}
+                        onClick={() => logout()}
                         data-testid="button-checkout-logout"
                       >
                         <LogOut className="h-4 w-4 mr-1" />

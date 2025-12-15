@@ -292,7 +292,7 @@ export default function ResearchStackDetail() {
   const [match, params] = useRoute("/research-stacks/:id");
   const { addToCart } = useCart();
   const { toast } = useToast();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, login } = useAuth();
   const [synergyMode, setSynergyMode] = useState<"beginner" | "expert">("beginner");
   const [quantity, setQuantity] = useState(1);
   const [purchaseType, setPurchaseType] = useState<PurchaseType>("one-time");
@@ -828,7 +828,7 @@ export default function ResearchStackDetail() {
                   {isAuthenticated ? (
                     <> Reviews can be submitted 30 days after your order from your <Link href="/dashboard" className="text-primary hover:underline">dashboard</Link>.</>
                   ) : (
-                    <> <Link href="/api/login" className="text-primary hover:underline">Sign in</Link> and make a purchase to leave a verified review.</>
+                    <> <span onClick={() => login()} style={{cursor: "pointer"}} className="text-primary hover:underline">Sign in</span> and make a purchase to leave a verified review.</>
                   )}
                 </p>
               </div>

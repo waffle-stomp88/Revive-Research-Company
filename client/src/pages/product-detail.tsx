@@ -152,7 +152,7 @@ export default function ProductDetail() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const { addToCart } = useCart();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, login } = useAuth();
   const [quantity, setQuantity] = useState(1);
   const [selectedDosage, setSelectedDosage] = useState<string>("10mg");
   const [purchaseType, setPurchaseType] = useState<PurchaseType>("one-time");
@@ -1063,7 +1063,7 @@ export default function ProductDetail() {
                   {isAuthenticated ? (
                     <> Reviews can be submitted 30 days after your order from your <Link href="/dashboard" className="text-primary hover:underline">dashboard</Link>.</>
                   ) : (
-                    <> <Link href="/api/login" className="text-primary hover:underline">Sign in</Link> and make a purchase to leave a verified review.</>
+                    <> <span onClick={() => login()} style={{cursor: "pointer"}} className="text-primary hover:underline">Sign in</span> and make a purchase to leave a verified review.</>
                   )}
                 </p>
               </div>

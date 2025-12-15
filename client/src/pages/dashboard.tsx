@@ -865,7 +865,7 @@ function ActivityFeed({ orders, products }: { orders?: Order[]; products?: Produ
 }
 
 export default function Dashboard() {
-  const { user, isLoading: authLoading, isAuthenticated } = useAuth();
+  const { user, isLoading: authLoading, isAuthenticated, login, logout } = useAuth();
   const { toast } = useToast();
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<ReviewableOrder | null>(null);
@@ -881,7 +881,7 @@ export default function Dashboard() {
         variant: "destructive",
       });
       setTimeout(() => {
-        window.location.href = "/api/login";
+        login();
       }, 500);
     }
   }, [authLoading, isAuthenticated, toast]);

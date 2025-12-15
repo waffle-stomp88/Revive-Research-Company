@@ -843,7 +843,7 @@ function CommissionBreakdown({ stats }: { stats?: AffiliateStats }) {
 
 export default function AffiliateDashboard() {
   const { toast } = useToast();
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, isLoading: authLoading, login, logout } = useAuth();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [payoutMethod, setPayoutMethod] = useState("");
@@ -861,7 +861,7 @@ export default function AffiliateDashboard() {
         variant: "destructive",
       });
       setTimeout(() => {
-        window.location.href = "/api/login";
+        login();
       }, 500);
     }
   }, [authLoading, isAuthenticated, toast]);
@@ -936,7 +936,7 @@ export default function AffiliateDashboard() {
         description: "Your affiliate account has been permanently deleted.",
       });
       setTimeout(() => {
-        window.location.href = "/api/logout";
+        logout();
       }, 1000);
     },
     onError: () => {

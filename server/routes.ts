@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertReviewSchema, insertNewsletterSubscriberSchema } from "@shared/schema";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth, isAuthenticated } from "./auth0Auth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import OpenAI from "openai";
@@ -48,11 +48,49 @@ export async function registerRoutes(
   // Setup authentication
   await setupAuth(app);
 
-  // Get authenticated user
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  // Sync Auth0 user to database
+  app.post('/api/auth/sync', async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const { id, email, firstName, lastName, profileImageUrl } = req.body;
+      
+      if (!id || !email) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+      
+      await storage.upsertUser({
+        id,
+        email,
+        firstName: firstName || null,
+        lastName: lastName || null,
+        profileImageUrl: profileImageUrl || null,
+      });
+      
+      const user = await storage.getUser(id);
+      
+      (req.session as any).userId = id;
+      
+      res.json(user);
+    } catch (error) {
+      console.error("Error syncing user:", error);
+      res.status(500).json({ message: "Failed to sync user" });
+    }
+  });
+
+  // Get authenticated user
+  app.get('/api/auth/user', async (req: any, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+      
       const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
       res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);

@@ -39,7 +39,7 @@ const itemVariants = {
 };
 
 export default function AccountSettings() {
-  const { user, isLoading: authLoading, isAuthenticated } = useAuth();
+  const { user, isLoading: authLoading, isAuthenticated, login, logout } = useAuth();
   const { toast } = useToast();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -53,7 +53,7 @@ export default function AccountSettings() {
         variant: "destructive",
       });
       setTimeout(() => {
-        window.location.href = "/api/login";
+        login();
       }, 500);
     }
   }, [authLoading, isAuthenticated, toast]);
@@ -96,7 +96,7 @@ export default function AccountSettings() {
         description: "Your account has been permanently deleted.",
       });
       setTimeout(() => {
-        window.location.href = "/api/logout";
+        logout();
       }, 1000);
     },
     onError: () => {

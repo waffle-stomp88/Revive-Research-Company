@@ -51,7 +51,7 @@ export function Navigation() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [hoveredCartItem, setHoveredCartItem] = useState<string | null>(null);
   const [location] = useLocation();
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading, login, logout } = useAuth();
   const { items, getItemCount, getSubtotal, removeFromCart } = useCart();
   const cartItemCount = getItemCount();
   const regularItems = items.filter(item => !item.isBundle);
@@ -498,16 +498,15 @@ export function Navigation() {
                 </DropdownMenu>
                 
                 {!isLoading && !isAuthenticated && (
-                  <a href="/api/login">
-                    <Button 
-                      variant="outline" 
-                      className="hidden md:inline-flex border-[#E7FB10]/50 text-[#E7FB10] hover:bg-[#E7FB10]/10 hover:border-[#E7FB10] transition-all duration-300"
-                      data-testid="button-sign-in"
-                    >
-                      <LogIn className="h-4 w-4 mr-2" />
-                      Sign In
-                    </Button>
-                  </a>
+                  <Button 
+                    variant="outline" 
+                    className="hidden md:inline-flex border-[#E7FB10]/50 text-[#E7FB10] hover:bg-[#E7FB10]/10 hover:border-[#E7FB10] transition-all duration-300"
+                    data-testid="button-sign-in"
+                    onClick={() => login()}
+                  >
+                    <LogIn className="h-4 w-4 mr-2" />
+                    Sign In
+                  </Button>
                 )}
                 
                 {!isLoading && isAuthenticated && (
@@ -578,11 +577,13 @@ export function Navigation() {
                         </DropdownMenuItem>
                       )}
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem asChild>
-                        <a href="/api/logout" className="cursor-pointer text-destructive" data-testid="button-logout">
-                          <LogOut className="h-4 w-4 mr-2" />
-                          Sign Out
-                        </a>
+                      <DropdownMenuItem 
+                        className="cursor-pointer text-destructive" 
+                        data-testid="button-logout"
+                        onClick={() => logout()}
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -814,26 +815,29 @@ export function Navigation() {
                 </Link>
                 
                 {!isLoading && !isAuthenticated && (
-                  <a href="/api/login">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="border-[#E7FB10]/50 text-[#E7FB10] hover:bg-[#E7FB10]/10 hover:border-[#E7FB10] text-xs"
-                      data-testid="button-mobile-sign-in"
-                    >
-                      <LogIn className="h-3 w-3 mr-1" />
-                      Sign In
-                    </Button>
-                  </a>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="border-[#E7FB10]/50 text-[#E7FB10] hover:bg-[#E7FB10]/10 hover:border-[#E7FB10] text-xs"
+                    data-testid="button-mobile-sign-in"
+                    onClick={() => login()}
+                  >
+                    <LogIn className="h-3 w-3 mr-1" />
+                    Sign In
+                  </Button>
                 )}
                 
                 {!isLoading && isAuthenticated && (
-                  <a href="/api/logout">
-                    <Button variant="outline" size="sm" data-testid="button-mobile-logout" className="text-xs">
-                      <LogOut className="h-3 w-3 mr-1" />
-                      Sign Out
-                    </Button>
-                  </a>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    data-testid="button-mobile-logout" 
+                    className="text-xs"
+                    onClick={() => logout()}
+                  >
+                    <LogOut className="h-3 w-3 mr-1" />
+                    Sign Out
+                  </Button>
                 )}
               </motion.div>
             </nav>

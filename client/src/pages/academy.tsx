@@ -439,7 +439,7 @@ function getAdjacentLessons(currentLessonId: string, completedLessons: string[])
 }
 
 export default function Academy() {
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading, login, logout } = useAuth();
   const [, navigate] = useLocation();
   const [showPersonaQuiz, setShowPersonaQuiz] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
@@ -944,7 +944,7 @@ export default function Academy() {
                     </p>
                     <Button
                       className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
-                      onClick={() => window.location.href = "/api/login"}
+                      onClick={() => login()}
                       data-testid="button-login-save"
                     >
                       Log In to Save

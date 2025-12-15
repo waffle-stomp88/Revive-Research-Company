@@ -4466,7 +4466,7 @@ function PricingOptimizerTab() {
 }
 
 export default function Admin() {
-  const { user, isLoading: authLoading, isAuthenticated } = useAuth();
+  const { user, isLoading: authLoading, isAuthenticated, login, logout } = useAuth();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -4478,7 +4478,7 @@ export default function Admin() {
         variant: "destructive",
       });
       setTimeout(() => {
-        window.location.href = "/api/login";
+        login();
       }, 500);
     }
   }, [authLoading, isAuthenticated, toast]);
