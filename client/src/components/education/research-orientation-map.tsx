@@ -56,7 +56,7 @@ export function ResearchOrientationMap() {
   const [, navigate] = useLocation();
   
   return (
-    <div className="w-full py-12">
+    <div className="hidden md:block w-full py-12">
       <div className="text-center mb-8">
         <p className="text-muted-foreground text-sm md:text-base max-w-xl mx-auto">
           A visual guide to the core research concepts. Explore any topic in any order.

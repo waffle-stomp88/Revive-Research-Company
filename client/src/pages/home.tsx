@@ -348,14 +348,14 @@ function ProductShowcase() {
           </Link>
         )}
 
-        {/* Category Quick Links - Compact */}
+        {/* Category Quick Links - Hidden on mobile */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mb-8"
+          className="hidden md:block mb-8"
         >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-4 gap-3">
             {categories.map((category, index) => {
               const Icon = category.icon;
               const colorClass = category.color === "cyan" 
