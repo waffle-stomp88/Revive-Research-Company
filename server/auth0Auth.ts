@@ -31,15 +31,27 @@ export async function setupAuth(app: Express) {
   app.use(getSession());
 }
 
-export const isAuthenticated: RequestHandler = async (req, res, next) => {
+export const isAuthenticated: RequestHandler = async (req: any, res, next) => {
   const authHeader = req.headers.authorization;
   
   if (authHeader && authHeader.startsWith('Bearer ')) {
     return next();
   }
   
-  if ((req.session as any)?.userId) {
-    return next();
+  const userId = (req.session as any)?.userId;
+  if (userId) {
+    // Populate req.user with user data so routes can access it
+    const user = await storage.getUser(userId);
+    if (user) {
+      req.user = {
+        claims: {
+          sub: userId,
+          email: user.email,
+        }
+      };
+      req.isAuthenticated = () => true;
+      return next();
+    }
   }
   
   return res.status(401).json({ message: "Unauthorized" });
