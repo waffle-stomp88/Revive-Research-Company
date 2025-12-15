@@ -924,10 +924,8 @@ export async function registerRoutes(
   
   // Check if user is admin middleware
   const isAdmin = async (req: any, res: any, next: any) => {
-    if (!req.isAuthenticated || !req.isAuthenticated()) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-    const userId = req.user?.claims?.sub;
+    // Get userId from session (set by /api/auth/sync)
+    const userId = (req.session as any)?.userId;
     if (!userId) {
       return res.status(401).json({ error: "Unauthorized" });
     }
@@ -935,6 +933,8 @@ export async function registerRoutes(
     if (!user?.isAdmin) {
       return res.status(403).json({ error: "Forbidden - Admin access required" });
     }
+    // Attach user to request for use in route handlers
+    req.user = { claims: { sub: userId } };
     next();
   };
 
