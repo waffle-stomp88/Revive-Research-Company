@@ -49,6 +49,7 @@ import {
   GraduationCap,
   BookOpen,
   ChevronRight,
+  ChevronDown,
   Bell,
   Mail,
   Loader2
@@ -61,6 +62,7 @@ import { PriceTrendBadge } from "@/components/price-trend-badge";
 import type { Product, Review, ProductStorageProfile, Batch, Coa, EducationArticle } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { SEOHead } from "@/components/seo-head";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 // Badge priority system - max 2 badges per product
 // Priority: Out of Stock > Low Stock > Sale > Selling Fast > Featured
@@ -159,6 +161,7 @@ export default function ProductDetail() {
   const [subscriptionInterval, setSubscriptionInterval] = useState<SubscriptionInterval>("monthly");
   const [notifyEmail, setNotifyEmail] = useState("");
   const [notifySuccess, setNotifySuccess] = useState(false);
+  const [isEducationOpen, setIsEducationOpen] = useState(false);
 
   const { data: product, isLoading, error } = useQuery<Product>({
     queryKey: ["/api/products", params.id],
@@ -397,14 +400,14 @@ export default function ProductDetail() {
               </div>
             )}
             
-            {/* Learn About This Peptide - Under Product Image */}
+            {/* Learn About This Peptide - DESKTOP ONLY (hidden on mobile, shown below purchase on mobile) */}
             {relatedArticles.length > 0 && (
               <motion.section
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.12 }}
-                className="mt-6"
-                data-testid="section-education"
+                className="mt-6 hidden md:block"
+                data-testid="section-education-desktop"
               >
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
@@ -452,8 +455,8 @@ export default function ProductDetail() {
               </motion.section>
             )}
 
-            {/* RUO Disclaimer - Under Education */}
-            <Card className="p-6 bg-red-950/30 border-2 border-red-500/50 animate-pulse-subtle mt-6" data-testid="card-ruo-disclaimer">
+            {/* RUO Disclaimer - DESKTOP ONLY (compact version shown on mobile in product info section) */}
+            <Card className="p-6 bg-red-950/30 border-2 border-red-500/50 animate-pulse-subtle mt-6 hidden md:block" data-testid="card-ruo-disclaimer-desktop">
               <div className="flex items-start gap-4">
                 <div className="p-3 rounded-full bg-red-500/20 border border-red-500/30">
                   <AlertTriangle className="h-6 w-6 text-red-400" />
@@ -672,6 +675,12 @@ export default function ProductDetail() {
               </div>
             </div>
 
+            {/* Mobile-only compact RUO notice */}
+            <div className="md:hidden flex items-center gap-2 p-3 rounded-lg bg-red-950/30 border border-red-500/40 mb-4" data-testid="card-ruo-mobile">
+              <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0" />
+              <span className="text-xs text-red-400 font-medium">Research Use Only - Not for human consumption</span>
+            </div>
+
             {/* Purchase buttons - only show when in stock */}
             {!isOutOfStock ? (
               <>
@@ -802,6 +811,48 @@ export default function ProductDetail() {
                 <span className="text-[10px] text-muted-foreground">Guaranteed</span>
               </div>
             </div>
+
+            {/* Mobile-only collapsible education section */}
+            {relatedArticles.length > 0 && (
+              <Collapsible 
+                open={isEducationOpen} 
+                onOpenChange={setIsEducationOpen}
+                className="md:hidden mb-6"
+              >
+                <CollapsibleTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-between border-[#ec4899]/30 hover:border-[#ec4899] text-sm"
+                    data-testid="button-toggle-education-mobile"
+                  >
+                    <div className="flex items-center gap-2">
+                      <GraduationCap className="h-4 w-4 text-[#ec4899]" />
+                      <span>Learn About This Peptide</span>
+                    </div>
+                    <ChevronDown className={`h-4 w-4 transition-transform ${isEducationOpen ? "rotate-180" : ""}`} />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-3 space-y-2">
+                  {relatedArticles.slice(0, 2).map((article) => (
+                    <Link key={article.id} href={`/education/${article.slug}`}>
+                      <Card 
+                        className="p-3 border-[#ec4899]/20 hover:border-[#ec4899]/40 transition-all cursor-pointer"
+                        data-testid={`card-article-mobile-${article.id}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <BookOpen className="h-4 w-4 text-[#ec4899] flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-sm font-medium truncate">{article.title}</h4>
+                            <span className="text-xs text-muted-foreground">{article.readTimeMinutes} min read</span>
+                          </div>
+                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                      </Card>
+                    </Link>
+                  ))}
+                </CollapsibleContent>
+              </Collapsible>
+            )}
 
             {benefits.length > 0 && (
               <div className="mb-8">
@@ -1136,6 +1187,27 @@ export default function ProductDetail() {
       
       {/* Recently Viewed Sidebar */}
       <RecentlyViewed currentProductId={params.id} variant="sidebar" />
+
+      {/* Sticky Mobile Add-to-Cart Bar */}
+      {product && !isOutOfStock && (
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-border p-3 safe-area-pb" data-testid="sticky-cart-bar-mobile">
+          <div className="flex items-center gap-3 max-w-lg mx-auto">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold truncate">{product.name}</p>
+              <p className="text-lg font-bold text-[#E7FB10]">${getBasePrice().toFixed(2)}</p>
+            </div>
+            <Button
+              size="lg"
+              className="bg-[#E7FB10] text-black font-display gap-2 shadow-[0_0_15px_rgba(231,251,16,0.4)]"
+              onClick={handleAddToCart}
+              data-testid="button-sticky-add-to-cart"
+            >
+              <ShoppingBag className="h-5 w-5" />
+              Add to Cart
+            </Button>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
