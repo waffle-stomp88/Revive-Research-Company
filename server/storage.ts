@@ -242,8 +242,12 @@ export class DatabaseStorage implements IStorage {
       const [existingByEmail] = await db.select().from(users).where(eq(users.email, userData.email));
       if (existingByEmail && existingByEmail.id !== userData.id) {
         // User exists with different ID (e.g., Auth0 ID vs old ID)
-        // Update the existing user to use the new Auth0 ID
-        await db.delete(users).where(eq(users.id, existingByEmail.id));
+        const oldUserId = existingByEmail.id;
+        
+        // First, update the existing user's email to null temporarily to allow new user creation
+        await db.update(users).set({ email: null }).where(eq(users.id, oldUserId));
+        
+        // Create the new user with the Auth0 ID
         const [newUser] = await db
           .insert(users)
           .values({
@@ -253,6 +257,16 @@ export class DatabaseStorage implements IStorage {
             updatedAt: new Date(),
           })
           .returning();
+        
+        // Update any foreign key references to point to the new ID
+        await db.update(affiliates).set({ userId: newUser.id }).where(eq(affiliates.userId, oldUserId));
+        await db.update(orders).set({ userId: newUser.id }).where(eq(orders.userId, oldUserId));
+        await db.update(reviews).set({ userId: newUser.id }).where(eq(reviews.userId, oldUserId));
+        await db.update(academyProgress).set({ userId: newUser.id }).where(eq(academyProgress.userId, oldUserId));
+        
+        // Now delete the old user record
+        await db.delete(users).where(eq(users.id, oldUserId));
+        
         return newUser;
       }
     }
