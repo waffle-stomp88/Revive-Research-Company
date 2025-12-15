@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ImageLoader } from "@/components/image-loader";
 import { QuickViewModal } from "@/components/quick-view-modal";
 import { CompareBar } from "@/components/comparison-tool";
@@ -197,6 +198,9 @@ export default function Products() {
   
   // Quick view modal state
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
+  
+  // Mobile filter sheet state
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
   const dealsRef = useRef<HTMLDivElement>(null);
   const bundlesRef = useRef<HTMLDivElement>(null);
@@ -569,6 +573,180 @@ export default function Products() {
                   Show Filters
                 </Button>
               )}
+              
+              {/* Mobile Filter Button - opens Sheet */}
+              <Sheet open={mobileFilterOpen} onOpenChange={setMobileFilterOpen}>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="lg:hidden gap-2"
+                    data-testid="button-mobile-filters"
+                  >
+                    <Filter className="h-4 w-4" />
+                    Filters
+                    {hasActiveFilters && (
+                      <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-[10px]">
+                        Active
+                      </Badge>
+                    )}
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-[300px] sm:w-[350px] overflow-y-auto">
+                  <SheetHeader>
+                    <SheetTitle className="flex items-center gap-2">
+                      <Filter className="h-5 w-5" />
+                      Filters
+                    </SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-6 space-y-6">
+                    {/* Search */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Search</label>
+                      <div className="relative">
+                        <Input
+                          placeholder="Search products..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="pr-8"
+                          data-testid="input-mobile-sheet-search"
+                        />
+                        {searchQuery ? (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6"
+                            onClick={() => setSearchQuery("")}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        ) : (
+                          <Search className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Sort */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Sort By</label>
+                      <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
+                        <SelectTrigger className="w-full" data-testid="select-mobile-sort">
+                          <SelectValue placeholder="Sort by" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="featured">Featured</SelectItem>
+                          <SelectItem value="name-asc">Name (A-Z)</SelectItem>
+                          <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+                          <SelectItem value="price-asc">Price (Low-High)</SelectItem>
+                          <SelectItem value="price-desc">Price (High-Low)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Price Filter */}
+                    <div className="space-y-4">
+                      <label className="text-sm font-medium">Price Range</label>
+                      <Slider
+                        value={priceRange}
+                        onValueChange={(value) => setPriceRange(value as [number, number])}
+                        min={priceStats.min}
+                        max={priceStats.max}
+                        step={5}
+                        className="mt-2"
+                        data-testid="slider-mobile-price-range"
+                      />
+                      <div className="flex gap-3">
+                        <div className="flex-1">
+                          <div className="border rounded-md px-3 py-2 text-sm bg-muted/30">
+                            <span className="text-muted-foreground text-xs block">Min</span>
+                            <span className="font-medium">${priceRange[0]}</span>
+                          </div>
+                        </div>
+                        <div className="flex-1">
+                          <div className="border rounded-md px-3 py-2 text-sm bg-muted/30">
+                            <span className="text-muted-foreground text-xs block">Max</span>
+                            <span className="font-medium">${priceRange[1]}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Peptide Groups */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Peptide Groups</label>
+                      <div className="space-y-1">
+                        {peptideGroups.map((group) => {
+                          const count = products?.filter(p => {
+                            const pg = getPeptideGroup(p.name);
+                            return pg?.id === group.id;
+                          }).length || 0;
+                          return (
+                            <Button
+                              key={group.id}
+                              variant={peptideGroupFilter === group.id ? "secondary" : "ghost"}
+                              className="w-full justify-between h-9 text-sm"
+                              onClick={() => setPeptideGroupFilter(group.id)}
+                              data-testid={`filter-mobile-peptide-group-${group.id}`}
+                            >
+                              <span className="flex items-center gap-2">
+                                <div 
+                                  className="w-2 h-2 rounded-full" 
+                                  style={{ backgroundColor: group.color }}
+                                />
+                                {group.label}
+                              </span>
+                              <span className="text-muted-foreground">{count}</span>
+                            </Button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Stock Filter */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Availability</label>
+                      <div className="space-y-1">
+                        {[
+                          { value: "all", label: "All" },
+                          { value: "in-stock", label: "In Stock" },
+                          { value: "out-of-stock", label: "Out of Stock" },
+                        ].map((option) => (
+                          <Button
+                            key={option.value}
+                            variant={stockFilter === option.value ? "secondary" : "ghost"}
+                            className="w-full justify-start h-9 text-sm"
+                            onClick={() => setStockFilter(option.value as typeof stockFilter)}
+                            data-testid={`filter-mobile-stock-${option.value}`}
+                          >
+                            {option.label}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Clear Filters & Apply */}
+                    <div className="space-y-2 pt-4 border-t">
+                      {hasActiveFilters && (
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                          onClick={clearFilters}
+                          data-testid="button-mobile-clear-filters"
+                        >
+                          <X className="h-4 w-4 mr-2" />
+                          Clear All Filters
+                        </Button>
+                      )}
+                      <Button
+                        className="w-full"
+                        onClick={() => setMobileFilterOpen(false)}
+                        data-testid="button-mobile-apply-filters"
+                      >
+                        Show {filteredAndSortedProducts.length} Results
+                      </Button>
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
               
               {/* Desktop Peptide Group Filter with counts */}
               <div className="hidden md:flex flex-1 gap-3 lg:justify-end flex-wrap">

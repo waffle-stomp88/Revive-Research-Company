@@ -41,7 +41,7 @@ function HeroSection() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[80vh] md:min-h-screen flex items-center justify-center overflow-hidden">
       <motion.div 
         style={{ y, scale, opacity: imageOpacity }}
         className="absolute inset-0 z-0"
@@ -119,7 +119,7 @@ function HeroSection() {
           initial={{ opacity: 0, y: 20, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.1 }}
-          className="mb-16 md:mb-20"
+          className="mb-8 md:mb-20"
         >
           <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/50 backdrop-blur-sm border border-[#E7FB10]/30 text-sm font-medium tracking-wide text-[#e7fb10]">
             <FlaskConical className="h-4 w-4" />
@@ -596,9 +596,15 @@ export default function Home() {
     <main>
       <SEOHead title="Premium Peptide Research Compounds" description="Shop third-party tested peptides for scientific research. GMP-certified compounds with Certificates of Analysis. Free shipping over $175." canonicalPath="/" />
       <HeroSection />
-      <MolecularDNAVisual />
+      {/* MolecularDNAVisual - hidden on mobile for performance */}
+      <div className="hidden md:block">
+        <MolecularDNAVisual />
+      </div>
       <ProductShowcase />
-      <TestingPipelineVisual />
+      {/* TestingPipelineVisual - hidden on mobile (too complex) */}
+      <div className="hidden md:block">
+        <TestingPipelineVisual />
+      </div>
       <WhyResearchersChooseUs />
       <CTASection />
     </main>

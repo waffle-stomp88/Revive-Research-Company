@@ -179,7 +179,9 @@ export function WhyResearchersChooseUs() {
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {reasons.map((reason, index) => (
-            <ReasonCard key={reason.title} reason={reason} index={index} />
+            <div key={reason.title} className={index >= 3 ? "hidden md:block" : ""}>
+              <ReasonCard reason={reason} index={index} />
+            </div>
           ))}
         </div>
       </div>
