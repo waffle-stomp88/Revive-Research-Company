@@ -38,24 +38,25 @@ Core principle: Premium peptide research with high-energy engagement—dark yet 
 - Display Font: Bebas Neue (headlines - bold, energetic)
 - Monospace: JetBrains Mono (technical content, code)
 
-**Hierarchy**:
-- Hero Headlines: Bebas Neue, text-6xl md:text-8xl, tracking-wide, glowing effect
-- Section Headers: Bebas Neue, text-3xl md:text-5xl, uppercase tracking
-- Subheadings: DM Sans, font-medium, text-xl md:text-2xl
-- Body Text: DM Sans, font-normal, text-base md:text-lg
-- Labels/Captions: DM Sans, font-medium, text-sm uppercase
-- Product Names: Bebas Neue, font-bold, text-2xl
-- Pricing: Bebas Neue, text-4xl, with glow effect
+**Hierarchy** (Mobile-First):
+- Hero Headlines: Bebas Neue, text-4xl sm:text-5xl md:text-7xl lg:text-8xl, tracking-wide, glowing effect
+- Section Headers: Bebas Neue, text-2xl sm:text-3xl md:text-4xl lg:text-5xl, uppercase tracking
+- Subheadings: DM Sans, font-medium, text-base sm:text-lg md:text-xl lg:text-2xl
+- Body Text: DM Sans, font-normal, text-sm sm:text-base md:text-lg
+- Labels/Captions: DM Sans, font-medium, text-xs sm:text-sm uppercase
+- Product Names: Bebas Neue, font-bold, text-lg sm:text-xl md:text-2xl
+- Pricing: Bebas Neue, text-2xl sm:text-3xl md:text-4xl, with glow effect
 
 ---
 
 ## Layout System
 
-**Spacing Primitives**: Use Tailwind units for consistency
-- Section padding: py-24 md:py-32 lg:py-40
-- Component spacing: gap-8 md:gap-12
-- Card padding: p-8 md:p-12
-- Tight groupings: gap-4
+**Spacing Primitives** (Mobile-First): Use Tailwind units for consistency
+- Section padding: py-12 sm:py-16 md:py-24 lg:py-32
+- Component spacing: gap-4 sm:gap-6 md:gap-8 lg:gap-12
+- Card padding: p-4 sm:p-6 md:p-8 lg:p-12
+- Container padding: px-4 sm:px-6 md:px-8 lg:px-0
+- Tight groupings: gap-2 sm:gap-3 md:gap-4
 
 **Container Strategy**:
 - Full-width sections with inner max-w-7xl mx-auto px-4 md:px-8

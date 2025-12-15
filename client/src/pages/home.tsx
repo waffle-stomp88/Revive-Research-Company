@@ -133,7 +133,7 @@ function HeroSection() {
           transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
         >
           <h1 
-            className="font-display text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 text-white drop-shadow-2xl leading-tight"
+            className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 text-white drop-shadow-2xl leading-tight"
             data-testid="text-hero-headline"
           >
             The Future of
@@ -146,7 +146,7 @@ function HeroSection() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5 }}
-          className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-10 leading-relaxed drop-shadow-lg"
+          className="text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-10 leading-relaxed drop-shadow-lg"
           data-testid="text-hero-subheadline"
         >
           Third-party tested. QR-verifiable. Built for researchers who demand transparency.
@@ -159,13 +159,13 @@ function HeroSection() {
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <Link href="/peptides" onClick={() => trackEvent('hero_cta_click', 'engagement', 'shop_peptides')}>
-            <Button size="lg" className="font-display text-lg px-10 gap-2 bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_30px_rgba(231,251,16,0.4)] hover:shadow-[0_0_50px_rgba(231,251,16,0.6)] transition-all duration-300" data-testid="button-hero-shop">
+            <Button size="lg" className="font-display text-base sm:text-lg px-6 sm:px-10 gap-2 bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_30px_rgba(231,251,16,0.4)] hover:shadow-[0_0_50px_rgba(231,251,16,0.6)] transition-all duration-300" data-testid="button-hero-shop">
               Shop Peptides
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
           <Link href="/coa">
-            <Button size="lg" variant="outline" className="font-display text-lg px-10 bg-black/30 backdrop-blur-sm border-white/30 text-white transition-all duration-300 hover:bg-[#21d8ff] hover:text-black hover:border-[#21d8ff]" data-testid="button-hero-coa">
+            <Button size="lg" variant="outline" className="font-display text-base sm:text-lg px-6 sm:px-10 bg-black/30 backdrop-blur-sm border-white/30 text-white transition-all duration-300 hover:bg-[#21d8ff] hover:text-black hover:border-[#21d8ff]" data-testid="button-hero-coa">
               Verify COA
             </Button>
           </Link>
@@ -178,7 +178,7 @@ function HeroSection() {
           className="mt-8"
         >
           <Link href="/education" onClick={() => trackEvent('hero_cta_click', 'engagement', 'learn_peptides')}>
-            <Button size="lg" variant="outline" className="font-display text-lg px-10 bg-transparent border-[#ec4899]/50 text-[#ec4899] hover:bg-[#ec4899]/10 hover:border-[#ec4899] transition-all duration-300" data-testid="button-hero-learn">
+            <Button size="lg" variant="outline" className="font-display text-base sm:text-lg px-6 sm:px-10 bg-transparent border-[#ec4899]/50 text-[#ec4899] hover:bg-[#ec4899]/10 hover:border-[#ec4899] transition-all duration-300" data-testid="button-hero-learn">
               New to Peptides? Start Here
               <ArrowRight className="h-4 w-4" />
             </Button>
