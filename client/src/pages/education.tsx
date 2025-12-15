@@ -197,7 +197,7 @@ const parseMarkdownTable = (tableText: string): { headers: string[]; rows: strin
 
 const renderTable = (table: { headers: string[]; rows: string[][] }): string => {
   const headerCells = table.headers
-    .map(h => `<th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-[#21d8ff] border-b border-[#21d8ff]/30">${h}</th>`)
+    .map(h => `<th class="px-3 py-2 text-left text-xs font-bold uppercase tracking-wider text-[#21d8ff] border-b border-[#21d8ff]/30">${h}</th>`)
     .join('');
   
   const bodyRows = table.rows
@@ -206,8 +206,8 @@ const renderTable = (table: { headers: string[]; rows: string[][] }): string => 
         .map((cell, cellIdx) => {
           const isFirstCol = cellIdx === 0;
           const cellClass = isFirstCol 
-            ? 'px-4 py-3 text-sm font-medium text-foreground whitespace-nowrap'
-            : 'px-4 py-3 text-sm text-muted-foreground';
+            ? 'px-3 py-2 text-xs font-medium text-foreground whitespace-nowrap'
+            : 'px-3 py-2 text-xs text-muted-foreground';
           return `<td class="${cellClass}">${cell}</td>`;
         })
         .join('');
@@ -217,7 +217,7 @@ const renderTable = (table: { headers: string[]; rows: string[][] }): string => 
     .join('');
   
   // Return on single line to avoid paragraph wrapping from renderMarkdown
-  return `<div class="my-6 overflow-hidden rounded-lg border border-[#21d8ff]/30 bg-gradient-to-br from-[#21d8ff]/5 to-transparent shadow-[0_0_15px_rgba(33,216,255,0.1)]"><table class="min-w-full divide-y divide-[#21d8ff]/20"><thead class="bg-[#21d8ff]/10"><tr>${headerCells}</tr></thead><tbody class="divide-y divide-border/50">${bodyRows}</tbody></table></div>`;
+  return `<div class="my-4 overflow-hidden rounded-lg border border-[#21d8ff]/30 bg-gradient-to-br from-[#21d8ff]/5 to-transparent shadow-[0_0_15px_rgba(33,216,255,0.1)]"><table class="min-w-full divide-y divide-[#21d8ff]/20"><thead class="bg-[#21d8ff]/10"><tr>${headerCells}</tr></thead><tbody class="divide-y divide-border/50">${bodyRows}</tbody></table></div>`;
 };
 
 const renderMarkdown = (content: string) => {
@@ -241,9 +241,9 @@ const renderMarkdown = (content: string) => {
     (match) => {
       const items = match
         .split('\n')
-        .map(line => line.replace(/^\d+\. (.+)$/, '<li class="ml-4">$1</li>'))
+        .map(line => line.replace(/^\d+\. (.+)$/, '<li class="ml-3">$1</li>'))
         .join('');
-      return `<ol class="list-decimal ml-4 my-4 space-y-1">${items}</ol>`;
+      return `<ol class="list-decimal ml-3 my-3 space-y-1 text-sm">${items}</ol>`;
     }
   );
   
@@ -253,21 +253,27 @@ const renderMarkdown = (content: string) => {
     (match) => {
       const items = match
         .split('\n')
-        .map(line => line.replace(/^- (.+)$/, '<li class="ml-4">$1</li>'))
+        .map(line => line.replace(/^- (.+)$/, '<li class="ml-3">$1</li>'))
         .join('');
-      return `<ul class="list-disc ml-4 my-4 space-y-1">${items}</ul>`;
+      return `<ul class="list-disc ml-3 my-3 space-y-1 text-sm">${items}</ul>`;
     }
   );
+
+  // Handle blockquotes/callouts (lines starting with >)
+  processedContent = processedContent.replace(
+    /^> (.+)$/gm,
+    '<div class="my-3 pl-3 border-l-2 border-[#E7FB10]/50 bg-[#E7FB10]/5 py-2 pr-3 rounded-r text-sm italic text-muted-foreground">$1</div>'
+  );
   
-  // Then apply other markdown transformations
+  // Then apply other markdown transformations - compact but readable
   return processedContent
-    .replace(/^### (.*$)/gim, '<h3 class="text-lg font-bold mt-6 mb-3 text-foreground">$1</h3>')
-    .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold mt-8 mb-4 text-foreground">$1</h2>')
-    .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mt-8 mb-4 text-foreground">$1</h1>')
+    .replace(/^### (.*$)/gim, '<h3 class="text-sm font-bold mt-4 mb-2 text-foreground flex items-center gap-2"><span class="w-1 h-4 bg-[#9d4edd] rounded-full"></span>$1</h3>')
+    .replace(/^## (.*$)/gim, '<h2 class="text-base font-bold mt-5 mb-2 text-foreground border-b border-[#21d8ff]/20 pb-1">$1</h2>')
+    .replace(/^# (.*$)/gim, '<h1 class="text-lg font-bold mt-5 mb-3 text-foreground">$1</h1>')
     .replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground font-semibold">$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/\n\n/g, '</p><p class="mb-4">')
-    .replace(/^(?!\s*<)/gm, '<p class="mb-4">'); // Skip lines starting with HTML tags (with optional whitespace)
+    .replace(/\n\n/g, '</p><p class="mb-2 text-sm leading-relaxed">')
+    .replace(/^(?!\s*<)/gm, '<p class="mb-2 text-sm leading-relaxed">'); // Skip lines starting with HTML tags (with optional whitespace)
 };
 
 type ArticleMode = "deep-dive" | "quick-breakdown";
@@ -599,7 +605,7 @@ export default function Education() {
                         )}
                       </div>
 
-                      <div className="p-6">
+                      <div className="p-4 md:p-6">
                         <AnimatePresence mode="wait">
                           {hasQuickBreakdown(article.slug) && articleMode === "quick-breakdown" ? (
                             <motion.div
@@ -623,14 +629,14 @@ export default function Education() {
                               transition={{ duration: 0.3 }}
                             >
                               {article.slug && articleVisuals[article.slug] && (
-                                <div className="mb-8">
+                                <div className="mb-6 max-w-md md:max-w-lg mx-auto">
                                   {articleVisuals[article.slug]()}
                                 </div>
                               )}
 
                               {article.content && (
                                 <div 
-                                  className="prose prose-invert max-w-none text-muted-foreground"
+                                  className="prose prose-invert prose-sm max-w-none text-muted-foreground"
                                   dangerouslySetInnerHTML={{ __html: renderMarkdown(article.content) }}
                                 />
                               )}
