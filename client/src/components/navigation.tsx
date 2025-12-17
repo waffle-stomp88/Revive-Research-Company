@@ -181,7 +181,7 @@ export function Navigation() {
             : "bg-background/80 backdrop-blur-sm"
         }`}>
           <nav className="max-w-7xl mx-auto px-4 md:px-8">
-            <div className="flex items-center justify-between h-16 md:h-20 min-w-0">
+            <div className="flex items-center justify-between h-14 md:h-16 min-w-0">
               <Link href="/" data-testid="link-home-logo" className="flex-shrink-0" onClick={() => window.scrollTo(0, 0)}>
                 <motion.div
                   whileHover={{ scale: 1.02 }}
