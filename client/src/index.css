@@ -116,13 +116,23 @@
   }
 }
 
-@keyframes logoGlow {
+@keyframes logoHolographic {
   0% {
-    filter: drop-shadow(0 0 12px rgba(231, 251, 16, 0.6)) drop-shadow(0 0 20px rgba(33, 216, 255, 0.3));
+    filter: drop-shadow(0 0 8px rgba(33, 216, 255, 0.6)) brightness(1);
+  }
+  33% {
+    filter: drop-shadow(0 0 8px rgba(231, 251, 16, 0.6)) brightness(1.05);
+  }
+  66% {
+    filter: drop-shadow(0 0 8px rgba(236, 72, 153, 0.6)) brightness(1);
   }
   100% {
-    filter: drop-shadow(0 0 16px rgba(33, 216, 255, 0.7)) drop-shadow(0 0 24px rgba(231, 251, 16, 0.4));
+    filter: drop-shadow(0 0 8px rgba(33, 216, 255, 0.6)) brightness(1);
   }
+}
+
+.holographic-logo {
+  animation: logoHolographic 6s ease-in-out infinite;
 }
 
 .holographic-text {

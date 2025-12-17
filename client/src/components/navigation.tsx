@@ -191,7 +191,7 @@ export function Navigation() {
                   <img
                     src={logoImage}
                     alt="Revive Research"
-                    className="h-8 md:h-10 w-auto mr-4"
+                    className="h-8 md:h-10 w-auto mr-4 holographic-logo"
                   />
                 </motion.div>
               </Link>
