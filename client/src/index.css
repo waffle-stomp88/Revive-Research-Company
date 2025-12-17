@@ -116,6 +116,15 @@
   }
 }
 
+@keyframes logoGlow {
+  0% {
+    filter: drop-shadow(0 0 12px rgba(231, 251, 16, 0.6)) drop-shadow(0 0 20px rgba(33, 216, 255, 0.3));
+  }
+  100% {
+    filter: drop-shadow(0 0 16px rgba(33, 216, 255, 0.7)) drop-shadow(0 0 24px rgba(231, 251, 16, 0.4));
+  }
+}
+
 .holographic-text {
   background: linear-gradient(
     90deg,

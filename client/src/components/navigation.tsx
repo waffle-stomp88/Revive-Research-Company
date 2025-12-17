@@ -192,7 +192,10 @@ export function Navigation() {
                     src={logoImage}
                     alt="Revive Research"
                     className="h-8 md:h-10 w-auto mr-4"
-                    style={{ filter: 'drop-shadow(0 0 8px rgba(231, 251, 16, 0.4))' }}
+                    style={{ 
+                      filter: 'drop-shadow(0 0 12px rgba(231, 251, 16, 0.6)) drop-shadow(0 0 20px rgba(33, 216, 255, 0.3))',
+                      animation: 'logoGlow 3s ease-in-out infinite alternate'
+                    }}
                   />
                 </motion.div>
               </Link>
