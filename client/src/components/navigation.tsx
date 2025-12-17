@@ -191,7 +191,7 @@ export function Navigation() {
                   <img
                     src={logoImage}
                     alt="Revive Research"
-                    className="h-12 md:h-30 w-auto"
+                    className="h-8 md:h-10 w-auto"
                   />
                 </motion.div>
               </Link>
