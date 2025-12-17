@@ -116,24 +116,6 @@
   }
 }
 
-@keyframes logoHolographic {
-  0% {
-    filter: drop-shadow(0 0 8px rgba(33, 216, 255, 0.6)) brightness(1);
-  }
-  33% {
-    filter: drop-shadow(0 0 8px rgba(231, 251, 16, 0.6)) brightness(1.05);
-  }
-  66% {
-    filter: drop-shadow(0 0 8px rgba(236, 72, 153, 0.6)) brightness(1);
-  }
-  100% {
-    filter: drop-shadow(0 0 8px rgba(33, 216, 255, 0.6)) brightness(1);
-  }
-}
-
-.holographic-logo {
-  animation: logoHolographic 6s ease-in-out infinite;
-}
 
 .holographic-text {
   background: linear-gradient(
