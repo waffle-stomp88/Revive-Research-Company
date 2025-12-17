@@ -15,7 +15,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/contexts/CartContext";
 import { SearchAutocomplete } from "@/components/search-autocomplete";
-import logoImage from "@assets/REVIVE-11_1764290805698.png";
+import logoImage from "@assets/Untitled_design_(1)_1766008857106.png";
 
 const navLinks = [
   { href: "/", label: "Home", color: "#ec4899" },
