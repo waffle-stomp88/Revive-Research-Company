@@ -9,7 +9,7 @@ export function FreeShippingBanner() {
 
   useEffect(() => {
     if (!dismissed) {
-      document.documentElement.style.setProperty('--banner-height', '32px');
+      document.documentElement.style.setProperty('--banner-height', '36px');
     } else {
       document.documentElement.style.setProperty('--banner-height', '0px');
     }
@@ -19,10 +19,10 @@ export function FreeShippingBanner() {
 
   return (
     <div 
-      className="fixed top-0 left-0 right-0 z-[60] bg-[#E7FB10] text-black py-1.5 px-4" 
+      className="fixed top-0 left-0 right-0 z-[60] bg-[#E7FB10] text-black py-2 px-4" 
       data-testid="banner-free-shipping"
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 text-xs font-medium">
+      <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 text-sm font-medium">
         <Truck className="h-4 w-4" />
         <span>
           <span className="font-bold text-red-500" style={{ animation: 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}>FREE SHIPPING</span> on orders over ${FREE_SHIPPING_THRESHOLD}
