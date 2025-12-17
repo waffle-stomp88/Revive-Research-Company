@@ -196,7 +196,7 @@ export function Navigation() {
                 </motion.div>
               </Link>
 
-              <div className="hidden md:flex items-center gap-3 flex-shrink-0">
+              <div className="hidden md:flex items-center gap-1 flex-shrink-0">
                 {navLinks.map((link) => {
                   const isActive = location === link.href;
                   const color = link.color;
