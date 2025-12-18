@@ -664,7 +664,7 @@ export default function Education() {
                               transition={{ duration: 0.3 }}
                             >
                               {article.slug && articleVisuals[article.slug] && (
-                                <div className="mb-6 max-w-md md:max-w-lg mx-auto">
+                                <div className="mb-6 max-w-2xl lg:max-w-3xl mx-auto">
                                   {articleVisuals[article.slug]()}
                                 </div>
                               )}

@@ -253,22 +253,22 @@ export function KLOWSynergyVisual() {
         </div>
 
         {/* Detailed explanation cards - 4 columns on large, 2x2 on medium */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.4 }}
-            className="p-3 rounded-lg border"
+            className="p-4 rounded-lg border"
             style={{
               backgroundColor: 'rgba(236, 72, 153, 0.08)',
               borderColor: 'rgba(236, 72, 153, 0.3)'
             }}
           >
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-2 h-2 rounded-full bg-[#ec4899]" style={{ boxShadow: '0 0 6px #ec4899' }}></div>
-              <span className="text-xs font-bold text-[#ec4899]">TB-500</span>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-3 h-3 rounded-full bg-[#ec4899]" style={{ boxShadow: '0 0 6px #ec4899' }}></div>
+              <span className="text-sm font-bold text-[#ec4899]">TB-500</span>
             </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Triggers cellular repair via actin regulation, promoting wound healing at the molecular level.
             </p>
           </motion.div>
@@ -277,17 +277,17 @@ export function KLOWSynergyVisual() {
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.5 }}
-            className="p-3 rounded-lg border"
+            className="p-4 rounded-lg border"
             style={{
               backgroundColor: 'rgba(33, 216, 255, 0.08)',
               borderColor: 'rgba(33, 216, 255, 0.3)'
             }}
           >
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-2 h-2 rounded-full bg-[#21d8ff]" style={{ boxShadow: '0 0 6px #21d8ff' }}></div>
-              <span className="text-xs font-bold text-[#21d8ff]">BPC-157</span>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-3 h-3 rounded-full bg-[#21d8ff]" style={{ boxShadow: '0 0 6px #21d8ff' }}></div>
+              <span className="text-sm font-bold text-[#21d8ff]">BPC-157</span>
             </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Stimulates angiogenesis to deliver nutrients and oxygen via VEGF pathway activation.
             </p>
           </motion.div>
@@ -296,17 +296,17 @@ export function KLOWSynergyVisual() {
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.6 }}
-            className="p-3 rounded-lg border"
+            className="p-4 rounded-lg border"
             style={{
               backgroundColor: 'rgba(231, 251, 16, 0.08)',
               borderColor: 'rgba(231, 251, 16, 0.3)'
             }}
           >
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-2 h-2 rounded-full bg-[#E7FB10]" style={{ boxShadow: '0 0 6px #E7FB10' }}></div>
-              <span className="text-xs font-bold text-[#E7FB10]">GHK-Cu</span>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-3 h-3 rounded-full bg-[#E7FB10]" style={{ boxShadow: '0 0 6px #E7FB10' }}></div>
+              <span className="text-sm font-bold text-[#E7FB10]">GHK-Cu</span>
             </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Copper peptide activates collagen I, III, IV synthesis for structural matrix support.
             </p>
           </motion.div>
@@ -315,17 +315,17 @@ export function KLOWSynergyVisual() {
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.7 }}
-            className="p-3 rounded-lg border"
+            className="p-4 rounded-lg border"
             style={{
               backgroundColor: 'rgba(34, 197, 94, 0.08)',
               borderColor: 'rgba(34, 197, 94, 0.3)'
             }}
           >
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-2 h-2 rounded-full bg-[#22c55e]" style={{ boxShadow: '0 0 6px #22c55e' }}></div>
-              <span className="text-xs font-bold text-[#22c55e]">KPV</span>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-3 h-3 rounded-full bg-[#22c55e]" style={{ boxShadow: '0 0 6px #22c55e' }}></div>
+              <span className="text-sm font-bold text-[#22c55e]">KPV</span>
             </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Anti-inflammatory tripeptide inhibits NF-κB pathway, reducing TNF-α, IL-6, and IL-8.
             </p>
           </motion.div>
@@ -336,17 +336,17 @@ export function KLOWSynergyVisual() {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.8 }}
-          className="mt-6 p-4 rounded-lg border"
+          className="mt-6 p-5 rounded-lg border"
           style={{
             backgroundColor: 'rgba(33, 216, 255, 0.08)',
             borderColor: 'rgba(33, 216, 255, 0.3)'
           }}
         >
-          <div className="flex items-center gap-2 mb-2">
-            <Activity className="h-4 w-4 text-[#21d8ff]" />
-            <span className="text-xs font-bold text-[#21d8ff]">The KLOW Advantage</span>
+          <div className="flex items-center gap-2 mb-3">
+            <Activity className="h-5 w-5 text-[#21d8ff]" />
+            <span className="text-sm font-bold text-[#21d8ff]">The KLOW Advantage</span>
           </div>
-          <p className="text-xs text-muted-foreground leading-relaxed">
+          <p className="text-sm text-muted-foreground leading-relaxed">
             <strong>TB-500</strong> repairs tissue → <strong>BPC-157</strong> increases blood flow → <strong>GHK-Cu</strong> builds collagen → <strong>KPV</strong> controls inflammation. Unlike basic healing stacks, KPV enters cells via PepT1 transporter and directly blocks NF-κB, the master inflammatory switch. This creates an optimal healing environment without inflammatory interference.
           </p>
         </motion.div>
