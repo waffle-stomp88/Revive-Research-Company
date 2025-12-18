@@ -740,9 +740,19 @@ export default function Academy() {
               <p className="text-lg text-white/60 max-w-2xl mx-auto">
                 A structured introduction to peptide research. Learn the fundamentals, understand best practices, and set proper expectations before you begin.
               </p>
-              <p className="text-sm text-white/40 mt-2">
-                Need quick reference? Visit our <Link href="/education" className="text-[#ec4899] hover:underline">Education Center</Link> reference library.
-              </p>
+              <div 
+                className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full border mt-4"
+                style={{
+                  background: "rgba(33, 216, 255, 0.05)",
+                  borderColor: "#21d8ff",
+                }}
+              >
+                <BookOpen className="w-4 h-4 text-[#21d8ff] flex-shrink-0" />
+                <span className="text-sm text-[#21d8ff]">Need quick reference?</span>
+                <Link href="/education" className="text-sm font-semibold px-3 py-1 rounded-full bg-[#21d8ff] text-black hover:bg-[#E7FB10] hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer">
+                  Education Center
+                </Link>
+              </div>
             </motion.div>
 
             <motion.div
