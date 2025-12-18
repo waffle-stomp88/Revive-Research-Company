@@ -157,7 +157,11 @@ function Router() {
         <Route path="/checkout" component={Checkout} />
         <Route path="/checkout/success" component={CheckoutSuccess} />
         <Route path="/coa" component={CoaVerification} />
-        <Route path="/coa-library" component={CoaLibrary} />
+        <Route path="/coa-library">
+          <ProtectedRoute title="COA Library" description="Access our complete library of Certificates of Analysis for verified research compounds.">
+            <CoaLibrary />
+          </ProtectedRoute>
+        </Route>
         <Route path="/batch" component={BatchLookup} />
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/account-settings" component={AccountSettings} />

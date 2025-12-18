@@ -29,6 +29,7 @@ Disallow: /supplies
 
 # Disallow gated and account pages
 Disallow: /academy
+Disallow: /coa-library
 Disallow: /dashboard
 Disallow: /account
 Disallow: /account-settings
