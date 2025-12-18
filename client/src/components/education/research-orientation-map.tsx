@@ -59,7 +59,7 @@ export function ResearchOrientationMap() {
     <div className="hidden md:block w-full py-12">
       <div className="text-center mb-8">
         <p className="text-muted-foreground text-sm md:text-base max-w-xl mx-auto">
-          A visual guide to the core research concepts. Explore any topic in any order.
+          Explore any topic in any order—no prerequisites required.
         </p>
       </div>
 
@@ -163,7 +163,7 @@ export function ResearchOrientationMap() {
         >
           <Map className="w-4 h-4 text-muted-foreground" />
           <span className="text-sm text-muted-foreground">
-            These five domains form the foundation of responsible research.
+            Master these five areas to become a confident researcher.
           </span>
         </div>
       </motion.div>
