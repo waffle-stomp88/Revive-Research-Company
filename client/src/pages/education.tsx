@@ -424,7 +424,7 @@ export default function Education() {
           >
             <Compass className="w-4 h-4 text-[#21d8ff] flex-shrink-0" />
             <span className="text-sm text-[#21d8ff]">Looking for structure?</span>
-            <Link href="/academy" className="text-sm font-semibold px-3 py-1 rounded-full bg-[#21d8ff] text-black hover:shadow-lg hover:scale-105 hover:brightness-110 transition-all duration-200 cursor-pointer">
+            <Link href="/academy" className="text-sm font-semibold px-3 py-1 rounded-full bg-[#21d8ff] text-black hover:bg-[#E7FB10] hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer">
               Research Academy
             </Link>
           </div>
