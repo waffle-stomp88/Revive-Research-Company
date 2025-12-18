@@ -72,6 +72,7 @@ import {
   HCGHormonalVisual,
   NADSirtuinVisual,
   GLOWSynergyVisual,
+  KLOWSynergyVisual,
   // Educational peptide visuals (compounds not carried by company)
   KisspeptinVisual,
   PT141Visual,
@@ -112,6 +113,7 @@ const articleVisuals: Record<string, () => JSX.Element> = {
   "tb-500-research-guide": () => <TB500ActinVisual />,
   "ghk-cu-research-guide": () => <GHKCuCopperVisual />,
   "glow-peptide-complex-research-guide": () => <GLOWSynergyVisual />,
+  "klow-peptide-complex-research-guide": () => <KLOWSynergyVisual />,
   "igf-1-lr3-research-guide": () => <IGF1SignalingVisual />,
   "mots-c-research-guide": () => <CellularEnergyVisual peptide="mots-c" />,
   "nad-precursor-research-guide": () => <NADSirtuinVisual />,
