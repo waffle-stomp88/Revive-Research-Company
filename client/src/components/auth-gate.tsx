@@ -21,7 +21,7 @@ export function AuthGate({ title, description }: AuthGateProps) {
   ];
 
   return (
-    <div className="min-h-[calc(100vh-180px)] flex items-center justify-center px-4 pt-8 pb-16">
+    <div className="min-h-[calc(100vh-120px)] flex items-center justify-center px-4 pt-16 pb-8">
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
