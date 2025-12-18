@@ -161,7 +161,7 @@ export function ResearchOrientationMap() {
             borderColor: "rgba(255,255,255,0.1)",
           }}
         >
-          <Map className="w-4 h-4 text-muted-foreground" />
+          <Map className="w-4 h-4 text-[#22c55e]" />
           <span className="text-sm text-muted-foreground">
             Master these five areas to become a confident researcher.
           </span>
