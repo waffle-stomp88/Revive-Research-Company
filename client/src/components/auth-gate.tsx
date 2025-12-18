@@ -31,7 +31,7 @@ export function AuthGate({ title, description }: AuthGateProps) {
         <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-[#E7FB10]/40 via-[#21d8ff]/20 to-[#E7FB10]/10 blur-sm" />
         <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#E7FB10]/20 via-transparent to-[#21d8ff]/20" />
         
-        <div className="relative rounded-2xl bg-[#1a1a1f]/95 backdrop-blur-xl border border-white/10 p-6 overflow-hidden">
+        <div className="relative rounded-2xl bg-[#1a1a1f]/95 backdrop-blur-xl border border-white/10 p-8 overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#E7FB10]/50 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#21d8ff]/30 to-transparent" />
           
@@ -53,7 +53,7 @@ export function AuthGate({ title, description }: AuthGateProps) {
               </motion.div>
               <div>
                 <h2 
-                  className="text-xl font-bold text-white tracking-wide"
+                  className="text-2xl font-bold text-white tracking-wide"
                   style={{ fontFamily: "'Bebas Neue', sans-serif" }}
                 >
                   {title || defaultTitle}
@@ -61,21 +61,21 @@ export function AuthGate({ title, description }: AuthGateProps) {
               </div>
             </div>
 
-            <p className="text-sm text-zinc-400 mb-5 leading-relaxed">
+            <p className="text-base text-zinc-400 mb-6 leading-relaxed">
               {description || defaultDescription}
             </p>
 
-            <div className="flex flex-wrap gap-2 mb-5">
+            <div className="flex flex-wrap gap-2 mb-6">
               {badges.map((badge, index) => (
                 <motion.div
                   key={badge.label}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.3 + index * 0.1 }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#21d8ff]/30 bg-[#21d8ff]/5"
+                  className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#21d8ff]/30 bg-[#21d8ff]/5"
                 >
-                  <badge.icon className="w-3.5 h-3.5 text-[#21d8ff]" />
-                  <span className="text-xs text-[#21d8ff] font-medium">{badge.label}</span>
+                  <badge.icon className="w-4 h-4 text-[#21d8ff]" />
+                  <span className="text-sm text-[#21d8ff] font-medium">{badge.label}</span>
                 </motion.div>
               ))}
             </div>
@@ -87,7 +87,7 @@ export function AuthGate({ title, description }: AuthGateProps) {
             >
               <Button
                 onClick={() => login()}
-                className="w-full h-11 text-sm font-semibold bg-[#E7FB10] hover:bg-[#E7FB10]/90 text-black rounded-xl group"
+                className="w-full h-12 text-base font-semibold bg-[#E7FB10] hover:bg-[#E7FB10]/90 text-black rounded-xl group"
                 data-testid="button-auth-gate-login"
               >
                 <Sparkles className="w-4 h-4 mr-2 group-hover:animate-pulse" />
@@ -96,7 +96,7 @@ export function AuthGate({ title, description }: AuthGateProps) {
               </Button>
             </motion.div>
 
-            <p className="text-center text-xs text-zinc-500 mt-3">
+            <p className="text-center text-sm text-zinc-500 mt-4">
               Already a researcher?{" "}
               <button
                 onClick={() => login()}
@@ -107,11 +107,13 @@ export function AuthGate({ title, description }: AuthGateProps) {
               </button>
             </p>
 
-            <div className="mt-4 pt-3 border-t border-white/5">
-              <p className="text-[10px] text-zinc-600 text-center">
-                <span className="text-red-400/80">RUO:</span> Products are for research use only. 
-                Must be 21+ to create account.
-              </p>
+            <div className="mt-5 pt-4 border-t border-white/5">
+              <div className="px-3 py-2 rounded-lg bg-red-950/30 border border-red-500/20">
+                <p className="text-xs text-red-400 text-center">
+                  <span className="font-semibold">Research Use Only:</span> Products are for laboratory research. 
+                  Must be 21+ to create account.
+                </p>
+              </div>
             </div>
           </div>
         </div>
