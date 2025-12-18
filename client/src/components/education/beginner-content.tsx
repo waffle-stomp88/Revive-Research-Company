@@ -610,6 +610,72 @@ Despite these challenges, multi-peptide research reflects how the body actually 
     takeaway: "GLOW Peptide Complex combines multiple peptides (signal, carrier, enzyme-inhibiting) to target different skin health pathways simultaneously, allowing research into synergistic effects."
   },
 
+  "klow-peptide-complex-research-guide": {
+    icon: Shield,
+    iconColor: "#21d8ff",
+    intro: `KLOW Peptide Complex takes the tissue repair concept further by adding a powerful anti-inflammatory component. It combines four peptides: TB-500, BPC-157, GHK-Cu, and KPV. The special ingredient is KPV, a tripeptide that specifically targets inflammation - which often gets in the way of healing.`,
+    sections: [
+      {
+        title: "The Four Peptides in KLOW",
+        content: `KLOW brings together four peptides that each do something different:
+
+**TB-500 (Tissue Repair)** - This is like your body's repair signal. It helps cells move to damaged areas and reorganize the protein scaffolding inside cells. Think of it as the "first responder" that starts the repair process.
+
+**BPC-157 (Blood Flow)** - Damaged tissue needs nutrients and oxygen to heal. BPC-157 helps your body grow new blood vessels to supply those repair sites - like building new roads to a construction zone.
+
+**GHK-Cu (Collagen Building)** - Once repair is happening, you need building materials. This copper-containing peptide signals cells to make collagen, the structural protein that holds tissue together.
+
+**KPV (Anti-Inflammatory)** - This is what makes KLOW special. Inflammation is supposed to protect you, but too much of it actually slows healing. KPV calms inflammation so the other peptides can work better.`
+      },
+      {
+        title: "Why KPV Makes a Difference",
+        content: `KPV is a tiny tripeptide (just three amino acids: Lysine-Proline-Valine) derived from a hormone called alpha-MSH. Despite its small size, it packs a punch:
+
+**How It Works Simply:**
+Your cells have a master "inflammation switch" called NF-κB. When this switch is ON, cells produce lots of inflammatory chemicals. KPV can get inside cells and help keep this switch in the OFF position.
+
+**The Smart Delivery System:**
+Your body has a transporter called PepT1 that normally helps absorb nutrients. Interestingly, when tissue is inflamed, PepT1 becomes more active in that area. This means KPV gets delivered preferentially to exactly where it's needed most - inflamed tissue.
+
+**What Gets Reduced:**
+With NF-κB calmed down, cells make fewer inflammatory chemicals like TNF-α, IL-6, and IL-8. These are the molecules that cause swelling, redness, and pain.`
+      },
+      {
+        title: "How the Four Work Together",
+        content: `Think of tissue repair like renovating a house while it's on fire:
+
+**Step 1 (TB-500):** The emergency crew arrives to assess damage and start basic repairs.
+
+**Step 2 (BPC-157):** Supply trucks start delivering materials (by building better roads to the site).
+
+**Step 3 (GHK-Cu):** Builders start reconstructing with proper structural materials.
+
+**Step 4 (KPV):** The fire department puts out the flames so construction can proceed without interference.
+
+The key insight is that inflammation (the "fire") can actually slow down or interfere with all the other repair processes. By addressing inflammation specifically, KLOW creates an environment where healing can happen more efficiently.`
+      },
+      {
+        title: "Research Applications",
+        content: `Scientists study KLOW-style combinations for several reasons:
+
+**Tissue Repair Research:**
+- How do different repair mechanisms interact?
+- Can you speed up healing by addressing multiple pathways?
+- What role does inflammation play in slowing repair?
+
+**Gut Health Studies:**
+KPV is particularly interesting for gut research because:
+- The gut has lots of PepT1 transporters
+- Inflammatory bowel conditions involve chronic inflammation
+- The gut barrier needs constant repair
+
+**Understanding Synergy:**
+Do four peptides together work better than four peptides separately? This is a fundamental question in combination therapy research.`
+      }
+    ],
+    takeaway: "KLOW Peptide Complex combines tissue repair peptides (TB-500, BPC-157, GHK-Cu) with the anti-inflammatory KPV, which blocks the NF-κB inflammation pathway. The key insight: controlling inflammation creates a better environment for healing."
+  },
+
   "igf-1-lr3-research-guide": {
     icon: Dna,
     iconColor: "#22c55e",
