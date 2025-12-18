@@ -309,6 +309,7 @@ export default function Education() {
     setArticleMode("quick-breakdown");
   };
 
+  // Handle URL-based article opening
   useEffect(() => {
     if (params.slug && articles.length > 0) {
       const article = articles.find(a => a.slug === params.slug);
@@ -316,16 +317,27 @@ export default function Education() {
         setExpandedArticle(article.id);
         setActiveCategory(article.category);
         setArticleMode("quick-breakdown");
-        setTimeout(() => {
-          const element = document.getElementById('expanded-article');
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }
-        }, 150);
       }
     }
   }, [params.slug, articles]);
+
+  // Scroll to top of article when it expands
+  useEffect(() => {
+    if (expandedArticle) {
+      // Use requestAnimationFrame to wait for DOM render
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const element = document.getElementById('expanded-article');
+          if (element) {
+            const headerOffset = 100; // Account for fixed header
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+            window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+          }
+        });
+      });
+    }
+  }, [expandedArticle]);
 
   // Calculate peptide article counts per group for dropdown badges
   const peptideGroupCounts = useMemo(() => {
