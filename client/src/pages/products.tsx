@@ -180,7 +180,7 @@ type ShopSection = "deals" | "bundles" | "products" | "bulk";
 
 export default function Products() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<SortOption>("featured");
+  const [sortBy, setSortBy] = useState<SortOption>("name-asc");
   const [stockFilter, setStockFilter] = useState<"all" | "in-stock" | "out-of-stock">("in-stock");
   const [activeSection, setActiveSection] = useState<ShopSection>("deals");
   const [sidebarOpen, setSidebarOpen] = useState(true);
