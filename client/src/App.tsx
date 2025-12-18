@@ -11,6 +11,7 @@ import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { AgeVerificationModal } from "@/components/age-verification-modal";
 import { FreeShippingBanner } from "@/components/free-shipping-banner";
+import { ProtectedRoute } from "@/components/protected-route";
 import { initGA } from "@/lib/analytics";
 import { useAnalytics } from "@/hooks/use-analytics";
 
@@ -94,16 +95,64 @@ function Router() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/shop" component={ProductsHub} />
-        <Route path="/peptides" component={Products} />
-        <Route path="/peptides/:id" component={ProductDetail} />
-        <Route path="/products" component={Products} />
-        <Route path="/products/:id" component={ProductDetail} />
-        <Route path="/bulk-packs" component={BulkPacks} />
-        <Route path="/wholesale" component={Wholesale} />
-        <Route path="/supplies" component={Supplies} />
-        <Route path="/research-stacks" component={ResearchStacks} />
-        <Route path="/research-stacks/:id" component={ResearchStackDetail} />
-        <Route path="/bundles/:id" component={BundleDetail} />
+        <Route path="/peptides">
+          <ProtectedRoute title="Access Research Peptides" description="Create a free account to browse our premium peptide catalog with verified quality and COA documentation.">
+            <Products />
+          </ProtectedRoute>
+        </Route>
+        <Route path="/peptides/:id">
+          {(params) => (
+            <ProtectedRoute title="View Product Details" description="Sign in to view detailed product information, pricing, and add items to your cart.">
+              <ProductDetail />
+            </ProtectedRoute>
+          )}
+        </Route>
+        <Route path="/products">
+          <ProtectedRoute title="Access Research Peptides" description="Create a free account to browse our premium peptide catalog with verified quality and COA documentation.">
+            <Products />
+          </ProtectedRoute>
+        </Route>
+        <Route path="/products/:id">
+          {(params) => (
+            <ProtectedRoute title="View Product Details" description="Sign in to view detailed product information, pricing, and add items to your cart.">
+              <ProductDetail />
+            </ProtectedRoute>
+          )}
+        </Route>
+        <Route path="/bulk-packs">
+          <ProtectedRoute title="Bulk Research Packs" description="Access exclusive bulk pricing for research institutions and qualified researchers.">
+            <BulkPacks />
+          </ProtectedRoute>
+        </Route>
+        <Route path="/wholesale">
+          <ProtectedRoute title="Wholesale Program" description="Join our wholesale program for institutional pricing and dedicated support.">
+            <Wholesale />
+          </ProtectedRoute>
+        </Route>
+        <Route path="/supplies">
+          <ProtectedRoute title="Research Supplies" description="Browse our selection of research supplies and equipment.">
+            <Supplies />
+          </ProtectedRoute>
+        </Route>
+        <Route path="/research-stacks">
+          <ProtectedRoute title="Research Stacks" description="Access curated peptide combinations designed for specific research applications.">
+            <ResearchStacks />
+          </ProtectedRoute>
+        </Route>
+        <Route path="/research-stacks/:id">
+          {(params) => (
+            <ProtectedRoute title="Research Stack Details" description="Sign in to view stack details and add to your cart.">
+              <ResearchStackDetail />
+            </ProtectedRoute>
+          )}
+        </Route>
+        <Route path="/bundles/:id">
+          {(params) => (
+            <ProtectedRoute title="Bundle Details" description="Sign in to view bundle details and pricing.">
+              <BundleDetail />
+            </ProtectedRoute>
+          )}
+        </Route>
         <Route path="/cart" component={Cart} />
         <Route path="/checkout" component={Checkout} />
         <Route path="/checkout/success" component={CheckoutSuccess} />
@@ -124,7 +173,11 @@ function Router() {
         <Route path="/what-we-dont-do" component={WhatWeDontDo} />
         <Route path="/education" component={Education} />
         <Route path="/education/:slug" component={Education} />
-        <Route path="/academy" component={Academy} />
+        <Route path="/academy">
+          <ProtectedRoute title="Peptide Research Academy" description="Access exclusive educational content, courses, and earn achievements as you learn.">
+            <Academy />
+          </ProtectedRoute>
+        </Route>
         <Route path="/quality-process" component={QualityProcess} />
         <Route path="/package-warm" component={PackageWarm} />
         <Route path="/transparency" component={Transparency} />
