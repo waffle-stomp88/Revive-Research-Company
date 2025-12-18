@@ -6,7 +6,7 @@ import {
   Hash, 
   Thermometer, 
   Truck,
-  Map
+  CheckCircle2
 } from "lucide-react";
 
 const RESEARCH_DOMAINS = [
@@ -157,12 +157,12 @@ export function ResearchOrientationMap() {
         <div
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border"
           style={{
-            background: "rgba(255,255,255,0.02)",
-            borderColor: "rgba(255,255,255,0.1)",
+            background: "rgba(34, 197, 94, 0.05)",
+            borderColor: "#22c55e",
           }}
         >
-          <Map className="w-4 h-4 text-[#22c55e]" />
-          <span className="text-sm text-muted-foreground">
+          <CheckCircle2 className="w-4 h-4 text-[#22c55e]" />
+          <span className="text-sm text-[#22c55e]">
             Master these five areas to become a confident researcher.
           </span>
         </div>
