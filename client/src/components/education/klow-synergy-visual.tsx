@@ -353,12 +353,12 @@ export function KLOWSynergyVisual() {
       </div>
 
       <motion.div
-        className="text-center text-xs text-muted-foreground"
+        className="text-center text-xs"
         initial={{ opacity: 0 }}
         animate={isInView ? { opacity: 1 } : {}}
         transition={{ delay: 2 }}
       >
-        <span className="px-3 py-1 rounded-full bg-muted/30">
+        <span className="px-3 py-1 rounded-full bg-red-950/40 border border-red-500/30 text-red-400">
           For research education only • KLOW peptide complex
         </span>
       </motion.div>
