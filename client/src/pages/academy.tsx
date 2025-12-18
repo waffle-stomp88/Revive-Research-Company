@@ -755,6 +755,20 @@ export default function Academy() {
               </div>
             </motion.div>
 
+            {/* Learning Path - Hidden on mobile */}
+            <div className="hidden md:block py-8 px-6">
+              <HorizontalLearningPath
+                modules={CURRICULUM}
+                completedLessons={localProgress.completedLessons}
+                onModuleClick={(moduleId) => {
+                  const element = document.getElementById(`module-section-${moduleId}`);
+                  if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }}
+              />
+            </div>
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -789,22 +803,6 @@ export default function Academy() {
                 </div>
               </div>
             </motion.div>
-          </div>
-        </section>
-
-        {/* Learning Path - Hidden on mobile */}
-        <section className="hidden md:block py-8 px-6 -mt-8">
-          <div className="max-w-6xl mx-auto">
-            <HorizontalLearningPath
-              modules={CURRICULUM}
-              completedLessons={localProgress.completedLessons}
-              onModuleClick={(moduleId) => {
-                const element = document.getElementById(`module-section-${moduleId}`);
-                if (element) {
-                  element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-              }}
-            />
           </div>
         </section>
 
