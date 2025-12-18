@@ -257,7 +257,7 @@ export function ChatBot() {
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 1, type: "spring", stiffness: 200 }}
-        className="fixed bottom-4 right-4 md:right-6 z-50"
+        className="fixed bottom-20 md:bottom-4 right-4 md:right-6 z-50"
       >
         <Button
           onClick={() => setIsOpen(!isOpen)}
