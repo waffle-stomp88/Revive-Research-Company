@@ -317,8 +317,12 @@ export default function Education() {
         setActiveCategory(article.category);
         setArticleMode("quick-breakdown");
         setTimeout(() => {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 200);
+          const element = document.getElementById('expanded-article');
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }, 150);
       }
     }
   }, [params.slug, articles]);
