@@ -5,7 +5,7 @@ import { Shield, Activity } from "lucide-react";
 function KLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean; activationLevel: number }) {
   return (
     <div className="relative w-full flex flex-col items-center justify-center overflow-hidden">
-      <svg viewBox="0 0 500 380" className="w-full h-auto" style={{ maxHeight: '420px' }}>
+      <svg viewBox="0 0 500 400" className="w-full h-auto" style={{ maxHeight: '480px' }}>
         <defs>
           <radialGradient id="klowCenterGlow" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#21d8ff" stopOpacity="0.6" />
@@ -13,7 +13,7 @@ function KLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
           </radialGradient>
         </defs>
         
-        <motion.text x="250" y="25" textAnchor="middle" fill="rgba(255,255,255,0.8)" fontSize="12" fontWeight="700"
+        <motion.text x="250" y="30" textAnchor="middle" fill="rgba(255,255,255,0.9)" fontSize="18" fontWeight="700"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
         >
@@ -26,10 +26,10 @@ function KLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.1 }}
         >
-          <circle cx="60" cy="80" r="16" fill="#ec4899" style={{ filter: 'drop-shadow(0 0 10px rgba(236, 72, 153, 0.7))' }} />
-          <text x="60" y="84" textAnchor="middle" fill="white" fontSize="8" fontWeight="700">TB</text>
-          <text x="60" y="115" textAnchor="middle" fill="#ec4899" fontSize="7" fontWeight="600">TB-500</text>
-          <text x="60" y="127" textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="6">Tissue Repair</text>
+          <circle cx="60" cy="80" r="22" fill="#ec4899" style={{ filter: 'drop-shadow(0 0 10px rgba(236, 72, 153, 0.7))' }} />
+          <text x="60" y="86" textAnchor="middle" fill="white" fontSize="12" fontWeight="700">TB</text>
+          <text x="60" y="120" textAnchor="middle" fill="#ec4899" fontSize="12" fontWeight="600">TB-500</text>
+          <text x="60" y="136" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="10">Tissue Repair</text>
         </motion.g>
 
         {/* PEPTIDE 2: BPC-157 */}
@@ -38,10 +38,10 @@ function KLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.2 }}
         >
-          <circle cx="175" cy="80" r="16" fill="#21d8ff" style={{ filter: 'drop-shadow(0 0 10px rgba(33, 216, 255, 0.7))' }} />
-          <text x="175" y="84" textAnchor="middle" fill="white" fontSize="8" fontWeight="700">BP</text>
-          <text x="175" y="115" textAnchor="middle" fill="#21d8ff" fontSize="7" fontWeight="600">BPC-157</text>
-          <text x="175" y="127" textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="6">Angiogenesis</text>
+          <circle cx="175" cy="80" r="22" fill="#21d8ff" style={{ filter: 'drop-shadow(0 0 10px rgba(33, 216, 255, 0.7))' }} />
+          <text x="175" y="86" textAnchor="middle" fill="white" fontSize="12" fontWeight="700">BP</text>
+          <text x="175" y="120" textAnchor="middle" fill="#21d8ff" fontSize="12" fontWeight="600">BPC-157</text>
+          <text x="175" y="136" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="10">Angiogenesis</text>
         </motion.g>
 
         {/* PEPTIDE 3: GHK-Cu */}
@@ -50,10 +50,10 @@ function KLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.3 }}
         >
-          <circle cx="325" cy="80" r="16" fill="#E7FB10" style={{ filter: 'drop-shadow(0 0 10px rgba(231, 251, 16, 0.7))' }} />
-          <text x="325" y="84" textAnchor="middle" fill="black" fontSize="8" fontWeight="700">GK</text>
-          <text x="325" y="115" textAnchor="middle" fill="#E7FB10" fontSize="7" fontWeight="600">GHK-Cu</text>
-          <text x="325" y="127" textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="6">Collagen</text>
+          <circle cx="325" cy="80" r="22" fill="#E7FB10" style={{ filter: 'drop-shadow(0 0 10px rgba(231, 251, 16, 0.7))' }} />
+          <text x="325" y="86" textAnchor="middle" fill="black" fontSize="12" fontWeight="700">GK</text>
+          <text x="325" y="120" textAnchor="middle" fill="#E7FB10" fontSize="12" fontWeight="600">GHK-Cu</text>
+          <text x="325" y="136" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="10">Collagen</text>
         </motion.g>
 
         {/* PEPTIDE 4: KPV - The differentiator */}
@@ -62,10 +62,10 @@ function KLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.4 }}
         >
-          <circle cx="440" cy="80" r="16" fill="#22c55e" style={{ filter: 'drop-shadow(0 0 10px rgba(34, 197, 94, 0.7))' }} />
-          <text x="440" y="84" textAnchor="middle" fill="white" fontSize="8" fontWeight="700">KPV</text>
-          <text x="440" y="115" textAnchor="middle" fill="#22c55e" fontSize="7" fontWeight="600">KPV</text>
-          <text x="440" y="127" textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="6">Anti-Inflam.</text>
+          <circle cx="440" cy="80" r="22" fill="#22c55e" style={{ filter: 'drop-shadow(0 0 10px rgba(34, 197, 94, 0.7))' }} />
+          <text x="440" y="86" textAnchor="middle" fill="white" fontSize="12" fontWeight="700">KPV</text>
+          <text x="440" y="120" textAnchor="middle" fill="#22c55e" fontSize="12" fontWeight="600">KPV</text>
+          <text x="440" y="136" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="10">Anti-Inflam.</text>
         </motion.g>
 
         {/* Arrows converging to tissue target */}
@@ -73,17 +73,17 @@ function KLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
           <>
             {activationLevel < 45 ? (
               <>
-                <motion.path d="M 60 140 L 60 175" stroke="#ec4899" strokeWidth="2" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8 }} />
-                <motion.path d="M 175 140 L 175 175" stroke="#21d8ff" strokeWidth="2" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8 }} />
-                <motion.path d="M 325 140 L 325 175" stroke="#E7FB10" strokeWidth="2" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8 }} />
-                <motion.path d="M 440 140 L 440 175" stroke="#22c55e" strokeWidth="2" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8 }} />
+                <motion.path d="M 60 150 L 60 185" stroke="#ec4899" strokeWidth="2.5" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8 }} />
+                <motion.path d="M 175 150 L 175 185" stroke="#21d8ff" strokeWidth="2.5" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8 }} />
+                <motion.path d="M 325 150 L 325 185" stroke="#E7FB10" strokeWidth="2.5" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8 }} />
+                <motion.path d="M 440 150 L 440 185" stroke="#22c55e" strokeWidth="2.5" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8 }} />
               </>
             ) : (
               <>
-                <motion.path d="M 60 140 Q 60 165 150 195" stroke="#ec4899" strokeWidth="2" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8, delay: 0.2 }} />
-                <motion.path d="M 175 140 Q 175 170 200 195" stroke="#21d8ff" strokeWidth="2" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8 }} />
-                <motion.path d="M 325 140 Q 325 170 300 195" stroke="#E7FB10" strokeWidth="2" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8, delay: 0.2 }} />
-                <motion.path d="M 440 140 Q 440 165 350 195" stroke="#22c55e" strokeWidth="2" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8, delay: 0.3 }} />
+                <motion.path d="M 60 150 Q 60 175 150 210" stroke="#ec4899" strokeWidth="2.5" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8, delay: 0.2 }} />
+                <motion.path d="M 175 150 Q 175 180 200 210" stroke="#21d8ff" strokeWidth="2.5" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8 }} />
+                <motion.path d="M 325 150 Q 325 180 300 210" stroke="#E7FB10" strokeWidth="2.5" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8, delay: 0.2 }} />
+                <motion.path d="M 440 150 Q 440 175 350 210" stroke="#22c55e" strokeWidth="2.5" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8, delay: 0.3 }} />
               </>
             )}
           </>
@@ -96,10 +96,10 @@ function KLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.5, duration: 0.6 }}
           >
-            <ellipse cx="250" cy="210" rx="110" ry="30" fill="rgba(33, 216, 255, 0.15)" stroke="#21d8ff" strokeWidth="2"
+            <ellipse cx="250" cy="230" rx="120" ry="35" fill="rgba(33, 216, 255, 0.15)" stroke="#21d8ff" strokeWidth="2.5"
               style={{ filter: 'drop-shadow(0 0 15px rgba(33, 216, 255, 0.4))' }}
             />
-            <text x="250" y="215" textAnchor="middle" fill="#21d8ff" fontSize="9" fontWeight="700">
+            <text x="250" y="236" textAnchor="middle" fill="#21d8ff" fontSize="14" fontWeight="700">
               Tissue Repair + Protection
             </text>
           </motion.g>
@@ -112,20 +112,20 @@ function KLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
           >
-            <path d="M 170 225 L 110 275" stroke="#ec4899" strokeWidth="2" fill="none" strokeDasharray="4,4" />
+            <path d="M 170 250 L 110 295" stroke="#ec4899" strokeWidth="2.5" fill="none" strokeDasharray="4,4" />
             
             {[0, 1, 2].map((i) => (
               <motion.g key={`regen-${i}`}>
-                <circle cx={70 + i * 30} cy={300} r="6" fill="#ec4899" 
+                <circle cx={70 + i * 30} cy={320} r="8" fill="#ec4899" 
                   style={{ filter: 'drop-shadow(0 0 6px rgba(236, 72, 153, 0.6))' }}
                 />
               </motion.g>
             ))}
             
-            <text x="110" y="335" textAnchor="middle" fill="#ec4899" fontSize="9" fontWeight="700">
+            <text x="110" y="355" textAnchor="middle" fill="#ec4899" fontSize="13" fontWeight="700">
               Cellular Regeneration
             </text>
-            <text x="110" y="350" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="7">
+            <text x="110" y="372" textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="11">
               TB-500 + BPC-157
             </text>
           </motion.g>
@@ -138,20 +138,20 @@ function KLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
           >
-            <path d="M 330 225 L 390 275" stroke="#22c55e" strokeWidth="2" fill="none" strokeDasharray="4,4" />
+            <path d="M 330 250 L 390 295" stroke="#22c55e" strokeWidth="2.5" fill="none" strokeDasharray="4,4" />
             
             {[0, 1, 2].map((i) => (
               <motion.g key={`antiinflam-${i}`}>
-                <circle cx={340 + i * 30} cy={300} r="6" fill="#22c55e"
+                <circle cx={340 + i * 30} cy={320} r="8" fill="#22c55e"
                   style={{ filter: 'drop-shadow(0 0 6px rgba(34, 197, 94, 0.6))' }}
                 />
               </motion.g>
             ))}
             
-            <text x="390" y="335" textAnchor="middle" fill="#22c55e" fontSize="9" fontWeight="700">
+            <text x="390" y="355" textAnchor="middle" fill="#22c55e" fontSize="13" fontWeight="700">
               Inflammation Control
             </text>
-            <text x="390" y="350" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="7">
+            <text x="390" y="372" textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="11">
               KPV NF-κB Block
             </text>
           </motion.g>
@@ -164,8 +164,8 @@ function KLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2 }}
           >
-            <ellipse cx="250" cy="320" rx="160" ry="25" fill="none" stroke="#E7FB10" strokeWidth="2" strokeDasharray="4,4" opacity="0.6" />
-            <text x="250" y="325" textAnchor="middle" fill="#E7FB10" fontSize="10" fontWeight="700">
+            <ellipse cx="250" cy="350" rx="170" ry="30" fill="none" stroke="#E7FB10" strokeWidth="2.5" strokeDasharray="4,4" opacity="0.6" />
+            <text x="250" y="356" textAnchor="middle" fill="#E7FB10" fontSize="14" fontWeight="700">
               RESULT: Complete Healing Environment
             </text>
           </motion.g>
