@@ -2335,83 +2335,32 @@ Return ONLY valid JSON in this exact format:
     }
   });
 
-  // Dynamic XML Sitemap
+  // XML Sitemap - Only public-facing, non-product pages for regulatory compliance
   app.get("/sitemap.xml", async (req, res) => {
     try {
-      const baseUrl = "https://revive-research--graysonwillard.replit.app";
-      const today = new Date().toISOString().split('T')[0];
+      const baseUrl = "https://reviveresearch.co";
       
-      // Static pages with their priorities and change frequencies
+      // Only include public, non-product, non-gated pages
       const staticPages = [
-        { url: "/", priority: "1.0", changefreq: "daily" },
-        { url: "/products", priority: "0.9", changefreq: "daily" },
-        { url: "/peptides", priority: "0.9", changefreq: "daily" },
-        { url: "/research-stacks", priority: "0.8", changefreq: "weekly" },
-        { url: "/bulk-packs", priority: "0.8", changefreq: "weekly" },
-        { url: "/wholesale", priority: "0.7", changefreq: "monthly" },
+        { url: "/", priority: "1.0", changefreq: "weekly" },
         { url: "/education", priority: "0.8", changefreq: "weekly" },
-        { url: "/dosage-calculator", priority: "0.7", changefreq: "monthly" },
-        { url: "/faq", priority: "0.6", changefreq: "monthly" },
-        { url: "/legal", priority: "0.5", changefreq: "monthly" },
-        { url: "/coa-verification", priority: "0.7", changefreq: "weekly" },
-        { url: "/about", priority: "0.6", changefreq: "monthly" },
-        { url: "/contact", priority: "0.6", changefreq: "monthly" },
         { url: "/quality-process", priority: "0.7", changefreq: "monthly" },
         { url: "/transparency", priority: "0.7", changefreq: "monthly" },
-        { url: "/ethical-pricing", priority: "0.6", changefreq: "monthly" },
-        { url: "/batch-archive", priority: "0.6", changefreq: "weekly" },
-        { url: "/buyer-checklist", priority: "0.6", changefreq: "monthly" },
-        { url: "/troubleshooting", priority: "0.5", changefreq: "monthly" },
-        { url: "/package-warm-guide", priority: "0.5", changefreq: "monthly" },
-        { url: "/lab-notes", priority: "0.7", changefreq: "weekly" },
-        { url: "/affiliate-program", priority: "0.6", changefreq: "monthly" },
+        { url: "/faq", priority: "0.6", changefreq: "monthly" },
+        { url: "/contact", priority: "0.6", changefreq: "monthly" },
       ];
 
-      // Fetch dynamic content
-      const [products, articles] = await Promise.all([
-        storage.getAllProducts(),
-        storage.getAllEducationArticles()
-      ]);
-
-      // Build XML sitemap
       let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 `;
 
-      // Add static pages
       for (const page of staticPages) {
         xml += `  <url>
     <loc>${baseUrl}${page.url}</loc>
-    <lastmod>${today}</lastmod>
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
   </url>
 `;
-      }
-
-      // Add product pages
-      for (const product of products) {
-        xml += `  <url>
-    <loc>${baseUrl}/peptides/${product.id}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-`;
-      }
-
-      // Add education article pages
-      for (const article of articles) {
-        if (article.isPublished) {
-          const lastmod = article.updatedAt ? new Date(article.updatedAt).toISOString().split('T')[0] : today;
-          xml += `  <url>
-    <loc>${baseUrl}/education/${article.slug}</loc>
-    <lastmod>${lastmod}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-`;
-        }
       }
 
       xml += `</urlset>`;
