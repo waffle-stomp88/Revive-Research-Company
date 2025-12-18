@@ -317,13 +317,7 @@ export default function Education() {
         setActiveCategory(article.category);
         setArticleMode("quick-breakdown");
         setTimeout(() => {
-          const element = document.getElementById('expanded-article');
-          if (element) {
-            const headerOffset = 100;
-            const elementPosition = element.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-            window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-          }
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }, 200);
       }
     }
