@@ -68,25 +68,11 @@ export function HorizontalLearningPath({ modules, completedLessons, onModuleClic
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="relative"
+                className="relative h-full flex flex-col"
               >
-                <div className="hidden md:flex justify-center mb-4">
-                  <motion.div
-                    className="w-4 h-4 rounded-full relative z-10"
-                    style={{
-                      backgroundColor: isComplete ? module.color : isStarted ? `${module.color}80` : "rgba(255,255,255,0.2)",
-                      boxShadow: isComplete || isStarted ? `0 0 15px ${module.color}80` : "none",
-                    }}
-                    animate={isComplete ? {
-                      boxShadow: [`0 0 15px ${module.color}80`, `0 0 25px ${module.color}`, `0 0 15px ${module.color}80`]
-                    } : {}}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
-                </div>
-
                 <button
                   onClick={() => onModuleClick(module.id)}
-                  className="w-full text-left group cursor-pointer"
+                  className="w-full h-full text-left group cursor-pointer flex flex-col"
                   data-testid={`button-module-${module.id}`}
                 >
                   <div
@@ -106,7 +92,7 @@ export function HorizontalLearningPath({ modules, completedLessons, onModuleClic
                       }}
                     />
 
-                    <div className="relative z-10">
+                    <div className="relative z-10 flex flex-col h-full">
                       <div className="flex items-center justify-between mb-4">
                         <div
                           className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110"

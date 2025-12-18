@@ -64,16 +64,6 @@ export function ResearchOrientationMap() {
       </div>
 
       <div className="relative">
-        <div className="hidden md:block absolute top-[60px] left-[10%] right-[10%] h-1 z-0">
-          <div 
-            className="absolute inset-0 rounded-full"
-            style={{
-              background: `linear-gradient(90deg, ${RESEARCH_DOMAINS[0].color}, ${RESEARCH_DOMAINS[1].color}, ${RESEARCH_DOMAINS[2].color}, ${RESEARCH_DOMAINS[3].color}, ${RESEARCH_DOMAINS[4].color})`,
-              opacity: 0.3,
-            }}
-          />
-        </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-5 relative z-10">
           {RESEARCH_DOMAINS.map((domain, index) => {
             const Icon = domain.icon;
@@ -84,18 +74,8 @@ export function ResearchOrientationMap() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.08 }}
-                className="relative"
+                className="relative h-full"
               >
-                <div className="hidden md:flex justify-center mb-4">
-                  <motion.div
-                    className="w-3 h-3 rounded-full relative z-10"
-                    style={{
-                      backgroundColor: domain.color,
-                      boxShadow: `0 0 12px ${domain.color}80`,
-                    }}
-                  />
-                </div>
-
                 <div
                     className="group cursor-pointer h-full transform transition-all duration-300 hover:scale-[1.03] hover:-translate-y-1"
                     data-testid={`domain-card-${domain.id}`}
