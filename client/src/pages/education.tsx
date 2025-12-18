@@ -416,16 +416,17 @@ export default function Education() {
             Browse our open reference library for quick lookups on peptide research topics, compounds, and best practices.
           </p>
           <div 
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border mt-4"
+            className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full border mt-4"
             style={{
               background: "rgba(33, 216, 255, 0.05)",
               borderColor: "#21d8ff",
             }}
           >
-            <Compass className="w-4 h-4 text-[#21d8ff]" />
-            <span className="text-sm text-[#21d8ff]">
-              Looking for structure? Try our <Link href="/academy" className="font-semibold hover:underline">Research Academy</Link> guided orientation.
-            </span>
+            <Compass className="w-4 h-4 text-[#21d8ff] flex-shrink-0" />
+            <span className="text-sm text-[#21d8ff]">Looking for structure?</span>
+            <Link href="/academy" className="text-sm font-semibold px-3 py-1 rounded-full bg-[#21d8ff] text-black hover:shadow-lg transition-all">
+              Research Academy
+            </Link>
           </div>
         </motion.div>
 
