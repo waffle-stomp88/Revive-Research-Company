@@ -55,20 +55,6 @@ export function HorizontalLearningPath({ modules, completedLessons, onModuleClic
       </div>
 
       <div className="relative">
-        <div className="hidden md:block absolute top-[60px] left-[12.5%] right-[12.5%] h-1 z-0">
-          <div className="absolute inset-0 rounded-full bg-white/10" />
-          <motion.div
-            className="absolute inset-y-0 left-0 rounded-full"
-            initial={{ width: "0%" }}
-            animate={{ width: `${(totalCompleted / totalLessons) * 100}%` }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            style={{
-              background: `linear-gradient(90deg, ${modules[0].color}, ${modules[1].color}, ${modules[2].color}, ${modules[3].color})`,
-              boxShadow: `0 0 20px ${modules[0].color}80`,
-            }}
-          />
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 relative z-10">
           {modules.map((module, index) => {
             const { completed, total } = getModuleProgress(module);
@@ -104,7 +90,7 @@ export function HorizontalLearningPath({ modules, completedLessons, onModuleClic
                   data-testid={`button-module-${module.id}`}
                 >
                   <div
-                    className="relative p-5 rounded-xl transition-all duration-300 overflow-hidden"
+                    className="relative p-5 rounded-xl transition-all duration-300 overflow-hidden h-full flex flex-col"
                     style={{
                       background: `linear-gradient(135deg, ${module.color}15 0%, transparent 100%)`,
                       border: `1px solid ${isComplete ? module.color : `${module.color}40`}`,
@@ -148,9 +134,9 @@ export function HorizontalLearningPath({ modules, completedLessons, onModuleClic
                       >
                         {module.title}
                       </h3>
-                      <p className="text-white/50 text-sm mb-4">{module.description}</p>
+                      <p className="text-white/50 text-sm mb-4 flex-grow">{module.description}</p>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 mt-auto">
                         {isComplete ? (
                           <span className="flex items-center gap-1.5 text-sm font-medium" style={{ color: module.color }}>
                             <CheckCircle2 className="w-4 h-4" />
