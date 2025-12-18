@@ -1,18 +1,49 @@
 # Revive Research - Robots.txt
-# Allow full indexing of all pages
+# Careful access control for regulatory compliance
 
 User-agent: *
 Allow: /
+Allow: /education
+Allow: /quality-process
+Allow: /transparency
+Allow: /faq
+Allow: /contact
+Allow: /ethical-pricing
+Allow: /buyer-checklist
 
-# Disallow private/transactional pages
+# Disallow all product and shop pages
+Disallow: /products
+Disallow: /products/
+Disallow: /peptides
+Disallow: /peptides/
+Disallow: /shop
 Disallow: /cart
 Disallow: /checkout
+Disallow: /bulk-packs
+Disallow: /research-stacks
+Disallow: /research-stacks/
+Disallow: /bundles
+Disallow: /bundles/
+Disallow: /wholesale
+Disallow: /supplies
+
+# Disallow gated and account pages
+Disallow: /academy
+Disallow: /dashboard
 Disallow: /account
+Disallow: /account-settings
+Disallow: /admin
+Disallow: /affiliate
+Disallow: /affiliate-dashboard
 Disallow: /login
+Disallow: /signup
+Disallow: /register
+
+# Disallow API and system pages
 Disallow: /api/
 
 # Sitemap location
-Sitemap: https://revive-research--graysonwillard.replit.app/sitemap.xml
+Sitemap: https://reviveresearch.co/sitemap.xml
 
-# Crawl-delay (optional, be polite to crawlers)
+# Crawl-delay
 Crawl-delay: 1

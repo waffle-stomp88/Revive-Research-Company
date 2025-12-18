@@ -1,0 +1,163 @@
+DO NOT PUT THESE ON YOUR SITEMAP
+1. ANY product pages
+
+This is non-negotiable.
+
+That includes:
+
+/products
+
+/product/*
+
+/peptides
+
+/shop
+
+/cart
+
+/checkout
+
+/bundles
+
+/protocols
+
+/buy-*
+
+Why:
+
+You explicitly do not want public visibility
+
+Google indexing = screenshots + scraping + regulators + platform reviewers
+
+Email providers do look at indexed content when reviewing accounts
+
+If it requires login, password, or approval, it does NOT belong on a sitemap.
+
+2. Any gated or account-based pages
+
+Examples:
+
+/login
+
+/signup
+
+/register
+
+/dashboard
+
+/profile
+
+/account
+
+/members
+
+/academy/* (if inside login)
+
+/admin (obviously)
+
+Why:
+
+Google cannot authenticate
+
+It creates crawl errors
+
+It looks sloppy and unprofessional
+
+It signals “this site doesn’t understand access control”
+
+3. Research Academy internal content
+
+Even if educational.
+
+Examples:
+
+Lesson pages
+
+Course modules
+
+PDFs
+
+Video lesson URLs
+
+Protocol breakdowns
+
+Why:
+
+You want this behind profile-based access
+
+You don’t want fragmented content appearing out of context in search
+
+It weakens your authority narrative (Google seeing “random peptide lessons”)
+
+The landing page is fine.
+The content itself is not.
+
+4. Anything referencing Replit
+
+Absolutely never again.
+
+If your sitemap contains:
+
+*.replit.app
+
+old staging URLs
+
+dev environments
+
+That is an instant trust hit.
+
+You already saw Google reject this — correctly.
+
+5. Utility / system pages
+
+Examples:
+
+/privacy (optional — usually not needed)
+
+/terms
+
+/cookies
+
+/404
+
+/reset-password
+
+/verify-email
+
+Why:
+They add zero SEO value and clutter Google’s crawl budget.
+
+6. Pages you’re “not ready for yet”
+
+This is subtle but important.
+
+If you look at a page and think:
+
+“Eh… we’ll clean that up later”
+
+It does NOT belong on the sitemap.
+
+Sitemaps are intentional, not exhaustive.
+
+✅ WHAT SHOULD BE ON YOUR SITEMAP (SMALL LIST)
+
+For Revive Research right now, this should be very short:
+
+✅ Include only:
+
+Homepage
+/
+
+About / Mission
+/about or /mission
+
+Research Academy landing page only
+/research-academy
+(NOT the internal lessons)
+
+Any purely informational, public-facing trust page
+(no peptides, no purchase intent)
+
+That’s it.
+
+If your sitemap has more than ~5–10 URLs right now, it’s wrong.
