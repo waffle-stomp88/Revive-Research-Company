@@ -14,9 +14,10 @@ export function SEOHead({
   ogImage 
 }: SEOHeadProps) {
   const hasRun = useRef(false);
-  const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+  // Always use the canonical non-www domain for SEO consistency
+  const canonicalDomain = 'https://reviveresearch.co';
   const path = canonicalPath || (typeof window !== 'undefined' ? window.location.pathname : '/');
-  const fullCanonicalUrl = `${baseUrl}${path}`;
+  const fullCanonicalUrl = `${canonicalDomain}${path}`;
 
   useEffect(() => {
     const fullTitle = `${title} | Revive Research`;
