@@ -71,9 +71,6 @@ export function AgeVerificationModal() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5 }}
-                  style={{
-                    filter: 'drop-shadow(0 0 20px rgba(231, 251, 16, 0.4))'
-                  }}
                 />
               </div>
 
