@@ -3028,9 +3028,13 @@ function EmailLogsTab() {
     );
   }
 
+  const sentCount = emailEvents.filter((e) => e.status === "sent").length;
+  const failedCount = emailEvents.filter((e) => e.status === "failed").length;
+  const successRate = emailEvents.length > 0 ? Math.round((sentCount / emailEvents.length) * 100) : 0;
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center justify-between gap-2 mb-2">
         <div>
           <h2 className="font-display text-xl font-bold" data-testid="text-email-logs-title">
             Email Logs
@@ -3039,38 +3043,65 @@ function EmailLogsTab() {
             Transactional email audit trail
           </p>
         </div>
-        <Badge variant="secondary" className="text-sm">
-          {emailEvents.length} emails
-        </Badge>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <Card className="p-4">
+          <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">
+            Total Sent
+          </div>
+          <div className="text-2xl font-bold">{emailEvents.length}</div>
+        </Card>
+        <Card className="p-4">
+          <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">
+            Success
+          </div>
+          <div className="text-2xl font-bold text-green-600">{sentCount}</div>
+        </Card>
+        <Card className="p-4">
+          <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">
+            Failed
+          </div>
+          <div className="text-2xl font-bold text-destructive">{failedCount}</div>
+        </Card>
+        <Card className="p-4">
+          <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">
+            Success Rate
+          </div>
+          <div className="text-2xl font-bold">{successRate}%</div>
+        </Card>
       </div>
 
       {selectedOrderId && orderEmails && (
-        <Card className="p-4 border-primary/30">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-medium">Emails for Order {getShortOrderRef(selectedOrderId)}</h3>
+        <Card className="p-4 bg-muted/40 border-primary/30">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="font-semibold text-sm">Filtering: Order {getShortOrderRef(selectedOrderId)}</h3>
+              <p className="text-xs text-muted-foreground mt-1">{orderEmails.length} email(s)</p>
+            </div>
             <Button
               size="sm"
-              variant="ghost"
+              variant="outline"
               onClick={() => setSelectedOrderId(null)}
               data-testid="btn-clear-filter"
             >
               <X className="h-4 w-4 mr-1" />
-              Clear
+              Clear Filter
             </Button>
           </div>
           {orderEmails.length === 0 ? (
             <p className="text-sm text-muted-foreground">No emails found for this order.</p>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-1 max-h-48 overflow-y-auto">
               {orderEmails.map((email) => (
-                <div key={email.id} className="flex items-center justify-between text-sm bg-muted/30 p-2 rounded">
-                  <div className="flex items-center gap-2">
+                <div key={email.id} className="flex items-center justify-between text-xs bg-background/50 p-2 rounded border border-border/50">
+                  <div className="flex items-center gap-2 flex-1">
                     {getTypeBadge(email.type)}
-                    <span className="text-muted-foreground">{email.recipientEmail}</span>
+                    <span className="text-muted-foreground truncate">{email.recipientEmail}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 ml-2">
                     {getStatusBadge(email.status)}
-                    <span className="text-muted-foreground text-xs">{formatDate(email.createdAt)}</span>
+                    <span className="text-muted-foreground whitespace-nowrap">{formatDate(email.createdAt)}</span>
                   </div>
                 </div>
               ))}
@@ -3079,41 +3110,49 @@ function EmailLogsTab() {
         </Card>
       )}
 
-      <div className="overflow-x-auto rounded-lg border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-32">Time</TableHead>
-              <TableHead className="w-28">Order</TableHead>
-              <TableHead>Recipient</TableHead>
-              <TableHead className="w-40">Type</TableHead>
-              <TableHead className="w-24">Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {emailEvents.map((event) => (
-              <TableRow key={event.id} data-testid={`row-email-${event.id}`}>
-                <TableCell className="text-sm text-muted-foreground">
-                  {formatDate(event.createdAt)}
-                </TableCell>
-                <TableCell>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="p-1 h-auto font-mono text-xs text-primary hover:underline"
-                    onClick={() => setSelectedOrderId(event.orderId)}
-                    data-testid={`btn-order-${event.orderId}`}
-                  >
-                    {getShortOrderRef(event.orderId)}
-                  </Button>
-                </TableCell>
-                <TableCell className="text-sm">{event.recipientEmail}</TableCell>
-                <TableCell>{getTypeBadge(event.type)}</TableCell>
-                <TableCell>{getStatusBadge(event.status)}</TableCell>
+      <div>
+        <h3 className="font-semibold text-sm mb-3">Recent Email Events</h3>
+        <div className="rounded-lg border overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/50">
+                <TableHead className="w-32 text-xs font-semibold">Time</TableHead>
+                <TableHead className="w-28 text-xs font-semibold">Order</TableHead>
+                <TableHead className="text-xs font-semibold">Recipient</TableHead>
+                <TableHead className="w-40 text-xs font-semibold">Type</TableHead>
+                <TableHead className="w-24 text-xs font-semibold">Status</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {emailEvents.slice(0, 50).map((event) => (
+                <TableRow key={event.id} data-testid={`row-email-${event.id}`} className="hover:bg-muted/30">
+                  <TableCell className="text-xs text-muted-foreground">
+                    {formatDate(event.createdAt)}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="p-1 h-auto font-mono text-xs text-primary hover:underline"
+                      onClick={() => setSelectedOrderId(event.orderId)}
+                      data-testid={`btn-order-${event.orderId}`}
+                    >
+                      {getShortOrderRef(event.orderId)}
+                    </Button>
+                  </TableCell>
+                  <TableCell className="text-xs">{event.recipientEmail}</TableCell>
+                  <TableCell>{getTypeBadge(event.type)}</TableCell>
+                  <TableCell>{getStatusBadge(event.status)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+        {emailEvents.length > 50 && (
+          <p className="text-xs text-muted-foreground mt-2 text-center">
+            Showing 50 of {emailEvents.length} emails
+          </p>
+        )}
       </div>
     </div>
   );
