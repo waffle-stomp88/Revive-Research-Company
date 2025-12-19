@@ -263,7 +263,7 @@ function EducationTeaser() {
                 </div>
 
                 {/* Stats Row */}
-                <div className="flex flex-wrap gap-3 mb-6">
+                <div className="flex flex-wrap gap-3 mb-6 justify-center">
                   <Badge className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30">
                     <BookOpen className="h-3 w-3 mr-1" /> 4 Modules
                   </Badge>
@@ -276,7 +276,7 @@ function EducationTeaser() {
                 </div>
 
                 {/* Modules Preview */}
-                <div className="space-y-3 mb-6">
+                <div className="space-y-3 mb-6 max-w-xs mx-auto">
                   {academyModules.map((module, index) => (
                     <motion.div
                       key={module.name}
@@ -328,7 +328,7 @@ function EducationTeaser() {
                 </div>
 
                 {/* Stats Row */}
-                <div className="flex flex-wrap gap-3 mb-6">
+                <div className="flex flex-wrap gap-3 mb-6 justify-center">
                   <Badge className="bg-[#ec4899]/20 text-[#ec4899] border-[#ec4899]/30">
                     40+ Articles
                   </Badge>
@@ -341,7 +341,7 @@ function EducationTeaser() {
                 </div>
 
                 {/* Categories Preview - Stacked like Academy modules */}
-                <div className="space-y-3 mb-6">
+                <div className="space-y-3 mb-6 max-w-xs mx-auto">
                   {educationCategories.map((category, index) => {
                     const Icon = category.icon;
                     return (
