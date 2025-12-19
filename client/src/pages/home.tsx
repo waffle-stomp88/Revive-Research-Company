@@ -250,7 +250,7 @@ function EducationTeaser() {
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
           >
-            <Card className="h-full border-2 border-[#21d8ff]/50 bg-gradient-to-br from-[#21d8ff]/10 to-transparent transition-all duration-300 overflow-visible animate-[pulse-glow-cyan_5s_ease-in-out_infinite]" style={{ boxShadow: '0 0 25px rgba(33, 216, 255, 0.25), inset 0 0 20px rgba(33, 216, 255, 0.05)' }}>
+            <Card className="h-full border-2 border-[#21d8ff]/50 bg-gradient-to-br from-[#21d8ff]/10 to-transparent transition-all duration-300 overflow-visible animate-[pulse-glow-cyan_12s_ease-in-out_infinite]" style={{ boxShadow: '0 0 25px rgba(33, 216, 255, 0.25), inset 0 0 20px rgba(33, 216, 255, 0.05)' }}>
               <div className="p-6 md:p-8">
                 <div className="flex items-center gap-4 mb-6">
                   <div className="p-4 rounded-xl bg-[#21d8ff]/20 border border-[#21d8ff]/40">
