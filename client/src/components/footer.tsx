@@ -57,7 +57,7 @@ export function Footer() {
 
   return (
     <footer className="bg-card border-t border-border">
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 pt-2 md:pt-4 pb-16 md:pb-24">
         {/* Newsletter Signup - Prominent at top */}
         <div className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-[#21d8ff]/10 via-[#E7FB10]/5 to-[#21d8ff]/10 border border-[#21d8ff]/40" data-testid="section-footer-newsletter">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
