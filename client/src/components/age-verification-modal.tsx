@@ -108,10 +108,11 @@ export function AgeVerificationModal() {
                     checked={agreed}
                     onCheckedChange={(checked) => setAgreed(checked === true)}
                     data-testid="checkbox-age-verification"
+                    className="pointer-events-none"
                   />
                   <label 
                     htmlFor="age-terms" 
-                    className="text-xs sm:text-sm font-medium cursor-pointer select-none flex-1"
+                    className="text-xs sm:text-sm font-medium cursor-pointer select-none flex-1 pointer-events-none"
                   >
                     I agree to these terms and confirm I am 21+.
                   </label>
