@@ -1377,6 +1377,29 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Get recent email events
+  app.get("/api/admin/email-events", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const events = await storage.getRecentEmailEvents(limit);
+      res.json(events);
+    } catch (error) {
+      console.error("Error fetching email events:", error);
+      res.status(500).json({ error: "Failed to fetch email events" });
+    }
+  });
+
+  // Admin: Get email events by order ID
+  app.get("/api/admin/email-events/order/:orderId", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const events = await storage.getEmailEventsByOrderId(req.params.orderId);
+      res.json(events);
+    } catch (error) {
+      console.error("Error fetching email events for order:", error);
+      res.status(500).json({ error: "Failed to fetch email events" });
+    }
+  });
+
   // Object Storage: Get upload URL (admin only)
   app.post("/api/objects/upload", isAuthenticated, isAdmin, async (req: any, res) => {
     try {
