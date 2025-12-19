@@ -25,6 +25,34 @@ export function log(message: string, source = "express") {
 
 (async () => {
 
+  // Canonical domain redirect middleware for production
+  // Redirects www and http traffic to https://reviveresearch.co
+  app.use((req, res, next) => {
+    const host = req.get('host') || '';
+    const proto = req.get('x-forwarded-proto') || req.protocol;
+    
+    // Only apply redirects for production custom domains, not Replit dev domains
+    const isReplitDev = host.includes('.replit.dev') || host.includes('.repl.co') || host.includes('localhost');
+    if (isReplitDev) {
+      return next();
+    }
+    
+    // Check if we need to redirect
+    const isWww = host.startsWith('www.');
+    const isHttp = proto !== 'https';
+    
+    if (isWww || isHttp) {
+      // Build canonical URL
+      const canonicalHost = host.replace(/^www\./, '');
+      const canonicalUrl = `https://${canonicalHost}${req.originalUrl}`;
+      
+      // 301 permanent redirect
+      return res.redirect(301, canonicalUrl);
+    }
+    
+    next();
+  });
+
   app.use(
     express.json({
       verify: (req, _res, buf) => {
