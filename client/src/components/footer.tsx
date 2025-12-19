@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Mail, MapPin, AlertTriangle, Shield, Scale, FileCheck, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import logoImage from "@assets/REVIVE-11_1764290805698.png";
+import logoImage from "@assets/Revive_PNG_1766012118069.png";
 import { useEffect, useState } from "react";
 import { NewsletterSignup } from "@/components/newsletter-signup";
 
