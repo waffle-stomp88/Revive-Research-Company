@@ -1,10 +1,19 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { 
   ArrowRight, 
   ChevronDown,
   FlaskConical,
+  GraduationCap,
+  BookOpen,
+  Award,
+  Zap,
+  FileCheck,
+  Beaker,
+  Thermometer,
 } from "lucide-react";
 import heroBackground from "@assets/69bf34cc-d177-46c6-af24-c51da5ee10fa_1764382400961.png";
 import { trackEvent } from "@/lib/analytics";
@@ -194,6 +203,197 @@ function HeroSection() {
   );
 }
 
+// Education categories for teaser
+const educationCategories = [
+  { name: "Peptide Profiles", icon: FlaskConical, color: "#ec4899", count: "20+" },
+  { name: "Research Basics", icon: Beaker, color: "#21d8ff", count: "10+" },
+  { name: "Understanding COAs", icon: FileCheck, color: "#9d4edd", count: "5+" },
+  { name: "Storage & Handling", icon: Thermometer, color: "#f97316", count: "8+" },
+];
+
+// Academy modules for teaser
+const academyModules = [
+  { name: "Orientation", description: "Peptide fundamentals & legal compliance", color: "#21d8ff" },
+  { name: "Core Foundations", description: "Purity, storage & reconstitution", color: "#E7FB10" },
+  { name: "Research Skills", description: "COA interpretation & lab safety", color: "#9d4edd" },
+  { name: "Lab Confidence", description: "Real-world research workflows", color: "#22c55e" },
+];
+
+function EducationTeaser() {
+  return (
+    <section className="py-16 md:py-24 bg-gradient-to-b from-background via-[#21d8ff]/5 to-background">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-12"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#9d4edd]/10 border border-[#9d4edd]/30 mb-4">
+            <GraduationCap className="h-4 w-4 text-[#9d4edd]" />
+            <span className="text-sm font-medium text-[#9d4edd]">Free Educational Resources</span>
+          </div>
+          <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
+            Learn Before You <span className="text-[#21d8ff]">Research</span>
+          </h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto text-base md:text-lg">
+            Access our comprehensive library of guides, interactive courses, and expert knowledge — all designed to make you a more informed researcher.
+          </p>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-2 gap-8 md:gap-12">
+          {/* Research Academy Card */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+          >
+            <Card className="h-full border-2 border-[#21d8ff]/30 bg-gradient-to-br from-[#21d8ff]/5 to-transparent hover:border-[#21d8ff]/60 transition-all duration-300 overflow-hidden">
+              <div className="p-6 md:p-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-3 rounded-xl bg-[#21d8ff]/20 border border-[#21d8ff]/30">
+                    <GraduationCap className="h-6 w-6 text-[#21d8ff]" />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-xl md:text-2xl font-bold">Research Academy</h3>
+                    <p className="text-sm text-muted-foreground">Gamified learning experience</p>
+                  </div>
+                </div>
+
+                {/* Stats Row */}
+                <div className="flex flex-wrap gap-3 mb-6">
+                  <Badge className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30">
+                    <BookOpen className="h-3 w-3 mr-1" /> 4 Modules
+                  </Badge>
+                  <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30">
+                    <Zap className="h-3 w-3 mr-1" /> 17 Lessons
+                  </Badge>
+                  <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30">
+                    <Award className="h-3 w-3 mr-1" /> Earn XP & Badges
+                  </Badge>
+                </div>
+
+                {/* Modules Preview */}
+                <div className="space-y-3 mb-6">
+                  {academyModules.map((module, index) => (
+                    <motion.div
+                      key={module.name}
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.2 + index * 0.1 }}
+                      className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10"
+                    >
+                      <div 
+                        className="w-2 h-2 rounded-full" 
+                        style={{ backgroundColor: module.color }}
+                      />
+                      <div className="flex-1">
+                        <span className="font-medium text-sm">{module.name}</span>
+                        <span className="text-xs text-muted-foreground ml-2 hidden sm:inline">— {module.description}</span>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+
+                <Link href="/academy" onClick={() => trackEvent('education_cta_click', 'engagement', 'academy')}>
+                  <Button className="w-full font-display gap-2 bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90" data-testid="button-start-academy">
+                    Start Learning
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+          </motion.div>
+
+          {/* Education Center Card */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            <Card className="h-full border-2 border-[#9d4edd]/30 bg-gradient-to-br from-[#9d4edd]/5 to-transparent hover:border-[#9d4edd]/60 transition-all duration-300 overflow-hidden">
+              <div className="p-6 md:p-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-3 rounded-xl bg-[#9d4edd]/20 border border-[#9d4edd]/30">
+                    <BookOpen className="h-6 w-6 text-[#9d4edd]" />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-xl md:text-2xl font-bold">Education Center</h3>
+                    <p className="text-sm text-muted-foreground">Comprehensive article library</p>
+                  </div>
+                </div>
+
+                {/* Stats Row */}
+                <div className="flex flex-wrap gap-3 mb-6">
+                  <Badge className="bg-[#ec4899]/20 text-[#ec4899] border-[#ec4899]/30">
+                    40+ Articles
+                  </Badge>
+                  <Badge className="bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30">
+                    Interactive Visuals
+                  </Badge>
+                  <Badge className="bg-[#f97316]/20 text-[#f97316] border-[#f97316]/30">
+                    Expert Written
+                  </Badge>
+                </div>
+
+                {/* Categories Preview */}
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  {educationCategories.map((category, index) => {
+                    const Icon = category.icon;
+                    return (
+                      <motion.div
+                        key={category.name}
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.3 + index * 0.1 }}
+                        className="flex items-center gap-2 p-3 rounded-lg bg-white/5 border border-white/10"
+                      >
+                        <Icon className="h-4 w-4" style={{ color: category.color }} />
+                        <div className="flex-1 min-w-0">
+                          <span className="text-xs font-medium block truncate">{category.name}</span>
+                          <span className="text-xs text-muted-foreground">{category.count} guides</span>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+
+                <Link href="/education" onClick={() => trackEvent('education_cta_click', 'engagement', 'education_center')}>
+                  <Button className="w-full font-display gap-2 bg-[#9d4edd] text-white hover:bg-[#9d4edd]/90" data-testid="button-browse-articles">
+                    Browse Articles
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+
+        {/* Bottom CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.4 }}
+          className="text-center mt-10"
+        >
+          <p className="text-muted-foreground text-sm">
+            New to peptide research?{" "}
+            <Link href="/education" className="text-[#ec4899] hover:underline cursor-pointer" data-testid="link-beginners-guide">
+              Start with our beginner's guide
+            </Link>
+          </p>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 function CTASection() {
   return (
     <section className="py-16 md:py-20 text-primary-foreground bg-[#e7fb10]">
@@ -263,6 +463,7 @@ export default function Home() {
       <div id="why-researchers">
         <WhyResearchersChooseUs />
       </div>
+      <EducationTeaser />
       <CTASection />
     </main>
   );
