@@ -385,7 +385,7 @@ function EducationTeaser() {
           <p className="text-muted-foreground text-sm">
             New to peptide research?{" "}
             <Link href="/education" className="text-[#ec4899] hover:underline cursor-pointer" data-testid="link-beginners-guide">
-              Start with our beginner's guide
+              Try our beginner-friendly Quick Breakdown mode
             </Link>
           </p>
         </motion.div>
@@ -460,10 +460,10 @@ export default function Home() {
       <div className="hidden md:block">
         <TestingPipelineVisual />
       </div>
+      <EducationTeaser />
       <div id="why-researchers">
         <WhyResearchersChooseUs />
       </div>
-      <EducationTeaser />
       <CTASection />
     </main>
   );
