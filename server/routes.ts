@@ -289,16 +289,18 @@ export async function registerRoutes(
     }
   });
 
-  // Helper function to mark order as paid and send confirmation email
-  async function markOrderPaidAndNotify(orderId: string): Promise<{ success: boolean; order?: any; error?: string }> {
+  // Helper function to mark order as paid and send confirmation email (idempotent)
+  async function markOrderPaidAndNotify(orderId: string): Promise<{ success: boolean; order?: any; error?: string; emailSent?: boolean; alreadyPaid?: boolean }> {
     try {
       const order = await storage.getOrder(orderId);
       if (!order) {
         return { success: false, error: "Order not found" };
       }
       
+      // Idempotent: if already paid, return success but skip email
       if (order.status === 'paid') {
-        return { success: true, order, error: "Order already marked as paid" };
+        console.log(`[Order ${orderId}] Already paid - skipping email (idempotent)`);
+        return { success: true, order, alreadyPaid: true, emailSent: false };
       }
       
       // Update order status to paid
@@ -309,7 +311,8 @@ export async function registerRoutes(
       
       console.log(`[Order ${orderId}] Marked as paid`);
       
-      // Send confirmation email
+      // Send confirmation email (only on first successful payment)
+      let emailSent = false;
       try {
         const product = await storage.getProduct(updatedOrder.productId);
         const productName = product?.name || updatedOrder.productId;
@@ -318,6 +321,7 @@ export async function registerRoutes(
         
         if (emailResult.success) {
           console.log(`[Order ${orderId}] Confirmation email sent to ${updatedOrder.email}`);
+          emailSent = true;
         } else {
           console.error(`[Order ${orderId}] Failed to send confirmation email: ${emailResult.error}`);
         }
@@ -325,7 +329,7 @@ export async function registerRoutes(
         console.error(`[Order ${orderId}] Email error:`, emailError);
       }
       
-      return { success: true, order: updatedOrder };
+      return { success: true, order: updatedOrder, emailSent, alreadyPaid: false };
     } catch (error: any) {
       console.error(`[Order ${orderId}] Error marking as paid:`, error);
       return { success: false, error: error.message || "Unknown error" };
@@ -333,8 +337,23 @@ export async function registerRoutes(
   }
 
   // Payment webhook - processor-agnostic endpoint to mark order as paid
+  // Protected by shared secret header (X-Webhook-Secret)
   app.post("/api/payments/webhook", async (req, res) => {
     try {
+      // Validate webhook secret
+      const webhookSecret = process.env.PAYMENT_WEBHOOK_SECRET;
+      const providedSecret = req.headers['x-webhook-secret'];
+      
+      if (!webhookSecret) {
+        console.error("[Payment Webhook] PAYMENT_WEBHOOK_SECRET not configured");
+        return res.status(500).json({ error: "Webhook not configured" });
+      }
+      
+      if (!providedSecret || providedSecret !== webhookSecret) {
+        console.error("[Payment Webhook] Invalid or missing X-Webhook-Secret header");
+        return res.status(401).json({ error: "Unauthorized - invalid webhook secret" });
+      }
+      
       const { order_id, orderId } = req.body;
       const id = order_id || orderId;
       
@@ -348,9 +367,17 @@ export async function registerRoutes(
       const result = await markOrderPaidAndNotify(id);
       
       if (result.success) {
+        const message = result.alreadyPaid 
+          ? "Order already paid - no email sent (idempotent)"
+          : result.emailSent 
+            ? "Order marked as paid and confirmation email sent"
+            : "Order marked as paid but email failed to send";
+        
         res.json({ 
           success: true, 
-          message: "Order marked as paid and confirmation email sent",
+          message,
+          emailSent: result.emailSent,
+          alreadyPaid: result.alreadyPaid,
           order: result.order 
         });
       } else {
@@ -1135,9 +1162,17 @@ export async function registerRoutes(
       const result = await markOrderPaidAndNotify(orderId);
       
       if (result.success) {
+        const message = result.alreadyPaid 
+          ? "Order already paid - no email sent (idempotent)"
+          : result.emailSent 
+            ? "Order marked as paid and confirmation email sent"
+            : "Order marked as paid but email failed to send";
+        
         res.json({ 
           success: true, 
-          message: "Order marked as paid and confirmation email sent",
+          message,
+          emailSent: result.emailSent,
+          alreadyPaid: result.alreadyPaid,
           order: result.order 
         });
       } else {
