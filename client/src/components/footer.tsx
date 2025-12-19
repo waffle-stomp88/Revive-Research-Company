@@ -31,6 +31,11 @@ const footerLinks = {
     { label: "Package Arrived Warm?", href: "/package-warm" },
     { label: "Contact Us", href: "/contact" },
   ],
+  company: [
+    { label: "Our Standards", href: "/what-we-dont-do" },
+    { label: "Transparency", href: "/transparency" },
+    { label: "Ethical Pricing", href: "/ethical-pricing" },
+  ],
 };
 
 export function Footer() {
@@ -64,8 +69,8 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-6">
-          <div className="lg:col-span-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-6">
+          <div className="lg:col-span-1">
             <Link href="/">
               <img
                 src={logoImage}
@@ -140,6 +145,23 @@ export function Footer() {
                 <li key={link.href}>
                   <Link href={link.href}>
                     <span className="text-sm text-muted-foreground hover:text-[#9d4edd] transition-colors cursor-pointer">
+                      {link.label}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-display font-semibold text-sm uppercase tracking-wider mb-4">
+              Company
+            </h4>
+            <ul className="space-y-2">
+              {footerLinks.company.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href}>
+                    <span className="text-sm text-muted-foreground hover:text-[#ec4899] transition-colors cursor-pointer">
                       {link.label}
                     </span>
                   </Link>
