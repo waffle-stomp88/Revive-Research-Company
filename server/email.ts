@@ -116,11 +116,15 @@ function getOrderConfirmationTemplate(order: {
 }, productName?: string): { subject: string; text: string; html: string } {
   const shortRef = getShortOrderRef(order.id);
   const { brand } = EMAIL_CONFIG;
+  const hasFirstName = order.firstName && order.firstName.trim().length > 0;
+  const greeting = hasFirstName 
+    ? `Thank you for your order, ${order.firstName}!` 
+    : 'Thank you for your order!';
   
   const subject = `Order Confirmation — ${brand.name} (#${shortRef})`;
   
   const text = `
-Thank you for your order, ${order.firstName}!
+${greeting}
 
 ORDER DETAILS
 -------------
@@ -162,7 +166,7 @@ Thank you for choosing ${brand.name}.
     </div>
     
     <div style="padding: 30px;">
-      <h2 style="color: ${brand.primaryColor}; margin: 0 0 20px 0;">Thank you for your order, ${order.firstName}!</h2>
+      <h2 style="color: ${brand.primaryColor}; margin: 0 0 20px 0;">${greeting}</h2>
       
       <div style="background-color: ${brand.backgroundColor}; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
         <h3 style="color: ${brand.accentColor}; margin: 0 0 15px 0; font-size: 16px;">ORDER DETAILS</h3>
