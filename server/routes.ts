@@ -255,7 +255,7 @@ export async function registerRoutes(
     }
   });
 
-  // Create order (can be used by guests or authenticated users)
+  // Create order with pending_payment status (processor-agnostic checkout)
   app.post("/api/orders", async (req: any, res) => {
     try {
       const orderData = { ...req.body };
@@ -265,9 +265,22 @@ export async function registerRoutes(
         orderData.userId = req.user.claims.sub;
       }
       
+      // Set default status to pending_payment for new orders
+      if (!orderData.status) {
+        orderData.status = 'pending_payment';
+      }
+      
       const validatedData = insertOrderSchema.parse(orderData);
       const order = await storage.createOrder(validatedData);
-      res.status(201).json(order);
+      
+      console.log(`[Order ${order.id}] Created with status: ${order.status}`);
+      
+      // Return order_id for payment processor to use in metadata
+      res.status(201).json({ 
+        order, 
+        orderId: order.id,
+        message: "Order created with pending_payment status. Complete payment to finalize."
+      });
     } catch (error) {
       console.error("Error creating order:", error);
       if (error instanceof Error && error.name === "ZodError") {
@@ -276,6 +289,86 @@ export async function registerRoutes(
       res.status(500).json({ error: "Failed to create order" });
     }
   });
+
+  // Helper function to mark order as paid and send confirmation email
+  async function markOrderPaidAndNotify(orderId: string): Promise<{ success: boolean; order?: any; error?: string }> {
+    try {
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return { success: false, error: "Order not found" };
+      }
+      
+      if (order.status === 'paid') {
+        return { success: true, order, error: "Order already marked as paid" };
+      }
+      
+      // Update order status to paid
+      const updatedOrder = await storage.updateOrderStatus(orderId, 'paid');
+      if (!updatedOrder) {
+        return { success: false, error: "Failed to update order status" };
+      }
+      
+      console.log(`[Order ${orderId}] Marked as paid`);
+      
+      // Send confirmation email
+      try {
+        const product = await storage.getProduct(updatedOrder.productId);
+        const productName = product?.name || updatedOrder.productId;
+        
+        const emailResult = await sendOrderConfirmationEmail(updatedOrder, productName);
+        
+        if (emailResult.success) {
+          console.log(`[Order ${orderId}] Confirmation email sent to ${updatedOrder.email}`);
+        } else {
+          console.error(`[Order ${orderId}] Failed to send confirmation email: ${emailResult.error}`);
+        }
+      } catch (emailError) {
+        console.error(`[Order ${orderId}] Email error:`, emailError);
+      }
+      
+      return { success: true, order: updatedOrder };
+    } catch (error: any) {
+      console.error(`[Order ${orderId}] Error marking as paid:`, error);
+      return { success: false, error: error.message || "Unknown error" };
+    }
+  }
+
+  // Payment webhook - processor-agnostic endpoint to mark order as paid
+  app.post("/api/payments/webhook", async (req, res) => {
+    try {
+      const { order_id, orderId } = req.body;
+      const id = order_id || orderId;
+      
+      if (!id) {
+        console.error("[Payment Webhook] Missing order_id in request body");
+        return res.status(400).json({ error: "Missing order_id in request body" });
+      }
+      
+      console.log(`[Payment Webhook] Processing payment for order: ${id}`);
+      
+      const result = await markOrderPaidAndNotify(id);
+      
+      if (result.success) {
+        res.json({ 
+          success: true, 
+          message: "Order marked as paid and confirmation email sent",
+          order: result.order 
+        });
+      } else {
+        res.status(result.error === "Order not found" ? 404 : 500).json({ 
+          success: false, 
+          error: result.error 
+        });
+      }
+    } catch (error: any) {
+      console.error("[Payment Webhook] Unexpected error:", error);
+      res.status(500).json({ 
+        success: false, 
+        error: error.message || "Failed to process payment webhook" 
+      });
+    }
+  });
+
 
   // Get user's orders (authenticated)
   app.get("/api/orders/my-orders", isAuthenticated, async (req: any, res) => {
