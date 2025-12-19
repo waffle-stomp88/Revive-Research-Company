@@ -11,7 +11,7 @@ export function AgeVerificationModal() {
   const [agreed, setAgreed] = useState(false);
 
   useEffect(() => {
-    const verified = localStorage.getItem(AGE_VERIFIED_KEY);
+    const verified = sessionStorage.getItem(AGE_VERIFIED_KEY);
     if (!verified) {
       setIsOpen(true);
     }
@@ -31,7 +31,7 @@ export function AgeVerificationModal() {
 
   const handleEnter = () => {
     if (agreed) {
-      localStorage.setItem(AGE_VERIFIED_KEY, "true");
+      sessionStorage.setItem(AGE_VERIFIED_KEY, "true");
       setIsOpen(false);
     }
   };
