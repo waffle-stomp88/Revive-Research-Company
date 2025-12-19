@@ -2935,6 +2935,190 @@ function StockNotificationsTab() {
   );
 }
 
+interface EmailEvent {
+  id: string;
+  orderId: string;
+  type: string;
+  recipientEmail: string;
+  subject: string;
+  status: string;
+  sesMessageId: string | null;
+  error: string | null;
+  createdAt: string;
+}
+
+function EmailLogsTab() {
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+
+  const { data: emailEvents, isLoading } = useQuery<EmailEvent[]>({
+    queryKey: ["/api/admin/email-events"],
+    queryFn: async () => {
+      const response = await fetch("/api/admin/email-events?limit=100", {
+        credentials: "include"
+      });
+      if (!response.ok) throw new Error("Failed to fetch email events");
+      return response.json();
+    }
+  });
+
+  const { data: orderEmails } = useQuery<EmailEvent[]>({
+    queryKey: ["/api/admin/email-events/order", selectedOrderId],
+    queryFn: async () => {
+      const response = await fetch(`/api/admin/email-events/order/${selectedOrderId}`, {
+        credentials: "include"
+      });
+      if (!response.ok) throw new Error("Failed to fetch order emails");
+      return response.json();
+    },
+    enabled: !!selectedOrderId
+  });
+
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  };
+
+  const getShortOrderRef = (orderId: string) => {
+    return `#${orderId.slice(-8).toUpperCase()}`;
+  };
+
+  const getStatusBadge = (status: string) => {
+    if (status === "sent") {
+      return <Badge variant="default" className="bg-green-600 hover:bg-green-700">Sent</Badge>;
+    } else if (status === "failed") {
+      return <Badge variant="destructive">Failed</Badge>;
+    }
+    return <Badge variant="secondary">{status}</Badge>;
+  };
+
+  const getTypeBadge = (type: string) => {
+    const typeMap: Record<string, string> = {
+      order_confirmation: "Order Confirmation",
+      shipping_notification: "Shipping",
+      affiliate_welcome: "Affiliate Welcome",
+      affiliate_payout: "Payout",
+    };
+    return <Badge variant="outline">{typeMap[type] || type}</Badge>;
+  };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
+
+  if (!emailEvents || emailEvents.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4">
+          <Mail className="h-8 w-8 text-muted-foreground" />
+        </div>
+        <h3 className="font-medium mb-2">No Email Logs</h3>
+        <p className="text-sm text-muted-foreground">
+          Transactional email events will appear here once sent.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between gap-2">
+        <div>
+          <h2 className="font-display text-xl font-bold" data-testid="text-email-logs-title">
+            Email Logs
+          </h2>
+          <p className="text-muted-foreground text-sm">
+            Transactional email audit trail
+          </p>
+        </div>
+        <Badge variant="secondary" className="text-sm">
+          {emailEvents.length} emails
+        </Badge>
+      </div>
+
+      {selectedOrderId && orderEmails && (
+        <Card className="p-4 border-primary/30">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-medium">Emails for Order {getShortOrderRef(selectedOrderId)}</h3>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setSelectedOrderId(null)}
+              data-testid="btn-clear-filter"
+            >
+              <X className="h-4 w-4 mr-1" />
+              Clear
+            </Button>
+          </div>
+          {orderEmails.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No emails found for this order.</p>
+          ) : (
+            <div className="space-y-2">
+              {orderEmails.map((email) => (
+                <div key={email.id} className="flex items-center justify-between text-sm bg-muted/30 p-2 rounded">
+                  <div className="flex items-center gap-2">
+                    {getTypeBadge(email.type)}
+                    <span className="text-muted-foreground">{email.recipientEmail}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {getStatusBadge(email.status)}
+                    <span className="text-muted-foreground text-xs">{formatDate(email.createdAt)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+      )}
+
+      <div className="overflow-x-auto rounded-lg border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-32">Time</TableHead>
+              <TableHead className="w-28">Order</TableHead>
+              <TableHead>Recipient</TableHead>
+              <TableHead className="w-40">Type</TableHead>
+              <TableHead className="w-24">Status</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {emailEvents.map((event) => (
+              <TableRow key={event.id} data-testid={`row-email-${event.id}`}>
+                <TableCell className="text-sm text-muted-foreground">
+                  {formatDate(event.createdAt)}
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-1 h-auto font-mono text-xs text-primary hover:underline"
+                    onClick={() => setSelectedOrderId(event.orderId)}
+                    data-testid={`btn-order-${event.orderId}`}
+                  >
+                    {getShortOrderRef(event.orderId)}
+                  </Button>
+                </TableCell>
+                <TableCell className="text-sm">{event.recipientEmail}</TableCell>
+                <TableCell>{getTypeBadge(event.type)}</TableCell>
+                <TableCell>{getStatusBadge(event.status)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+}
+
 interface DiscountCode {
   id: string;
   code: string;
@@ -4593,6 +4777,10 @@ export default function Admin() {
                   <Bell className="h-4 w-4" />
                   <span className="hidden sm:inline">Notify</span>
                 </TabsTrigger>
+                <TabsTrigger value="email-logs" className="flex items-center gap-2" data-testid="tab-email-logs">
+                  <Mail className="h-4 w-4" />
+                  <span className="hidden sm:inline">Emails</span>
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="overview">
@@ -4650,6 +4838,12 @@ export default function Admin() {
               <TabsContent value="notifications">
                 <Card className="p-6">
                   <StockNotificationsTab />
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="email-logs">
+                <Card className="p-6">
+                  <EmailLogsTab />
                 </Card>
               </TabsContent>
             </Tabs>
