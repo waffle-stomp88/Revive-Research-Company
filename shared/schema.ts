@@ -457,6 +457,23 @@ export const insertAcademyProgressSchema = createInsertSchema(academyProgress).o
 export type InsertAcademyProgress = z.infer<typeof insertAcademyProgressSchema>;
 export type AcademyProgress = typeof academyProgress.$inferSelect;
 
+// Email events table - Track all transactional email sends
+export const emailEvents = pgTable("email_events", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  orderId: varchar("order_id"),
+  type: text("type").notNull(), // order_confirmation, stock_notification, etc.
+  recipientEmail: text("recipient_email").notNull(),
+  subject: text("subject").notNull(),
+  status: text("status").notNull().default("sent"), // sent, failed, bounced, complained
+  sesMessageId: text("ses_message_id"),
+  error: text("error"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertEmailEventSchema = createInsertSchema(emailEvents).omit({ id: true, createdAt: true });
+export type InsertEmailEvent = z.infer<typeof insertEmailEventSchema>;
+export type EmailEvent = typeof emailEvents.$inferSelect;
+
 // Academy persona types
 export const academyPersonas = {
   beginner: "Complete Beginner",

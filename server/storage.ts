@@ -1,7 +1,7 @@
 import { 
   users, products, coas, orders, contacts, affiliateApplications, affiliates, affiliateSales, affiliatePayouts, reviews,
   batches, productStorageProfiles, legalDocuments, faqEntries, educationArticles, coaGlossaryTerms, stockNotifications, discountCodes, newsletterSubscribers,
-  productDosageStock, priceHistory, academyProgress,
+  productDosageStock, priceHistory, academyProgress, emailEvents,
   type User, type UpsertUser,
   type Product, type InsertProduct,
   type ProductDosageStock, type InsertProductDosageStock, type ProductWithDosageStock,
@@ -25,6 +25,7 @@ import {
   type NewsletterSubscriber, type InsertNewsletterSubscriber,
   type PriceHistory, type InsertPriceHistory, type PriceTrend, type PriceChangeReason,
   type AcademyProgress, type InsertAcademyProgress,
+  type EmailEvent, type InsertEmailEvent,
   priceChangeReasons
 } from "@shared/schema";
 import { db } from "./db";
@@ -228,6 +229,11 @@ export interface IStorage {
   getAcademyProgress(userId: string): Promise<AcademyProgress | undefined>;
   createAcademyProgress(progress: InsertAcademyProgress): Promise<AcademyProgress>;
   updateAcademyProgress(userId: string, data: Partial<InsertAcademyProgress>): Promise<AcademyProgress | undefined>;
+  
+  // Email Events
+  createEmailEvent(event: InsertEmailEvent): Promise<EmailEvent>;
+  getRecentEmailEvents(limit?: number): Promise<EmailEvent[]>;
+  getEmailEventsByOrderId(orderId: string): Promise<EmailEvent[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1506,6 +1512,26 @@ export class DatabaseStorage implements IStorage {
       .where(eq(academyProgress.userId, userId))
       .returning();
     return progress || undefined;
+  }
+
+  // Email Events
+  async createEmailEvent(event: InsertEmailEvent): Promise<EmailEvent> {
+    const [emailEvent] = await db.insert(emailEvents).values(event).returning();
+    return emailEvent;
+  }
+
+  async getRecentEmailEvents(limit: number = 50): Promise<EmailEvent[]> {
+    return db.select()
+      .from(emailEvents)
+      .orderBy(desc(emailEvents.createdAt))
+      .limit(limit);
+  }
+
+  async getEmailEventsByOrderId(orderId: string): Promise<EmailEvent[]> {
+    return db.select()
+      .from(emailEvents)
+      .where(eq(emailEvents.orderId, orderId))
+      .orderBy(desc(emailEvents.createdAt));
   }
 }
 
