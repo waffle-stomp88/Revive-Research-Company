@@ -83,14 +83,14 @@ export function AgeVerificationModal() {
                 <div className="space-y-2 sm:space-y-3">
                   <div className="flex items-start gap-2 p-3 rounded-lg" style={{ background: 'linear-gradient(135deg, rgba(33, 216, 255, 0.25) 0%, rgba(33, 216, 255, 0.15) 100%)', border: '1.5px solid rgba(33, 216, 255, 0.7)', boxShadow: '0 0 20px rgba(33, 216, 255, 0.4), inset 0 0 10px rgba(33, 216, 255, 0.15)' }}>
                     <Shield className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: '#21d8ff' }} />
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs" style={{ color: '#ffffff' }}>
                       Products are for lawful research use only—not for human or animal consumption.
                     </p>
                   </div>
 
                   <div className="flex items-start gap-2 p-3 rounded-lg" style={{ background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.25) 0%, rgba(236, 72, 153, 0.15) 100%)', border: '1.5px solid rgba(236, 72, 153, 0.7)', boxShadow: '0 0 20px rgba(236, 72, 153, 0.4), inset 0 0 10px rgba(236, 72, 153, 0.15)' }}>
                     <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: '#ec4899' }} />
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs" style={{ color: '#ffffff' }}>
                       Purchaser assumes full responsibility for use, handling, and distribution.
                     </p>
                   </div>
