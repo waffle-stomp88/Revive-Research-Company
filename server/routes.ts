@@ -265,10 +265,9 @@ export async function registerRoutes(
         orderData.userId = req.user.claims.sub;
       }
       
-      // Set default status to pending_payment for new orders
-      if (!orderData.status) {
-        orderData.status = 'pending_payment';
-      }
+      // Security: Always force status to pending_payment for new orders
+      // Clients cannot set their own status to bypass payment flow
+      orderData.status = 'pending_payment';
       
       const validatedData = insertOrderSchema.parse(orderData);
       const order = await storage.createOrder(validatedData);
@@ -1056,22 +1055,10 @@ export async function registerRoutes(
         }
       }
 
-      // Send order confirmation email
-      try {
-        const product = await storage.getProduct(order.productId);
-        const productName = product?.name || order.productId;
-        
-        const emailResult = await sendOrderConfirmationEmail(order, productName);
-        
-        if (emailResult.success) {
-          console.log(`[Order ${order.id}] Confirmation email sent to ${order.email}`);
-        } else {
-          console.error(`[Order ${order.id}] Failed to send confirmation email: ${emailResult.error}`);
-        }
-      } catch (emailError) {
-        // Log but don't fail the order if email fails
-        console.error(`[Order ${order.id}] Email error:`, emailError);
-      }
+      // Note: Email is now sent via /api/payments/webhook or /api/admin/orders/:id/mark-paid
+      // for processor-agnostic order flow. Stripe checkout creates orders with 'paid' status
+      // directly, so email is handled by the centralized markOrderPaidAndNotify function
+      // when called from the payment webhook.
 
       res.json({ order, alreadyProcessed: false });
     } catch (error) {
@@ -1136,6 +1123,35 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error updating order status:", error);
       res.status(500).json({ error: "Failed to update order status" });
+    }
+  });
+
+  // Admin: Mark order as paid and send confirmation email
+  app.post("/api/admin/orders/:id/mark-paid", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const orderId = req.params.id;
+      console.log(`[Admin] Marking order ${orderId} as paid`);
+      
+      const result = await markOrderPaidAndNotify(orderId);
+      
+      if (result.success) {
+        res.json({ 
+          success: true, 
+          message: "Order marked as paid and confirmation email sent",
+          order: result.order 
+        });
+      } else {
+        res.status(result.error === "Order not found" ? 404 : 500).json({ 
+          success: false, 
+          error: result.error 
+        });
+      }
+    } catch (error: any) {
+      console.error("[Admin Mark Paid] Error:", error);
+      res.status(500).json({ 
+        success: false, 
+        error: error.message || "Failed to mark order as paid" 
+      });
     }
   });
 
