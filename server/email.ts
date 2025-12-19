@@ -1,4 +1,6 @@
 import * as nodemailer from 'nodemailer';
+import { storage } from './storage';
+import type { InsertEmailEvent } from '@shared/schema';
 
 // Email configuration
 const EMAIL_CONFIG = {
@@ -242,12 +244,33 @@ export async function sendOrderConfirmationEmail(order: {
   country?: string;
 }, productName?: string): Promise<EmailResult> {
   const template = getOrderConfirmationTemplate(order, productName);
+  const timestamp = new Date().toISOString();
   
-  return sendEmail({
+  const result = await sendEmail({
     to: order.email,
     subject: template.subject,
     text: template.text,
     html: template.html,
     replyTo: EMAIL_CONFIG.replyTo,
   });
+
+  // Log email event to database
+  const emailEvent: InsertEmailEvent = {
+    orderId: order.id,
+    type: 'order_confirmation',
+    recipientEmail: order.email,
+    subject: template.subject,
+    status: result.success ? 'sent' : 'failed',
+    sesMessageId: result.messageId || null,
+    error: result.error || null,
+  };
+
+  try {
+    await storage.createEmailEvent(emailEvent);
+    console.log(`[Email Event] Logged: orderId=${order.id}, type=order_confirmation, status=${emailEvent.status}, sesMessageId=${result.messageId || 'N/A'}, timestamp=${timestamp}`);
+  } catch (logError) {
+    console.error('[Email Event] Failed to log event to database:', logError);
+  }
+
+  return result;
 }
