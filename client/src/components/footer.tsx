@@ -81,7 +81,7 @@ export function Footer() {
               <img
                 src={logoImage}
                 alt="Revive Research"
-                className="h-10 w-auto mb-6"
+                className="h-20 w-auto mb-6"
                 data-testid="img-footer-logo"
               />
             </Link>
