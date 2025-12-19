@@ -1,25 +1,13 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { 
   ArrowRight, 
   ChevronDown,
   FlaskConical,
-  Flame,
-  Sparkles,
-  TrendingUp,
-  Package,
-  Zap,
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import type { Product } from "@shared/schema";
 import heroBackground from "@assets/69bf34cc-d177-46c6-af24-c51da5ee10fa_1764382400961.png";
-import bottleImage from "@assets/reta_bottle_1764702933066.jpg";
-import { useState, useEffect } from "react";
 import { trackEvent } from "@/lib/analytics";
-import { BUNDLES } from "@/lib/bundles";
 import { SEOHead } from "@/components/seo-head";
 import { MolecularDNAVisual } from "@/components/home/molecular-dna-visual";
 import { TestingPipelineVisual } from "@/components/home/testing-pipeline-visual";
@@ -34,9 +22,9 @@ function HeroSection() {
   const overlayY = useTransform(scrollY, [0, 600], [0, -80]);
 
   const handleScrollClick = () => {
-    const productsSection = document.getElementById('products');
-    if (productsSection) {
-      productsSection.scrollIntoView({ behavior: 'smooth' });
+    const nextSection = document.getElementById('why-researchers');
+    if (nextSection) {
+      nextSection.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -206,357 +194,6 @@ function HeroSection() {
   );
 }
 
-// Countdown timer hook - counts down to end of week
-function useCountdown() {
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  
-  useEffect(() => {
-    const calculateTimeLeft = () => {
-      const now = new Date();
-      const endOfWeek = new Date();
-      endOfWeek.setDate(now.getDate() + (7 - now.getDay()));
-      endOfWeek.setHours(23, 59, 59, 999);
-      
-      const difference = Math.max(0, endOfWeek.getTime() - now.getTime());
-      
-      setTimeLeft({
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((difference / 1000 / 60) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
-      });
-    };
-    
-    calculateTimeLeft();
-    const timer = setInterval(calculateTimeLeft, 1000);
-    return () => clearInterval(timer);
-  }, []);
-  
-  return timeLeft;
-}
-
-// Product categories for quick links
-const categories = [
-  { name: "Tissue Repair", icon: Zap, color: "cyan", href: "/peptides?category=tissue" },
-  { name: "Metabolic", icon: Flame, color: "yellow", href: "/peptides?category=metabolic" },
-  { name: "Anti-Aging", icon: Sparkles, color: "purple", href: "/peptides?category=aging" },
-  { name: "Growth Hormone", icon: TrendingUp, color: "cyan", href: "/peptides?category=gh" },
-];
-
-function ProductShowcase() {
-  const { data: products, isLoading } = useQuery<Product[]>({
-    queryKey: ["/api/products"],
-  });
-  const timeLeft = useCountdown();
-
-  const weeklyDeal = products?.find(p => p.isWeeklyDeal && p.inStock);
-  const bestSellers = products?.filter(p => p.inStock).slice(0, 3) || [];
-  const featuredBundles = BUNDLES.slice(0, 3);
-
-  return (
-    <section className="py-8 md:py-12" id="products">
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
-        
-        {/* Sale of the Week - Compact on mobile */}
-        {weeklyDeal && (
-          <Link href={`/products/${weeklyDeal.id}`} data-testid={`link-weekly-deal-${weeklyDeal.id}`}>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="mb-6 md:mb-10 cursor-pointer"
-            >
-              <div className="sale-glow-pulse rounded-xl md:rounded-2xl transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(239,68,68,0.5)]">
-                <Card className="border-2 border-red-500 bg-gradient-to-r from-red-500/15 via-red-500/5 to-background overflow-hidden transition-colors duration-300 hover:border-red-400">
-                  <div className="p-4 md:p-8">
-                    {/* Top row - Sale label */}
-                    <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-4">
-                      <Badge className="bg-[#E7FB10] text-black font-bold text-[10px] md:text-xs px-2 md:px-3 py-0.5 md:py-1">HOT DEAL</Badge>
-                      <span className="text-xs md:text-sm text-red-400 font-semibold flex items-center gap-1 md:gap-2">
-                        <Flame className="h-3 w-3 md:h-4 md:w-4 animate-pulse" />
-                        Sale of the Week
-                      </span>
-                    </div>
-                    
-                    {/* Mobile: Compact horizontal layout */}
-                    <div className="md:hidden flex items-center gap-3">
-                      <div className="w-12 h-12 bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center flex-shrink-0 border border-red-500/30">
-                        <FlaskConical className="h-6 w-6 text-red-500/60" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-display text-lg font-bold text-[#E7FB10] truncate">{weeklyDeal.name}</h3>
-                        <div className="flex items-center gap-2">
-                          <span className="font-display text-xl font-bold text-[#E7FB10]">
-                            ${Number(weeklyDeal.price).toFixed(2)}
-                          </span>
-                          <Button size="sm" className="bg-red-500 hover:bg-red-600 text-white font-display text-xs gap-1 pointer-events-none h-7 px-2">
-                            Shop <ArrowRight className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Desktop: Full layout */}
-                    <div className="hidden md:flex flex-col lg:flex-row lg:items-center gap-6">
-                      {/* Product info */}
-                      <div className="flex items-center gap-5 flex-1">
-                        <div className="w-24 h-24 bg-gradient-to-br from-muted to-muted/50 rounded-xl flex items-center justify-center flex-shrink-0 border border-red-500/30">
-                          <FlaskConical className="h-12 w-12 text-red-500/60" />
-                        </div>
-                        <div>
-                          <h3 className="font-display text-3xl font-bold text-[#E7FB10] mb-1">{weeklyDeal.name}</h3>
-                          <p className="text-muted-foreground text-base">Limited time offer - don't miss out!</p>
-                        </div>
-                      </div>
-                      
-                      {/* Countdown + Price + CTA */}
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 lg:gap-6">
-                        {/* Countdown */}
-                        <div className="flex gap-2">
-                          {[
-                            { value: timeLeft.days, label: "Days" },
-                            { value: timeLeft.hours, label: "Hrs" },
-                            { value: timeLeft.minutes, label: "Min" },
-                            { value: timeLeft.seconds, label: "Sec" },
-                          ].map((item, i) => (
-                            <div key={i} className="text-center">
-                              <div className="bg-red-500/20 border border-red-500/50 rounded-lg px-3 py-2 min-w-[48px]">
-                                <span className="font-display text-xl font-bold text-red-400">
-                                  {String(item.value).padStart(2, '0')}
-                                </span>
-                              </div>
-                              <span className="text-[10px] text-muted-foreground mt-1 block">{item.label}</span>
-                            </div>
-                          ))}
-                        </div>
-                        
-                        {/* Price + Button */}
-                        <div className="flex items-center gap-4">
-                          <span className="font-display text-4xl font-bold text-[#E7FB10]">
-                            ${Number(weeklyDeal.price).toFixed(2)}
-                          </span>
-                          <Button size="lg" className="bg-red-500 hover:bg-red-600 text-white font-display text-base gap-2 pointer-events-none shadow-lg shadow-red-500/30" data-testid="button-weekly-deal">
-                            Shop Now <ArrowRight className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              </div>
-            </motion.div>
-          </Link>
-        )}
-
-        {/* Category Quick Links - Hidden on mobile */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="hidden md:block mb-8"
-        >
-          <div className="grid grid-cols-4 gap-3">
-            {categories.map((category, index) => {
-              const Icon = category.icon;
-              const colorClass = category.color === "cyan" 
-                ? "border-[#21d8ff]/30 hover:border-[#21d8ff] hover:bg-[#21d8ff]/10 text-[#21d8ff]"
-                : category.color === "yellow"
-                ? "border-[#E7FB10]/30 hover:border-[#E7FB10] hover:bg-[#E7FB10]/10 text-[#E7FB10]"
-                : "border-[#9d4edd]/30 hover:border-[#9d4edd] hover:bg-[#9d4edd]/10 text-[#9d4edd]";
-              
-              return (
-                <motion.div
-                  key={category.name}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <Link href={category.href}>
-                    <Card className={`p-3 cursor-pointer transition-all duration-300 border ${colorClass} group`} data-testid={`link-category-${category.name.toLowerCase().replace(' ', '-')}`}>
-                      <div className="flex items-center gap-2">
-                        <Icon className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                        <span className="text-sm font-medium">{category.name}</span>
-                      </div>
-                    </Card>
-                  </Link>
-                </motion.div>
-              );
-            })}
-          </div>
-        </motion.div>
-
-        {/* Best Sellers Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-12"
-        >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="font-display text-2xl md:text-3xl font-bold">Best Sellers</h2>
-            <Link href="/peptides">
-              <Button variant="ghost" className="gap-2 text-muted-foreground hover:text-foreground" data-testid="button-view-all-products">
-                View All <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-          
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[1, 2, 3].map((i) => (
-                <Card key={i} className="animate-pulse p-4">
-                  <div className="aspect-square bg-muted rounded-lg mb-4" />
-                  <div className="h-5 bg-muted rounded w-3/4 mb-2" />
-                  <div className="h-5 bg-muted rounded w-1/2" />
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {bestSellers.map((product, index) => (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <Link href={`/peptides/${product.id}`} onClick={() => trackEvent('product_click', 'best_sellers', product.name)}>
-                    <Card 
-                      className="group cursor-pointer transition-all duration-300 border border-[#21d8ff]/30 hover:border-[#21d8ff] hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(33,216,255,0.5)] overflow-hidden"
-                      data-testid={`card-bestseller-${product.id}`}
-                    >
-                      <div className="aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center relative overflow-hidden">
-                        <img 
-                          src={bottleImage} 
-                          alt={`${product.name} research peptide - premium quality`}
-                          className="h-[90%] w-[90%] object-contain group-hover:scale-110 transition-transform duration-300"
-                        />
-                        {product.isWeeklyDeal && (
-                          <Badge className="absolute top-2 right-2 bg-[#E7FB10] text-black text-xs px-2 py-0.5 font-bold">DEAL</Badge>
-                        )}
-                      </div>
-                      <div className="p-4 text-center">
-                        <h3 className="font-display text-lg md:text-xl font-bold text-[#E7FB10] group-hover:text-[#21d8ff] transition-colors mb-2">
-                          {product.name}
-                        </h3>
-                        <span className="font-display text-xl font-bold">${Number(product.price).toFixed(2)}</span>
-                      </div>
-                    </Card>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </motion.div>
-
-        {/* Research Stacks - Hidden on mobile */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="hidden md:block"
-        >
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <Package className="h-5 w-5 text-[#21d8ff]" />
-              <h2 className="font-display text-2xl md:text-3xl font-bold">Research Stacks</h2>
-            </div>
-            <Link href="/bundles">
-              <Button variant="ghost" className="gap-2 text-muted-foreground hover:text-foreground" data-testid="button-view-all-bundles">
-                View All <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-6">
-            {featuredBundles.map((bundle, index) => {
-              const Icon = bundle.icon;
-              const isCyan = bundle.color === "cyan";
-              
-              return (
-                <motion.div
-                  key={bundle.id}
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <Link href={`/bundles/${bundle.id}`} data-testid={`link-bundle-${bundle.id}`}>
-                    <Card 
-                      className={`group cursor-pointer transition-all duration-300 border overflow-hidden h-full hover:scale-[1.02] ${
-                        isCyan 
-                          ? "border-[#21d8ff]/30 hover:border-[#21d8ff] hover:shadow-[0_0_25px_rgba(33,216,255,0.4)]" 
-                          : "border-[#E7FB10]/30 hover:border-[#E7FB10] hover:shadow-[0_0_25px_rgba(231,251,16,0.4)]"
-                      }`}
-                      data-testid={`card-bundle-${bundle.id}`}
-                    >
-                      <div className="p-6">
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center gap-3">
-                            <Icon className={isCyan ? "h-5 w-5 text-[#21d8ff]" : "h-5 w-5 text-[#E7FB10]"} />
-                            <h3 className={`font-display text-lg md:text-xl font-bold ${isCyan ? "text-[#21d8ff]" : "text-[#E7FB10]"}`}>
-                              {bundle.name}
-                            </h3>
-                          </div>
-                          <Badge className={`text-xs font-bold px-2 py-0.5 ${isCyan ? "bg-[#21d8ff] text-black" : "bg-[#E7FB10] text-black"}`}>
-                            -{bundle.savings}%
-                          </Badge>
-                        </div>
-                        
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {bundle.products.map((product, i) => (
-                            <Badge key={i} variant="outline" className="text-sm px-2 py-0.5">
-                              {product}
-                            </Badge>
-                          ))}
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <span className="text-sm text-muted-foreground line-through">${bundle.originalPrice.toFixed(2)}</span>
-                            <span className={`font-display text-xl md:text-2xl font-bold ${isCyan ? "text-[#21d8ff]" : "text-[#E7FB10]"}`}>
-                              ${bundle.bundlePrice.toFixed(2)}
-                            </span>
-                          </div>
-                          <ArrowRight className={`h-5 w-5 group-hover:translate-x-1 transition-transform ${isCyan ? "text-[#21d8ff]" : "text-[#E7FB10]"}`} />
-                        </div>
-                      </div>
-                    </Card>
-                  </Link>
-                </motion.div>
-              );
-            })}
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Wanna See More CTA */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="mt-12 flex justify-center"
-      >
-        <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#E7FB10]/20 via-[#21d8ff]/20 to-[#E7FB10]/20 rounded-lg blur-lg" />
-          <Link href="/peptides">
-            <Button 
-              size="lg" 
-              className="relative font-display text-lg gap-2 border-2 border-[#E7FB10] bg-transparent hover:bg-[#E7FB10]/10 text-[#E7FB10]"
-              data-testid="button-wanna-see-more"
-            >
-              Wanna See More?
-              <ArrowRight className="h-5 w-5" />
-            </Button>
-          </Link>
-        </div>
-      </motion.div>
-    </section>
-  );
-}
-
 function CTASection() {
   return (
     <section className="py-16 md:py-20 text-primary-foreground bg-[#e7fb10]">
@@ -619,12 +256,13 @@ export default function Home() {
       <div className="hidden md:block">
         <MolecularDNAVisual />
       </div>
-      <ProductShowcase />
       {/* TestingPipelineVisual - hidden on mobile (too complex) */}
       <div className="hidden md:block">
         <TestingPipelineVisual />
       </div>
-      <WhyResearchersChooseUs />
+      <div id="why-researchers">
+        <WhyResearchersChooseUs />
+      </div>
       <CTASection />
     </main>
   );
