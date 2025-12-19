@@ -424,8 +424,7 @@ function CTASection() {
               >
                 <Button 
                   size="lg" 
-                  variant="secondary"
-                  className="font-display text-base px-8 gap-2 transition-all duration-300 hover:shadow-[0_0_20px_rgba(33,216,255,0.4)]"
+                  className="font-display text-base px-8 gap-2 bg-[#ec4899] text-white transition-all duration-300 hover:shadow-[0_0_20px_rgba(236,72,153,0.6)]"
                 >
                   Browse Peptides
                   <ArrowRight className="h-4 w-4" />
