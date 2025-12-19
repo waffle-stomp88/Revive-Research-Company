@@ -76,8 +76,7 @@ export function AgeVerificationModal() {
 
               <div className="space-y-3 sm:space-y-6 text-foreground/90">
                 <p className="text-xs sm:text-base leading-relaxed">
-                  We source high-quality research compounds at fair, cost-plus 
-                  pricing. No hype, no fluff—just reliable peptides for research purposes only.
+                  Welcome to Revive Research. Every compound we offer is third-party tested with full documentation available. We believe researchers deserve transparency—from pricing to purity.
                 </p>
 
                 <div className="space-y-2 sm:space-y-3">
