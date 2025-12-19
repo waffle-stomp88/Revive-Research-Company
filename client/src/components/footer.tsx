@@ -17,17 +17,18 @@ function getResponseTimeByTimeZone(): string {
 
 const footerLinks = {
   shop: [
-    { label: "All Products", href: "/products" },
-    { label: "Affiliate Program", href: "/affiliate" },
+    { label: "COA Library", href: "/coa-library" },
+    { label: "Batch Archive", href: "/batch-archive" },
   ],
   resources: [
-    { label: "Education Center", href: "/education" },
     { label: "Quality Process", href: "/quality-process" },
-    { label: "Batch Archive", href: "/batch-archive" },
     { label: "Lab Notes", href: "/lab-notes" },
+    { label: "Buyer Checklist", href: "/buyer-checklist" },
   ],
   support: [
-    { label: "Shipping & Returns", href: "/shipping" },
+    { label: "FAQ", href: "/faq" },
+    { label: "Troubleshooting", href: "/troubleshooting" },
+    { label: "Package Arrived Warm?", href: "/package-warm" },
     { label: "Contact Us", href: "/contact" },
   ],
 };
