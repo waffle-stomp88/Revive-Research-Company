@@ -97,21 +97,21 @@ export function AgeVerificationModal() {
                 </div>
 
                 <motion.div 
-                  className="flex items-start gap-2 pt-2 px-3 py-2.5 rounded-lg cursor-pointer transition-all"
+                  className="flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all w-full"
                   style={{ background: 'rgba(157, 78, 221, 0.05)', border: '1px solid rgba(157, 78, 221, 0.2)' }}
                   whileHover={{ background: 'rgba(157, 78, 221, 0.1)', boxShadow: '0 0 15px rgba(157, 78, 221, 0.3)' }}
                   onClick={() => setAgreed(!agreed)}
+                  data-testid="button-age-terms"
                 >
                   <Checkbox
                     id="age-terms"
                     checked={agreed}
                     onCheckedChange={(checked) => setAgreed(checked === true)}
-                    className="mt-0.5"
                     data-testid="checkbox-age-verification"
                   />
                   <label 
                     htmlFor="age-terms" 
-                    className="text-xs sm:text-sm font-medium cursor-pointer select-none"
+                    className="text-xs sm:text-sm font-medium cursor-pointer select-none flex-1"
                   >
                     I agree to these terms and confirm I am 21+.
                   </label>
