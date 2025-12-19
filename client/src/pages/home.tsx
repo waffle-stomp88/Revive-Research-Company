@@ -203,12 +203,12 @@ function HeroSection() {
   );
 }
 
-// Education categories for teaser
+// Education categories for teaser - 4 items to match Academy modules
 const educationCategories = [
-  { name: "Peptide Profiles", icon: FlaskConical, color: "#ec4899", count: "20+" },
-  { name: "Research Basics", icon: Beaker, color: "#21d8ff", count: "10+" },
-  { name: "Understanding COAs", icon: FileCheck, color: "#9d4edd", count: "5+" },
-  { name: "Storage & Handling", icon: Thermometer, color: "#f97316", count: "8+" },
+  { name: "Peptide Profiles", description: "In-depth compound guides", icon: FlaskConical, color: "#ec4899" },
+  { name: "Research Basics", description: "Foundational knowledge", icon: Beaker, color: "#21d8ff" },
+  { name: "Understanding COAs", description: "Certificate interpretation", icon: FileCheck, color: "#9d4edd" },
+  { name: "Storage & Handling", description: "Best practices for labs", icon: Thermometer, color: "#f97316" },
 ];
 
 // Academy modules for teaser
@@ -250,14 +250,14 @@ function EducationTeaser() {
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
           >
-            <Card className="h-full border-2 border-[#21d8ff]/30 bg-gradient-to-br from-[#21d8ff]/5 to-transparent hover:border-[#21d8ff]/60 transition-all duration-300 overflow-hidden">
+            <Card className="h-full border-2 border-[#21d8ff]/50 bg-gradient-to-br from-[#21d8ff]/10 to-transparent transition-all duration-300 overflow-visible animate-[pulse-glow-cyan_5s_ease-in-out_infinite]" style={{ boxShadow: '0 0 25px rgba(33, 216, 255, 0.25), inset 0 0 20px rgba(33, 216, 255, 0.05)' }}>
               <div className="p-6 md:p-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-3 rounded-xl bg-[#21d8ff]/20 border border-[#21d8ff]/30">
-                    <GraduationCap className="h-6 w-6 text-[#21d8ff]" />
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="p-4 rounded-xl bg-[#21d8ff]/20 border border-[#21d8ff]/40">
+                    <GraduationCap className="h-8 w-8 text-[#21d8ff]" />
                   </div>
                   <div>
-                    <h3 className="font-display text-xl md:text-2xl font-bold">Research Academy</h3>
+                    <h3 className="font-display text-2xl md:text-3xl font-bold text-[#21d8ff]">RESEARCH ACADEMY</h3>
                     <p className="text-sm text-muted-foreground">Gamified learning experience</p>
                   </div>
                 </div>
@@ -315,14 +315,14 @@ function EducationTeaser() {
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            <Card className="h-full border-2 border-[#9d4edd]/30 bg-gradient-to-br from-[#9d4edd]/5 to-transparent hover:border-[#9d4edd]/60 transition-all duration-300 overflow-hidden">
+            <Card className="h-full border-2 border-[#9d4edd]/50 bg-gradient-to-br from-[#9d4edd]/10 to-transparent transition-all duration-300 overflow-visible animate-pulse-glow-purple" style={{ boxShadow: '0 0 25px rgba(157, 78, 221, 0.25), inset 0 0 20px rgba(157, 78, 221, 0.05)' }}>
               <div className="p-6 md:p-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-3 rounded-xl bg-[#9d4edd]/20 border border-[#9d4edd]/30">
-                    <BookOpen className="h-6 w-6 text-[#9d4edd]" />
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="p-4 rounded-xl bg-[#9d4edd]/20 border border-[#9d4edd]/40">
+                    <BookOpen className="h-8 w-8 text-[#9d4edd]" />
                   </div>
                   <div>
-                    <h3 className="font-display text-xl md:text-2xl font-bold">Education Center</h3>
+                    <h3 className="font-display text-2xl md:text-3xl font-bold text-[#9d4edd]">EDUCATION CENTER</h3>
                     <p className="text-sm text-muted-foreground">Comprehensive article library</p>
                   </div>
                 </div>
@@ -340,23 +340,23 @@ function EducationTeaser() {
                   </Badge>
                 </div>
 
-                {/* Categories Preview */}
-                <div className="grid grid-cols-2 gap-3 mb-6">
+                {/* Categories Preview - Stacked like Academy modules */}
+                <div className="space-y-3 mb-6">
                   {educationCategories.map((category, index) => {
                     const Icon = category.icon;
                     return (
                       <motion.div
                         key={category.name}
-                        initial={{ opacity: 0, y: 10 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, x: 10 }}
+                        whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        transition={{ delay: 0.3 + index * 0.1 }}
-                        className="flex items-center gap-2 p-3 rounded-lg bg-white/5 border border-white/10"
+                        transition={{ delay: 0.2 + index * 0.1 }}
+                        className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10"
                       >
-                        <Icon className="h-4 w-4" style={{ color: category.color }} />
-                        <div className="flex-1 min-w-0">
-                          <span className="text-xs font-medium block truncate">{category.name}</span>
-                          <span className="text-xs text-muted-foreground">{category.count} guides</span>
+                        <Icon className="h-4 w-4 flex-shrink-0" style={{ color: category.color }} />
+                        <div className="flex-1">
+                          <span className="font-medium text-sm">{category.name}</span>
+                          <span className="text-xs text-muted-foreground ml-2 hidden sm:inline">— {category.description}</span>
                         </div>
                       </motion.div>
                     );
