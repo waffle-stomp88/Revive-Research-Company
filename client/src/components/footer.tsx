@@ -18,29 +18,17 @@ function getResponseTimeByTimeZone(): string {
 const footerLinks = {
   shop: [
     { label: "All Products", href: "/products" },
-    { label: "COA Library", href: "/coa-library" },
-    { label: "Batch Archive", href: "/batch-archive" },
     { label: "Affiliate Program", href: "/affiliate" },
   ],
   resources: [
     { label: "Education Center", href: "/education" },
     { label: "Quality Process", href: "/quality-process" },
+    { label: "Batch Archive", href: "/batch-archive" },
     { label: "Lab Notes", href: "/lab-notes" },
-    { label: "Buyer Checklist", href: "/buyer-checklist" },
   ],
   support: [
-    { label: "FAQ", href: "/faq" },
-    { label: "Shipping Details", href: "/shipping" },
-    { label: "Package Arrived Warm?", href: "/package-warm" },
-    { label: "Troubleshooting", href: "/troubleshooting" },
+    { label: "Shipping & Returns", href: "/shipping" },
     { label: "Contact Us", href: "/contact" },
-  ],
-  company: [
-    { label: "Our Standards", href: "/what-we-dont-do" },
-    { label: "Transparency", href: "/transparency" },
-    { label: "Ethical Pricing", href: "/ethical-pricing" },
-    { label: "Privacy Policy", href: "/privacy" },
-    { label: "Terms of Service", href: "/terms" },
   ],
 };
 
@@ -59,23 +47,23 @@ export function Footer() {
     <footer className="bg-card border-t border-border">
       <div className="max-w-7xl mx-auto px-4 md:px-8 pt-2 md:pt-4 pb-16 md:pb-24">
         {/* Newsletter Signup - Prominent at top */}
-        <div className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-[#21d8ff]/10 via-[#E7FB10]/5 to-[#21d8ff]/10 border border-[#21d8ff]/40" data-testid="section-footer-newsletter">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+        <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-[#21d8ff]/10 via-[#E7FB10]/5 to-[#21d8ff]/10 border border-[#21d8ff]/40" data-testid="section-footer-newsletter">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
             <div className="text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#21d8ff]/20 border border-[#21d8ff]/30 mb-2">
-                <Mail className="h-4 w-4 text-[#21d8ff]" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#21d8ff]/20 border border-[#21d8ff]/30 mb-1">
+                <Mail className="h-3 w-3 text-[#21d8ff]" />
                 <span className="text-xs font-medium text-[#21d8ff] uppercase tracking-wider">Newsletter</span>
               </div>
-              <h4 className="font-display font-bold text-xl mb-1">Stay in the Loop</h4>
-              <p className="text-muted-foreground text-sm max-w-md">Get exclusive research updates, new compound releases, and educational content delivered to your inbox.</p>
+              <h4 className="font-display font-bold text-lg mb-1">Stay in the Loop</h4>
+              <p className="text-muted-foreground text-xs max-w-md">Get exclusive updates and educational content delivered to your inbox.</p>
             </div>
-            <div className="w-full lg:w-auto lg:min-w-[380px]">
+            <div className="w-full lg:w-auto lg:min-w-[360px]">
               <NewsletterSignup compact />
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-6">
           <div className="lg:col-span-2">
             <Link href="/">
               <img
@@ -109,21 +97,16 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-display font-semibold text-sm uppercase tracking-wider mb-6">
+            <h4 className="font-display font-semibold text-sm uppercase tracking-wider mb-4">
               Shop
             </h4>
-            <ul className="space-y-3">
+            <ul className="space-y-2">
               {footerLinks.shop.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href}>
-                    <div className="inline-block px-2.5 py-1.5 rounded-md border border-transparent hover:border-[#E7FB10] transition-all duration-300 cursor-pointer" 
-                         style={{ boxShadow: '0 0 0 1px rgba(231, 251, 16, 0)' }}
-                         onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 0 8px rgba(231, 251, 16, 0.5), 0 0 16px rgba(231, 251, 16, 0.2)'}
-                         onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 0 0 1px rgba(231, 251, 16, 0)'}>
-                      <span className="text-sm text-muted-foreground hover:text-[#E7FB10] transition-colors">
-                        {link.label}
-                      </span>
-                    </div>
+                    <span className="text-sm text-muted-foreground hover:text-[#E7FB10] transition-colors cursor-pointer">
+                      {link.label}
+                    </span>
                   </Link>
                 </li>
               ))}
@@ -131,21 +114,16 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-display font-semibold text-sm uppercase tracking-wider mb-6">
+            <h4 className="font-display font-semibold text-sm uppercase tracking-wider mb-4">
               Resources
             </h4>
-            <ul className="space-y-3">
+            <ul className="space-y-2">
               {footerLinks.resources.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href}>
-                    <div className="inline-block px-2.5 py-1.5 rounded-md border border-transparent hover:border-[#21d8ff] transition-all duration-300 cursor-pointer"
-                         style={{ boxShadow: '0 0 0 1px rgba(33, 216, 255, 0)' }}
-                         onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 0 8px rgba(33, 216, 255, 0.5), 0 0 16px rgba(33, 216, 255, 0.2)'}
-                         onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 0 0 1px rgba(33, 216, 255, 0)'}>
-                      <span className="text-sm text-muted-foreground hover:text-[#21d8ff] transition-colors">
-                        {link.label}
-                      </span>
-                    </div>
+                    <span className="text-sm text-muted-foreground hover:text-[#21d8ff] transition-colors cursor-pointer">
+                      {link.label}
+                    </span>
                   </Link>
                 </li>
               ))}
@@ -153,107 +131,40 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-display font-semibold text-sm uppercase tracking-wider mb-6">
+            <h4 className="font-display font-semibold text-sm uppercase tracking-wider mb-4">
               Support
             </h4>
-            <ul className="space-y-3">
+            <ul className="space-y-2">
               {footerLinks.support.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href}>
-                    <div className="inline-block px-2.5 py-1.5 rounded-md border border-transparent hover:border-[#9d4edd] transition-all duration-300 cursor-pointer"
-                         style={{ boxShadow: '0 0 0 1px rgba(157, 78, 221, 0)' }}
-                         onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 0 8px rgba(157, 78, 221, 0.5), 0 0 16px rgba(157, 78, 221, 0.2)'}
-                         onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 0 0 1px rgba(157, 78, 221, 0)'}>
-                      <span className="text-sm text-muted-foreground hover:text-[#9d4edd] transition-colors">
-                        {link.label}
-                      </span>
-                    </div>
+                    <span className="text-sm text-muted-foreground hover:text-[#9d4edd] transition-colors cursor-pointer">
+                      {link.label}
+                    </span>
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div>
-            <h4 className="font-display font-semibold text-sm uppercase tracking-wider mb-6">
-              Company
-            </h4>
-            <ul className="space-y-3">
-              {footerLinks.company.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href}>
-                    <div className="inline-block px-2.5 py-1.5 rounded-md border border-transparent hover:border-[#ec4899] transition-all duration-300 cursor-pointer"
-                         style={{ boxShadow: '0 0 0 1px rgba(236, 72, 153, 0)' }}
-                         onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 0 8px rgba(236, 72, 153, 0.5), 0 0 16px rgba(236, 72, 153, 0.2)'}
-                         onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 0 0 1px rgba(236, 72, 153, 0)'}>
-                      <span className="text-sm text-muted-foreground hover:text-[#ec4899] transition-colors">
-                        {link.label}
-                      </span>
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
 
         {/* FDA & Regulatory Compliance */}
-        <div className="mt-8 p-6 rounded-lg bg-red-950/30 border-2 border-red-500/50 animate-pulse-subtle" data-testid="section-fda-disclaimer">
-          <div className="flex items-start gap-4">
-            <div className="p-3 rounded-full bg-red-500/20 border border-red-500/30 flex-shrink-0">
-              <AlertTriangle className="h-6 w-6 text-red-400" />
-            </div>
-            <div className="flex-1">
-              <h4 className="font-display font-bold text-red-400 uppercase tracking-wider text-sm mb-3">
-                FDA & Regulatory Compliance
-              </h4>
-              <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-                All products are sold for laboratory research use only. <span className="text-red-400 font-semibold">Not for human consumption</span>, medical, veterinary, or household use. 
-                The statements made on this website have not been evaluated by the US Food and Drug Administration. These products are{" "}
-                <span className="text-red-400 font-semibold">not intended to diagnose, treat, cure, or prevent any disease</span>.
-              </p>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Revive Research is not a compounding pharmacy (503A) or outsourcing facility (503B) as defined under the Federal Food, Drug, and Cosmetic Act. 
-                All products are sold strictly for research, laboratory, or analytical purposes only. By using our website or purchasing products, you agree to our{" "}
-                <Link href="/terms"><span className="text-red-400 hover:underline cursor-pointer">Terms of Service</span></Link>.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Researcher Responsibility */}
-        <div className="mt-4 p-5 rounded-lg border border-[#E7FB10]/30 bg-[#E7FB10]/5" data-testid="section-researcher-responsibility">
+        <div className="mt-6 p-5 rounded-lg bg-red-950/30 border-2 border-red-500/50 animate-pulse-subtle" data-testid="section-fda-disclaimer">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="h-5 w-5 text-[#E7FB10] flex-shrink-0 mt-0.5" />
-            <div>
+            <AlertTriangle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <h4 className="font-display font-bold text-red-400 uppercase tracking-wider text-sm mb-2">
+                Important Legal Disclaimer
+              </h4>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                <span className="font-semibold text-[#E7FB10]">Researcher Responsibility:</span> All content on ReviveResearch.com is for{" "}
-                <span className="font-semibold text-[#E7FB10]">educational and informational purposes only</span>. These materials are{" "}
-                <span className="font-semibold text-[#E7FB10]">not intended for human or veterinary use</span> and are not classified as drugs, supplements, or food products under applicable law. 
-                By purchasing, you acknowledge full responsibility for use in accordance with all applicable laws and regulations. 
-                Nothing on this site constitutes medical advice or a recommendation for use.
+                All products are sold for laboratory research use only. <span className="text-red-400 font-semibold">Not for human consumption.</span> Not evaluated by the FDA. Not intended to diagnose, treat, cure, or prevent any disease. By purchasing, you agree to our <Link href="/terms"><span className="text-red-400 hover:underline cursor-pointer">Terms of Service</span></Link>.
               </p>
             </div>
           </div>
         </div>
 
-        {/* Compliance Icons */}
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div className="flex items-center gap-3 p-4 rounded-lg bg-[#21d8ff]/5 border border-[#21d8ff]/40 shadow-glow-blue-sm">
-            <Scale className="h-5 w-5 text-[#21d8ff]" />
-            <span className="text-sm text-muted-foreground">Federal & state law compliant</span>
-          </div>
-          <div className="flex items-center gap-3 p-4 rounded-lg bg-[#21d8ff]/5 border border-[#21d8ff]/40 shadow-glow-blue-sm">
-            <FileCheck className="h-5 w-5 text-[#21d8ff]" />
-            <span className="text-sm text-muted-foreground">Third-party tested & verified</span>
-          </div>
-          <div className="flex items-center gap-3 p-4 rounded-lg bg-[#21d8ff]/5 border border-[#21d8ff]/40 shadow-glow-blue-sm">
-            <Shield className="h-5 w-5 text-[#21d8ff]" />
-            <span className="text-sm text-muted-foreground">Qualified researchers only</span>
-          </div>
-        </div>
-
-        <div className="border-t border-border mt-8 pt-8">
+        <div className="border-t border-border mt-6 pt-6">
           <div className="flex flex-col items-center gap-4">
             <p className="text-sm text-muted-foreground">
               © {new Date().getFullYear()} Revive Research. All rights reserved.
