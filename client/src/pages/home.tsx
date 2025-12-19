@@ -252,7 +252,7 @@ function EducationTeaser() {
           >
             <Card className="h-full border-2 border-[#21d8ff]/50 bg-gradient-to-br from-[#21d8ff]/10 to-transparent transition-all duration-300 overflow-visible" style={{ boxShadow: '0 0 25px rgba(33, 216, 255, 0.25), inset 0 0 20px rgba(33, 216, 255, 0.05)', animation: 'pulse-glow-cyan 6s ease-in-out infinite' }}>
               <div className="p-6 md:p-8">
-                <div className="flex items-center gap-4 mb-6">
+                <div className="flex flex-col items-center gap-4 mb-6 text-center">
                   <div className="p-4 rounded-xl bg-[#21d8ff]/20 border border-[#21d8ff]/40">
                     <GraduationCap className="h-8 w-8 text-[#21d8ff]" />
                   </div>
@@ -263,7 +263,7 @@ function EducationTeaser() {
                 </div>
 
                 {/* Stats Row */}
-                <div className="flex flex-wrap gap-3 mb-6">
+                <div className="flex flex-wrap gap-3 mb-6 justify-center">
                   <Badge className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30">
                     <BookOpen className="h-3 w-3 mr-1" /> 4 Modules
                   </Badge>
@@ -317,7 +317,7 @@ function EducationTeaser() {
           >
             <Card className="h-full border-2 border-[#9d4edd]/50 bg-gradient-to-br from-[#9d4edd]/10 to-transparent transition-all duration-300 overflow-visible" style={{ boxShadow: '0 0 25px rgba(157, 78, 221, 0.25), inset 0 0 20px rgba(157, 78, 221, 0.05)', animation: 'pulse-glow-purple 6s ease-in-out infinite' }}>
               <div className="p-6 md:p-8">
-                <div className="flex items-center gap-4 mb-6">
+                <div className="flex flex-col items-center gap-4 mb-6 text-center">
                   <div className="p-4 rounded-xl bg-[#9d4edd]/20 border border-[#9d4edd]/40">
                     <BookOpen className="h-8 w-8 text-[#9d4edd]" />
                   </div>
@@ -328,7 +328,7 @@ function EducationTeaser() {
                 </div>
 
                 {/* Stats Row */}
-                <div className="flex flex-wrap gap-3 mb-6">
+                <div className="flex flex-wrap gap-3 mb-6 justify-center">
                   <Badge className="bg-[#ec4899]/20 text-[#ec4899] border-[#ec4899]/30">
                     40+ Articles
                   </Badge>
