@@ -158,7 +158,7 @@ export function Footer() {
                 Important Legal Disclaimer
               </h4>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                All products are sold for laboratory research use only. <span className="text-red-400 font-semibold">Not for human consumption.</span> Not evaluated by the FDA. Not intended to diagnose, treat, cure, or prevent any disease. By purchasing, you agree to our <Link href="/terms"><span className="text-red-400 hover:underline cursor-pointer">Terms of Service</span></Link>.
+                All products are sold for laboratory research use only. <span className="text-red-400 font-semibold">Not for human consumption.</span> Not evaluated by the FDA. Not intended to diagnose, treat, cure, or prevent any disease. Revive Research is not a compounding pharmacy (503A) or outsourcing facility (503B) under the Federal Food, Drug, and Cosmetic Act. By purchasing, you agree to our <Link href="/terms"><span className="text-red-400 hover:underline cursor-pointer">Terms of Service</span></Link>.
               </p>
             </div>
           </div>
