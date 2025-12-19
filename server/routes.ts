@@ -5,6 +5,7 @@ import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaS
 import { setupAuth, isAuthenticated } from "./auth0Auth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
+import { sendEmail, sendOrderConfirmationEmail } from "./email";
 import OpenAI from "openai";
 import { z } from "zod";
 
@@ -95,6 +96,55 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Test email endpoint - sends a plain text email to verify SES configuration (admin only)
+  app.post("/api/test-email", isAuthenticated, async (req: any, res) => {
+    // Check if user is admin
+    const userId = (req.session as any)?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized - Login required" });
+    }
+    const user = await storage.getUser(userId);
+    if (!user?.isAdmin) {
+      return res.status(403).json({ error: "Forbidden - Admin access required" });
+    }
+    try {
+      const { to } = req.body;
+      
+      if (!to || typeof to !== 'string') {
+        return res.status(400).json({ error: "Missing 'to' email address in request body" });
+      }
+      
+      console.log(`[Test Email] Attempting to send test email to: ${to}`);
+      
+      const result = await sendEmail({
+        to,
+        subject: "Revive Research - Test Email",
+        text: `This is a test email from Revive Research.\n\nIf you received this, your Amazon SES email configuration is working correctly.\n\nSent at: ${new Date().toISOString()}\n\nFrom: ${process.env.SES_FROM_EMAIL}`,
+      });
+      
+      if (result.success) {
+        console.log(`[Test Email] Success! MessageId: ${result.messageId}`);
+        res.json({ 
+          success: true, 
+          message: "Test email sent successfully",
+          messageId: result.messageId 
+        });
+      } else {
+        console.error(`[Test Email] Failed: ${result.error}`);
+        res.status(500).json({ 
+          success: false, 
+          error: result.error 
+        });
+      }
+    } catch (error: any) {
+      console.error("[Test Email] Unexpected error:", error);
+      res.status(500).json({ 
+        success: false, 
+        error: error.message || "Failed to send test email" 
+      });
     }
   });
 
@@ -911,6 +961,23 @@ export async function registerRoutes(
             tier2Commission
           );
         }
+      }
+
+      // Send order confirmation email
+      try {
+        const product = await storage.getProduct(order.productId);
+        const productName = product?.name || order.productId;
+        
+        const emailResult = await sendOrderConfirmationEmail(order, productName);
+        
+        if (emailResult.success) {
+          console.log(`[Order ${order.id}] Confirmation email sent to ${order.email}`);
+        } else {
+          console.error(`[Order ${order.id}] Failed to send confirmation email: ${emailResult.error}`);
+        }
+      } catch (emailError) {
+        // Log but don't fail the order if email fails
+        console.error(`[Order ${order.id}] Email error:`, emailError);
       }
 
       res.json({ order, alreadyProcessed: false });
