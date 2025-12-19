@@ -70,7 +70,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-8 lg:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-6">
           <div className="lg:col-span-2">
             <Link href="/">
               <img
@@ -171,20 +171,21 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* FDA & Regulatory Compliance - Right side */}
-          <div className="lg:col-span-1 flex flex-col justify-end">
-            <div className="p-3 rounded-lg bg-red-950/30 border-2 border-red-500/50 animate-pulse-subtle" data-testid="section-fda-disclaimer">
-              <div className="flex items-start gap-2">
-                <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    <span className="text-red-400 font-semibold">RUO:</span> For laboratory research use only. <span className="text-red-400 font-semibold">Not for human consumption.</span>
-                  </p>
-                </div>
-              </div>
+        </div>
+
+        {/* FDA & Regulatory Compliance */}
+        <div className="mt-6 p-5 rounded-lg bg-red-950/30 border-2 border-red-500/50 animate-pulse-subtle" data-testid="section-fda-disclaimer">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <h4 className="font-display font-bold text-red-400 uppercase tracking-wider text-sm mb-2">
+                Important Legal Disclaimer
+              </h4>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                All products are sold for laboratory research use only. <span className="text-red-400 font-semibold">Not for human consumption.</span> Not evaluated by the FDA. Not intended to diagnose, treat, cure, or prevent any disease. Revive Research is not a compounding pharmacy (503A) or outsourcing facility (503B) under the Federal Food, Drug, and Cosmetic Act. By purchasing, you agree to our <Link href="/terms"><span className="text-red-400 hover:underline cursor-pointer">Terms of Service</span></Link>.
+              </p>
             </div>
           </div>
-
         </div>
 
         <div className="border-t border-border mt-6 pt-6">
