@@ -59,17 +59,17 @@ export function Footer() {
     <footer className="bg-card border-t border-border">
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24">
         {/* Newsletter Signup - Prominent at top */}
-        <div className="mb-16 p-8 rounded-2xl bg-gradient-to-r from-[#21d8ff]/10 via-[#E7FB10]/5 to-[#21d8ff]/10 border border-[#21d8ff]/40" data-testid="section-footer-newsletter">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+        <div className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-[#21d8ff]/10 via-[#E7FB10]/5 to-[#21d8ff]/10 border border-[#21d8ff]/40" data-testid="section-footer-newsletter">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
             <div className="text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#21d8ff]/20 border border-[#21d8ff]/30 mb-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#21d8ff]/20 border border-[#21d8ff]/30 mb-2">
                 <Mail className="h-4 w-4 text-[#21d8ff]" />
                 <span className="text-xs font-medium text-[#21d8ff] uppercase tracking-wider">Newsletter</span>
               </div>
-              <h4 className="font-display font-bold text-2xl mb-2">Stay in the Loop</h4>
-              <p className="text-muted-foreground max-w-md">Get exclusive research updates, new compound releases, and educational content delivered to your inbox.</p>
+              <h4 className="font-display font-bold text-xl mb-1">Stay in the Loop</h4>
+              <p className="text-muted-foreground text-sm max-w-md">Get exclusive research updates, new compound releases, and educational content delivered to your inbox.</p>
             </div>
-            <div className="w-full lg:w-auto lg:min-w-[400px]">
+            <div className="w-full lg:w-auto lg:min-w-[380px]">
               <NewsletterSignup compact />
             </div>
           </div>
