@@ -49,7 +49,11 @@ export async function registerRoutes(
 ): Promise<Server> {
   
   // Serve static assets from public folder (e.g., /assets/logo.png)
+  // In development: serve from public/assets and client/public/assets
+  // In production: serve from dist/public/assets (Vite copies client/public to dist/public)
   app.use('/assets', express.static(path.resolve(process.cwd(), 'public/assets')));
+  app.use('/assets', express.static(path.resolve(process.cwd(), 'client/public/assets')));
+  app.use('/assets', express.static(path.resolve(process.cwd(), 'dist/public/assets')));
   
   // Setup authentication
   await setupAuth(app);
