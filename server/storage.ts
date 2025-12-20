@@ -1,7 +1,7 @@
 import { 
   users, products, coas, orders, contacts, affiliateApplications, affiliates, affiliateSales, affiliatePayouts, reviews,
   batches, productStorageProfiles, legalDocuments, faqEntries, educationArticles, coaGlossaryTerms, stockNotifications, discountCodes, newsletterSubscribers,
-  productDosageStock, priceHistory, academyProgress, emailEvents,
+  productDosageStock, priceHistory, academyProgress, emailEvents, wishlists,
   type User, type UpsertUser,
   type Product, type InsertProduct,
   type ProductDosageStock, type InsertProductDosageStock, type ProductWithDosageStock,
@@ -26,6 +26,7 @@ import {
   type PriceHistory, type InsertPriceHistory, type PriceTrend, type PriceChangeReason,
   type AcademyProgress, type InsertAcademyProgress,
   type EmailEvent, type InsertEmailEvent,
+  type Wishlist, type InsertWishlist,
   priceChangeReasons
 } from "@shared/schema";
 import { db } from "./db";
@@ -234,6 +235,12 @@ export interface IStorage {
   createEmailEvent(event: InsertEmailEvent): Promise<EmailEvent>;
   getRecentEmailEvents(limit?: number): Promise<EmailEvent[]>;
   getEmailEventsByOrderId(orderId: string): Promise<EmailEvent[]>;
+  
+  // Wishlists
+  getWishlistByUserId(userId: string): Promise<Wishlist[]>;
+  addToWishlist(userId: string, productId: string): Promise<Wishlist>;
+  removeFromWishlist(userId: string, productId: string): Promise<boolean>;
+  isInWishlist(userId: string, productId: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1532,6 +1539,43 @@ export class DatabaseStorage implements IStorage {
       .from(emailEvents)
       .where(eq(emailEvents.orderId, orderId))
       .orderBy(desc(emailEvents.createdAt));
+  }
+
+  // Wishlists
+  async getWishlistByUserId(userId: string): Promise<Wishlist[]> {
+    return db.select()
+      .from(wishlists)
+      .where(eq(wishlists.userId, userId))
+      .orderBy(desc(wishlists.createdAt));
+  }
+
+  async addToWishlist(userId: string, productId: string): Promise<Wishlist> {
+    // Check if already exists
+    const [existing] = await db.select()
+      .from(wishlists)
+      .where(and(eq(wishlists.userId, userId), eq(wishlists.productId, productId)));
+    
+    if (existing) {
+      return existing;
+    }
+    
+    const [wishlistItem] = await db.insert(wishlists)
+      .values({ userId, productId })
+      .returning();
+    return wishlistItem;
+  }
+
+  async removeFromWishlist(userId: string, productId: string): Promise<boolean> {
+    const result = await db.delete(wishlists)
+      .where(and(eq(wishlists.userId, userId), eq(wishlists.productId, productId)));
+    return true;
+  }
+
+  async isInWishlist(userId: string, productId: string): Promise<boolean> {
+    const [item] = await db.select()
+      .from(wishlists)
+      .where(and(eq(wishlists.userId, userId), eq(wishlists.productId, productId)));
+    return !!item;
   }
 }
 
