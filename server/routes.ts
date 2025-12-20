@@ -1,5 +1,7 @@
 import type { Express } from "express";
+import express from "express";
 import { createServer, type Server } from "http";
+import path from "path";
 import { storage } from "./storage";
 import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertReviewSchema, insertNewsletterSubscriberSchema } from "@shared/schema";
 import { setupAuth, isAuthenticated } from "./auth0Auth";
@@ -45,6 +47,9 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  
+  // Serve static assets from public folder (e.g., /assets/logo.png)
+  app.use('/assets', express.static(path.resolve(process.cwd(), 'public/assets')));
   
   // Setup authentication
   await setupAuth(app);
