@@ -9,7 +9,6 @@ import {
   FlaskConical,
   Boxes,
   Building2,
-  Droplets,
   ArrowRight,
   Sparkles,
   Shield,
@@ -43,15 +42,6 @@ const productCategories = [
     description: "Volume discounts for researchers",
     details: "Save 10-15% when purchasing 5-packs or 10-packs. Perfect for ongoing research protocols requiring consistent supply.",
     features: ["5-pack: 10% off", "10-pack: 15% off", "Mix any peptides"],
-  },
-  {
-    href: "/supplies",
-    label: "Supplies",
-    icon: Droplets,
-    color: "#9d4edd",
-    description: "Research essentials",
-    details: "Everything you need for proper peptide handling. Bacteriostatic water, syringes, alcohol swabs, and storage supplies.",
-    features: ["Bac water", "Syringes", "Storage supplies"],
   },
   {
     href: "/wholesale",

@@ -19,7 +19,6 @@ import Home from "@/pages/home";
 import Products from "@/pages/products";
 import BulkPacks from "@/pages/bulk-packs";
 import Wholesale from "@/pages/wholesale";
-import Supplies from "@/pages/supplies";
 import ProductDetail from "@/pages/product-detail";
 import BundleDetail from "@/pages/bundle-detail";
 import Cart from "@/pages/cart";
@@ -127,11 +126,6 @@ function Router() {
         <Route path="/wholesale">
           <ProtectedRoute title="Wholesale Program" description="Join our wholesale program for institutional pricing and dedicated support.">
             <Wholesale />
-          </ProtectedRoute>
-        </Route>
-        <Route path="/supplies">
-          <ProtectedRoute title="Research Supplies" description="Browse our selection of research supplies and equipment.">
-            <Supplies />
           </ProtectedRoute>
         </Route>
         <Route path="/research-stacks">
