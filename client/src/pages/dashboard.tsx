@@ -585,12 +585,13 @@ interface WishlistItem {
   createdAt: string;
 }
 
-function WishlistWidget({ products }: { products?: Product[] }) {
+function WishlistWidget({ products, isAuthenticated }: { products?: Product[]; isAuthenticated: boolean }) {
   const { addToCart } = useCart();
   const { toast } = useToast();
 
   const { data: wishlistItems, isLoading } = useQuery<WishlistItem[]>({
     queryKey: ["/api/wishlist"],
+    enabled: isAuthenticated,
   });
 
   const removeMutation = useMutation({
@@ -599,6 +600,9 @@ function WishlistWidget({ products }: { products?: Product[] }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/wishlist"] });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to remove from wishlist", variant: "destructive" });
     },
   });
 
@@ -1362,7 +1366,7 @@ export default function Dashboard() {
                 <RecommendedStacks orders={orders} products={products} />
               </div>
               
-              <WishlistWidget products={products} />
+              <WishlistWidget products={products} isAuthenticated={isAuthenticated} />
               <MyCOAs orders={orders} products={products} />
 
               <Card className="border-[#21d8ff]/30 bg-gradient-to-br from-[#21d8ff]/5 to-transparent">

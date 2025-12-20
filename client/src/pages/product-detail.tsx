@@ -52,7 +52,8 @@ import {
   ChevronDown,
   Bell,
   Mail,
-  Loader2
+  Loader2,
+  Heart
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useMutation } from "@tanstack/react-query";
@@ -224,6 +225,60 @@ export default function ProductDetail() {
     if (!product || !notifyEmail.trim()) return;
     stockNotifyMutation.mutate({ productId: product.id, email: notifyEmail.trim() });
   };
+
+  // Wishlist functionality
+  const { data: wishlistStatus } = useQuery<{ isInWishlist: boolean }>({
+    queryKey: ["/api/wishlist/check", params.id],
+    enabled: !!params.id && isAuthenticated,
+  });
+
+  const addToWishlistMutation = useMutation({
+    mutationFn: async (productId: string) => {
+      await apiRequest("POST", "/api/wishlist", { productId });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/wishlist"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/wishlist/check", params.id] });
+      toast({ title: "Added to Wishlist", description: "Product saved to your wishlist" });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to add to wishlist. Please try again.", variant: "destructive" });
+    },
+  });
+
+  const removeFromWishlistMutation = useMutation({
+    mutationFn: async (productId: string) => {
+      await apiRequest("DELETE", `/api/wishlist/${productId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/wishlist"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/wishlist/check", params.id] });
+      toast({ title: "Removed from Wishlist", description: "Product removed from your wishlist" });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to remove from wishlist. Please try again.", variant: "destructive" });
+    },
+  });
+
+  const handleToggleWishlist = () => {
+    if (!isAuthenticated) {
+      toast({ 
+        title: "Login Required", 
+        description: "Please sign in to save items to your wishlist. Click the heart again after logging in.",
+      });
+      login();
+      return;
+    }
+    if (!params.id) return;
+    
+    if (wishlistStatus?.isInWishlist) {
+      removeFromWishlistMutation.mutate(params.id);
+    } else {
+      addToWishlistMutation.mutate(params.id);
+    }
+  };
+
+  const isInWishlist = wishlistStatus?.isInWishlist ?? false;
 
   useEffect(() => {
     if (product?.dosageOptions && product.dosageOptions.length > 0) {
@@ -716,6 +771,20 @@ export default function ProductDetail() {
                         Buy Now
                       </>
                     )}
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className={`border-2 transition-all duration-300 ${
+                      isInWishlist 
+                        ? "border-[#ec4899] bg-[#ec4899]/10 text-[#ec4899]" 
+                        : "border-[#2a2a32] text-muted-foreground hover:border-[#ec4899] hover:text-[#ec4899]"
+                    }`}
+                    onClick={handleToggleWishlist}
+                    disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
+                    data-testid="button-toggle-wishlist"
+                  >
+                    <Heart className={`h-5 w-5 ${isInWishlist ? "fill-current" : ""}`} />
                   </Button>
                 </div>
 
