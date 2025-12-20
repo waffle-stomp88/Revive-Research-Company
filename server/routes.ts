@@ -2578,6 +2578,57 @@ Return ONLY valid JSON in this exact format:
     }
   });
 
+  // Wishlists
+  app.get("/api/wishlist", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const items = await storage.getWishlistByUserId(userId);
+      res.json(items);
+    } catch (error) {
+      console.error("Error fetching wishlist:", error);
+      res.status(500).json({ error: "Failed to fetch wishlist" });
+    }
+  });
+
+  app.post("/api/wishlist", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { productId } = req.body;
+      if (!productId) {
+        return res.status(400).json({ error: "Product ID is required" });
+      }
+      const item = await storage.addToWishlist(userId, productId);
+      res.json(item);
+    } catch (error) {
+      console.error("Error adding to wishlist:", error);
+      res.status(500).json({ error: "Failed to add to wishlist" });
+    }
+  });
+
+  app.delete("/api/wishlist/:productId", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { productId } = req.params;
+      await storage.removeFromWishlist(userId, productId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error removing from wishlist:", error);
+      res.status(500).json({ error: "Failed to remove from wishlist" });
+    }
+  });
+
+  app.get("/api/wishlist/check/:productId", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { productId } = req.params;
+      const isInWishlist = await storage.isInWishlist(userId, productId);
+      res.json({ isInWishlist });
+    } catch (error) {
+      console.error("Error checking wishlist:", error);
+      res.status(500).json({ error: "Failed to check wishlist" });
+    }
+  });
+
   // XML Sitemap - Only public-facing, non-product pages for regulatory compliance
   app.get("/sitemap.xml", async (req, res) => {
     try {
