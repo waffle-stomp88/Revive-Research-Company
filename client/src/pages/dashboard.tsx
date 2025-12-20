@@ -578,25 +578,39 @@ function RecommendedStacks({ orders, products }: { orders?: Order[]; products?: 
   );
 }
 
+interface WishlistItem {
+  id: string;
+  userId: string;
+  productId: string;
+  createdAt: string;
+}
+
 function WishlistWidget({ products }: { products?: Product[] }) {
-  const [wishlist, setWishlist] = useState<string[]>([]);
   const { addToCart } = useCart();
   const { toast } = useToast();
 
-  useEffect(() => {
-    const saved = localStorage.getItem('wishlist');
-    if (saved) setWishlist(JSON.parse(saved));
-  }, []);
+  const { data: wishlistItems, isLoading } = useQuery<WishlistItem[]>({
+    queryKey: ["/api/wishlist"],
+  });
+
+  const removeMutation = useMutation({
+    mutationFn: async (productId: string) => {
+      await apiRequest("DELETE", `/api/wishlist/${productId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/wishlist"] });
+    },
+  });
 
   const wishlistProducts = useMemo(() => {
-    if (!products) return [];
-    return wishlist.map(id => products.find(p => p.id === id)).filter(Boolean) as Product[];
-  }, [wishlist, products]);
+    if (!products || !wishlistItems) return [];
+    return wishlistItems
+      .map(item => products.find(p => p.id === item.productId))
+      .filter(Boolean) as Product[];
+  }, [wishlistItems, products]);
 
   const removeFromWishlist = (productId: string) => {
-    const updated = wishlist.filter(id => id !== productId);
-    setWishlist(updated);
-    localStorage.setItem('wishlist', JSON.stringify(updated));
+    removeMutation.mutate(productId);
   };
 
   const handleAddToCart = (product: Product) => {
@@ -623,6 +637,25 @@ function WishlistWidget({ products }: { products?: Product[] }) {
     });
   };
 
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-sm">
+            <Heart className="h-4 w-4 text-[#ec4899]" />
+            Wishlist
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   if (wishlistProducts.length === 0) {
     return (
       <Card>
@@ -636,7 +669,7 @@ function WishlistWidget({ products }: { products?: Product[] }) {
           <div className="text-center py-4">
             <Bookmark className="h-8 w-8 mx-auto text-muted-foreground/50 mb-2" />
             <p className="text-xs text-muted-foreground">No items saved yet</p>
-            <Link href="/products">
+            <Link href="/peptides">
               <Button variant="outline" size="sm" className="mt-2">
                 Browse Products
               </Button>
