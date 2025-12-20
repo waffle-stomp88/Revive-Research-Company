@@ -396,7 +396,7 @@ function MelanocortinAnimation({ isInView }: { isInView: boolean }) {
         ))}
         
         <motion.path
-          d="M 80 145 Q 80 165 120 175 Q 160 185 200 175"
+          d="M 80 145 Q 80 165 120 175 Q 160 185 200 175 Q 230 165 260 80"
           stroke="#21d8ff"
           strokeWidth="2"
           strokeDasharray="4,2"
