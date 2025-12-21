@@ -614,23 +614,24 @@ function PlainEnglishSummary({ calculations, syringeSize, doseValue, doseUnit }:
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mb-6 p-4 rounded-xl bg-gradient-to-r from-[#22c55e]/10 via-[#21d8ff]/10 to-[#a855f7]/10 border border-[#22c55e]/20"
+      className="mb-6 p-6 rounded-xl bg-gradient-to-r from-[#22c55e]/15 via-[#21d8ff]/15 to-[#a855f7]/15 border-2 border-[#22c55e]/40 shadow-lg"
+      style={{ boxShadow: '0 0 20px rgba(34, 197, 94, 0.2)' }}
     >
-      <div className="flex items-start gap-3">
-        <div className="p-2 rounded-lg bg-[#22c55e]/20">
-          <GraduationCap className="h-4 w-4 text-[#22c55e]" />
+      <div className="flex items-start gap-4">
+        <div className="p-3 rounded-lg bg-[#22c55e]/30 flex-shrink-0">
+          <GraduationCap className="h-5 w-5 text-[#22c55e]" />
         </div>
-        <div className="flex-1 space-y-2">
-          <h4 className="text-[#22c55e] text-sm font-medium">Your Instructions</h4>
-          <div className="space-y-1.5 text-sm">
-            <p className="text-white">
-              <span className="text-[#E7FB10] font-bold">Draw {calculations.unitsToDraw} units</span> on a {syringeLabel} syringe.
+        <div className="flex-1 space-y-3">
+          <h4 className="text-[#22c55e] text-lg font-bold tracking-wide">Your Instructions</h4>
+          <div className="space-y-2.5 text-base">
+            <p className="text-white leading-relaxed">
+              <span className="text-[#E7FB10] font-bold text-lg">Draw {calculations.unitsToDraw} units</span> on a {syringeLabel} syringe.
             </p>
-            <p className="text-gray-300">
-              This equals <span className="text-[#21d8ff] font-medium">{doseDisplay}</span> per injection.
+            <p className="text-gray-200 leading-relaxed">
+              This equals <span className="text-[#21d8ff] font-semibold text-base">{doseDisplay}</span> per injection.
             </p>
-            <p className="text-gray-400">
-              A full vial provides <span className="text-[#a855f7] font-medium">{calculations.totalDoses} injections</span> at this dose.
+            <p className="text-gray-300 leading-relaxed">
+              A full vial provides <span className="text-[#a855f7] font-semibold text-base">{calculations.totalDoses} injections</span> at this dose.
             </p>
           </div>
         </div>
