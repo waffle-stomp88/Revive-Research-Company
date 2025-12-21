@@ -113,10 +113,10 @@ function SavingsCalculator() {
   const tierColor = getTierColor(quantity);
   
   return (
-    <Card className="p-6 md:p-8 border-2 border-[#21d8ff]/50 bg-gradient-to-br from-[#21d8ff]/10 to-transparent">
+    <Card className="p-6 md:p-8 border-2 border-[#E7FB10]/50 bg-gradient-to-br from-[#E7FB10]/10 to-transparent">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-12 h-12 rounded-xl bg-[#21d8ff]/30 flex items-center justify-center">
-          <Calculator className="h-6 w-6 text-[#21d8ff]" />
+        <div className="w-12 h-12 rounded-xl bg-[#E7FB10]/30 flex items-center justify-center">
+          <Calculator className="h-6 w-6 text-[#E7FB10]" />
         </div>
         <div>
           <h3 className="font-display text-xl font-bold">Savings Calculator</h3>
@@ -163,7 +163,7 @@ function SavingsCalculator() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setQuantity(preset)}
-                className={quantity >= preset ? "text-[#21d8ff]" : "text-muted-foreground"}
+                className={quantity >= preset ? "text-[#E7FB10]" : "text-muted-foreground"}
                 data-testid={`button-preset-${preset}`}
               >
                 {preset}
@@ -183,11 +183,11 @@ function SavingsCalculator() {
           </div>
         </div>
         
-        <div className="p-4 rounded-xl bg-gradient-to-r from-[#21d8ff]/30 to-[#22c55e]/30 border border-[#21d8ff]/50">
+        <div className="p-4 rounded-xl bg-gradient-to-r from-[#E7FB10]/30 to-[#22c55e]/30 border border-[#E7FB10]/50">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Estimated Savings</p>
-              <p className="text-3xl font-bold text-[#21d8ff]">Up to ${savings.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-[#E7FB10]">Up to ${savings.toLocaleString()}</p>
             </div>
             <div className="text-right">
               <Badge style={{ backgroundColor: tierColor, color: tierColor === "#E7FB10" ? "black" : "white" }} className="mb-1">{tierLabel}</Badge>
