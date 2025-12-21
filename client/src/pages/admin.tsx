@@ -2963,6 +2963,10 @@ interface NewsletterData {
 }
 
 function LaunchSubscribersTab() {
+  const [filterSource, setFilterSource] = useState<string>("all");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [searchEmail, setSearchEmail] = useState("");
+
   const { data: subscriberData, isLoading } = useQuery<NewsletterData>({
     queryKey: ["/api/admin/newsletter/subscribers"],
     queryFn: async () => {
@@ -2976,12 +2980,32 @@ function LaunchSubscribersTab() {
 
   const { toast } = useToast();
 
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest("DELETE", `/api/admin/newsletter/subscribers/${id}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/newsletter/subscribers"] });
+      toast({ title: "Subscriber deleted successfully" });
+    },
+    onError: () => {
+      toast({ title: "Failed to delete subscriber", variant: "destructive" });
+    },
+  });
+
+  const handleDeleteSubscriber = (id: string, email: string) => {
+    if (confirm(`Delete subscriber "${email}"? This cannot be undone.`)) {
+      deleteMutation.mutate(id);
+    }
+  };
+
   const exportToCSV = () => {
     if (!subscriberData?.subscribers) return;
     
     const csv = [
       ["Email", "Source", "Status", "Signed Up"],
-      ...subscriberData.subscribers.map(sub => [
+      ...filteredSubscribers.map(sub => [
         sub.email,
         sub.source,
         sub.status,
@@ -2998,9 +3022,18 @@ function LaunchSubscribersTab() {
     
     toast({
       title: "Downloaded",
-      description: `${subscriberData.subscribers.length} subscribers exported to CSV`,
+      description: `${filteredSubscribers.length} subscribers exported to CSV`,
     });
   };
+
+  const filteredSubscribers = (subscriberData?.subscribers || []).filter(sub => {
+    const matchesSource = filterSource === "all" || sub.source === filterSource;
+    const matchesStatus = filterStatus === "all" || sub.status === filterStatus;
+    const matchesEmail = sub.email.toLowerCase().includes(searchEmail.toLowerCase());
+    return matchesSource && matchesStatus && matchesEmail;
+  });
+
+  const sources = Array.from(new Set(subscriberData?.subscribers?.map(s => s.source) || []));
 
   if (isLoading) {
     return (
@@ -3057,8 +3090,53 @@ function LaunchSubscribersTab() {
         ))}
       </div>
 
-      <div>
-        <h3 className="font-semibold text-sm mb-3">All Subscribers</h3>
+      <div className="space-y-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+          <div className="flex-1">
+            <Label className="text-xs font-semibold mb-1.5 block">Search Email</Label>
+            <Input
+              placeholder="Filter by email..."
+              value={searchEmail}
+              onChange={(e) => setSearchEmail(e.target.value)}
+              className="text-xs"
+              data-testid="input-search-email"
+            />
+          </div>
+          <div className="w-full sm:w-40">
+            <Label className="text-xs font-semibold mb-1.5 block">Source</Label>
+            <Select value={filterSource} onValueChange={setFilterSource}>
+              <SelectTrigger className="text-xs" data-testid="select-filter-source">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Sources</SelectItem>
+                {sources.map(source => (
+                  <SelectItem key={source} value={source} className="capitalize">
+                    {source}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="w-full sm:w-40">
+            <Label className="text-xs font-semibold mb-1.5 block">Status</Label>
+            <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <SelectTrigger className="text-xs" data-testid="select-filter-status">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="subscribed">Subscribed</SelectItem>
+                <SelectItem value="unsubscribed">Unsubscribed</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+          <span>Showing {filteredSubscribers.length} of {subscriberData?.total || 0} subscribers</span>
+        </div>
+
         <div className="rounded-lg border overflow-hidden">
           <Table>
             <TableHeader>
@@ -3067,29 +3145,49 @@ function LaunchSubscribersTab() {
                 <TableHead className="w-32 text-xs font-semibold">Source</TableHead>
                 <TableHead className="w-24 text-xs font-semibold">Status</TableHead>
                 <TableHead className="w-32 text-xs font-semibold">Signed Up</TableHead>
+                <TableHead className="w-12 text-xs font-semibold"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {subscriberData.subscribers.map((sub) => (
-                <TableRow key={sub.id} data-testid={`row-subscriber-${sub.id}`} className="hover:bg-muted/30">
-                  <TableCell className="text-xs">{sub.email}</TableCell>
-                  <TableCell className="text-xs">
-                    <Badge variant="outline" className="capitalize">{sub.source}</Badge>
-                  </TableCell>
-                  <TableCell className="text-xs">
-                    <Badge variant={sub.status === "subscribed" ? "default" : "secondary"}>
-                      {sub.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">
-                    {new Date(sub.createdAt).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric"
-                    })}
+              {filteredSubscribers.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-8 text-xs text-muted-foreground">
+                    No subscribers match your filters
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                filteredSubscribers.map((sub) => (
+                  <TableRow key={sub.id} data-testid={`row-subscriber-${sub.id}`} className="hover:bg-muted/30">
+                    <TableCell className="text-xs">{sub.email}</TableCell>
+                    <TableCell className="text-xs">
+                      <Badge variant="outline" className="capitalize">{sub.source}</Badge>
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      <Badge variant={sub.status === "subscribed" ? "default" : "secondary"}>
+                        {sub.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {new Date(sub.createdAt).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric"
+                      })}
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => handleDeleteSubscriber(sub.id, sub.email)}
+                        disabled={deleteMutation.isPending}
+                        data-testid={`btn-delete-subscriber-${sub.id}`}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>

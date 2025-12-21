@@ -208,6 +208,7 @@ export interface IStorage {
   // Newsletter Subscribers
   subscribeToNewsletter(subscriber: InsertNewsletterSubscriber): Promise<NewsletterSubscriber>;
   getAllNewsletterSubscribers(): Promise<NewsletterSubscriber[]>;
+  deleteNewsletterSubscriber(id: string): Promise<boolean>;
   unsubscribeFromNewsletter(email: string): Promise<NewsletterSubscriber | undefined>;
   checkNewsletterSubscription(email: string): Promise<NewsletterSubscriber | undefined>;
   
@@ -1284,6 +1285,11 @@ export class DatabaseStorage implements IStorage {
   async checkNewsletterSubscription(email: string): Promise<NewsletterSubscriber | undefined> {
     const [result] = await db.select().from(newsletterSubscribers).where(eq(newsletterSubscribers.email, email));
     return result || undefined;
+  }
+
+  async deleteNewsletterSubscriber(id: string): Promise<boolean> {
+    const result = await db.delete(newsletterSubscribers).where(eq(newsletterSubscribers.id, id));
+    return !!result;
   }
 
   // Product Dosage Stock Management Implementation

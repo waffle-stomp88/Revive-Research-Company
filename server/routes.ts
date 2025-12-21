@@ -2598,6 +2598,18 @@ Return ONLY valid JSON in this exact format:
     }
   });
 
+  // Delete a newsletter subscriber (admin only)
+  app.delete("/api/admin/newsletter/subscribers/:id", isAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteNewsletterSubscriber(id);
+      res.json({ success: true, message: "Subscriber deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting newsletter subscriber:", error);
+      res.status(500).json({ error: "Failed to delete newsletter subscriber" });
+    }
+  });
+
   // Academy Progress - Get or create user's academy progress
   app.get("/api/academy/progress", isAuthenticated, async (req: any, res) => {
     try {
