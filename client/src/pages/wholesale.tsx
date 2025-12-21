@@ -25,7 +25,6 @@ const wholesaleFormSchema = z.object({
   contactName: z.string().min(2, "Contact name is required"),
   email: z.string().email("Please enter a valid email address"),
   phone: z.string().regex(/^[\d\s\-\(\)\+]+$/, "Phone number must contain only numbers and common formatting characters").min(10, "Phone number must be at least 10 digits"),
-  businessType: z.string().min(1, "Please select your business type"),
   estimatedMonthlyVolume: z.string().min(1, "Please select estimated volume"),
   intendedUseCategory: z.string().min(1, "Please select your intended use category"),
   website: z.string().optional(),
@@ -60,16 +59,6 @@ const pricingTiers = [
     label: "Elite",
     color: "#22c55e" 
   },
-];
-
-const businessTypes = [
-  "Wellness Clinic",
-  "Weight Loss Clinic",
-  "Research Facility",
-  "Compounding Pharmacy",
-  "Medical Practice",
-  "Reseller",
-  "Other",
 ];
 
 const volumeOptions = [
@@ -235,7 +224,6 @@ export default function Wholesale() {
       contactName: "",
       email: "",
       phone: "",
-      businessType: "",
       estimatedMonthlyVolume: "",
       intendedUseCategory: "",
       website: "",
@@ -252,10 +240,10 @@ export default function Wholesale() {
         message: `[WHOLESALE INQUIRY]
 
 Business Name: ${data.businessName}
-Business Type: ${data.businessType}
 Contact: ${data.contactName}
 Phone: ${data.phone}
 Website: ${data.website || "N/A"}
+Intended Use Category: ${data.intendedUseCategory}
 Estimated Monthly Volume: ${data.estimatedMonthlyVolume}
 
 Additional Information:
@@ -741,56 +729,30 @@ ${data.additionalInfo || "None provided"}`.trim(),
                     />
                   </div>
 
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="businessType"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Business Type *</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger data-testid="select-business-type" className={field.value ? "bg-blue-500/20 border-blue-500/50" : ""}>
-                                <SelectValue placeholder="Select type" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {businessTypes.map((type) => (
-                                <SelectItem key={type} value={type}>
-                                  {type}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="estimatedMonthlyVolume"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Estimated Monthly Volume *</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger data-testid="select-volume" className={field.value ? "bg-blue-500/20 border-blue-500/50" : ""}>
-                                <SelectValue placeholder="Select volume" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {volumeOptions.map((option) => (
-                                <SelectItem key={option} value={option}>
-                                  {option}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="estimatedMonthlyVolume"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Estimated Monthly Volume *</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger data-testid="select-volume" className={field.value ? "bg-blue-500/20 border-blue-500/50" : ""}>
+                              <SelectValue placeholder="Select volume" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {volumeOptions.map((option) => (
+                              <SelectItem key={option} value={option}>
+                                {option}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                   <FormField
                     control={form.control}
