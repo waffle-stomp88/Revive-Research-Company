@@ -975,9 +975,8 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
               />
             ))}
             
-            {/* Cone/hub where needle attaches */}
-            <polygon points="295,25 310,30 310,50 295,55" fill="url(#syringeBody)" />
-            <polygon points="297,27 308,32 308,48 297,53" fill="#1a1a1f" />
+            {/* Cone/hub where needle attaches - hidden to avoid grey showing */}
+            {/* Removed to prevent grey artifact on 30u syringe */}
             
             {/* Needle - detailed */}
             <g>
