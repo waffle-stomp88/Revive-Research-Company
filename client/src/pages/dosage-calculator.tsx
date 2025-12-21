@@ -981,17 +981,12 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
             
             {/* Needle - detailed */}
             <g>
-              <path
-                d="M 310 38 L 330 38 L 330 42 L 310 42 Z"
-                fill="url(#plunger)"
-                filter="url(#needleGlow)"
-              />
-              {/* Needle tip - sharp angle */}
-              <polygon points="330,38 340,40 330,42" fill="#8a8a92" filter="url(#needleGlow)" />
+              {/* Needle shaft */}
+              <rect x="310" y="38" width="20" height="4" rx="0.5" fill="#6a6a72" filter="url(#needleGlow)" />
               {/* Needle shine */}
-              <line x1="310" y1="38" x2="330" y2="38" stroke="white" strokeWidth="0.5" opacity="0.5" />
-              {/* Bevel */}
-              <path d="M 330 38 Q 335 40 340 40" stroke="#6a6a72" strokeWidth="0.5" fill="none" />
+              <line x1="310" y1="38.5" x2="330" y2="38.5" stroke="white" strokeWidth="0.5" opacity="0.6" />
+              {/* Needle tip - clean point */}
+              <polygon points="330,38 343,40 330,42" fill="#7a7a82" filter="url(#needleGlow)" />
             </g>
             
             {/* Tick marks and numbers */}
