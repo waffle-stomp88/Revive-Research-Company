@@ -978,55 +978,12 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
             })}
           </svg>
         </div>
-
-        <div className="text-right min-w-[80px]">
-          {isOverflow ? (
-            <>
-              <div className="text-2xl font-bold text-red-400 line-through">{units}</div>
-              <div className="text-[10px] text-red-400 mt-1">overflow</div>
-            </>
-          ) : (
-            <>
-              <motion.div
-                key={units}
-                initial={{ scale: 1.2, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="text-3xl font-bold text-[#E7FB10]"
-                data-testid="result-volume"
-              >
-                {units}
-              </motion.div>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="text-[10px] text-gray-500 cursor-help flex items-center justify-end gap-1 mt-1">
-                    units
-                    {isBeginnerMode && <HelpCircle className="h-2.5 w-2.5" />}
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-xs bg-[#1a1a1f] border-[#2a2a32] text-gray-300">
-                  <div className="space-y-2">
-                    <p className="text-xs font-medium text-[#E7FB10]">What are units?</p>
-                    <p className="text-xs">Units (u) are the markings on your insulin syringe. Draw the liquid up to this number on your syringe.</p>
-                  </div>
-                </TooltipContent>
-              </Tooltip>
-            </>
-          )}
-        </div>
       </div>
 
       {isOverflow && (
         <div className="mt-3 flex items-center gap-2 text-red-400 text-xs">
           <AlertTriangle className="h-3 w-3" />
           <span>Exceeds capacity — increase water or use larger syringe</span>
-        </div>
-      )}
-
-      {isBeginnerMode && !isOverflow && (
-        <div className="mt-3 text-center">
-          <p className="text-xs text-gray-500">
-            Draw liquid until the plunger aligns with the <span className="text-[#E7FB10] font-medium">{units}</span> mark
-          </p>
         </div>
       )}
     </div>
