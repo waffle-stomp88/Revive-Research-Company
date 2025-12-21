@@ -4,11 +4,11 @@ import { SEOHead } from "@/components/seo-head";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { 
   Building2, CheckCircle2, FileText, Users, Truck, Shield, HeadphonesIcon, 
   Package, Send, Loader2, Calculator, ArrowRight, Sparkles, Award, 
-  BadgeCheck, Lock, FlaskConical, Minus, Plus, TrendingUp
+  BadgeCheck, Lock, Minus, Plus
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
-import type { Product } from "@shared/schema";
 
 const wholesaleFormSchema = z.object({
   businessName: z.string().min(2, "Business name is required"),
@@ -257,69 +256,6 @@ function SavingsCalculator() {
         </p>
       </div>
     </Card>
-  );
-}
-
-function PopularWholesaleProducts() {
-  const { data: products } = useQuery<Product[]>({
-    queryKey: ["/api/products"],
-  });
-  
-  const popularProducts = products?.slice(0, 4) || [];
-  
-  return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <Badge className="bg-[#a855f7]/20 text-[#a855f7] border-[#a855f7]/30 mb-3">
-          <TrendingUp className="h-3 w-3 mr-1" />
-          Top Sellers
-        </Badge>
-        <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">Popular for Wholesale</h2>
-        <p className="text-muted-foreground max-w-xl mx-auto">
-          Our most requested compounds for bulk orders
-        </p>
-      </div>
-      
-      <div className="grid md:grid-cols-4 gap-4">
-        {popularProducts.map((product, index) => (
-          <motion.div
-            key={product.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-          >
-            <Link href={`/products/${product.id}`}>
-              <motion.div
-                whileHover={{ scale: 1.03 }}
-                transition={{ type: "tween", duration: 0.15 }}
-              >
-                <Card className="p-4 border-[#2a2a32] hover:border-[#a855f7]/50 transition-colors cursor-pointer group">
-                  <div className="h-24 bg-gradient-to-br from-[#a855f7]/10 to-transparent rounded-lg flex items-center justify-center mb-3">
-                    <FlaskConical className="h-10 w-10 text-[#a855f7] group-hover:scale-110 transition-transform" />
-                  </div>
-                  <h4 className="font-semibold text-sm mb-1 line-clamp-1">{product.name}</h4>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">{product.category}</span>
-                    <Badge variant="outline" className="text-[10px] border-[#22c55e]/50 text-[#22c55e]">
-                      Bulk Ready
-                    </Badge>
-                  </div>
-                </Card>
-              </motion.div>
-            </Link>
-          </motion.div>
-        ))}
-      </div>
-      
-      <div className="text-center">
-        <Link href="/shop">
-          <Button variant="outline" className="border-[#a855f7] text-[#a855f7] hover:bg-[#a855f7]/10">
-            View All Products
-            <ArrowRight className="h-4 w-4 ml-2" />
-          </Button>
-        </Link>
-      </div>
-    </div>
   );
 }
 
@@ -722,16 +658,6 @@ ${data.additionalInfo || "None provided"}`.trim(),
               })}
             </div>
           </div>
-        </motion.div>
-
-        {/* Popular Wholesale Products */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35 }}
-          className="mb-16"
-        >
-          <PopularWholesaleProducts />
         </motion.div>
 
         {/* Application Form */}
