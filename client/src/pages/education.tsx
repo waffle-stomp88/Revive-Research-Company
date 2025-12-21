@@ -30,6 +30,7 @@ import {
   Filter,
   X,
   Compass,
+  ExternalLink,
 } from "lucide-react";
 import {
   Select,
