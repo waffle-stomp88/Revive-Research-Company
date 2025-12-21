@@ -684,7 +684,12 @@ ${data.additionalInfo || "None provided"}`.trim(),
                         <FormItem>
                           <FormLabel>Business Name *</FormLabel>
                           <FormControl>
-                            <Input placeholder="Your Company LLC" {...field} data-testid="input-business-name" />
+                            <Input 
+                              placeholder="Your Company LLC" 
+                              {...field} 
+                              data-testid="input-business-name"
+                              className={field.value ? "bg-blue-500/20 border-blue-500/50" : ""}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -697,7 +702,12 @@ ${data.additionalInfo || "None provided"}`.trim(),
                         <FormItem>
                           <FormLabel>Contact Name *</FormLabel>
                           <FormControl>
-                            <Input placeholder="John Smith" {...field} data-testid="input-contact-name" />
+                            <Input 
+                              placeholder="John Smith" 
+                              {...field} 
+                              data-testid="input-contact-name"
+                              className={field.value ? "bg-blue-500/20 border-blue-500/50" : ""}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -713,7 +723,13 @@ ${data.additionalInfo || "None provided"}`.trim(),
                         <FormItem>
                           <FormLabel>Business Email *</FormLabel>
                           <FormControl>
-                            <Input type="email" placeholder="contact@company.com" {...field} data-testid="input-email" />
+                            <Input 
+                              type="email" 
+                              placeholder="contact@company.com" 
+                              {...field} 
+                              data-testid="input-email"
+                              className={field.value ? "bg-blue-500/20 border-blue-500/50" : ""}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -726,7 +742,13 @@ ${data.additionalInfo || "None provided"}`.trim(),
                         <FormItem>
                           <FormLabel>Phone Number *</FormLabel>
                           <FormControl>
-                            <Input type="tel" placeholder="(555) 123-4567" {...field} data-testid="input-phone" />
+                            <Input 
+                              type="tel" 
+                              placeholder="(555) 123-4567" 
+                              {...field} 
+                              data-testid="input-phone"
+                              className={field.value ? "bg-blue-500/20 border-blue-500/50" : ""}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -743,7 +765,7 @@ ${data.additionalInfo || "None provided"}`.trim(),
                           <FormLabel>Business Type *</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                              <SelectTrigger data-testid="select-business-type">
+                              <SelectTrigger data-testid="select-business-type" className={field.value ? "bg-blue-500/20 border-blue-500/50" : ""}>
                                 <SelectValue placeholder="Select type" />
                               </SelectTrigger>
                             </FormControl>
@@ -767,7 +789,7 @@ ${data.additionalInfo || "None provided"}`.trim(),
                           <FormLabel>Estimated Monthly Volume *</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                              <SelectTrigger data-testid="select-volume">
+                              <SelectTrigger data-testid="select-volume" className={field.value ? "bg-blue-500/20 border-blue-500/50" : ""}>
                                 <SelectValue placeholder="Select volume" />
                               </SelectTrigger>
                             </FormControl>
@@ -794,7 +816,7 @@ ${data.additionalInfo || "None provided"}`.trim(),
                           <FormLabel>Primary Shipping Country / Region *</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                              <SelectTrigger data-testid="select-country">
+                              <SelectTrigger data-testid="select-country" className={field.value ? "bg-blue-500/20 border-blue-500/50" : ""}>
                                 <SelectValue placeholder="Select country" />
                               </SelectTrigger>
                             </FormControl>
@@ -818,7 +840,7 @@ ${data.additionalInfo || "None provided"}`.trim(),
                           <FormLabel>Intended Research or Distribution Context *</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                              <SelectTrigger data-testid="select-use-category">
+                              <SelectTrigger data-testid="select-use-category" className={field.value ? "bg-blue-500/20 border-blue-500/50" : ""}>
                                 <SelectValue placeholder="Select category" />
                               </SelectTrigger>
                             </FormControl>
@@ -844,7 +866,7 @@ ${data.additionalInfo || "None provided"}`.trim(),
                         <FormLabel>Target Start Timeline (Optional)</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger data-testid="select-timeline">
+                            <SelectTrigger data-testid="select-timeline" className={field.value ? "bg-blue-500/20 border-blue-500/50" : ""}>
                               <SelectValue placeholder="Select timeline" />
                             </SelectTrigger>
                           </FormControl>
@@ -868,7 +890,12 @@ ${data.additionalInfo || "None provided"}`.trim(),
                       <FormItem>
                         <FormLabel>Website (Optional)</FormLabel>
                         <FormControl>
-                          <Input placeholder="https://yourcompany.com" {...field} data-testid="input-website" />
+                          <Input 
+                            placeholder="https://yourcompany.com" 
+                            {...field} 
+                            data-testid="input-website"
+                            className={field.value ? "bg-blue-500/20 border-blue-500/50" : ""}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -884,7 +911,7 @@ ${data.additionalInfo || "None provided"}`.trim(),
                         <FormControl>
                           <Textarea 
                             placeholder="Tell us about your business and what compounds you're interested in..."
-                            className="min-h-[100px]"
+                            className={`min-h-[100px] ${field.value ? "bg-blue-500/20 border-blue-500/50" : ""}`}
                             {...field}
                             data-testid="textarea-info"
                           />
