@@ -118,10 +118,13 @@ export async function registerRoutes(
         profileImageUrl: null,
       });
       
+      // Automatically grant admin access to dev bypass user
+      await storage.setUserAdmin(devUserId, true);
+      
       (req.session as any).userId = devUserId;
       
       const user = await storage.getUser(devUserId);
-      res.json({ success: true, user, message: "Dev bypass login successful. Note: Admin access requires manual database flag." });
+      res.json({ success: true, user, message: "Dev bypass login successful with admin access." });
     } catch (error) {
       console.error("Error in dev bypass login:", error);
       res.status(500).json({ message: "Failed to create dev session" });

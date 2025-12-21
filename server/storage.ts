@@ -56,6 +56,7 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
   deleteUser(id: string): Promise<boolean>;
+  setUserAdmin(id: string, isAdmin: boolean): Promise<User | undefined>;
   
   getAllProducts(): Promise<Product[]>;
   getProduct(id: string): Promise<Product | undefined>;
@@ -301,6 +302,11 @@ export class DatabaseStorage implements IStorage {
   async deleteUser(id: string): Promise<boolean> {
     const result = await db.delete(users).where(eq(users.id, id)).returning();
     return result.length > 0;
+  }
+
+  async setUserAdmin(id: string, isAdmin: boolean): Promise<User | undefined> {
+    const [user] = await db.update(users).set({ isAdmin, updatedAt: new Date() }).where(eq(users.id, id)).returning();
+    return user || undefined;
   }
 
   async getAllProducts(): Promise<Product[]> {
