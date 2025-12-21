@@ -2577,6 +2577,27 @@ Return ONLY valid JSON in this exact format:
     }
   });
 
+  // Get all newsletter subscribers (admin only)
+  app.get("/api/admin/newsletter/subscribers", isAdmin, async (req, res) => {
+    try {
+      const subscribers = await storage.getAllNewsletterSubscribers();
+      res.json({
+        total: subscribers.length,
+        subscribers,
+        // Group by source for easy analysis
+        bySource: subscribers.reduce((acc, sub) => {
+          const source = sub.source || "unknown";
+          if (!acc[source]) acc[source] = [];
+          acc[source].push(sub.email);
+          return acc;
+        }, {} as Record<string, string[]>),
+      });
+    } catch (error) {
+      console.error("Error fetching newsletter subscribers:", error);
+      res.status(500).json({ error: "Failed to fetch newsletter subscribers" });
+    }
+  });
+
   // Academy Progress - Get or create user's academy progress
   app.get("/api/academy/progress", isAuthenticated, async (req: any, res) => {
     try {
