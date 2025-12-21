@@ -708,21 +708,42 @@ export default function Checkout() {
                 </div>
                 <p className="text-[10px] text-[#E7FB10]/60 text-right mb-4">Preview pricing — subject to change at launch</p>
 
+                {EARLY_ACCESS_MODE && (
+                  <div className="mb-4 p-3 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30" data-testid="early-access-checkout-notice">
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle className="h-4 w-4 text-[#E7FB10] mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-[#E7FB10]">Purchasing is disabled during Early Access</p>
+                        <p className="text-xs text-muted-foreground mt-1">You'll be notified at launch.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: EARLY_ACCESS_MODE ? 1 : 1.02 }}
+                  whileTap={{ scale: EARLY_ACCESS_MODE ? 1 : 0.98 }}
                 >
                   <Button
                     size="lg"
-                    className="w-full font-display text-lg gap-2 bg-[#E7FB10] hover:bg-[#E7FB10]/90 transition-all duration-300 hover:shadow-[0_0_30px_rgba(231,251,16,0.6)]"
+                    className={`w-full font-display text-lg gap-2 transition-all duration-300 ${
+                      EARLY_ACCESS_MODE 
+                        ? "bg-muted text-muted-foreground cursor-not-allowed" 
+                        : "bg-[#E7FB10] hover:bg-[#E7FB10]/90 hover:shadow-[0_0_30px_rgba(231,251,16,0.6)]"
+                    }`}
                     onClick={handleCheckout}
-                    disabled={checkoutMutation.isPending}
+                    disabled={checkoutMutation.isPending || EARLY_ACCESS_MODE}
                     data-testid="button-checkout"
                   >
                     {checkoutMutation.isPending ? (
                       <>
                         <Loader2 className="h-5 w-5 animate-spin" />
                         Redirecting...
+                      </>
+                    ) : EARLY_ACCESS_MODE ? (
+                      <>
+                        <Clock className="h-5 w-5" />
+                        Coming Soon
                       </>
                     ) : (
                       <>
@@ -904,28 +925,48 @@ export default function Checkout() {
 
                 <Separator className="my-6" />
 
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex justify-between items-center mb-4">
                   <span className="font-display text-lg font-semibold">Total</span>
                   <span className="font-display text-2xl font-bold" data-testid="text-order-total">
                     ${bundleTotal.toFixed(2)}
                   </span>
                 </div>
+                <p className="text-[10px] text-[#E7FB10]/60 text-right mb-4">Preview pricing — subject to change at launch</p>
+
+                {EARLY_ACCESS_MODE && (
+                  <div className="mb-4 p-3 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30" data-testid="early-access-checkout-notice">
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle className="h-4 w-4 text-[#E7FB10] mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-[#E7FB10]">Purchasing is disabled during Early Access</p>
+                        <p className="text-xs text-muted-foreground mt-1">You'll be notified at launch.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <Button
                   size="lg"
-                  className={`w-full font-display text-lg gap-2 ${
-                    isSubscription
-                      ? "bg-[#21d8ff] hover:bg-[#21d8ff]/90"
-                      : "bg-[#E7FB10] hover:bg-[#E7FB10]/90"
+                  className={`w-full font-display text-lg gap-2 transition-all duration-300 ${
+                    EARLY_ACCESS_MODE 
+                      ? "bg-muted text-muted-foreground cursor-not-allowed" 
+                      : isSubscription
+                        ? "bg-[#21d8ff] hover:bg-[#21d8ff]/90"
+                        : "bg-[#E7FB10] hover:bg-[#E7FB10]/90"
                   }`}
                   onClick={handleCheckout}
-                  disabled={checkoutMutation.isPending}
+                  disabled={checkoutMutation.isPending || EARLY_ACCESS_MODE}
                   data-testid="button-checkout"
                 >
                   {checkoutMutation.isPending ? (
                     <>
                       <Loader2 className="h-5 w-5 animate-spin" />
                       Redirecting...
+                    </>
+                  ) : EARLY_ACCESS_MODE ? (
+                    <>
+                      <Clock className="h-5 w-5" />
+                      Coming Soon
                     </>
                   ) : (
                     <>
@@ -1107,7 +1148,7 @@ export default function Checkout() {
 
               <Separator className="my-6" />
 
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex justify-between items-center mb-4">
                 <span className="font-display text-lg font-semibold">
                   {isSubscription ? `Total per ${interval === 'weekly' ? 'week' : interval === 'biweekly' ? '2 weeks' : 'month'}` : 'Total'}
                 </span>
@@ -1115,22 +1156,42 @@ export default function Checkout() {
                   ${total.toFixed(2)}
                 </span>
               </div>
+              <p className="text-[10px] text-[#E7FB10]/60 text-right mb-4">Preview pricing — subject to change at launch</p>
+
+              {EARLY_ACCESS_MODE && (
+                <div className="mb-4 p-3 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30" data-testid="early-access-checkout-notice">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="h-4 w-4 text-[#E7FB10] mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-[#E7FB10]">Purchasing is disabled during Early Access</p>
+                      <p className="text-xs text-muted-foreground mt-1">You'll be notified at launch.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <Button
                 size="lg"
-                className={`w-full font-display text-lg gap-2 ${
-                  isSubscription 
-                    ? "bg-[#21d8ff] hover:bg-[#21d8ff]/90" 
-                    : "bg-[#E7FB10] hover:bg-[#E7FB10]/90"
+                className={`w-full font-display text-lg gap-2 transition-all duration-300 ${
+                  EARLY_ACCESS_MODE 
+                    ? "bg-muted text-muted-foreground cursor-not-allowed" 
+                    : isSubscription 
+                      ? "bg-[#21d8ff] hover:bg-[#21d8ff]/90" 
+                      : "bg-[#E7FB10] hover:bg-[#E7FB10]/90"
                 }`}
                 onClick={handleCheckout}
-                disabled={checkoutMutation.isPending}
+                disabled={checkoutMutation.isPending || EARLY_ACCESS_MODE}
                 data-testid="button-checkout"
               >
                 {checkoutMutation.isPending ? (
                   <>
                     <Loader2 className="h-5 w-5 animate-spin" />
                     Redirecting...
+                  </>
+                ) : EARLY_ACCESS_MODE ? (
+                  <>
+                    <Clock className="h-5 w-5" />
+                    Coming Soon
                   </>
                 ) : isSubscription ? (
                   <>
@@ -1145,7 +1206,7 @@ export default function Checkout() {
                 )}
               </Button>
 
-              {isSubscription && (
+              {isSubscription && !EARLY_ACCESS_MODE && (
                 <p className="text-xs text-muted-foreground text-center mt-4 flex items-center justify-center gap-1">
                   <ShieldCheck className="h-3 w-3" />
                   Cancel anytime. No commitment required.

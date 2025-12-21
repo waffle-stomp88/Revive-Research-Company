@@ -387,6 +387,7 @@ export type DiscountCode = typeof discountCodes.$inferSelect;
 export const newsletterSubscribers = pgTable("newsletter_subscribers", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   email: text("email").notNull().unique(),
+  source: text("source").default("website"), // website, early_access_modal, footer, etc.
   status: text("status").default("subscribed"), // subscribed, unsubscribed
   createdAt: timestamp("created_at").defaultNow(),
 });

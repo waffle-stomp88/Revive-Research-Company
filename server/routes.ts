@@ -2545,13 +2545,16 @@ Return ONLY valid JSON in this exact format:
   // Newsletter subscription
   app.post("/api/newsletter/subscribe", async (req, res) => {
     try {
-      const { email } = req.body;
+      const { email, source } = req.body;
       
       if (!email) {
         return res.status(400).json({ error: "Email is required" });
       }
 
-      const parsed = insertNewsletterSubscriberSchema.safeParse({ email });
+      const parsed = insertNewsletterSubscriberSchema.safeParse({ 
+        email, 
+        source: source || "website" 
+      });
       if (!parsed.success) {
         return res.status(400).json({ error: "Invalid email address" });
       }

@@ -109,7 +109,7 @@ export function EarlyAccessModal() {
             </div>
 
             <h2 className="font-display text-2xl md:text-3xl font-black mb-3">
-              Soft Launch — Early Access
+              Early Access — Soft Launch Preview
             </h2>
 
             <p className="text-muted-foreground mb-6 text-sm leading-relaxed">
