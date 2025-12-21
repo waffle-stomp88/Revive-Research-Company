@@ -553,21 +553,24 @@ export default function ProductDetail() {
               {product.name}
             </h1>
 
-            <div className="flex items-baseline gap-3 mb-3 flex-wrap">
-              <span className="font-display text-3xl font-bold text-[#E7FB10]" data-testid="text-product-price">
-                ${getBasePrice().toFixed(2)}
-              </span>
-              {product.originalPrice && (
-                <span className="text-lg text-muted-foreground line-through">
-                  ${(Number(product.originalPrice) * getDosageMultiplier()).toFixed(2)}
+            <div className="mb-3">
+              <div className="flex items-baseline gap-3 flex-wrap">
+                <span className="font-display text-3xl font-bold text-[#E7FB10]" data-testid="text-product-price">
+                  ${getBasePrice().toFixed(2)}
                 </span>
-              )}
-              {selectedDosage !== "10mg" && (
-                <Badge variant="outline" className="text-xs">
-                  +{((getDosageMultiplier() - 1) * 100).toFixed(0)}% for {selectedDosage}
-                </Badge>
-              )}
-              <PriceTrendBadge productId={product.id} />
+                {product.originalPrice && (
+                  <span className="text-lg text-muted-foreground line-through">
+                    ${(Number(product.originalPrice) * getDosageMultiplier()).toFixed(2)}
+                  </span>
+                )}
+                {selectedDosage !== "10mg" && (
+                  <Badge variant="outline" className="text-xs">
+                    +{((getDosageMultiplier() - 1) * 100).toFixed(0)}% for {selectedDosage}
+                  </Badge>
+                )}
+                <PriceTrendBadge productId={product.id} />
+              </div>
+              <span className="text-[10px] text-[#E7FB10]/60 mt-1 block">Preview pricing — subject to change at launch</span>
             </div>
 
             <p className="text-sm text-muted-foreground leading-relaxed mb-4" data-testid="text-product-description">

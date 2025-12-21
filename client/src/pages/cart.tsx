@@ -250,6 +250,7 @@ export default function CartPage() {
                           <p className="text-xs text-muted-foreground">
                             ${item.price.toFixed(2)} each
                           </p>
+                          <span className="text-[9px] text-[#E7FB10]/60">Preview pricing</span>
                         </div>
                       </div>
                     </div>

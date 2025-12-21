@@ -1100,21 +1100,24 @@ export default function Products() {
                                   {product.shortDescription}
                                 </p>
                                 <div className="flex items-center justify-between mt-auto pt-2 border-t border-border flex-wrap gap-2">
-                                  <div className="flex items-center gap-2">
-                                    <div className="flex items-baseline gap-1.5">
-                                      <span className="font-display text-lg font-bold text-[#E7FB10]">
-                                        ${Number(product.price).toFixed(2)}
-                                      </span>
-                                      {product.originalPrice && (
-                                        <span className="text-[10px] text-muted-foreground line-through">
-                                          ${Number(product.originalPrice).toFixed(2)}
+                                  <div className="flex flex-col">
+                                    <div className="flex items-center gap-2">
+                                      <div className="flex items-baseline gap-1.5">
+                                        <span className="font-display text-lg font-bold text-[#E7FB10]">
+                                          ${Number(product.price).toFixed(2)}
                                         </span>
+                                        {product.originalPrice && (
+                                          <span className="text-[10px] text-muted-foreground line-through">
+                                            ${Number(product.originalPrice).toFixed(2)}
+                                          </span>
+                                        )}
+                                      </div>
+                                      {/* Price Trend Arrow - Show based on sale status */}
+                                      {product.originalPrice && Number(product.price) < Number(product.originalPrice) && (
+                                        <TrendingDown className="h-4 w-4 text-red-500" data-testid={`icon-price-down-${product.id}`} />
                                       )}
                                     </div>
-                                    {/* Price Trend Arrow - Show based on sale status */}
-                                    {product.originalPrice && Number(product.price) < Number(product.originalPrice) && (
-                                      <TrendingDown className="h-4 w-4 text-red-500" data-testid={`icon-price-down-${product.id}`} />
-                                    )}
+                                    <span className="text-[9px] text-[#E7FB10]/60">Preview pricing</span>
                                   </div>
                                   <div className="flex items-center gap-1.5 ml-auto">
                                     <Button
