@@ -199,7 +199,18 @@ export default function Checkout() {
     return price * (1 - discountPercent / 100);
   };
 
+  // Early Access Mode - block actual purchases
+  const EARLY_ACCESS_MODE = true;
+
   const handleCheckout = () => {
+    if (EARLY_ACCESS_MODE) {
+      toast({
+        title: "Coming Soon!",
+        description: "Purchasing will be enabled at launch. Sign up for our newsletter to be notified!",
+        duration: 6000,
+      });
+      return;
+    }
     checkoutMutation.mutate();
   };
 
@@ -689,12 +700,13 @@ export default function Checkout() {
 
                 <Separator className="my-6" />
 
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex justify-between items-center mb-2">
                   <span className="font-display text-lg font-semibold">Total</span>
                   <span className="font-display text-2xl font-bold" data-testid="text-order-total">
                     ${cartTotal.toFixed(2)}
                   </span>
                 </div>
+                <p className="text-[10px] text-[#E7FB10]/60 text-right mb-4">Preview pricing — subject to change at launch</p>
 
                 <motion.div
                   whileHover={{ scale: 1.02 }}

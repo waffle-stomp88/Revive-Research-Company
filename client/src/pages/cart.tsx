@@ -359,10 +359,11 @@ export default function CartPage() {
 
                 <Separator className="my-4" />
 
-                <div className="flex justify-between font-display font-bold text-xl mb-6">
+                <div className="flex justify-between font-display font-bold text-xl mb-2">
                   <span>Total</span>
                   <span className="text-[#E7FB10]" data-testid="text-total">${total.toFixed(2)}</span>
                 </div>
+                <p className="text-[10px] text-[#E7FB10]/60 text-right mb-4">Preview pricing — subject to change at launch</p>
 
                 <Button
                   size="lg"

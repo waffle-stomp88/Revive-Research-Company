@@ -86,6 +86,46 @@ export async function registerRoutes(
     }
   });
 
+  // Dev bypass login - for admin access during development when Auth0 is unavailable
+  // Only works in development environment with correct bypass key
+  app.post('/api/auth/dev-bypass', async (req, res) => {
+    const bypassKey = req.body.key;
+    const expectedKey = process.env.DEV_BYPASS_KEY || 'revive-dev-2024';
+    
+    // Only allow in development or if explicitly enabled
+    const isDev = process.env.NODE_ENV !== 'production';
+    
+    if (!isDev && !process.env.DEV_BYPASS_ENABLED) {
+      return res.status(403).json({ message: "Dev bypass not available in production" });
+    }
+    
+    if (bypassKey !== expectedKey) {
+      return res.status(401).json({ message: "Invalid bypass key" });
+    }
+    
+    try {
+      // Create or get the dev admin user
+      const devUserId = 'dev-admin-bypass';
+      const devEmail = 'admin@reviveresearch.dev';
+      
+      await storage.upsertUser({
+        id: devUserId,
+        email: devEmail,
+        firstName: 'Dev',
+        lastName: 'Admin',
+        profileImageUrl: null,
+      });
+      
+      (req.session as any).userId = devUserId;
+      
+      const user = await storage.getUser(devUserId);
+      res.json({ success: true, user, message: "Dev bypass login successful. Note: Admin access requires manual database flag." });
+    } catch (error) {
+      console.error("Error in dev bypass login:", error);
+      res.status(500).json({ message: "Failed to create dev session" });
+    }
+  });
+
   // Get authenticated user
   app.get('/api/auth/user', async (req: any, res) => {
     try {
