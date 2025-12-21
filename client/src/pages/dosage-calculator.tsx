@@ -366,49 +366,14 @@ export default function DosageCalculator() {
                     </div>
                   )}
 
-                  <div className="flex flex-col md:flex-row gap-6 items-center">
-                    <div className="flex-1 w-full">
-                      <EnhancedSyringeVisual
-                        fillPercentage={calculations.fillPercentage}
-                        units={calculations.unitsToDraw}
-                        maxUnits={calculations.syringeUnits}
-                        volumeMl={calculations.volumeToDraw}
-                        isBeginnerMode={isBeginnerMode}
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-3 w-full md:w-auto">
-                      <ResultCard
-                        label="Draw"
-                        value={`${calculations.unitsToDraw}`}
-                        unit={isBeginnerMode ? "units" : "units"}
-                        subtext={`${calculations.volumeToDraw.toFixed(3)} mL`}
-                        color="#E7FB10"
-                        testId="result-units"
-                        isBeginnerMode={isBeginnerMode}
-                        tooltip={isBeginnerMode ? "This is how many units to draw on your syringe" : undefined}
-                      />
-                      <ResultCard
-                        label="Conc."
-                        value={`${calculations.concentration.toFixed(1)}`}
-                        unit="mg/mL"
-                        subtext={`${calculations.concentrationMcg.toFixed(0)} mcg/mL`}
-                        color="#21d8ff"
-                        testId="result-concentration"
-                        isBeginnerMode={isBeginnerMode}
-                        tooltip={isBeginnerMode ? "How much peptide is in each mL of liquid" : undefined}
-                      />
-                      <ResultCard
-                        label="Total"
-                        value={`${calculations.totalDoses}`}
-                        unit="doses"
-                        subtext="per vial"
-                        color="#a855f7"
-                        testId="result-total-doses"
-                        isBeginnerMode={isBeginnerMode}
-                        tooltip={isBeginnerMode ? "How many injections you can get from one vial" : undefined}
-                      />
-                    </div>
+                  <div className="w-full">
+                    <EnhancedSyringeVisual
+                      fillPercentage={calculations.fillPercentage}
+                      units={calculations.unitsToDraw}
+                      maxUnits={calculations.syringeUnits}
+                      volumeMl={calculations.volumeToDraw}
+                      isBeginnerMode={isBeginnerMode}
+                    />
                   </div>
 
                   {isBeginnerMode && (
