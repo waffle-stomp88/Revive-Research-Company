@@ -621,7 +621,7 @@ ${data.additionalInfo || "None provided"}`.trim(),
             <div className="absolute inset-0 bg-gradient-to-br from-[#21d8ff]/5 to-transparent -z-10" />
             
             <div className="text-center mb-6">
-              <h2 className="font-display text-2xl font-bold mb-2">Apply for Wholesale Account</h2>
+              <h2 className="font-display text-4xl font-bold mb-2">Apply for Wholesale Account</h2>
               <p className="text-muted-foreground">
                 Complete the form below and our team will review your application.<br />
                 Approved applicants are typically contacted within 2–5 business days.
