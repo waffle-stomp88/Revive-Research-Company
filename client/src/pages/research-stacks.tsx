@@ -388,7 +388,7 @@ function ResearchStacks() {
 export default function ResearchStacksWrapper() {
   return (
     <>
-      <EarlyAccessModal />
+      <EarlyAccessModal showOnProductPages={true} />
       <ResearchStacks />
     </>
   );

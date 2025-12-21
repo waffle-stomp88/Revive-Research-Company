@@ -15,21 +15,25 @@ import {
   Eye,
 } from "lucide-react";
 
-const STORAGE_KEY = "reviveEarlyAccessAcknowledged";
+const GLOBAL_STORAGE_KEY = "reviveEarlyAccessAcknowledged";
+const PRODUCTS_STORAGE_KEY = "reviveEarlyAccessProductsAcknowledged";
 
-export function EarlyAccessModal() {
+export function EarlyAccessModal({ showOnProductPages = false }: { showOnProductPages?: boolean } = {}) {
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const { toast } = useToast();
+  
+  // Use different storage keys for product pages vs global
+  const storageKey = showOnProductPages ? PRODUCTS_STORAGE_KEY : GLOBAL_STORAGE_KEY;
 
   useEffect(() => {
-    const acknowledged = localStorage.getItem(STORAGE_KEY);
+    const acknowledged = localStorage.getItem(storageKey);
     if (!acknowledged) {
       const timer = setTimeout(() => setIsOpen(true), 500);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [storageKey]);
 
   const subscribeMutation = useMutation({
     mutationFn: async (email: string) => {
@@ -68,7 +72,7 @@ export function EarlyAccessModal() {
   };
 
   const handleDismiss = () => {
-    localStorage.setItem(STORAGE_KEY, "true");
+    localStorage.setItem(storageKey, "true");
     setIsOpen(false);
   };
 

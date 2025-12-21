@@ -1351,7 +1351,7 @@ function ProductsComponent() {
 export default function Products() {
   return (
     <>
-      <EarlyAccessModal />
+      <EarlyAccessModal showOnProductPages={true} />
       <ProductsComponent />
     </>
   );

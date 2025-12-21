@@ -46,7 +46,7 @@ export default function BulkPacks() {
 
   return (
     <>
-      <EarlyAccessModal />
+      <EarlyAccessModal showOnProductPages={true} />
       <main className="min-h-screen pt-32 md:pt-40 pb-12">
       <SEOHead title="Bulk Research Packs" description="Save on larger quantities of research peptides. Bulk pricing for serious researchers." canonicalPath="/bulk-packs" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
