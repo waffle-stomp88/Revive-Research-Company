@@ -27,7 +27,10 @@ const wholesaleFormSchema = z.object({
   phone: z.string().min(10, "Valid phone number is required"),
   businessType: z.string().min(1, "Please select your business type"),
   estimatedMonthlyVolume: z.string().min(1, "Please select estimated volume"),
+  shippingCountry: z.string().min(1, "Please select your shipping country"),
+  intendedUseCategory: z.string().min(1, "Please select your intended use category"),
   website: z.string().optional(),
+  targetTimeline: z.string().optional(),
   additionalInfo: z.string().optional(),
 });
 
@@ -75,6 +78,34 @@ const volumeOptions = [
   "250-499 vials/month",
   "500-999 vials/month",
   "1000+ vials/month",
+];
+
+const countries = [
+  "United States",
+  "Canada",
+  "Mexico",
+  "United Kingdom",
+  "Germany",
+  "France",
+  "Netherlands",
+  "Australia",
+  "New Zealand",
+  "Japan",
+  "Other",
+];
+
+const intendedUseCategories = [
+  "Academic / Laboratory Research",
+  "Product Development / R&D",
+  "Distribution / Resale",
+  "Other (explain in additional information)",
+];
+
+const timelineOptions = [
+  "Immediately",
+  "30–60 days",
+  "60–90 days",
+  "Exploring options",
 ];
 
 function SavingsCalculator() {
@@ -220,7 +251,10 @@ export default function Wholesale() {
       phone: "",
       businessType: "",
       estimatedMonthlyVolume: "",
+      shippingCountry: "",
+      intendedUseCategory: "",
       website: "",
+      targetTimeline: "",
       additionalInfo: "",
     },
   });
@@ -751,6 +785,82 @@ ${data.additionalInfo || "None provided"}`.trim(),
                     />
                   </div>
 
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="shippingCountry"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Primary Shipping Country / Region *</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger data-testid="select-country">
+                                <SelectValue placeholder="Select country" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {countries.map((country) => (
+                                <SelectItem key={country} value={country}>
+                                  {country}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="intendedUseCategory"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Intended Research or Distribution Context *</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger data-testid="select-use-category">
+                                <SelectValue placeholder="Select category" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {intendedUseCategories.map((category) => (
+                                <SelectItem key={category} value={category}>
+                                  {category}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="targetTimeline"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Target Start Timeline (Optional)</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger data-testid="select-timeline">
+                              <SelectValue placeholder="Select timeline" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {timelineOptions.map((option) => (
+                              <SelectItem key={option} value={option}>
+                                {option}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   <FormField
                     control={form.control}
                     name="website"
@@ -783,6 +893,10 @@ ${data.additionalInfo || "None provided"}`.trim(),
                       </FormItem>
                     )}
                   />
+
+                  <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/30 text-center text-xs text-blue-400">
+                    Wholesale access is subject to verification, minimum order requirements, and approval. Submission does not guarantee acceptance.
+                  </div>
 
                   <Button 
                     type="submit" 
