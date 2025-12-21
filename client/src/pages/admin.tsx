@@ -3157,9 +3157,9 @@ function EmailLogsTab() {
     return <Badge variant="outline">{typeMap[type] || type}</Badge>;
   };
 
-  const sentCount = emailEvents.filter((e) => e.status === "sent").length;
-  const failedCount = emailEvents.filter((e) => e.status === "failed").length;
-  const successRate = emailEvents.length > 0 ? Math.round((sentCount / emailEvents.length) * 100) : 0;
+  const sentCount = emailEvents?.filter((e) => e.status === "sent").length || 0;
+  const failedCount = emailEvents?.filter((e) => e.status === "failed").length || 0;
+  const successRate = emailEvents && emailEvents.length > 0 ? Math.round((sentCount / emailEvents.length) * 100) : 0;
 
   return (
     <div className="space-y-6">
@@ -3203,7 +3203,7 @@ function EmailLogsTab() {
                   <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">
                     Total Sent
                   </div>
-                  <div className="text-2xl font-bold">{emailEvents.length}</div>
+                  <div className="text-2xl font-bold">{emailEvents?.length || 0}</div>
                 </Card>
                 <Card className="p-4">
                   <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">
