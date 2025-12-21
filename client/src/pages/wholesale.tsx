@@ -27,7 +27,6 @@ const wholesaleFormSchema = z.object({
   phone: z.string().regex(/^[\d\s\-\(\)\+]+$/, "Phone number must contain only numbers and common formatting characters").min(10, "Phone number must be at least 10 digits"),
   businessType: z.string().min(1, "Please select your business type"),
   estimatedMonthlyVolume: z.string().min(1, "Please select estimated volume"),
-  shippingCountry: z.string().min(1, "Please select your shipping country"),
   intendedUseCategory: z.string().min(1, "Please select your intended use category"),
   website: z.string().optional(),
   targetTimeline: z.string().optional(),
@@ -78,20 +77,6 @@ const volumeOptions = [
   "250-499 vials/month",
   "500-999 vials/month",
   "1000+ vials/month",
-];
-
-const countries = [
-  "United States",
-  "Canada",
-  "Mexico",
-  "United Kingdom",
-  "Germany",
-  "France",
-  "Netherlands",
-  "Australia",
-  "New Zealand",
-  "Japan",
-  "Other",
 ];
 
 const intendedUseCategories = [
@@ -252,7 +237,6 @@ export default function Wholesale() {
       phone: "",
       businessType: "",
       estimatedMonthlyVolume: "",
-      shippingCountry: "",
       intendedUseCategory: "",
       website: "",
       targetTimeline: "",
@@ -808,56 +792,30 @@ ${data.additionalInfo || "None provided"}`.trim(),
                     />
                   </div>
 
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="shippingCountry"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Primary Shipping Country / Region *</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger data-testid="select-country" className={field.value ? "bg-blue-500/20 border-blue-500/50" : ""}>
-                                <SelectValue placeholder="Select country" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {countries.map((country) => (
-                                <SelectItem key={country} value={country}>
-                                  {country}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="intendedUseCategory"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Intended Research or Distribution Context *</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger data-testid="select-use-category" className={field.value ? "bg-blue-500/20 border-blue-500/50" : ""}>
-                                <SelectValue placeholder="Select category" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {intendedUseCategories.map((category) => (
-                                <SelectItem key={category} value={category}>
-                                  {category}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="intendedUseCategory"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Intended Research or Distribution Context *</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger data-testid="select-use-category" className={field.value ? "bg-blue-500/20 border-blue-500/50" : ""}>
+                              <SelectValue placeholder="Select category" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {intendedUseCategories.map((category) => (
+                              <SelectItem key={category} value={category}>
+                                {category}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                   <FormField
                     control={form.control}
