@@ -87,10 +87,14 @@ export async function registerRoutes(
   });
 
   // Dev bypass login - for admin access during development when Auth0 is unavailable
-  // ONLY works when NODE_ENV !== 'production' - cannot be enabled in production
+  // Works in Replit development environment (when REPL_ID is set) or when NODE_ENV !== 'production'
   app.post('/api/auth/dev-bypass', async (req, res) => {
-    // Strict production check - never allow in production, no override possible
-    if (process.env.NODE_ENV === 'production') {
+    // Allow bypass in Replit development environment (identified by REPL_ID)
+    // or when not in production mode
+    const isReplitDev = !!process.env.REPL_ID;
+    const isDevMode = process.env.NODE_ENV !== 'production';
+    
+    if (!isReplitDev && !isDevMode) {
       console.warn('[Security] Dev bypass attempted in production - blocked');
       return res.status(403).json({ message: "Dev bypass disabled in production" });
     }
