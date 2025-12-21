@@ -15,25 +15,24 @@ import {
   Eye,
 } from "lucide-react";
 
-const GLOBAL_STORAGE_KEY = "reviveEarlyAccessAcknowledged";
-const PRODUCTS_STORAGE_KEY = "reviveEarlyAccessProductsAcknowledged";
+const PRODUCTS_SESSION_KEY = "reviveEarlyAccessProductsAcknowledged";
 
 export function EarlyAccessModal({ showOnProductPages = false }: { showOnProductPages?: boolean } = {}) {
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const { toast } = useToast();
-  
-  // Use different storage keys for product pages vs global
-  const storageKey = showOnProductPages ? PRODUCTS_STORAGE_KEY : GLOBAL_STORAGE_KEY;
 
   useEffect(() => {
-    const acknowledged = localStorage.getItem(storageKey);
-    if (!acknowledged) {
-      const timer = setTimeout(() => setIsOpen(true), 500);
-      return () => clearTimeout(timer);
+    if (showOnProductPages) {
+      // Use sessionStorage so it shows fresh each session
+      const acknowledged = sessionStorage.getItem(PRODUCTS_SESSION_KEY);
+      if (!acknowledged) {
+        const timer = setTimeout(() => setIsOpen(true), 500);
+        return () => clearTimeout(timer);
+      }
     }
-  }, [storageKey]);
+  }, [showOnProductPages]);
 
   const subscribeMutation = useMutation({
     mutationFn: async (email: string) => {
@@ -71,10 +70,22 @@ export function EarlyAccessModal({ showOnProductPages = false }: { showOnProduct
     }
   };
 
-  const handleDismiss = () => {
-    localStorage.setItem(storageKey, "true");
+  const handleContinue = () => {
+    sessionStorage.setItem(PRODUCTS_SESSION_KEY, "true");
     setIsOpen(false);
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      document.documentElement.classList.add("modal-open");
+      document.body.classList.add("modal-open");
+      
+      return () => {
+        document.documentElement.classList.remove("modal-open");
+        document.body.classList.remove("modal-open");
+      };
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -85,7 +96,6 @@ export function EarlyAccessModal({ showOnProductPages = false }: { showOnProduct
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-        onClick={handleDismiss}
       >
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -129,7 +139,7 @@ export function EarlyAccessModal({ showOnProductPages = false }: { showOnProduct
             </div>
 
             {!subscribed ? (
-              <form onSubmit={handleSubscribe} className="space-y-4">
+              <form onSubmit={handleSubscribe} className="space-y-3">
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -164,9 +174,8 @@ export function EarlyAccessModal({ showOnProductPages = false }: { showOnProduct
             )}
 
             <Button
-              variant="ghost"
-              className="w-full mt-3 text-muted-foreground hover:text-foreground"
-              onClick={handleDismiss}
+              className="w-full mt-3 bg-white/10 border border-white/20 text-white hover:bg-white/20"
+              onClick={handleContinue}
               data-testid="button-early-access-continue"
             >
               Continue browsing
