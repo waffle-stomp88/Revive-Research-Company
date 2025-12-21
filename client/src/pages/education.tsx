@@ -696,10 +696,15 @@ export default function Education() {
                               <div className="flex-1">
                                 <h4 className="font-display font-semibold text-sm mb-2">Peer-Reviewed Research</h4>
                                 <p className="text-xs text-muted-foreground mb-3">
-                                  Explore clinical studies and scientific literature about {article.title}
+                                  Explore clinical studies and scientific literature
                                 </p>
                                 <a 
-                                  href={`https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(article.title)}`}
+                                  href={`https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(
+                                    (article.slug?.replace('-research-guide', '') || article.title)
+                                      .split('-')
+                                      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                                      .join('-')
+                                  )}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="inline-flex items-center gap-2"
