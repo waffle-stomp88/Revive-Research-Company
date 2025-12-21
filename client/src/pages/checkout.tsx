@@ -706,7 +706,7 @@ export default function Checkout() {
                     ${cartTotal.toFixed(2)}
                   </span>
                 </div>
-                <p className="text-[10px] text-[#E7FB10]/60 text-right mb-4">Preview pricing — subject to change at launch</p>
+                <p className="text-xs font-semibold text-[#E7FB10] text-right mb-4">Early access pricing preview — subject to change at launch</p>
 
                 {EARLY_ACCESS_MODE && (
                   <div className="mb-4 p-3 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30" data-testid="early-access-checkout-notice">
@@ -931,7 +931,7 @@ export default function Checkout() {
                     ${bundleTotal.toFixed(2)}
                   </span>
                 </div>
-                <p className="text-[10px] text-[#E7FB10]/60 text-right mb-4">Preview pricing — subject to change at launch</p>
+                <p className="text-xs font-semibold text-[#E7FB10] text-right mb-4">Early access pricing preview — subject to change at launch</p>
 
                 {EARLY_ACCESS_MODE && (
                   <div className="mb-4 p-3 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30" data-testid="early-access-checkout-notice">
@@ -1156,7 +1156,7 @@ export default function Checkout() {
                   ${total.toFixed(2)}
                 </span>
               </div>
-              <p className="text-[10px] text-[#E7FB10]/60 text-right mb-4">Preview pricing — subject to change at launch</p>
+              <p className="text-xs font-semibold text-[#E7FB10] text-right mb-4">Early access pricing preview — subject to change at launch</p>
 
               {EARLY_ACCESS_MODE && (
                 <div className="mb-4 p-3 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30" data-testid="early-access-checkout-notice">

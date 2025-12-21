@@ -570,7 +570,7 @@ export default function ProductDetail() {
                 )}
                 <PriceTrendBadge productId={product.id} />
               </div>
-              <span className="text-[10px] text-[#E7FB10]/60 mt-1 block">Preview pricing — subject to change at launch</span>
+              <span className="text-xs font-semibold text-[#E7FB10] mt-1 block">Early access pricing preview — subject to change at launch</span>
             </div>
 
             <p className="text-sm text-muted-foreground leading-relaxed mb-4" data-testid="text-product-description">
