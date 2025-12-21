@@ -45,8 +45,9 @@ function HeroSection() {
       >
         <img 
           src={heroBackground} 
-          alt=""
+          alt="Revive Research peptide laboratory with molecular structure visualization - premium research compounds"
           className="w-full h-full object-cover object-center"
+          data-testid="img-hero-background"
         />
       </motion.div>
       {/* Animated overlays - hidden on mobile for performance */}
