@@ -87,21 +87,23 @@ export async function registerRoutes(
   });
 
   // Dev bypass login - for admin access during development when Auth0 is unavailable
-  // Only works in development environment with correct bypass key
+  // ONLY works when NODE_ENV !== 'production' - cannot be enabled in production
   app.post('/api/auth/dev-bypass', async (req, res) => {
+    // Strict production check - never allow in production, no override possible
+    if (process.env.NODE_ENV === 'production') {
+      console.warn('[Security] Dev bypass attempted in production - blocked');
+      return res.status(403).json({ message: "Dev bypass disabled in production" });
+    }
+    
     const bypassKey = req.body.key;
     const expectedKey = process.env.DEV_BYPASS_KEY || 'revive-dev-2024';
     
-    // Only allow in development or if explicitly enabled
-    const isDev = process.env.NODE_ENV !== 'production';
-    
-    if (!isDev && !process.env.DEV_BYPASS_ENABLED) {
-      return res.status(403).json({ message: "Dev bypass not available in production" });
-    }
-    
     if (bypassKey !== expectedKey) {
+      console.warn('[Security] Invalid dev bypass key attempt');
       return res.status(401).json({ message: "Invalid bypass key" });
     }
+    
+    console.log('[Dev] Dev bypass login used');
     
     try {
       // Create or get the dev admin user
@@ -981,6 +983,15 @@ export async function registerRoutes(
 
   // Create Stripe checkout session
   app.post("/api/stripe/create-checkout-session", async (req, res) => {
+    // Early Access Mode - block purchases during soft launch
+    const EARLY_ACCESS_MODE = process.env.EARLY_ACCESS_MODE !== 'false'; // Default to true
+    if (EARLY_ACCESS_MODE) {
+      return res.status(503).json({ 
+        error: "Coming Soon! Purchasing will be enabled at launch.",
+        earlyAccess: true 
+      });
+    }
+    
     try {
       const { productId, quantity, subscription, interval, affiliateCode } = req.body;
 
