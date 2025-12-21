@@ -264,7 +264,31 @@ export default function DosageCalculator() {
                   )}
                 </div>
 
-                {!isBeginnerMode && (
+                {isBeginnerMode ? (
+                  <div className="space-y-2">
+                    <Label className="text-gray-400 text-xs uppercase tracking-wide flex items-center gap-1.5">
+                      <Beaker className="h-3 w-3 text-[#22c55e]" />
+                      Quick Reference
+                    </Label>
+                    <div className="bg-[#0d0d10] border border-[#2a2a32] rounded-md p-3 space-y-2 h-9 flex items-center justify-center">
+                      {calculations ? (
+                        <div className="flex gap-3 text-xs">
+                          <div className="text-center">
+                            <p className="text-gray-500">Concentration</p>
+                            <p className="text-[#E7FB10] font-medium">{calculations.concentration.toFixed(2)} mg/mL</p>
+                          </div>
+                          <div className="border-l border-[#2a2a32]" />
+                          <div className="text-center">
+                            <p className="text-gray-500">Total Doses</p>
+                            <p className="text-[#21d8ff] font-medium">{calculations.totalDoses}</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-gray-500 text-xs">Enter values to see reference</p>
+                      )}
+                    </div>
+                  </div>
+                ) : (
                   <div className="space-y-2">
                     <Label className="text-gray-400 text-xs uppercase tracking-wide flex items-center gap-1.5">
                       <Syringe className="h-3 w-3 text-[#22c55e]" />
