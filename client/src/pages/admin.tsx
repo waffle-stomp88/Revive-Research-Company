@@ -98,6 +98,7 @@ import {
   CheckCircle,
   XCircle,
   Settings,
+  Download,
 } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { ObjectUploader } from "@/components/ObjectUploader";
@@ -2947,7 +2948,158 @@ interface EmailEvent {
   createdAt: string;
 }
 
+interface NewsletterSubscriber {
+  id: string;
+  email: string;
+  source: string;
+  status: string;
+  createdAt: string;
+}
+
+interface NewsletterData {
+  total: number;
+  subscribers: NewsletterSubscriber[];
+  bySource: Record<string, string[]>;
+}
+
+function LaunchSubscribersTab() {
+  const { data: subscriberData, isLoading } = useQuery<NewsletterData>({
+    queryKey: ["/api/admin/newsletter/subscribers"],
+    queryFn: async () => {
+      const response = await fetch("/api/admin/newsletter/subscribers", {
+        credentials: "include"
+      });
+      if (!response.ok) throw new Error("Failed to fetch subscribers");
+      return response.json();
+    }
+  });
+
+  const { toast } = useToast();
+
+  const exportToCSV = () => {
+    if (!subscriberData?.subscribers) return;
+    
+    const csv = [
+      ["Email", "Source", "Status", "Signed Up"],
+      ...subscriberData.subscribers.map(sub => [
+        sub.email,
+        sub.source,
+        sub.status,
+        new Date(sub.createdAt).toLocaleDateString()
+      ])
+    ].map(row => row.map(cell => `"${cell}"`).join(",")).join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `launch-subscribers-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    
+    toast({
+      title: "Downloaded",
+      description: `${subscriberData.subscribers.length} subscribers exported to CSV`,
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
+
+  if (!subscriberData || subscriberData.total === 0) {
+    return (
+      <div className="text-center py-12">
+        <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4">
+          <Mail className="h-8 w-8 text-muted-foreground" />
+        </div>
+        <h3 className="font-medium mb-2">No Launch Subscribers Yet</h3>
+        <p className="text-sm text-muted-foreground">
+          Email signups will appear here as users subscribe for launch notifications.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between gap-2">
+        <div>
+          <h2 className="font-display text-xl font-bold">Launch Subscribers</h2>
+          <p className="text-muted-foreground text-sm">
+            Emails collected for launch notifications
+          </p>
+        </div>
+        <Button onClick={exportToCSV} size="sm" variant="outline" data-testid="btn-export-subscribers">
+          <Download className="h-4 w-4 mr-2" />
+          Export CSV
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <Card className="p-4">
+          <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">
+            Total Subscribers
+          </div>
+          <div className="text-2xl font-bold">{subscriberData.total}</div>
+        </Card>
+        {Object.entries(subscriberData.bySource).map(([source, emails]) => (
+          <Card key={source} className="p-4">
+            <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1 truncate">
+              {source}
+            </div>
+            <div className="text-2xl font-bold">{emails.length}</div>
+          </Card>
+        ))}
+      </div>
+
+      <div>
+        <h3 className="font-semibold text-sm mb-3">All Subscribers</h3>
+        <div className="rounded-lg border overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/50">
+                <TableHead className="text-xs font-semibold">Email</TableHead>
+                <TableHead className="w-32 text-xs font-semibold">Source</TableHead>
+                <TableHead className="w-24 text-xs font-semibold">Status</TableHead>
+                <TableHead className="w-32 text-xs font-semibold">Signed Up</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {subscriberData.subscribers.map((sub) => (
+                <TableRow key={sub.id} data-testid={`row-subscriber-${sub.id}`} className="hover:bg-muted/30">
+                  <TableCell className="text-xs">{sub.email}</TableCell>
+                  <TableCell className="text-xs">
+                    <Badge variant="outline" className="capitalize">{sub.source}</Badge>
+                  </TableCell>
+                  <TableCell className="text-xs">
+                    <Badge variant={sub.status === "subscribed" ? "default" : "secondary"}>
+                      {sub.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-xs text-muted-foreground">
+                    {new Date(sub.createdAt).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric"
+                    })}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function EmailLogsTab() {
+  const [emailTab, setEmailTab] = useState("orders");
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
   const { data: emailEvents, isLoading } = useQuery<EmailEvent[]>({
@@ -3005,155 +3157,164 @@ function EmailLogsTab() {
     return <Badge variant="outline">{typeMap[type] || type}</Badge>;
   };
 
-  if (isLoading) {
-    return (
-      <div className="space-y-4">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-64 w-full" />
-      </div>
-    );
-  }
-
-  if (!emailEvents || emailEvents.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4">
-          <Mail className="h-8 w-8 text-muted-foreground" />
-        </div>
-        <h3 className="font-medium mb-2">No Email Logs</h3>
-        <p className="text-sm text-muted-foreground">
-          Transactional email events will appear here once sent.
-        </p>
-      </div>
-    );
-  }
-
   const sentCount = emailEvents.filter((e) => e.status === "sent").length;
   const failedCount = emailEvents.filter((e) => e.status === "failed").length;
   const successRate = emailEvents.length > 0 ? Math.round((sentCount / emailEvents.length) * 100) : 0;
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-2 mb-2">
-        <div>
-          <h2 className="font-display text-xl font-bold" data-testid="text-email-logs-title">
-            Email Logs
-          </h2>
-          <p className="text-muted-foreground text-sm">
-            Transactional email audit trail
-          </p>
-        </div>
-      </div>
+      <Tabs value={emailTab} onValueChange={setEmailTab} className="space-y-4">
+        <TabsList className="grid w-full max-w-xs grid-cols-2">
+          <TabsTrigger value="orders">Orders</TabsTrigger>
+          <TabsTrigger value="launch">Launch</TabsTrigger>
+        </TabsList>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <Card className="p-4">
-          <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">
-            Total Sent
-          </div>
-          <div className="text-2xl font-bold">{emailEvents.length}</div>
-        </Card>
-        <Card className="p-4">
-          <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">
-            Success
-          </div>
-          <div className="text-2xl font-bold text-green-600">{sentCount}</div>
-        </Card>
-        <Card className="p-4">
-          <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">
-            Failed
-          </div>
-          <div className="text-2xl font-bold text-destructive">{failedCount}</div>
-        </Card>
-        <Card className="p-4">
-          <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">
-            Success Rate
-          </div>
-          <div className="text-2xl font-bold">{successRate}%</div>
-        </Card>
-      </div>
-
-      {selectedOrderId && orderEmails && (
-        <Card className="p-4 bg-muted/40 border-primary/30">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-semibold text-sm">Filtering: Order {getShortOrderRef(selectedOrderId)}</h3>
-              <p className="text-xs text-muted-foreground mt-1">{orderEmails.length} email(s)</p>
+        <TabsContent value="orders" className="space-y-6">
+          {isLoading ? (
+            <div className="space-y-4">
+              <Skeleton className="h-8 w-48" />
+              <Skeleton className="h-64 w-full" />
             </div>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setSelectedOrderId(null)}
-              data-testid="btn-clear-filter"
-            >
-              <X className="h-4 w-4 mr-1" />
-              Clear Filter
-            </Button>
-          </div>
-          {orderEmails.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No emails found for this order.</p>
+          ) : !emailEvents || emailEvents.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4">
+                <Mail className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <h3 className="font-medium mb-2">No Email Logs</h3>
+              <p className="text-sm text-muted-foreground">
+                Transactional email events will appear here once sent.
+              </p>
+            </div>
           ) : (
-            <div className="space-y-1 max-h-48 overflow-y-auto">
-              {orderEmails.map((email) => (
-                <div key={email.id} className="flex items-center justify-between text-xs bg-background/50 p-2 rounded border border-border/50">
-                  <div className="flex items-center gap-2 flex-1">
-                    {getTypeBadge(email.type)}
-                    <span className="text-muted-foreground truncate">{email.recipientEmail}</span>
-                  </div>
-                  <div className="flex items-center gap-2 ml-2">
-                    {getStatusBadge(email.status)}
-                    <span className="text-muted-foreground whitespace-nowrap">{formatDate(email.createdAt)}</span>
-                  </div>
+            <>
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <div>
+                  <h2 className="font-display text-xl font-bold" data-testid="text-email-logs-title">
+                    Email Logs
+                  </h2>
+                  <p className="text-muted-foreground text-sm">
+                    Transactional email audit trail
+                  </p>
                 </div>
-              ))}
-            </div>
-          )}
-        </Card>
-      )}
+              </div>
 
-      <div>
-        <h3 className="font-semibold text-sm mb-3">Recent Email Events</h3>
-        <div className="rounded-lg border overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-muted/50">
-                <TableHead className="w-32 text-xs font-semibold">Time</TableHead>
-                <TableHead className="w-28 text-xs font-semibold">Order</TableHead>
-                <TableHead className="text-xs font-semibold">Recipient</TableHead>
-                <TableHead className="w-40 text-xs font-semibold">Type</TableHead>
-                <TableHead className="w-24 text-xs font-semibold">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {emailEvents.slice(0, 50).map((event) => (
-                <TableRow key={event.id} data-testid={`row-email-${event.id}`} className="hover:bg-muted/30">
-                  <TableCell className="text-xs text-muted-foreground">
-                    {formatDate(event.createdAt)}
-                  </TableCell>
-                  <TableCell>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <Card className="p-4">
+                  <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">
+                    Total Sent
+                  </div>
+                  <div className="text-2xl font-bold">{emailEvents.length}</div>
+                </Card>
+                <Card className="p-4">
+                  <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">
+                    Success
+                  </div>
+                  <div className="text-2xl font-bold text-green-600">{sentCount}</div>
+                </Card>
+                <Card className="p-4">
+                  <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">
+                    Failed
+                  </div>
+                  <div className="text-2xl font-bold text-destructive">{failedCount}</div>
+                </Card>
+                <Card className="p-4">
+                  <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">
+                    Success Rate
+                  </div>
+                  <div className="text-2xl font-bold">{successRate}%</div>
+                </Card>
+              </div>
+
+              {selectedOrderId && orderEmails && (
+                <Card className="p-4 bg-muted/40 border-primary/30">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="font-semibold text-sm">Filtering: Order {getShortOrderRef(selectedOrderId)}</h3>
+                      <p className="text-xs text-muted-foreground mt-1">{orderEmails.length} email(s)</p>
+                    </div>
                     <Button
-                      variant="ghost"
                       size="sm"
-                      className="p-1 h-auto font-mono text-xs text-primary hover:underline"
-                      onClick={() => setSelectedOrderId(event.orderId)}
-                      data-testid={`btn-order-${event.orderId}`}
+                      variant="outline"
+                      onClick={() => setSelectedOrderId(null)}
+                      data-testid="btn-clear-filter"
                     >
-                      {getShortOrderRef(event.orderId)}
+                      <X className="h-4 w-4 mr-1" />
+                      Clear Filter
                     </Button>
-                  </TableCell>
-                  <TableCell className="text-xs">{event.recipientEmail}</TableCell>
-                  <TableCell>{getTypeBadge(event.type)}</TableCell>
-                  <TableCell>{getStatusBadge(event.status)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-        {emailEvents.length > 50 && (
-          <p className="text-xs text-muted-foreground mt-2 text-center">
-            Showing 50 of {emailEvents.length} emails
-          </p>
-        )}
-      </div>
+                  </div>
+                  {orderEmails.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">No emails found for this order.</p>
+                  ) : (
+                    <div className="space-y-1 max-h-48 overflow-y-auto">
+                      {orderEmails.map((email) => (
+                        <div key={email.id} className="flex items-center justify-between text-xs bg-background/50 p-2 rounded border border-border/50">
+                          <div className="flex items-center gap-2 flex-1">
+                            {getTypeBadge(email.type)}
+                            <span className="text-muted-foreground truncate">{email.recipientEmail}</span>
+                          </div>
+                          <div className="flex items-center gap-2 ml-2">
+                            {getStatusBadge(email.status)}
+                            <span className="text-muted-foreground whitespace-nowrap">{formatDate(email.createdAt)}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </Card>
+              )}
+
+              <div>
+                <h3 className="font-semibold text-sm mb-3">Recent Email Events</h3>
+                <div className="rounded-lg border overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-muted/50">
+                        <TableHead className="w-32 text-xs font-semibold">Time</TableHead>
+                        <TableHead className="w-28 text-xs font-semibold">Order</TableHead>
+                        <TableHead className="text-xs font-semibold">Recipient</TableHead>
+                        <TableHead className="w-40 text-xs font-semibold">Type</TableHead>
+                        <TableHead className="w-24 text-xs font-semibold">Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {emailEvents.slice(0, 50).map((event) => (
+                        <TableRow key={event.id} data-testid={`row-email-${event.id}`} className="hover:bg-muted/30">
+                          <TableCell className="text-xs text-muted-foreground">
+                            {formatDate(event.createdAt)}
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="p-1 h-auto font-mono text-xs text-primary hover:underline"
+                              onClick={() => setSelectedOrderId(event.orderId)}
+                              data-testid={`btn-order-${event.orderId}`}
+                            >
+                              {getShortOrderRef(event.orderId)}
+                            </Button>
+                          </TableCell>
+                          <TableCell className="text-xs">{event.recipientEmail}</TableCell>
+                          <TableCell>{getTypeBadge(event.type)}</TableCell>
+                          <TableCell>{getStatusBadge(event.status)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+                {emailEvents.length > 50 && (
+                  <p className="text-xs text-muted-foreground mt-2 text-center">
+                    Showing 50 of {emailEvents.length} emails
+                  </p>
+                )}
+              </div>
+            </>
+          )}
+        </TabsContent>
+
+        <TabsContent value="launch">
+          <LaunchSubscribersTab />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
