@@ -936,9 +936,9 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
             {/* Syringe barrel - inner chamber */}
             <rect x="38" y="23" width="254" height="34" rx="4" fill="#0d0d10" />
             
-            {/* Liquid fill - fills from left (plunger) side rightward toward needle */}
+            {/* Liquid fill - fills from right (needle) side leftward toward plunger */}
             <motion.rect
-              x={38}
+              x={292 - Math.max((clampedFill / 100) * 254, 0)}
               y="23"
               height="34"
               rx="3"
@@ -951,7 +951,7 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
             
             {/* Liquid shine effect */}
             <motion.rect
-              x={38}
+              x={292 - Math.max((clampedFill / 100) * 254, 0)}
               y="23"
               height="10"
               rx="2"
