@@ -11,11 +11,13 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Switch } from "@/components/ui/switch";
 
 const COMMON_VIAL_STRENGTHS = [
-  { value: "1", label: "1mg" },
-  { value: "2", label: "2mg" },
   { value: "5", label: "5mg" },
   { value: "10", label: "10mg" },
+  { value: "12", label: "12mg" },
   { value: "15", label: "15mg" },
+  { value: "20", label: "20mg" },
+  { value: "40", label: "40mg" },
+  { value: "80", label: "80mg" },
   { value: "custom", label: "Custom" },
 ];
 
@@ -27,7 +29,7 @@ const SYRINGE_SIZES = [
 
 export default function DosageCalculator() {
   const [doseValue, setDoseValue] = useState<string>("250");
-  const [doseUnit, setDoseUnit] = useState<"mcg" | "mg">("mcg");
+  const [doseUnit, setDoseUnit] = useState<"mcg" | "mg">("mg");
   const [vialStrength, setVialStrength] = useState<string>("5");
   const [customVialStrength, setCustomVialStrength] = useState<string>("");
   const [waterVolume, setWaterVolume] = useState<string>("2");
