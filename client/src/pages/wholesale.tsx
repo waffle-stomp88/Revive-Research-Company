@@ -596,15 +596,6 @@ ${data.additionalInfo || "None provided"}`.trim(),
                   );
                 })}
               </div>
-              
-              <Button 
-                className="w-full bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90 mt-4"
-                onClick={() => document.getElementById('application')?.scrollIntoView({ behavior: 'smooth' })}
-                data-testid="button-apply-benefits"
-              >
-                Apply for Wholesale Account
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
             </div>
           </div>
         </motion.div>
