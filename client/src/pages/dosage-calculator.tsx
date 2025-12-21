@@ -366,8 +366,8 @@ export default function DosageCalculator() {
                     </div>
                   )}
 
-                  {isBeginnerMode ? (
-                    <div className="w-full">
+                  <div className="flex flex-col md:flex-row gap-6 items-center">
+                    <div className="flex-1 w-full">
                       <EnhancedSyringeVisual
                         fillPercentage={calculations.fillPercentage}
                         units={calculations.unitsToDraw}
@@ -376,52 +376,40 @@ export default function DosageCalculator() {
                         isBeginnerMode={isBeginnerMode}
                       />
                     </div>
-                  ) : (
-                    <div className="flex flex-col md:flex-row gap-6 items-center">
-                      <div className="flex-1 w-full">
-                        <EnhancedSyringeVisual
-                          fillPercentage={calculations.fillPercentage}
-                          units={calculations.unitsToDraw}
-                          maxUnits={calculations.syringeUnits}
-                          volumeMl={calculations.volumeToDraw}
-                          isBeginnerMode={isBeginnerMode}
-                        />
-                      </div>
 
-                      <div className="grid grid-cols-3 gap-3 w-full md:w-auto">
-                        <ResultCard
-                          label="Draw"
-                          value={`${calculations.unitsToDraw}`}
-                          unit="units"
-                          subtext={`${calculations.volumeToDraw.toFixed(3)} mL`}
-                          color="#E7FB10"
-                          testId="result-units"
-                          isBeginnerMode={isBeginnerMode}
-                          tooltip={isBeginnerMode ? "This is how many units to draw on your syringe" : undefined}
-                        />
-                        <ResultCard
-                          label="Conc."
-                          value={`${calculations.concentration.toFixed(1)}`}
-                          unit="mg/mL"
-                          subtext={`${calculations.concentrationMcg.toFixed(0)} mcg/mL`}
-                          color="#21d8ff"
-                          testId="result-concentration"
-                          isBeginnerMode={isBeginnerMode}
-                          tooltip={isBeginnerMode ? "How much peptide is in each mL of liquid" : undefined}
-                        />
-                        <ResultCard
-                          label="Total"
-                          value={`${calculations.totalDoses}`}
-                          unit="doses"
-                          subtext="per vial"
-                          color="#a855f7"
-                          testId="result-total-doses"
-                          isBeginnerMode={isBeginnerMode}
-                          tooltip={isBeginnerMode ? "How many injections you can get from one vial" : undefined}
-                        />
-                      </div>
+                    <div className="grid grid-cols-3 gap-3 w-full md:w-auto">
+                      <ResultCard
+                        label="Draw"
+                        value={`${calculations.unitsToDraw}`}
+                        unit={isBeginnerMode ? "units" : "units"}
+                        subtext={`${calculations.volumeToDraw.toFixed(3)} mL`}
+                        color="#E7FB10"
+                        testId="result-units"
+                        isBeginnerMode={isBeginnerMode}
+                        tooltip={isBeginnerMode ? "This is how many units to draw on your syringe" : undefined}
+                      />
+                      <ResultCard
+                        label="Conc."
+                        value={`${calculations.concentration.toFixed(1)}`}
+                        unit="mg/mL"
+                        subtext={`${calculations.concentrationMcg.toFixed(0)} mcg/mL`}
+                        color="#21d8ff"
+                        testId="result-concentration"
+                        isBeginnerMode={isBeginnerMode}
+                        tooltip={isBeginnerMode ? "How much peptide is in each mL of liquid" : undefined}
+                      />
+                      <ResultCard
+                        label="Total"
+                        value={`${calculations.totalDoses}`}
+                        unit="doses"
+                        subtext="per vial"
+                        color="#a855f7"
+                        testId="result-total-doses"
+                        isBeginnerMode={isBeginnerMode}
+                        tooltip={isBeginnerMode ? "How many injections you can get from one vial" : undefined}
+                      />
                     </div>
-                  )}
+                  </div>
 
                   {isBeginnerMode && (
                     <PlainEnglishSummary 
@@ -451,7 +439,7 @@ export default function DosageCalculator() {
             </AnimatePresence>
           </motion.div>
 
-          {!isBeginnerMode && (
+          {isBeginnerMode && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -975,17 +963,23 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
               />
             ))}
             
-            {/* Cone/hub where needle attaches - hidden to avoid grey showing */}
-            {/* Removed to prevent grey artifact on 30u syringe */}
+            {/* Cone/hub where needle attaches */}
+            <polygon points="295,25 310,30 310,50 295,55" fill="url(#syringeBody)" />
+            <polygon points="297,27 308,32 308,48 297,53" fill="#1a1a1f" />
             
             {/* Needle - detailed */}
             <g>
-              {/* Needle shaft */}
-              <rect x="310" y="38" width="20" height="4" rx="0.5" fill="#6a6a72" filter="url(#needleGlow)" />
+              <path
+                d="M 310 38 L 330 38 L 330 42 L 310 42 Z"
+                fill="url(#plunger)"
+                filter="url(#needleGlow)"
+              />
+              {/* Needle tip - sharp angle */}
+              <polygon points="330,38 340,40 330,42" fill="#8a8a92" filter="url(#needleGlow)" />
               {/* Needle shine */}
-              <line x1="310" y1="38.5" x2="330" y2="38.5" stroke="white" strokeWidth="0.5" opacity="0.6" />
-              {/* Needle tip - clean point */}
-              <polygon points="330,38 343,40 330,42" fill="#7a7a82" filter="url(#needleGlow)" />
+              <line x1="310" y1="38" x2="330" y2="38" stroke="white" strokeWidth="0.5" opacity="0.5" />
+              {/* Bevel */}
+              <path d="M 330 38 Q 335 40 340 40" stroke="#6a6a72" strokeWidth="0.5" fill="none" />
             </g>
             
             {/* Tick marks and numbers */}
