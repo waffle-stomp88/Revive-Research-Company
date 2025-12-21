@@ -366,15 +366,6 @@ export default function DosageCalculator() {
                     </div>
                   )}
 
-                  {isBeginnerMode && (
-                    <PlainEnglishSummary 
-                      calculations={calculations}
-                      syringeSize={syringeSize}
-                      doseValue={doseValue}
-                      doseUnit={doseUnit}
-                    />
-                  )}
-
                   <div className="flex flex-col md:flex-row gap-6 items-center">
                     <div className="flex-1 w-full">
                       <EnhancedSyringeVisual
@@ -419,6 +410,15 @@ export default function DosageCalculator() {
                       />
                     </div>
                   </div>
+
+                  {isBeginnerMode && (
+                    <PlainEnglishSummary 
+                      calculations={calculations}
+                      syringeSize={syringeSize}
+                      doseValue={doseValue}
+                      doseUnit={doseUnit}
+                    />
+                  )}
 
                   {isBeginnerMode && (
                     <AllSyringeComparison calculations={calculations} />
@@ -893,7 +893,7 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
               </filter>
             </defs>
             
-            {/* Plunger - moves based on fill */}
+            {/* Back plunger - pushes liquid in from left */}
             <g>
               <motion.rect
                 x={6 + (clampedFill / 100) * 222}
@@ -924,9 +924,9 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
             {/* Syringe barrel - inner chamber */}
             <rect x="38" y="23" width="254" height="34" rx="4" fill="#0d0d10" />
             
-            {/* Liquid fill - animated */}
+            {/* Liquid fill - fills from right (needle) side leftward */}
             <motion.rect
-              x={38}
+              x={292 - Math.max((clampedFill / 100) * 254, 0)}
               y="23"
               height="34"
               rx="3"
@@ -939,7 +939,7 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
             
             {/* Liquid shine effect */}
             <motion.rect
-              x={38}
+              x={292 - Math.max((clampedFill / 100) * 254, 0)}
               y="23"
               height="10"
               rx="2"
