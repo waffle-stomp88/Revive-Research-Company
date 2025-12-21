@@ -680,8 +680,8 @@ export default function Education() {
                           )}
                         </AnimatePresence>
 
-                        {/* PubMed Research Section for peptide research guide articles */}
-                        {article.category === "peptides" && article.slug?.endsWith('-research-guide') && (
+                        {/* PubMed Research Section for peptide research guide articles (not for complex blends) */}
+                        {article.category === "peptides" && article.slug?.endsWith('-research-guide') && !article.slug?.includes('complex') && (
                           <motion.div 
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
