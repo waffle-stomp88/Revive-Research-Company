@@ -196,9 +196,10 @@ function SavingsCalculator() {
           </div>
         </div>
         
-        <div className="mt-4 p-3 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30">
-          <p className="text-xs text-center text-[#E7FB10] font-medium">
-            ⚠️ Discounts vary by compound. Final pricing confirmed after application review.
+        <div className="mt-4 p-3 rounded-lg bg-red-500/20 border border-red-500/40">
+          <p className="text-xs text-center text-red-400 font-medium flex items-center justify-center gap-2">
+            <span className="text-lg">⚠️</span>
+            Discounts vary by compound. Final pricing confirmed after application review.
           </p>
         </div>
       </div>
