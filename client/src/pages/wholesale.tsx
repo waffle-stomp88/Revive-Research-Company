@@ -244,6 +244,7 @@ export default function Wholesale() {
 
   const form = useForm<WholesaleFormData>({
     resolver: zodResolver(wholesaleFormSchema),
+    mode: "onChange",
     defaultValues: {
       businessName: "",
       contactName: "",
