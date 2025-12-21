@@ -125,11 +125,7 @@ function Router() {
             <BulkPacks />
           </ProtectedRoute>
         </Route>
-        <Route path="/wholesale">
-          <ProtectedRoute title="Wholesale Program" description="Join our wholesale program for institutional pricing and dedicated support.">
-            <Wholesale />
-          </ProtectedRoute>
-        </Route>
+        <Route path="/wholesale" component={Wholesale} />
         <Route path="/research-stacks">
           <ProtectedRoute title="Research Stacks" description="Access curated peptide combinations designed for specific research applications.">
             <ResearchStacks />
