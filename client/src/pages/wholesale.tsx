@@ -8,7 +8,7 @@ import { useMutation } from "@tanstack/react-query";
 import { 
   Building2, CheckCircle2, FileText, Users, Truck, Shield, HeadphonesIcon, 
   Package, Send, Loader2, Calculator, ArrowRight, Sparkles, Award, 
-  BadgeCheck, Lock, Minus, Plus
+  BadgeCheck, Lock, Minus, Plus, Check, Zap, TrendingUp
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Link } from "wouter";
 
 const wholesaleFormSchema = z.object({
   businessName: z.string().min(2, "Business name is required"),
@@ -36,61 +35,29 @@ type WholesaleFormData = z.infer<typeof wholesaleFormSchema>;
 
 const pricingTiers = [
   { 
-    range: "100–249 vials", 
-    discount: "Up to 20% off", 
-    discountNote: "Discount varies by compound",
-    whoFor: "Best for small clinics / first-time bulk buyers",
-    margin: "Avg reseller margin: 38–52%",
-    perks: "Ships in 3–5 days",
-    mixMatch: true,
+    range: "100–249", 
+    discount: "20%", 
+    label: "Bronze",
     color: "#21d8ff" 
   },
   { 
-    range: "250–499 vials", 
-    discount: "Up to 25% off", 
-    discountNote: "Discount varies by compound",
-    whoFor: "Ideal for scaling resellers building recurring customer volume",
-    margin: "Avg reseller margin: 45–58%",
-    perks: "Priority allocation + same-week restocks",
-    mixMatch: true,
+    range: "250–499", 
+    discount: "25%", 
+    label: "Silver",
     color: "#E7FB10" 
   },
   { 
-    range: "500–999 vials", 
-    discount: "Up to 30% off", 
-    discountNote: "Discount varies by compound",
-    whoFor: "For distributors needing consistent inventory across multiple compounds",
-    margin: "Avg reseller margin: 50–65%",
-    perks: "Free domestic shipping + reserved batch access",
-    mixMatch: true,
+    range: "500–999", 
+    discount: "30%", 
+    label: "Gold",
     color: "#a855f7" 
   },
   { 
-    range: "1000+ vials", 
-    discount: "Custom Pricing", 
-    discountNote: "Enterprise rates available",
-    whoFor: "For companies seeking private label, large recurring orders, or regional distribution",
-    margin: "Margins negotiated per contract",
-    perks: "Custom labeling | Private inventory | Contract pricing",
-    mixMatch: true,
+    range: "1000+", 
+    discount: "35%", 
+    label: "Elite",
     color: "#22c55e" 
   },
-];
-
-const differentiators = [
-  { icon: Shield, label: "U.S. Supplier Relationships", description: "Direct partnerships with domestic manufacturers" },
-  { icon: BadgeCheck, label: "Consistent Batch Quality", description: "Rigorous QC on every production run" },
-  { icon: Award, label: "99–99.5% Purity Range", description: "Third-party verified on all compounds" },
-  { icon: Truck, label: "Fast Domestic Shipping", description: "Most orders ship within 24–48 hours" },
-];
-
-const benefits = [
-  { icon: Package, title: "Minimum Order: 100 Vials", description: "Flexible ordering across multiple products" },
-  { icon: FileText, title: "Full COA Access", description: "Batch-specific certificates for every order" },
-  { icon: Truck, title: "Priority Shipping", description: "Expedited fulfillment for all wholesale orders" },
-  { icon: Users, title: "Dedicated Account Manager", description: "Direct line to your personal rep" },
-  { icon: Shield, title: "Quality Guarantee", description: "99%+ purity on every batch" },
-  { icon: HeadphonesIcon, title: "B2B Support", description: "Extended support hours for business accounts" },
 ];
 
 const businessTypes = [
@@ -108,37 +75,6 @@ const volumeOptions = [
   "250-499 vials/month",
   "500-999 vials/month",
   "1000+ vials/month",
-];
-
-const processSteps = [
-  { 
-    step: 1, 
-    title: "Apply", 
-    description: "Complete our quick application form with your business details",
-    icon: FileText,
-    color: "#21d8ff"
-  },
-  { 
-    step: 2, 
-    title: "Get Approved", 
-    description: "Our team reviews and approves within 24-48 hours",
-    icon: BadgeCheck,
-    color: "#E7FB10"
-  },
-  { 
-    step: 3, 
-    title: "Start Ordering", 
-    description: "Access wholesale pricing and place your first bulk order",
-    icon: Package,
-    color: "#22c55e"
-  },
-];
-
-const trustBadges = [
-  { icon: Shield, label: "99%+ Purity Verified", color: "#22c55e" },
-  { icon: Award, label: "Third-Party Lab Tested", color: "#E7FB10" },
-  { icon: Lock, label: "Secure B2B Portal", color: "#21d8ff" },
-  { icon: BadgeCheck, label: "GMP Compliant", color: "#a855f7" },
 ];
 
 function SavingsCalculator() {
@@ -160,12 +96,21 @@ function SavingsCalculator() {
     if (qty >= 100) return "Bronze Tier";
     return "Retail";
   };
+
+  const getTierColor = (qty: number) => {
+    if (qty >= 1000) return "#22c55e";
+    if (qty >= 500) return "#a855f7";
+    if (qty >= 250) return "#E7FB10";
+    if (qty >= 100) return "#21d8ff";
+    return "#6b7280";
+  };
   
   const discount = getDiscount(quantity);
   const retailTotal = quantity * basePrice;
   const wholesaleTotal = retailTotal * (1 - discount);
   const savings = retailTotal - wholesaleTotal;
   const tierLabel = getTierLabel(quantity);
+  const tierColor = getTierColor(quantity);
   
   return (
     <Card className="p-6 md:p-8 border-2 border-[#E7FB10]/30 bg-gradient-to-br from-[#E7FB10]/5 to-transparent">
@@ -227,10 +172,10 @@ function SavingsCalculator() {
           </div>
         </div>
         
-        <div className="grid grid-cols-2 gap-4">
-          <div className="p-4 rounded-lg bg-[#1a1a1f] border border-[#2a2a32]">
+        <div className="grid grid-cols-2 gap-3">
+          <div className="p-4 rounded-lg bg-muted/30">
             <p className="text-xs text-muted-foreground mb-1">Retail Price</p>
-            <p className="text-xl font-bold line-through text-red-400">${retailTotal.toLocaleString()}</p>
+            <p className="text-xl font-bold line-through text-muted-foreground">${retailTotal.toLocaleString()}</p>
           </div>
           <div className="p-4 rounded-lg bg-[#22c55e]/10 border border-[#22c55e]/30">
             <p className="text-xs text-muted-foreground mb-1">Wholesale Price</p>
@@ -245,7 +190,7 @@ function SavingsCalculator() {
               <p className="text-3xl font-bold text-[#E7FB10]">Up to ${savings.toLocaleString()}</p>
             </div>
             <div className="text-right">
-              <Badge className="bg-[#E7FB10] text-black mb-1">{tierLabel}</Badge>
+              <Badge style={{ backgroundColor: tierColor, color: tierColor === "#E7FB10" ? "black" : "white" }} className="mb-1">{tierLabel}</Badge>
               <p className="text-lg font-bold text-[#22c55e]">Up to {(discount * 100).toFixed(0)}% OFF</p>
             </div>
           </div>
@@ -319,343 +264,347 @@ ${data.additionalInfo || "None provided"}`.trim(),
     <main className="min-h-screen pt-32 md:pt-40 pb-12">
       <SEOHead title="Wholesale Program" description="Wholesale pricing for institutions and resellers. Contact us for volume discounts." canonicalPath="/wholesale" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
-        {/* Hero Section with Gradient */}
+        {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative text-center mb-16 py-12 rounded-3xl overflow-hidden"
+          className="relative text-center mb-20"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-[#21d8ff]/20 via-[#a855f7]/10 to-[#E7FB10]/10" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_rgba(33,216,255,0.3),_transparent_50%)]" />
-          <motion.div 
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full blur-3xl"
-            style={{ background: "radial-gradient(circle, #21d8ff 0%, transparent 70%)" }}
-            animate={{
-              opacity: [0.2, 0.4, 0.2],
-              scale: [1, 1.1, 1]
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
+          <div className="absolute inset-0 -z-10">
+            <motion.div 
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[120px] opacity-30"
+              style={{ background: "radial-gradient(circle, #21d8ff 0%, #a855f7 50%, transparent 70%)" }}
+              animate={{
+                scale: [1, 1.2, 1],
+                rotate: [0, 180, 360]
+              }}
+              transition={{
+                duration: 20,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+            />
+          </div>
           
-          <div className="relative z-10">
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.1 }}
-              className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#21d8ff]/20 border border-[#21d8ff]/40 mb-6"
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#21d8ff]/20 border border-[#21d8ff]/40 mb-6"
+          >
+            <Building2 className="h-4 w-4 text-[#21d8ff]" />
+            <span className="text-sm font-semibold text-[#21d8ff]">B2B Supply Partner</span>
+          </motion.div>
+          
+          <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold mb-6">
+            Scale Your Business with{" "}
+            <span className="relative inline-block">
+              <span className="relative z-10 bg-gradient-to-r from-[#21d8ff] via-[#a855f7] to-[#E7FB10] text-transparent bg-clip-text">
+                Premium Supply
+              </span>
+              <motion.span 
+                className="absolute inset-0 bg-gradient-to-r from-[#21d8ff]/20 via-[#a855f7]/20 to-[#E7FB10]/20 blur-xl -z-10"
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 3, repeat: Infinity }}
+              />
+            </span>
+          </h1>
+          <p className="text-muted-foreground max-w-2xl mx-auto text-lg md:text-xl mb-10">
+            Partner with us for reliable peptide supply. Tiered discounts, dedicated support, 
+            and quality you can trust.
+          </p>
+          
+          <div className="flex flex-wrap justify-center gap-4">
+            <Button 
+              size="lg" 
+              className="bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90 px-8"
+              onClick={() => document.getElementById('application')?.scrollIntoView({ behavior: 'smooth' })}
+              data-testid="button-apply-hero"
             >
-              <Sparkles className="h-4 w-4 text-[#21d8ff]" />
-              <span className="text-sm font-semibold text-[#21d8ff]">B2B Supply Partner</span>
-            </motion.div>
+              Apply Now
+              <ArrowRight className="h-5 w-5 ml-2" />
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="border-white/20 px-8"
+              onClick={() => document.getElementById('calculator')?.scrollIntoView({ behavior: 'smooth' })}
+              data-testid="button-calculator-hero"
+            >
+              <Calculator className="h-5 w-5 mr-2" />
+              Calculate Savings
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* Animated Stats Bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="mb-20"
+        >
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#1a1a1f] via-[#22222a] to-[#1a1a1f] border border-[#2a2a32] p-1">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,_rgba(33,216,255,0.1),_transparent_50%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,_rgba(168,85,247,0.1),_transparent_50%)]" />
             
-            <h1 className="font-display text-4xl md:text-6xl font-bold mb-4">
-              Wholesale Program
-            </h1>
-            <p className="text-muted-foreground max-w-2xl mx-auto text-lg md:text-xl">
-              Premium peptide supply for clinics, research facilities, and resellers. 
-              Tiered pricing up to <span className="text-[#E7FB10] font-semibold">35% OFF</span> with dedicated support.
-            </p>
-            
-            <div className="flex flex-wrap justify-center gap-4 mt-8">
-              <Button 
-                size="lg" 
-                className="bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90"
-                onClick={() => document.getElementById('application')?.scrollIntoView({ behavior: 'smooth' })}
-                data-testid="button-apply-hero"
-              >
-                Apply Now
-                <ArrowRight className="h-5 w-5 ml-2" />
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-white/20"
-                onClick={() => document.getElementById('calculator')?.scrollIntoView({ behavior: 'smooth' })}
-                data-testid="button-calculator-hero"
-              >
-                <Calculator className="h-5 w-5 mr-2" />
-                Calculate Savings
-              </Button>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Trust Badges */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="flex flex-wrap justify-center gap-4 mb-16"
-        >
-          {trustBadges.map((badge, index) => {
-            const Icon = badge.icon;
-            return (
-              <motion.div
-                key={badge.label}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.1 + index * 0.05 }}
-              >
-                <motion.div 
-                  className="flex items-center gap-2 px-4 py-2 rounded-full border"
-                  style={{ 
-                    borderColor: `${badge.color}40`,
-                    backgroundColor: `${badge.color}10`
-                  }}
-                  animate={{
-                    boxShadow: [
-                      `0 0 0 ${badge.color}00`,
-                      `0 0 15px ${badge.color}30`,
-                      `0 0 0 ${badge.color}00`
-                    ]
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    delay: index * 0.7,
-                    ease: "easeInOut"
-                  }}
-                >
-                  <Icon className="h-4 w-4" style={{ color: badge.color }} />
-                  <span className="text-sm font-medium">{badge.label}</span>
-                </motion.div>
-              </motion.div>
-            );
-          })}
-        </motion.div>
-
-        {/* Why Our Wholesale is Different */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.12 }}
-          className="mb-16"
-        >
-          <div className="text-center mb-6">
-            <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30 mb-3">
-              <Sparkles className="h-3 w-3 mr-1" />
-              Why Partner With Us
-            </Badge>
-            <h2 className="font-display text-2xl md:text-3xl font-bold">What Makes Our Wholesale Different</h2>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {differentiators.map((item, index) => {
-              const Icon = item.icon;
-              return (
-                <motion.div
-                  key={item.label}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.15 + index * 0.05 }}
-                >
-                  <Card className="p-4 text-center border-[#2a2a32] h-full">
-                    <div className="w-12 h-12 rounded-xl bg-[#22c55e]/10 flex items-center justify-center mx-auto mb-3">
-                      <Icon className="h-6 w-6 text-[#22c55e]" />
-                    </div>
-                    <h4 className="font-semibold text-sm mb-1">{item.label}</h4>
-                    <p className="text-xs text-muted-foreground">{item.description}</p>
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </div>
-        </motion.div>
-
-        {/* Animated Pricing Tiers */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mb-16"
-        >
-          <div className="text-center mb-8">
-            <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">Volume Pricing Tiers</h2>
-            <p className="text-muted-foreground">The more you order, the more you save</p>
-          </div>
-          
-          <div className="grid md:grid-cols-4 gap-4">
-            {pricingTiers.map((tier, index) => (
-              <motion.div
-                key={tier.range}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 + index * 0.1 }}
-                className="h-full"
-              >
-                <div
-                  className="border-2 rounded-xl h-full"
-                  style={{ borderColor: tier.color }}
-                >
-                  <Card
-                    className="p-6 text-center h-full"
-                    data-testid={`card-tier-${index}`}
+            <div className="relative grid grid-cols-2 md:grid-cols-4 divide-x divide-[#2a2a32]">
+              {[
+                { value: "99%+", label: "Purity Verified", icon: Shield, color: "#22c55e" },
+                { value: "24-48hr", label: "Fast Shipping", icon: Truck, color: "#21d8ff" },
+                { value: "100+", label: "Active Partners", icon: Users, color: "#a855f7" },
+                { value: "35%", label: "Max Discount", icon: TrendingUp, color: "#E7FB10" },
+              ].map((stat, index) => {
+                const Icon = stat.icon;
+                return (
+                  <motion.div
+                    key={stat.label}
+                    className="p-6 md:p-8 text-center"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 + index * 0.1 }}
                   >
-                      <motion.div 
-                        className="w-14 h-14 rounded-xl mx-auto mb-4 flex items-center justify-center"
-                        style={{ backgroundColor: `${tier.color}20` }}
-                        animate={{ 
-                          y: [0, -5, 0],
-                          boxShadow: [
-                            `0 0 0 ${tier.color}00`,
-                            `0 0 20px ${tier.color}40`,
-                            `0 0 0 ${tier.color}00`
-                          ]
-                        }}
-                        transition={{ 
-                          duration: 3,
-                          repeat: Infinity,
-                          delay: index * 0.5,
-                          ease: "easeInOut"
-                        }}
-                      >
-                        <Package className="h-7 w-7" style={{ color: tier.color }} />
-                      </motion.div>
-                      <p className="text-sm text-muted-foreground mb-2">{tier.range}</p>
-                      <p 
-                        className="font-display text-2xl font-bold mb-3"
-                        style={{ color: tier.color }}
-                      >
-                        {tier.discount}
-                      </p>
-                      <p className="text-[10px] text-muted-foreground italic mt-1">{tier.discountNote}</p>
-                      <div className="space-y-2 text-left mt-4 pt-4 border-t border-[#2a2a32]">
-                        <p className="text-xs text-white/90 font-medium leading-tight">{tier.whoFor}</p>
-                        <p className="text-xs font-semibold" style={{ color: tier.color }}>{tier.margin}</p>
-                        <p className="text-[10px] text-muted-foreground">{tier.perks}</p>
-                        {tier.mixMatch && (
-                          <Badge variant="outline" className="text-[10px] border-[#22c55e]/50 text-[#22c55e]">
-                            Mix & match allowed
-                          </Badge>
-                        )}
-                      </div>
-                    </Card>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-          
-          <div className="mt-6 text-center space-y-1">
-            <p className="text-[11px] text-muted-foreground">
-              Margin ranges based on typical reseller pricing across common compounds.
-            </p>
-            <p className="text-[11px] text-muted-foreground font-medium">
-              Discounts apply up to each compound's wholesale price floor. Final pricing provided upon approval.
-            </p>
-          </div>
-        </motion.div>
-
-        {/* How It Works Timeline */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-          className="mb-16"
-        >
-          <div className="text-center mb-8">
-            <Badge className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30 mb-3">
-              Simple Process
-            </Badge>
-            <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">How It Works</h2>
-            <p className="text-muted-foreground">Get started in three easy steps</p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-6 relative">
-            <div className="hidden md:block absolute top-16 left-1/6 right-1/6 h-0.5 bg-gradient-to-r from-[#21d8ff] via-[#E7FB10] to-[#22c55e]" />
-            
-            {processSteps.map((step, index) => {
-              const Icon = step.icon;
-              return (
-                <motion.div
-                  key={step.step}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 + index * 0.1 }}
-                  className="relative"
-                >
-                  <Card className="p-6 text-center border-[#2a2a32] h-full">
-                    <motion.div 
-                      className="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center relative z-10"
-                      style={{ 
-                        backgroundColor: `${step.color}20`,
-                        border: `2px solid ${step.color}`
-                      }}
+                    <motion.div
                       animate={{ 
-                        scale: [1, 1.1, 1],
-                        boxShadow: [
-                          `0 0 0 0 ${step.color}00`,
-                          `0 0 0 8px ${step.color}20`,
-                          `0 0 0 0 ${step.color}00`
-                        ]
+                        y: [0, -3, 0],
                       }}
                       transition={{ 
                         duration: 2,
                         repeat: Infinity,
-                        delay: index * 0.6,
-                        ease: "easeInOut"
+                        delay: index * 0.3
                       }}
+                      className="inline-block mb-2"
                     >
-                      <Icon className="h-5 w-5" style={{ color: step.color }} />
+                      <Icon className="h-6 w-6 mx-auto" style={{ color: stat.color }} />
                     </motion.div>
-                    <Badge 
-                      className="mb-3"
-                      style={{ 
-                        backgroundColor: `${step.color}20`,
-                        color: step.color,
-                        borderColor: `${step.color}30`
-                      }}
-                    >
-                      Step {step.step}
-                    </Badge>
-                    <h3 className="font-display text-xl font-bold mb-2">{step.title}</h3>
-                    <p className="text-sm text-muted-foreground">{step.description}</p>
-                  </Card>
-                </motion.div>
-              );
-            })}
+                    <p className="font-display text-2xl md:text-3xl font-bold" style={{ color: stat.color }}>
+                      {stat.value}
+                    </p>
+                    <p className="text-xs md:text-sm text-muted-foreground mt-1">{stat.label}</p>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
         </motion.div>
 
-        {/* Savings Calculator */}
+        {/* Volume Discount Visualization */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mb-20"
+        >
+          <div className="text-center mb-10">
+            <Badge className="bg-[#a855f7]/20 text-[#a855f7] border-[#a855f7]/30 mb-3">
+              <Sparkles className="h-3 w-3 mr-1" />
+              Volume Pricing
+            </Badge>
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-3">
+              The More You Order, The More You Save
+            </h2>
+            <p className="text-muted-foreground max-w-xl mx-auto">
+              Unlock deeper discounts as your volume grows. All tiers include mix & match flexibility.
+            </p>
+          </div>
+          
+          {/* Tier Progress Bar */}
+          <div className="relative max-w-4xl mx-auto">
+            {/* Background track */}
+            <div className="h-3 rounded-full bg-[#2a2a32] mb-8 overflow-hidden">
+              <motion.div 
+                className="h-full rounded-full"
+                style={{ 
+                  background: "linear-gradient(90deg, #21d8ff 0%, #E7FB10 33%, #a855f7 66%, #22c55e 100%)" 
+                }}
+                initial={{ width: "0%" }}
+                animate={{ width: "100%" }}
+                transition={{ duration: 2, ease: "easeOut", delay: 0.5 }}
+              />
+            </div>
+            
+            {/* Tier markers */}
+            <div className="flex justify-between">
+              {pricingTiers.map((tier, index) => (
+                <motion.div
+                  key={tier.label}
+                  className="text-center"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 + index * 0.15 }}
+                >
+                  <motion.div
+                    className="w-16 h-16 md:w-20 md:h-20 rounded-2xl mx-auto mb-3 flex items-center justify-center relative"
+                    style={{ 
+                      backgroundColor: `${tier.color}15`,
+                      border: `2px solid ${tier.color}40`
+                    }}
+                    whileHover={{ 
+                      scale: 1.1,
+                      borderColor: tier.color
+                    }}
+                    animate={{
+                      boxShadow: [
+                        `0 0 0 0 ${tier.color}00`,
+                        `0 0 30px 5px ${tier.color}30`,
+                        `0 0 0 0 ${tier.color}00`
+                      ]
+                    }}
+                    transition={{
+                      boxShadow: {
+                        duration: 3,
+                        repeat: Infinity,
+                        delay: index * 0.5
+                      }
+                    }}
+                  >
+                    <span 
+                      className="font-display text-xl md:text-2xl font-bold"
+                      style={{ color: tier.color }}
+                    >
+                      {tier.discount}
+                    </span>
+                  </motion.div>
+                  <p className="font-semibold text-sm md:text-base" style={{ color: tier.color }}>
+                    {tier.label}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{tier.range} vials</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+          
+          <p className="text-center text-xs text-muted-foreground mt-8 max-w-2xl mx-auto">
+            Discounts apply up to each compound's wholesale price floor. Final pricing provided upon approval.
+          </p>
+        </motion.div>
+
+        {/* How It Works - Connected Flow */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="mb-20"
+        >
+          <div className="text-center mb-10">
+            <Badge className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30 mb-3">
+              Simple Process
+            </Badge>
+            <h2 className="font-display text-3xl md:text-4xl font-bold">
+              Get Started in 3 Steps
+            </h2>
+          </div>
+          
+          <div className="relative max-w-3xl mx-auto">
+            {/* Connecting line */}
+            <div className="hidden md:block absolute top-12 left-[15%] right-[15%] h-px">
+              <motion.div 
+                className="h-full bg-gradient-to-r from-[#21d8ff] via-[#E7FB10] to-[#22c55e]"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 1.5, delay: 0.5 }}
+              />
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-8 md:gap-4">
+              {[
+                { step: 1, title: "Apply", desc: "Complete our quick form with your business details", icon: FileText, color: "#21d8ff" },
+                { step: 2, title: "Get Approved", desc: "Our team reviews within 24-48 hours", icon: BadgeCheck, color: "#E7FB10" },
+                { step: 3, title: "Start Ordering", desc: "Access wholesale pricing and place bulk orders", icon: Package, color: "#22c55e" },
+              ].map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <motion.div
+                    key={item.step}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 + index * 0.2 }}
+                    className="text-center relative"
+                  >
+                    <motion.div
+                      className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center relative"
+                      style={{ 
+                        background: `linear-gradient(135deg, ${item.color}20, transparent)`,
+                        border: `2px solid ${item.color}`
+                      }}
+                      animate={{
+                        scale: [1, 1.05, 1],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        delay: index * 0.4
+                      }}
+                    >
+                      <Icon className="h-10 w-10" style={{ color: item.color }} />
+                      <span 
+                        className="absolute -top-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold"
+                        style={{ backgroundColor: item.color, color: item.color === "#E7FB10" ? "black" : "white" }}
+                      >
+                        {item.step}
+                      </span>
+                    </motion.div>
+                    <h3 className="font-display text-xl font-bold mb-2">{item.title}</h3>
+                    <p className="text-sm text-muted-foreground max-w-[200px] mx-auto">{item.desc}</p>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Savings Calculator + Benefits */}
         <motion.div
           id="calculator"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="mb-16"
+          className="mb-20"
         >
-          <div className="grid md:grid-cols-2 gap-8 items-start">
+          <div className="grid lg:grid-cols-2 gap-8 items-start">
             <SavingsCalculator />
             
-            <div className="space-y-4">
-              <h3 className="font-display text-2xl font-bold mb-4">Why Go Wholesale?</h3>
-              {benefits.map((benefit, index) => {
-                const Icon = benefit.icon;
-                return (
-                  <motion.div
-                    key={benefit.title}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4 + index * 0.05 }}
-                  >
-                    <Card className="p-4 border-border/50">
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-[#21d8ff]/10 flex items-center justify-center flex-shrink-0">
-                          <Icon className="h-5 w-5 text-[#21d8ff]" />
-                        </div>
-                        <div>
-                          <h4 className="font-semibold mb-0.5">{benefit.title}</h4>
-                          <p className="text-sm text-muted-foreground">{benefit.description}</p>
-                        </div>
+            <div className="space-y-6">
+              <div>
+                <h3 className="font-display text-2xl md:text-3xl font-bold mb-2">Why Partner With Us?</h3>
+                <p className="text-muted-foreground">Everything you need to grow your business with confidence.</p>
+              </div>
+              
+              <div className="space-y-3">
+                {[
+                  { text: "Minimum order just 100 vials — mix & match any products", icon: Package },
+                  { text: "Full COA access with batch-specific documentation", icon: FileText },
+                  { text: "Priority shipping — most orders ship within 24-48 hours", icon: Truck },
+                  { text: "Dedicated account manager for personalized support", icon: Users },
+                  { text: "99%+ purity guaranteed on every batch", icon: Shield },
+                  { text: "Extended B2B support hours for business accounts", icon: HeadphonesIcon },
+                ].map((benefit, index) => {
+                  const Icon = benefit.icon;
+                  return (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.4 + index * 0.08 }}
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#21d8ff]/5 transition-colors group"
+                    >
+                      <div className="w-8 h-8 rounded-lg bg-[#21d8ff]/10 flex items-center justify-center flex-shrink-0 group-hover:bg-[#21d8ff]/20 transition-colors">
+                        <Icon className="h-4 w-4 text-[#21d8ff]" />
                       </div>
-                    </Card>
-                  </motion.div>
-                );
-              })}
+                      <span className="text-sm">{benefit.text}</span>
+                    </motion.div>
+                  );
+                })}
+              </div>
+              
+              <Button 
+                className="w-full bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90 mt-4"
+                onClick={() => document.getElementById('application')?.scrollIntoView({ behavior: 'smooth' })}
+                data-testid="button-apply-benefits"
+              >
+                Apply for Wholesale Account
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
             </div>
           </div>
         </motion.div>
@@ -667,7 +616,9 @@ ${data.additionalInfo || "None provided"}`.trim(),
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <Card className="p-6 md:p-8 max-w-2xl mx-auto border-2 border-[#21d8ff]/30">
+          <Card className="p-6 md:p-8 max-w-2xl mx-auto border-2 border-[#21d8ff]/30 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#21d8ff]/5 to-transparent -z-10" />
+            
             <div className="text-center mb-6">
               <h2 className="font-display text-2xl font-bold mb-2">Apply for Wholesale Account</h2>
               <p className="text-muted-foreground">
@@ -676,16 +627,24 @@ ${data.additionalInfo || "None provided"}`.trim(),
             </div>
 
             {submitted ? (
-              <div className="text-center py-12">
-                <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
+              <motion.div 
+                className="text-center py-12"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+              >
+                <motion.div 
+                  className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4"
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 0.5 }}
+                >
                   <CheckCircle2 className="h-8 w-8 text-green-500" />
-                </div>
+                </motion.div>
                 <h3 className="font-display text-xl font-bold mb-2">Application Received!</h3>
                 <p className="text-muted-foreground max-w-md mx-auto">
                   Thank you for your interest. Our wholesale team will review your application 
                   and reach out within 24-48 business hours.
                 </p>
-              </div>
+              </motion.div>
             ) : (
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -762,7 +721,9 @@ ${data.additionalInfo || "None provided"}`.trim(),
                             </FormControl>
                             <SelectContent>
                               {businessTypes.map((type) => (
-                                <SelectItem key={type} value={type}>{type}</SelectItem>
+                                <SelectItem key={type} value={type}>
+                                  {type}
+                                </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
@@ -784,7 +745,9 @@ ${data.additionalInfo || "None provided"}`.trim(),
                             </FormControl>
                             <SelectContent>
                               {volumeOptions.map((option) => (
-                                <SelectItem key={option} value={option}>{option}</SelectItem>
+                                <SelectItem key={option} value={option}>
+                                  {option}
+                                </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
@@ -799,7 +762,7 @@ ${data.additionalInfo || "None provided"}`.trim(),
                     name="website"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Website (optional)</FormLabel>
+                        <FormLabel>Website (Optional)</FormLabel>
                         <FormControl>
                           <Input placeholder="https://yourcompany.com" {...field} data-testid="input-website" />
                         </FormControl>
@@ -813,13 +776,13 @@ ${data.additionalInfo || "None provided"}`.trim(),
                     name="additionalInfo"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Additional Information (optional)</FormLabel>
+                        <FormLabel>Additional Information (Optional)</FormLabel>
                         <FormControl>
                           <Textarea 
-                            placeholder="Tell us about your research needs, specific products of interest, or any questions..."
+                            placeholder="Tell us about your business and what compounds you're interested in..."
                             className="min-h-[100px]"
                             {...field}
-                            data-testid="textarea-additional"
+                            data-testid="textarea-info"
                           />
                         </FormControl>
                         <FormMessage />
@@ -831,7 +794,7 @@ ${data.additionalInfo || "None provided"}`.trim(),
                     type="submit" 
                     className="w-full bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90"
                     disabled={submitMutation.isPending}
-                    data-testid="button-submit-wholesale"
+                    data-testid="button-submit-application"
                   >
                     {submitMutation.isPending ? (
                       <>
@@ -850,13 +813,6 @@ ${data.additionalInfo || "None provided"}`.trim(),
             )}
           </Card>
         </motion.div>
-
-        <div className="mt-12 p-4 border border-red-500/30 rounded-lg bg-red-500/5">
-          <p className="text-xs text-red-400/80 text-center animate-pulse-subtle">
-            <strong>Research Use Only:</strong> All wholesale orders are subject to verification. 
-            Products are sold exclusively for legitimate research purposes. Not for human consumption.
-          </p>
-        </div>
       </div>
     </main>
   );
