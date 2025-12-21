@@ -23,8 +23,8 @@ import { apiRequest } from "@/lib/queryClient";
 const wholesaleFormSchema = z.object({
   businessName: z.string().min(2, "Business name is required"),
   contactName: z.string().min(2, "Contact name is required"),
-  email: z.string().email("Valid email is required"),
-  phone: z.string().min(10, "Valid phone number is required"),
+  email: z.string().email("Please enter a valid email address"),
+  phone: z.string().regex(/^[\d\s\-\(\)\+]+$/, "Phone number must contain only numbers and common formatting characters").min(10, "Phone number must be at least 10 digits"),
   businessType: z.string().min(1, "Please select your business type"),
   estimatedMonthlyVolume: z.string().min(1, "Please select estimated volume"),
   shippingCountry: z.string().min(1, "Please select your shipping country"),
