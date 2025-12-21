@@ -196,9 +196,11 @@ function SavingsCalculator() {
           </div>
         </div>
         
-        <p className="text-[10px] text-muted-foreground text-center mt-3 italic">
-          Discounts vary by compound based on manufacturing cost. Final pricing confirmed after application review.
-        </p>
+        <div className="mt-4 p-3 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30">
+          <p className="text-xs text-center text-[#E7FB10] font-medium">
+            ⚠️ Discounts vary by compound. Final pricing confirmed after application review.
+          </p>
+        </div>
       </div>
     </Card>
   );
