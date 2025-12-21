@@ -264,6 +264,55 @@ export default function DosageCalculator() {
                   )}
                 </div>
 
+                {!isBeginnerMode && (
+                  <div className="space-y-2">
+                    <Label className="text-gray-400 text-xs uppercase tracking-wide flex items-center gap-1.5">
+                      <Syringe className="h-3 w-3 text-[#22c55e]" />
+                      Syringe
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <HelpCircle className="h-3 w-3 text-gray-500 cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs bg-[#1a1a1f] border-[#2a2a32] text-gray-300">
+                          <div className="space-y-2">
+                            <p className="text-xs font-medium text-[#22c55e]">What are syringe units?</p>
+                            <p className="text-xs">Units (u) are the markings on an insulin syringe. All insulin syringes hold up to 1mL total, but the number of printed markings varies:</p>
+                            <div className="space-y-1 text-xs">
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">100u syringe:</span>
+                                <span className="text-white">1 unit = 0.01mL</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">50u syringe:</span>
+                                <span className="text-white">1 unit = 0.02mL</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">30u syringe:</span>
+                                <span className="text-white">1 unit = 0.033mL</span>
+                              </div>
+                            </div>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    </Label>
+                    <div className="flex gap-1">
+                      {SYRINGE_SIZES.map((size) => (
+                        <button
+                          key={size.value}
+                          onClick={() => setSyringeSize(size.value)}
+                          className={`flex-1 h-9 text-xs rounded-md border transition-all ${
+                            syringeSize === size.value
+                              ? "bg-[#22c55e]/20 border-[#22c55e]/50 text-[#22c55e]"
+                              : "bg-[#0d0d10] border-[#2a2a32] text-gray-400 hover:border-[#3a3a42]"
+                          }`}
+                          data-testid={`radio-syringe-${size.value}`}
+                        >
+                          {size.desc}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {isBeginnerMode && (
