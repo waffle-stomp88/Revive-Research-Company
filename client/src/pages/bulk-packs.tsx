@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { EarlyAccessModal } from "@/components/early-access-modal";
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 
@@ -44,7 +45,9 @@ export default function BulkPacks() {
   };
 
   return (
-    <main className="min-h-screen pt-32 md:pt-40 pb-12">
+    <>
+      <EarlyAccessModal />
+      <main className="min-h-screen pt-32 md:pt-40 pb-12">
       <SEOHead title="Bulk Research Packs" description="Save on larger quantities of research peptides. Bulk pricing for serious researchers." canonicalPath="/bulk-packs" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div
@@ -217,5 +220,6 @@ export default function BulkPacks() {
         </div>
       </div>
     </main>
+    </>
   );
 }

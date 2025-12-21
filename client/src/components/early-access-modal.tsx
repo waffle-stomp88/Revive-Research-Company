@@ -119,8 +119,8 @@ export function EarlyAccessModal() {
 
             <div className="flex items-center gap-2 justify-center mb-6 px-3 py-2 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/20">
               <Eye className="h-4 w-4 text-[#E7FB10]" />
-              <span className="text-xs text-[#E7FB10]">
-                Preview pricing shown — subject to change at launch.
+              <span className="text-xs font-semibold text-[#E7FB10]">
+                Early access pricing preview — subject to change at launch
               </span>
             </div>
 
@@ -177,8 +177,8 @@ export function EarlyAccessModal() {
 
 export function PreviewPricingNotice({ className = "" }: { className?: string }) {
   return (
-    <span className={`text-[10px] text-[#E7FB10]/70 block ${className}`}>
-      Preview pricing — subject to change
+    <span className={`text-xs font-semibold text-[#E7FB10] block ${className}`}>
+      Early access pricing preview — subject to change at launch
     </span>
   );
 }

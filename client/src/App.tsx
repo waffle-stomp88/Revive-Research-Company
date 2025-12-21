@@ -10,7 +10,6 @@ import { CartProvider } from "@/contexts/CartContext";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { AgeVerificationModal } from "@/components/age-verification-modal";
-import { EarlyAccessModal } from "@/components/early-access-modal";
 import { FreeShippingBanner } from "@/components/free-shipping-banner";
 import { ProtectedRoute } from "@/components/protected-route";
 import { initGA } from "@/lib/analytics";
@@ -250,7 +249,6 @@ function App() {
             <TooltipProvider>
               <PreventScrollbarHiding />
               <AgeVerificationModal />
-              <EarlyAccessModal />
               <AffiliateTracker />
               <ScrollToTop />
               <div className="min-h-screen flex flex-col bg-background text-foreground select-none">

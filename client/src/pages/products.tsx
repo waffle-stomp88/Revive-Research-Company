@@ -13,6 +13,7 @@ import { ImageLoader } from "@/components/image-loader";
 import { QuickViewModal } from "@/components/quick-view-modal";
 import { CompareBar } from "@/components/comparison-tool";
 import { RecentlyViewed } from "@/components/recently-viewed";
+import { EarlyAccessModal } from "@/components/early-access-modal";
 import {
   Select,
   SelectContent,
@@ -178,7 +179,7 @@ const getPeptideGroup = (productName: string): { id: string; label: string; colo
 
 type ShopSection = "deals" | "bundles" | "products" | "bulk";
 
-export default function Products() {
+function ProductsComponent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("name-asc");
   const [stockFilter, setStockFilter] = useState<"all" | "in-stock" | "out-of-stock">("in-stock");
@@ -1344,5 +1345,14 @@ export default function Products() {
       {/* Recently Viewed Section */}
       <RecentlyViewed variant="section" />
     </main>
+  );
+}
+
+export default function Products() {
+  return (
+    <>
+      <EarlyAccessModal />
+      <ProductsComponent />
+    </>
   );
 }

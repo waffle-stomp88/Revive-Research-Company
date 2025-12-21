@@ -6,6 +6,7 @@ import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Cro
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { EarlyAccessModal } from "@/components/early-access-modal";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 
 interface SynergyCopy {
@@ -136,7 +137,7 @@ const researchStacks: ResearchStack[] = [
   },
 ];
 
-export default function ResearchStacks() {
+function ResearchStacks() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-12">
       <SEOHead title="Research Stacks" description="Curated peptide combinations for specific research goals. Save with bundle pricing." canonicalPath="/research-stacks" />
@@ -383,3 +384,13 @@ export default function ResearchStacks() {
     </main>
   );
 }
+
+export default function ResearchStacksWrapper() {
+  return (
+    <>
+      <EarlyAccessModal />
+      <ResearchStacks />
+    </>
+  );
+}
+
