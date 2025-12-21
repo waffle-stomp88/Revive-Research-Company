@@ -853,76 +853,156 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
   const isOverflow = units > maxUnits;
   const clampedFill = Math.min(Math.max(fillPercentage, 0), 100);
   
-  const tickMarks = [0, 25, 50, 75, 100].map(pct => ({
-    pct,
-    value: Math.round((pct / 100) * maxUnits)
-  }));
+  // Create tick marks every 10 units
+  const tickMarks = [];
+  for (let i = 0; i <= maxUnits; i += Math.max(Math.ceil(maxUnits / 20), 5)) {
+    tickMarks.push({
+      pct: (i / maxUnits) * 100,
+      value: i,
+      isMajor: i % Math.max(Math.ceil(maxUnits / 10), 10) === 0
+    });
+  }
 
   return (
     <div className={`relative rounded-xl p-4 ${isOverflow ? 'bg-red-500/5 border border-red-500/20' : 'bg-[#0d0d10]'}`}>
       <div className="flex items-center gap-4">
         <div className="flex-1">
-          <svg viewBox="0 0 320 60" className="w-full h-auto">
+          <svg viewBox="0 0 360 80" className="w-full h-auto" style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))' }}>
             <defs>
               <linearGradient id="syringeBody" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#3a3a42" />
+                <stop offset="0%" stopColor="#4a4a52" />
                 <stop offset="50%" stopColor="#2a2a32" />
                 <stop offset="100%" stopColor="#1a1a1f" />
               </linearGradient>
-              <linearGradient id="liquidFill" x1="100%" y1="0%" x2="0%" y2="0%">
-                <stop offset="0%" stopColor={isOverflow ? "#ef4444" : "#E7FB10"} stopOpacity="0.9" />
-                <stop offset="100%" stopColor={isOverflow ? "#dc2626" : "#21d8ff"} stopOpacity="0.9" />
+              <linearGradient id="liquidFill" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor={isOverflow ? "#ef4444" : "#E7FB10"} stopOpacity="1" />
+                <stop offset="100%" stopColor={isOverflow ? "#991b1b" : "#0ea5e9"} stopOpacity="0.8" />
+              </linearGradient>
+              <linearGradient id="plunger" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#6a6a72" />
+                <stop offset="50%" stopColor="#4a4a52" />
+                <stop offset="100%" stopColor="#3a3a42" />
               </linearGradient>
               <filter id="innerGlow">
-                <feGaussianBlur stdDeviation="2" result="blur" />
+                <feGaussianBlur stdDeviation="1.5" result="blur" />
                 <feComposite in="SourceGraphic" in2="blur" operator="over" />
               </filter>
-              <filter id="dropShadow">
-                <feDropShadow dx="0" dy="2" stdDeviation="2" floodOpacity="0.3" />
+              <filter id="needleGlow">
+                <feGaussianBlur stdDeviation="0.5" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
               </filter>
             </defs>
             
-            <rect x="10" y="18" width="20" height="24" rx="3" fill="#2a2a32" filter="url(#dropShadow)" />
-            <rect x="12" y="20" width="16" height="20" rx="2" fill="url(#syringeBody)" />
+            {/* Plunger - moves based on fill */}
+            <g>
+              <motion.rect
+                x={6 + (clampedFill / 100) * 222}
+                y="26"
+                width="22"
+                height="28"
+                rx="2"
+                fill="url(#plunger)"
+                initial={{ x: 6 }}
+                animate={{ x: 6 + (clampedFill / 100) * 222 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              />
+              <motion.circle
+                cx={17 + (clampedFill / 100) * 222}
+                cy="40"
+                r="8"
+                fill="#6a6a72"
+                opacity="0.6"
+                initial={{ cx: 17 }}
+                animate={{ cx: 17 + (clampedFill / 100) * 222 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              />
+            </g>
             
-            <rect x="30" y="15" width="230" height="30" rx="4" fill="url(#syringeBody)" filter="url(#dropShadow)" />
-            <rect x="32" y="17" width="226" height="26" rx="3" fill="#1a1a1f" />
+            {/* Syringe barrel - outer */}
+            <rect x="35" y="20" width="260" height="40" rx="5" fill="url(#syringeBody)" />
             
+            {/* Syringe barrel - inner chamber */}
+            <rect x="38" y="23" width="254" height="34" rx="4" fill="#0d0d10" />
+            
+            {/* Liquid fill - animated */}
             <motion.rect
-              x={256 - Math.max((clampedFill / 100) * 222, 0)}
-              y="19"
-              height="22"
-              rx="2"
+              x={38}
+              y="23"
+              height="34"
+              rx="3"
               fill="url(#liquidFill)"
               filter="url(#innerGlow)"
               initial={{ width: 0 }}
-              animate={{ width: Math.max((clampedFill / 100) * 222, 0) }}
+              animate={{ width: Math.max((clampedFill / 100) * 254, 0) }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             />
             
-            <rect x="260" y="22" width="25" height="16" rx="2" fill="#4a4a52" />
+            {/* Liquid shine effect */}
+            <motion.rect
+              x={38}
+              y="23"
+              height="10"
+              rx="2"
+              fill="white"
+              opacity="0.2"
+              initial={{ width: 0 }}
+              animate={{ width: Math.max((clampedFill / 100) * 254, 0) }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+            />
             
-            <rect x="285" y="27" width="30" height="6" rx="1" fill="#6a6a72" />
-            <polygon points="315,30 325,30 315,27 315,33" fill="#8a8a92" />
+            {/* Barrel graduations/ridges */}
+            {[0, 1, 2].map(i => (
+              <rect
+                key={`ridge-${i}`}
+                x={38 + i * 90}
+                y="20"
+                width="2"
+                height="40"
+                fill="#3a3a42"
+                opacity="0.4"
+              />
+            ))}
             
+            {/* Cone/hub where needle attaches */}
+            <polygon points="295,25 310,30 310,50 295,55" fill="url(#syringeBody)" />
+            <polygon points="297,27 308,32 308,48 297,53" fill="#1a1a1f" />
+            
+            {/* Needle - detailed */}
+            <g>
+              <path
+                d="M 310 38 L 330 38 L 330 42 L 310 42 Z"
+                fill="url(#plunger)"
+                filter="url(#needleGlow)"
+              />
+              {/* Needle tip - sharp angle */}
+              <polygon points="330,38 340,40 330,42" fill="#8a8a92" filter="url(#needleGlow)" />
+              {/* Needle shine */}
+              <line x1="310" y1="38" x2="330" y2="38" stroke="white" strokeWidth="0.5" opacity="0.5" />
+              {/* Bevel */}
+              <path d="M 330 38 Q 335 40 340 40" stroke="#6a6a72" strokeWidth="0.5" fill="none" />
+            </g>
+            
+            {/* Tick marks and numbers */}
             {tickMarks.map((tick, i) => {
               const reversedValue = maxUnits - tick.value;
+              const xPos = 38 + (tick.pct / 100) * 254;
               return (
-                <g key={tick.pct}>
+                <g key={`tick-${i}`}>
                   <line
-                    x1={34 + (tick.pct / 100) * 222}
-                    y1="42"
-                    x2={34 + (tick.pct / 100) * 222}
-                    y2={i % 2 === 0 ? 50 : 46}
-                    stroke="#4a4a52"
-                    strokeWidth="1"
+                    x1={xPos}
+                    y1={tick.isMajor ? 55 : 58}
+                    x2={xPos}
+                    y2={tick.isMajor ? 62 : 60}
+                    stroke={tick.isMajor ? "#7a7a82" : "#5a5a62"}
+                    strokeWidth={tick.isMajor ? "1.5" : "1"}
                   />
-                  {i % 2 === 0 && (
+                  {tick.isMajor && (
                     <text
-                      x={34 + (tick.pct / 100) * 222}
-                      y="58"
-                      fill="#6a6a72"
-                      fontSize="8"
+                      x={xPos}
+                      y="72"
+                      fill="#8a8a92"
+                      fontSize="9"
+                      fontWeight="500"
                       textAnchor="middle"
                     >
                       {reversedValue}
@@ -934,11 +1014,11 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
           </svg>
         </div>
 
-        <div className="text-right min-w-[70px]">
+        <div className="text-right min-w-[80px]">
           {isOverflow ? (
             <>
-              <div className="text-xl font-bold text-red-400 line-through">{units}</div>
-              <div className="text-[10px] text-red-400">overflow</div>
+              <div className="text-2xl font-bold text-red-400 line-through">{units}</div>
+              <div className="text-[10px] text-red-400 mt-1">overflow</div>
             </>
           ) : (
             <>
@@ -946,14 +1026,14 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
                 key={units}
                 initial={{ scale: 1.2, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="text-2xl font-bold text-[#E7FB10]"
+                className="text-3xl font-bold text-[#E7FB10]"
                 data-testid="result-volume"
               >
                 {units}
               </motion.div>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="text-[10px] text-gray-500 cursor-help flex items-center justify-end gap-1">
+                  <div className="text-[10px] text-gray-500 cursor-help flex items-center justify-end gap-1 mt-1">
                     units
                     {isBeginnerMode && <HelpCircle className="h-2.5 w-2.5" />}
                   </div>
@@ -980,7 +1060,7 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
       {isBeginnerMode && !isOverflow && (
         <div className="mt-3 text-center">
           <p className="text-xs text-gray-500">
-            Draw liquid until it reaches the <span className="text-[#E7FB10] font-medium">{units}</span> mark on your syringe
+            Draw liquid until the plunger aligns with the <span className="text-[#E7FB10] font-medium">{units}</span> mark
           </p>
         </div>
       )}
