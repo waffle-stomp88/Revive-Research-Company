@@ -377,17 +377,7 @@ export default function DosageCalculator() {
                       />
                     </div>
 
-                    <div className="grid grid-cols-3 gap-3 w-full md:w-auto">
-                      <ResultCard
-                        label="Draw"
-                        value={`${calculations.unitsToDraw}`}
-                        unit={isBeginnerMode ? "units" : "units"}
-                        subtext={`${calculations.volumeToDraw.toFixed(3)} mL`}
-                        color="#E7FB10"
-                        testId="result-units"
-                        isBeginnerMode={isBeginnerMode}
-                        tooltip={isBeginnerMode ? "This is how many units to draw on your syringe" : undefined}
-                      />
+                    <div className="grid grid-cols-2 gap-3 w-full md:w-auto">
                       <ResultCard
                         label="Conc."
                         value={`${calculations.concentration.toFixed(1)}`}
