@@ -623,7 +623,8 @@ ${data.additionalInfo || "None provided"}`.trim(),
             <div className="text-center mb-6">
               <h2 className="font-display text-2xl font-bold mb-2">Apply for Wholesale Account</h2>
               <p className="text-muted-foreground">
-                Complete the form below and our team will review your application. Approved applicants are typically contacted within 2–5 business days.
+                Complete the form below and our team will review your application.<br />
+                Approved applicants are typically contacted within 2–5 business days.
               </p>
             </div>
 
