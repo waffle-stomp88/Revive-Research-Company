@@ -679,6 +679,45 @@ export default function Education() {
                           )}
                         </AnimatePresence>
 
+                        {/* PubMed Research Section for peptide research guide articles */}
+                        {article.category === "peptides" && article.slug?.endsWith('-research-guide') && (
+                          <motion.div 
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3, delay: 0.1 }}
+                            className="mt-8 p-4 rounded-lg border border-[#21d8ff]/30 bg-[#21d8ff]/5"
+                            data-testid="section-research"
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className="p-2 rounded-lg bg-[#21d8ff]/20 flex-shrink-0">
+                                <Beaker className="h-5 w-5 text-[#21d8ff]" />
+                              </div>
+                              <div className="flex-1">
+                                <h4 className="font-display font-semibold text-sm mb-2">Peer-Reviewed Research</h4>
+                                <p className="text-xs text-muted-foreground mb-3">
+                                  Explore clinical studies and scientific literature about {article.title}
+                                </p>
+                                <a 
+                                  href={`https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(article.title)}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-2"
+                                  data-testid={`link-pubmed-research`}
+                                >
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    className="border-[#21d8ff]/50 hover:border-[#21d8ff] text-[#21d8ff] text-xs gap-1.5"
+                                  >
+                                    View on PubMed
+                                    <ExternalLink className="h-3 w-3" />
+                                  </Button>
+                                </a>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+
                         {/* RUO Disclaimer for peptide articles */}
                         {article.category === "peptides" && (
                           <div className="mt-8 p-4 rounded-lg border border-red-500/30 bg-red-950/20">

@@ -926,43 +926,6 @@ export default function ProductDetail() {
               </Collapsible>
             )}
 
-            {/* Peptide Research Section - Links to PubMed */}
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
-              className="mb-6 p-4 rounded-lg border border-[#21d8ff]/30 bg-[#21d8ff]/5"
-              data-testid="section-research"
-            >
-              <div className="flex items-start gap-3">
-                <div className="p-2 rounded-lg bg-[#21d8ff]/20 flex-shrink-0">
-                  <Beaker className="h-5 w-5 text-[#21d8ff]" />
-                </div>
-                <div className="flex-1">
-                  <h4 className="font-display font-semibold text-sm mb-2">Peptide Research</h4>
-                  <p className="text-xs text-muted-foreground mb-3">
-                    Explore peer-reviewed research and clinical studies about {product?.name}
-                  </p>
-                  <a 
-                    href={`https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(product?.name || '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2"
-                    data-testid={`link-pubmed-research`}
-                  >
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="border-[#21d8ff]/50 hover:border-[#21d8ff] text-[#21d8ff] text-xs gap-1.5"
-                    >
-                      View on PubMed
-                      <ExternalLink className="h-3 w-3" />
-                    </Button>
-                  </a>
-                </div>
-              </div>
-            </motion.div>
-
             {benefits.length > 0 && (
               <div className="mb-8">
                 <h3 className="font-display font-semibold text-lg mb-4">Key Benefits</h3>
