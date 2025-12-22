@@ -1239,7 +1239,7 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-[#f97316]" data-testid="text-last-order">
-                  {ordersLoading ? "..." : orders && orders.length > 0 
+                  {ordersLoading ? "..." : orders && orders.length > 0 && orders[0].createdAt
                     ? new Date(orders[0].createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })
                     : "None yet"}
                 </div>
