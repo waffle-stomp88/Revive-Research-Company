@@ -31,6 +31,7 @@ import {
   X,
   Compass,
   ExternalLink,
+  Search,
 } from "lucide-react";
 import {
   Select,
@@ -288,6 +289,7 @@ export default function Education() {
   const [articleMode, setArticleMode] = useState<ArticleMode>("quick-breakdown");
   const [peptideSort, setPeptideSort] = useState<SortOption>("a-z");
   const [peptideGroupFilter, setPeptideGroupFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { data: articles = [], isLoading } = useQuery<EducationArticle[]>({
     queryKey: ["/api/education"],
@@ -357,6 +359,15 @@ export default function Education() {
     let result = activeCategory === "all"
       ? articles
       : articles.filter((a) => a.category === activeCategory);
+    
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter((a) => 
+        a.title.toLowerCase().includes(query) || 
+        (a.summary || "").toLowerCase().includes(query)
+      );
+    }
     
     // Apply peptide group filter if in peptides category
     if (activeCategory === "peptides" && peptideGroupFilter !== "all") {
@@ -444,6 +455,20 @@ export default function Education() {
         </motion.div>
 
         <ResearchOrientationMap />
+
+        <div className="mt-8 mb-6">
+          <div className="relative max-w-md mx-auto">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Search articles..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              data-testid="input-search-articles"
+              className="w-full pl-9 pr-4 py-2 rounded-lg border border-[#21d8ff]/30 bg-[#21d8ff]/5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#21d8ff] focus:bg-[#21d8ff]/10 transition-all text-sm"
+            />
+          </div>
+        </div>
 
         <div className="flex flex-col lg:flex-row gap-8 mt-8">
           <motion.aside
