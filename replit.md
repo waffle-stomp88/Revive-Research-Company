@@ -43,6 +43,12 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **Peptide Academy**: Gamified learning experience at `/academy` featuring a 4-module curriculum (Orientation, Core Foundations, Research Skills, Lab Confidence) with 17 lessons. Features include persona quiz for personalized learning paths, XP points system, achievement badges (First Lesson, Orientation Complete, etc.), progress rings, and localStorage + database sync for progress tracking. Uses glassmorphism hero design with neon accents.
 - **Visual Infographic Components**: `client/src/components/infographics/` contains `AnimatedTrustStats`, `VerificationJourney`, `ProcessPipeline`, and `LearningRoadmap` for visual storytelling.
 - **Education Article Visuals**: `client/src/components/education/` contains interactive diagrams like `COAAnatomyDiagram`, `HPLCExplainer`, `StorageTemperatureGuide`, `TelomereVisual`, `GLP1ReceptorComparison`, and `GHAxisDiagram` to enhance educational content.
+- **Research Phase & Title System**: Tracks user progression through research phases (Observer → Initiate → Researcher → Analyst → Specialist) based on activity thresholds (education views, batch verifications, compounds tracked). Titles awarded for specific behaviors (Getting Started, Safety-First, COA Confident, Compound Tracker, Stack Builder, Verification Regular, Early Access Member). Database stores `researchPhase`, `researchTitles`, and activity counts in user table.
+- **Tabbed Dashboard Interface**: Dashboard at `/dashboard` uses a 4-tab structure (Overview, Research, Orders, Rewards) to reduce cognitive load:
+  - **Overview Tab**: Quick summary with stats cards, recent activity, and order counts
+  - **Research Tab**: Full Research Profile with tooltips on all metrics, Research Phase progression bar with actionable next-step guidance (e.g., "Next milestone: Verify your first batch number to reach Initiate"), recommended reading
+  - **Orders Tab**: Order history and product reviews section
+  - **Rewards Tab**: Customer achievements, Access Level (renamed from Loyalty Status) with tooltip explaining account privileges, affiliate program CTA
 
 ## External Dependencies
 
