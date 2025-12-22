@@ -652,7 +652,7 @@ export default function Education() {
                               >
                                 <Button 
                                   size="sm"
-                                  className="bg-[#21d8ff] hover:bg-[#1aa3cc] text-black font-medium gap-2"
+                                  className="bg-[#21d8ff] hover:bg-black text-black hover:text-[#21d8ff] font-medium gap-2"
                                 >
                                   View on PubMed
                                   <ExternalLink className="h-3.5 w-3.5" />
