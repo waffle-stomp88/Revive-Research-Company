@@ -1,0 +1,135 @@
+Replit Instructions: Research Phase + Title system for User Dashboard
+
+Objective:
+Add a “Research Phase” system and a single dynamic “Title” badge to the user dashboard. Display Phase + Title beside/under the user’s name, and add a small “Research Profile” section.
+
+A) UI Changes
+
+In the dashboard header next to the user name, show:
+
+Research Phase (primary)
+
+Title (secondary)
+Example:
+“Welcome back, {firstName}”
+“{phase} • {title}”
+
+Add a “Research Profile” panel or strip under the top stat cards:
+
+Phase
+
+Title
+
+Compounds Researched count
+
+Batch Verifications count
+
+Education Completed count (or Education Pages Viewed count)
+
+B) Data We Need to Track (minimal viable)
+
+Add/update fields in the user profile or user analytics table:
+
+education_count (int) — count of education pages viewed or completed modules
+
+safety_completed (boolean)
+
+coa_education_viewed (boolean)
+
+batch_verification_count (int)
+
+compounds_tracked_count (int) — watchlist/portfolio count
+
+verified_reviews_count (int) — optional now
+
+early_access_member (boolean) — set true if account created before launch date
+
+C) Phase Calculation (server-side or client-side)
+
+Compute phase using the following logic:
+
+Observer
+
+default on account creation
+
+Initiate
+
+safety_completed = true
+
+coa_education_viewed = true
+
+compounds_tracked_count >= 1
+
+Researcher
+
+meet any 2:
+
+batch_verification_count >= 1
+
+education_count >= 5
+
+compounds_tracked_count >= 3
+
+Analyst
+
+meet any 2:
+
+batch_verification_count >= 3
+
+education_count >= 8
+
+verified_reviews_count >= 1
+
+compounds_tracked_count >= 5
+
+Specialist
+
+meet any 2:
+
+batch_verification_count >= 10
+
+education_count >= 15
+
+verified_reviews_count >= 3
+
+D) Title Calculation (choose 1 best match)
+
+Return a single title string based on highest priority match:
+
+Priority order:
+
+If early_access_member true → “Early Access Member”
+
+Else if batch_verification_count >= 3 → “Verification Regular”
+
+Else if coa_education_viewed && batch_verification_count >= 1 → “COA Confident”
+
+Else if compounds_tracked_count >= 5 → “Stack Builder”
+
+Else if compounds_tracked_count >= 3 → “Compound Tracker”
+
+Else if safety_completed → “Safety-First”
+
+Else → “Getting Started”
+
+E) Where to increment counters
+
+Increment education_count when a user views an education article (or completes a module if you have that).
+
+Set safety_completed when user visits the Safety page and clicks “Mark Complete” (add a button) OR after X seconds + scroll depth if you want automated.
+
+Set coa_education_viewed when user visits COA/Verification education page.
+
+Increment batch_verification_count whenever the user successfully uses the Verify Batch feature.
+
+compounds_tracked_count should reflect watchlist + portfolio counts.
+
+F) Return to frontend
+
+Expose an endpoint or include in /me response:
+
+phase
+
+title
+
+the counts used to show Research Profile
