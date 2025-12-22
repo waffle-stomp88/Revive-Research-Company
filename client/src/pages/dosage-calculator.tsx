@@ -863,19 +863,19 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
             <g>
               {/* Plunger rod - horizontal bar extending left from barrel */}
               <motion.rect
-                x={-30 + (100 - clampedFill) / 100 * 60}
+                x={-30 - (clampedFill / 100) * 60}
                 y="36"
                 width="65"
                 height="8"
                 rx="2"
                 fill="url(#plunger)"
                 initial={{ x: -30 }}
-                animate={{ x: -30 + (100 - clampedFill) / 100 * 60 }}
+                animate={{ x: -30 - (clampedFill / 100) * 60 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
               />
               {/* Plunger thumb rest / flange - the part you push with your thumb */}
               <motion.rect
-                x={-38 + (100 - clampedFill) / 100 * 60}
+                x={-38 - (clampedFill / 100) * 60}
                 y="28"
                 width="10"
                 height="24"
@@ -884,12 +884,12 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
                 stroke="#5a5a62"
                 strokeWidth="1"
                 initial={{ x: -38 }}
-                animate={{ x: -38 + (100 - clampedFill) / 100 * 60 }}
+                animate={{ x: -38 - (clampedFill / 100) * 60 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
               />
-              {/* Plunger stopper - the rubber part inside barrel */}
+              {/* Plunger stopper - the rubber part inside barrel at edge of liquid */}
               <motion.rect
-                x={35 + (100 - clampedFill) / 100 * 254}
+                x={286 - (clampedFill / 100) * 254}
                 y="23"
                 width="6"
                 height="34"
@@ -897,8 +897,8 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
                 fill="#4a4a52"
                 stroke="#3a3a42"
                 strokeWidth="1"
-                initial={{ x: 35 }}
-                animate={{ x: 35 + (100 - clampedFill) / 100 * 254 }}
+                initial={{ x: 286 }}
+                animate={{ x: 286 - (clampedFill / 100) * 254 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
               />
             </g>
