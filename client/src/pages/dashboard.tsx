@@ -1858,7 +1858,108 @@ export default function Dashboard() {
             </Tabs>
           </motion.div>
         </motion.div>
+      </main>
+
+      {/* Review Dialog */}
+      <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Write a Review</DialogTitle>
+            <DialogDescription> 
+                      className="overflow-hidden relative"
+                      style={{
+                        background: 'linear-gradient(135deg, #21d8ff 0%, #21d8ff 25%, #9d4edd 50%, #ec4899 75%, #21d8ff 100%)',
+                        backgroundSize: '200% 200%',
+                        animation: 'gradient-shift 8s ease infinite',
+                      }}
+                    >
+                      <style>{`
+                        @keyframes gradient-shift {
+                          0% { background-position: 0% 50%; }
+                          50% { background-position: 100% 50%; }
+                          100% { background-position: 0% 50%; }
+                        }
+                      `}</style>
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+                      <CardContent className="relative z-10 p-6">
+                        <div className="flex items-start justify-between gap-3 mb-3">
+                          <div>
+                            <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-0.5">
+                              <TrendingUp className="h-5 w-5" />
+                              Become an Affiliate
+                            </h3>
+                            <p className="text-white/90 text-sm">
+                              Earn commissions by sharing Revive Research
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="mb-4">
+                          <ul className="space-y-1.5 text-sm text-white/90">
+                            <li className="flex items-center gap-2">
+                              <CheckCircle className="h-4 w-4 text-[#E7FB10]" />
+                              <span>10% commission on direct sales</span>
+                            </li>
+                            <li className="flex items-center gap-2">
+                              <CheckCircle className="h-4 w-4 text-[#E7FB10]" />
+                              <span>10% team override on recruits</span>
+                            </li>
+                            <li className="flex items-center gap-2">
+                              <CheckCircle className="h-4 w-4 text-[#E7FB10]" />
+                              <span>20% private discount</span>
+                            </li>
+                          </ul>
+                        </div>
+
+                        <Link href="/affiliate">
+                          <Button 
+                            className="w-full font-semibold glow-yellow"
+                            style={{
+                              backgroundColor: '#E7FB10',
+                              color: '#000',
+                            }}
+                            data-testid="button-affiliate-apply"
+                          >
+                            Apply to Our Program
+                            <ArrowRight className="h-4 w-4 ml-2" />
+                          </Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <div className="space-y-4">
+                    <LoyaltyProgress totalSpent={totalSpent} />
+                    <RecommendedStacks orders={orders} products={products} />
+                    <WishlistWidget products={products} isAuthenticated={isAuthenticated} />
+                    
+                    <Card className="border-[#21d8ff]/30 bg-gradient-to-br from-[#21d8ff]/5 to-transparent">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="flex items-center gap-2 text-sm">
+                          <div className="h-6 w-6 rounded-full bg-[#21d8ff]/15 flex items-center justify-center">
+                            <FileCheck className="h-3.5 w-3.5 text-[#21d8ff]" />
+                          </div>
+                          Quick Actions
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <Link href="/coa" className="block">
+                          <Button className="w-full bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90 h-9" data-testid="link-verify-coa">
+                            <FileCheck className="h-4 w-4 mr-2" />
+                            Verify Batch Number
+                          </Button>
+                        </Link>
+                        <p className="text-xs text-muted-foreground text-center">Verify product analysis with batch numbers</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </motion.div>
+        </motion.div>
       </div>
+
       <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
