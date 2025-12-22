@@ -27,9 +27,11 @@ import {
   ArrowRight,
   LogOut,
   Calendar,
-  DollarSign,
   CheckCircle,
+  BookOpen,
+  GraduationCap,
   Clock,
+  Activity,
   Truck,
   Star,
   MessageSquare,
@@ -133,7 +135,7 @@ function CustomerAchievements({ orders, totalSpent }: { orders?: Order[]; totalS
   const badges: CustomerBadge[] = useMemo(() => [
     {
       id: "first-order",
-      title: "First Steps",
+      title: "Research Initiated",
       description: "Placed your first order",
       icon: Zap,
       color: "#E7FB10",
@@ -143,7 +145,7 @@ function CustomerAchievements({ orders, totalSpent }: { orders?: Order[]; totalS
     },
     {
       id: "repeat-customer",
-      title: "Repeat Researcher",
+      title: "Active Researcher",
       description: "Made 5+ orders",
       icon: RefreshCw,
       color: "#21d8ff",
@@ -153,8 +155,8 @@ function CustomerAchievements({ orders, totalSpent }: { orders?: Order[]; totalS
     },
     {
       id: "explorer",
-      title: "Compound Explorer",
-      description: "Tried 3+ different products",
+      title: "Compound Literacy",
+      description: "Explored 3+ different compounds",
       icon: Target,
       color: "#9d4edd",
       earned: uniqueProducts >= 3,
@@ -162,14 +164,14 @@ function CustomerAchievements({ orders, totalSpent }: { orders?: Order[]; totalS
       target: 3,
     },
     {
-      id: "big-spender",
-      title: "Dedicated Researcher",
-      description: "Spent $500+ total",
+      id: "sustained",
+      title: "Sustained Engagement",
+      description: "Consistent research activity",
       icon: Crown,
       color: "#E7FB10",
-      earned: totalSpent >= 500,
-      progress: Math.min(totalSpent, 500),
-      target: 500,
+      earned: orderCount >= 3 && uniqueProducts >= 2,
+      progress: Math.min(orderCount, 3),
+      target: 3,
     },
     {
       id: "bundle-master",
@@ -182,16 +184,16 @@ function CustomerAchievements({ orders, totalSpent }: { orders?: Order[]; totalS
       target: 1,
     },
     {
-      id: "loyal",
-      title: "Loyal Partner",
-      description: "10+ lifetime orders",
+      id: "early-access",
+      title: "Early Access Member",
+      description: "Joined during early access",
       icon: Trophy,
       color: "#f97316",
-      earned: orderCount >= 10,
-      progress: Math.min(orderCount, 10),
-      target: 10,
+      earned: orderCount >= 1,
+      progress: 1,
+      target: 1,
     },
-  ], [orderCount, uniqueProducts, totalSpent]);
+  ], [orderCount, uniqueProducts]);
 
   const earnedCount = badges.filter(b => b.earned).length;
 
@@ -523,6 +525,76 @@ function QuickReorder({ orders, products }: { orders?: Order[]; products?: Produ
             </div>
           );
         })}
+      </CardContent>
+    </Card>
+  );
+}
+
+function RecommendedNextReading() {
+  const guides = [
+    {
+      title: "Getting Started with Peptide Research",
+      path: "/education/research-fundamentals",
+      tag: "Start Here",
+      color: "#E7FB10",
+    },
+    {
+      title: "Safety & Compliance Guidelines",
+      path: "/education/safety-guidelines",
+      tag: "Essential",
+      color: "#21d8ff",
+    },
+    {
+      title: "Understanding COA Documentation",
+      path: "/coa",
+      tag: "Verification",
+      color: "#9d4edd",
+    },
+  ];
+
+  return (
+    <Card className="border-[#9d4edd]/20 bg-gradient-to-br from-[#9d4edd]/5 to-transparent">
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center gap-2 text-sm">
+          <div className="h-6 w-6 rounded-full bg-[#9d4edd]/15 flex items-center justify-center">
+            <GraduationCap className="h-3.5 w-3.5 text-[#9d4edd]" />
+          </div>
+          Recommended Next Reading
+        </CardTitle>
+        <CardDescription>Continue your research journey</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {guides.map((guide) => (
+          <Link key={guide.path} href={guide.path}>
+            <div 
+              className="flex items-center justify-between p-2.5 rounded-lg border hover-elevate cursor-pointer"
+              style={{ borderColor: `${guide.color}20` }}
+              data-testid={`link-guide-${guide.title.toLowerCase().replace(/\s+/g, '-')}`}
+            >
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <Badge 
+                  variant="secondary" 
+                  className="text-[10px] shrink-0"
+                  style={{ 
+                    backgroundColor: `${guide.color}15`,
+                    color: guide.color,
+                    borderColor: `${guide.color}30`,
+                  }}
+                >
+                  {guide.tag}
+                </Badge>
+                <span className="text-sm truncate">{guide.title}</span>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+            </div>
+          </Link>
+        ))}
+        <Link href="/education">
+          <Button variant="ghost" size="sm" className="w-full mt-2 text-[#9d4edd]" data-testid="link-all-education">
+            View All Educational Content
+            <ArrowRight className="h-3 w-3 ml-1" />
+          </Button>
+        </Link>
       </CardContent>
     </Card>
   );
@@ -1128,17 +1200,17 @@ export default function Dashboard() {
 
             <Card className="border-[#22c55e]/30 bg-gradient-to-br from-[#22c55e]/5 to-transparent">
               <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-                <CardTitle className="text-sm font-medium">Total Spent</CardTitle>
+                <CardTitle className="text-sm font-medium">Compounds Researched</CardTitle>
                 <div className="h-8 w-8 rounded-full bg-[#22c55e]/10 flex items-center justify-center">
-                  <DollarSign className="h-4 w-4 text-[#22c55e]" />
+                  <Activity className="h-4 w-4 text-[#22c55e]" />
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-[#22c55e]" data-testid="text-total-spent">
-                  ${ordersLoading ? "..." : totalSpent.toFixed(2)}
+                <div className="text-2xl font-bold text-[#22c55e]" data-testid="text-compounds-researched">
+                  {ordersLoading ? "..." : new Set(orders?.map(o => o.productId) || []).size}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Lifetime value
+                  Unique compounds in portfolio
                 </p>
               </CardContent>
             </Card>
@@ -1158,11 +1230,33 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <SavingsSummary orders={orders} products={products} />
+            <Card className="border-[#f97316]/30 bg-gradient-to-br from-[#f97316]/5 to-transparent">
+              <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+                <CardTitle className="text-sm font-medium">Last Order</CardTitle>
+                <div className="h-8 w-8 rounded-full bg-[#f97316]/10 flex items-center justify-center">
+                  <Calendar className="h-4 w-4 text-[#f97316]" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-[#f97316]" data-testid="text-last-order">
+                  {ordersLoading ? "..." : orders && orders.length > 0 
+                    ? new Date(orders[0].createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                    : "None yet"}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {orders && orders.length > 0 ? "Most recent order" : "Place your first order"}
+                </p>
+              </CardContent>
+            </Card>
           </motion.div>
 
-          <motion.div variants={itemVariants} className="mb-8">
-            <CustomerAchievements orders={orders} totalSpent={totalSpent} />
+          <motion.div variants={itemVariants} className="grid gap-4 lg:grid-cols-3 mb-8">
+            <div className="lg:col-span-2">
+              <RecommendedNextReading />
+            </div>
+            <div>
+              <CustomerAchievements orders={orders} totalSpent={totalSpent} />
+            </div>
           </motion.div>
 
           <motion.div variants={itemVariants} className="grid gap-6 lg:grid-cols-3 mb-8">
