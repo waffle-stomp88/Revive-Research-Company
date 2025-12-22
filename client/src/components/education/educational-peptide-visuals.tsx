@@ -140,10 +140,10 @@ function KisspeptinAxisAnimation({ isInView }: { isInView: boolean }) {
               scale: [0.5, 1, 0.5]
             } : {}}
             transition={{
-              duration: 1.5,
-              delay: 1 + i * 0.4,
+              duration: 2.5,
+              delay: 1 + i * 0.6,
               repeat: Infinity,
-              repeatDelay: 0.8,
+              repeatDelay: 1.2,
               ease: "easeInOut"
             }}
             style={{ filter: 'drop-shadow(0 0 6px rgba(236, 72, 153, 0.8))' }}
