@@ -131,7 +131,7 @@ const getBadgeStyles = (color: string, earned: boolean) => {
 };
 
 function CustomerAchievements({ orders, totalSpent }: { orders?: Order[]; totalSpent: number }) {
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const orderCount = orders?.length || 0;
   const uniqueProducts = new Set(orders?.map(o => o.productId) || []).size;
   
@@ -1274,24 +1274,6 @@ export default function Dashboard() {
             </motion.div>
 
             <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
-              <Card className="border-[#21d8ff]/40 bg-gradient-to-br from-[#21d8ff]/10 to-[#21d8ff]/5 relative overflow-hidden group hover-elevate">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#21d8ff]/0 via-[#21d8ff]/10 to-[#21d8ff]/0 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 relative">
-                  <CardTitle className="text-sm font-medium">Account Status</CardTitle>
-                  <motion.div className="h-8 w-8 rounded-full bg-[#21d8ff]/20 flex items-center justify-center group-hover:shadow-lg group-hover:shadow-[#21d8ff]/50" animate={{ boxShadow: ["0 0 0 0 rgba(33, 216, 255, 0)", "0 0 0 8px rgba(33, 216, 255, 0)"] }} transition={{ duration: 2.2, repeat: Infinity }}>
-                    <User className="h-4 w-4 text-[#21d8ff]" />
-                  </motion.div>
-                </CardHeader>
-                <CardContent className="relative">
-                  <div className="text-3xl font-bold text-[#21d8ff]">Active</div>
-                  <p className="text-xs text-muted-foreground">
-                    Member since {formatDate(user?.createdAt || new Date())}
-                  </p>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
               <Card className="border-[#f97316]/40 bg-gradient-to-br from-[#f97316]/10 to-[#f97316]/5 relative overflow-hidden group hover-elevate">
                 <div className="absolute inset-0 bg-gradient-to-r from-[#f97316]/0 via-[#f97316]/10 to-[#f97316]/0 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 relative">
@@ -1317,6 +1299,10 @@ export default function Dashboard() {
           {/* Tabbed Interface for Intent-Based Navigation */}
           <motion.div variants={itemVariants}>
             <Tabs defaultValue="overview" className="w-full">
+              <div className="text-xs text-muted-foreground/60 flex gap-1 mb-2">
+                <Info className="h-3 w-3 flex-shrink-0 mt-0.5" />
+                <span>Hover over metrics to learn more</span>
+              </div>
               <TabsList className="grid w-full grid-cols-4 mb-6">
                 <TabsTrigger value="overview" data-testid="tab-overview" className="gap-2">
                   <Activity className="h-4 w-4" />
@@ -1338,95 +1324,49 @@ export default function Dashboard() {
 
               {/* Overview Tab - Quick summary and next actions */}
               <TabsContent value="overview" className="space-y-6">
-                <div className="grid gap-4 lg:grid-cols-3">
-                  <div className="lg:col-span-2">
-                    <RecommendedNextReading />
-                  </div>
-                  <div>
-                    {/* Quick Research Status */}
-                    {researchProfile && (
-                      <Card className="border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 to-transparent">
-                        <CardHeader className="pb-3">
-                          <CardTitle className="flex items-center gap-2 text-sm">
-                            <div className="h-6 w-6 rounded-full bg-[#E7FB10]/15 flex items-center justify-center">
-                              <GraduationCap className="h-3.5 w-3.5 text-[#E7FB10]" />
-                            </div>
-                            Research Progress
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="flex items-center gap-2 mb-3">
-                            <Badge variant="outline" className="bg-[#E7FB10]/10 border-[#E7FB10]/40 text-[#E7FB10]">
-                              {researchProfile.phase}
-                            </Badge>
-                            <Badge variant="outline" className="bg-[#21d8ff]/10 border-[#21d8ff]/40 text-[#21d8ff]">
-                              {researchProfile.title}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center gap-1 mb-2">
-                            {(["Observer", "Initiate", "Researcher", "Analyst", "Specialist"] as ResearchPhase[]).map((phase, idx) => {
-                              const phaseOrder = ["Observer", "Initiate", "Researcher", "Analyst", "Specialist"];
-                              const currentIdx = phaseOrder.indexOf(researchProfile.phase);
-                              const isActive = idx <= currentIdx;
-                              return (
-                                <div key={phase} className="flex-1">
-                                  <div 
-                                    className={`h-1.5 rounded-full transition-all ${
-                                      isActive ? "bg-[#E7FB10]" : "bg-muted"
-                                    }`}
-                                  />
-                                </div>
-                              );
-                            })}
-                          </div>
-                          <Link href="#" onClick={(e) => { e.preventDefault(); document.querySelector('[data-testid="tab-research"]')?.dispatchEvent(new MouseEvent('click', { bubbles: true })); }}>
-                            <Button variant="ghost" size="sm" className="w-full mt-2 text-[#E7FB10]">
-                              View Full Profile
-                              <ChevronRight className="h-3 w-3 ml-1" />
-                            </Button>
-                          </Link>
-                        </CardContent>
-                      </Card>
-                    )}
-                  </div>
-                </div>
+                <RecommendedNextReading />
                 
-                {/* Recent Orders Preview */}
-                {orders && orders.length > 0 && (
-                  <Card className="border-[#9d4edd]/20">
+                {researchProfile && (
+                  <Card className="border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 to-transparent">
                     <CardHeader className="pb-3">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="flex items-center gap-2 text-sm">
-                          <Package className="h-4 w-4 text-[#9d4edd]" />
-                          Recent Orders
-                        </CardTitle>
-                        <Link href="#" onClick={(e) => { e.preventDefault(); document.querySelector('[data-testid="tab-orders"]')?.dispatchEvent(new MouseEvent('click', { bubbles: true })); }}>
-                          <Button variant="ghost" size="sm" className="text-[#9d4edd]">
-                            View All
-                            <ChevronRight className="h-3 w-3 ml-1" />
-                          </Button>
-                        </Link>
-                      </div>
+                      <CardTitle className="flex items-center gap-2 text-sm">
+                        <div className="h-6 w-6 rounded-full bg-[#E7FB10]/15 flex items-center justify-center">
+                          <GraduationCap className="h-3.5 w-3.5 text-[#E7FB10]" />
+                        </div>
+                        Research Progress
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="space-y-3">
-                        {orders.slice(0, 3).map((order) => (
-                          <div key={order.id} className="flex items-center justify-between p-3 rounded-lg border hover-elevate">
-                            <div className="flex items-center gap-3">
-                              <div className="h-8 w-8 rounded bg-[#9d4edd]/10 flex items-center justify-center">
-                                <Package className="h-4 w-4 text-[#9d4edd]" />
-                              </div>
-                              <div>
-                                <p className="text-sm font-medium">{getProductName(order.productId)}</p>
-                                <p className="text-xs text-muted-foreground">{formatDate(order.createdAt)}</p>
-                              </div>
-                            </div>
-                            <Badge variant={getStatusColor(order.status)}>
-                              {order.status || "pending"}
-                            </Badge>
-                          </div>
-                        ))}
+                      <div className="flex items-center gap-2 mb-3">
+                        <Badge variant="outline" className="bg-[#E7FB10]/10 border-[#E7FB10]/40 text-[#E7FB10]">
+                          {researchProfile.phase}
+                        </Badge>
+                        <Badge variant="outline" className="bg-[#21d8ff]/10 border-[#21d8ff]/40 text-[#21d8ff]">
+                          {researchProfile.title}
+                        </Badge>
                       </div>
+                      <div className="flex items-center gap-1 mb-2">
+                        {(["Observer", "Initiate", "Researcher", "Analyst", "Specialist"] as ResearchPhase[]).map((phase, idx) => {
+                          const phaseOrder = ["Observer", "Initiate", "Researcher", "Analyst", "Specialist"];
+                          const currentIdx = phaseOrder.indexOf(researchProfile.phase);
+                          const isActive = idx <= currentIdx;
+                          return (
+                            <div key={phase} className="flex-1">
+                              <div 
+                                className={`h-1.5 rounded-full transition-all ${
+                                  isActive ? "bg-[#E7FB10]" : "bg-muted"
+                                }`}
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <Link href="#" onClick={(e) => { e.preventDefault(); document.querySelector('[data-testid="tab-research"]')?.dispatchEvent(new MouseEvent('click', { bubbles: true })); }}>
+                        <Button variant="ghost" size="sm" className="w-full mt-2 text-[#E7FB10]">
+                          View Full Profile
+                          <ChevronRight className="h-3 w-3 ml-1" />
+                        </Button>
+                      </Link>
                     </CardContent>
                   </Card>
                 )}
@@ -1690,8 +1630,7 @@ export default function Dashboard() {
 
               {/* Orders Tab - Order history and reviews */}
               <TabsContent value="orders" className="space-y-6">
-                <div className="grid gap-6 lg:grid-cols-3">
-                  <div className="lg:col-span-2 space-y-6">
+                <div className="space-y-6">
                     <Card className="border-[#9d4edd]/20">
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -1882,13 +1821,31 @@ export default function Dashboard() {
                   )}
                 </CardContent>
               </Card>
-                  </div>
 
                   {/* Quick Reorder sidebar */}
-                  <div className="space-y-4">
-                    <QuickReorder orders={orders} products={products} />
-                    <MyCOAs orders={orders} products={products} />
-                  </div>
+                  <Card className="border-[#21d8ff]/20">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-sm">
+                        <Package className="h-4 w-4 text-[#21d8ff]" />
+                        Quick Reorder
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <QuickReorder orders={orders} products={products} />
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-[#22c55e]/20">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-sm">
+                        <FileCheck className="h-4 w-4 text-[#22c55e]" />
+                        Certificates of Analysis
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <MyCOAs orders={orders} products={products} />
+                    </CardContent>
+                  </Card>
                 </div>
               </TabsContent>
 
