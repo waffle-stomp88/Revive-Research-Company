@@ -861,25 +861,40 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
             
             {/* Back plunger - pushes liquid in from left */}
             <g>
+              {/* Plunger rod */}
+              <motion.line
+                x1={16 + (clampedFill / 100) * 222}
+                y1="26"
+                x2={16 + (clampedFill / 100) * 222}
+                y2="54"
+                stroke="#5a5a62"
+                strokeWidth="2"
+                initial={{ x1: 16 }}
+                animate={{ x1: 16 + (clampedFill / 100) * 222, x2: 16 + (clampedFill / 100) * 222 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              />
+              {/* Plunger stopper/handle */}
               <motion.rect
                 x={6 + (clampedFill / 100) * 222}
-                y="26"
-                width="22"
-                height="28"
-                rx="2"
+                y="22"
+                width="20"
+                height="36"
+                rx="3"
                 fill="url(#plunger)"
+                stroke="#5a5a62"
+                strokeWidth="1"
                 initial={{ x: 6 }}
                 animate={{ x: 6 + (clampedFill / 100) * 222 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
               />
+              {/* Plunger top knob */}
               <motion.circle
-                cx={17 + (clampedFill / 100) * 222}
-                cy="40"
-                r="8"
-                fill="#6a6a72"
-                opacity="0.6"
-                initial={{ cx: 17 }}
-                animate={{ cx: 17 + (clampedFill / 100) * 222 }}
+                cx={16 + (clampedFill / 100) * 222}
+                cy="22"
+                r="4"
+                fill="#7a7a82"
+                initial={{ cx: 16 }}
+                animate={{ cx: 16 + (clampedFill / 100) * 222 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
               />
             </g>
