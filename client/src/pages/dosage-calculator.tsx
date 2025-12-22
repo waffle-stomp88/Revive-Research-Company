@@ -859,42 +859,46 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
               </filter>
             </defs>
             
-            {/* Back plunger - pushes liquid in from left */}
+            {/* Plunger - extends from left side */}
             <g>
-              {/* Plunger rod */}
-              <motion.line
-                x1={16 + (clampedFill / 100) * 222}
-                y1="26"
-                x2={16 + (clampedFill / 100) * 222}
-                y2="54"
-                stroke="#5a5a62"
-                strokeWidth="2"
-                initial={{ x1: 16 }}
-                animate={{ x1: 16 + (clampedFill / 100) * 222, x2: 16 + (clampedFill / 100) * 222 }}
+              {/* Plunger rod - horizontal bar extending left from barrel */}
+              <motion.rect
+                x={-30 + (100 - clampedFill) / 100 * 60}
+                y="36"
+                width="65"
+                height="8"
+                rx="2"
+                fill="url(#plunger)"
+                initial={{ x: -30 }}
+                animate={{ x: -30 + (100 - clampedFill) / 100 * 60 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
               />
-              {/* Plunger stopper/handle */}
+              {/* Plunger thumb rest / flange - the part you push with your thumb */}
               <motion.rect
-                x={6 + (clampedFill / 100) * 222}
-                y="22"
-                width="20"
-                height="36"
-                rx="3"
-                fill="url(#plunger)"
+                x={-38 + (100 - clampedFill) / 100 * 60}
+                y="28"
+                width="10"
+                height="24"
+                rx="2"
+                fill="#6a6a72"
                 stroke="#5a5a62"
                 strokeWidth="1"
-                initial={{ x: 6 }}
-                animate={{ x: 6 + (clampedFill / 100) * 222 }}
+                initial={{ x: -38 }}
+                animate={{ x: -38 + (100 - clampedFill) / 100 * 60 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
               />
-              {/* Plunger top knob */}
-              <motion.circle
-                cx={16 + (clampedFill / 100) * 222}
-                cy="22"
-                r="4"
-                fill="#7a7a82"
-                initial={{ cx: 16 }}
-                animate={{ cx: 16 + (clampedFill / 100) * 222 }}
+              {/* Plunger stopper - the rubber part inside barrel */}
+              <motion.rect
+                x={35 + (100 - clampedFill) / 100 * 254}
+                y="23"
+                width="6"
+                height="34"
+                rx="1"
+                fill="#4a4a52"
+                stroke="#3a3a42"
+                strokeWidth="1"
+                initial={{ x: 35 }}
+                animate={{ x: 35 + (100 - clampedFill) / 100 * 254 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
               />
             </g>
