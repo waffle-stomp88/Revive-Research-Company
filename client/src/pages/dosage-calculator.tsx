@@ -614,18 +614,18 @@ function PlainEnglishSummary({ calculations, syringeSize, doseValue, doseUnit }:
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mb-6 p-6 rounded-xl bg-gradient-to-r from-[#22c55e]/15 via-[#21d8ff]/15 to-[#a855f7]/15 border-2 border-[#22c55e]/40 shadow-lg"
+      className="mb-6 p-4 rounded-xl bg-gradient-to-r from-[#22c55e]/15 via-[#21d8ff]/15 to-[#a855f7]/15 border-2 border-[#22c55e]/40 shadow-lg max-w-2xl mx-auto"
       style={{ boxShadow: '0 0 20px rgba(34, 197, 94, 0.2)' }}
     >
-      <div className="flex items-start gap-4">
+      <div className="flex flex-col items-center gap-3 text-center">
         <div className="p-3 rounded-lg bg-[#22c55e]/30 flex-shrink-0">
           <GraduationCap className="h-5 w-5 text-[#22c55e]" />
         </div>
-        <div className="flex-1 space-y-3">
+        <div className="space-y-2">
           <h4 className="text-[#22c55e] text-lg font-bold tracking-wide">Your Instructions</h4>
-          <div className="space-y-2.5 text-base">
+          <div className="space-y-2 text-sm">
             <p className="text-white leading-relaxed">
-              <span className="text-[#E7FB10] font-bold text-lg">Draw {calculations.unitsToDraw} units</span> on a {syringeLabel} syringe.
+              <span className="text-[#E7FB10] font-bold text-base">Draw {calculations.unitsToDraw} units</span> on a {syringeLabel} syringe.
             </p>
             <p className="text-gray-200 leading-relaxed">
               This equals <span className="text-[#21d8ff] font-semibold text-base">{doseDisplay}</span> per injection.
