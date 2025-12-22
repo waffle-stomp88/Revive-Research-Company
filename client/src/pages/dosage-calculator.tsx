@@ -833,7 +833,7 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
     <div className={`relative rounded-xl p-4 ${isOverflow ? 'bg-red-500/5 border border-red-500/20' : 'bg-[#0d0d10]'}`}>
       <div className="flex items-center gap-4">
         <div className="flex-1">
-          <svg viewBox="0 0 360 80" className="w-2/3 h-auto mx-auto" style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))' }}>
+          <svg viewBox="0 0 420 80" className="w-2/3 h-auto mx-auto" style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))' }}>
             <defs>
               <linearGradient id="syringeBody" x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" stopColor="#4a4a52" />
@@ -863,19 +863,19 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
             <g>
               {/* Plunger rod - horizontal bar extending left from barrel */}
               <motion.rect
-                x={-30 - (clampedFill / 100) * 60}
+                x={30 - (clampedFill / 100) * 25}
                 y="36"
                 width="65"
                 height="8"
                 rx="2"
                 fill="url(#plunger)"
-                initial={{ x: -30 }}
-                animate={{ x: -30 - (clampedFill / 100) * 60 }}
+                initial={{ x: 30 }}
+                animate={{ x: 30 - (clampedFill / 100) * 25 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
               />
               {/* Plunger thumb rest / flange - the part you push with your thumb */}
               <motion.rect
-                x={-38 - (clampedFill / 100) * 60}
+                x={22 - (clampedFill / 100) * 25}
                 y="28"
                 width="10"
                 height="24"
@@ -883,13 +883,13 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
                 fill="#6a6a72"
                 stroke="#5a5a62"
                 strokeWidth="1"
-                initial={{ x: -38 }}
-                animate={{ x: -38 - (clampedFill / 100) * 60 }}
+                initial={{ x: 22 }}
+                animate={{ x: 22 - (clampedFill / 100) * 25 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
               />
               {/* Plunger stopper - the rubber part inside barrel at edge of liquid */}
               <motion.rect
-                x={286 - (clampedFill / 100) * 254}
+                x={346 - (clampedFill / 100) * 254}
                 y="23"
                 width="6"
                 height="34"
@@ -897,21 +897,21 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
                 fill="#4a4a52"
                 stroke="#3a3a42"
                 strokeWidth="1"
-                initial={{ x: 286 }}
-                animate={{ x: 286 - (clampedFill / 100) * 254 }}
+                initial={{ x: 346 }}
+                animate={{ x: 346 - (clampedFill / 100) * 254 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
               />
             </g>
             
             {/* Syringe barrel - outer */}
-            <rect x="35" y="20" width="260" height="40" rx="5" fill="url(#syringeBody)" />
+            <rect x="95" y="20" width="260" height="40" rx="5" fill="url(#syringeBody)" />
             
             {/* Syringe barrel - inner chamber */}
-            <rect x="38" y="23" width="254" height="34" rx="4" fill="#0d0d10" />
+            <rect x="98" y="23" width="254" height="34" rx="4" fill="#0d0d10" />
             
             {/* Liquid fill - fills from right (needle) side leftward */}
             <motion.rect
-              x={292 - Math.max((clampedFill / 100) * 254, 0)}
+              x={352 - Math.max((clampedFill / 100) * 254, 0)}
               y="23"
               height="34"
               rx="3"
@@ -924,7 +924,7 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
             
             {/* Liquid shine effect */}
             <motion.rect
-              x={292 - Math.max((clampedFill / 100) * 254, 0)}
+              x={352 - Math.max((clampedFill / 100) * 254, 0)}
               y="23"
               height="10"
               rx="2"
@@ -939,7 +939,7 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
             {[0, 1, 2].map(i => (
               <rect
                 key={`ridge-${i}`}
-                x={38 + i * 90}
+                x={98 + i * 90}
                 y="20"
                 width="2"
                 height="40"
@@ -949,28 +949,28 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
             ))}
             
             {/* Cone/hub where needle attaches */}
-            <polygon points="295,25 310,30 310,50 295,55" fill="url(#syringeBody)" />
-            <polygon points="297,27 308,32 308,48 297,53" fill="#1a1a1f" />
+            <polygon points="355,25 370,30 370,50 355,55" fill="url(#syringeBody)" />
+            <polygon points="357,27 368,32 368,48 357,53" fill="#1a1a1f" />
             
             {/* Needle - detailed */}
             <g>
               <path
-                d="M 310 38 L 330 38 L 330 42 L 310 42 Z"
+                d="M 370 38 L 390 38 L 390 42 L 370 42 Z"
                 fill="url(#plunger)"
                 filter="url(#needleGlow)"
               />
               {/* Needle tip - sharp angle */}
-              <polygon points="330,38 340,40 330,42" fill="#8a8a92" filter="url(#needleGlow)" />
+              <polygon points="390,38 400,40 390,42" fill="#8a8a92" filter="url(#needleGlow)" />
               {/* Needle shine */}
-              <line x1="310" y1="38" x2="330" y2="38" stroke="white" strokeWidth="0.5" opacity="0.5" />
+              <line x1="370" y1="38" x2="390" y2="38" stroke="white" strokeWidth="0.5" opacity="0.5" />
               {/* Bevel */}
-              <path d="M 330 38 Q 335 40 340 40" stroke="#6a6a72" strokeWidth="0.5" fill="none" />
+              <path d="M 390 38 Q 395 40 400 40" stroke="#6a6a72" strokeWidth="0.5" fill="none" />
             </g>
             
             {/* Tick marks and numbers */}
             {tickMarks.map((tick, i) => {
               const reversedValue = maxUnits - tick.value;
-              const xPos = 38 + (tick.pct / 100) * 254;
+              const xPos = 98 + (tick.pct / 100) * 254;
               return (
                 <g key={`tick-${i}`}>
                   <line
