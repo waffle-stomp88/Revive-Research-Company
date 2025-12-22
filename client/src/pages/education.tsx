@@ -470,7 +470,7 @@ export default function Education() {
 
         <ResearchOrientationMap />
 
-        <div className="flex flex-col lg:flex-row gap-8 mt-4">
+        <div className="flex flex-col lg:flex-row gap-8 mt-0">
           <motion.aside
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
