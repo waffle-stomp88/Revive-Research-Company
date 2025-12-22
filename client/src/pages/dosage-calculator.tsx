@@ -614,7 +614,7 @@ function PlainEnglishSummary({ calculations, syringeSize, doseValue, doseUnit }:
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mb-6 p-4 rounded-xl bg-gradient-to-r from-[#22c55e]/15 via-[#21d8ff]/15 to-[#a855f7]/15 border-2 border-[#22c55e]/40 shadow-lg max-w-2xl mx-auto"
+      className="mb-6 p-4 rounded-xl bg-gradient-to-r from-[#22c55e]/15 via-[#21d8ff]/15 to-[#a855f7]/15 border-2 border-[#22c55e]/40 shadow-lg"
       style={{ boxShadow: '0 0 20px rgba(34, 197, 94, 0.2)' }}
     >
       <div className="flex flex-col items-center gap-3 text-center">
