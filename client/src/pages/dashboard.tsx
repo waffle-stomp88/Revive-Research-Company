@@ -1232,296 +1232,297 @@ export default function Dashboard() {
             </a>
           </motion.div>
 
-          <motion.div variants={itemVariants} className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-            <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
-              <Card className="border-[#E7FB10]/40 bg-gradient-to-br from-[#E7FB10]/10 to-[#E7FB10]/5 relative overflow-hidden group hover-elevate">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#E7FB10]/0 via-[#E7FB10]/10 to-[#E7FB10]/0 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 relative">
-                  <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-                  <motion.div className="h-8 w-8 rounded-full bg-[#E7FB10]/20 flex items-center justify-center group-hover:shadow-lg group-hover:shadow-[#E7FB10]/50" animate={{ boxShadow: ["0 0 0 0 rgba(231, 251, 16, 0)", "0 0 0 8px rgba(231, 251, 16, 0)"] }} transition={{ duration: 2, repeat: Infinity }}>
-                    <Package className="h-4 w-4 text-[#E7FB10]" />
-                  </motion.div>
+          {/* Main Dashboard Grid - Achievements, Orders, Research Overview */}
+          <motion.div variants={itemVariants} className="grid gap-6 lg:grid-cols-3 mb-8">
+            {/* Left Column - Achievements */}
+            <div>
+              <CustomerAchievements orders={orders} totalSpent={totalSpent} />
+            </div>
+
+            {/* Middle Column - Orders & Wishlist */}
+            <div className="space-y-6">
+              <Card className="border-[#9d4edd]/20">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-sm">
+                    <ShoppingBag className="h-4 w-4 text-[#9d4edd]" />
+                    Recent Orders
+                  </CardTitle>
                 </CardHeader>
-                <CardContent className="relative">
-                  <div className="text-3xl font-bold text-[#E7FB10]" data-testid="text-total-orders">
-                    {ordersLoading ? "..." : orders?.length || 0}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    All time purchases
-                  </p>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
-              <Card className="border-[#22c55e]/40 bg-gradient-to-br from-[#22c55e]/10 to-[#22c55e]/5 relative overflow-hidden group hover-elevate">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#22c55e]/0 via-[#22c55e]/10 to-[#22c55e]/0 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 relative">
-                  <CardTitle className="text-sm font-medium">Compounds Researched</CardTitle>
-                  <motion.div className="h-8 w-8 rounded-full bg-[#22c55e]/20 flex items-center justify-center group-hover:shadow-lg group-hover:shadow-[#22c55e]/50" animate={{ boxShadow: ["0 0 0 0 rgba(34, 197, 94, 0)", "0 0 0 8px rgba(34, 197, 94, 0)"] }} transition={{ duration: 2.5, repeat: Infinity }}>
-                    <Activity className="h-4 w-4 text-[#22c55e]" />
-                  </motion.div>
-                </CardHeader>
-                <CardContent className="relative">
-                  <div className="text-3xl font-bold text-[#22c55e]" data-testid="text-compounds-researched">
-                    {ordersLoading ? "..." : new Set(orders?.map(o => o.productId) || []).size}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Unique compounds in portfolio
-                  </p>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
-              <Card className="border-[#f97316]/40 bg-gradient-to-br from-[#f97316]/10 to-[#f97316]/5 relative overflow-hidden group hover-elevate">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#f97316]/0 via-[#f97316]/10 to-[#f97316]/0 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 relative">
-                  <CardTitle className="text-sm font-medium">Last Order</CardTitle>
-                  <motion.div className="h-8 w-8 rounded-full bg-[#f97316]/20 flex items-center justify-center group-hover:shadow-lg group-hover:shadow-[#f97316]/50" animate={{ boxShadow: ["0 0 0 0 rgba(249, 115, 22, 0)", "0 0 0 8px rgba(249, 115, 22, 0)"] }} transition={{ duration: 2.3, repeat: Infinity }}>
-                    <Calendar className="h-4 w-4 text-[#f97316]" />
-                  </motion.div>
-                </CardHeader>
-                <CardContent className="relative">
-                  <div className="text-3xl font-bold text-[#f97316]" data-testid="text-last-order">
-                    {ordersLoading ? "..." : orders && orders.length > 0 && orders[0].createdAt
-                      ? new Date(orders[0].createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })
-                      : "None yet"}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {orders && orders.length > 0 ? "Most recent order" : "Place your first order"}
-                  </p>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </motion.div>
-
-          {/* Tabbed Interface for Intent-Based Navigation */}
-          <motion.div variants={itemVariants}>
-            <Tabs defaultValue="overview" className="w-full">
-              <div className="text-xs text-muted-foreground/60 flex gap-1 mb-2">
-                <Info className="h-3 w-3 flex-shrink-0 mt-0.5" />
-                <span>Hover over metrics to learn more</span>
-              </div>
-              <TabsList className="grid w-full grid-cols-4 mb-6">
-                <TabsTrigger value="overview" data-testid="tab-overview" className="gap-2">
-                  <Activity className="h-4 w-4" />
-                  <span className="hidden sm:inline">Overview</span>
-                </TabsTrigger>
-                <TabsTrigger value="research" data-testid="tab-research" className="gap-2">
-                  <GraduationCap className="h-4 w-4" />
-                  <span className="hidden sm:inline">Research</span>
-                </TabsTrigger>
-                <TabsTrigger value="orders" data-testid="tab-orders" className="gap-2">
-                  <ShoppingBag className="h-4 w-4" />
-                  <span className="hidden sm:inline">Orders</span>
-                </TabsTrigger>
-                <TabsTrigger value="rewards" data-testid="tab-rewards" className="gap-2">
-                  <Trophy className="h-4 w-4" />
-                  <span className="hidden sm:inline">Rewards</span>
-                </TabsTrigger>
-              </TabsList>
-
-              {/* Overview Tab - Quick summary and next actions */}
-              <TabsContent value="overview" className="space-y-6">
-                <RecommendedNextReading />
-                
-                {researchProfile && (
-                  <Card className="border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 to-transparent">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="flex items-center gap-2 text-sm">
-                        <div className="h-6 w-6 rounded-full bg-[#E7FB10]/15 flex items-center justify-center">
-                          <GraduationCap className="h-3.5 w-3.5 text-[#E7FB10]" />
+                <CardContent>
+                  {ordersLoading ? (
+                    <div className="space-y-3">
+                      {[...Array(3)].map((_, i) => (
+                        <Skeleton key={i} className="h-12 w-full rounded" />
+                      ))}
+                    </div>
+                  ) : orders && orders.length > 0 ? (
+                    <div className="space-y-3">
+                      {orders.slice(0, 5).map((order) => (
+                        <div
+                          key={order.id}
+                          className="flex items-center justify-between p-3 rounded-lg border hover-elevate transition-colors"
+                          data-testid={`order-item-${order.id}`}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate" data-testid={`text-order-product-${order.id}`}>
+                              {getProductName(order.productId)}
+                            </p>
+                            <p className="text-xs text-muted-foreground">{formatDate(order.createdAt)}</p>
+                          </div>
+                          <Badge variant={getStatusColor(order.status)} className="ml-2">
+                            {order.status || "pending"}
+                          </Badge>
                         </div>
-                        Research Progress
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center gap-2 mb-3">
-                        <Badge variant="outline" className="bg-[#E7FB10]/10 border-[#E7FB10]/40 text-[#E7FB10]">
-                          {researchProfile.phase}
-                        </Badge>
-                        <Badge variant="outline" className="bg-[#21d8ff]/10 border-[#21d8ff]/40 text-[#21d8ff]">
-                          {researchProfile.title}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-1 mb-2">
-                        {(["Observer", "Initiate", "Researcher", "Analyst", "Specialist"] as ResearchPhase[]).map((phase, idx) => {
-                          const phaseOrder = ["Observer", "Initiate", "Researcher", "Analyst", "Specialist"];
-                          const currentIdx = phaseOrder.indexOf(researchProfile.phase);
-                          const isActive = idx <= currentIdx;
-                          return (
-                            <div key={phase} className="flex-1">
-                              <div 
-                                className={`h-1.5 rounded-full transition-all ${
-                                  isActive ? "bg-[#E7FB10]" : "bg-muted"
-                                }`}
-                              />
-                            </div>
-                          );
-                        })}
-                      </div>
-                      <Link href="#" onClick={(e) => { e.preventDefault(); document.querySelector('[data-testid="tab-research"]')?.dispatchEvent(new MouseEvent('click', { bubbles: true })); }}>
-                        <Button variant="ghost" size="sm" className="w-full mt-2 text-[#E7FB10]">
-                          View Full Profile
-                          <ChevronRight className="h-3 w-3 ml-1" />
+                      ))}
+                      {orders.length > 5 && (
+                        <p className="text-center text-xs text-muted-foreground">
+                          {orders.length - 5} more orders
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-center py-6">
+                      <ShoppingBag className="h-8 w-8 mx-auto text-muted-foreground/30 mb-2" />
+                      <p className="text-sm text-muted-foreground">No orders yet</p>
+                      <Link href="/products">
+                        <Button size="sm" variant="ghost" className="mt-2 text-[#E7FB10]">
+                          Browse Products
+                          <ArrowRight className="h-3 w-3 ml-1" />
                         </Button>
                       </Link>
-                    </CardContent>
-                  </Card>
-                )}
-              </TabsContent>
-
-              {/* Research Tab - Full research profile and education */}
-              <TabsContent value="research" className="space-y-6">
-                {/* Research Profile Panel - Now with tooltips and next-step guidance */}
-                {researchProfile && (
-                  <Card className="border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 via-transparent to-[#21d8ff]/5">
-                    <CardHeader>
-                  <div className="flex items-center justify-between flex-wrap gap-3">
-                    <div>
-                      <CardTitle className="flex items-center gap-2">
-                        <div className="h-7 w-7 rounded-full bg-[#E7FB10]/15 flex items-center justify-center">
-                          <GraduationCap className="h-4 w-4 text-[#E7FB10]" />
-                        </div>
-                        Research Progress
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="max-w-xs">Your knowledge and activity level. Progress through phases by reading articles, verifying batches, and tracking compounds.</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </CardTitle>
-                      <CardDescription>Your research journey progress and achievements</CardDescription>
                     </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Right Column - Research Overview */}
+            <div>
+              {researchProfile && (
+                <Card className="border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 to-transparent">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-sm">
+                      <div className="h-6 w-6 rounded-full bg-[#E7FB10]/15 flex items-center justify-center">
+                        <GraduationCap className="h-3.5 w-3.5 text-[#E7FB10]" />
+                      </div>
+                      Research Overview
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
                     <div className="flex items-center gap-2">
                       <Badge variant="outline" className="bg-[#E7FB10]/10 border-[#E7FB10]/40 text-[#E7FB10]">
-                        Phase: {researchProfile.phase}
+                        {researchProfile.phase}
                       </Badge>
                       <Badge variant="outline" className="bg-[#21d8ff]/10 border-[#21d8ff]/40 text-[#21d8ff]">
                         {researchProfile.title}
                       </Badge>
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
-                    <Tooltip>
-                      <TooltipTrigger className="w-full">
-                        <div className="text-center p-3 rounded-lg bg-muted/30 hover-elevate cursor-help">
-                          <div className="text-2xl font-bold text-[#E7FB10]" data-testid="text-education-count">
-                            {researchProfile.educationCount}
+                    <div className="flex items-center gap-1">
+                      {(["Observer", "Initiate", "Researcher", "Analyst", "Specialist"] as ResearchPhase[]).map((phase, idx) => {
+                        const phaseOrder = ["Observer", "Initiate", "Researcher", "Analyst", "Specialist"];
+                        const currentIdx = phaseOrder.indexOf(researchProfile.phase);
+                        const isActive = idx <= currentIdx;
+                        return (
+                          <div key={phase} className="flex-1">
+                            <div 
+                              className={`h-1.5 rounded-full transition-all ${
+                                isActive ? "bg-[#E7FB10]" : "bg-muted"
+                              }`}
+                            />
                           </div>
-                          <div className="text-xs text-muted-foreground">Education Completed</div>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="max-w-xs">Verified learning modules completed. Read articles in the Education section to increase this count.</p>
-                      </TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger className="w-full">
-                        <div className="text-center p-3 rounded-lg bg-muted/30 hover-elevate cursor-help">
-                          <div className="text-2xl font-bold text-[#21d8ff]" data-testid="text-verification-count">
-                            {researchProfile.batchVerificationCount}
-                          </div>
-                          <div className="text-xs text-muted-foreground">Batches Verified</div>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="max-w-xs">Authenticity checks performed. Verify batch numbers on the COA page to confirm product quality.</p>
-                      </TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger className="w-full">
-                        <div className="text-center p-3 rounded-lg bg-muted/30 hover-elevate cursor-help">
-                          <div className="text-2xl font-bold text-[#22c55e]" data-testid="text-compounds-tracked">
-                            {researchProfile.compoundsTrackedCount}
-                          </div>
-                          <div className="text-xs text-muted-foreground">Compounds Tracked</div>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="max-w-xs">Active research subjects. Each unique compound you purchase adds to your research portfolio.</p>
-                      </TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger className="w-full">
-                        <div className="text-center p-3 rounded-lg bg-muted/30 hover-elevate cursor-help">
-                          <div className="text-2xl font-bold text-[#f97316]" data-testid="text-reviews-count">
-                            {researchProfile.verifiedReviewsCount}
-                          </div>
-                          <div className="text-xs text-muted-foreground">Verified Reviews</div>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="max-w-xs">Reviews written on products you've purchased. Share your research experience to help others.</p>
-                      </TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger className="w-full">
-                        <div className="text-center p-3 rounded-lg bg-muted/30 hover-elevate cursor-help">
-                          <div className="flex items-center justify-center">
-                            {researchProfile.safetyCompleted ? (
-                              <CheckCircle className="h-6 w-6 text-[#22c55e]" />
-                            ) : (
-                              <div className="h-6 w-6 rounded-full border-2 border-muted-foreground/30" />
-                            )}
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-1">Safety Trained</div>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="max-w-xs">Completed safety and compliance training. Essential for responsible research practices.</p>
-                      </TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger className="w-full">
-                        <div className="text-center p-3 rounded-lg bg-muted/30 hover-elevate cursor-help">
-                          <div className="flex items-center justify-center">
-                            {researchProfile.coaEducationViewed ? (
-                              <CheckCircle className="h-6 w-6 text-[#22c55e]" />
-                            ) : (
-                              <div className="h-6 w-6 rounded-full border-2 border-muted-foreground/30" />
-                            )}
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-1">COA Trained</div>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="max-w-xs">Learned how to read and verify Certificates of Analysis. Critical for quality assessment.</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                  
-                  {/* Phase Progression with Next Step Guidance */}
-                  <div className="mt-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="text-sm font-medium">Research Phase Progression</div>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="max-w-xs">Progress through phases by engaging with educational content, verifying batches, and tracking compounds.</p>
-                        </TooltipContent>
-                      </Tooltip>
+                        );
+                      })}
                     </div>
-                    
-                    {/* Next Step Directive */}
-                    {(() => {
-                      const phase = researchProfile.phase;
-                      const edu = researchProfile.educationCount;
-                      const batch = researchProfile.batchVerificationCount;
-                      const compounds = researchProfile.compoundsTrackedCount;
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="p-2 rounded-lg bg-muted/30">
+                        <div className="font-bold text-[#E7FB10]">{researchProfile.educationCount}</div>
+                        <div className="text-muted-foreground">Education</div>
+                      </div>
+                      <div className="p-2 rounded-lg bg-muted/30">
+                        <div className="font-bold text-[#21d8ff]">{researchProfile.batchVerificationCount}</div>
+                        <div className="text-muted-foreground">Verified</div>
+                      </div>
+                    </div>
+                    <Link href="#" onClick={(e) => { e.preventDefault(); document.querySelector('[data-testid="tab-education"]')?.dispatchEvent(new MouseEvent('click', { bubbles: true })); }}>
+                      <Button variant="ghost" size="sm" className="w-full text-[#E7FB10]">
+                        View Details
+                        <ChevronRight className="h-3 w-3 ml-1" />
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </motion.div>
+
+          {/* Detailed Tabs - Education, Profile, All Orders */}
+          <motion.div variants={itemVariants}>
+            <Tabs defaultValue="education" className="w-full">
+              <TabsList className="grid w-full grid-cols-3 mb-6">
+                <TabsTrigger value="education" data-testid="tab-education" className="gap-2">
+                  <BookOpen className="h-4 w-4" />
+                  <span className="hidden sm:inline">Education & Research</span>
+                </TabsTrigger>
+                <TabsTrigger value="profile" data-testid="tab-profile" className="gap-2">
+                  <User className="h-4 w-4" />
+                  <span className="hidden sm:inline">Profile Settings</span>
+                </TabsTrigger>
+                <TabsTrigger value="all-orders" data-testid="tab-all-orders" className="gap-2">
+                  <ShoppingBag className="h-4 w-4" />
+                  <span className="hidden sm:inline">All Orders</span>
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Education & Research Tab */}
+              <TabsContent value="education" className="space-y-6">
+                {/* Research Profile Panel - Now with tooltips and next-step guidance */}
+                {researchProfile && (
+                  <Card className="border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 via-transparent to-[#21d8ff]/5">
+                    <CardHeader>
+                      <div className="flex items-center justify-between flex-wrap gap-3">
+                        <div>
+                          <CardTitle className="flex items-center gap-2">
+                            <div className="h-7 w-7 rounded-full bg-[#E7FB10]/15 flex items-center justify-center">
+                              <GraduationCap className="h-4 w-4 text-[#E7FB10]" />
+                            </div>
+                            Research Progress
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="max-w-xs">Your knowledge and activity level. Progress through phases by reading articles, verifying batches, and tracking compounds.</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </CardTitle>
+                          <CardDescription>Your research journey progress and achievements</CardDescription>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="bg-[#E7FB10]/10 border-[#E7FB10]/40 text-[#E7FB10]">
+                            Phase: {researchProfile.phase}
+                          </Badge>
+                          <Badge variant="outline" className="bg-[#21d8ff]/10 border-[#21d8ff]/40 text-[#21d8ff]">
+                            {researchProfile.title}
+                          </Badge>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
+                        <Tooltip>
+                          <TooltipTrigger className="w-full">
+                            <div className="text-center p-3 rounded-lg bg-muted/30 hover-elevate cursor-help">
+                              <div className="text-2xl font-bold text-[#E7FB10]" data-testid="text-education-count">
+                                {researchProfile.educationCount}
+                              </div>
+                              <div className="text-xs text-muted-foreground">Education Completed</div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs">Verified learning modules completed. Read articles in the Education section to increase this count.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger className="w-full">
+                            <div className="text-center p-3 rounded-lg bg-muted/30 hover-elevate cursor-help">
+                              <div className="text-2xl font-bold text-[#21d8ff]" data-testid="text-verification-count">
+                                {researchProfile.batchVerificationCount}
+                              </div>
+                              <div className="text-xs text-muted-foreground">Batches Verified</div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs">Authenticity checks performed. Verify batch numbers on the COA page to confirm product quality.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger className="w-full">
+                            <div className="text-center p-3 rounded-lg bg-muted/30 hover-elevate cursor-help">
+                              <div className="text-2xl font-bold text-[#22c55e]" data-testid="text-compounds-tracked">
+                                {researchProfile.compoundsTrackedCount}
+                              </div>
+                              <div className="text-xs text-muted-foreground">Compounds Tracked</div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs">Active research subjects. Each unique compound you purchase adds to your research portfolio.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger className="w-full">
+                            <div className="text-center p-3 rounded-lg bg-muted/30 hover-elevate cursor-help">
+                              <div className="text-2xl font-bold text-[#f97316]" data-testid="text-reviews-count">
+                                {researchProfile.verifiedReviewsCount}
+                              </div>
+                              <div className="text-xs text-muted-foreground">Verified Reviews</div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs">Reviews written on products you've purchased. Share your research experience to help others.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger className="w-full">
+                            <div className="text-center p-3 rounded-lg bg-muted/30 hover-elevate cursor-help">
+                              <div className="flex items-center justify-center">
+                                {researchProfile.safetyCompleted ? (
+                                  <CheckCircle className="h-6 w-6 text-[#22c55e]" />
+                                ) : (
+                                  <div className="h-6 w-6 rounded-full border-2 border-muted-foreground/30" />
+                                )}
+                              </div>
+                              <div className="text-xs text-muted-foreground mt-1">Safety Trained</div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs">Completed safety and compliance training. Essential for responsible research practices.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger className="w-full">
+                            <div className="text-center p-3 rounded-lg bg-muted/30 hover-elevate cursor-help">
+                              <div className="flex items-center justify-center">
+                                {researchProfile.coaEducationViewed ? (
+                                  <CheckCircle className="h-6 w-6 text-[#22c55e]" />
+                                ) : (
+                                  <div className="h-6 w-6 rounded-full border-2 border-muted-foreground/30" />
+                                )}
+                              </div>
+                              <div className="text-xs text-muted-foreground mt-1">COA Trained</div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs">Learned how to read and verify Certificates of Analysis. Critical for quality assessment.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
                       
-                      let nextStep = "";
-                      let nextPhase = "";
-                      
-                      if (phase === "Observer") {
-                        if (batch === 0) {
+                      {/* Phase Progression with Next Step Guidance */}
+                      <div className="mt-6">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="text-sm font-medium">Research Phase Progression</div>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="max-w-xs">Progress through phases by engaging with educational content, verifying batches, and tracking compounds.</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
+                        
+                        {/* Next Step Directive */}
+                        {(() => {
+                          const phase = researchProfile.phase;
+                          const edu = researchProfile.educationCount;
+                          const batch = researchProfile.batchVerificationCount;
+                          const compounds = researchProfile.compoundsTrackedCount;
+                          
+                          let nextStep = "";
+                          let nextPhase = "";
+                          
+                          if (phase === "Observer") {
+                            if (batch === 0) {
                           nextStep = "Verify your first batch number to reach Initiate";
                           nextPhase = "Initiate";
                         } else if (edu < 1) {
@@ -1624,14 +1625,46 @@ export default function Dashboard() {
                   </Card>
                 )}
 
-                {/* Recommended Reading for Research Tab */}
+                {/* Recommended Reading */}
                 <RecommendedNextReading />
               </TabsContent>
 
-              {/* Orders Tab - Order history and reviews */}
-              <TabsContent value="orders" className="space-y-6">
-                <div className="space-y-6">
-                    <Card className="border-[#9d4edd]/20">
+              {/* Profile Settings Tab */}
+              <TabsContent value="profile" className="space-y-6">
+                <Card className="border-[#21d8ff]/20">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <User className="h-5 w-5 text-[#21d8ff]" />
+                      Profile & Settings
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="p-4 rounded-lg bg-muted/30">
+                      <p className="text-sm mb-3">Manage your account and preferences</p>
+                      <Link href="/account-settings">
+                        <Button className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 w-full">
+                          Go to Account Settings
+                          <ArrowRight className="h-4 w-4 ml-2" />
+                        </Button>
+                      </Link>
+                    </div>
+                    <div className="grid gap-4 text-sm">
+                      <div className="p-3 rounded-lg border">
+                        <div className="font-medium mb-1">Email</div>
+                        <div className="text-muted-foreground">{user?.email}</div>
+                      </div>
+                      <div className="p-3 rounded-lg border">
+                        <div className="font-medium mb-1">Member Since</div>
+                        <div className="text-muted-foreground">{formatDate(user?.createdAt || new Date())}</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* All Orders Tab */}
+              <TabsContent value="all-orders" className="space-y-6">
+                <Card className="border-[#9d4edd]/20">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
@@ -1821,43 +1854,18 @@ export default function Dashboard() {
                   )}
                 </CardContent>
               </Card>
-
-                  {/* Quick Reorder sidebar */}
-                  <Card className="border-[#21d8ff]/20">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-sm">
-                        <Package className="h-4 w-4 text-[#21d8ff]" />
-                        Quick Reorder
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <QuickReorder orders={orders} products={products} />
-                    </CardContent>
-                  </Card>
-
-                  <Card className="border-[#22c55e]/20">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-sm">
-                        <FileCheck className="h-4 w-4 text-[#22c55e]" />
-                        Certificates of Analysis
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <MyCOAs orders={orders} products={products} />
-                    </CardContent>
-                  </Card>
-                </div>
               </TabsContent>
+            </Tabs>
+          </motion.div>
+        </motion.div>
+      </main>
 
-              {/* Rewards Tab - Loyalty, achievements, and affiliate */}
-              <TabsContent value="rewards" className="space-y-6">
-                <div className="grid gap-6 lg:grid-cols-3">
-                  <div className="lg:col-span-2 space-y-6">
-                    <CustomerAchievements orders={orders} totalSpent={totalSpent} />
-                    <SavingsSummary orders={orders} products={products} />
-                    
-                    {/* Affiliate CTA */}
-                    <Card 
+      {/* Review Dialog */}
+      <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Write a Review</DialogTitle>
+            <DialogDescription> 
                       className="overflow-hidden relative"
                       style={{
                         background: 'linear-gradient(135deg, #21d8ff 0%, #21d8ff 25%, #9d4edd 50%, #ec4899 75%, #21d8ff 100%)',
