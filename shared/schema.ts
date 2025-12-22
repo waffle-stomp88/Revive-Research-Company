@@ -439,6 +439,41 @@ export type PriceTrend = {
   notes?: string;
 };
 
+// User Research Profile - Track research journey metrics for phase/title system
+export const userResearchProfiles = pgTable("user_research_profiles", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull().unique(),
+  educationCount: integer("education_count").default(0), // Education pages viewed/completed
+  safetyCompleted: boolean("safety_completed").default(false),
+  coaEducationViewed: boolean("coa_education_viewed").default(false),
+  batchVerificationCount: integer("batch_verification_count").default(0),
+  compoundsTrackedCount: integer("compounds_tracked_count").default(0), // Watchlist/portfolio count
+  verifiedReviewsCount: integer("verified_reviews_count").default(0),
+  earlyAccessMember: boolean("early_access_member").default(false), // Set true if account created before launch
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertUserResearchProfileSchema = createInsertSchema(userResearchProfiles).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertUserResearchProfile = z.infer<typeof insertUserResearchProfileSchema>;
+export type UserResearchProfile = typeof userResearchProfiles.$inferSelect;
+
+// Research phase types
+export const researchPhases = ["Observer", "Initiate", "Researcher", "Analyst", "Specialist"] as const;
+export type ResearchPhase = typeof researchPhases[number];
+
+// Research title types
+export const researchTitles = [
+  "Getting Started",
+  "Safety-First", 
+  "Compound Tracker",
+  "Stack Builder",
+  "COA Confident",
+  "Verification Regular",
+  "Early Access Member"
+] as const;
+export type ResearchTitle = typeof researchTitles[number];
+
 // Academy Progress table - Track user learning journey
 export const academyProgress = pgTable("academy_progress", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),

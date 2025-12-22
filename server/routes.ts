@@ -2723,6 +2723,112 @@ Return ONLY valid JSON in this exact format:
     }
   });
 
+  // User Research Profile - Get computed phase, title, and counts
+  app.get("/api/research-profile", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Get or create profile
+      let profile = await storage.getUserResearchProfile(userId);
+      if (!profile) {
+        // Create initial profile, marking as early access if created before launch
+        profile = await storage.createOrUpdateUserResearchProfile(userId, {
+          earlyAccessMember: true, // All current users are early access
+        });
+      }
+      
+      // Get wishlist count for compounds tracked
+      const wishlist = await storage.getWishlistByUserId(userId);
+      const orders = await storage.getOrdersByUserId(userId);
+      const uniqueProducts = new Set([
+        ...wishlist.map(w => w.productId),
+        ...orders.map(o => o.productId)
+      ]);
+      
+      // Update compounds tracked count
+      if (uniqueProducts.size !== profile.compoundsTrackedCount) {
+        profile = await storage.createOrUpdateUserResearchProfile(userId, {
+          compoundsTrackedCount: uniqueProducts.size
+        });
+      }
+      
+      // Count verified reviews
+      const allReviews = await storage.getAllReviews();
+      const userReviews = allReviews.filter(r => r.userId === userId);
+      if (userReviews.length !== profile.verifiedReviewsCount) {
+        profile = await storage.createOrUpdateUserResearchProfile(userId, {
+          verifiedReviewsCount: userReviews.length
+        });
+      }
+      
+      const phase = storage.computeResearchPhase(profile);
+      const title = storage.computeResearchTitle(profile);
+      
+      res.json({
+        phase,
+        title,
+        educationCount: profile.educationCount || 0,
+        safetyCompleted: profile.safetyCompleted || false,
+        coaEducationViewed: profile.coaEducationViewed || false,
+        batchVerificationCount: profile.batchVerificationCount || 0,
+        compoundsTrackedCount: profile.compoundsTrackedCount || 0,
+        verifiedReviewsCount: profile.verifiedReviewsCount || 0,
+        earlyAccessMember: profile.earlyAccessMember || false,
+      });
+    } catch (error) {
+      console.error("Error fetching research profile:", error);
+      res.status(500).json({ error: "Failed to fetch research profile" });
+    }
+  });
+
+  // Track education page view
+  app.post("/api/research-profile/track-education", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const profile = await storage.incrementEducationCount(userId);
+      res.json({ success: true, educationCount: profile.educationCount });
+    } catch (error) {
+      console.error("Error tracking education:", error);
+      res.status(500).json({ error: "Failed to track education" });
+    }
+  });
+
+  // Mark safety education completed
+  app.post("/api/research-profile/mark-safety-completed", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const profile = await storage.markSafetyCompleted(userId);
+      res.json({ success: true, safetyCompleted: profile.safetyCompleted });
+    } catch (error) {
+      console.error("Error marking safety completed:", error);
+      res.status(500).json({ error: "Failed to mark safety completed" });
+    }
+  });
+
+  // Mark COA education viewed
+  app.post("/api/research-profile/mark-coa-viewed", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const profile = await storage.markCoaEducationViewed(userId);
+      res.json({ success: true, coaEducationViewed: profile.coaEducationViewed });
+    } catch (error) {
+      console.error("Error marking COA viewed:", error);
+      res.status(500).json({ error: "Failed to mark COA viewed" });
+    }
+  });
+
+  // Track batch verification (called when user successfully verifies a batch)
+  app.post("/api/research-profile/track-verification", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const profile = await storage.incrementBatchVerificationCount(userId);
+      res.json({ success: true, batchVerificationCount: profile.batchVerificationCount });
+    } catch (error) {
+      console.error("Error tracking verification:", error);
+      res.status(500).json({ error: "Failed to track verification" });
+    }
+  });
+
   // XML Sitemap - Only public-facing, non-product pages for regulatory compliance
   app.get("/sitemap.xml", async (req, res) => {
     try {

@@ -1,7 +1,7 @@
 import { 
   users, products, coas, orders, contacts, affiliateApplications, affiliates, affiliateSales, affiliatePayouts, reviews,
   batches, productStorageProfiles, legalDocuments, faqEntries, educationArticles, coaGlossaryTerms, stockNotifications, discountCodes, newsletterSubscribers,
-  productDosageStock, priceHistory, academyProgress, emailEvents, wishlists,
+  productDosageStock, priceHistory, academyProgress, emailEvents, wishlists, userResearchProfiles,
   type User, type UpsertUser,
   type Product, type InsertProduct,
   type ProductDosageStock, type InsertProductDosageStock, type ProductWithDosageStock,
@@ -27,6 +27,8 @@ import {
   type AcademyProgress, type InsertAcademyProgress,
   type EmailEvent, type InsertEmailEvent,
   type Wishlist, type InsertWishlist,
+  type UserResearchProfile, type InsertUserResearchProfile,
+  type ResearchPhase, type ResearchTitle,
   priceChangeReasons
 } from "@shared/schema";
 import { db } from "./db";
@@ -243,6 +245,16 @@ export interface IStorage {
   addToWishlist(userId: string, productId: string): Promise<Wishlist>;
   removeFromWishlist(userId: string, productId: string): Promise<boolean>;
   isInWishlist(userId: string, productId: string): Promise<boolean>;
+  
+  // User Research Profiles
+  getUserResearchProfile(userId: string): Promise<UserResearchProfile | undefined>;
+  createOrUpdateUserResearchProfile(userId: string, data: Partial<InsertUserResearchProfile>): Promise<UserResearchProfile>;
+  incrementEducationCount(userId: string): Promise<UserResearchProfile>;
+  incrementBatchVerificationCount(userId: string): Promise<UserResearchProfile>;
+  markSafetyCompleted(userId: string): Promise<UserResearchProfile>;
+  markCoaEducationViewed(userId: string): Promise<UserResearchProfile>;
+  computeResearchPhase(profile: UserResearchProfile): ResearchPhase;
+  computeResearchTitle(profile: UserResearchProfile): ResearchTitle;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1588,6 +1600,102 @@ export class DatabaseStorage implements IStorage {
       .from(wishlists)
       .where(and(eq(wishlists.userId, userId), eq(wishlists.productId, productId)));
     return !!item;
+  }
+
+  // User Research Profiles
+  async getUserResearchProfile(userId: string): Promise<UserResearchProfile | undefined> {
+    const [profile] = await db.select()
+      .from(userResearchProfiles)
+      .where(eq(userResearchProfiles.userId, userId));
+    return profile || undefined;
+  }
+
+  async createOrUpdateUserResearchProfile(userId: string, data: Partial<InsertUserResearchProfile>): Promise<UserResearchProfile> {
+    const existing = await this.getUserResearchProfile(userId);
+    
+    if (existing) {
+      const [updated] = await db.update(userResearchProfiles)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(userResearchProfiles.userId, userId))
+        .returning();
+      return updated;
+    }
+    
+    const [created] = await db.insert(userResearchProfiles)
+      .values({ userId, ...data })
+      .returning();
+    return created;
+  }
+
+  async incrementEducationCount(userId: string): Promise<UserResearchProfile> {
+    const profile = await this.getUserResearchProfile(userId);
+    const newCount = (profile?.educationCount || 0) + 1;
+    return this.createOrUpdateUserResearchProfile(userId, { educationCount: newCount });
+  }
+
+  async incrementBatchVerificationCount(userId: string): Promise<UserResearchProfile> {
+    const profile = await this.getUserResearchProfile(userId);
+    const newCount = (profile?.batchVerificationCount || 0) + 1;
+    return this.createOrUpdateUserResearchProfile(userId, { batchVerificationCount: newCount });
+  }
+
+  async markSafetyCompleted(userId: string): Promise<UserResearchProfile> {
+    return this.createOrUpdateUserResearchProfile(userId, { safetyCompleted: true });
+  }
+
+  async markCoaEducationViewed(userId: string): Promise<UserResearchProfile> {
+    return this.createOrUpdateUserResearchProfile(userId, { coaEducationViewed: true });
+  }
+
+  computeResearchPhase(profile: UserResearchProfile): ResearchPhase {
+    const { safetyCompleted, coaEducationViewed, compoundsTrackedCount, batchVerificationCount, educationCount, verifiedReviewsCount } = profile;
+    
+    // Specialist: meet any 2 of: batch_verification_count >= 10, education_count >= 15, verified_reviews_count >= 3
+    const specialistCriteria = [
+      (batchVerificationCount || 0) >= 10,
+      (educationCount || 0) >= 15,
+      (verifiedReviewsCount || 0) >= 3
+    ].filter(Boolean).length;
+    if (specialistCriteria >= 2) return "Specialist";
+    
+    // Analyst: meet any 2 of: batch_verification_count >= 3, education_count >= 8, verified_reviews_count >= 1, compounds_tracked_count >= 5
+    const analystCriteria = [
+      (batchVerificationCount || 0) >= 3,
+      (educationCount || 0) >= 8,
+      (verifiedReviewsCount || 0) >= 1,
+      (compoundsTrackedCount || 0) >= 5
+    ].filter(Boolean).length;
+    if (analystCriteria >= 2) return "Analyst";
+    
+    // Researcher: meet any 2 of: batch_verification_count >= 1, education_count >= 5, compounds_tracked_count >= 3
+    const researcherCriteria = [
+      (batchVerificationCount || 0) >= 1,
+      (educationCount || 0) >= 5,
+      (compoundsTrackedCount || 0) >= 3
+    ].filter(Boolean).length;
+    if (researcherCriteria >= 2) return "Researcher";
+    
+    // Initiate: safety_completed = true, coa_education_viewed = true, compounds_tracked_count >= 1
+    if (safetyCompleted && coaEducationViewed && (compoundsTrackedCount || 0) >= 1) {
+      return "Initiate";
+    }
+    
+    // Default: Observer
+    return "Observer";
+  }
+
+  computeResearchTitle(profile: UserResearchProfile): ResearchTitle {
+    const { earlyAccessMember, batchVerificationCount, coaEducationViewed, compoundsTrackedCount, safetyCompleted } = profile;
+    
+    // Priority order for title selection
+    if (earlyAccessMember) return "Early Access Member";
+    if ((batchVerificationCount || 0) >= 3) return "Verification Regular";
+    if (coaEducationViewed && (batchVerificationCount || 0) >= 1) return "COA Confident";
+    if ((compoundsTrackedCount || 0) >= 5) return "Stack Builder";
+    if ((compoundsTrackedCount || 0) >= 3) return "Compound Tracker";
+    if (safetyCompleted) return "Safety-First";
+    
+    return "Getting Started";
   }
 }
 
