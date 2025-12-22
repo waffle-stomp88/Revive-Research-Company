@@ -1160,20 +1160,26 @@ export default function Dashboard() {
           initial="hidden"
           animate="visible"
         >
-          <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+          <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-[#21d8ff]/10">
             <div className="flex items-center gap-4">
-              <Avatar className="h-16 w-16">
-                {user?.profileImageUrl && (
-                  <AvatarImage src={user.profileImageUrl} alt={user?.firstName || "User"} className="object-cover" />
-                )}
-                <AvatarFallback className="text-xl font-semibold">
-                  {getInitials()}
-                </AvatarFallback>
-              </Avatar>
+              <motion.div
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Avatar className="h-16 w-16 ring-2 ring-[#21d8ff]/30 ring-offset-2 ring-offset-background">
+                  {user?.profileImageUrl && (
+                    <AvatarImage src={user.profileImageUrl} alt={user?.firstName || "User"} className="object-cover" />
+                  )}
+                  <AvatarFallback className="text-xl font-semibold bg-gradient-to-br from-[#E7FB10]/20 to-[#21d8ff]/20">
+                    {getInitials()}
+                  </AvatarFallback>
+                </Avatar>
+              </motion.div>
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <div className="flex items-center gap-1">
-                    <h1 className="font-display text-2xl md:text-3xl font-bold holographic-text" data-testid="text-user-name">
+                    <h1 className="font-display text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#E7FB10] bg-clip-text text-transparent" data-testid="text-user-name">
                       Welcome{user?.firstName ? `, ${user.firstName}` : ""}
                     </h1>
                     {affiliate?.id && (
@@ -1227,73 +1233,85 @@ export default function Dashboard() {
           </motion.div>
 
           <motion.div variants={itemVariants} className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-            <Card className="border-[#E7FB10]/30 bg-gradient-to-br from-[#E7FB10]/5 to-transparent">
-              <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-                <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-                <div className="h-8 w-8 rounded-full bg-[#E7FB10]/10 flex items-center justify-center">
-                  <Package className="h-4 w-4 text-[#E7FB10]" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-[#E7FB10]" data-testid="text-total-orders">
-                  {ordersLoading ? "..." : orders?.length || 0}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  All time purchases
-                </p>
-              </CardContent>
-            </Card>
+            <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
+              <Card className="border-[#E7FB10]/40 bg-gradient-to-br from-[#E7FB10]/10 to-[#E7FB10]/5 relative overflow-hidden group hover-elevate">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#E7FB10]/0 via-[#E7FB10]/10 to-[#E7FB10]/0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 relative">
+                  <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+                  <motion.div className="h-8 w-8 rounded-full bg-[#E7FB10]/20 flex items-center justify-center group-hover:shadow-lg group-hover:shadow-[#E7FB10]/50" animate={{ boxShadow: ["0 0 0 0 rgba(231, 251, 16, 0)", "0 0 0 8px rgba(231, 251, 16, 0)"] }} transition={{ duration: 2, repeat: Infinity }}>
+                    <Package className="h-4 w-4 text-[#E7FB10]" />
+                  </motion.div>
+                </CardHeader>
+                <CardContent className="relative">
+                  <div className="text-3xl font-bold text-[#E7FB10]" data-testid="text-total-orders">
+                    {ordersLoading ? "..." : orders?.length || 0}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    All time purchases
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-            <Card className="border-[#22c55e]/30 bg-gradient-to-br from-[#22c55e]/5 to-transparent">
-              <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-                <CardTitle className="text-sm font-medium">Compounds Researched</CardTitle>
-                <div className="h-8 w-8 rounded-full bg-[#22c55e]/10 flex items-center justify-center">
-                  <Activity className="h-4 w-4 text-[#22c55e]" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-[#22c55e]" data-testid="text-compounds-researched">
-                  {ordersLoading ? "..." : new Set(orders?.map(o => o.productId) || []).size}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Unique compounds in portfolio
-                </p>
-              </CardContent>
-            </Card>
+            <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
+              <Card className="border-[#22c55e]/40 bg-gradient-to-br from-[#22c55e]/10 to-[#22c55e]/5 relative overflow-hidden group hover-elevate">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#22c55e]/0 via-[#22c55e]/10 to-[#22c55e]/0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 relative">
+                  <CardTitle className="text-sm font-medium">Compounds Researched</CardTitle>
+                  <motion.div className="h-8 w-8 rounded-full bg-[#22c55e]/20 flex items-center justify-center group-hover:shadow-lg group-hover:shadow-[#22c55e]/50" animate={{ boxShadow: ["0 0 0 0 rgba(34, 197, 94, 0)", "0 0 0 8px rgba(34, 197, 94, 0)"] }} transition={{ duration: 2.5, repeat: Infinity }}>
+                    <Activity className="h-4 w-4 text-[#22c55e]" />
+                  </motion.div>
+                </CardHeader>
+                <CardContent className="relative">
+                  <div className="text-3xl font-bold text-[#22c55e]" data-testid="text-compounds-researched">
+                    {ordersLoading ? "..." : new Set(orders?.map(o => o.productId) || []).size}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Unique compounds in portfolio
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-            <Card className="border-[#21d8ff]/30 bg-gradient-to-br from-[#21d8ff]/5 to-transparent">
-              <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-                <CardTitle className="text-sm font-medium">Account Status</CardTitle>
-                <div className="h-8 w-8 rounded-full bg-[#21d8ff]/10 flex items-center justify-center">
-                  <User className="h-4 w-4 text-[#21d8ff]" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-[#21d8ff]">Active</div>
-                <p className="text-xs text-muted-foreground">
-                  Member since {formatDate(user?.createdAt || new Date())}
-                </p>
-              </CardContent>
-            </Card>
+            <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
+              <Card className="border-[#21d8ff]/40 bg-gradient-to-br from-[#21d8ff]/10 to-[#21d8ff]/5 relative overflow-hidden group hover-elevate">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#21d8ff]/0 via-[#21d8ff]/10 to-[#21d8ff]/0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 relative">
+                  <CardTitle className="text-sm font-medium">Account Status</CardTitle>
+                  <motion.div className="h-8 w-8 rounded-full bg-[#21d8ff]/20 flex items-center justify-center group-hover:shadow-lg group-hover:shadow-[#21d8ff]/50" animate={{ boxShadow: ["0 0 0 0 rgba(33, 216, 255, 0)", "0 0 0 8px rgba(33, 216, 255, 0)"] }} transition={{ duration: 2.2, repeat: Infinity }}>
+                    <User className="h-4 w-4 text-[#21d8ff]" />
+                  </motion.div>
+                </CardHeader>
+                <CardContent className="relative">
+                  <div className="text-3xl font-bold text-[#21d8ff]">Active</div>
+                  <p className="text-xs text-muted-foreground">
+                    Member since {formatDate(user?.createdAt || new Date())}
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-            <Card className="border-[#f97316]/30 bg-gradient-to-br from-[#f97316]/5 to-transparent">
-              <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-                <CardTitle className="text-sm font-medium">Last Order</CardTitle>
-                <div className="h-8 w-8 rounded-full bg-[#f97316]/10 flex items-center justify-center">
-                  <Calendar className="h-4 w-4 text-[#f97316]" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-[#f97316]" data-testid="text-last-order">
-                  {ordersLoading ? "..." : orders && orders.length > 0 && orders[0].createdAt
-                    ? new Date(orders[0].createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })
-                    : "None yet"}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {orders && orders.length > 0 ? "Most recent order" : "Place your first order"}
-                </p>
-              </CardContent>
-            </Card>
+            <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
+              <Card className="border-[#f97316]/40 bg-gradient-to-br from-[#f97316]/10 to-[#f97316]/5 relative overflow-hidden group hover-elevate">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#f97316]/0 via-[#f97316]/10 to-[#f97316]/0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 relative">
+                  <CardTitle className="text-sm font-medium">Last Order</CardTitle>
+                  <motion.div className="h-8 w-8 rounded-full bg-[#f97316]/20 flex items-center justify-center group-hover:shadow-lg group-hover:shadow-[#f97316]/50" animate={{ boxShadow: ["0 0 0 0 rgba(249, 115, 22, 0)", "0 0 0 8px rgba(249, 115, 22, 0)"] }} transition={{ duration: 2.3, repeat: Infinity }}>
+                    <Calendar className="h-4 w-4 text-[#f97316]" />
+                  </motion.div>
+                </CardHeader>
+                <CardContent className="relative">
+                  <div className="text-3xl font-bold text-[#f97316]" data-testid="text-last-order">
+                    {ordersLoading ? "..." : orders && orders.length > 0 && orders[0].createdAt
+                      ? new Date(orders[0].createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                      : "None yet"}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {orders && orders.length > 0 ? "Most recent order" : "Place your first order"}
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
           </motion.div>
 
           {/* Tabbed Interface for Intent-Based Navigation */}
