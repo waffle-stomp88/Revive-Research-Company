@@ -453,7 +453,7 @@ export default function Education() {
             </Link>
           </div>
 
-          <div className="mt-6 mb-8">
+          <div className="my-6">
             <div className="relative max-w-md mx-auto">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               <input
@@ -468,7 +468,9 @@ export default function Education() {
           </div>
         </motion.div>
 
-        <ResearchOrientationMap />
+        <div className="mt-6">
+          <ResearchOrientationMap />
+        </div>
 
         <div className="flex flex-col lg:flex-row gap-8 mt-4">
           <motion.aside
