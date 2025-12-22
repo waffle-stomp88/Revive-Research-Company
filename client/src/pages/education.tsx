@@ -453,7 +453,7 @@ export default function Education() {
             </Link>
           </div>
 
-          <div className="mt-6 mb-8">
+          <div className="mt-4">
             <div className="relative max-w-md mx-auto">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               <input
@@ -466,10 +466,6 @@ export default function Education() {
               />
             </div>
           </div>
-
-          <p className="text-center text-sm text-muted-foreground mb-12">
-            Explore any topic in any order—no prerequisites required.
-          </p>
         </motion.div>
 
         <ResearchOrientationMap />
