@@ -452,23 +452,27 @@ export default function Education() {
               Research Academy
             </Link>
           </div>
+
+          <div className="mt-6 mb-8">
+            <div className="relative max-w-md mx-auto">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search articles..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                data-testid="input-search-articles"
+                className="w-full pl-9 pr-4 py-2 rounded-lg border border-[#21d8ff]/30 bg-[#21d8ff]/5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#21d8ff] focus:bg-[#21d8ff]/10 transition-all text-sm"
+              />
+            </div>
+          </div>
+
+          <p className="text-center text-sm text-muted-foreground mb-12">
+            Explore any topic in any order—no prerequisites required.
+          </p>
         </motion.div>
 
         <ResearchOrientationMap />
-
-        <div className="mt-8 mb-6">
-          <div className="relative max-w-md mx-auto">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-            <input
-              type="text"
-              placeholder="Search articles..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              data-testid="input-search-articles"
-              className="w-full pl-9 pr-4 py-2 rounded-lg border border-[#21d8ff]/30 bg-[#21d8ff]/5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#21d8ff] focus:bg-[#21d8ff]/10 transition-all text-sm"
-            />
-          </div>
-        </div>
 
         <div className="flex flex-col lg:flex-row gap-8 mt-8">
           <motion.aside
