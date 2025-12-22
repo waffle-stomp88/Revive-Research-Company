@@ -427,7 +427,7 @@ export default function Education() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-12"
+          className="text-center mb-8"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ec4899]/10 border border-[#ec4899]/20 mb-4">
             <BookOpen className="h-4 w-4 text-[#ec4899]" />
@@ -453,7 +453,7 @@ export default function Education() {
             </Link>
           </div>
 
-          <div className="mt-4">
+          <div className="mt-6 mb-8">
             <div className="relative max-w-md mx-auto">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               <input
@@ -470,7 +470,7 @@ export default function Education() {
 
         <ResearchOrientationMap />
 
-        <div className="flex flex-col lg:flex-row gap-8 mt-8">
+        <div className="flex flex-col lg:flex-row gap-8 mt-4">
           <motion.aside
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
