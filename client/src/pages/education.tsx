@@ -647,6 +647,7 @@ export default function Education() {
                                 )}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                className="ml-auto"
                                 data-testid={`link-pubmed-research`}
                               >
                                 <Button 
