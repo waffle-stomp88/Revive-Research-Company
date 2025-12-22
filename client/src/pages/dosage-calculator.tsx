@@ -833,7 +833,7 @@ function EnhancedSyringeVisual({ fillPercentage, units, maxUnits, volumeMl, isBe
     <div className={`relative rounded-xl p-4 ${isOverflow ? 'bg-red-500/5 border border-red-500/20' : 'bg-[#0d0d10]'}`}>
       <div className="flex items-center gap-4">
         <div className="flex-1">
-          <svg viewBox="0 0 360 80" className="w-3/4 h-auto mx-auto" style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))' }}>
+          <svg viewBox="0 0 360 80" className="w-2/3 h-auto mx-auto" style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))' }}>
             <defs>
               <linearGradient id="syringeBody" x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" stopColor="#4a4a52" />
