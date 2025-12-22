@@ -59,7 +59,7 @@ import {
   Timer,
   Boxes,
 } from "lucide-react";
-import type { Order, Product, ReviewableOrder, Coa } from "@shared/schema";
+import type { Order, Product, ReviewableOrder, Coa, ResearchPhase, ResearchTitle } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { BUNDLES, type Bundle } from "@/lib/bundles";
 
@@ -1016,6 +1016,23 @@ export default function Dashboard() {
     retry: false,
   });
 
+  interface ResearchProfileData {
+    phase: ResearchPhase;
+    title: ResearchTitle;
+    educationCount: number;
+    safetyCompleted: boolean;
+    coaEducationViewed: boolean;
+    batchVerificationCount: number;
+    compoundsTrackedCount: number;
+    verifiedReviewsCount: number;
+    earlyAccessMember: boolean;
+  }
+
+  const { data: researchProfile, isLoading: researchProfileLoading } = useQuery<ResearchProfileData>({
+    queryKey: ["/api/research-profile"],
+    enabled: isAuthenticated,
+  });
+
   const submitReviewMutation = useMutation({
     mutationFn: async (data: { orderId: string; rating: number; title: string; comment: string }) => {
       return apiRequest("POST", "/api/reviews", data);
@@ -1170,6 +1187,24 @@ export default function Dashboard() {
                   </Link>
                 </div>
                 <p className="text-muted-foreground" data-testid="text-user-email">{user?.email}</p>
+                {researchProfile && (
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge 
+                      variant="outline" 
+                      className="bg-[#E7FB10]/10 border-[#E7FB10]/40 text-[#E7FB10]"
+                      data-testid="badge-research-phase"
+                    >
+                      {researchProfile.phase}
+                    </Badge>
+                    <Badge 
+                      variant="outline" 
+                      className="bg-[#21d8ff]/10 border-[#21d8ff]/40 text-[#21d8ff]"
+                      data-testid="badge-research-title"
+                    >
+                      {researchProfile.title}
+                    </Badge>
+                  </div>
+                )}
               </div>
             </div>
             <a href="/api/logout">
@@ -1258,6 +1293,119 @@ export default function Dashboard() {
               <CustomerAchievements orders={orders} totalSpent={totalSpent} />
             </div>
           </motion.div>
+
+          {/* Research Profile Panel */}
+          {researchProfile && (
+            <motion.div variants={itemVariants} className="mb-8">
+              <Card className="border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 via-transparent to-[#21d8ff]/5">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="flex items-center gap-2">
+                        <div className="h-7 w-7 rounded-full bg-[#E7FB10]/15 flex items-center justify-center">
+                          <GraduationCap className="h-4 w-4 text-[#E7FB10]" />
+                        </div>
+                        Research Profile
+                      </CardTitle>
+                      <CardDescription>Your research journey progress and achievements</CardDescription>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="bg-[#E7FB10]/10 border-[#E7FB10]/40 text-[#E7FB10]">
+                        Phase: {researchProfile.phase}
+                      </Badge>
+                      <Badge variant="outline" className="bg-[#21d8ff]/10 border-[#21d8ff]/40 text-[#21d8ff]">
+                        {researchProfile.title}
+                      </Badge>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
+                    <div className="text-center p-3 rounded-lg bg-muted/30">
+                      <div className="text-2xl font-bold text-[#E7FB10]" data-testid="text-education-count">
+                        {researchProfile.educationCount}
+                      </div>
+                      <div className="text-xs text-muted-foreground">Articles Read</div>
+                    </div>
+                    <div className="text-center p-3 rounded-lg bg-muted/30">
+                      <div className="text-2xl font-bold text-[#21d8ff]" data-testid="text-verification-count">
+                        {researchProfile.batchVerificationCount}
+                      </div>
+                      <div className="text-xs text-muted-foreground">Batches Verified</div>
+                    </div>
+                    <div className="text-center p-3 rounded-lg bg-muted/30">
+                      <div className="text-2xl font-bold text-[#22c55e]" data-testid="text-compounds-tracked">
+                        {researchProfile.compoundsTrackedCount}
+                      </div>
+                      <div className="text-xs text-muted-foreground">Compounds Tracked</div>
+                    </div>
+                    <div className="text-center p-3 rounded-lg bg-muted/30">
+                      <div className="text-2xl font-bold text-[#f97316]" data-testid="text-reviews-count">
+                        {researchProfile.verifiedReviewsCount}
+                      </div>
+                      <div className="text-xs text-muted-foreground">Reviews Written</div>
+                    </div>
+                    <div className="text-center p-3 rounded-lg bg-muted/30">
+                      <div className="flex items-center justify-center">
+                        {researchProfile.safetyCompleted ? (
+                          <CheckCircle className="h-6 w-6 text-[#22c55e]" />
+                        ) : (
+                          <div className="h-6 w-6 rounded-full border-2 border-muted-foreground/30" />
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">Safety Complete</div>
+                    </div>
+                    <div className="text-center p-3 rounded-lg bg-muted/30">
+                      <div className="flex items-center justify-center">
+                        {researchProfile.coaEducationViewed ? (
+                          <CheckCircle className="h-6 w-6 text-[#22c55e]" />
+                        ) : (
+                          <div className="h-6 w-6 rounded-full border-2 border-muted-foreground/30" />
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">COA Trained</div>
+                    </div>
+                  </div>
+                  
+                  {/* Phase Progression */}
+                  <div className="mt-6">
+                    <div className="text-sm font-medium mb-3">Research Phase Progression</div>
+                    <div className="flex items-center gap-1">
+                      {(["Observer", "Initiate", "Researcher", "Analyst", "Specialist"] as ResearchPhase[]).map((phase, idx) => {
+                        const phaseOrder = ["Observer", "Initiate", "Researcher", "Analyst", "Specialist"];
+                        const currentIdx = phaseOrder.indexOf(researchProfile.phase);
+                        const isActive = idx <= currentIdx;
+                        const isCurrent = phase === researchProfile.phase;
+                        return (
+                          <div key={phase} className="flex-1">
+                            <div 
+                              className={`h-2 rounded-full transition-all ${
+                                isActive 
+                                  ? isCurrent 
+                                    ? "bg-[#E7FB10]" 
+                                    : "bg-[#E7FB10]/50"
+                                  : "bg-muted"
+                              }`}
+                            />
+                            <div className={`text-xs mt-1 text-center ${isCurrent ? "text-[#E7FB10] font-medium" : "text-muted-foreground"}`}>
+                              {phase}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  
+                  {researchProfile.earlyAccessMember && (
+                    <div className="mt-4 flex items-center gap-2 p-3 rounded-lg bg-[#9d4edd]/10 border border-[#9d4edd]/30">
+                      <Sparkles className="h-4 w-4 text-[#9d4edd]" />
+                      <span className="text-sm text-[#9d4edd]">Early Access Member - Thank you for being an early supporter!</span>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
 
           <motion.div variants={itemVariants} className="grid gap-6 lg:grid-cols-3 mb-8">
             <div className="lg:col-span-2 space-y-6">
