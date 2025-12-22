@@ -132,12 +132,11 @@ function KisspeptinAxisAnimation({ isInView }: { isInView: boolean }) {
             key={`kiss-pulse-${i}`}
             r="4"
             fill="#ec4899"
-            initial={{ opacity: 0 }}
+            initial={{ opacity: 0, cx: 160, cy: 50 }}
             animate={isInView ? {
-              cx: [160, 160, 160],
-              cy: [50, 75, 95],
-              opacity: [0, 1, 0],
-              scale: [0.5, 1, 0.5]
+              cy: [50, 75, 175],
+              opacity: [0, 1, 1, 0],
+              scale: [0.5, 1, 1, 0.5]
             } : {}}
             transition={{
               duration: 2.5,
