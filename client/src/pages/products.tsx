@@ -475,6 +475,60 @@ function ProductsComponent() {
           </p>
         </motion.div>
 
+        {/* Research Stacks & Bulk Orders CTAs - Separate Section */}
+        {!searchQuery && peptideGroupFilter === "all" && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="mb-12 grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
+            {/* Research Stacks CTA */}
+            <Link href="/research-stacks">
+              <Card className="p-6 border border-[#21d8ff]/20 hover:border-[#21d8ff]/50 cursor-pointer transition-all hover-elevate h-full" data-testid="card-stacks-cta">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="p-3 rounded-lg bg-[#21d8ff]/10 flex-shrink-0">
+                    <Boxes className="h-6 w-6 text-[#21d8ff]" />
+                  </div>
+                  <div>
+                    <h3 className="font-display font-bold text-lg text-[#21d8ff]">RESEARCH STACKS</h3>
+                    <Badge className="mt-1 text-xs bg-[#21d8ff]/20 text-[#21d8ff] border-0">Save More</Badge>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Expertly curated peptide combinations based on research protocols. Bundle and save on the most popular stacks.
+                </p>
+                <Button className="w-full bg-[#21d8ff] text-black hover:bg-[#1aa3cc] font-semibold" data-testid="button-view-stacks">
+                  View Research Stacks
+                  <ChevronRight className="h-4 w-4 ml-2" />
+                </Button>
+              </Card>
+            </Link>
+
+            {/* Bulk Orders CTA */}
+            <Link href="/bulk-packs">
+              <Card className="p-6 border border-[#9d4edd]/20 hover:border-[#9d4edd]/50 cursor-pointer transition-all hover-elevate h-full" data-testid="card-bulk-cta">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="p-3 rounded-lg bg-[#9d4edd]/10 flex-shrink-0">
+                    <Package className="h-6 w-6 text-[#9d4edd]" />
+                  </div>
+                  <div>
+                    <h3 className="font-display font-bold text-lg text-[#9d4edd]">BULK ORDERS</h3>
+                    <Badge className="mt-1 text-xs bg-[#9d4edd]/20 text-[#9d4edd] border-0">Volume Pricing</Badge>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Need larger quantities for your research facility? Contact us for custom bulk pricing with discounts up to 30%.
+                </p>
+                <Button className="w-full bg-[#9d4edd] text-white hover:bg-[#7d2dab] font-semibold" data-testid="button-view-bulk">
+                  Explore Bulk Options
+                  <ChevronRight className="h-4 w-4 ml-2" />
+                </Button>
+              </Card>
+            </Link>
+          </motion.div>
+        )}
+
         {/* Main Layout with Sidebar */}
         <div className="flex gap-6">
           {/* Sidebar */}
@@ -1063,55 +1117,6 @@ function ProductsComponent() {
                 }
                 return null;
               })()}
-
-              {/* Research Stacks & Bulk Orders CTAs */}
-              {!searchQuery && peptideGroupFilter === "all" && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                  {/* Research Stacks CTA */}
-                  <Link href="/research-stacks">
-                    <Card className="p-6 border border-[#21d8ff]/20 hover:border-[#21d8ff]/50 cursor-pointer transition-all hover-elevate h-full" data-testid="card-stacks-cta">
-                      <div className="flex items-start gap-4 mb-4">
-                        <div className="p-3 rounded-lg bg-[#21d8ff]/10 flex-shrink-0">
-                          <Boxes className="h-6 w-6 text-[#21d8ff]" />
-                        </div>
-                        <div>
-                          <h3 className="font-display font-bold text-lg text-[#21d8ff]">RESEARCH STACKS</h3>
-                          <Badge className="mt-1 text-xs bg-[#21d8ff]/20 text-[#21d8ff] border-0">Save More</Badge>
-                        </div>
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Expertly curated peptide combinations based on research protocols. Bundle and save on the most popular stacks.
-                      </p>
-                      <Button className="w-full bg-[#21d8ff] text-black hover:bg-[#1aa3cc] font-semibold" data-testid="button-view-stacks">
-                        View Research Stacks
-                        <ChevronRight className="h-4 w-4 ml-2" />
-                      </Button>
-                    </Card>
-                  </Link>
-
-                  {/* Bulk Orders CTA */}
-                  <Link href="/bulk-packs">
-                    <Card className="p-6 border border-[#9d4edd]/20 hover:border-[#9d4edd]/50 cursor-pointer transition-all hover-elevate h-full" data-testid="card-bulk-cta">
-                      <div className="flex items-start gap-4 mb-4">
-                        <div className="p-3 rounded-lg bg-[#9d4edd]/10 flex-shrink-0">
-                          <Package className="h-6 w-6 text-[#9d4edd]" />
-                        </div>
-                        <div>
-                          <h3 className="font-display font-bold text-lg text-[#9d4edd]">BULK ORDERS</h3>
-                          <Badge className="mt-1 text-xs bg-[#9d4edd]/20 text-[#9d4edd] border-0">Volume Pricing</Badge>
-                        </div>
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Need larger quantities for your research facility? Contact us for custom bulk pricing with discounts up to 30%.
-                      </p>
-                      <Button className="w-full bg-[#9d4edd] text-white hover:bg-[#7d2dab] font-semibold" data-testid="button-view-bulk">
-                        Explore Bulk Options
-                        <ChevronRight className="h-4 w-4 ml-2" />
-                      </Button>
-                    </Card>
-                  </Link>
-                </div>
-              )}
 
               {isLoading ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
