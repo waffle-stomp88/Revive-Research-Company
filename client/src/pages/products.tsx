@@ -158,13 +158,15 @@ const CATEGORIES = [
 
 const peptideGroups = [
   { id: "all", label: "All Peptides", color: "#ec4899" },
-  { id: "metabolic", label: "Metabolic / GLP-1", color: "#E7FB10", names: ["semaglutide", "tirzepatide", "retatrutide"] },
-  { id: "growth-hormone", label: "Growth Hormone", color: "#21d8ff", names: ["cjc-1295", "ipamorelin", "tesamorelin", "igf-1 lr3"] },
-  { id: "tissue-repair", label: "Tissue Repair", color: "#22c55e", names: ["bpc-157", "tb-500"] },
-  { id: "skin-regeneration", label: "Skin & Regeneration", color: "#ec4899", names: ["ghk-cu", "glow"] },
-  { id: "longevity", label: "Longevity & Cellular", color: "#9d4edd", names: ["epithalon", "mots-c", "nad+"] },
-  { id: "cognitive", label: "Cognitive / Neuro", color: "#f97316", names: ["semax"] },
-  { id: "hormonal", label: "Hormonal", color: "#21d8ff", names: ["hcg"] },
+  { id: "metabolic", label: "Metabolic / GLP-1", color: "#E7FB10", names: ["retatrutide", "cagrilintide", "mazdutide", "survodutide", "aod-9604", "5-amino-1mq", "aicar", "slu-pp-322", "l-carnitine", "lipo-c"] },
+  { id: "growth-hormone", label: "Growth Hormone", color: "#21d8ff", names: ["cjc-1295", "ipamorelin", "tesamorelin", "igf-1 lr3", "igf-des", "ghrp-2", "ghrp-6", "hexarelin", "sermorelin", "mgf", "peg-mgf"] },
+  { id: "tissue-repair", label: "Tissue Repair", color: "#22c55e", names: ["bpc-157", "tb-500", "ll-37", "ara-290", "klow"] },
+  { id: "skin-regeneration", label: "Skin & Regeneration", color: "#ec4899", names: ["ghk-cu", "glow", "snap-8", "hyaluronic"] },
+  { id: "longevity", label: "Longevity & Cellular", color: "#9d4edd", names: ["epithalon", "mots-c", "nad+", "foxo4-dri", "ss-31", "glutathione"] },
+  { id: "cognitive", label: "Cognitive / Neuro", color: "#f97316", names: ["semax", "selank", "dsip", "cerebrolysin", "pinealon", "melatonin"] },
+  { id: "hormonal", label: "Hormonal", color: "#a855f7", names: ["hcg", "hmg", "gonadorelin", "oxytocin", "kisspeptin", "pt-141", "triptorelin", "alprostadil"] },
+  { id: "immune", label: "Immune / Thymic", color: "#14b8a6", names: ["thymosin alpha-1", "thymalin", "vip", "kpv"] },
+  { id: "specialty", label: "Specialty", color: "#64748b", names: ["melanotan", "pnc-27", "adipotide", "ace-031", "botulinum"] },
 ];
 
 const getPeptideGroup = (productName: string): { id: string; label: string; color: string } | null => {
@@ -192,8 +194,8 @@ interface ProductsPageState {
 }
 
 function ProductsComponent() {
-  // Restore state from sessionStorage if available
-  const savedState = useMemo(() => {
+  // Restore state from sessionStorage if available (using useState so we can clear it)
+  const [savedState, setSavedState] = useState<ProductsPageState | null>(() => {
     try {
       const stored = sessionStorage.getItem(PRODUCTS_STATE_KEY);
       if (stored) {
@@ -201,7 +203,7 @@ function ProductsComponent() {
       }
     } catch {}
     return null;
-  }, []);
+  });
 
   const [searchQuery, setSearchQuery] = useState(savedState?.searchQuery ?? "");
   const [sortBy, setSortBy] = useState<SortOption>(savedState?.sortBy ?? "name-asc");
@@ -232,15 +234,18 @@ function ProductsComponent() {
   const productsRef = useRef<HTMLDivElement>(null);
   const bulkRef = useRef<HTMLDivElement>(null);
 
-  // Restore scroll position after component mounts and state is restored
+  // Restore scroll position after component mounts and clear saved state
   useEffect(() => {
-    if (savedState?.scrollY && !stateRestored) {
+    if (savedState && !stateRestored) {
       // Use requestAnimationFrame to ensure DOM is ready
       requestAnimationFrame(() => {
-        window.scrollTo(0, savedState.scrollY);
+        if (savedState.scrollY > 0) {
+          window.scrollTo(0, savedState.scrollY);
+        }
         setStateRestored(true);
-        // Clear the saved state after restoring
+        // Clear both sessionStorage and the in-memory state
         sessionStorage.removeItem(PRODUCTS_STATE_KEY);
+        setSavedState(null);
       });
     }
   }, [savedState, stateRestored]);
@@ -320,9 +325,13 @@ function ProductsComponent() {
     return products.find(p => p.isWeeklyDeal && p.inStock);
   }, [products]);
 
+  // Calculate price stats only from displayed products (excluding Research Stacks and Supplies)
   const priceStats = useMemo(() => {
     if (!products || products.length === 0) return { min: 0, max: 300 };
-    const prices = products.map(p => Number(p.price));
+    const excludedCategories = ["Research Stacks", "Supplies"];
+    const displayedProducts = products.filter(p => !excludedCategories.includes(p.category));
+    if (displayedProducts.length === 0) return { min: 0, max: 300 };
+    const prices = displayedProducts.map(p => Number(p.price));
     return {
       min: Math.floor(Math.min(...prices)),
       max: Math.ceil(Math.max(...prices)),
@@ -330,18 +339,24 @@ function ProductsComponent() {
   }, [products]);
 
   useEffect(() => {
-    if (products && products.length > 0) {
-      const prices = products.map(p => Number(p.price));
+    // Only reset price range if we don't have a saved state (avoids overwriting restored filter)
+    if (products && products.length > 0 && !savedState?.priceRange) {
+      const excludedCategories = ["Research Stacks", "Supplies"];
+      const displayedProducts = products.filter(p => !excludedCategories.includes(p.category));
+      if (displayedProducts.length === 0) return;
+      const prices = displayedProducts.map(p => Number(p.price));
       const min = Math.floor(Math.min(...prices));
       const max = Math.ceil(Math.max(...prices));
       setPriceRange([min, max]);
     }
-  }, [products]);
+  }, [products, savedState]);
 
   const categoryStats = useMemo(() => {
     if (!products) return {};
-    const counts: Record<string, number> = { all: products.length };
-    products.forEach(p => {
+    const excludedCategories = ["Research Stacks", "Supplies"];
+    const displayedProducts = products.filter(p => !excludedCategories.includes(p.category));
+    const counts: Record<string, number> = { all: displayedProducts.length };
+    displayedProducts.forEach(p => {
       const cat = p.category.toLowerCase().replace(/\s+/g, "-");
       counts[cat] = (counts[cat] || 0) + 1;
     });
@@ -352,6 +367,12 @@ function ProductsComponent() {
     if (!products) return [];
 
     let filtered = products.filter((product) => {
+      // Exclude Research Stacks and Supplies from this page (they have their own pages)
+      const excludedCategories = ["Research Stacks", "Supplies"];
+      if (excludedCategories.includes(product.category)) {
+        return false;
+      }
+
       const matchesSearch =
         searchQuery === "" ||
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -412,19 +433,23 @@ function ProductsComponent() {
 
   const uniqueCategories = useMemo(() => {
     if (!products) return [];
-    const cats = new Set(products.map(p => p.category));
+    const excludedCategories = ["Research Stacks", "Supplies"];
+    const displayedProducts = products.filter(p => !excludedCategories.includes(p.category));
+    const cats = new Set(displayedProducts.map(p => p.category));
     return Array.from(cats).map(cat => ({
       id: cat.toLowerCase().replace(/\s+/g, "-"),
       name: cat,
-      count: products.filter(p => p.category === cat).length
+      count: displayedProducts.filter(p => p.category === cat).length
     }));
   }, [products]);
 
-  // Peptide group counts for badges
+  // Peptide group counts for badges (excluding Research Stacks and Supplies)
   const peptideGroupCounts = useMemo(() => {
     if (!products) return {};
-    const counts: Record<string, number> = { all: products.length };
-    products.forEach(p => {
+    const excludedCategories = ["Research Stacks", "Supplies"];
+    const displayedProducts = products.filter(p => !excludedCategories.includes(p.category));
+    const counts: Record<string, number> = { all: displayedProducts.length };
+    displayedProducts.forEach(p => {
       const group = getPeptideGroup(p.name);
       if (group) {
         counts[group.id] = (counts[group.id] || 0) + 1;
