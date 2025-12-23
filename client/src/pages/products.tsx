@@ -179,17 +179,41 @@ const getPeptideGroup = (productName: string): { id: string; label: string; colo
 
 type ShopSection = "deals" | "bundles" | "products" | "bulk";
 
+const PRODUCTS_STATE_KEY = 'products_page_state';
+
+interface ProductsPageState {
+  searchQuery: string;
+  sortBy: SortOption;
+  stockFilter: "all" | "in-stock" | "out-of-stock";
+  selectedCategory: string;
+  peptideGroupFilter: string;
+  priceRange: [number, number];
+  scrollY: number;
+}
+
 function ProductsComponent() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<SortOption>("name-asc");
-  const [stockFilter, setStockFilter] = useState<"all" | "in-stock" | "out-of-stock">("in-stock");
+  // Restore state from sessionStorage if available
+  const savedState = useMemo(() => {
+    try {
+      const stored = sessionStorage.getItem(PRODUCTS_STATE_KEY);
+      if (stored) {
+        return JSON.parse(stored) as ProductsPageState;
+      }
+    } catch {}
+    return null;
+  }, []);
+
+  const [searchQuery, setSearchQuery] = useState(savedState?.searchQuery ?? "");
+  const [sortBy, setSortBy] = useState<SortOption>(savedState?.sortBy ?? "name-asc");
+  const [stockFilter, setStockFilter] = useState<"all" | "in-stock" | "out-of-stock">(savedState?.stockFilter ?? "in-stock");
   const [activeSection, setActiveSection] = useState<ShopSection>("deals");
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [peptideGroupFilter, setPeptideGroupFilter] = useState<string>("all");
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 300]);
+  const [selectedCategory, setSelectedCategory] = useState<string>(savedState?.selectedCategory ?? "all");
+  const [peptideGroupFilter, setPeptideGroupFilter] = useState<string>(savedState?.peptideGroupFilter ?? "all");
+  const [priceRange, setPriceRange] = useState<[number, number]>(savedState?.priceRange ?? [0, 300]);
   const [categoriesExpanded, setCategoriesExpanded] = useState(true);
   const [peptideGroupsExpanded, setPeptideGroupsExpanded] = useState(true);
+  const [stateRestored, setStateRestored] = useState(false);
   
   // Collapsible section states
   const [dealsOpen, setDealsOpen] = useState(true);
@@ -207,6 +231,33 @@ function ProductsComponent() {
   const bundlesRef = useRef<HTMLDivElement>(null);
   const productsRef = useRef<HTMLDivElement>(null);
   const bulkRef = useRef<HTMLDivElement>(null);
+
+  // Restore scroll position after component mounts and state is restored
+  useEffect(() => {
+    if (savedState?.scrollY && !stateRestored) {
+      // Use requestAnimationFrame to ensure DOM is ready
+      requestAnimationFrame(() => {
+        window.scrollTo(0, savedState.scrollY);
+        setStateRestored(true);
+        // Clear the saved state after restoring
+        sessionStorage.removeItem(PRODUCTS_STATE_KEY);
+      });
+    }
+  }, [savedState, stateRestored]);
+
+  // Function to save current state before navigating to a product
+  const savePageState = () => {
+    const state: ProductsPageState = {
+      searchQuery,
+      sortBy,
+      stockFilter,
+      selectedCategory,
+      peptideGroupFilter,
+      priceRange,
+      scrollY: window.scrollY,
+    };
+    sessionStorage.setItem(PRODUCTS_STATE_KEY, JSON.stringify(state));
+  };
 
   const { data: products, isLoading, error } = useQuery<Product[]>({
     queryKey: ["/api/products"],
@@ -814,7 +865,7 @@ function ProductsComponent() {
                       className="mb-12"
                       data-testid="section-sale-of-week"
                     >
-                  <Link href={`/peptides/${saleProduct.id}`}>
+                  <Link href={`/peptides/${saleProduct.id}`} onClick={savePageState}>
                     <div className="sale-glow-pulse rounded-xl">
                     <Card className="p-3 md:p-6 border-2 border-red-500 bg-gradient-to-br from-red-950/40 via-background to-background transition-all duration-300 cursor-pointer group hover:scale-[1.02] md:hover:scale-105 hover:shadow-[0_0_30px_rgba(239,68,68,0.6)] hover:border-red-400">
                       {/* Mobile: Compact horizontal layout */}
@@ -1024,7 +1075,7 @@ function ProductsComponent() {
                       variants={fadeInUp}
                       className="h-full"
                     >
-                      <Link href={`/peptides/${product.id}`} className="h-full block">
+                      <Link href={`/peptides/${product.id}`} className="h-full block" onClick={savePageState}>
                         {/* Check if product is out of stock (either inStock=false OR stockAmount<=0) */}
                         {(() => {
                           const isOutOfStock = !product.inStock || (product.stockAmount !== null && product.stockAmount <= 0);
