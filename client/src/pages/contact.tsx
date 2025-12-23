@@ -273,7 +273,7 @@ export default function Contact() {
 
                         <Button 
                           type="submit" 
-                          className="w-full bg-[#9d4edd] text-white hover:bg-[#b561f5] transition-all duration-200 hover:shadow-lg"
+                          className="w-full bg-[#9d4edd] text-white hover:bg-black hover:text-[#9d4edd] border border-[#9d4edd] hover:border-[#9d4edd] transition-all duration-300"
                           disabled={mutation.isPending}
                           data-testid="btn-submit-contact"
                         >
