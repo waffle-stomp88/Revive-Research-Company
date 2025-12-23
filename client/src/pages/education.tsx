@@ -501,19 +501,6 @@ export default function Education() {
             </Link>
           </div>
 
-          <div className="my-6">
-            <div className="relative max-w-md mx-auto">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-              <input
-                type="text"
-                placeholder="Search articles..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                data-testid="input-search-articles"
-                className="w-full pl-9 pr-4 py-2 rounded-lg border border-[#21d8ff]/30 bg-[#21d8ff]/5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#21d8ff] focus:bg-[#21d8ff]/10 transition-all text-sm"
-              />
-            </div>
-          </div>
         </motion.div>
 
         <div className="mt-6">
@@ -828,6 +815,21 @@ export default function Education() {
 
                     {/* Right Panel - Article Grid */}
                     <div className="flex-1 min-w-0">
+                      {/* Search Bar */}
+                      <div className="mb-4">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                          <input
+                            type="text"
+                            placeholder="Search peptide guides..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            data-testid="input-search-articles"
+                            className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#ec4899] focus:ring-1 focus:ring-[#ec4899]/30 transition-all text-sm"
+                          />
+                        </div>
+                      </div>
+
                       <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
                         <div>
                           <h2 className="text-xl font-bold" style={{ color: peptideGroups.find(g => g.id === peptideGroupFilter)?.color || "#ec4899" }}>
@@ -906,6 +908,24 @@ export default function Education() {
                 ) : (
                   /* General Education & Lab Guides Tabs - Simple List */
                   <div>
+                    {/* Search Bar */}
+                    <div className="mb-6">
+                      <div className="relative max-w-md">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                        <input
+                          type="text"
+                          placeholder={`Search ${activeTab === "general" ? "education" : "lab"} articles...`}
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          data-testid="input-search-articles"
+                          className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#E7FB10] focus:ring-1 focus:ring-[#E7FB10]/30 transition-all text-sm"
+                          style={{
+                            borderColor: searchQuery ? EDUCATION_TABS.find(t => t.id === activeTab)?.color : undefined
+                          }}
+                        />
+                      </div>
+                    </div>
+
                     <div className="flex items-center justify-between mb-6">
                       <div>
                         <h2 className="text-2xl font-bold" style={{ color: EDUCATION_TABS.find(t => t.id === activeTab)?.color }}>
