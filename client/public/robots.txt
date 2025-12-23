@@ -3,13 +3,7 @@
 
 User-agent: *
 Allow: /
-Allow: /education
-Allow: /quality-process
-Allow: /transparency
-Allow: /faq
-Allow: /contact
-Allow: /ethical-pricing
-Allow: /buyer-checklist
+
 
 # Disallow all product and shop pages
 Disallow: /products
@@ -24,7 +18,6 @@ Disallow: /research-stacks
 Disallow: /research-stacks/
 Disallow: /bundles
 Disallow: /bundles/
-Disallow: /wholesale
 Disallow: /supplies
 
 # Disallow gated and account pages
@@ -34,7 +27,6 @@ Disallow: /dashboard
 Disallow: /account
 Disallow: /account-settings
 Disallow: /admin
-Disallow: /affiliate
 Disallow: /affiliate-dashboard
 Disallow: /login
 Disallow: /signup
