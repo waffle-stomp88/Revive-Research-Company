@@ -393,6 +393,11 @@ export default function Education() {
       if (group && group !== "all") {
         counts[group] = (counts[group] || 0) + 1;
       }
+      // Also count in any additional categories from multi-category mapping
+      const additionalGroups = multiCategoryArticles[a.slug || ""] || [];
+      additionalGroups.forEach(addGroup => {
+        counts[addGroup] = (counts[addGroup] || 0) + 1;
+      });
     });
     return counts;
   }, [articles]);
@@ -443,7 +448,9 @@ export default function Education() {
     if (activeTab === "peptides" && peptideGroupFilter !== "all") {
       result = result.filter((a) => {
         const group = getPeptideGroup(a.slug || "");
-        return group === peptideGroupFilter;
+        // Check primary group or any additional categories from multi-category mapping
+        const additionalGroups = multiCategoryArticles[a.slug || ""] || [];
+        return group === peptideGroupFilter || additionalGroups.includes(peptideGroupFilter);
       });
     }
     
