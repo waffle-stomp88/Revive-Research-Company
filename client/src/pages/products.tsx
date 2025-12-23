@@ -570,10 +570,7 @@ function ProductsComponent() {
                     </CollapsibleTrigger>
                     <CollapsibleContent className="space-y-1 pt-2">
                       {peptideGroups.map((group) => {
-                        const count = products?.filter(p => {
-                          const pg = getPeptideGroup(p.name);
-                          return pg?.id === group.id;
-                        }).length || 0;
+                        const count = peptideGroupCounts[group.id] || 0;
                         return (
                           <Button
                             key={group.id}
@@ -752,10 +749,7 @@ function ProductsComponent() {
                       <label className="text-sm font-medium">Peptide Groups</label>
                       <div className="space-y-1">
                         {peptideGroups.map((group) => {
-                          const count = products?.filter(p => {
-                            const pg = getPeptideGroup(p.name);
-                            return pg?.id === group.id;
-                          }).length || 0;
+                          const count = peptideGroupCounts[group.id] || 0;
                           return (
                             <Button
                               key={group.id}
