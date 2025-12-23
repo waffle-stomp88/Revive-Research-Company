@@ -53,9 +53,7 @@ import {
   Bell,
   Mail,
   Loader2,
-  Heart,
-  Boxes,
-  Package
+  Heart
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useMutation } from "@tanstack/react-query";
@@ -1144,62 +1142,6 @@ export default function ProductDetail() {
             </div>
           </motion.section>
         )}
-
-        {/* Research Stacks & Bulk Orders CTAs */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.15 }}
-          className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6"
-        >
-          {/* Research Stacks CTA */}
-          <Link href="/research-stacks">
-            <Card className="p-6 border border-[#21d8ff]/20 hover:border-[#21d8ff]/50 cursor-pointer transition-all group hover-elevate h-full" data-testid="card-stacks-cta">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-[#21d8ff]/10">
-                    <Boxes className="h-5 w-5 text-[#21d8ff]" />
-                  </div>
-                  <div>
-                    <h3 className="font-display font-bold text-lg text-[#21d8ff]">RESEARCH STACKS</h3>
-                    <Badge variant="secondary" className="mt-1 text-xs bg-[#21d8ff]/20 text-[#21d8ff]">Save More</Badge>
-                  </div>
-                </div>
-              </div>
-              <p className="text-sm text-muted-foreground mb-4">
-                Expertly curated peptide combinations based on research protocols. Bundle and save on the most popular stacks.
-              </p>
-              <Button className="w-full bg-[#21d8ff] text-black hover:bg-[#1aa3cc] font-semibold" data-testid="button-view-stacks">
-                View Research Stacks
-                <ChevronRight className="h-4 w-4 ml-2" />
-              </Button>
-            </Card>
-          </Link>
-
-          {/* Bulk Orders CTA */}
-          <Link href="/bulk-packs">
-            <Card className="p-6 border border-[#9d4edd]/20 hover:border-[#9d4edd]/50 cursor-pointer transition-all group hover-elevate h-full" data-testid="card-bulk-cta">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-[#9d4edd]/10">
-                    <Package className="h-5 w-5 text-[#9d4edd]" />
-                  </div>
-                  <div>
-                    <h3 className="font-display font-bold text-lg text-[#9d4edd]">BULK ORDERS</h3>
-                    <Badge variant="secondary" className="mt-1 text-xs bg-[#9d4edd]/20 text-[#9d4edd]">Volume Pricing</Badge>
-                  </div>
-                </div>
-              </div>
-              <p className="text-sm text-muted-foreground mb-4">
-                Need larger quantities for your research facility? Contact us for custom bulk pricing with discounts up to 30%.
-              </p>
-              <Button className="w-full bg-[#9d4edd] text-white hover:bg-[#7d2dab] font-semibold" data-testid="button-view-bulk">
-                Explore Bulk Options
-                <ChevronRight className="h-4 w-4 ml-2" />
-              </Button>
-            </Card>
-          </Link>
-        </motion.section>
 
         {/* Reviews Section */}
         <motion.section
