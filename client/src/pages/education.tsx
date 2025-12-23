@@ -559,56 +559,8 @@ export default function Education() {
               })}
             </TabsList>
 
-            {/* Shared content area for all tabs */}
-            <div className="flex flex-col lg:flex-row gap-8">
-              {/* Sidebar - Quick Links */}
-              <aside className="lg:w-56 flex-shrink-0 order-2 lg:order-1">
-                <div className="lg:sticky lg:top-28 space-y-6">
-                  <div className="p-4 rounded-lg bg-gradient-to-br from-[#21d8ff]/15 via-[#E7FB10]/10 to-[#21d8ff]/5 border border-[#21d8ff]/30 overflow-hidden relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#21d8ff]/0 via-[#21d8ff]/5 to-[#21d8ff]/0 pointer-events-none" />
-                    <div className="relative z-10">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Compass className="h-4 w-4 text-[#21d8ff]" />
-                        <span className="text-sm font-semibold">New to Research?</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground mb-3">
-                        Try our guided orientation
-                      </p>
-                      <Link href="/academy">
-                        <Button 
-                          size="sm"
-                          className="w-full bg-gradient-to-r from-[#21d8ff] to-[#1aa3cc] hover:shadow-lg hover:shadow-[#21d8ff]/40 text-black font-semibold transition-all duration-200 group"
-                          data-testid="button-go-to-academy"
-                        >
-                          <span className="flex items-center justify-center gap-2">
-                            Academy
-                            <ChevronRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
-                          </span>
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Quick Links</p>
-                    <Link href="/transparency">
-                      <div className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
-                        <Shield className="h-3.5 w-3.5 text-[#E7FB10]" />
-                        <span className="text-xs text-muted-foreground">Quality Standards</span>
-                      </div>
-                    </Link>
-                    <Link href="/faq">
-                      <div className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
-                        <Info className="h-3.5 w-3.5 text-[#9d4edd]" />
-                        <span className="text-xs text-muted-foreground">FAQ</span>
-                      </div>
-                    </Link>
-                  </div>
-                </div>
-              </aside>
-
-              {/* Main Content */}
-              <div className="flex-1 min-w-0 order-1 lg:order-2">
+            {/* Main Content Area */}
+            <div className="mt-2">
             {expandedArticle ? (
               <div className="relative">
                 {/* Floating Back Button - visible while scrolling */}
@@ -801,144 +753,221 @@ export default function Education() {
               </div>
             ) : (
               <div>
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h2 className="text-2xl font-bold" style={{ color: EDUCATION_TABS.find(t => t.id === activeTab)?.color }}>
-                      {EDUCATION_TABS.find(t => t.id === activeTab)?.label || 'Articles'}
-                    </h2>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {filteredArticles.length} article{filteredArticles.length !== 1 ? 's' : ''} available
-                    </p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                    {activeTab === "peptides" && (
-                      <div className="flex flex-wrap items-center gap-3 p-4 rounded-lg bg-muted/30 border border-border">
-                        <div className="flex items-center gap-2">
-                          <Filter className="h-4 w-4 text-muted-foreground" />
-                          <Select value={peptideGroupFilter} onValueChange={setPeptideGroupFilter}>
-                            <SelectTrigger className="w-[200px] h-9" data-testid="select-peptide-group">
-                              <SelectValue placeholder="Filter by group" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {peptideGroups.map((group) => (
-                                <SelectItem key={group.id} value={group.id} data-testid={`option-group-${group.id}`}>
-                                  <span className="flex items-center justify-between w-full gap-3">
-                                    <span style={{ color: group.color }}>{group.label}</span>
-                                    <Badge variant="secondary" className="ml-auto text-xs">{peptideGroupCounts[group.id] || 0}</Badge>
-                                  </span>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        
-                        <div className="flex items-center gap-2">
-                          <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
-                          <Select value={peptideSort} onValueChange={(v) => setPeptideSort(v as SortOption)}>
-                            <SelectTrigger className="w-[130px] h-9" data-testid="select-peptide-sort">
-                              <SelectValue placeholder="Sort by" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="a-z" data-testid="option-sort-az">
-                                <span className="flex items-center gap-2">
-                                  <SortAsc className="h-3 w-3" /> A to Z
-                                </span>
-                              </SelectItem>
-                              <SelectItem value="z-a" data-testid="option-sort-za">
-                                <span className="flex items-center gap-2">
-                                  <SortDesc className="h-3 w-3" /> Z to A
-                                </span>
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        {peptideGroupFilter !== "all" && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setPeptideGroupFilter("all")}
-                            className="h-9 px-3 text-muted-foreground hover:text-foreground"
-                            data-testid="button-clear-filter"
-                          >
-                            <X className="h-3 w-3 mr-1" />
-                            Clear filter
-                          </Button>
-                        )}
-                        
-                        <span className="text-sm text-muted-foreground ml-auto">
-                          {filteredArticles.length} peptide{filteredArticles.length !== 1 ? 's' : ''}
-                        </span>
-                      </div>
-                    )}
-
-                    <div className="grid gap-3">
-                    {filteredArticles.length > 0 ? (
-                      filteredArticles.map((article) => {
-                        const catColor = getCategoryColor(article.category);
-                        
-                        return (
-                          <Card
-                            key={article.id}
-                            id={`article-${article.id}`}
-                            className="p-4 cursor-pointer hover:bg-muted/30 transition-all group"
-                            style={{ borderColor: `${catColor}20` }}
-                            onClick={() => handleOpenArticle(article.id)}
-                            data-testid={`card-article-${article.slug || article.id}`}
-                          >
-                            <div className="flex items-center justify-between gap-4">
-                              <div className="flex-1 min-w-0">
-                                <h4 className="font-medium group-hover:text-foreground transition-colors">
-                                  {article.title}
-                                </h4>
-                                <p className="text-sm text-muted-foreground line-clamp-1 mt-1">
-                                  {article.summary}
-                                </p>
-                              </div>
-                              <div className="flex items-center gap-3 flex-shrink-0">
-                                {activeTab === "peptides" && article.slug && (
-                                  <Badge 
-                                    variant="outline" 
-                                    className="text-xs hidden sm:inline-flex"
-                                    style={{ 
-                                      borderColor: `${peptideGroups.find(g => g.id === getPeptideGroup(article.slug || ""))?.color || catColor}50`,
-                                      color: peptideGroups.find(g => g.id === getPeptideGroup(article.slug || ""))?.color || catColor
-                                    }}
-                                  >
-                                    {peptideGroups.find(g => g.id === getPeptideGroup(article.slug || ""))?.label || "Other"}
-                                  </Badge>
-                                )}
-                                <span className="text-xs text-muted-foreground">
-                                  {article.readTimeMinutes} min
-                                </span>
-                                <ChevronRight 
-                                  className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" 
-                                  style={{ color: catColor }}
+                {/* Peptide Research Guides Tab - Two Panel Layout */}
+                {activeTab === "peptides" ? (
+                  <div className="flex flex-col lg:flex-row gap-6">
+                    {/* Left Panel - Category Navigation */}
+                    <div className="lg:w-64 flex-shrink-0">
+                      <div className="lg:sticky lg:top-28 space-y-2">
+                        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-2">
+                          Research Categories
+                        </h3>
+                        {peptideGroups.map((group) => {
+                          const isActive = peptideGroupFilter === group.id;
+                          const count = peptideGroupCounts[group.id] || 0;
+                          return (
+                            <button
+                              key={group.id}
+                              onClick={() => setPeptideGroupFilter(group.id)}
+                              className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-left transition-all cursor-pointer ${
+                                isActive 
+                                  ? 'bg-card border shadow-sm' 
+                                  : 'hover:bg-muted/50'
+                              }`}
+                              style={{
+                                borderColor: isActive ? `${group.color}40` : 'transparent',
+                                backgroundColor: isActive ? `${group.color}10` : undefined
+                              }}
+                              data-testid={`button-category-${group.id}`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <div 
+                                  className="w-2 h-2 rounded-full"
+                                  style={{ backgroundColor: group.color }}
                                 />
+                                <span className={`text-sm font-medium ${isActive ? 'text-foreground' : 'text-muted-foreground'}`}>
+                                  {group.label}
+                                </span>
                               </div>
-                            </div>
+                              <Badge 
+                                variant="secondary" 
+                                className="text-xs"
+                                style={{
+                                  backgroundColor: isActive ? `${group.color}20` : undefined,
+                                  color: isActive ? group.color : undefined
+                                }}
+                              >
+                                {count}
+                              </Badge>
+                            </button>
+                          );
+                        })}
+
+                        {/* Academy CTA */}
+                        <div className="mt-6 p-4 rounded-lg bg-gradient-to-br from-[#21d8ff]/10 to-[#E7FB10]/5 border border-[#21d8ff]/20">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Compass className="h-4 w-4 text-[#21d8ff]" />
+                            <span className="text-xs font-semibold">New to Peptides?</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground mb-3">
+                            Start with our guided curriculum
+                          </p>
+                          <Link href="/academy">
+                            <Button 
+                              size="sm"
+                              className="w-full bg-[#21d8ff] hover:bg-[#1aa3cc] text-black font-semibold text-xs"
+                              data-testid="button-go-to-academy"
+                            >
+                              Research Academy
+                              <ChevronRight className="h-3 w-3 ml-1" />
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right Panel - Article Grid */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+                        <div>
+                          <h2 className="text-xl font-bold" style={{ color: peptideGroups.find(g => g.id === peptideGroupFilter)?.color || "#ec4899" }}>
+                            {peptideGroupFilter === "all" ? "All Peptide Guides" : peptideGroups.find(g => g.id === peptideGroupFilter)?.label}
+                          </h2>
+                          <p className="text-sm text-muted-foreground">
+                            {filteredArticles.length} research guide{filteredArticles.length !== 1 ? 's' : ''}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Select value={peptideSort} onValueChange={(v) => setPeptideSort(v as SortOption)}>
+                            <SelectTrigger className="w-[120px] h-8 text-xs" data-testid="select-peptide-sort">
+                              <SelectValue placeholder="Sort" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="a-z"><SortAsc className="h-3 w-3 inline mr-1" /> A-Z</SelectItem>
+                              <SelectItem value="z-a"><SortDesc className="h-3 w-3 inline mr-1" /> Z-A</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        {filteredArticles.length > 0 ? (
+                          filteredArticles.map((article) => {
+                            const groupColor = peptideGroups.find(g => g.id === getPeptideGroup(article.slug || ""))?.color || "#ec4899";
+                            return (
+                              <Card
+                                key={article.id}
+                                className="p-4 cursor-pointer hover:bg-muted/30 transition-all group"
+                                style={{ borderColor: `${groupColor}20` }}
+                                onClick={() => handleOpenArticle(article.id)}
+                                data-testid={`card-article-${article.slug || article.id}`}
+                              >
+                                <div className="flex flex-col gap-2">
+                                  <div className="flex items-start justify-between gap-2">
+                                    <h4 className="font-medium text-sm group-hover:text-foreground transition-colors line-clamp-2">
+                                      {article.title}
+                                    </h4>
+                                    <ChevronRight 
+                                      className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform flex-shrink-0 mt-0.5" 
+                                      style={{ color: groupColor }}
+                                    />
+                                  </div>
+                                  <p className="text-xs text-muted-foreground line-clamp-2">
+                                    {article.summary}
+                                  </p>
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <Badge 
+                                      variant="outline" 
+                                      className="text-xs"
+                                      style={{ borderColor: `${groupColor}50`, color: groupColor }}
+                                    >
+                                      {peptideGroups.find(g => g.id === getPeptideGroup(article.slug || ""))?.label || "Other"}
+                                    </Badge>
+                                    <span className="text-xs text-muted-foreground ml-auto">
+                                      {article.readTimeMinutes} min
+                                    </span>
+                                  </div>
+                                </div>
+                              </Card>
+                            );
+                          })
+                        ) : (
+                          <Card className="p-8 text-center border-dashed border-2 col-span-2">
+                            <FlaskConical className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+                            <h3 className="font-display text-lg font-bold mb-1">No Guides Yet</h3>
+                            <p className="text-sm text-muted-foreground">
+                              Research guides for this category are coming soon.
+                            </p>
                           </Card>
-                        );
-                      })
-                    ) : (
-                      <Card className="p-12 text-center border-dashed border-2">
-                        <BookOpen className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                        <h3 className="font-display text-xl font-bold mb-2">No Articles Yet</h3>
-                        <p className="text-muted-foreground">
-                          Articles for this category are coming soon.
-                        </p>
-                      </Card>
-                    )}
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
+                ) : (
+                  /* General Education & Lab Guides Tabs - Simple List */
+                  <div>
+                    <div className="flex items-center justify-between mb-6">
+                      <div>
+                        <h2 className="text-2xl font-bold" style={{ color: EDUCATION_TABS.find(t => t.id === activeTab)?.color }}>
+                          {EDUCATION_TABS.find(t => t.id === activeTab)?.label || 'Articles'}
+                        </h2>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {filteredArticles.length} article{filteredArticles.length !== 1 ? 's' : ''} available
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="grid gap-3">
+                      {filteredArticles.length > 0 ? (
+                        filteredArticles.map((article) => {
+                          const catColor = getCategoryColor(article.category);
+                          return (
+                            <Card
+                              key={article.id}
+                              className="p-4 cursor-pointer hover:bg-muted/30 transition-all group"
+                              style={{ borderColor: `${catColor}20` }}
+                              onClick={() => handleOpenArticle(article.id)}
+                              data-testid={`card-article-${article.slug || article.id}`}
+                            >
+                              <div className="flex items-center justify-between gap-4">
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-medium group-hover:text-foreground transition-colors">
+                                    {article.title}
+                                  </h4>
+                                  <p className="text-sm text-muted-foreground line-clamp-1 mt-1">
+                                    {article.summary}
+                                  </p>
+                                </div>
+                                <div className="flex items-center gap-3 flex-shrink-0">
+                                  <span className="text-xs text-muted-foreground">
+                                    {article.readTimeMinutes} min
+                                  </span>
+                                  <ChevronRight 
+                                    className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" 
+                                    style={{ color: catColor }}
+                                  />
+                                </div>
+                              </div>
+                            </Card>
+                          );
+                        })
+                      ) : (
+                        <Card className="p-12 text-center border-dashed border-2">
+                          <BookOpen className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                          <h3 className="font-display text-xl font-bold mb-2">No Articles Yet</h3>
+                          <p className="text-muted-foreground">
+                            Articles for this section are coming soon.
+                          </p>
+                        </Card>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
             </div>
-          </div>
-        </Tabs>
-      </motion.div>
+          </Tabs>
+        </motion.div>
       </div>
     </main>
   );
