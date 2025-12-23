@@ -325,10 +325,10 @@ function ProductsComponent() {
     return products.find(p => p.isWeeklyDeal && p.inStock);
   }, [products]);
 
-  // Calculate price stats only from displayed products (excluding Research Stacks and Supplies)
+  // Calculate price stats only from displayed products (excluding Research Stacks)
   const priceStats = useMemo(() => {
     if (!products || products.length === 0) return { min: 0, max: 300 };
-    const excludedCategories = ["Research Stacks", "Supplies"];
+    const excludedCategories = ["Research Stacks"];
     const displayedProducts = products.filter(p => !excludedCategories.includes(p.category));
     if (displayedProducts.length === 0) return { min: 0, max: 300 };
     const prices = displayedProducts.map(p => Number(p.price));
@@ -341,7 +341,7 @@ function ProductsComponent() {
   useEffect(() => {
     // Only reset price range if we don't have a saved state (avoids overwriting restored filter)
     if (products && products.length > 0 && !savedState?.priceRange) {
-      const excludedCategories = ["Research Stacks", "Supplies"];
+      const excludedCategories = ["Research Stacks"];
       const displayedProducts = products.filter(p => !excludedCategories.includes(p.category));
       if (displayedProducts.length === 0) return;
       const prices = displayedProducts.map(p => Number(p.price));
@@ -353,7 +353,7 @@ function ProductsComponent() {
 
   const categoryStats = useMemo(() => {
     if (!products) return {};
-    const excludedCategories = ["Research Stacks", "Supplies"];
+    const excludedCategories = ["Research Stacks"];
     const displayedProducts = products.filter(p => !excludedCategories.includes(p.category));
     const counts: Record<string, number> = { all: displayedProducts.length };
     displayedProducts.forEach(p => {
@@ -367,8 +367,8 @@ function ProductsComponent() {
     if (!products) return [];
 
     let filtered = products.filter((product) => {
-      // Exclude Research Stacks and Supplies from this page (they have their own pages)
-      const excludedCategories = ["Research Stacks", "Supplies"];
+      // Exclude Research Stacks from this page (they have their own page)
+      const excludedCategories = ["Research Stacks"];
       if (excludedCategories.includes(product.category)) {
         return false;
       }
@@ -433,7 +433,7 @@ function ProductsComponent() {
 
   const uniqueCategories = useMemo(() => {
     if (!products) return [];
-    const excludedCategories = ["Research Stacks", "Supplies"];
+    const excludedCategories = ["Research Stacks"];
     const displayedProducts = products.filter(p => !excludedCategories.includes(p.category));
     const cats = new Set(displayedProducts.map(p => p.category));
     return Array.from(cats).map(cat => ({
@@ -443,10 +443,10 @@ function ProductsComponent() {
     }));
   }, [products]);
 
-  // Peptide group counts for badges (excluding Research Stacks and Supplies)
+  // Peptide group counts for badges (excluding Research Stacks)
   const peptideGroupCounts = useMemo(() => {
     if (!products) return {};
-    const excludedCategories = ["Research Stacks", "Supplies"];
+    const excludedCategories = ["Research Stacks"];
     const displayedProducts = products.filter(p => !excludedCategories.includes(p.category));
     const counts: Record<string, number> = { all: displayedProducts.length };
     displayedProducts.forEach(p => {
