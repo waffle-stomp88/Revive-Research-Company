@@ -320,8 +320,8 @@ export const educationArticles = pgTable("education_articles", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   slug: text("slug").notNull().unique(),
   title: text("title").notNull(),
-  category: text("category").notNull(), // Primary category for backward compatibility
-  categories: text("categories").array(), // Multiple categories for complex articles (e.g., GLOW, KLOW)
+  category: text("category").notNull(), // Primary category (also used for complex articles like GLOW/KLOW)
+  relatedCategories: text("related_categories").array(), // Additional categories for complex articles
   summary: text("summary"),
   content: text("content").notNull(),
   imageUrl: text("image_url"),
