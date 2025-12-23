@@ -8,7 +8,7 @@ import { useMutation } from "@tanstack/react-query";
 import { 
   Building2, CheckCircle2, FileText, Users, Truck, Shield, HeadphonesIcon, 
   Package, Send, Loader2, Calculator, ArrowRight, Sparkles, Award, 
-  BadgeCheck, Lock, Minus, Plus, Check, Zap, TrendingUp
+  BadgeCheck, Lock, Minus, Plus, Check, Zap, TrendingUp, Palette
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -583,6 +583,7 @@ ${data.additionalInfo || "None provided"}`.trim(),
               <div className="space-y-3">
                 {[
                   { text: "Minimum order just 100 vials — mix & match any products", icon: Package },
+                  { text: "White label / label-less vials for custom branding", icon: Palette, highlight: true },
                   { text: "Full COA access with batch-specific documentation", icon: FileText },
                   { text: "Priority shipping — most orders ship within 24-48 hours", icon: Truck },
                   { text: "Dedicated account manager for personalized support", icon: Users },
@@ -590,22 +591,53 @@ ${data.additionalInfo || "None provided"}`.trim(),
                   { text: "Extended B2B support hours for business accounts", icon: HeadphonesIcon },
                 ].map((benefit, index) => {
                   const Icon = benefit.icon;
+                  const isHighlighted = (benefit as any).highlight;
                   return (
                     <motion.div
                       key={index}
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.4 + index * 0.08 }}
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#21d8ff]/5 transition-colors group"
+                      className={`flex items-center gap-3 p-3 rounded-lg transition-colors group ${
+                        isHighlighted 
+                          ? "bg-[#a855f7]/10 border border-[#a855f7]/30 hover:bg-[#a855f7]/15" 
+                          : "hover:bg-[#21d8ff]/5"
+                      }`}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-[#21d8ff]/10 flex items-center justify-center flex-shrink-0 group-hover:bg-[#21d8ff]/20 transition-colors">
-                        <Icon className="h-4 w-4 text-[#21d8ff]" />
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors ${
+                        isHighlighted
+                          ? "bg-[#a855f7]/20 group-hover:bg-[#a855f7]/30"
+                          : "bg-[#21d8ff]/10 group-hover:bg-[#21d8ff]/20"
+                      }`}>
+                        <Icon className={`h-4 w-4 ${isHighlighted ? "text-[#a855f7]" : "text-[#21d8ff]"}`} />
                       </div>
-                      <span className="text-sm">{benefit.text}</span>
+                      <span className={`text-sm ${isHighlighted ? "font-semibold text-[#a855f7]" : ""}`}>
+                        {benefit.text}
+                      </span>
                     </motion.div>
                   );
                 })}
               </div>
+              
+              {/* White Label Emphasis */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+                className="mt-6 p-4 rounded-xl bg-gradient-to-r from-[#a855f7]/10 to-[#21d8ff]/5 border border-[#a855f7]/30"
+              >
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 pt-0.5">
+                    <Palette className="h-5 w-5 text-[#a855f7]" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-[#a855f7] mb-1">Build Your Brand</p>
+                    <p className="text-xs text-muted-foreground">
+                      Receive blank, label-less vials so you can apply your own branding, labels, and packaging. Perfect for private label distribution, white label fulfillment, and resellers looking to establish their own brand identity.
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
             </div>
           </div>
         </motion.div>
