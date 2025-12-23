@@ -186,6 +186,12 @@ const generalEdCategories = [
   { id: "glossary", label: "Terminology", color: "#22c55e" },
 ];
 
+// Multi-category articles: complex peptides that appear under multiple research groups
+const multiCategoryArticles: Record<string, string[]> = {
+  "glow-peptide-complex-research-guide": ["skin-regeneration", "tissue-repair", "longevity"],
+  "klow-peptide-complex-research-guide": ["tissue-repair", "longevity", "immune"],
+};
+
 type SortOption = "a-z" | "z-a";
 
 const getPeptideGroup = (slug: string): string => {
@@ -443,7 +449,11 @@ export default function Education() {
     
     // Apply general education category filter if in general tab
     if (activeTab === "general" && generalEdCategoryFilter !== "all") {
-      result = result.filter((a) => a.category === generalEdCategoryFilter);
+      result = result.filter((a) => {
+        // Check primary category or any additional categories from multi-category mapping
+        const additionalCategories = multiCategoryArticles[a.slug || ""] || [];
+        return a.category === generalEdCategoryFilter || additionalCategories.includes(generalEdCategoryFilter);
+      });
     }
     
     // Apply sorting for peptides tab (alphabetical by default)
