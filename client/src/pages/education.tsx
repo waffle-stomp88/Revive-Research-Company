@@ -443,11 +443,7 @@ export default function Education() {
     
     // Apply general education category filter if in general tab
     if (activeTab === "general" && generalEdCategoryFilter !== "all") {
-      result = result.filter((a) => {
-        // Check primary category or any of the article's related categories (for complex articles like GLOW/KLOW)
-        return a.category === generalEdCategoryFilter || 
-               (a.relatedCategories && a.relatedCategories.includes(generalEdCategoryFilter));
-      });
+      result = result.filter((a) => a.category === generalEdCategoryFilter);
     }
     
     // Apply sorting for peptides tab (alphabetical by default)
