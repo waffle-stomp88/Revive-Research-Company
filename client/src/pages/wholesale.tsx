@@ -327,7 +327,7 @@ ${data.additionalInfo || "None provided"}`.trim(),
           <div className="flex flex-wrap justify-center gap-4">
             <Button 
               size="lg" 
-              className="bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90 px-8"
+              className="bg-[#21d8ff] text-black hover:bg-black hover:text-[#21d8ff] border border-[#21d8ff] hover:border-[#21d8ff] transition-all duration-300 px-8"
               onClick={() => document.getElementById('application')?.scrollIntoView({ behavior: 'smooth' })}
               data-testid="button-apply-hero"
             >
@@ -337,7 +337,7 @@ ${data.additionalInfo || "None provided"}`.trim(),
             <Button 
               size="lg" 
               variant="outline" 
-              className="border-white/20 px-8"
+              className="border-white/20 hover:bg-[#21d8ff] hover:text-black hover:border-[#21d8ff] transition-all duration-300 px-8"
               onClick={() => document.getElementById('calculator')?.scrollIntoView({ behavior: 'smooth' })}
               data-testid="button-calculator-hero"
             >
@@ -881,7 +881,7 @@ ${data.additionalInfo || "None provided"}`.trim(),
 
                   <Button 
                     type="submit" 
-                    className="w-full bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90"
+                    className="w-full bg-[#21d8ff] text-black hover:bg-black hover:text-[#21d8ff] border border-[#21d8ff] hover:border-[#21d8ff] transition-all duration-300"
                     disabled={submitMutation.isPending}
                     data-testid="button-submit-application"
                   >
