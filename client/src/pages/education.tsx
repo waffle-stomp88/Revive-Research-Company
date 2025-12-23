@@ -832,24 +832,32 @@ export default function Education() {
                         })}
 
                         {/* Academy CTA */}
-                        <div className="mt-6 p-4 rounded-lg bg-gradient-to-br from-[#21d8ff]/10 to-[#E7FB10]/5 border border-[#21d8ff]/20">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Compass className="h-4 w-4 text-[#21d8ff]" />
-                            <span className="text-xs font-semibold">New to Peptides?</span>
+                        <div className="mt-6 p-4 rounded-lg bg-gradient-to-br from-[#21d8ff]/20 via-[#9d4edd]/10 to-[#E7FB10]/10 border border-[#21d8ff]/50 relative overflow-hidden group hover-elevate transition-all"
+                          style={{
+                            boxShadow: '0 0 20px rgba(33, 216, 255, 0.4), 0 0 40px rgba(157, 78, 221, 0.2), inset 0 0 20px rgba(33, 216, 255, 0.1)'
+                          }}>
+                          {/* Holographic shimmer background */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-[#21d8ff]/0 via-[#E7FB10]/20 to-[#21d8ff]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                          
+                          <div className="relative z-10">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Compass className="h-4 w-4 text-[#21d8ff]" />
+                              <span className="text-xs font-bold bg-gradient-to-r from-[#21d8ff] to-[#E7FB10] bg-clip-text text-transparent">New to Peptides?</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground mb-3">
+                              Start with our guided curriculum
+                            </p>
+                            <Link href="/academy">
+                              <Button 
+                                size="sm"
+                                className="w-full bg-gradient-to-r from-[#21d8ff] to-[#E7FB10] hover:shadow-lg text-black font-semibold text-xs"
+                                data-testid="button-go-to-academy"
+                              >
+                                Research Academy
+                                <ChevronRight className="h-3 w-3 ml-1" />
+                              </Button>
+                            </Link>
                           </div>
-                          <p className="text-xs text-muted-foreground mb-3">
-                            Start with our guided curriculum
-                          </p>
-                          <Link href="/academy">
-                            <Button 
-                              size="sm"
-                              className="w-full bg-[#21d8ff] hover:bg-[#1aa3cc] text-black font-semibold text-xs"
-                              data-testid="button-go-to-academy"
-                            >
-                              Research Academy
-                              <ChevronRight className="h-3 w-3 ml-1" />
-                            </Button>
-                          </Link>
                         </div>
                       </div>
                     </div>
