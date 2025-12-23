@@ -850,7 +850,18 @@ export default function Education() {
                             <Link href="/academy">
                               <Button 
                                 size="sm"
-                                className="w-full bg-gradient-to-r from-[#21d8ff] to-[#E7FB10] hover:shadow-lg text-black font-semibold text-xs"
+                                className="w-full bg-gradient-to-r from-[#21d8ff] to-[#E7FB10] text-black font-semibold text-xs transition-all duration-300 hover:bg-black hover:shadow-lg"
+                                style={{
+                                  backgroundImage: 'linear-gradient(to right, #21d8ff, #E7FB10)'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.backgroundImage = 'linear-gradient(to right, #1a1a1f, #1a1a1f)';
+                                  e.currentTarget.style.color = '#21d8ff';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundImage = 'linear-gradient(to right, #21d8ff, #E7FB10)';
+                                  e.currentTarget.style.color = '#000000';
+                                }}
                                 data-testid="button-go-to-academy"
                               >
                                 Research Academy
