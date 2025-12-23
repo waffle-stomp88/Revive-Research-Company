@@ -40,6 +40,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArticleModeToggle, BeginnerBadge } from "@/components/education/article-mode-toggle";
 import { BeginnerArticleContent, WhatIsPeptideSection, hasQuickBreakdown } from "@/components/education/beginner-content";
 import type { EducationArticle, Product } from "@shared/schema";
@@ -139,6 +140,31 @@ const categories = [
   { id: "storage", label: "Storage & Handling", icon: Thermometer, color: "#f97316" },
   { id: "safety", label: "Lab Safety", icon: AlertTriangle, color: "#ef4444" },
   { id: "glossary", label: "Terminology", icon: Info, color: "#22c55e" },
+];
+
+// Tab definitions for the 3-tab structure
+const EDUCATION_TABS = [
+  { 
+    id: "peptides", 
+    label: "Peptide Research Guides", 
+    icon: FlaskConical, 
+    color: "#ec4899",
+    categories: ["peptides"]
+  },
+  { 
+    id: "general", 
+    label: "General Education", 
+    icon: BookOpen, 
+    color: "#21d8ff",
+    categories: ["basics", "coa-guide", "storage", "glossary"]
+  },
+  { 
+    id: "lab-guides", 
+    label: "Lab Guides", 
+    icon: Beaker, 
+    color: "#22c55e",
+    categories: ["safety"]
+  },
 ];
 
 const peptideGroups = [
@@ -284,6 +310,7 @@ type ArticleMode = "deep-dive" | "quick-breakdown";
 
 export default function Education() {
   const params = useParams<{ slug?: string }>();
+  const [activeTab, setActiveTab] = useState("peptides");
   const [activeCategory, setActiveCategory] = useState("all");
   const [expandedArticle, setExpandedArticle] = useState<string | null>(null);
   const [articleMode, setArticleMode] = useState<ArticleMode>("quick-breakdown");
@@ -355,10 +382,28 @@ export default function Education() {
     return counts;
   }, [articles]);
 
+  // Calculate article counts per tab
+  const tabCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    EDUCATION_TABS.forEach(tab => {
+      counts[tab.id] = articles.filter(a => tab.categories.includes(a.category)).length;
+    });
+    return counts;
+  }, [articles]);
+
+  // Get articles for a specific tab
+  const getTabArticles = (tabId: string) => {
+    const tab = EDUCATION_TABS.find(t => t.id === tabId);
+    if (!tab) return [];
+    return articles.filter(a => tab.categories.includes(a.category));
+  };
+
   const filteredArticles = (() => {
-    let result = activeCategory === "all"
-      ? articles
-      : articles.filter((a) => a.category === activeCategory);
+    // Get articles based on active tab
+    const currentTab = EDUCATION_TABS.find(t => t.id === activeTab);
+    let result = currentTab 
+      ? articles.filter(a => currentTab.categories.includes(a.category))
+      : articles;
     
     // Apply search filter
     if (searchQuery.trim()) {
@@ -369,16 +414,16 @@ export default function Education() {
       );
     }
     
-    // Apply peptide group filter if in peptides category
-    if (activeCategory === "peptides" && peptideGroupFilter !== "all") {
+    // Apply peptide group filter if in peptides tab
+    if (activeTab === "peptides" && peptideGroupFilter !== "all") {
       result = result.filter((a) => {
         const group = getPeptideGroup(a.slug || "");
         return group === peptideGroupFilter;
       });
     }
     
-    // Apply sorting for peptides category (alphabetical by default)
-    if (activeCategory === "peptides") {
+    // Apply sorting for peptides tab (alphabetical by default)
+    if (activeTab === "peptides") {
       result = [...result].sort((a, b) => {
         const nameA = a.title.toLowerCase();
         const nameB = b.title.toLowerCase();
@@ -388,6 +433,9 @@ export default function Education() {
           return nameB.localeCompare(nameA);
         }
       });
+    } else {
+      // Sort alphabetically for other tabs too
+      result = [...result].sort((a, b) => a.title.localeCompare(b.title));
     }
     
     return result;
@@ -472,123 +520,95 @@ export default function Education() {
           <ResearchOrientationMap />
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8 mt-4">
-          <motion.aside
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="lg:w-64 flex-shrink-0"
-          >
-            <div className="lg:sticky lg:top-28">
-              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">
-                Browse by Topic
-              </h2>
-              <nav className="space-y-1">
-                {categories.map((cat) => {
-                  const Icon = cat.icon;
-                  const isActive = activeCategory === cat.id;
-                  const count = cat.id === 'all' 
-                    ? articles.length 
-                    : articles.filter(a => a.category === cat.id).length;
-                  
-                  return (
-                    <button
-                      key={cat.id}
-                      onClick={() => {
-                        setActiveCategory(cat.id);
-                        setExpandedArticle(null);
-                      }}
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all cursor-pointer ${
-                        isActive 
-                          ? 'bg-card border' 
-                          : 'hover:bg-muted/50'
-                      }`}
+        {/* Main Tabbed Content Area */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="mt-8"
+        >
+          <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); setExpandedArticle(null); setPeptideGroupFilter("all"); }} className="w-full">
+            <TabsList className="w-full justify-start bg-card/50 border border-border p-1 rounded-lg mb-6 flex-wrap h-auto gap-1">
+              {EDUCATION_TABS.map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <TabsTrigger
+                    key={tab.id}
+                    value={tab.id}
+                    className="flex items-center gap-2 px-4 py-2.5 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md transition-all"
+                    style={{
+                      color: activeTab === tab.id ? tab.color : undefined,
+                      borderColor: activeTab === tab.id ? `${tab.color}40` : undefined,
+                    }}
+                    data-testid={`tab-${tab.id}`}
+                  >
+                    <Icon className="h-4 w-4" style={{ color: tab.color }} />
+                    <span className="hidden sm:inline">{tab.label}</span>
+                    <Badge 
+                      variant="secondary" 
+                      className="ml-1 text-xs px-1.5 py-0"
                       style={{
-                        borderColor: isActive ? `${cat.color}40` : 'transparent',
-                        backgroundColor: isActive ? `${cat.color}10` : undefined
+                        backgroundColor: activeTab === tab.id ? `${tab.color}20` : undefined,
+                        color: activeTab === tab.id ? tab.color : undefined
                       }}
-                      data-testid={`nav-category-${cat.id}`}
                     >
-                      <div 
-                        className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                        style={{ 
-                          backgroundColor: `${cat.color}20`,
-                          boxShadow: isActive ? `0 0 10px ${cat.color}30` : undefined
-                        }}
-                      >
-                        <Icon 
-                          className="h-4 w-4" 
-                          style={{ color: cat.color }}
-                        />
+                      {tabCounts[tab.id] || 0}
+                    </Badge>
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+
+            {/* Shared content area for all tabs */}
+            <div className="flex flex-col lg:flex-row gap-8">
+              {/* Sidebar - Quick Links */}
+              <aside className="lg:w-56 flex-shrink-0 order-2 lg:order-1">
+                <div className="lg:sticky lg:top-28 space-y-6">
+                  <div className="p-4 rounded-lg bg-gradient-to-br from-[#21d8ff]/15 via-[#E7FB10]/10 to-[#21d8ff]/5 border border-[#21d8ff]/30 overflow-hidden relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#21d8ff]/0 via-[#21d8ff]/5 to-[#21d8ff]/0 pointer-events-none" />
+                    <div className="relative z-10">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Compass className="h-4 w-4 text-[#21d8ff]" />
+                        <span className="text-sm font-semibold">New to Research?</span>
                       </div>
-                      <span className={`flex-1 text-sm font-medium ${isActive ? 'text-foreground' : 'text-muted-foreground'}`}>
-                        {cat.label}
-                      </span>
-                      <span 
-                        className="text-xs px-2 py-0.5 rounded-full"
-                        style={{
-                          backgroundColor: isActive ? `${cat.color}20` : 'hsl(var(--muted))',
-                          color: isActive ? cat.color : undefined
-                        }}
-                      >
-                        {count}
-                      </span>
-                    </button>
-                  );
-                })}
-              </nav>
-
-              <Separator className="my-6" />
-
-              <div className="p-5 rounded-lg bg-gradient-to-br from-[#21d8ff]/15 via-[#E7FB10]/10 to-[#21d8ff]/5 border border-[#21d8ff]/30 overflow-hidden relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#21d8ff]/0 via-[#21d8ff]/5 to-[#21d8ff]/0 pointer-events-none" />
-                <div className="relative z-10">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Compass className="h-5 w-5 text-[#21d8ff]" />
-                    <span className="text-sm font-semibold">New to Research?</span>
+                      <p className="text-xs text-muted-foreground mb-3">
+                        Try our guided orientation
+                      </p>
+                      <Link href="/academy">
+                        <Button 
+                          size="sm"
+                          className="w-full bg-gradient-to-r from-[#21d8ff] to-[#1aa3cc] hover:shadow-lg hover:shadow-[#21d8ff]/40 text-black font-semibold transition-all duration-200 group"
+                          data-testid="button-go-to-academy"
+                        >
+                          <span className="flex items-center justify-center gap-2">
+                            Academy
+                            <ChevronRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+                          </span>
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
-                  <p className="text-xs text-muted-foreground mb-4">
-                    Try our guided orientation with progress tracking
-                  </p>
-                  <Link href="/academy">
-                    <Button 
-                      className="w-full bg-gradient-to-r from-[#21d8ff] to-[#1aa3cc] hover:shadow-lg hover:shadow-[#21d8ff]/40 text-black font-semibold transition-all duration-200 group"
-                      data-testid="button-go-to-academy"
-                    >
-                      <span className="flex items-center justify-center gap-2">
-                        Research Academy
-                        <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                      </span>
-                    </Button>
-                  </Link>
+
+                  <div className="space-y-1">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Quick Links</p>
+                    <Link href="/transparency">
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+                        <Shield className="h-3.5 w-3.5 text-[#E7FB10]" />
+                        <span className="text-xs text-muted-foreground">Quality Standards</span>
+                      </div>
+                    </Link>
+                    <Link href="/faq">
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+                        <Info className="h-3.5 w-3.5 text-[#9d4edd]" />
+                        <span className="text-xs text-muted-foreground">FAQ</span>
+                      </div>
+                    </Link>
+                  </div>
                 </div>
-              </div>
+              </aside>
 
-              <Separator className="my-6" />
-
-              <div className="space-y-2">
-                <Link href="/transparency">
-                  <div className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
-                    <Shield className="h-4 w-4 text-[#E7FB10]" />
-                    <span className="text-sm text-muted-foreground">Quality Standards</span>
-                  </div>
-                </Link>
-                <Link href="/faq">
-                  <div className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
-                    <Info className="h-4 w-4 text-[#9d4edd]" />
-                    <span className="text-sm text-muted-foreground">FAQ</span>
-                  </div>
-                </Link>
-              </div>
-            </div>
-          </motion.aside>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex-1 min-w-0"
-          >
+              {/* Main Content */}
+              <div className="flex-1 min-w-0 order-1 lg:order-2">
             {expandedArticle ? (
               <div className="relative">
                 {/* Floating Back Button - visible while scrolling */}
@@ -783,8 +803,8 @@ export default function Education() {
               <div>
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold">
-                      {activeCategory === 'all' ? 'All Articles' : getCategoryLabel(activeCategory)}
+                    <h2 className="text-2xl font-bold" style={{ color: EDUCATION_TABS.find(t => t.id === activeTab)?.color }}>
+                      {EDUCATION_TABS.find(t => t.id === activeTab)?.label || 'Articles'}
                     </h2>
                     <p className="text-sm text-muted-foreground mt-1">
                       {filteredArticles.length} article{filteredArticles.length !== 1 ? 's' : ''} available
@@ -792,69 +812,8 @@ export default function Education() {
                   </div>
                 </div>
 
-                
-                {activeCategory === 'all' ? (
-                  <div className="space-y-10">
-                    {groupedArticles.map((group) => {
-                      const Icon = group.icon;
-                      return (
-                        <div key={group.id}>
-                          <div className="flex items-center gap-3 mb-4">
-                            <div 
-                              className="w-10 h-10 rounded-lg flex items-center justify-center"
-                              style={{ backgroundColor: `${group.color}20` }}
-                            >
-                              <Icon className="h-5 w-5" style={{ color: group.color }} />
-                            </div>
-                            <div>
-                              <h3 className="font-semibold text-lg" style={{ color: group.color }}>
-                                {group.label}
-                              </h3>
-                              <p className="text-xs text-muted-foreground">
-                                {group.articles.length} article{group.articles.length !== 1 ? 's' : ''}
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="grid gap-3">
-                            {group.articles.map((article) => (
-                              <Card
-                                key={article.id}
-                                id={`article-${article.id}`}
-                                className="p-4 cursor-pointer hover:bg-muted/30 transition-all group"
-                                style={{ borderColor: `${group.color}20` }}
-                                onClick={() => handleOpenArticle(article.id)}
-                                data-testid={`card-article-${article.slug || article.id}`}
-                              >
-                                <div className="flex items-center justify-between gap-4">
-                                  <div className="flex-1 min-w-0">
-                                    <h4 className="font-medium group-hover:text-foreground transition-colors">
-                                      {article.title}
-                                    </h4>
-                                    <p className="text-sm text-muted-foreground line-clamp-1 mt-1">
-                                      {article.summary}
-                                    </p>
-                                  </div>
-                                  <div className="flex items-center gap-3 flex-shrink-0">
-                                    <span className="text-xs text-muted-foreground">
-                                      {article.readTimeMinutes} min
-                                    </span>
-                                    <ChevronRight 
-                                      className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" 
-                                      style={{ color: group.color }}
-                                    />
-                                  </div>
-                                </div>
-                              </Card>
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {activeCategory === "peptides" && (
+                <div className="space-y-4">
+                    {activeTab === "peptides" && (
                       <div className="flex flex-wrap items-center gap-3 p-4 rounded-lg bg-muted/30 border border-border">
                         <div className="flex items-center gap-2">
                           <Filter className="h-4 w-4 text-muted-foreground" />
@@ -939,7 +898,7 @@ export default function Education() {
                                 </p>
                               </div>
                               <div className="flex items-center gap-3 flex-shrink-0">
-                                {activeCategory === "peptides" && article.slug && (
+                                {activeTab === "peptides" && article.slug && (
                                   <Badge 
                                     variant="outline" 
                                     className="text-xs hidden sm:inline-flex"
@@ -974,11 +933,12 @@ export default function Education() {
                     )}
                     </div>
                   </div>
-                )}
-              </div>
+                </div>
             )}
-          </motion.div>
-        </div>
+            </div>
+          </div>
+        </Tabs>
+      </motion.div>
       </div>
     </main>
   );
