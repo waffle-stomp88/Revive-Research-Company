@@ -178,6 +178,14 @@ const peptideGroups = [
   { id: "hormonal", label: "Hormonal", color: "#21d8ff", slugs: ["hcg", "kisspeptin"] },
 ];
 
+const generalEdCategories = [
+  { id: "all", label: "All Articles", color: "#21d8ff" },
+  { id: "basics", label: "Research Basics", color: "#21d8ff" },
+  { id: "coa-guide", label: "Understanding COAs", color: "#9d4edd" },
+  { id: "storage", label: "Storage & Handling", color: "#f97316" },
+  { id: "glossary", label: "Terminology", color: "#22c55e" },
+];
+
 type SortOption = "a-z" | "z-a";
 
 const getPeptideGroup = (slug: string): string => {
@@ -316,6 +324,7 @@ export default function Education() {
   const [articleMode, setArticleMode] = useState<ArticleMode>("quick-breakdown");
   const [peptideSort, setPeptideSort] = useState<SortOption>("a-z");
   const [peptideGroupFilter, setPeptideGroupFilter] = useState<string>("all");
+  const [generalEdCategoryFilter, setGeneralEdCategoryFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: articles = [], isLoading } = useQuery<EducationArticle[]>({
@@ -382,6 +391,16 @@ export default function Education() {
     return counts;
   }, [articles]);
 
+  // Calculate general education article counts per category
+  const generalEdCategoryCounts = useMemo(() => {
+    const genEdArticles = articles.filter(a => EDUCATION_TABS.find(t => t.id === "general")?.categories.includes(a.category));
+    const counts: Record<string, number> = { all: genEdArticles.length };
+    generalEdCategories.slice(1).forEach(cat => {
+      counts[cat.id] = genEdArticles.filter(a => a.category === cat.id).length;
+    });
+    return counts;
+  }, [articles]);
+
   // Calculate article counts per tab
   const tabCounts = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -420,6 +439,11 @@ export default function Education() {
         const group = getPeptideGroup(a.slug || "");
         return group === peptideGroupFilter;
       });
+    }
+    
+    // Apply general education category filter if in general tab
+    if (activeTab === "general" && generalEdCategoryFilter !== "all") {
+      result = result.filter((a) => a.category === generalEdCategoryFilter);
     }
     
     // Apply sorting for peptides tab (alphabetical by default)
@@ -905,8 +929,141 @@ export default function Education() {
                       </div>
                     </div>
                   </div>
+                ) : activeTab === "general" ? (
+                  /* General Education Tab - Two Panel Layout */
+                  <div className="flex flex-col lg:flex-row gap-6">
+                    {/* Left Panel - Category Navigation */}
+                    <div className="lg:w-64 flex-shrink-0">
+                      <div className="lg:sticky lg:top-28 space-y-2">
+                        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-2">
+                          Topics
+                        </h3>
+                        {generalEdCategories.map((cat) => {
+                          const isActive = generalEdCategoryFilter === cat.id;
+                          const count = generalEdCategoryCounts[cat.id] || 0;
+                          return (
+                            <button
+                              key={cat.id}
+                              onClick={() => setGeneralEdCategoryFilter(cat.id)}
+                              className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-left transition-all cursor-pointer ${
+                                isActive 
+                                  ? 'bg-card border shadow-sm' 
+                                  : 'hover:bg-muted/50'
+                              }`}
+                              style={{
+                                borderColor: isActive ? `${cat.color}40` : 'transparent',
+                                backgroundColor: isActive ? `${cat.color}10` : undefined
+                              }}
+                              data-testid={`button-category-${cat.id}`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <div 
+                                  className="w-2 h-2 rounded-full"
+                                  style={{ backgroundColor: cat.color }}
+                                />
+                                <span className={`text-sm font-medium ${isActive ? 'text-foreground' : 'text-muted-foreground'}`}>
+                                  {cat.label}
+                                </span>
+                              </div>
+                              <Badge 
+                                variant="secondary" 
+                                className="text-xs"
+                                style={{
+                                  backgroundColor: isActive ? `${cat.color}20` : undefined,
+                                  color: isActive ? cat.color : undefined
+                                }}
+                              >
+                                {count}
+                              </Badge>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Right Panel - Article Grid */}
+                    <div className="flex-1 min-w-0">
+                      {/* Search Bar */}
+                      <div className="mb-4">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                          <input
+                            type="text"
+                            placeholder="Search education articles..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            data-testid="input-search-articles"
+                            className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#21d8ff] focus:ring-1 focus:ring-[#21d8ff]/30 transition-all text-sm"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+                        <div>
+                          <h2 className="text-xl font-bold" style={{ color: generalEdCategories.find(c => c.id === generalEdCategoryFilter)?.color || "#21d8ff" }}>
+                            {generalEdCategoryFilter === "all" ? "All Education Articles" : generalEdCategories.find(c => c.id === generalEdCategoryFilter)?.label}
+                          </h2>
+                          <p className="text-sm text-muted-foreground">
+                            {filteredArticles.length} article{filteredArticles.length !== 1 ? 's' : ''}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        {filteredArticles.length > 0 ? (
+                          filteredArticles.map((article) => {
+                            const catColor = getCategoryColor(article.category);
+                            return (
+                              <Card
+                                key={article.id}
+                                className="p-4 cursor-pointer hover:bg-muted/30 transition-all group"
+                                style={{ borderColor: `${catColor}20` }}
+                                onClick={() => handleOpenArticle(article.id)}
+                                data-testid={`card-article-${article.slug || article.id}`}
+                              >
+                                <div className="flex flex-col gap-2">
+                                  <div className="flex items-start justify-between gap-2">
+                                    <h4 className="font-medium text-sm group-hover:text-foreground transition-colors line-clamp-2">
+                                      {article.title}
+                                    </h4>
+                                    <ChevronRight 
+                                      className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform flex-shrink-0 mt-0.5" 
+                                      style={{ color: catColor }}
+                                    />
+                                  </div>
+                                  <p className="text-xs text-muted-foreground line-clamp-2">
+                                    {article.summary}
+                                  </p>
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <Badge 
+                                      variant="outline" 
+                                      className="text-xs"
+                                      style={{ borderColor: `${catColor}50`, color: catColor }}
+                                    >
+                                      {getCategoryLabel(article.category)}
+                                    </Badge>
+                                    <span className="text-xs text-muted-foreground ml-auto">
+                                      {article.readTimeMinutes} min
+                                    </span>
+                                  </div>
+                                </div>
+                              </Card>
+                            );
+                          })
+                        ) : (
+                          <Card className="p-8 text-center border-dashed border-2 col-span-2">
+                            <BookOpen className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+                            <h3 className="font-display text-lg font-bold mb-1">No Articles Yet</h3>
+                            <p className="text-sm text-muted-foreground">
+                              Articles for this category are coming soon.
+                            </p>
+                          </Card>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 ) : (
-                  /* General Education & Lab Guides Tabs - Simple List */
+                  /* Lab Guides Tab - Simple List */
                   <div>
                     {/* Search Bar */}
                     <div className="mb-6">
@@ -914,25 +1071,20 @@ export default function Education() {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                         <input
                           type="text"
-                          placeholder={`Search ${activeTab === "general" ? "education" : "lab"} articles...`}
+                          placeholder="Search lab guides..."
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                           data-testid="input-search-articles"
-                          className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#E7FB10] focus:ring-1 focus:ring-[#E7FB10]/30 transition-all text-sm"
-                          style={{
-                            borderColor: searchQuery ? EDUCATION_TABS.find(t => t.id === activeTab)?.color : undefined
-                          }}
+                          className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#22c55e] focus:ring-1 focus:ring-[#22c55e]/30 transition-all text-sm"
                         />
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between mb-6">
                       <div>
-                        <h2 className="text-2xl font-bold" style={{ color: EDUCATION_TABS.find(t => t.id === activeTab)?.color }}>
-                          {EDUCATION_TABS.find(t => t.id === activeTab)?.label || 'Articles'}
-                        </h2>
+                        <h2 className="text-2xl font-bold text-[#22c55e]">Lab Guides</h2>
                         <p className="text-sm text-muted-foreground mt-1">
-                          {filteredArticles.length} article{filteredArticles.length !== 1 ? 's' : ''} available
+                          {filteredArticles.length} guide{filteredArticles.length !== 1 ? 's' : ''} available
                         </p>
                       </div>
                     </div>
@@ -974,9 +1126,9 @@ export default function Education() {
                       ) : (
                         <Card className="p-12 text-center border-dashed border-2">
                           <BookOpen className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                          <h3 className="font-display text-xl font-bold mb-2">No Articles Yet</h3>
+                          <h3 className="font-display text-xl font-bold mb-2">No Guides Yet</h3>
                           <p className="text-muted-foreground">
-                            Articles for this section are coming soon.
+                            Lab guides are coming soon.
                           </p>
                         </Card>
                       )}
