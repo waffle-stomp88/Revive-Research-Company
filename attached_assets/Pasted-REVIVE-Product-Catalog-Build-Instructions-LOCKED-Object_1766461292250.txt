@@ -1,0 +1,113 @@
+REVIVE — Product Catalog Build Instructions (LOCKED)
+Objective
+
+Populate the REVIVE product catalog with all manufacturer-available peptides, regardless of stock status, while strictly preserving the existing REVIVE peptide product page structure.
+All newly created products must be Out of Stock with no pricing set.
+
+NON-NEGOTIABLE FORMAT REQUIREMENT
+
+🚨 All work must follow the CURRENT REVIVE peptide product page format exactly.
+
+Do not redesign layouts
+
+Do not introduce new fields, sections, or UI elements
+
+Do not change dropdown behavior, page flow, or copy structure
+
+New products must be indistinguishable from existing peptide pages except for name and dosage options
+
+If something cannot be implemented within the current peptide template, it must not be added.
+
+Source Data Handling
+
+Scrub the provided manufacturer order / inventory table submitted via the form.
+
+Extract only:
+
+Peptide name
+
+All available vial dosage options
+
+Ignore and discard:
+
+All pricing
+
+All minimum order quantity text (e.g., “10 vials”)
+
+Minimum order quantities are not product attributes and must never appear on product pages.
+
+Dosage Rules (Critical)
+
+Dosages may be listed in mg, IU, mL, or mcg
+
+Use exact manufacturer-listed dosages only
+
+Do not infer, convert, normalize, or combine dosages
+
+Product Page Structure
+
+One product page per peptide
+
+All dosage sizes added via the existing dosage dropdown
+
+No separate pages per dosage
+
+Dropdown formatting must match current peptide pages exactly
+
+Product Creation Rules
+
+For each peptide not currently on the website:
+
+Create one product page using the existing peptide template
+
+Populate the dosage dropdown with all valid dosage options
+
+Set product status to Out of Stock
+
+Leave price field unset / “TBD”
+
+Maintain consistent naming and formatting with existing products
+
+Existing Inventory Verification (Mandatory)
+
+For peptides already on the website:
+
+Compare existing dosage dropdown options against the manufacturer list
+
+If a dosage is:
+
+Missing → add it
+
+Incorrect → correct or remove it
+
+Do not duplicate existing peptides
+
+Required Actions Summary
+
+You must:
+
+Scrub and normalize the manufacturer inventory list
+
+Add missing peptides using the current peptide page format
+
+Add all valid dosage options via the existing dropdown system
+
+Verify and correct dosage discrepancies on existing products
+
+Leave pricing unset
+
+Mark all new products Out of Stock
+
+What NOT to Do
+
+Do NOT change the peptide page layout or structure
+
+Do NOT create new templates or variants
+
+Do NOT add pricing
+
+Do NOT display minimum order quantities
+
+Do NOT guess dosages
+
+Do NOT duplicate peptides
