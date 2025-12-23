@@ -158,15 +158,14 @@ const CATEGORIES = [
 
 const peptideGroups = [
   { id: "all", label: "All Peptides", color: "#ec4899" },
-  { id: "metabolic", label: "Metabolic / GLP-1", color: "#E7FB10", names: ["retatrutide", "cagrilintide", "mazdutide", "survodutide", "aod-9604", "5-amino-1mq", "aicar", "slu-pp-322", "l-carnitine", "lipo-c"] },
-  { id: "growth-hormone", label: "Growth Hormone", color: "#21d8ff", names: ["cjc-1295", "ipamorelin", "tesamorelin", "igf-1 lr3", "igf-des", "ghrp-2", "ghrp-6", "hexarelin", "sermorelin", "mgf", "peg-mgf"] },
+  { id: "metabolic", label: "Metabolic / GLP-1", color: "#E7FB10", names: ["retatrutide", "cagrilintide", "mazdutide", "survodutide", "aod-9604", "5-amino-1mq", "aicar", "slu-pp-322", "l-carnitine", "lipo-c", "adipotide"] },
+  { id: "growth-hormone", label: "Growth Hormone", color: "#21d8ff", names: ["cjc-1295", "ipamorelin", "tesamorelin", "igf-1 lr3", "igf-des", "ghrp-2", "ghrp-6", "hexarelin", "sermorelin", "mgf", "peg-mgf", "ace-031"] },
   { id: "tissue-repair", label: "Tissue Repair", color: "#22c55e", names: ["bpc-157", "tb-500", "ll-37", "ara-290", "klow"] },
-  { id: "skin-regeneration", label: "Skin & Regeneration", color: "#ec4899", names: ["ghk-cu", "glow", "snap-8", "hyaluronic"] },
-  { id: "longevity", label: "Longevity & Cellular", color: "#9d4edd", names: ["epithalon", "mots-c", "nad+", "foxo4-dri", "ss-31", "glutathione"] },
-  { id: "cognitive", label: "Cognitive / Neuro", color: "#f97316", names: ["semax", "selank", "dsip", "cerebrolysin", "pinealon", "melatonin"] },
+  { id: "skin-regeneration", label: "Skin & Regeneration", color: "#ec4899", names: ["ghk-cu", "glow", "snap-8", "hyaluronic", "melanotan"] },
+  { id: "longevity", label: "Longevity & Cellular", color: "#9d4edd", names: ["epithalon", "mots-c", "nad+", "foxo4-dri", "ss-31", "glutathione", "pnc-27"] },
+  { id: "cognitive", label: "Cognitive / Neuro", color: "#f97316", names: ["semax", "selank", "dsip", "cerebrolysin", "pinealon", "melatonin", "botulinum"] },
   { id: "hormonal", label: "Hormonal", color: "#a855f7", names: ["hcg", "hmg", "gonadorelin", "oxytocin", "kisspeptin", "pt-141", "triptorelin", "alprostadil"] },
   { id: "immune", label: "Immune / Thymic", color: "#14b8a6", names: ["thymosin alpha-1", "thymalin", "vip", "kpv"] },
-  { id: "specialty", label: "Specialty", color: "#64748b", names: ["melanotan", "pnc-27", "adipotide", "ace-031", "botulinum"] },
 ];
 
 const getPeptideGroup = (productName: string): { id: string; label: string; color: string } | null => {
