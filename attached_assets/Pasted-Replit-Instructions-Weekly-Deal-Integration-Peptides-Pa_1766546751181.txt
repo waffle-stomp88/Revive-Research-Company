@@ -1,0 +1,71 @@
+Replit Instructions — Weekly Deal Integration (Peptides Page)
+Goal
+
+Refactor the Weekly Deal section so it is full-width, appears above the product grid, and does not compete with the left filter rail. Keep the existing Peptides page styling and layout conventions.
+
+Required Layout Change
+Current Problem
+
+The Weekly Deal card sits in the main content area next to the left filter rail, creating visual competition and unclear hierarchy.
+
+New Layout (Required)
+
+On the Peptides (Individual Vials) listing page:
+
+Keep the existing header/title section as-is (“PEPTIDES” + subtitle).
+
+Render the Weekly Deal section as a full-width horizontal banner/card that sits between the header and the products area.
+
+The Products area begins immediately after the Weekly Deal section and contains:
+
+Left rail filters (unchanged)
+
+Product grid + sorting controls (unchanged)
+
+Weekly Deal should NOT appear inside the product grid and should NOT be constrained by the filter column width.
+
+Implementation Details
+Placement
+
+Insert Weekly Deal section in the main page flow like this:
+
+Page Title + subtitle
+
+Weekly Deal full-width banner
+
+Two-column layout begins:
+
+Left: Filters
+
+Right: Product grid + sort + list
+
+Width / Container Rules
+
+Weekly Deal must span the same max-width container as the rest of the page content (site container), but within that container it should be 100% width.
+
+Weekly Deal must be independent of the filters/grid flex layout (do not place it inside the two-column wrapper that contains filters + grid).
+
+Design Requirements (Match Current Style)
+
+Keep the current dark theme, border glow / accent styling, typography, and spacing consistent with existing components.
+
+Weekly Deal should read as a promo banner (shorter height), not as a full product tile competing with the grid.
+
+Maintain the same deal content elements you already show (product image, title, short description, price, discount, CTA).
+
+Behavior Requirements
+No Interaction With Filters
+
+Weekly Deal is not filterable and should not change when filters change.
+
+It should not be treated as a “pinned product” within the grid.
+
+Optional (Preferred)
+
+Add a dismiss/collapse control on the Weekly Deal banner:
+
+“Hide deal” / “Dismiss”
+
+Store in localStorage so it stays hidden for that session (or 24h).
+
+Default is visible when not dismissed.

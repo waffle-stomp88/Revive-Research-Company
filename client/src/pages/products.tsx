@@ -228,6 +228,26 @@ function ProductsComponent() {
   // Mobile filter sheet state
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
+  // Weekly Deal dismiss state with localStorage
+  const [weeklyDealDismissed, setWeeklyDealDismissed] = useState(() => {
+    try {
+      const stored = localStorage.getItem("weekly-deal-dismissed");
+      return stored === "true";
+    } catch {
+      return false;
+    }
+  });
+
+  const dismissWeeklyDeal = () => {
+    setWeeklyDealDismissed(true);
+    localStorage.setItem("weekly-deal-dismissed", "true");
+  };
+
+  const undismissWeeklyDeal = () => {
+    setWeeklyDealDismissed(false);
+    localStorage.removeItem("weekly-deal-dismissed");
+  };
+
   const dealsRef = useRef<HTMLDivElement>(null);
   const bundlesRef = useRef<HTMLDivElement>(null);
   const productsRef = useRef<HTMLDivElement>(null);
@@ -474,6 +494,118 @@ function ProductsComponent() {
             Premium research compounds, curated bundles, and volume pricing for your laboratory needs.
           </p>
         </motion.div>
+
+        {/* Full-width Weekly Deal Section */}
+        {!weeklyDealDismissed && saleProduct && (
+          <motion.div
+            ref={dealsRef}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mb-12 -mx-4 md:-mx-8 px-4 md:px-8"
+          >
+            <Link href={`/peptides/${saleProduct.id}`} onClick={savePageState}>
+              <div className="sale-glow-pulse rounded-xl">
+                <Card className="p-3 md:p-6 border-2 border-red-500 bg-gradient-to-br from-red-950/40 via-background to-background transition-all duration-300 cursor-pointer group hover:scale-[1.02] md:hover:scale-105 hover:shadow-[0_0_30px_rgba(239,68,68,0.6)] hover:border-red-400 relative">
+                  {/* Dismiss button */}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      dismissWeeklyDeal();
+                    }}
+                    className="absolute top-3 right-3 p-1 hover:bg-white/10 rounded transition-colors"
+                    data-testid="button-dismiss-weekly-deal"
+                    aria-label="Hide deal"
+                  >
+                    <X className="h-5 w-5 text-red-400 hover:text-red-300" />
+                  </button>
+
+                  {/* Mobile: Compact horizontal layout */}
+                  <div className="md:hidden flex items-center gap-3 pr-8">
+                    <div className="w-16 h-16 bg-muted/50 rounded-lg overflow-hidden flex-shrink-0 border border-red-500/20">
+                      <img 
+                        src={saleProduct.imageUrl || productImage} 
+                        alt={`${saleProduct.name}`}
+                        className="w-full h-full object-contain p-1"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Flame className="h-4 w-4 text-red-500" />
+                        <span className="font-display text-xs font-bold text-red-400">WEEKLY DEAL</span>
+                        {saleProduct.originalPrice && (
+                          <Badge variant="destructive" className="text-xs px-1.5 py-0">
+                            {Math.round(((Number(saleProduct.originalPrice) - Number(saleProduct.price)) / Number(saleProduct.originalPrice)) * 100)}% OFF
+                          </Badge>
+                        )}
+                      </div>
+                      <h3 className="font-display text-base font-bold text-[#E7FB10] truncate">
+                        {saleProduct.name}
+                      </h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="font-display text-lg font-bold">${Number(saleProduct.price).toFixed(2)}</span>
+                        <Button size="sm" className="h-7 text-xs gap-1 ml-auto">
+                          Shop <ArrowRight className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Desktop: Full layout */}
+                  <div className="hidden md:flex flex-row gap-5 items-center">
+                    <div className="flex items-center gap-3 flex-shrink-0">
+                      <Flame className="h-6 w-6 text-red-500" />
+                      <div>
+                        <span className="font-display text-xs font-bold text-red-400 block">WEEKLY DEAL</span>
+                        <Badge variant="destructive" className="animate-pulse mt-1">
+                          {SALE_OF_THE_WEEK.badge}
+                        </Badge>
+                      </div>
+                    </div>
+
+                    <div className="w-40 h-40 bg-muted/50 rounded-lg overflow-hidden flex-shrink-0 border border-red-500/20">
+                      <img 
+                        src={saleProduct.imageUrl || productImage} 
+                        alt={`${saleProduct.name} research peptide - premium quality lab tested compound`}
+                        className="w-full h-full object-contain p-3 group-hover:scale-110 transition-transform"
+                      />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                        {saleProduct.originalPrice && (
+                          <Badge variant="destructive" className="text-base px-2.5 py-0.5">
+                            {Math.round(((Number(saleProduct.originalPrice) - Number(saleProduct.price)) / Number(saleProduct.originalPrice)) * 100)}% OFF
+                          </Badge>
+                        )}
+                        {saleProduct.weeklyDealEndDate && (
+                          <span className="text-sm text-muted-foreground">Ends {saleProduct.weeklyDealEndDate}</span>
+                        )}
+                      </div>
+                      <h3 className="font-display text-3xl font-bold text-[#E7FB10] mb-2">
+                        {saleProduct.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-4 max-w-lg">
+                        {saleProduct.shortDescription}
+                      </p>
+                      <div className="flex items-center gap-4">
+                        <span className="font-display text-3xl font-bold">${Number(saleProduct.price).toFixed(2)}</span>
+                        {saleProduct.originalPrice && (
+                          <span className="text-lg text-muted-foreground line-through">
+                            ${Number(saleProduct.originalPrice).toFixed(2)}
+                          </span>
+                        )}
+                        <Button className="ml-2 gap-2">
+                          Shop Now <ArrowRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </Link>
+          </motion.div>
+        )}
 
         {/* Main Layout with Sidebar */}
         <div className="flex gap-6">
@@ -859,108 +991,6 @@ function ProductsComponent() {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-
-            {/* Weekly Deal Section */}
-            <div ref={dealsRef} className="scroll-mt-36">
-              {saleProduct && (
-                <Collapsible open={dealsOpen} onOpenChange={setDealsOpen} className="mb-12">
-                  <CollapsibleTrigger asChild>
-                    <div className="cursor-pointer flex items-center gap-3 mb-5">
-                      <Flame className="h-6 w-6 text-red-500" />
-                      <h2 className="font-display font-bold text-2xl md:text-3xl">Weekly Deal</h2>
-                      <Badge variant="destructive" className="animate-pulse">
-                        {SALE_OF_THE_WEEK.badge}
-                      </Badge>
-                      <ChevronDown className={`h-5 w-5 ml-auto transition-transform ${dealsOpen ? "" : "-rotate-90"}`} />
-                    </div>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <motion.section
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6 }}
-                      className="mb-12"
-                      data-testid="section-sale-of-week"
-                    >
-                  <Link href={`/peptides/${saleProduct.id}`} onClick={savePageState}>
-                    <div className="sale-glow-pulse rounded-xl">
-                    <Card className="p-3 md:p-6 border-2 border-red-500 bg-gradient-to-br from-red-950/40 via-background to-background transition-all duration-300 cursor-pointer group hover:scale-[1.02] md:hover:scale-105 hover:shadow-[0_0_30px_rgba(239,68,68,0.6)] hover:border-red-400">
-                      {/* Mobile: Compact horizontal layout */}
-                      <div className="md:hidden flex items-center gap-3">
-                        <div className="w-16 h-16 bg-muted/50 rounded-lg overflow-hidden flex-shrink-0 border border-red-500/20">
-                          <img 
-                            src={saleProduct.imageUrl || productImage} 
-                            alt={`${saleProduct.name}`}
-                            className="w-full h-full object-contain p-1"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            {saleProduct.originalPrice && (
-                              <Badge variant="destructive" className="text-xs px-1.5 py-0">
-                                {Math.round(((Number(saleProduct.originalPrice) - Number(saleProduct.price)) / Number(saleProduct.originalPrice)) * 100)}% OFF
-                              </Badge>
-                            )}
-                          </div>
-                          <h3 className="font-display text-base font-bold text-[#E7FB10] truncate">
-                            {saleProduct.name}
-                          </h3>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="font-display text-lg font-bold">${Number(saleProduct.price).toFixed(2)}</span>
-                            <Button size="sm" className="h-7 text-xs gap-1 ml-auto">
-                              Shop <ArrowRight className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Desktop: Full layout */}
-                      <div className="hidden md:flex flex-row gap-5 items-center">
-                        <div className="w-48 h-48 bg-muted/50 rounded-lg overflow-hidden flex-shrink-0 border border-red-500/20">
-                          <img 
-                            src={saleProduct.imageUrl || productImage} 
-                            alt={`${saleProduct.name} research peptide - premium quality lab tested compound`}
-                            className="w-full h-full object-contain p-3 group-hover:scale-110 transition-transform"
-                          />
-                        </div>
-                        <div className="flex-1 text-left">
-                          <div className="flex flex-wrap items-center gap-2 mb-2">
-                            {saleProduct.originalPrice && (
-                              <Badge variant="destructive" className="text-base px-2.5 py-0.5">
-                                {Math.round(((Number(saleProduct.originalPrice) - Number(saleProduct.price)) / Number(saleProduct.originalPrice)) * 100)}% OFF
-                              </Badge>
-                            )}
-                            {saleProduct.weeklyDealEndDate && (
-                              <span className="text-sm text-muted-foreground">Ends {saleProduct.weeklyDealEndDate}</span>
-                            )}
-                          </div>
-                          <h3 className="font-display text-3xl font-bold text-[#E7FB10] mb-2">
-                            {saleProduct.name}
-                          </h3>
-                          <p className="text-sm text-muted-foreground mb-4 max-w-lg">
-                            {saleProduct.shortDescription}
-                          </p>
-                          <div className="flex items-center gap-4">
-                            <span className="font-display text-3xl font-bold">${Number(saleProduct.price).toFixed(2)}</span>
-                            {saleProduct.originalPrice && (
-                              <span className="text-lg text-muted-foreground line-through">
-                                ${Number(saleProduct.originalPrice).toFixed(2)}
-                              </span>
-                            )}
-                            <Button className="ml-2 gap-2">
-                              Shop Now <ArrowRight className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
-                    </div>
-                    </Link>
-                    </motion.section>
-                  </CollapsibleContent>
-                </Collapsible>
-              )}
             </div>
 
             {/* All Products Section */}
