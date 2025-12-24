@@ -31,7 +31,7 @@ const productCategories = [
     icon: FlaskConical,
     color: "#E7FB10",
     description: "Individual research vials",
-    details: "Our flagship catalog of premium research peptides. Each vial comes with batch-specific COA and 99%+ verified purity.",
+    details: "Our flagship catalog of premium research peptides. Each vial comes with batch-specific COA and 98%+ verified purity.",
     features: ["Individual vials", "Full COA access", "Multiple dosage options"],
   },
   {
@@ -55,7 +55,7 @@ const productCategories = [
 ];
 
 const trustBadges = [
-  { icon: Shield, label: "99%+ Purity", description: "Third-party verified" },
+  { icon: Shield, label: "98%+ Purity", description: "Third-party verified" },
   { icon: CheckCircle2, label: "Full COA", description: "Every batch tested" },
   { icon: Truck, label: "Fast Shipping", description: "24hr fulfillment" },
   { icon: Clock, label: "Same-Day", description: "Before 12:00 CT" },

@@ -587,7 +587,7 @@ ${data.additionalInfo || "None provided"}`.trim(),
                   { text: "Full COA access with batch-specific documentation", icon: FileText },
                   { text: "Priority shipping — most orders ship within 24-48 hours", icon: Truck },
                   { text: "Dedicated account manager for personalized support", icon: Users },
-                  { text: "99%+ purity guaranteed on every batch", icon: Shield },
+                  { text: "98%+ purity guaranteed on every batch", icon: Shield },
                   { text: "Extended B2B support hours for business accounts", icon: HeadphonesIcon },
                 ].map((benefit, index) => {
                   const Icon = benefit.icon;
