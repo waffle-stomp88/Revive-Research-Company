@@ -458,10 +458,10 @@
   }
 
   .animate-pulse-glow-cyan {
-    animation: pulse-glow-cyan 2s ease-in-out infinite;
+    animation: pulse-glow-cyan 3s ease-in-out infinite;
   }
   .animate-pulse-glow-purple {
-    animation: pulse-glow-purple 2s ease-in-out infinite;
+    animation: pulse-glow-purple 3s ease-in-out infinite;
   }
   @keyframes pulse-glow-upsell {
     0%, 100% {
