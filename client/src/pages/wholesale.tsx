@@ -360,7 +360,7 @@ ${data.additionalInfo || "None provided"}`.trim(),
             
             <div className="relative grid grid-cols-2 md:grid-cols-4 divide-x divide-[#2a2a32]">
               {[
-                { value: "99%+", label: "Purity Verified", icon: Shield, color: "#22c55e" },
+                { value: "98%+", label: "Purity Verified", icon: Shield, color: "#22c55e" },
                 { value: "24-48hr", label: "Fast Shipping", icon: Truck, color: "#21d8ff" },
                 { value: "100+", label: "Active Partners", icon: Users, color: "#a855f7" },
                 { value: "35%", label: "Max Discount", icon: TrendingUp, color: "#E7FB10" },
