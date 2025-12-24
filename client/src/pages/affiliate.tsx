@@ -392,7 +392,7 @@ export default function AffiliatePage() {
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
             >
-              <Card className="p-5 h-full border-2 border-[#21d8ff]/60 bg-gradient-to-br from-[#21d8ff]/10 to-transparent relative overflow-hidden animate-[pulse-glow-cyan_3s_ease-in-out_infinite]" style={{ boxShadow: '0 0 20px rgba(33, 216, 255, 0.3), inset 0 0 20px rgba(33, 216, 255, 0.05)' }}>
+              <Card className="p-5 h-full border-2 border-[#21d8ff]/60 bg-gradient-to-br from-[#21d8ff]/10 to-transparent relative overflow-hidden animate-[pulse-glow-cyan_2.5s_ease-in-out_infinite]" style={{ boxShadow: '0 0 20px rgba(33, 216, 255, 0.3), inset 0 0 20px rgba(33, 216, 255, 0.05)' }}>
                 <div className="absolute top-3 right-3">
                   <Badge className="bg-[#21d8ff] text-black font-bold text-xs">TIER 2</Badge>
                 </div>
