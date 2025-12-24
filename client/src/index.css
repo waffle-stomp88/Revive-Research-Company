@@ -458,10 +458,11 @@
   }
 
   .animate-pulse-glow-cyan {
-    animation: pulse-glow-cyan 12s ease-in-out infinite;
+    animation: pulse-glow-cyan 2s ease-in-out infinite;
   }
-
-  /* Upsell Box Pulse & Glow Animation */
+  .animate-pulse-glow-purple {
+    animation: pulse-glow-purple 2s ease-in-out infinite;
+  }
   @keyframes pulse-glow-upsell {
     0%, 100% {
       box-shadow: 0 0 15px rgba(33, 216, 255, 0.1), 0 0 30px rgba(33, 216, 255, 0.02);
