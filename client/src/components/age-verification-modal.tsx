@@ -134,18 +134,6 @@ export function AgeVerificationModal() {
                       cursor: agreed ? 'pointer' : 'not-allowed',
                       transition: 'all 0.2s ease'
                     }}
-                    onMouseEnter={(e) => {
-                      if (agreed) {
-                        e.currentTarget.style.boxShadow = '0 0 20px rgba(231, 251, 16, 0.8), 0 0 30px rgba(231, 251, 16, 0.5)';
-                        e.currentTarget.style.backgroundColor = 'rgb(231, 251, 16)';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (agreed) {
-                        e.currentTarget.style.boxShadow = '0 0 20px rgba(231, 251, 16, 0.5)';
-                        e.currentTarget.style.backgroundColor = 'rgb(231, 251, 16)';
-                      }
-                    }}
                     data-testid="button-enter-site"
                   >
                     Enter Site

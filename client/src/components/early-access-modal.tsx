@@ -157,9 +157,9 @@ export function EarlyAccessModal({ showOnProductPages = false }: { showOnProduct
                   disabled={subscribeMutation.isPending}
                   data-testid="button-early-access-notify"
                 >
-                  {subscribeMutation.isPending && (
+                  {subscribeMutation.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  )}
+                  ) : null}
                   Notify me at launch
                 </Button>
               </form>
