@@ -38,3 +38,4 @@ export { DihexaSynapseVisual } from "./dihexa-synapse-visual";
 export { GlutathioneRedoxVisual } from "./glutathione-redox-visual";
 export { B12MethylationVisual } from "./b12-methylation-visual";
 export { MelanotanReceptorVisual } from "./melanotan-receptor-visual";
+export { SLUPP332Visual } from "./slupp-visual";

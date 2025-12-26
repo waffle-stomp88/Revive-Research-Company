@@ -76,6 +76,7 @@ import {
   NADSirtuinVisual,
   GLOWSynergyVisual,
   KLOWSynergyVisual,
+  SLUPP332Visual,
   // Educational peptide visuals (compounds not carried by company)
   KisspeptinVisual,
   PT141Visual,
@@ -142,6 +143,7 @@ const articleVisuals: Record<string, () => JSX.Element> = {
   "glutathione-research-guide": () => <GlutathioneRedoxVisual />,
   "vitamin-b12-research-guide": () => <B12MethylationVisual />,
   "melanotan-research-guide": () => <MelanotanReceptorVisual />,
+  "slu-pp-332-research-guide": () => <SLUPP332Visual />,
 };
 
 const categories = [
@@ -181,7 +183,7 @@ const EDUCATION_TABS = [
 
 const peptideGroups = [
   { id: "all", label: "All Peptides", color: "#ec4899" },
-  { id: "metabolic", label: "Metabolic / GLP-1", color: "#E7FB10", slugs: ["semaglutide", "tirzepatide", "retatrutide", "aod-9604", "5-amino-1mq"] },
+  { id: "metabolic", label: "Metabolic / GLP-1", color: "#E7FB10", slugs: ["semaglutide", "tirzepatide", "retatrutide", "aod-9604", "5-amino-1mq", "slu-pp-332"] },
   { id: "growth-hormone", label: "Growth Hormone", color: "#21d8ff", slugs: ["cjc-1295", "ipamorelin", "tesamorelin", "igf-1-lr3"] },
   { id: "tissue-repair", label: "Tissue Repair", color: "#22c55e", slugs: ["bpc-157", "tb-500"] },
   { id: "skin-regeneration", label: "Skin & Regeneration", color: "#ec4899", slugs: ["ghk-cu", "glow-peptide-complex", "melanotan"] },
@@ -372,11 +374,6 @@ export default function Education() {
       peptideName.includes(p.name.toLowerCase().replace(/[^a-z0-9]/g, ' ').trim()));
     
     return directMatch ? [directMatch] : [];
-  };
-
-  const handleOpenArticle = (articleId: string) => {
-    setExpandedArticle(articleId);
-    setArticleMode("quick-breakdown");
   };
 
   // Handle URL-based article opening

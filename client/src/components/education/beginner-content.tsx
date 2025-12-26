@@ -1517,6 +1517,35 @@ Think of it like a fertilizer specifically designed to help brain cells form new
       }
     ],
     takeaway: "Melanotan I and II are synthetic melanocortin receptor agonists that stimulate melanin production. MT-I is selective for MC1R (skin), while MT-II activates multiple receptors affecting pigmentation, appetite, and other systems."
+  },
+
+  "slu-pp-332-research-guide": {
+    icon: Zap,
+    iconColor: "#E7FB10",
+    intro: `SLU-PP-332 is a first-in-class research compound known as an "exercise mimetic." It's an ERR agonist that tells your body to act as if it's undergoing intense endurance training, triggering metabolic pathways usually reserved for physical exertion.`,
+    sections: [
+      {
+        title: "The Exercise Mimetic Mechanism",
+        content: `SLU-PP-332 works by activating Estrogen-Related Receptors (ERRs), specifically ERRα, ERRβ, and ERRγ. These receptors are like metabolic master switches:
+
+**Mitochondrial Boost** - Activation triggers the creation of new mitochondria, the "power plants" of your cells.
+
+**Fat Oxidation** - It tells the body to prioritize burning fat for fuel, mimicking the metabolic shift seen during long-distance running.
+
+**Glucose Control** - Research shows significant improvements in insulin sensitivity and blood sugar management.`
+      },
+      {
+        title: "Impact on Endurance",
+        content: `In research settings, SLU-PP-332 has shown remarkable effects on physical capacity:
+
+**Running Distance** - Studies in mice found that those treated with the compound could run 45% further than untreated controls.
+
+**Muscle Fiber Shift** - It appears to promote a shift toward "slow-twitch" oxidative muscle fibers, which are more resistant to fatigue.
+
+**Weight Management** - Research indicates it can reduce body fat mass even without changes in food intake.`
+      }
+    ],
+    takeaway: "SLU-PP-332 is a breakthrough exercise mimetic that activates ERR receptors to boost mitochondrial function, enhance fat burning, and significantly increase endurance capacity in research models."
   }
 };
 
