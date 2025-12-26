@@ -74,7 +74,6 @@ export function AuthGate({ title, description }: AuthGateProps) {
                   transition={{ delay: 0.3 + index * 0.1 }}
                   className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#21d8ff]/30 bg-[#21d8ff]/5"
                 >
-                  <badge.icon className="w-4 h-4 text-[#21d8ff]" />
                   <span className="text-sm text-[#21d8ff] font-medium">{badge.label}</span>
                 </motion.div>
               ))}
