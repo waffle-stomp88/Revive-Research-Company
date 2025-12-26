@@ -375,8 +375,14 @@ export default function Education() {
     }
 
     const peptideName = slug.replace('-research-guide', '').replace(/-/g, ' ').toLowerCase();
-    const directMatch = products.find(p => p.name.toLowerCase().includes(peptideName) || 
-      peptideName.includes(p.name.toLowerCase().replace(/[^a-z0-9]/g, ' ').trim()));
+    const directMatch = products.find(p => {
+      const pName = p.name.toLowerCase();
+      const pNameClean = pName.replace(/[^a-z0-9]/g, ' ').trim();
+      return pName.includes(peptideName) || 
+             peptideName.includes(pName) ||
+             pNameClean.includes(peptideName) ||
+             peptideName.includes(pNameClean);
+    });
     
     return directMatch ? [directMatch] : [];
   };
@@ -788,7 +794,7 @@ export default function Education() {
                                 </div>
                                 <div className="flex gap-2 flex-wrap">
                                   {matchingProducts.map(product => (
-                                    <Link key={product.id} href={`/peptides/${product.id}`}>
+                                    <Link key={product.id} href={`/product/${product.id}`}>
                                       <Button 
                                         variant="outline" 
                                         size="sm"
