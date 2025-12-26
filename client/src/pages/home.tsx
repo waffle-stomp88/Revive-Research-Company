@@ -38,7 +38,7 @@ function HeroSection() {
   };
 
   return (
-    <section className="relative min-h-[80vh] md:min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[95vh] md:min-h-screen flex items-center justify-center overflow-hidden">
       <motion.div 
         style={{ y, scale, opacity: imageOpacity }}
         className="absolute inset-0 z-0"
@@ -252,32 +252,32 @@ function EducationTeaser() {
             transition={{ delay: 0.1 }}
           >
             <Card className="h-full border-2 border-[#21d8ff]/50 bg-gradient-to-br from-[#21d8ff]/10 to-transparent transition-all duration-300 overflow-visible" style={{ boxShadow: '0 0 25px rgba(33, 216, 255, 0.25), inset 0 0 20px rgba(33, 216, 255, 0.05)', animation: 'pulse-glow-cyan 2.5s ease-in-out infinite' }}>
-              <div className="p-6 md:p-8">
-                <div className="flex flex-col items-center gap-4 mb-6 text-center">
-                  <div className="p-4 rounded-xl bg-[#21d8ff]/20 border border-[#21d8ff]/40">
-                    <GraduationCap className="h-8 w-8 text-[#21d8ff]" />
+              <div className="p-4 sm:p-6 md:p-8">
+                <div className="flex flex-col items-center gap-3 sm:gap-4 mb-4 sm:mb-6 text-center">
+                  <div className="p-3 sm:p-4 rounded-xl bg-[#21d8ff]/20 border border-[#21d8ff]/40">
+                    <GraduationCap className="h-6 w-6 sm:h-8 sm:w-8 text-[#21d8ff]" />
                   </div>
                   <div>
-                    <h3 className="font-display text-2xl md:text-3xl font-bold text-[#21d8ff]">RESEARCH ACADEMY</h3>
-                    <p className="text-sm text-muted-foreground">Gamified learning experience</p>
+                    <h3 className="font-display text-xl sm:text-2xl md:text-3xl font-bold text-[#21d8ff]">RESEARCH ACADEMY</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Gamified learning experience</p>
                   </div>
                 </div>
 
                 {/* Stats Row */}
-                <div className="flex flex-wrap gap-3 mb-6 justify-center">
-                  <Badge className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30">
+                <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-6 justify-center">
+                  <Badge className="text-xs bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30">
                     <BookOpen className="h-3 w-3 mr-1" /> 4 Modules
                   </Badge>
-                  <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30">
+                  <Badge className="text-xs bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30">
                     <Zap className="h-3 w-3 mr-1" /> 17 Lessons
                   </Badge>
-                  <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30">
+                  <Badge className="text-xs bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30 hidden sm:inline-flex">
                     <Award className="h-3 w-3 mr-1" /> Earn XP & Badges
                   </Badge>
                 </div>
 
-                {/* Modules Preview */}
-                <div className="space-y-3 mb-6">
+                {/* Modules Preview - Hidden on mobile for compact view */}
+                <div className="hidden sm:block space-y-3 mb-6">
                   {academyModules.map((module, index) => (
                     <motion.div
                       key={module.name}
@@ -320,32 +320,32 @@ function EducationTeaser() {
             transition={{ delay: 0.2 }}
           >
             <Card className="h-full border-2 border-[#9d4edd]/50 bg-gradient-to-br from-[#9d4edd]/10 to-transparent transition-all duration-300 overflow-visible" style={{ boxShadow: '0 0 25px rgba(157, 78, 221, 0.25), inset 0 0 20px rgba(157, 78, 221, 0.05)', animation: 'pulse-glow-purple 2.5s ease-in-out infinite' }}>
-              <div className="p-6 md:p-8">
-                <div className="flex flex-col items-center gap-4 mb-6 text-center">
-                  <div className="p-4 rounded-xl bg-[#9d4edd]/20 border border-[#9d4edd]/40">
-                    <BookOpen className="h-8 w-8 text-[#9d4edd]" />
+              <div className="p-4 sm:p-6 md:p-8">
+                <div className="flex flex-col items-center gap-3 sm:gap-4 mb-4 sm:mb-6 text-center">
+                  <div className="p-3 sm:p-4 rounded-xl bg-[#9d4edd]/20 border border-[#9d4edd]/40">
+                    <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 text-[#9d4edd]" />
                   </div>
                   <div>
-                    <h3 className="font-display text-2xl md:text-3xl font-bold text-[#9d4edd]">EDUCATION CENTER</h3>
-                    <p className="text-sm text-muted-foreground">Comprehensive article library</p>
+                    <h3 className="font-display text-xl sm:text-2xl md:text-3xl font-bold text-[#9d4edd]">EDUCATION CENTER</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Comprehensive article library</p>
                   </div>
                 </div>
 
                 {/* Stats Row */}
-                <div className="flex flex-wrap gap-3 mb-6 justify-center">
-                  <Badge className="bg-[#ec4899]/20 text-[#ec4899] border-[#ec4899]/30">
+                <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-6 justify-center">
+                  <Badge className="text-xs bg-[#ec4899]/20 text-[#ec4899] border-[#ec4899]/30">
                     40+ Articles
                   </Badge>
-                  <Badge className="bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30">
+                  <Badge className="text-xs bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30">
                     Interactive Visuals
                   </Badge>
-                  <Badge className="bg-[#f97316]/20 text-[#f97316] border-[#f97316]/30">
+                  <Badge className="text-xs bg-[#f97316]/20 text-[#f97316] border-[#f97316]/30 hidden sm:inline-flex">
                     Expert Written
                   </Badge>
                 </div>
 
-                {/* Categories Preview - Stacked like Academy modules */}
-                <div className="space-y-3 mb-6">
+                {/* Categories Preview - Hidden on mobile for compact view */}
+                <div className="hidden sm:block space-y-3 mb-6">
                   {educationCategories.map((category, index) => {
                     const Icon = category.icon;
                     return (
