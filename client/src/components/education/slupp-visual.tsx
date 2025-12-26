@@ -3,124 +3,126 @@ import { useRef, useState, useEffect } from "react";
 import { Zap, Activity, Battery, Flame, Heart, TrendingUp, Dumbbell } from "lucide-react";
 
 function ExerciseMimeticAnimation({ isInView, activePhase }: { isInView: boolean; activePhase: number }) {
+  const steps = [
+    {
+      id: 0,
+      title: "SLU-PP-332",
+      subtitle: "Compound Entry",
+      color: "#E7FB10",
+      detail: "Binds to nuclear ERR receptors"
+    },
+    {
+      id: 1,
+      title: "ERR-α Activation",
+      subtitle: "Receptor Binding",
+      color: "#22c55e",
+      detail: "Triggers conformational change"
+    },
+    {
+      id: 2,
+      title: "PGC-1α Recruitment",
+      subtitle: "Gene Transcription",
+      color: "#21d8ff",
+      detail: "Master switch for mitochondria"
+    },
+    {
+      id: 3,
+      title: "Exercise Adaptation",
+      subtitle: "Muscle Transformation",
+      color: "#f97316",
+      detail: "Type I fiber conversion"
+    }
+  ];
+
   return (
-    <div className="relative w-full h-72 flex items-center justify-center overflow-hidden bg-black/20 rounded-xl border border-white/5">
-      <div 
-        className="absolute inset-0"
-        style={{
-          background: 'radial-gradient(circle at 50% 50%, rgba(231, 251, 16, 0.05) 0%, transparent 70%)'
-        }}
-      />
-      
-      <svg viewBox="0 0 450 250" className="w-full h-full max-w-2xl drop-shadow-2xl">
-        <defs>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          <linearGradient id="dnaGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#E7FB10" stopOpacity="0.2" />
-            <stop offset="50%" stopColor="#E7FB10" stopOpacity="1" />
-            <stop offset="100%" stopColor="#E7FB10" stopOpacity="0.2" />
-          </linearGradient>
-        </defs>
+    <div className="relative w-full p-6 bg-black/30 rounded-xl border border-white/10">
+      {/* Linear Pipeline */}
+      <div className="flex items-center justify-between gap-2">
+        {steps.map((step, index) => (
+          <div key={step.id} className="flex items-center flex-1">
+            {/* Step Card */}
+            <motion.div
+              className="flex-1 p-4 rounded-lg text-center relative"
+              style={{
+                backgroundColor: activePhase === index ? `${step.color}20` : 'rgba(255,255,255,0.03)',
+                border: `2px solid ${activePhase === index ? step.color : 'rgba(255,255,255,0.1)'}`,
+                boxShadow: activePhase === index ? `0 0 20px ${step.color}40` : 'none'
+              }}
+              animate={{
+                scale: activePhase === index ? 1.02 : 1,
+              }}
+              transition={{ duration: 0.3 }}
+            >
+              {/* Step Number */}
+              <div 
+                className="absolute -top-2 -left-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+                style={{ 
+                  backgroundColor: activePhase >= index ? step.color : '#333',
+                  color: activePhase >= index ? '#000' : '#666'
+                }}
+              >
+                {index + 1}
+              </div>
+              
+              <h4 
+                className="text-sm font-bold mb-1"
+                style={{ color: step.color }}
+              >
+                {step.title}
+              </h4>
+              <p className="text-[10px] text-muted-foreground mb-2">
+                {step.subtitle}
+              </p>
+              
+              {/* Active Detail */}
+              {activePhase === index && (
+                <motion.p
+                  className="text-[9px] mt-2 pt-2 border-t border-white/10"
+                  style={{ color: step.color }}
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  {step.detail}
+                </motion.p>
+              )}
+            </motion.div>
 
-        {/* Nucleus/Cell Boundary */}
-        <motion.circle
-          cx="225" cy="125" r="110"
-          fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeDasharray="5,5"
-        />
+            {/* Arrow Connector */}
+            {index < steps.length - 1 && (
+              <div className="flex-shrink-0 w-8 flex items-center justify-center">
+                <motion.div
+                  className="w-6 h-0.5 relative"
+                  style={{ 
+                    backgroundColor: activePhase > index ? steps[index + 1].color : 'rgba(255,255,255,0.2)'
+                  }}
+                >
+                  <motion.div
+                    className="absolute right-0 top-1/2 -translate-y-1/2 w-0 h-0"
+                    style={{
+                      borderTop: '4px solid transparent',
+                      borderBottom: '4px solid transparent',
+                      borderLeft: `6px solid ${activePhase > index ? steps[index + 1].color : 'rgba(255,255,255,0.2)'}`
+                    }}
+                  />
+                </motion.div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
 
-        {/* Phase 0: Compound Entry */}
-        <motion.g animate={{ opacity: activePhase === 0 ? 1 : 0.4 }}>
-          <motion.rect
-            x="20" y="105" width="70" height="40" rx="8"
-            fill="rgba(231, 251, 16, 0.1)"
-            stroke="#E7FB10" strokeWidth="2"
-            animate={activePhase === 0 ? { 
-              scale: [1, 1.05, 1],
-              boxShadow: "0 0 20px rgba(231, 251, 16, 0.5)"
-            } : {}}
-            transition={{ repeat: Infinity, duration: 2 }}
-          />
-          <text x="55" y="130" textAnchor="middle" fill="#E7FB10" fontSize="10" fontWeight="bold">SLU-PP-332</text>
-        </motion.g>
-
-        {/* Signaling Path */}
-        <motion.path
-          d="M 90 125 Q 150 125 180 125"
-          fill="none" stroke="#E7FB10" strokeWidth="2" strokeDasharray="4,4"
-          animate={{ strokeDashoffset: [0, -20] }}
-          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-          style={{ opacity: activePhase >= 0 ? 1 : 0.1 }}
-        />
-
-        {/* Phase 1: ERR Activation (The "Switch") */}
-        <motion.g transform="translate(180, 85)" animate={{ scale: activePhase === 1 ? 1.1 : 1 }}>
-          <motion.ellipse
-            cx="45" cy="40" rx="35" ry="15"
-            fill={activePhase === 1 ? "rgba(34, 197, 94, 0.3)" : "rgba(34, 197, 94, 0.1)"}
-            stroke="#22c55e" strokeWidth="2"
-            style={{ filter: activePhase === 1 ? 'url(#glow)' : '' }}
-          />
-          <text x="45" y="43" textAnchor="middle" fill="#22c55e" fontSize="9" fontWeight="bold">ERR-α Receptor</text>
-          
-          {/* Docking Animation */}
-          {activePhase === 1 && (
-            <motion.circle
-              cx="45" cy="40" r="4" fill="#E7FB10"
-              animate={{ scale: [0, 1.5, 0], opacity: [0, 1, 0] }}
-              transition={{ repeat: Infinity, duration: 1.5 }}
-            />
-          )}
-        </motion.g>
-
-        {/* Phase 2: Gene Expression (Mitochondrial Program) */}
-        <motion.g transform="translate(180, 140)" animate={{ opacity: activePhase >= 2 ? 1 : 0.1 }}>
-          <motion.path
-            d="M 10 30 Q 45 10 80 30"
-            fill="none" stroke="url(#dnaGradient)" strokeWidth="3"
-            animate={activePhase === 2 ? { y: [0, -5, 0] } : {}}
-            transition={{ repeat: Infinity, duration: 2 }}
-          />
-          <text x="45" y="55" textAnchor="middle" fill="#21d8ff" fontSize="8" fontWeight="bold">PGC-1α CO-ACTIVATION</text>
-          <text x="45" y="65" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="7">Mitochondrial Biogenesis</text>
-        </motion.g>
-
-        {/* Phase 3: Muscle Transformation */}
-        <motion.g transform="translate(320, 85)" animate={{ x: activePhase === 3 ? [0, 5, 0] : 0 }}>
-          <rect x="0" y="0" width="100" height="80" rx="10" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" />
-          <text x="50" y="20" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="8" fontWeight="bold">SKELETAL MUSCLE</text>
-          
-          {/* Fiber Type Switch */}
-          <motion.g animate={{ fill: activePhase === 3 ? "#E7FB10" : "#666" }}>
-            <circle cx="30" cy="45" r="8" />
-            <circle cx="50" cy="45" r="8" />
-            <circle cx="70" cy="45" r="8" />
-            <text x="50" y="65" textAnchor="middle" fontSize="7" fill={activePhase === 3 ? "#E7FB10" : "#666"}>Type I (Slow-Twitch)</text>
-          </motion.g>
-          
-          {activePhase === 3 && (
-            <motion.path
-              d="M 20 75 L 80 75"
-              stroke="#E7FB10" strokeWidth="2"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-            />
-          )}
-        </motion.g>
-
-        {/* Connecting Arrows */}
-        <motion.path
-          d="M 260 110 L 310 110"
-          stroke="#22c55e" strokeWidth="2" markerEnd="url(#arrow)"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: activePhase >= 2 ? 1 : 0.1 }}
-        />
-      </svg>
+      {/* Bottom Summary */}
+      <motion.div
+        className="mt-6 pt-4 border-t border-white/10 text-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isInView ? 1 : 0 }}
+      >
+        <p className="text-xs text-muted-foreground">
+          <span className="text-[#E7FB10] font-medium">SLU-PP-332</span> activates ERR nuclear receptors → recruits{" "}
+          <span className="text-[#21d8ff] font-medium">PGC-1α coactivator</span> → triggers{" "}
+          <span className="text-[#f97316] font-medium">endurance exercise adaptations</span>
+        </p>
+      </motion.div>
     </div>
   );
 }
