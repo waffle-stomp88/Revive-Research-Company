@@ -356,8 +356,25 @@ export default function Education() {
   });
 
   const handleOpenArticle = (articleId: string) => {
+    // Store scroll position before opening article
+    sessionStorage.setItem('education_scroll_pos', window.pageYOffset.toString());
     setExpandedArticle(articleId);
     setArticleMode("quick-breakdown");
+  };
+
+  const handleBackToArticles = () => {
+    setExpandedArticle(null);
+    // Use requestAnimationFrame to wait for the list to render
+    requestAnimationFrame(() => {
+      const savedPos = sessionStorage.getItem('education_scroll_pos');
+      if (savedPos) {
+        window.scrollTo({
+          top: parseInt(savedPos),
+          behavior: 'instant'
+        });
+        sessionStorage.removeItem('education_scroll_pos');
+      }
+    });
   };
 
   // Helper to find matching products for a peptide article
@@ -663,7 +680,7 @@ export default function Education() {
                     <Card id="expanded-article" className="overflow-hidden" style={{ borderColor: `${catColor}30` }}>
                       <div className="p-6 border-b" style={{ borderColor: `${catColor}20` }}>
                         <button
-                          onClick={() => setExpandedArticle(null)}
+                          onClick={handleBackToArticles}
                           className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4 cursor-pointer"
                           data-testid="button-back-to-articles"
                         >
@@ -1120,13 +1137,22 @@ export default function Education() {
                             );
                           })
                         ) : (
-                          <Card className="p-8 text-center border-dashed border-2 col-span-2">
-                            <BookOpen className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-                            <h3 className="font-display text-lg font-bold mb-1">No Articles Yet</h3>
-                            <p className="text-sm text-muted-foreground">
+                          <div className="flex flex-col items-center justify-center p-12 text-center border-dashed border-2 rounded-xl border-muted/30">
+                            <BookOpen className="h-12 w-12 text-muted-foreground mb-4 opacity-20" />
+                            <h3 className="font-display text-xl font-bold mb-2">No Articles Yet</h3>
+                            <p className="text-muted-foreground max-w-xs mx-auto">
                               Articles for this category are coming soon.
                             </p>
-                          </Card>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="mt-6"
+                              onClick={handleBackToArticles}
+                            >
+                              <ArrowLeft className="h-4 w-4 mr-2" />
+                              Back to Library
+                            </Button>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -1193,13 +1219,21 @@ export default function Education() {
                           );
                         })
                       ) : (
-                        <Card className="p-12 text-center border-dashed border-2">
-                          <BookOpen className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                          <div className="p-12 text-center border-dashed border-2 rounded-xl border-muted/30">
+                          <BookOpen className="h-12 w-12 mx-auto text-muted-foreground mb-4 opacity-20" />
                           <h3 className="font-display text-xl font-bold mb-2">No Guides Yet</h3>
-                          <p className="text-muted-foreground">
+                          <p className="text-muted-foreground max-w-xs mx-auto mb-6">
                             Lab guides are coming soon.
                           </p>
-                        </Card>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={handleBackToArticles}
+                          >
+                            <ArrowLeft className="h-4 w-4 mr-2" />
+                            Back to Library
+                          </Button>
+                        </div>
                       )}
                     </div>
                   </div>
