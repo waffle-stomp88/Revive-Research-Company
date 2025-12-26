@@ -561,8 +561,9 @@ export default function Education() {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Browse our open reference library for quick lookups on peptide research topics, compounds, and best practices.
           </p>
+          {/* Structure CTA - Desktop Only */}
           <div 
-            className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full border mt-4"
+            className="hidden md:inline-flex items-center gap-3 px-5 py-2.5 rounded-full border mt-4"
             style={{
               background: "rgba(33, 216, 255, 0.05)",
               borderColor: "#21d8ff",
@@ -573,6 +574,36 @@ export default function Education() {
             <Link href="/academy" className="text-sm font-semibold px-3 py-1 rounded-full bg-[#21d8ff] text-black hover:bg-[#E7FB10] hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer">
               Research Academy
             </Link>
+          </div>
+
+          {/* Academy CTA - Mobile Only (Holographic Style) */}
+          <div className="mt-6 md:hidden max-w-sm mx-auto text-left">
+            <div className="p-4 rounded-lg bg-gradient-to-br from-[#21d8ff]/20 via-[#9d4edd]/10 to-[#E7FB10]/10 border border-[#21d8ff]/50 relative overflow-hidden group hover-elevate transition-all shadow-[0_0_20px_rgba(33,216,255,0.3)]">
+              {/* Holographic shimmer background */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#21d8ff]/0 via-[#E7FB10]/20 to-[#21d8ff]/0 opacity-100 pointer-events-none" />
+              
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-2">
+                  <Compass className="h-4 w-4 text-[#21d8ff]" />
+                  <span className="text-xs font-bold bg-gradient-to-r from-[#21d8ff] to-[#E7FB10] bg-clip-text text-transparent">New to Peptides?</span>
+                </div>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Start with our guided curriculum in the Academy
+                </p>
+                <Link href="/academy">
+                  <Button 
+                    size="sm"
+                    className="w-full bg-gradient-to-r from-[#21d8ff] to-[#E7FB10] text-black font-semibold text-xs transition-all duration-300"
+                    style={{
+                      backgroundImage: 'linear-gradient(to right, #21d8ff, #E7FB10)'
+                    }}
+                  >
+                    Enter Research Academy
+                    <ChevronRight className="h-3 w-3 ml-1" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </div>
 
         </motion.div>
