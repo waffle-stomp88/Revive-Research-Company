@@ -38,7 +38,7 @@ function ReceptorComparisonChart({ isInView, activeType }: { isInView: boolean; 
   const mt = melanotanTypes[activeType];
   
   return (
-    <div className="relative w-full h-64 flex flex-col items-center justify-center overflow-hidden">
+    <div className="relative w-full min-h-[18rem] flex flex-col items-center justify-center">
       <div 
         className="absolute inset-0 rounded-xl"
         style={{
@@ -46,7 +46,7 @@ function ReceptorComparisonChart({ isInView, activeType }: { isInView: boolean; 
         }}
       />
       
-      <div className="w-full max-w-md px-4">
+      <div className="w-full max-w-md px-4 relative z-10">
         <motion.div
           className="text-center mb-4"
           initial={{ opacity: 0, y: -10 }}

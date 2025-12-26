@@ -353,12 +353,25 @@ export default function Education() {
     queryKey: ["/api/products"],
   });
 
-  // Helper to find matching product for a peptide article
-  const getMatchingProduct = (slug: string): Product | undefined => {
-    if (!slug?.endsWith('-research-guide')) return undefined;
+  // Helper to find matching products for a peptide article
+  const getMatchingProducts = (slug: string): Product[] => {
+    if (!slug?.endsWith('-research-guide')) return [];
+    
+    // Special case for Melanotan article which covers both MT-1 and MT-2
+    if (slug === "melanotan-research-guide") {
+      return products.filter(p => 
+        p.name.toLowerCase().includes("melanotan i") || 
+        p.name.toLowerCase().includes("melanotan 1") ||
+        p.name.toLowerCase().includes("melanotan ii") ||
+        p.name.toLowerCase().includes("melanotan 2")
+      );
+    }
+
     const peptideName = slug.replace('-research-guide', '').replace(/-/g, ' ').toLowerCase();
-    return products.find(p => p.name.toLowerCase().includes(peptideName) || 
+    const directMatch = products.find(p => p.name.toLowerCase().includes(peptideName) || 
       peptideName.includes(p.name.toLowerCase().replace(/[^a-z0-9]/g, ' ').trim()));
+    
+    return directMatch ? [directMatch] : [];
   };
 
   const handleOpenArticle = (articleId: string) => {
@@ -760,8 +773,8 @@ export default function Education() {
 
                         {/* Subtle product CTA for peptide articles */}
                         {article.category === "peptides" && (() => {
-                          const matchingProduct = getMatchingProduct(article.slug || "");
-                          if (!matchingProduct) return null;
+                          const matchingProducts = getMatchingProducts(article.slug || "");
+                          if (matchingProducts.length === 0) return null;
                           return (
                             <div className="mt-6 pt-6 border-t border-border/50">
                               <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -771,17 +784,21 @@ export default function Education() {
                                     Interested in this compound for your research?
                                   </span>
                                 </div>
-                                <Link href={`/peptides/${matchingProduct.id}`}>
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    className="text-xs border-[#21d8ff]/30 text-[#21d8ff] hover:bg-[#21d8ff]/10 hover:border-[#21d8ff]"
-                                    data-testid={`button-view-product-${matchingProduct.id}`}
-                                  >
-                                    View {matchingProduct.name}
-                                    <ChevronRight className="h-3 w-3 ml-1" />
-                                  </Button>
-                                </Link>
+                                <div className="flex gap-2 flex-wrap">
+                                  {matchingProducts.map(product => (
+                                    <Link key={product.id} href={`/peptides/${product.id}`}>
+                                      <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        className="text-xs border-[#21d8ff]/30 text-[#21d8ff] hover:bg-[#21d8ff]/10 hover:border-[#21d8ff]"
+                                        data-testid={`button-view-product-${product.id}`}
+                                      >
+                                        View {product.name}
+                                        <ChevronRight className="h-3 w-3 ml-1" />
+                                      </Button>
+                                    </Link>
+                                  ))}
+                                </div>
                               </div>
                             </div>
                           );
