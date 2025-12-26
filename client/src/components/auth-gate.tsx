@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Lock, FlaskConical, Shield, GraduationCap, Sparkles, ArrowRight } from "lucide-react";
+import { Lock, FlaskConical, Shield, GraduationCap, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 

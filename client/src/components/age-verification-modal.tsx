@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Shield, AlertTriangle, Zap } from "lucide-react";
+import { Shield, AlertTriangle } from "lucide-react";
 import logoUrl from "@assets/Revive_PNG_1766012118069.png";
 
 const AGE_VERIFIED_KEY = "revive-research-age-verified";
