@@ -90,7 +90,6 @@ export function AuthGate({ title, description }: AuthGateProps) {
                 className="w-full h-12 text-base font-semibold bg-[#E7FB10] hover:bg-[#E7FB10]/90 text-black rounded-xl group"
                 data-testid="button-auth-gate-login"
               >
-                <Sparkles className="w-4 h-4 mr-2 group-hover:animate-pulse" />
                 Create Free Account
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-0.5 transition-transform" />
               </Button>

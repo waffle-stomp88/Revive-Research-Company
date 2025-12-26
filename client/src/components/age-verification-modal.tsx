@@ -148,7 +148,6 @@ export function AgeVerificationModal() {
                     }}
                     data-testid="button-enter-site"
                   >
-                    <Zap className="h-4 w-4 mr-2" />
                     Enter Site
                   </Button>
                 </motion.div>
