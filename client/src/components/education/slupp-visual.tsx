@@ -47,9 +47,13 @@ function ExerciseMimeticAnimation({ isInView, activePhase }: { isInView: boolean
           stroke={activePhase >= 0 ? "#E7FB10" : "rgba(255,255,255,0.2)"}
           strokeWidth="2"
           initial={{ opacity: 0, scale: 0.8 }}
-          animate={isInView ? { opacity: 1, scale: 1 } : {}}
-          transition={{ delay: 0.4 }}
-          style={{ filter: activePhase === 0 ? 'drop-shadow(0 0 15px rgba(231, 251, 16, 0.6))' : undefined }}
+          animate={isInView ? { 
+            opacity: 1, 
+            scale: activePhase === 0 ? 1.05 : 1,
+            fill: activePhase === 0 ? "rgba(231, 251, 16, 0.3)" : "rgba(231, 251, 16, 0.2)"
+          } : {}}
+          transition={{ duration: 0.5 }}
+          style={{ filter: activePhase === 0 ? 'drop-shadow(0 0 20px rgba(231, 251, 16, 0.8))' : undefined }}
         />
         <motion.text x="70" y="92" textAnchor="middle" fill="#E7FB10" fontSize="11" fontWeight="bold"
           initial={{ opacity: 0 }}
@@ -103,13 +107,16 @@ function ExerciseMimeticAnimation({ isInView, activePhase }: { isInView: boolean
                 cy={receptor.y}
                 rx="40"
                 ry="18"
-                fill={activePhase === 1 ? `${receptor.color}30` : `${receptor.color}15`}
+                fill={activePhase === 1 ? `${receptor.color}40` : `${receptor.color}15`}
                 stroke={receptor.color}
-                strokeWidth={activePhase === 1 ? 2.5 : 1.5}
+                strokeWidth={activePhase === 1 ? 3 : 1.5}
                 initial={{ scale: 0 }}
-                animate={isInView ? { scale: 1 } : {}}
-                transition={{ delay: 1.1 + i * 0.15 }}
-                style={{ filter: activePhase === 1 ? `drop-shadow(0 0 12px ${receptor.color}60)` : undefined }}
+                animate={isInView ? { 
+                  scale: activePhase === 1 ? 1.1 : 1,
+                  opacity: 1 
+                } : {}}
+                transition={{ duration: 0.5 }}
+                style={{ filter: activePhase === 1 ? `drop-shadow(0 0 15px ${receptor.color})` : undefined }}
               />
               <motion.text x="195" y={receptor.y - 3} textAnchor="middle" fill={receptor.color} fontSize="10" fontWeight="bold"
                 initial={{ opacity: 0 }}
@@ -148,14 +155,17 @@ function ExerciseMimeticAnimation({ isInView, activePhase }: { isInView: boolean
 
         <motion.rect
           x="275" y="40" width="105" height="120" rx="12"
-          fill={activePhase >= 2 ? "rgba(34, 197, 94, 0.15)" : "rgba(255,255,255,0.03)"}
+          fill={activePhase >= 2 ? "rgba(34, 197, 94, 0.2)" : "rgba(255,255,255,0.03)"}
           stroke={activePhase >= 2 ? "#22c55e" : "rgba(255,255,255,0.15)"}
           strokeWidth="2"
           strokeDasharray={activePhase >= 2 ? "0" : "4,4"}
           initial={{ opacity: 0, scale: 0.8 }}
-          animate={isInView ? { opacity: 1, scale: 1 } : {}}
-          transition={{ delay: 1.8 }}
-          style={{ filter: activePhase >= 2 ? 'drop-shadow(0 0 20px rgba(34, 197, 94, 0.4))' : undefined }}
+          animate={isInView ? { 
+            opacity: 1, 
+            scale: activePhase >= 2 ? 1.02 : 1 
+          } : {}}
+          transition={{ duration: 0.5 }}
+          style={{ filter: activePhase >= 2 ? 'drop-shadow(0 0 25px rgba(34, 197, 94, 0.5))' : undefined }}
         />
         <motion.text x="327" y="58" textAnchor="middle" fill="#22c55e" fontSize="9" fontWeight="bold"
           initial={{ opacity: 0 }}
@@ -174,15 +184,23 @@ function ExerciseMimeticAnimation({ isInView, activePhase }: { isInView: boolean
           <motion.g key={benefit.text}>
             <motion.text x="292" y={benefit.y} fill={benefit.color} fontSize="10"
               initial={{ opacity: 0, x: -10 }}
-              animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ delay: 2 + i * 0.1 }}
+              animate={isInView ? { 
+                opacity: 1, 
+                x: 0,
+                scale: activePhase === 3 ? 1.1 : 1
+              } : {}}
+              transition={{ delay: 0.1 * i }}
             >
               {benefit.icon}
             </motion.text>
             <motion.text x="307" y={benefit.y} fill="rgba(255,255,255,0.8)" fontSize="8"
               initial={{ opacity: 0, x: -10 }}
-              animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ delay: 2.05 + i * 0.1 }}
+              animate={isInView ? { 
+                opacity: 1, 
+                x: 0,
+                fill: activePhase === 3 ? "#ffffff" : "rgba(255,255,255,0.8)"
+              } : {}}
+              transition={{ delay: 0.1 * i }}
             >
               {benefit.text}
             </motion.text>
@@ -226,7 +244,7 @@ function ExerciseMimeticAnimation({ isInView, activePhase }: { isInView: boolean
 
 const phases = [
   { id: 0, label: "Compound", icon: Zap, color: "#E7FB10", description: "SLU-PP-332 binds to ERR receptors" },
-  { id: 1, label: "ERR Activation", icon: Activity, color: "#22c55e", description: "Pan-agonist activates ERRα, β, and γ" },
+  { id: 1, label: "ERR Activation", icon: Activity, color: "#22c55e", description: "Pan-agonist activates ERR-α, β, and γ" },
   { id: 2, label: "Gene Expression", icon: Battery, color: "#21d8ff", description: "Upregulates mitochondrial & metabolic genes" },
   { id: 3, label: "Exercise Effects", icon: TrendingUp, color: "#f97316", description: "Mimics endurance training adaptations" },
 ];
