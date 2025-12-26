@@ -4,239 +4,122 @@ import { Zap, Activity, Battery, Flame, Heart, TrendingUp, Dumbbell } from "luci
 
 function ExerciseMimeticAnimation({ isInView, activePhase }: { isInView: boolean; activePhase: number }) {
   return (
-    <div className="relative w-full h-64 flex items-center justify-center overflow-hidden">
+    <div className="relative w-full h-72 flex items-center justify-center overflow-hidden bg-black/20 rounded-xl border border-white/5">
       <div 
-        className="absolute inset-0 rounded-xl"
+        className="absolute inset-0"
         style={{
-          background: 'radial-gradient(ellipse at center, rgba(231, 251, 16, 0.1) 0%, transparent 70%)'
+          background: 'radial-gradient(circle at 50% 50%, rgba(231, 251, 16, 0.05) 0%, transparent 70%)'
         }}
       />
       
-      <svg viewBox="0 0 400 200" className="w-full h-full max-w-xl">
+      <svg viewBox="0 0 450 250" className="w-full h-full max-w-2xl drop-shadow-2xl">
         <defs>
-          <filter id="errGlow">
-            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
             <feMerge>
               <feMergeNode in="coloredBlur"/>
               <feMergeNode in="SourceGraphic"/>
             </feMerge>
           </filter>
-          <linearGradient id="errGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#E7FB10" />
-            <stop offset="50%" stopColor="#22c55e" />
-            <stop offset="100%" stopColor="#21d8ff" />
-          </linearGradient>
-          <linearGradient id="energyGradient" x1="0%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%" stopColor="#f97316" stopOpacity="0.2" />
-            <stop offset="100%" stopColor="#E7FB10" stopOpacity="0.8" />
+          <linearGradient id="dnaGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#E7FB10" stopOpacity="0.2" />
+            <stop offset="50%" stopColor="#E7FB10" stopOpacity="1" />
+            <stop offset="100%" stopColor="#E7FB10" stopOpacity="0.2" />
           </linearGradient>
         </defs>
 
-        <motion.text x="200" y="18" textAnchor="middle" fill="#E7FB10" fontSize="11" fontWeight="bold"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ delay: 0.3 }}
-          style={{ textShadow: '0 0 10px rgba(231, 251, 16, 0.6)' }}
-        >
-          SLU-PP-332 Exercise Mimetic Pathway
-        </motion.text>
-
-        <motion.rect
-          x="30" y="70" width="80" height="60" rx="12"
-          fill={activePhase >= 0 ? "rgba(231, 251, 16, 0.2)" : "rgba(255,255,255,0.05)"}
-          stroke={activePhase >= 0 ? "#E7FB10" : "rgba(255,255,255,0.2)"}
-          strokeWidth="2"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={isInView ? { 
-            opacity: 1, 
-            scale: activePhase === 0 ? 1.05 : 1,
-            fill: activePhase === 0 ? "rgba(231, 251, 16, 0.3)" : "rgba(231, 251, 16, 0.2)"
-          } : {}}
-          transition={{ duration: 0.5 }}
-          style={{ filter: activePhase === 0 ? 'drop-shadow(0 0 20px rgba(231, 251, 16, 0.8))' : undefined }}
-        />
-        <motion.text x="70" y="92" textAnchor="middle" fill="#E7FB10" fontSize="11" fontWeight="bold"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ delay: 0.5 }}
-        >
-          SLU-PP-332
-        </motion.text>
-        <motion.text x="70" y="107" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="8"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ delay: 0.6 }}
-        >
-          ERR Pan-Agonist
-        </motion.text>
-        <motion.text x="70" y="120" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="7"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ delay: 0.7 }}
-        >
-          (First-in-class)
-        </motion.text>
-
-        <motion.path
-          d="M 110 100 L 140 100"
-          stroke="#E7FB10"
-          strokeWidth="3"
-          strokeLinecap="round"
-          initial={{ pathLength: 0 }}
-          animate={isInView ? { pathLength: 1 } : {}}
-          transition={{ delay: 0.8 }}
-          style={{ filter: 'drop-shadow(0 0 6px rgba(231, 251, 16, 0.6))' }}
-        />
-        <motion.polygon
-          points="138,95 148,100 138,105"
-          fill="#E7FB10"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ delay: 0.9 }}
+        {/* Nucleus/Cell Boundary */}
+        <motion.circle
+          cx="225" cy="125" r="110"
+          fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeDasharray="5,5"
         />
 
-        <motion.g initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 1 }}>
-          {[
-            { label: "ERRα", y: 55, color: "#22c55e", desc: "Mitochondria" },
-            { label: "ERRβ", y: 100, color: "#21d8ff", desc: "Differentiation" },
-            { label: "ERRγ", y: 145, color: "#9d4edd", desc: "Oxidation" },
-          ].map((receptor, i) => (
-            <motion.g key={receptor.label}>
-              <motion.ellipse
-                cx="195"
-                cy={receptor.y}
-                rx="40"
-                ry="18"
-                fill={activePhase === 1 ? `${receptor.color}40` : `${receptor.color}15`}
-                stroke={receptor.color}
-                strokeWidth={activePhase === 1 ? 3 : 1.5}
-                initial={{ scale: 0 }}
-                animate={isInView ? { 
-                  scale: activePhase === 1 ? 1.1 : 1,
-                  opacity: 1 
-                } : {}}
-                transition={{ duration: 0.5 }}
-                style={{ filter: activePhase === 1 ? `drop-shadow(0 0 15px ${receptor.color})` : undefined }}
-              />
-              <motion.text x="195" y={receptor.y - 3} textAnchor="middle" fill={receptor.color} fontSize="10" fontWeight="bold"
-                initial={{ opacity: 0 }}
-                animate={isInView ? { opacity: 1 } : {}}
-                transition={{ delay: 1.2 + i * 0.15 }}
-              >
-                {receptor.label}
-              </motion.text>
-              <motion.text x="195" y={receptor.y + 10} textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="7"
-                initial={{ opacity: 0 }}
-                animate={isInView ? { opacity: 1 } : {}}
-                transition={{ delay: 1.3 + i * 0.15 }}
-              >
-                {receptor.desc}
-              </motion.text>
-            </motion.g>
-          ))}
+        {/* Phase 0: Compound Entry */}
+        <motion.g animate={{ opacity: activePhase === 0 ? 1 : 0.4 }}>
+          <motion.rect
+            x="20" y="105" width="70" height="40" rx="8"
+            fill="rgba(231, 251, 16, 0.1)"
+            stroke="#E7FB10" strokeWidth="2"
+            animate={activePhase === 0 ? { 
+              scale: [1, 1.05, 1],
+              boxShadow: "0 0 20px rgba(231, 251, 16, 0.5)"
+            } : {}}
+            transition={{ repeat: Infinity, duration: 2 }}
+          />
+          <text x="55" y="130" textAnchor="middle" fill="#E7FB10" fontSize="10" fontWeight="bold">SLU-PP-332</text>
         </motion.g>
 
+        {/* Signaling Path */}
         <motion.path
-          d="M 235 100 L 265 100"
-          stroke="url(#errGradient)"
-          strokeWidth="3"
-          strokeLinecap="round"
-          initial={{ pathLength: 0 }}
-          animate={isInView ? { pathLength: 1 } : {}}
-          transition={{ delay: 1.6 }}
-        />
-        <motion.polygon
-          points="263,95 273,100 263,105"
-          fill="#21d8ff"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ delay: 1.7 }}
+          d="M 90 125 Q 150 125 180 125"
+          fill="none" stroke="#E7FB10" strokeWidth="2" strokeDasharray="4,4"
+          animate={{ strokeDashoffset: [0, -20] }}
+          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+          style={{ opacity: activePhase >= 0 ? 1 : 0.1 }}
         />
 
-        <motion.rect
-          x="275" y="40" width="105" height="120" rx="12"
-          fill={activePhase >= 2 ? "rgba(34, 197, 94, 0.2)" : "rgba(255,255,255,0.03)"}
-          stroke={activePhase >= 2 ? "#22c55e" : "rgba(255,255,255,0.15)"}
-          strokeWidth="2"
-          strokeDasharray={activePhase >= 2 ? "0" : "4,4"}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={isInView ? { 
-            opacity: 1, 
-            scale: activePhase >= 2 ? 1.02 : 1 
-          } : {}}
-          transition={{ duration: 0.5 }}
-          style={{ filter: activePhase >= 2 ? 'drop-shadow(0 0 25px rgba(34, 197, 94, 0.5))' : undefined }}
-        />
-        <motion.text x="327" y="58" textAnchor="middle" fill="#22c55e" fontSize="9" fontWeight="bold"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ delay: 1.9 }}
-        >
-          EXERCISE BENEFITS
-        </motion.text>
-        
-        {[
-          { icon: "⚡", text: "+70% Endurance", y: 78, color: "#E7FB10" },
-          { icon: "🔥", text: "Fat Oxidation ↑", y: 98, color: "#f97316" },
-          { icon: "💪", text: "Type I Fibers", y: 118, color: "#21d8ff" },
-          { icon: "📊", text: "Glucose Control", y: 138, color: "#9d4edd" },
-        ].map((benefit, i) => (
-          <motion.g key={benefit.text}>
-            <motion.text x="292" y={benefit.y} fill={benefit.color} fontSize="10"
-              initial={{ opacity: 0, x: -10 }}
-              animate={isInView ? { 
-                opacity: 1, 
-                x: 0,
-                scale: activePhase === 3 ? 1.1 : 1
-              } : {}}
-              transition={{ delay: 0.1 * i }}
-            >
-              {benefit.icon}
-            </motion.text>
-            <motion.text x="307" y={benefit.y} fill="rgba(255,255,255,0.8)" fontSize="8"
-              initial={{ opacity: 0, x: -10 }}
-              animate={isInView ? { 
-                opacity: 1, 
-                x: 0,
-                fill: activePhase === 3 ? "#ffffff" : "rgba(255,255,255,0.8)"
-              } : {}}
-              transition={{ delay: 0.1 * i }}
-            >
-              {benefit.text}
-            </motion.text>
-          </motion.g>
-        ))}
-
-        {[0, 1, 2].map((i) => (
-          <motion.circle
-            key={`pulse-${i}`}
-            r="4"
-            fill="#E7FB10"
-            initial={{ opacity: 0 }}
-            animate={isInView ? {
-              cx: [110, 150, 235, 275],
-              cy: [100, 100, 100, 100],
-              opacity: [0, 1, 1, 0],
-              scale: [0.5, 1, 1, 0.5]
-            } : {}}
-            transition={{
-              duration: 2,
-              delay: 2.5 + i * 0.6,
-              repeat: Infinity,
-              repeatDelay: 1,
-              ease: "easeInOut"
-            }}
-            style={{ filter: 'drop-shadow(0 0 8px rgba(231, 251, 16, 0.8))' }}
+        {/* Phase 1: ERR Activation (The "Switch") */}
+        <motion.g transform="translate(180, 85)" animate={{ scale: activePhase === 1 ? 1.1 : 1 }}>
+          <motion.ellipse
+            cx="45" cy="40" rx="35" ry="15"
+            fill={activePhase === 1 ? "rgba(34, 197, 94, 0.3)" : "rgba(34, 197, 94, 0.1)"}
+            stroke="#22c55e" strokeWidth="2"
+            style={{ filter: activePhase === 1 ? 'url(#glow)' : '' }}
           />
-        ))}
+          <text x="45" y="43" textAnchor="middle" fill="#22c55e" fontSize="9" fontWeight="bold">ERR-α Receptor</text>
+          
+          {/* Docking Animation */}
+          {activePhase === 1 && (
+            <motion.circle
+              cx="45" cy="40" r="4" fill="#E7FB10"
+              animate={{ scale: [0, 1.5, 0], opacity: [0, 1, 0] }}
+              transition={{ repeat: Infinity, duration: 1.5 }}
+            />
+          )}
+        </motion.g>
 
-        <motion.text x="200" y="188" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="8"
+        {/* Phase 2: Gene Expression (Mitochondrial Program) */}
+        <motion.g transform="translate(180, 140)" animate={{ opacity: activePhase >= 2 ? 1 : 0.1 }}>
+          <motion.path
+            d="M 10 30 Q 45 10 80 30"
+            fill="none" stroke="url(#dnaGradient)" strokeWidth="3"
+            animate={activePhase === 2 ? { y: [0, -5, 0] } : {}}
+            transition={{ repeat: Infinity, duration: 2 }}
+          />
+          <text x="45" y="55" textAnchor="middle" fill="#21d8ff" fontSize="8" fontWeight="bold">PGC-1α CO-ACTIVATION</text>
+          <text x="45" y="65" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="7">Mitochondrial Biogenesis</text>
+        </motion.g>
+
+        {/* Phase 3: Muscle Transformation */}
+        <motion.g transform="translate(320, 85)" animate={{ x: activePhase === 3 ? [0, 5, 0] : 0 }}>
+          <rect x="0" y="0" width="100" height="80" rx="10" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" />
+          <text x="50" y="20" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="8" fontWeight="bold">SKELETAL MUSCLE</text>
+          
+          {/* Fiber Type Switch */}
+          <motion.g animate={{ fill: activePhase === 3 ? "#E7FB10" : "#666" }}>
+            <circle cx="30" cy="45" r="8" />
+            <circle cx="50" cy="45" r="8" />
+            <circle cx="70" cy="45" r="8" />
+            <text x="50" y="65" textAnchor="middle" fontSize="7" fill={activePhase === 3 ? "#E7FB10" : "#666"}>Type I (Slow-Twitch)</text>
+          </motion.g>
+          
+          {activePhase === 3 && (
+            <motion.path
+              d="M 20 75 L 80 75"
+              stroke="#E7FB10" strokeWidth="2"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+            />
+          )}
+        </motion.g>
+
+        {/* Connecting Arrows */}
+        <motion.path
+          d="M 260 110 L 310 110"
+          stroke="#22c55e" strokeWidth="2" markerEnd="url(#arrow)"
           initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ delay: 2.8 }}
-        >
-          First-in-class ERR pan-agonist mimics endurance exercise benefits
-        </motion.text>
+          animate={{ opacity: activePhase >= 2 ? 1 : 0.1 }}
+        />
       </svg>
     </div>
   );
