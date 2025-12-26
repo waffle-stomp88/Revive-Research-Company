@@ -110,7 +110,6 @@ export function EarlyAccessModal({ showOnProductPages = false }: { showOnProduct
         >
           <div className="absolute -top-4 left-1/2 -translate-x-1/2">
             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#E7FB10]/20 to-[#21d8ff]/20 border border-[#E7FB10]/40">
-              <Sparkles className="h-4 w-4 text-[#E7FB10]" />
               <span className="text-sm font-bold text-[#E7FB10]">EARLY ACCESS</span>
             </div>
           </div>
@@ -158,10 +157,8 @@ export function EarlyAccessModal({ showOnProductPages = false }: { showOnProduct
                   disabled={subscribeMutation.isPending}
                   data-testid="button-early-access-notify"
                 >
-                  {subscribeMutation.isPending ? (
+                  {subscribeMutation.isPending && (
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  ) : (
-                    <Mail className="h-4 w-4 mr-2" />
                   )}
                   Notify me at launch
                 </Button>
