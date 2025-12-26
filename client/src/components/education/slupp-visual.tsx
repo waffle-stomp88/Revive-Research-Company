@@ -2,131 +2,6 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { Zap, Activity, Battery, Flame, Heart, TrendingUp, Dumbbell } from "lucide-react";
 
-function ExerciseMimeticAnimation({ isInView, activePhase }: { isInView: boolean; activePhase: number }) {
-  const steps = [
-    {
-      id: 0,
-      title: "SLU-PP-332",
-      subtitle: "Compound Entry",
-      color: "#E7FB10",
-      detail: "Binds to nuclear ERR receptors"
-    },
-    {
-      id: 1,
-      title: "ERR-α Activation",
-      subtitle: "Receptor Binding",
-      color: "#22c55e",
-      detail: "Triggers conformational change"
-    },
-    {
-      id: 2,
-      title: "PGC-1α Recruitment",
-      subtitle: "Gene Transcription",
-      color: "#21d8ff",
-      detail: "Master switch for mitochondria"
-    },
-    {
-      id: 3,
-      title: "Exercise Adaptation",
-      subtitle: "Muscle Transformation",
-      color: "#f97316",
-      detail: "Type I fiber conversion"
-    }
-  ];
-
-  return (
-    <div className="relative w-full p-6 bg-black/30 rounded-xl border border-white/10">
-      {/* Linear Pipeline */}
-      <div className="flex items-center justify-between gap-2">
-        {steps.map((step, index) => (
-          <div key={step.id} className="flex items-center flex-1">
-            {/* Step Card */}
-            <motion.div
-              className="flex-1 p-4 rounded-lg text-center relative"
-              style={{
-                backgroundColor: activePhase === index ? `${step.color}20` : 'rgba(255,255,255,0.03)',
-                border: `2px solid ${activePhase === index ? step.color : 'rgba(255,255,255,0.1)'}`,
-                boxShadow: activePhase === index ? `0 0 20px ${step.color}40` : 'none'
-              }}
-              animate={{
-                scale: activePhase === index ? 1.02 : 1,
-              }}
-              transition={{ duration: 0.3 }}
-            >
-              {/* Step Number */}
-              <div 
-                className="absolute -top-2 -left-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
-                style={{ 
-                  backgroundColor: activePhase >= index ? step.color : '#333',
-                  color: activePhase >= index ? '#000' : '#666'
-                }}
-              >
-                {index + 1}
-              </div>
-              
-              <h4 
-                className="text-sm font-bold mb-1"
-                style={{ color: step.color }}
-              >
-                {step.title}
-              </h4>
-              <p className="text-[10px] text-muted-foreground mb-2">
-                {step.subtitle}
-              </p>
-              
-              {/* Active Detail */}
-              {activePhase === index && (
-                <motion.p
-                  className="text-[9px] mt-2 pt-2 border-t border-white/10"
-                  style={{ color: step.color }}
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                >
-                  {step.detail}
-                </motion.p>
-              )}
-            </motion.div>
-
-            {/* Arrow Connector */}
-            {index < steps.length - 1 && (
-              <div className="flex-shrink-0 w-8 flex items-center justify-center">
-                <motion.div
-                  className="w-6 h-0.5 relative"
-                  style={{ 
-                    backgroundColor: activePhase > index ? steps[index + 1].color : 'rgba(255,255,255,0.2)'
-                  }}
-                >
-                  <motion.div
-                    className="absolute right-0 top-1/2 -translate-y-1/2 w-0 h-0"
-                    style={{
-                      borderTop: '4px solid transparent',
-                      borderBottom: '4px solid transparent',
-                      borderLeft: `6px solid ${activePhase > index ? steps[index + 1].color : 'rgba(255,255,255,0.2)'}`
-                    }}
-                  />
-                </motion.div>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Bottom Summary */}
-      <motion.div
-        className="mt-6 pt-4 border-t border-white/10 text-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isInView ? 1 : 0 }}
-      >
-        <p className="text-xs text-muted-foreground">
-          <span className="text-[#E7FB10] font-medium">SLU-PP-332</span> activates ERR nuclear receptors → recruits{" "}
-          <span className="text-[#21d8ff] font-medium">PGC-1α coactivator</span> → triggers{" "}
-          <span className="text-[#f97316] font-medium">endurance exercise adaptations</span>
-        </p>
-      </motion.div>
-    </div>
-  );
-}
-
 const phases = [
   { id: 0, label: "Compound", icon: Zap, color: "#E7FB10", description: "SLU-PP-332 binds to ERR receptors" },
   { id: 1, label: "ERR Activation", icon: Activity, color: "#22c55e", description: "Pan-agonist activates ERR-α, β, and γ" },
@@ -145,10 +20,17 @@ export function SLUPP332Visual() {
     
     const interval = setInterval(() => {
       setActivePhase((prev) => (prev + 1) % phases.length);
-    }, 2500);
+    }, 3000);
     
     return () => clearInterval(interval);
   }, [isPlaying, isInView]);
+
+  const researchFindings = [
+    { stat: "+70%", label: "Endurance", desc: "Treadmill running time in mice", color: "#E7FB10" },
+    { stat: "+45%", label: "Distance", desc: "Running distance improvement", color: "#22c55e" },
+    { stat: "↓ Fat", label: "Body Composition", desc: "Decreased fat mass accumulation", color: "#f97316" },
+    { stat: "↑ Type I", label: "Muscle Fibers", desc: "Slow-twitch oxidative conversion", color: "#21d8ff" },
+  ];
 
   return (
     <div ref={containerRef} className="relative">
@@ -159,6 +41,7 @@ export function SLUPP332Visual() {
         }}
       />
       
+      {/* Header */}
       <motion.div
         className="text-center mb-6"
         initial={{ opacity: 0, y: 20 }}
@@ -174,91 +57,156 @@ export function SLUPP332Visual() {
         >
           <Dumbbell className="h-5 w-5 text-[#E7FB10]" style={{ filter: 'drop-shadow(0 0 4px rgba(231, 251, 16, 0.6))' }} />
           <span className="text-sm font-bold bg-gradient-to-r from-[#E7FB10] to-[#22c55e] bg-clip-text text-transparent">
-            Exercise Mimetic Mechanism
+            Exercise in a Pill
           </span>
         </div>
-        <p className="text-sm text-muted-foreground max-w-md mx-auto">
-          How SLU-PP-332 activates ERR receptors to replicate endurance exercise benefits
+        <p className="text-sm text-muted-foreground max-w-lg mx-auto">
+          SLU-PP-332 activates the same genetic programs as endurance exercise—without physical activity
         </p>
       </motion.div>
 
+      {/* Main Visual - Two Column Layout */}
       <div 
-        className="rounded-xl border p-6 mb-6"
+        className="rounded-xl border overflow-hidden"
         style={{ 
           borderColor: 'rgba(231, 251, 16, 0.3)',
-          background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.05) 0%, transparent 50%)'
+          background: 'linear-gradient(135deg, rgba(231, 251, 16, 0.03) 0%, transparent 50%)'
         }}
       >
-        <ExerciseMimeticAnimation isInView={isInView} activePhase={activePhase} />
-        
-        <div className="mt-6">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-xs text-muted-foreground uppercase tracking-wider">
-              Activation Pathway
-            </span>
-            <button
-              onClick={() => setIsPlaying(!isPlaying)}
-              className="text-xs px-3 py-1 rounded-full transition-all"
-              style={{
-                backgroundColor: isPlaying ? 'rgba(231, 251, 16, 0.2)' : 'rgba(255,255,255,0.1)',
-                color: isPlaying ? '#E7FB10' : 'rgba(255,255,255,0.6)',
-                border: `1px solid ${isPlaying ? '#E7FB10' : 'rgba(255,255,255,0.2)'}`
-              }}
-            >
-              {isPlaying ? '⏸ Pause' : '▶ Play'}
-            </button>
+        <div className="grid md:grid-cols-2 gap-0">
+          {/* Left: Mechanism Pathway */}
+          <div className="p-6 border-r border-white/5">
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="text-sm font-bold text-[#E7FB10]">Mechanism of Action</h4>
+              <button
+                onClick={() => setIsPlaying(!isPlaying)}
+                className="text-[10px] px-2 py-1 rounded-full transition-all"
+                style={{
+                  backgroundColor: isPlaying ? 'rgba(231, 251, 16, 0.2)' : 'rgba(255,255,255,0.1)',
+                  color: isPlaying ? '#E7FB10' : 'rgba(255,255,255,0.6)',
+                  border: `1px solid ${isPlaying ? '#E7FB10' : 'rgba(255,255,255,0.2)'}`
+                }}
+              >
+                {isPlaying ? 'Pause' : 'Play'}
+              </button>
+            </div>
+            
+            {/* Vertical Timeline */}
+            <div className="space-y-3">
+              {phases.map((phase, index) => {
+                const Icon = phase.icon;
+                const isActive = activePhase === index;
+                const isPast = activePhase > index;
+                
+                return (
+                  <motion.div
+                    key={phase.id}
+                    className="flex items-start gap-3 cursor-pointer"
+                    onClick={() => {
+                      setIsPlaying(false);
+                      setActivePhase(index);
+                    }}
+                    animate={{ opacity: isActive ? 1 : isPast ? 0.7 : 0.4 }}
+                  >
+                    {/* Timeline dot and line */}
+                    <div className="flex flex-col items-center">
+                      <motion.div
+                        className="w-8 h-8 rounded-full flex items-center justify-center"
+                        style={{ 
+                          backgroundColor: isActive || isPast ? `${phase.color}30` : 'rgba(255,255,255,0.05)',
+                          border: `2px solid ${isActive ? phase.color : isPast ? `${phase.color}60` : 'rgba(255,255,255,0.1)'}`,
+                          boxShadow: isActive ? `0 0 15px ${phase.color}50` : 'none'
+                        }}
+                        animate={{ scale: isActive ? 1.1 : 1 }}
+                      >
+                        <Icon className="h-4 w-4" style={{ color: isActive || isPast ? phase.color : '#666' }} />
+                      </motion.div>
+                      {index < phases.length - 1 && (
+                        <div 
+                          className="w-0.5 h-6 mt-1"
+                          style={{ backgroundColor: isPast ? phase.color : 'rgba(255,255,255,0.1)' }}
+                        />
+                      )}
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="flex-1 pt-1">
+                      <h5 
+                        className="text-xs font-bold mb-0.5"
+                        style={{ color: isActive ? phase.color : isPast ? phase.color : '#888' }}
+                      >
+                        {phase.label}
+                      </h5>
+                      <p className="text-[10px] text-muted-foreground leading-snug">
+                        {phase.description}
+                      </p>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
           
-          <div className="grid grid-cols-4 gap-2">
-            {phases.map((phase, index) => {
-              const Icon = phase.icon;
-              const isActive = activePhase === index;
-              
-              return (
+          {/* Right: Research Results */}
+          <div className="p-6 bg-black/20">
+            <h4 className="text-sm font-bold text-[#22c55e] mb-4">2024 Research Results</h4>
+            <p className="text-[10px] text-muted-foreground mb-4">
+              Billon et al. • J Pharmacol Exp Ther
+            </p>
+            
+            <div className="grid grid-cols-2 gap-3">
+              {researchFindings.map((finding, i) => (
                 <motion.div
-                  key={phase.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: 0.8 + index * 0.1 }}
-                  className="relative rounded-lg p-3 cursor-pointer transition-all text-center"
+                  key={i}
+                  className="p-3 rounded-lg"
                   style={{ 
-                    backgroundColor: isActive ? `${phase.color}20` : `${phase.color}08`,
-                    border: `1.5px solid ${isActive ? phase.color : `${phase.color}30`}`,
-                    boxShadow: isActive ? `0 0 20px ${phase.color}30` : undefined
+                    backgroundColor: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.08)'
                   }}
-                  onClick={() => {
-                    setIsPlaying(false);
-                    setActivePhase(index);
-                  }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: 0.5 + i * 0.1 }}
                 >
-                  <motion.div
-                    className="w-10 h-10 rounded-lg mx-auto mb-2 flex items-center justify-center"
-                    style={{ backgroundColor: `${phase.color}20` }}
-                    animate={{ scale: isActive ? 1.1 : 1 }}
+                  <div 
+                    className="text-lg font-bold mb-1"
+                    style={{ color: finding.color }}
                   >
-                    <Icon className="h-5 w-5" style={{ color: phase.color, filter: isActive ? `drop-shadow(0 0 6px ${phase.color})` : undefined }} />
-                  </motion.div>
-                  <span className="text-xs font-bold block mb-1" style={{ color: phase.color }}>
-                    {phase.label}
-                  </span>
-                  <span className="text-[9px] text-muted-foreground leading-tight block">
-                    {phase.description}
-                  </span>
+                    {finding.stat}
+                  </div>
+                  <div className="text-[11px] font-medium text-foreground mb-1">
+                    {finding.label}
+                  </div>
+                  <div className="text-[9px] text-muted-foreground leading-tight">
+                    {finding.desc}
+                  </div>
                 </motion.div>
-              );
-            })}
+              ))}
+            </div>
+            
+            {/* Key Insight */}
+            <motion.div
+              className="mt-4 p-3 rounded-lg bg-[#E7FB10]/5 border border-[#E7FB10]/20"
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : {}}
+              transition={{ delay: 1 }}
+            >
+              <p className="text-[10px] text-muted-foreground leading-relaxed">
+                <span className="text-[#E7FB10] font-medium">Key finding:</span> Mice treated with SLU-PP-332 showed metabolic improvements 
+                <span className="text-[#22c55e]"> without any change in food intake</span>—pure metabolic enhancement.
+              </p>
+            </motion.div>
           </div>
         </div>
       </div>
 
       <motion.div
-        className="text-center text-xs text-muted-foreground"
+        className="text-center text-xs text-muted-foreground mt-4"
         initial={{ opacity: 0 }}
         animate={isInView ? { opacity: 1 } : {}}
-        transition={{ delay: 2 }}
+        transition={{ delay: 1.5 }}
       >
         <span className="px-3 py-1 rounded-full bg-muted/30">
-          SLU-PP-332 ERR agonist visualization • For educational purposes only
+          For research purposes only • Not FDA approved
         </span>
       </motion.div>
     </div>
