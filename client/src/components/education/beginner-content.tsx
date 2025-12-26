@@ -1292,6 +1292,231 @@ A proper COA comes from an independent, third-party laboratory - not the company
       }
     ],
     takeaway: "Thymulin is a zinc-dependent thymic hormone essential for T-cell maturation. It's unique in requiring zinc for activity and serves as a marker of thymic function, making it valuable for immune and aging research."
+  },
+
+  "5-amino-1mq-research-guide": {
+    icon: Zap,
+    iconColor: "#E7FB10",
+    intro: `5-Amino-1MQ is a small molecule that inhibits an enzyme called NNMT (nicotinamide N-methyltransferase). This enzyme plays a role in how your body processes NAD+, a crucial molecule for cellular energy. By blocking NNMT, researchers study how cells might have more NAD+ available for energy production.`,
+    sections: [
+      {
+        title: "The NAD+ Connection",
+        content: `NAD+ (nicotinamide adenine dinucleotide) is essential for cellular energy:
+
+**Energy Currency** - NAD+ is involved in converting food into cellular energy. Every cell needs it to function.
+
+**NNMT's Role** - The enzyme NNMT breaks down NAD+ precursors, effectively reducing the amount of NAD+ your cells can make.
+
+**5-Amino-1MQ's Effect** - By inhibiting NNMT, 5-Amino-1MQ may help preserve more NAD+ precursors, potentially supporting cellular energy levels.
+
+Think of it like a drain stopper - it helps keep more NAD+ in the system rather than letting it "drain away" through NNMT.`
+      },
+      {
+        title: "How It Works (Simply Explained)",
+        content: `Here's the basic mechanism:
+
+**NNMT Enzyme** - This enzyme normally methylates (adds a chemical group to) nicotinamide, removing it from the NAD+ salvage pathway.
+
+**Blocking NNMT** - When 5-Amino-1MQ inhibits NNMT, more nicotinamide stays available to be recycled back into NAD+.
+
+**Cellular Impact** - With more NAD+ available, cells may have better energy metabolism and mitochondrial function.
+
+**Research Interest** - Scientists study this for understanding metabolic health, aging, and cellular energy dynamics.`
+      },
+      {
+        title: "Research Applications",
+        content: `Scientists investigate 5-Amino-1MQ in several contexts:
+
+**Metabolic Research** - Understanding how NNMT inhibition affects overall metabolism and energy expenditure.
+
+**Fat Tissue Studies** - NNMT is highly expressed in fat tissue, making it interesting for adipose metabolism research.
+
+**Aging Research** - NAD+ levels decline with age, so NNMT inhibition is studied as a potential way to support NAD+ in aging cells.
+
+**Muscle Research** - Studies examine effects on muscle cell energy and regeneration.`
+      }
+    ],
+    takeaway: "5-Amino-1MQ inhibits the NNMT enzyme, which normally depletes NAD+ precursors. By blocking NNMT, it may help maintain higher cellular NAD+ levels, supporting energy metabolism and cellular function."
+  },
+
+  "dihexa-research-guide": {
+    icon: Brain,
+    iconColor: "#9d4edd",
+    intro: `Dihexa is a peptide derivative that researchers study for its effects on cognitive function. It works through the HGF/c-Met system - a signaling pathway involved in nerve cell connections. What makes Dihexa remarkable is its reported potency: it appears to be about 7 times more powerful than BDNF (brain-derived neurotrophic factor) at promoting synapse formation.`,
+    sections: [
+      {
+        title: "The HGF/c-Met Connection",
+        content: `Dihexa works through a specific growth factor system:
+
+**HGF (Hepatocyte Growth Factor)** - Despite its name, HGF also affects the brain, particularly in forming new connections between nerve cells.
+
+**c-Met Receptor** - This is the receptor that HGF activates. When triggered, it promotes processes that help nerve cells grow and connect.
+
+**Synaptogenesis** - The formation of new synapses (connections between neurons) is crucial for learning and memory. Dihexa appears to strongly promote this process.
+
+Think of it like a fertilizer specifically designed to help brain cells form new connections with each other.`
+      },
+      {
+        title: "Why It's So Potent",
+        content: `Dihexa has remarkable characteristics:
+
+**Angiotensin IV Derivative** - Dihexa was developed from a brain peptide called angiotensin IV, modified to be more stable and potent.
+
+**7x BDNF Potency** - In research settings, Dihexa promotes synapse formation about 7 times more effectively than BDNF, a well-known neurotrophic factor.
+
+**Oral Availability** - Unlike many peptides, Dihexa can be absorbed orally, making it easier to study in research settings.
+
+**Low Doses Needed** - Its high potency means very small amounts can produce observable effects in research.`
+      },
+      {
+        title: "Research Focus Areas",
+        content: `Scientists study Dihexa for several reasons:
+
+**Cognitive Function** - Understanding how enhanced synapse formation affects learning and memory.
+
+**Neuroplasticity** - Studying how the brain forms new connections and adapts.
+
+**Neurodegenerative Research** - Exploring whether enhanced synaptogenesis might help in conditions where neurons lose connections.
+
+**Structure-Function Studies** - Understanding how modifications to the angiotensin IV structure create such potent effects.`
+      }
+    ],
+    takeaway: "Dihexa is a peptide derivative that works through the HGF/c-Met pathway to promote synapse formation. It's studied for being approximately 7 times more potent than BDNF at stimulating new neuronal connections."
+  },
+
+  "glutathione-research-guide": {
+    icon: Shield,
+    iconColor: "#22c55e",
+    intro: `Glutathione is often called the "master antioxidant" because it's the most abundant antioxidant your body makes. It's a tripeptide (just three amino acids: glutamate, cysteine, and glycine) found in virtually every cell. Unlike most antioxidants you eat, glutathione is made inside your cells where it's needed most.`,
+    sections: [
+      {
+        title: "Why Glutathione Is Special",
+        content: `Your body produces many antioxidants, but glutathione stands out:
+
+**Made Internally** - While you get vitamins C and E from food, your cells manufacture glutathione themselves.
+
+**Found Everywhere** - Every cell in your body contains glutathione, with especially high concentrations in the liver.
+
+**Recycling Ability** - Glutathione can be regenerated after it neutralizes free radicals. It goes from GSH (reduced) to GSSG (oxidized) and back again.
+
+**Multi-Tasker** - Beyond antioxidant duties, glutathione helps with detoxification, protein repair, and immune function.`
+      },
+      {
+        title: "The Redox Cycle",
+        content: `Glutathione works through an elegant recycling system:
+
+**GSH (Reduced Form)** - This is the active form that can neutralize harmful reactive oxygen species.
+
+**GSSG (Oxidized Form)** - After donating electrons to neutralize threats, glutathione becomes oxidized.
+
+**Recycling Enzymes** - Enzymes like glutathione reductase convert GSSG back to GSH, using NADPH as energy.
+
+**The Ratio Matters** - The GSH:GSSG ratio is a key indicator of cellular oxidative stress. Healthy cells maintain high GSH levels.`
+      },
+      {
+        title: "Research Applications",
+        content: `Scientists study glutathione in many contexts:
+
+**Liver Health** - The liver has the highest glutathione concentrations and uses it extensively for detoxification.
+
+**Aging Research** - Glutathione levels decline with age, making it interesting for longevity studies.
+
+**Immune Function** - Immune cells require glutathione to function properly, especially during infections.
+
+**Cellular Stress** - Researchers use glutathione levels as markers of how well cells handle oxidative stress.`
+      }
+    ],
+    takeaway: "Glutathione is a tripeptide antioxidant made by every cell in your body. It protects cells from oxidative damage through a regenerating cycle (GSH↔GSSG) and supports detoxification, making it central to cellular health research."
+  },
+
+  "vitamin-b12-research-guide": {
+    icon: Dna,
+    iconColor: "#ec4899",
+    intro: `Vitamin B12 (cobalamin) is an essential nutrient that contains cobalt at its center - the only vitamin with a metal atom. Despite needing only tiny amounts, B12 is crucial for DNA synthesis, nerve function, and energy metabolism. It's unique among vitamins because it requires a special protein (intrinsic factor) for absorption.`,
+    sections: [
+      {
+        title: "What Makes B12 Unique",
+        content: `B12 has several distinctive characteristics:
+
+**Contains Cobalt** - The "cobal" in cobalamin refers to the cobalt atom at its center, making it the only vitamin with a metal.
+
+**Multiple Forms** - B12 comes in several forms: cyanocobalamin (synthetic), methylcobalamin, hydroxocobalamin, and adenosylcobalamin.
+
+**Special Absorption** - Your stomach produces intrinsic factor, a protein that binds B12 and enables absorption in the small intestine.
+
+**Long Storage** - The liver stores years' worth of B12, which is why deficiency can take a long time to develop.`
+      },
+      {
+        title: "The Methylation Connection",
+        content: `B12's most important role involves methylation:
+
+**Methyl Donor** - Methylcobalamin provides methyl groups for countless biochemical reactions.
+
+**Homocysteine Conversion** - B12 helps convert homocysteine to methionine. High homocysteine is associated with health concerns.
+
+**DNA Synthesis** - Methylation reactions involving B12 are essential for making new DNA, explaining why deficiency affects rapidly dividing cells.
+
+**Neural Function** - The nervous system particularly depends on B12-dependent methylation for myelin (nerve coating) maintenance.`
+      },
+      {
+        title: "Research Applications",
+        content: `Scientists study B12 in various contexts:
+
+**Neurological Research** - B12 deficiency can cause serious nerve damage, making it important for nervous system studies.
+
+**Energy Metabolism** - Understanding B12's role in converting food to cellular energy.
+
+**Methylation Studies** - B12 is central to one-carbon metabolism research.
+
+**Deficiency Research** - Studying absorption issues, especially in aging populations where intrinsic factor production may decline.`
+      }
+    ],
+    takeaway: "Vitamin B12 is the only vitamin containing a metal (cobalt). It's essential for methylation reactions that affect DNA synthesis, nerve function, and energy metabolism. Its unique absorption mechanism involving intrinsic factor makes it a subject of ongoing research."
+  },
+
+  "melanotan-research-guide": {
+    icon: Sparkles,
+    iconColor: "#f97316",
+    intro: `Melanotan I and Melanotan II are synthetic peptides that mimic alpha-melanocyte stimulating hormone (α-MSH), which naturally regulates skin pigmentation. Developed at the University of Arizona, these peptides activate melanocortin receptors, with MT-I being more selective for MC1R (skin pigmentation) and MT-II affecting multiple receptor subtypes.`,
+    sections: [
+      {
+        title: "Understanding the Melanocortin System",
+        content: `These peptides work through melanocortin receptors:
+
+**MC1R (Skin)** - When activated, this receptor triggers melanocytes to produce melanin, the pigment that darkens skin.
+
+**MC3R and MC4R** - These receptors in the brain affect appetite, sexual function, and energy balance. MT-II activates these more than MT-I.
+
+**MC5R (Glands)** - Affects secretory glands, relevant to some side effect profiles.
+
+**Natural α-MSH** - Your body produces this hormone to stimulate tanning. Melanotan peptides are more potent and longer-lasting.`
+      },
+      {
+        title: "MT-I vs MT-II Comparison",
+        content: `The two peptides have different selectivity profiles:
+
+**Melanotan I (Afamelanotide)** - More selective for MC1R, primarily affecting skin pigmentation with fewer other effects.
+
+**Melanotan II** - Activates multiple melanocortin receptors (MC1R, MC3R, MC4R, MC5R), leading to broader effects beyond pigmentation.
+
+**Potency Differences** - MT-II is generally more potent at lower doses due to its multi-receptor activity.
+
+**Research Status** - MT-I has been developed as a pharmaceutical product (afamelanotide) for specific conditions, while MT-II remains primarily a research compound.`
+      },
+      {
+        title: "Research Focus Areas",
+        content: `Scientists study these peptides for various reasons:
+
+**Photoprotection Research** - Understanding how increased melanin might protect skin from UV damage.
+
+**Melanocortin System Studies** - Using these peptides to understand how melanocortin receptors affect different body systems.
+
+**Receptor Selectivity** - Comparing MT-I and MT-II helps researchers understand how slight structural differences change receptor binding.
+
+**Pigmentation Disorders** - Research into conditions where natural melanin production is impaired.`
+      }
+    ],
+    takeaway: "Melanotan I and II are synthetic melanocortin receptor agonists that stimulate melanin production. MT-I is selective for MC1R (skin), while MT-II activates multiple receptors affecting pigmentation, appetite, and other systems."
   }
 };
 

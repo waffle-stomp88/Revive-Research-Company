@@ -83,7 +83,13 @@ import {
   DSIPVisual,
   SelankVisual,
   AOD9604Visual,
-  ThymulinVisual
+  ThymulinVisual,
+  // New compound research visuals
+  Amino1MQNADVisual,
+  DihexaSynapseVisual,
+  GlutathioneRedoxVisual,
+  B12MethylationVisual,
+  MelanotanReceptorVisual
 } from "@/components/education";
 
 // Articles that are part of the Academy curriculum (for cross-linking)
@@ -130,6 +136,12 @@ const articleVisuals: Record<string, () => JSX.Element> = {
   "selank-research-guide": () => <SelankVisual />,
   "aod-9604-research-guide": () => <AOD9604Visual />,
   "thymulin-research-guide": () => <ThymulinVisual />,
+  // New compound research visuals
+  "5-amino-1mq-research-guide": () => <Amino1MQNADVisual />,
+  "dihexa-research-guide": () => <DihexaSynapseVisual />,
+  "glutathione-research-guide": () => <GlutathioneRedoxVisual />,
+  "vitamin-b12-research-guide": () => <B12MethylationVisual />,
+  "melanotan-research-guide": () => <MelanotanReceptorVisual />,
 };
 
 const categories = [
@@ -169,12 +181,12 @@ const EDUCATION_TABS = [
 
 const peptideGroups = [
   { id: "all", label: "All Peptides", color: "#ec4899" },
-  { id: "metabolic", label: "Metabolic / GLP-1", color: "#E7FB10", slugs: ["semaglutide", "tirzepatide", "retatrutide", "aod-9604"] },
+  { id: "metabolic", label: "Metabolic / GLP-1", color: "#E7FB10", slugs: ["semaglutide", "tirzepatide", "retatrutide", "aod-9604", "5-amino-1mq"] },
   { id: "growth-hormone", label: "Growth Hormone", color: "#21d8ff", slugs: ["cjc-1295", "ipamorelin", "tesamorelin", "igf-1-lr3"] },
   { id: "tissue-repair", label: "Tissue Repair", color: "#22c55e", slugs: ["bpc-157", "tb-500"] },
-  { id: "skin-regeneration", label: "Skin & Regeneration", color: "#ec4899", slugs: ["ghk-cu", "glow-peptide-complex"] },
-  { id: "longevity", label: "Longevity & Cellular", color: "#9d4edd", slugs: ["epithalon", "mots-c", "nad-precursor", "thymosin-alpha-1", "thymulin"] },
-  { id: "cognitive", label: "Cognitive / Neuro", color: "#f97316", slugs: ["semax", "pt-141", "dsip", "selank"] },
+  { id: "skin-regeneration", label: "Skin & Regeneration", color: "#ec4899", slugs: ["ghk-cu", "glow-peptide-complex", "melanotan"] },
+  { id: "longevity", label: "Longevity & Cellular", color: "#9d4edd", slugs: ["epithalon", "mots-c", "nad-precursor", "thymosin-alpha-1", "thymulin", "glutathione", "vitamin-b12"] },
+  { id: "cognitive", label: "Cognitive / Neuro", color: "#f97316", slugs: ["semax", "pt-141", "dsip", "selank", "dihexa"] },
   { id: "hormonal", label: "Hormonal", color: "#21d8ff", slugs: ["hcg", "kisspeptin"] },
 ];
 
