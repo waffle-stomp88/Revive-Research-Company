@@ -355,6 +355,11 @@ export default function Education() {
     queryKey: ["/api/products"],
   });
 
+  const handleOpenArticle = (articleId: string) => {
+    setExpandedArticle(articleId);
+    setArticleMode("quick-breakdown");
+  };
+
   // Helper to find matching products for a peptide article
   const getMatchingProducts = (slug: string): Product[] => {
     if (!slug?.endsWith('-research-guide')) return [];
