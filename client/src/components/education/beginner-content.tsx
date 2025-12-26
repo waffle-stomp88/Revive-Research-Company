@@ -1522,30 +1522,48 @@ Think of it like a fertilizer specifically designed to help brain cells form new
   "slu-pp-332-research-guide": {
     icon: Zap,
     iconColor: "#E7FB10",
-    intro: `SLU-PP-332 is a first-in-class research compound known as an "exercise mimetic." It's an ERR agonist that tells your body to act as if it's undergoing intense endurance training, triggering metabolic pathways usually reserved for physical exertion.`,
+    intro: `SLU-PP-332 is a first-in-class research compound known as an "exercise mimetic." While most peptides work like traditional hormones, SLU-PP-332 works like a "fitness switch" for your cells. It tells your body to act as if it's undergoing intense endurance training, triggering metabolic pathways usually reserved for high-intensity physical exertion even when the subject is at rest.`,
     sections: [
       {
         title: "The Exercise Mimetic Mechanism",
-        content: `SLU-PP-332 works by activating Estrogen-Related Receptors (ERRs), specifically ERRα, ERRβ, and ERRγ. These receptors are like metabolic master switches:
+        content: `SLU-PP-332 works by activating Estrogen-Related Receptors (ERRs), specifically ERRα, ERRβ, and ERRγ. These receptors are like metabolic master switches that coordinate how your cells produce and use energy.
 
-**Mitochondrial Boost** - Activation triggers the creation of new mitochondria, the "power plants" of your cells.
+**Mitochondrial Biogenesis** - Activation triggers the creation of new mitochondria, the "power plants" of your cells. More mitochondria mean a higher capacity for energy production and oxygen utilization.
 
-**Fat Oxidation** - It tells the body to prioritize burning fat for fuel, mimicking the metabolic shift seen during long-distance running.
+**Fat Oxidation** - It tells the body to prioritize burning fat for fuel. This mimics the "fat-adapted" metabolic state seen in elite endurance athletes who can sustain performance by tapping into lipid stores efficiently.
 
-**Glucose Control** - Research shows significant improvements in insulin sensitivity and blood sugar management.`
+**Metabolic Efficiency** - By activating these pathways, SLU-PP-332 helps the body become more efficient at managing energy resources, which is a primary focus of metabolic research.`
       },
       {
-        title: "Impact on Endurance",
-        content: `In research settings, SLU-PP-332 has shown remarkable effects on physical capacity:
+        title: "Impact on Physical Capacity",
+        content: `In research settings, SLU-PP-332 has shown remarkable effects on physical capacity and muscle architecture:
 
-**Running Distance** - Studies in mice found that those treated with the compound could run 45% further than untreated controls.
+**Endurance Capacity** - Studies in sedentary models found that those treated with the compound could run significantly further and longer than untreated controls. In some treadmill tests, endurance increased by up to 70%.
 
-**Muscle Fiber Shift** - It appears to promote a shift toward "slow-twitch" oxidative muscle fibers, which are more resistant to fatigue.
+**Muscle Fiber Shift** - One of its most fascinating effects is promoting a shift toward "slow-twitch" oxidative (Type I) muscle fibers. These are the red muscle fibers used for endurance that are naturally resistant to fatigue and high in mitochondrial density.
 
-**Weight Management** - Research indicates it can reduce body fat mass even without changes in food intake.`
+**Fatigue Resistance** - By increasing mitochondrial density and optimizing fat burning, the compound appears to delay the onset of exhaustion during physical exertion, effectively expanding the "aerobic window."`
+      },
+      {
+        title: "Metabolic Health Research",
+        content: `Beyond physical performance, scientists are investigating SLU-PP-332 for its systemic metabolic effects:
+
+**Weight Management** - Research indicates it can reduce body fat mass even without changes in food intake, likely by increasing the body's baseline metabolic rate and thermogenic activity.
+
+**Glucose Management** - Activation of ERR receptors is associated with improved insulin sensitivity and better blood sugar control, making it a subject of interest for metabolic syndrome and insulin resistance research.
+
+**Cellular Protection** - Some studies examine whether the enhanced mitochondrial function provides protective effects against cellular stress and age-related metabolic decline.`
+      },
+      {
+        title: "Why This Matters for Science",
+        content: `The discovery of SLU-PP-332 represents a significant leap in understanding how we can chemically signal the body to adapt to exercise-like stress.
+
+**Research Versatility** - It allows scientists to study the benefits of exercise in models that may not be able to perform physical activity, providing insights into muscle wasting and metabolic stagnation.
+
+**Future Directions** - Current research is focused on long-term safety, the durability of metabolic shifts, and how ERR agonism compares to other metabolic pathways like GLP-1 or AMPK activation.`
       }
     ],
-    takeaway: "SLU-PP-332 is a breakthrough exercise mimetic that activates ERR receptors to boost mitochondrial function, enhance fat burning, and significantly increase endurance capacity in research models."
+    takeaway: "SLU-PP-332 is a breakthrough exercise mimetic that activates ERR receptors to 'switch on' the benefits of endurance training at a cellular level—boosting mitochondria, enhancing fat burning, and significantly increasing physical endurance capacity."
   }
 };
 
