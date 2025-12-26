@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Shield, AlertTriangle } from "lucide-react";
+import { Shield, AlertTriangle, Zap } from "lucide-react";
 import logoUrl from "@assets/Revive_PNG_1766012118069.png";
 
 const AGE_VERIFIED_KEY = "revive-research-age-verified";
@@ -81,12 +81,14 @@ export function AgeVerificationModal() {
 
                 <div className="space-y-2 sm:space-y-3">
                   <div className="flex items-start gap-2 p-3 rounded-lg" style={{ background: 'linear-gradient(135deg, rgba(33, 216, 255, 0.25) 0%, rgba(33, 216, 255, 0.15) 100%)', border: '1.5px solid rgba(33, 216, 255, 0.7)', boxShadow: '0 0 20px rgba(33, 216, 255, 0.4), inset 0 0 10px rgba(33, 216, 255, 0.15)' }}>
+                    <Shield className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: '#21d8ff' }} />
                     <p className="text-xs" style={{ color: '#ffffff' }}>
                       Products are for lawful research use only—not for human or animal consumption.
                     </p>
                   </div>
 
                   <div className="flex items-start gap-2 p-3 rounded-lg" style={{ background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.25) 0%, rgba(236, 72, 153, 0.15) 100%)', border: '1.5px solid rgba(236, 72, 153, 0.7)', boxShadow: '0 0 20px rgba(236, 72, 153, 0.4), inset 0 0 10px rgba(236, 72, 153, 0.15)' }}>
+                    <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: '#ec4899' }} />
                     <p className="text-xs" style={{ color: '#ffffff' }}>
                       Purchaser assumes full responsibility for use, handling, and distribution.
                     </p>
@@ -125,15 +127,28 @@ export function AgeVerificationModal() {
                   <Button
                     onClick={handleEnter}
                     disabled={!agreed}
-                    className="w-full h-10 bg-[#E7FB10] text-black font-semibold hover:opacity-90 active:scale-[0.98]"
+                    className="w-full h-10 bg-[#E7FB10] text-black font-semibold"
                     style={{
                       boxShadow: agreed ? '0 0 20px rgba(231, 251, 16, 0.5)' : 'none',
                       opacity: agreed ? 1 : 0.5,
                       cursor: agreed ? 'pointer' : 'not-allowed',
                       transition: 'all 0.2s ease'
                     }}
+                    onMouseEnter={(e) => {
+                      if (agreed) {
+                        e.currentTarget.style.boxShadow = '0 0 20px rgba(231, 251, 16, 0.8), 0 0 30px rgba(231, 251, 16, 0.5)';
+                        e.currentTarget.style.backgroundColor = 'rgb(231, 251, 16)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (agreed) {
+                        e.currentTarget.style.boxShadow = '0 0 20px rgba(231, 251, 16, 0.5)';
+                        e.currentTarget.style.backgroundColor = 'rgb(231, 251, 16)';
+                      }
+                    }}
                     data-testid="button-enter-site"
                   >
+                    <Zap className="h-4 w-4 mr-2" />
                     Enter Site
                   </Button>
                 </motion.div>

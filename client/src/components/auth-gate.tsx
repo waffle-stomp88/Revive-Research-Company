@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Lock, FlaskConical, Shield, GraduationCap, ArrowRight } from "lucide-react";
+import { Lock, FlaskConical, Shield, GraduationCap, Sparkles, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -74,6 +74,7 @@ export function AuthGate({ title, description }: AuthGateProps) {
                   transition={{ delay: 0.3 + index * 0.1 }}
                   className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#21d8ff]/30 bg-[#21d8ff]/5"
                 >
+                  <badge.icon className="w-4 h-4 text-[#21d8ff]" />
                   <span className="text-sm text-[#21d8ff] font-medium">{badge.label}</span>
                 </motion.div>
               ))}
@@ -89,6 +90,7 @@ export function AuthGate({ title, description }: AuthGateProps) {
                 className="w-full h-12 text-base font-semibold bg-[#E7FB10] hover:bg-[#E7FB10]/90 text-black rounded-xl group"
                 data-testid="button-auth-gate-login"
               >
+                <Sparkles className="w-4 h-4 mr-2 group-hover:animate-pulse" />
                 Create Free Account
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-0.5 transition-transform" />
               </Button>
