@@ -490,9 +490,6 @@ function ProductsComponent() {
           className="mb-8"
         >
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">Peptides</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl">
-            Premium research compounds, curated bundles, and volume pricing for your laboratory needs.
-          </p>
         </motion.div>
 
         {/* Full-width Weekly Deal Section */}

@@ -146,7 +146,7 @@ export function CompareBar({ products }: CompareBarProps) {
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 100, opacity: 0 }}
-        className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50"
+        className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 hidden md:block"
         data-testid="bar-compare"
       >
         <Card className="flex items-center gap-4 px-4 py-3 bg-[#1a1a1f]/95 backdrop-blur-sm border-[#21d8ff]/50 shadow-xl">
