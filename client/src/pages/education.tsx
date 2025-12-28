@@ -32,6 +32,7 @@ import {
   Compass,
   ExternalLink,
   Search,
+  ArrowRight,
 } from "lucide-react";
 import {
   Select,
@@ -46,6 +47,7 @@ import { BeginnerArticleContent, WhatIsPeptideSection, hasQuickBreakdown } from 
 import type { EducationArticle, Product } from "@shared/schema";
 import { ResearchOrientationMap } from "@/components/education/research-orientation-map";
 import { OrderingJourney } from "@/components/infographics/ordering-journey";
+import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { 
   COAAnatomyDiagram, 
   HPLCExplainer, 
