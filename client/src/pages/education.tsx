@@ -817,29 +817,29 @@ export default function Education() {
                           const matchingProducts = getMatchingProducts(article.slug || "");
                           if (matchingProducts.length === 0) return null;
                           return (
-                            <div className="mt-6 pt-6 border-t border-border/50">
-                              <div className="flex items-center justify-between gap-4 flex-wrap">
-                                <div className="flex items-center gap-3">
-                                  <FlaskConical className="h-4 w-4 text-muted-foreground" />
-                                  <span className="text-sm text-muted-foreground">
-                                    Interested in this compound for your research?
-                                  </span>
-                                </div>
-                                <div className="flex gap-2 flex-wrap">
-                                  {matchingProducts.map(product => (
-                                    <Link key={product.id} href={`/product/${product.id}`}>
-                                      <Button 
-                                        variant="outline" 
-                                        size="sm"
-                                        className="text-xs border-[#21d8ff]/30 text-[#21d8ff] hover:bg-[#21d8ff]/10 hover:border-[#21d8ff]"
-                                        data-testid={`button-view-product-${product.id}`}
-                                      >
-                                        View {product.name}
-                                        <ChevronRight className="h-3 w-3 ml-1" />
-                                      </Button>
-                                    </Link>
-                                  ))}
-                                </div>
+                            <div className="mt-8 pt-8 border-t border-border/50">
+                              <h3 className="font-display text-xl font-bold mb-4">Related Research Compound</h3>
+                              <div className="space-y-4">
+                                {matchingProducts.map(product => (
+                                  <Link key={product.id} href={`/peptides/${product.id}`}>
+                                    <Card className="p-4 border border-[#21d8ff]/20 hover:border-[#21d8ff]/50 transition-all hover-elevate cursor-pointer">
+                                      <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded bg-muted flex-shrink-0">
+                                          <img 
+                                            src={product.imageUrl || productImage} 
+                                            alt={product.name}
+                                            className="w-full h-full object-contain p-2"
+                                          />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                          <h4 className="font-display font-bold text-[#E7FB10] truncate">{product.name}</h4>
+                                          <p className="text-xs text-muted-foreground truncate">{product.shortDescription}</p>
+                                        </div>
+                                        <ArrowRight className="h-5 w-5 text-[#21d8ff]" />
+                                      </div>
+                                    </Card>
+                                  </Link>
+                                ))}
                               </div>
                             </div>
                           );
