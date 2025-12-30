@@ -1265,9 +1265,42 @@ export default function Checkout() {
                 <div className="mb-4 p-3 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30" data-testid="early-access-checkout-notice">
                   <div className="flex items-start gap-2">
                     <AlertTriangle className="h-4 w-4 text-[#E7FB10] mt-0.5 flex-shrink-0" />
-                    <div>
+                    <div className="flex-1">
                       <p className="text-sm font-medium text-[#E7FB10]">Purchasing is disabled during Early Access</p>
-                      <p className="text-xs text-muted-foreground mt-1">You'll be notified at launch.</p>
+                      {emailSubmitted ? (
+                        <p className="text-xs text-green-400 mt-2 flex items-center gap-1">
+                          <CheckCircle className="h-3 w-3" />
+                          Email confirmed! You'll be notified at launch.
+                        </p>
+                      ) : (
+                        <div className="mt-2">
+                          <p className="text-xs text-muted-foreground mb-2">Enter your email to be notified at launch:</p>
+                          <div className="flex gap-2">
+                            <input
+                              type="email"
+                              placeholder="your@email.com"
+                              value={notifyEmail}
+                              onChange={(e) => setNotifyEmail(e.target.value)}
+                              className="flex-1 px-2 py-1.5 text-sm rounded bg-background border border-[#E7FB10]/30 text-foreground placeholder-muted-foreground focus:outline-none focus:border-[#E7FB10]"
+                              disabled={newsletterMutation.isPending}
+                              data-testid="input-launch-email"
+                            />
+                            <Button
+                              size="sm"
+                              className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
+                              onClick={() => notifyEmail && newsletterMutation.mutate(notifyEmail)}
+                              disabled={!notifyEmail || newsletterMutation.isPending}
+                              data-testid="button-notify-me"
+                            >
+                              {newsletterMutation.isPending ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <Mail className="h-3 w-3" />
+                              )}
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
