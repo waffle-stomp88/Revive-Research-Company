@@ -3027,19 +3027,21 @@ function LaunchSubscribersTab() {
   };
 
   const filteredSubscribers = (subscriberData?.subscribers || []).filter(sub => {
-    const matchesSource = filterSource === "all" || sub.source === filterSource;
+    const effectiveSource = sub.source === 'early_access_modal' ? 'product_early_access' : (sub.source || 'website');
+    const matchesSource = filterSource === "all" || effectiveSource === filterSource;
     const matchesStatus = filterStatus === "all" || sub.status === filterStatus;
     const matchesEmail = sub.email.toLowerCase().includes(searchEmail.toLowerCase());
     return matchesSource && matchesStatus && matchesEmail;
   });
 
-  const sources = Array.from(new Set(subscriberData?.subscribers?.map(s => s.source || "website") || []));
+  const sources = Array.from(new Set(subscriberData?.subscribers?.map(s => s.source === 'early_access_modal' ? 'product_early_access' : (s.source || "website")) || []));
 
   const getSourceBadgeColor = (source: string) => {
     switch (source) {
       case "footer": return "bg-blue-500/10 text-blue-400 border-blue-500/20";
       case "product_early_access": return "bg-purple-500/10 text-purple-400 border-purple-500/20";
       case "checkout_launch_notify": return "bg-green-500/10 text-green-400 border-green-500/20";
+      case "early_access_modal": return "bg-purple-500/10 text-purple-400 border-purple-500/20";
       default: return "bg-slate-500/10 text-slate-400 border-slate-500/20";
     }
   };
@@ -3090,9 +3092,9 @@ function LaunchSubscribersTab() {
           <div className="text-2xl font-bold">{subscriberData.total}</div>
         </Card>
         {Object.entries(subscriberData.bySource).map(([source, emails]) => (
-          <Card key={source} className="p-4 border-l-2" style={{ borderLeftColor: source === 'footer' ? '#3b82f6' : source === 'product_early_access' ? '#a855f7' : '#22c55e' }}>
+          <Card key={source} className="p-4 border-l-2" style={{ borderLeftColor: source === 'footer' ? '#3b82f6' : (source === 'product_early_access' || source === 'early_access_modal') ? '#a855f7' : '#22c55e' }}>
             <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mb-1 truncate">
-              {source.replace(/_/g, ' ')}
+              {(source === 'early_access_modal' ? 'product_early_access' : source).replace(/_/g, ' ')}
             </div>
             <div className="text-2xl font-bold">{emails.length}</div>
           </Card>
