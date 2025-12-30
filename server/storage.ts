@@ -1463,7 +1463,7 @@ export class DatabaseStorage implements IStorage {
     notes?: string
   ): Promise<{ success: boolean; priceHistory?: PriceHistory; error?: string }> {
     // Check if we can change the price (30-day rule) - but allow AI pricing suggestions to bypass
-    if (reason !== "AI Pricing Suggestion") {
+    if (reason as string !== "AI Pricing Suggestion") {
       const canChange = await this.canChangePrice(productId);
       if (!canChange.canChange) {
         return { 
