@@ -119,7 +119,7 @@ export default function Checkout() {
     mutationFn: async (email: string) => {
       const response = await apiRequest("POST", "/api/newsletter/subscribe", {
         email,
-        source: "checkout",
+        source: "checkout_launch_notify",
       });
       return response.json();
     },
