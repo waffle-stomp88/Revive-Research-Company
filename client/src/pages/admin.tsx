@@ -3091,14 +3091,24 @@ function LaunchSubscribersTab() {
           </div>
           <div className="text-2xl font-bold">{subscriberData.total}</div>
         </Card>
-        {Object.entries(subscriberData.bySource).map(([source, emails]) => (
-          <Card key={source} className="p-4 border-l-2" style={{ borderLeftColor: source === 'footer' ? '#3b82f6' : (source === 'product_early_access' || source === 'early_access_modal') ? '#a855f7' : '#22c55e' }}>
-            <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mb-1 truncate">
-              {(source === 'early_access_modal' ? 'product_early_access' : source).replace(/_/g, ' ')}
-            </div>
-            <div className="text-2xl font-bold">{emails.length}</div>
-          </Card>
-        ))}
+        <Card className="p-4 border-l-2 border-l-blue-500">
+          <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mb-1 truncate">
+            Footer Newsletter
+          </div>
+          <div className="text-2xl font-bold">{(subscriberData.bySource['footer'] || []).length}</div>
+        </Card>
+        <Card className="p-4 border-l-2 border-l-purple-500">
+          <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mb-1 truncate">
+            Product Early Access
+          </div>
+          <div className="text-2xl font-bold">{(subscriberData.bySource['product_early_access'] || []).length + (subscriberData.bySource['early_access_modal'] || []).length}</div>
+        </Card>
+        <Card className="p-4 border-l-2 border-l-green-500">
+          <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mb-1 truncate">
+            Checkout Launch Notify
+          </div>
+          <div className="text-2xl font-bold">{(subscriberData.bySource['checkout_launch_notify'] || []).length}</div>
+        </Card>
       </div>
 
       <div className="space-y-4">
@@ -3121,11 +3131,10 @@ function LaunchSubscribersTab() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Touchpoints</SelectItem>
-                {sources.map(source => (
-                  <SelectItem key={source} value={source} className="capitalize">
-                    {source.replace(/_/g, ' ')}
-                  </SelectItem>
-                ))}
+                <SelectItem value="footer">Footer Newsletter</SelectItem>
+                <SelectItem value="product_early_access">Product Early Access</SelectItem>
+                <SelectItem value="checkout_launch_notify">Checkout Launch Notify</SelectItem>
+                <SelectItem value="website">General Website</SelectItem>
               </SelectContent>
             </Select>
           </div>
