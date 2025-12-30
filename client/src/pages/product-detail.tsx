@@ -827,34 +827,58 @@ export default function ProductDetail() {
                     <span>You'll be notified when this product is available!</span>
                   </div>
                 ) : (
-                  <form onSubmit={handleNotifySubmit} className="flex gap-2">
-                    <div className="relative flex-1">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        type="email"
-                        placeholder="Enter your email"
-                        value={notifyEmail}
-                        onChange={(e) => setNotifyEmail(e.target.value)}
-                        className="pl-9 h-10 bg-background/50"
-                        required
-                        data-testid="input-notify-email"
-                      />
+                  <form onSubmit={handleNotifySubmit} className="flex flex-col gap-2">
+                    <div className="flex gap-2">
+                      <div className="relative flex-1">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          type="email"
+                          placeholder="Enter your email"
+                          value={notifyEmail}
+                          onChange={(e) => setNotifyEmail(e.target.value)}
+                          className="pl-9 h-11 bg-background/50"
+                          required
+                          data-testid="input-notify-email"
+                        />
+                      </div>
+                      <Button
+                        type="submit"
+                        className="bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90 gap-1.5 px-5 h-11"
+                        disabled={stockNotifyMutation.isPending}
+                        data-testid="button-notify-me"
+                      >
+                        {stockNotifyMutation.isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <>
+                            <Bell className="h-4 w-4" />
+                            Notify Me
+                          </>
+                        )}
+                      </Button>
                     </div>
-                    <Button
-                      type="submit"
-                      className="bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90 gap-1.5 px-5"
-                      disabled={stockNotifyMutation.isPending}
-                      data-testid="button-notify-me"
-                    >
-                      {stockNotifyMutation.isPending ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <>
-                          <Bell className="h-4 w-4" />
-                          Notify Me
-                        </>
-                      )}
-                    </Button>
+                    <div className="flex items-center gap-2 px-1">
+                      <input 
+                        type="checkbox" 
+                        id="early-access-signup" 
+                        className="rounded border-[#E7FB10]/30 bg-black/20"
+                        onChange={async (e) => {
+                          if (e.target.checked && notifyEmail) {
+                            try {
+                              await apiRequest("POST", "/api/newsletter/subscribe", { 
+                                email: notifyEmail, 
+                                source: "product_early_access" 
+                              });
+                            } catch (err) {
+                              console.error("Early access signup error:", err);
+                            }
+                          }
+                        }}
+                      />
+                      <label htmlFor="early-access-signup" className="text-[10px] text-muted-foreground leading-tight cursor-pointer">
+                        Also notify me about new product drops and early access deals
+                      </label>
+                    </div>
                   </form>
                 )}
                 <p className="text-[10px] text-muted-foreground mt-3">

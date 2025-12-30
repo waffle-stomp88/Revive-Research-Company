@@ -3007,7 +3007,7 @@ function LaunchSubscribersTab() {
       ["Email", "Source", "Status", "Signed Up"],
       ...filteredSubscribers.map(sub => [
         sub.email,
-        sub.source,
+        sub.source || "website",
         sub.status,
         new Date(sub.createdAt).toLocaleDateString()
       ])
@@ -3033,7 +3033,25 @@ function LaunchSubscribersTab() {
     return matchesSource && matchesStatus && matchesEmail;
   });
 
-  const sources = Array.from(new Set(subscriberData?.subscribers?.map(s => s.source) || []));
+  const sources = Array.from(new Set(subscriberData?.subscribers?.map(s => s.source || "website") || []));
+
+  const getSourceBadgeColor = (source: string) => {
+    switch (source) {
+      case "footer": return "bg-blue-500/10 text-blue-400 border-blue-500/20";
+      case "product_early_access": return "bg-purple-500/10 text-purple-400 border-purple-500/20";
+      case "checkout_launch_notify": return "bg-green-500/10 text-green-400 border-green-500/20";
+      default: return "bg-slate-500/10 text-slate-400 border-slate-500/20";
+    }
+  };
+
+  const getSourceBadgeColor = (source: string) => {
+    switch (source) {
+      case "footer": return "bg-blue-500/10 text-blue-400 border-blue-500/20";
+      case "product_early_access": return "bg-purple-500/10 text-purple-400 border-purple-500/20";
+      case "checkout_launch_notify": return "bg-green-500/10 text-green-400 border-green-500/20";
+      default: return "bg-slate-500/10 text-slate-400 border-slate-500/20";
+    }
+  };
 
   if (isLoading) {
     return (
@@ -3064,7 +3082,7 @@ function LaunchSubscribersTab() {
         <div>
           <h2 className="font-display text-xl font-bold">Launch Subscribers</h2>
           <p className="text-muted-foreground text-sm">
-            Emails collected for launch notifications
+            Emails collected for launch notifications across all touchpoints
           </p>
         </div>
         <Button onClick={exportToCSV} size="sm" variant="outline" data-testid="btn-export-subscribers">
@@ -3073,17 +3091,17 @@ function LaunchSubscribersTab() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <Card className="p-4">
-          <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">
-            Total Subscribers
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <Card className="p-4 bg-muted/30">
+          <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mb-1">
+            Total
           </div>
           <div className="text-2xl font-bold">{subscriberData.total}</div>
         </Card>
         {Object.entries(subscriberData.bySource).map(([source, emails]) => (
-          <Card key={source} className="p-4">
-            <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1 truncate">
-              {source}
+          <Card key={source} className="p-4 border-l-2" style={{ borderLeftColor: source === 'footer' ? '#3b82f6' : source === 'product_early_access' ? '#a855f7' : '#22c55e' }}>
+            <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mb-1 truncate">
+              {source.replace(/_/g, ' ')}
             </div>
             <div className="text-2xl font-bold">{emails.length}</div>
           </Card>
@@ -3093,35 +3111,35 @@ function LaunchSubscribersTab() {
       <div className="space-y-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <div className="flex-1">
-            <Label className="text-xs font-semibold mb-1.5 block">Search Email</Label>
+            <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1.5 block">Search Email</Label>
             <Input
               placeholder="Filter by email..."
               value={searchEmail}
               onChange={(e) => setSearchEmail(e.target.value)}
-              className="text-xs"
+              className="h-9 text-sm"
               data-testid="input-search-email"
             />
           </div>
-          <div className="w-full sm:w-40">
-            <Label className="text-xs font-semibold mb-1.5 block">Source</Label>
+          <div className="w-full sm:w-48">
+            <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1.5 block">Touchpoint</Label>
             <Select value={filterSource} onValueChange={setFilterSource}>
-              <SelectTrigger className="text-xs" data-testid="select-filter-source">
+              <SelectTrigger className="h-9 text-sm" data-testid="select-filter-source">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Sources</SelectItem>
+                <SelectItem value="all">All Touchpoints</SelectItem>
                 {sources.map(source => (
                   <SelectItem key={source} value={source} className="capitalize">
-                    {source}
+                    {source.replace(/_/g, ' ')}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
           <div className="w-full sm:w-40">
-            <Label className="text-xs font-semibold mb-1.5 block">Status</Label>
+            <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1.5 block">Status</Label>
             <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger className="text-xs" data-testid="select-filter-status">
+              <SelectTrigger className="h-9 text-sm" data-testid="select-filter-status">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -3133,37 +3151,39 @@ function LaunchSubscribersTab() {
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+        <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground px-1">
           <span>Showing {filteredSubscribers.length} of {subscriberData?.total || 0} subscribers</span>
         </div>
 
-        <div className="rounded-lg border overflow-hidden">
+        <div className="rounded-lg border overflow-hidden bg-card">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/50">
-                <TableHead className="text-xs font-semibold">Email</TableHead>
-                <TableHead className="w-32 text-xs font-semibold">Source</TableHead>
-                <TableHead className="w-24 text-xs font-semibold">Status</TableHead>
-                <TableHead className="w-32 text-xs font-semibold">Signed Up</TableHead>
-                <TableHead className="w-12 text-xs font-semibold"></TableHead>
+              <TableRow className="bg-muted/50 hover:bg-muted/50 border-b">
+                <TableHead className="text-[10px] font-bold uppercase tracking-wider">Email Address</TableHead>
+                <TableHead className="w-48 text-[10px] font-bold uppercase tracking-wider">Touchpoint</TableHead>
+                <TableHead className="w-24 text-[10px] font-bold uppercase tracking-wider">Status</TableHead>
+                <TableHead className="w-32 text-[10px] font-bold uppercase tracking-wider">Date Joined</TableHead>
+                <TableHead className="w-12"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredSubscribers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-xs text-muted-foreground">
+                  <TableCell colSpan={5} className="text-center py-12 text-sm text-muted-foreground">
                     No subscribers match your filters
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredSubscribers.map((sub) => (
-                  <TableRow key={sub.id} data-testid={`row-subscriber-${sub.id}`} className="hover:bg-muted/30">
-                    <TableCell className="text-xs">{sub.email}</TableCell>
-                    <TableCell className="text-xs">
-                      <Badge variant="outline" className="capitalize">{sub.source}</Badge>
+                  <TableRow key={sub.id} data-testid={`row-subscriber-${sub.id}`} className="hover:bg-muted/30 transition-colors">
+                    <TableCell className="text-sm font-medium">{sub.email}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={`capitalize text-[10px] px-2 py-0 h-5 font-bold tracking-wider ${getSourceBadgeColor(sub.source || 'website')}`}>
+                        {(sub.source || 'website').replace(/_/g, ' ')}
+                      </Badge>
                     </TableCell>
-                    <TableCell className="text-xs">
-                      <Badge variant={sub.status === "subscribed" ? "default" : "secondary"}>
+                    <TableCell>
+                      <Badge variant={sub.status === "subscribed" ? "default" : "secondary"} className="text-[10px] px-2 py-0 h-5 font-bold uppercase tracking-wider">
                         {sub.status}
                       </Badge>
                     </TableCell>
@@ -3174,15 +3194,16 @@ function LaunchSubscribersTab() {
                         year: "numeric"
                       })}
                     </TableCell>
-                    <TableCell className="text-xs">
+                    <TableCell>
                       <Button
                         size="icon"
                         variant="ghost"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                         onClick={() => handleDeleteSubscriber(sub.id, sub.email)}
                         disabled={deleteMutation.isPending}
                         data-testid={`btn-delete-subscriber-${sub.id}`}
                       >
-                        <Trash2 className="h-4 w-4 text-destructive" />
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </TableCell>
                   </TableRow>

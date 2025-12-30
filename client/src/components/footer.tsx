@@ -65,7 +65,7 @@ export function Footer() {
               <p className="text-muted-foreground text-xs max-w-md">Get exclusive updates and educational content delivered to your inbox.</p>
             </div>
             <div className="w-full lg:w-auto lg:min-w-[360px]">
-              <NewsletterSignup compact />
+              <NewsletterSignup compact source="footer" />
             </div>
           </div>
         </div>

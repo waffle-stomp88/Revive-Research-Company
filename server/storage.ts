@@ -1278,11 +1278,28 @@ export class DatabaseStorage implements IStorage {
   }
 
   async subscribeToNewsletter(subscriber: InsertNewsletterSubscriber): Promise<NewsletterSubscriber> {
-    const [result] = await db.insert(newsletterSubscribers).values(subscriber).onConflictDoUpdate({
-      target: newsletterSubscribers.email,
-      set: { status: "subscribed" }
-    }).returning();
-    return result;
+    const [existing] = await db
+      .select()
+      .from(newsletterSubscribers)
+      .where(eq(newsletterSubscribers.email, subscriber.email));
+
+    if (existing) {
+      const [updated] = await db
+        .update(newsletterSubscribers)
+        .set({ 
+          source: subscriber.source || existing.source,
+          status: "subscribed" 
+        })
+        .where(eq(newsletterSubscribers.email, subscriber.email))
+        .returning();
+      return updated;
+    }
+
+    const [newSubscriber] = await db
+      .insert(newsletterSubscribers)
+      .values(subscriber)
+      .returning();
+    return newSubscriber;
   }
 
   async getAllNewsletterSubscribers(): Promise<NewsletterSubscriber[]> {

@@ -8,9 +8,10 @@ import { trackEvent } from "@/lib/analytics";
 
 interface NewsletterSignupProps {
   compact?: boolean;
+  source?: string;
 }
 
-export function NewsletterSignup({ compact = false }: NewsletterSignupProps) {
+export function NewsletterSignup({ compact = false, source = "footer" }: NewsletterSignupProps) {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -28,7 +29,7 @@ export function NewsletterSignup({ compact = false }: NewsletterSignupProps) {
       const response = await fetch("/api/newsletter/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, source }),
       });
 
       const data = await response.json();
