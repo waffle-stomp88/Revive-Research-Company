@@ -38,6 +38,10 @@ import {
   X,
   ArrowRight,
   ArrowLeft,
+  Settings,
+  Gift,
+  Rocket,
+  TrendingUp,
 } from "lucide-react";
 import type { AcademyProgress, EducationArticle } from "@shared/schema";
 import { academyPersonas, academyAchievements } from "@shared/schema";
@@ -108,6 +112,81 @@ const PERSONA_QUESTIONS = [
       { value: "intermediate", label: "I have some lab experience" },
       { value: "advanced", label: "I'm an experienced researcher" },
     ],
+  },
+];
+
+// Persona-specific configurations
+const PERSONA_CONFIG = {
+  beginner: {
+    welcomeMessage: "Welcome to your research journey! We'll guide you step by step through the fundamentals.",
+    description: "Linear learning path with detailed explanations at every step.",
+    unlockMode: "linear" as const, // Must complete lessons in order
+    recommendedStart: "welcome",
+    color: "#21d8ff",
+    icon: Lightbulb,
+    features: [
+      "Step-by-step guidance through all modules",
+      "Extra context and 'Why this matters' explanations",
+      "Beginner-friendly terminology throughout",
+    ],
+  },
+  intermediate: {
+    welcomeMessage: "Great to have you! Your lab experience will help you move quickly through the basics.",
+    description: "Flexible module access - explore topics in any order within modules.",
+    unlockMode: "module" as const, // Can do lessons within a module in any order
+    recommendedStart: "purity-basics",
+    color: "#E7FB10",
+    icon: Beaker,
+    features: [
+      "Skip ahead within unlocked modules",
+      "Focus on practical application",
+      "Build on your existing knowledge",
+    ],
+  },
+  advanced: {
+    welcomeMessage: "Welcome, researcher! Jump directly to the topics most relevant to your work.",
+    description: "Full access - start anywhere and focus on what matters to you.",
+    unlockMode: "full" as const, // All lessons accessible
+    recommendedStart: "reading-coas",
+    color: "#9d4edd",
+    icon: FlaskConical,
+    features: [
+      "Access all modules immediately",
+      "Quick review mode available",
+      "Focus on advanced techniques",
+    ],
+  },
+};
+
+// Reward milestones
+const REWARD_MILESTONES = [
+  { 
+    xpRequired: 100, 
+    reward: "Early Learner Badge", 
+    description: "Complete your first module",
+    type: "badge" as const,
+    icon: Sparkles,
+  },
+  { 
+    xpRequired: 250, 
+    reward: "Research Ready Badge", 
+    description: "Master the fundamentals",
+    type: "badge" as const,
+    icon: Award,
+  },
+  { 
+    xpRequired: 400, 
+    reward: "5% Discount Code", 
+    description: "Unlock your first reward",
+    type: "discount" as const,
+    icon: Gift,
+  },
+  { 
+    xpRequired: 600, 
+    reward: "Certified Researcher", 
+    description: "Complete the full academy",
+    type: "certificate" as const,
+    icon: GraduationCap,
   },
 ];
 
@@ -186,6 +265,7 @@ function EmbeddedLessonViewer({
   onComplete,
   completedLessons,
   totalXp,
+  persona,
 }: {
   lessonId: string;
   onClose: () => void;
@@ -194,6 +274,7 @@ function EmbeddedLessonViewer({
   completedLessons: string[];
   totalXp: number;
   article?: EducationArticle | null;
+  persona?: string | null;
 }) {
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -221,6 +302,11 @@ function EmbeddedLessonViewer({
   const lessonInfo = findLessonById(lessonId);
   const isCompleted = completedLessons.includes(lessonId);
   const slides = getLessonSlides(lessonId);
+  
+  // Get persona-specific learning mode
+  const personaConfig = persona ? PERSONA_CONFIG[persona as keyof typeof PERSONA_CONFIG] : null;
+  const learningMode = personaConfig?.unlockMode === "full" ? "Quick Review" : 
+                       personaConfig?.unlockMode === "module" ? "Standard" : "Guided";
 
   if (!lessonInfo || !slides) return null;
 
@@ -278,6 +364,22 @@ function EmbeddedLessonViewer({
             </div>
           </div>
           <div className="flex items-center gap-3">
+            {personaConfig && (
+              <Badge 
+                variant="secondary" 
+                className="text-xs hidden sm:flex"
+                style={{ 
+                  backgroundColor: `${personaConfig.color}15`,
+                  color: personaConfig.color,
+                }}
+              >
+                {(() => {
+                  const Icon = personaConfig.icon;
+                  return <Icon className="w-3 h-3 mr-1" />;
+                })()}
+                {learningMode} Mode
+              </Badge>
+            )}
             <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30">
               <Zap className="w-3 h-3 mr-1" />
               {totalXp} XP
@@ -693,16 +795,61 @@ export default function Academy() {
     return (completed / module.lessons.length) * 100;
   };
 
+  const getPersonaConfig = () => {
+    const persona = localProgress.persona as keyof typeof PERSONA_CONFIG;
+    return persona ? PERSONA_CONFIG[persona] : null;
+  };
+
   const isLessonUnlocked = (moduleId: number, lessonIndex: number) => {
+    const personaConfig = getPersonaConfig();
+    const unlockMode = personaConfig?.unlockMode || "linear";
+
+    // Advanced users have full access to all lessons
+    if (unlockMode === "full") return true;
+
+    // First lesson is always unlocked
     if (moduleId === 0 && lessonIndex === 0) return true;
 
+    // Check if previous modules are complete (required for all modes except "full")
     const allPreviousModuleLessons = CURRICULUM.slice(0, moduleId).flatMap(m => m.lessons.map(l => l.id));
     if (!allPreviousModuleLessons.every(id => localProgress.completedLessons.includes(id))) {
       return false;
     }
 
+    // Module mode: Any lesson within an unlocked module is accessible
+    if (unlockMode === "module") {
+      return true; // Module is unlocked, so all lessons within it are accessible
+    }
+
+    // Linear mode: Must complete lessons in order
     const currentModuleLessons = CURRICULUM[moduleId].lessons.slice(0, lessonIndex).map(l => l.id);
     return currentModuleLessons.every(id => localProgress.completedLessons.includes(id));
+  };
+
+  const getRecommendedLesson = () => {
+    const personaConfig = getPersonaConfig();
+    
+    // If persona has a recommended start and user hasn't started yet, use persona-specific recommendation
+    if (personaConfig && localProgress.completedLessons.length === 0) {
+      const recommended = findLessonById(personaConfig.recommendedStart);
+      if (recommended && recommended.module && recommended.module.lessons) {
+        const lessonIndex = recommended.module.lessons.findIndex(l => l.id === recommended.lesson.id);
+        if (lessonIndex !== -1 && isLessonUnlocked(recommended.module.id, lessonIndex)) {
+          return recommended;
+        }
+      }
+    }
+    
+    // Find first incomplete unlocked lesson
+    for (const module of CURRICULUM) {
+      for (const lesson of module.lessons) {
+        if (!localProgress.completedLessons.includes(lesson.id) && isLessonUnlocked(module.id, module.lessons.indexOf(lesson))) {
+          return { lesson, module };
+        }
+      }
+    }
+    
+    return null;
   };
 
   return (
@@ -769,6 +916,49 @@ export default function Academy() {
               />
             </div>
 
+            {/* Personalized Welcome Message */}
+            {localProgress.persona && getPersonaConfig() && (
+              <motion.div
+                data-testid="personalized-dashboard"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+                className="backdrop-blur-xl border rounded-2xl p-6"
+                style={{ 
+                  backgroundColor: `${getPersonaConfig()!.color}10`,
+                  borderColor: `${getPersonaConfig()!.color}30`,
+                }}
+              >
+                <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+                  <div className="flex items-start gap-4">
+                    <div 
+                      className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                      style={{ backgroundColor: `${getPersonaConfig()!.color}20` }}
+                    >
+                      {(() => {
+                        const Icon = getPersonaConfig()!.icon;
+                        return <Icon className="w-6 h-6" style={{ color: getPersonaConfig()!.color }} />;
+                      })()}
+                    </div>
+                    <div>
+                      <p className="text-white font-medium mb-1">{getPersonaConfig()!.welcomeMessage}</p>
+                      <p className="text-sm text-white/60">{getPersonaConfig()!.description}</p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-white/50 hover:text-white/80 flex-shrink-0"
+                    onClick={() => setShowPersonaQuiz(true)}
+                    data-testid="button-change-persona"
+                  >
+                    <Settings className="w-4 h-4 mr-1" />
+                    Change
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -784,9 +974,24 @@ export default function Academy() {
                       {getCompletedCount()} of {getTotalLessons()} lessons completed
                     </p>
                     {localProgress.persona && (
-                      <Badge variant="outline" className="mt-2 border-[#21d8ff]/30 text-[#21d8ff]">
-                        {academyPersonas[localProgress.persona as keyof typeof academyPersonas]}
-                      </Badge>
+                      <div className="flex items-center gap-2 mt-2">
+                        <Badge 
+                          variant="outline" 
+                          className="border-opacity-30"
+                          style={{ 
+                            borderColor: getPersonaConfig()?.color || "#21d8ff",
+                            color: getPersonaConfig()?.color || "#21d8ff",
+                          }}
+                        >
+                          {academyPersonas[localProgress.persona as keyof typeof academyPersonas]}
+                        </Badge>
+                        {getPersonaConfig()?.unlockMode === "full" && (
+                          <Badge className="bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30">
+                            <Rocket className="w-3 h-3 mr-1" />
+                            Full Access
+                          </Badge>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -802,6 +1007,29 @@ export default function Academy() {
                   </div>
                 </div>
               </div>
+
+              {/* Recommended Next Lesson */}
+              {getRecommendedLesson() && getCompletedCount() < getTotalLessons() && (
+                <div data-testid="recommended-section" className="mt-6 pt-6 border-t border-white/10">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <TrendingUp className="w-5 h-5 text-[#E7FB10]" />
+                      <div>
+                        <p className="text-sm text-white/60">Recommended Next</p>
+                        <p className="text-white font-medium">{getRecommendedLesson()!.lesson.title}</p>
+                      </div>
+                    </div>
+                    <Button
+                      className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
+                      onClick={() => setSelectedLesson(getRecommendedLesson()!.lesson.id)}
+                      data-testid="button-start-recommended"
+                    >
+                      <Play className="w-4 h-4 mr-2" />
+                      Start
+                    </Button>
+                  </div>
+                </div>
+              )}
             </motion.div>
           </div>
         </section>
@@ -814,7 +1042,11 @@ export default function Academy() {
 
                 {CURRICULUM.map((module, moduleIndex) => {
                   const moduleProgress = getModuleProgress(module.id);
-                  const isModuleUnlocked = moduleIndex === 0 || 
+                  const personaConfig = getPersonaConfig();
+                  const unlockMode = personaConfig?.unlockMode || "linear";
+                  
+                  // Advanced users have all modules unlocked
+                  const isModuleUnlocked = unlockMode === "full" || moduleIndex === 0 || 
                     CURRICULUM.slice(0, moduleIndex).every(m => 
                       m.lessons.every(l => localProgress.completedLessons.includes(l.id))
                     );
@@ -921,6 +1153,67 @@ export default function Academy() {
                   ))}
                 </div>
 
+                {/* Reward Milestones */}
+                <Card className="bg-gradient-to-br from-[#E7FB10]/5 to-[#9d4edd]/5 border-[#E7FB10]/20 p-6 mt-6">
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                    <Gift className="w-5 h-5 text-[#E7FB10]" />
+                    Reward Milestones
+                  </h3>
+                  <div className="space-y-3">
+                    {REWARD_MILESTONES.map((milestone, index) => {
+                      const isUnlocked = localProgress.totalXp >= milestone.xpRequired;
+                      const progress = Math.min((localProgress.totalXp / milestone.xpRequired) * 100, 100);
+                      const Icon = milestone.icon;
+                      
+                      return (
+                        <div 
+                          key={index}
+                          data-testid={`milestone-${milestone.xpRequired}`}
+                          className={`p-3 rounded-lg border transition-all ${
+                            isUnlocked 
+                              ? "bg-[#E7FB10]/10 border-[#E7FB10]/30" 
+                              : "bg-white/5 border-white/10"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                              isUnlocked ? "bg-[#E7FB10]/20" : "bg-white/10"
+                            }`}>
+                              {isUnlocked ? (
+                                <CheckCircle2 className="w-4 h-4 text-[#E7FB10]" />
+                              ) : (
+                                <Icon className="w-4 h-4 text-white/40" />
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between gap-2">
+                                <span className={`text-sm font-medium truncate ${isUnlocked ? "text-[#E7FB10]" : "text-white/80"}`}>
+                                  {milestone.reward}
+                                </span>
+                                <Badge 
+                                  variant="secondary" 
+                                  className={`text-[10px] flex-shrink-0 ${
+                                    isUnlocked 
+                                      ? "bg-[#E7FB10]/20 text-[#E7FB10]" 
+                                      : "bg-white/10 text-white/50"
+                                  }`}
+                                >
+                                  {milestone.xpRequired} XP
+                                </Badge>
+                              </div>
+                              {!isUnlocked && (
+                                <div className="mt-1">
+                                  <Progress value={progress} className="h-1" />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </Card>
+
                 <Card className="bg-white/5 border-white/10 p-6 mt-6">
                   <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                     <Brain className="w-5 h-5 text-[#21d8ff]" />
@@ -966,7 +1259,7 @@ export default function Academy() {
         </section>
 
         <Dialog open={showPersonaQuiz} onOpenChange={setShowPersonaQuiz}>
-          <DialogContent className="bg-[#1a1a1f] border-white/10 max-w-md">
+          <DialogContent data-testid="persona-quiz-dialog" className="bg-[#1a1a1f] border-white/10 max-w-lg">
             <DialogHeader>
               <DialogTitle className="text-xl text-white flex items-center gap-2">
                 <Target className="w-5 h-5 text-[#E7FB10]" />
@@ -977,23 +1270,63 @@ export default function Academy() {
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-4 mt-4">
-              {PERSONA_QUESTIONS[0].options.map((option) => (
-                <Button
-                  key={option.value}
-                  variant="outline"
-                  className="w-full justify-start h-auto p-4 border-white/10 hover:border-[#E7FB10]/50 hover:bg-[#E7FB10]/10 text-left"
-                  onClick={() => selectPersona(option.value)}
-                  data-testid={`button-persona-${option.value}`}
-                >
-                  <div className="flex items-center gap-3">
-                    {option.value === "beginner" && <Lightbulb className="w-5 h-5 text-[#21d8ff]" />}
-                    {option.value === "intermediate" && <Beaker className="w-5 h-5 text-[#E7FB10]" />}
-                    {option.value === "advanced" && <FlaskConical className="w-5 h-5 text-[#9d4edd]" />}
-                    <span className="text-white">{option.label}</span>
-                  </div>
-                </Button>
-              ))}
+            <div className="space-y-3 mt-4">
+              {PERSONA_QUESTIONS[0].options.map((option) => {
+                const config = PERSONA_CONFIG[option.value as keyof typeof PERSONA_CONFIG];
+                const isCurrentPersona = localProgress.persona === option.value;
+                const Icon = config.icon;
+                
+                return (
+                  <button
+                    key={option.value}
+                    className={`w-full text-left p-4 rounded-xl border transition-all ${
+                      isCurrentPersona 
+                        ? "border-2 bg-opacity-20" 
+                        : "border-white/10 hover:border-opacity-50"
+                    }`}
+                    style={{ 
+                      borderColor: isCurrentPersona ? config.color : undefined,
+                      backgroundColor: isCurrentPersona ? `${config.color}15` : "rgba(255,255,255,0.03)",
+                    }}
+                    onClick={() => selectPersona(option.value)}
+                    data-testid={`button-persona-${option.value}`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div 
+                        className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: `${config.color}20` }}
+                      >
+                        <Icon className="w-5 h-5" style={{ color: config.color }} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-white font-medium">{option.label}</span>
+                          {isCurrentPersona && (
+                            <Badge className="text-[10px] bg-white/10 text-white/60 border-0">
+                              Current
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-sm text-white/50 mb-2">{config.description}</p>
+                        <div className="flex flex-wrap gap-1">
+                          {config.features.slice(0, 2).map((feature, idx) => (
+                            <Badge 
+                              key={idx} 
+                              variant="secondary" 
+                              className="text-[10px] bg-white/5 text-white/40 border-0"
+                            >
+                              {feature}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                      {isCurrentPersona && (
+                        <CheckCircle2 className="w-5 h-5 flex-shrink-0" style={{ color: config.color }} />
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
 
             <Button
@@ -1002,7 +1335,7 @@ export default function Academy() {
               onClick={() => setShowPersonaQuiz(false)}
               data-testid="button-skip-persona"
             >
-              Skip for now
+              {localProgress.persona ? "Keep current selection" : "Skip for now"}
             </Button>
           </DialogContent>
         </Dialog>
@@ -1016,6 +1349,7 @@ export default function Academy() {
               onNavigate={(lessonId) => setSelectedLesson(lessonId)}
               completedLessons={localProgress.completedLessons}
               totalXp={localProgress.totalXp}
+              persona={localProgress.persona}
               article={articles?.find((a) => {
                 const lessonInfo = findLessonById(selectedLesson);
                 return lessonInfo && a.slug === lessonInfo.lesson.articleSlug;
