@@ -40,7 +40,16 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **Account Deletion Feature**: Users and affiliates can permanently delete their accounts from settings with confirmation.
 - **Dosage-Specific Stock Management**: Admin Products tab manages inventory per dosage, with inline editor, quick actions, and derived product-level stock.
 - **Trust & Transparency Features**: Includes an Education Center (onboarding course, article library), Quality Process Page (interactive 6-step visualization), Package Warm Guide, Batch Archive, Ethical Pricing Page, Transparency Page, Lab Notes Blog, Buyer Checklist, Troubleshooting Guides, and Support Status Widget.
-- **Peptide Academy**: Gamified learning experience at `/academy` featuring a 4-module curriculum (Orientation, Core Foundations, Research Skills, Lab Confidence) with 17 lessons. Features include persona quiz for personalized learning paths, XP points system, achievement badges (First Lesson, Orientation Complete, etc.), progress rings, and localStorage + database sync for progress tracking. Uses glassmorphism hero design with neon accents.
+- **Peptide Academy**: Gamified learning experience at `/academy` featuring a 4-module curriculum (Orientation, Core Foundations, Research Skills, Lab Confidence) with 17 lessons. Features include:
+  - **Persona-Based Personalization**: Three personas (Beginner, Intermediate, Advanced) with distinct unlock modes:
+    - Beginner: Linear progression (must complete lessons in order)
+    - Intermediate: Module-level access (any lesson within unlocked modules)
+    - Advanced: Full access (all lessons unlocked immediately)
+  - **Personalized Dashboard**: Custom welcome messages, learning mode indicators (Guided/Standard/Quick Review), and persona-specific recommended lessons
+  - **Reward Milestones**: XP-based milestones at 100 XP (First Badge), 250 XP (Complete Badge), 400 XP (Discount Code), 600 XP (Certificate)
+  - **Change Persona**: Users can change their learning persona at any time via the settings button
+  - XP points system, achievement badges (First Lesson, Orientation Complete, etc.), progress rings, and localStorage + database sync for progress tracking
+  - Uses glassmorphism hero design with neon accents
 - **Visual Infographic Components**: `client/src/components/infographics/` contains `AnimatedTrustStats`, `VerificationJourney`, `ProcessPipeline`, and `LearningRoadmap` for visual storytelling.
 - **Education Article Visuals**: `client/src/components/education/` contains interactive diagrams like `COAAnatomyDiagram`, `HPLCExplainer`, `StorageTemperatureGuide`, `TelomereVisual`, `GLP1ReceptorComparison`, and `GHAxisDiagram` to enhance educational content.
 - **Research Phase & Title System**: Tracks user progression through research phases (Observer → Initiate → Researcher → Analyst → Specialist) based on activity thresholds (education views, batch verifications, compounds tracked). Titles awarded for specific behaviors (Getting Started, Safety-First, COA Confident, Compound Tracker, Stack Builder, Verification Regular, Early Access Member). Database stores `researchPhase`, `researchTitles`, and activity counts in user table.
