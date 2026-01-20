@@ -544,6 +544,7 @@ export default function Academy() {
   const { user, isLoading: authLoading, login, logout } = useAuth();
   const [, navigate] = useLocation();
   const [showPersonaQuiz, setShowPersonaQuiz] = useState(false);
+  const [pendingPersona, setPendingPersona] = useState<string | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
   const perfectQuizAchievedRef = useRef(false);
   const [localProgress, setLocalProgress] = useState<{
@@ -1273,22 +1274,25 @@ export default function Academy() {
             <div className="space-y-3 mt-4">
               {PERSONA_QUESTIONS[0].options.map((option) => {
                 const config = PERSONA_CONFIG[option.value as keyof typeof PERSONA_CONFIG];
+                const isSelected = pendingPersona === option.value;
                 const isCurrentPersona = localProgress.persona === option.value;
                 const Icon = config.icon;
                 
                 return (
                   <button
                     key={option.value}
-                    className={`w-full text-left p-4 rounded-xl border transition-all ${
-                      isCurrentPersona 
-                        ? "border-2 bg-opacity-20" 
-                        : "border-white/10 hover:border-opacity-50"
+                    className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
+                      isSelected 
+                        ? "ring-2 ring-offset-2 ring-offset-[#1a1a1f]" 
+                        : "border-white/10 hover:border-white/20"
                     }`}
                     style={{ 
-                      borderColor: isCurrentPersona ? config.color : undefined,
-                      backgroundColor: isCurrentPersona ? `${config.color}15` : "rgba(255,255,255,0.03)",
-                    }}
-                    onClick={() => selectPersona(option.value)}
+                      borderColor: isSelected ? config.color : undefined,
+                      backgroundColor: isSelected ? `${config.color}15` : "rgba(255,255,255,0.03)",
+                      // @ts-ignore - ring color for Tailwind
+                      "--tw-ring-color": isSelected ? config.color : undefined,
+                    } as React.CSSProperties}
+                    onClick={() => setPendingPersona(option.value)}
                     data-testid={`button-persona-${option.value}`}
                   >
                     <div className="flex items-start gap-3">
@@ -1301,7 +1305,7 @@ export default function Academy() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="text-white font-medium">{option.label}</span>
-                          {isCurrentPersona && (
+                          {isCurrentPersona && !isSelected && (
                             <Badge className="text-[10px] bg-white/10 text-white/60 border-0">
                               Current
                             </Badge>
@@ -1320,7 +1324,7 @@ export default function Academy() {
                           ))}
                         </div>
                       </div>
-                      {isCurrentPersona && (
+                      {isSelected && (
                         <CheckCircle2 className="w-5 h-5 flex-shrink-0" style={{ color: config.color }} />
                       )}
                     </div>
@@ -1329,14 +1333,32 @@ export default function Academy() {
               })}
             </div>
 
-            <Button
-              variant="ghost"
-              className="mt-4 text-white/40 hover:text-white/60"
-              onClick={() => setShowPersonaQuiz(false)}
-              data-testid="button-skip-persona"
-            >
-              {localProgress.persona ? "Keep current selection" : "Skip for now"}
-            </Button>
+            <div className="flex flex-col gap-2 mt-6">
+              <Button
+                className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 font-medium"
+                disabled={!pendingPersona}
+                onClick={() => {
+                  if (pendingPersona) {
+                    selectPersona(pendingPersona);
+                    setPendingPersona(null);
+                  }
+                }}
+                data-testid="button-submit-persona"
+              >
+                {pendingPersona ? `Continue as ${pendingPersona.charAt(0).toUpperCase() + pendingPersona.slice(1)}` : "Select a learning path"}
+              </Button>
+              <Button
+                variant="ghost"
+                className="text-white/40 hover:text-white/60"
+                onClick={() => {
+                  setShowPersonaQuiz(false);
+                  setPendingPersona(null);
+                }}
+                data-testid="button-skip-persona"
+              >
+                {localProgress.persona ? "Keep current selection" : "Skip for now"}
+              </Button>
+            </div>
           </DialogContent>
         </Dialog>
 
