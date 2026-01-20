@@ -947,14 +947,14 @@ export default function Academy() {
                     </div>
                   </div>
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
-                    className="text-white/50 hover:text-white/80 flex-shrink-0"
+                    className="border-white/20 text-white hover:bg-white/10 flex-shrink-0"
                     onClick={() => setShowPersonaQuiz(true)}
                     data-testid="button-change-persona"
                   >
                     <Settings className="w-4 h-4 mr-1" />
-                    Change
+                    Change Experience Level
                   </Button>
                 </div>
               </motion.div>
