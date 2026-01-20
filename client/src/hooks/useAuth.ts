@@ -14,12 +14,15 @@ export function useAuth() {
     getAccessTokenSilently,
   } = useAuth0();
 
-  const { data: dbUser, isLoading: dbLoading, refetch } = useQuery<User>({
+  // Check for session-based user (dev bypass or other server sessions)
+  const { data: sessionUser, isLoading: sessionLoading, refetch: refetchSession } = useQuery<User>({
     queryKey: ["/api/auth/user"],
     retry: false,
-    enabled: auth0IsAuthenticated,
+    // Always try to fetch - server will return user if session exists
+    enabled: true,
   });
 
+  // Sync Auth0 user to database when authenticated via Auth0
   useEffect(() => {
     if (auth0IsAuthenticated && auth0User) {
       apiRequest("POST", "/api/auth/sync", {
@@ -29,30 +32,52 @@ export function useAuth() {
         lastName: auth0User.family_name || '',
         profileImageUrl: auth0User.picture,
       }).then(() => {
-        refetch();
+        refetchSession();
       }).catch(console.error);
     }
-  }, [auth0IsAuthenticated, auth0User, refetch]);
+  }, [auth0IsAuthenticated, auth0User, refetchSession]);
 
   const login = () => {
     loginWithRedirect();
   };
 
-  const logout = () => {
-    auth0Logout({
-      logoutParams: {
-        returnTo: window.location.origin,
-      },
-    });
+  const logout = async () => {
+    // Clear server session first (for dev bypass)
+    try {
+      await fetch("/api/auth/logout", { 
+        method: "POST",
+        credentials: "include" 
+      });
+    } catch (e) {
+      // Ignore errors, proceed with Auth0 logout
+    }
+    
+    // If we're authenticated via Auth0, do Auth0 logout
+    if (auth0IsAuthenticated) {
+      auth0Logout({
+        logoutParams: {
+          returnTo: window.location.origin,
+        },
+      });
+    } else {
+      // For dev bypass, just reload to clear state
+      window.location.href = "/";
+    }
   };
 
+  // User is authenticated if either Auth0 says so AND we have dbUser,
+  // OR if we have a session user from dev bypass
+  const isAuthenticated = (auth0IsAuthenticated && !!sessionUser) || !!sessionUser;
+  const isLoading = auth0Loading || sessionLoading;
+
   return {
-    user: dbUser,
+    user: sessionUser,
     auth0User,
-    isLoading: auth0Loading || (auth0IsAuthenticated && dbLoading),
-    isAuthenticated: auth0IsAuthenticated && !!dbUser,
+    isLoading,
+    isAuthenticated,
     login,
     logout,
     getAccessTokenSilently,
+    refetch: refetchSession,
   };
 }
