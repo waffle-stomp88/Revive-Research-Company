@@ -57,7 +57,7 @@ function getResponseTimeByTimeZone(): string {
   const ctTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Chicago" }));
   const ctHour = ctTime.getHours();
   const isOffHours = ctHour >= 17 || ctHour < 9;
-  return isOffHours ? "12 hours" : "3 hours";
+  return isOffHours ? "12 hours" : "2-4 hours";
 }
 
 export default function Contact() {
