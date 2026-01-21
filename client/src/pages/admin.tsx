@@ -748,6 +748,10 @@ function ProductsTab() {
   const [newDosage, setNewDosage] = useState("");
   const { toast } = useToast();
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
+
   // Fetch products with dosage stock data
   const { data: productsWithStock, isLoading } = useQuery<ProductWithDosageStock[]>({
     queryKey: ["/api/admin/products-with-stock"],
@@ -755,6 +759,11 @@ function ProductsTab() {
 
   // Fallback to regular products for non-admin use
   const products = productsWithStock;
+
+  // Reset pagination when products or sorting change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [products?.length, sortField, sortDirection]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -796,6 +805,12 @@ function ProductsTab() {
     
     return sortDirection === "asc" ? comparison : -comparison;
   });
+
+  const totalPages = Math.ceil((sortedProducts?.length || 0) / itemsPerPage);
+  const paginatedProducts = sortedProducts?.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -1669,7 +1684,7 @@ function ProductsTab() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sortedProducts?.map((product) => {
+            {paginatedProducts?.map((product) => {
               const productWithStock = product as ProductWithDosageStock;
               const stockSummary = getDosageStockSummary(productWithStock);
               const anyInStock = stockSummary ? stockSummary.inStock > 0 : product.inStock;
@@ -1721,6 +1736,51 @@ function ProductsTab() {
             })}
           </TableBody>
         </Table>
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-4 py-4 border-t border-border/50 bg-black/20">
+            <div className="text-sm text-muted-foreground">
+              Showing <span className="text-foreground font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> to <span className="text-foreground font-medium">{Math.min(currentPage * itemsPerPage, products?.length || 0)}</span> of <span className="text-foreground font-medium">{products?.length || 0}</span> products
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="h-8 border-[#21d8ff]/30 hover:bg-[#21d8ff]/10 hover:text-[#21d8ff]"
+              >
+                Previous
+              </Button>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <Button
+                    key={page}
+                    variant={currentPage === page ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setCurrentPage(page)}
+                    className={`h-8 w-8 p-0 ${
+                      currentPage === page 
+                        ? "bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90" 
+                        : "border-[#21d8ff]/30 text-muted-foreground hover:bg-[#21d8ff]/10 hover:text-[#21d8ff]"
+                    }`}
+                  >
+                    {page}
+                  </Button>
+                ))}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                className="h-8 border-[#21d8ff]/30 hover:bg-[#21d8ff]/10 hover:text-[#21d8ff]"
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
