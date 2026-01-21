@@ -94,28 +94,11 @@ export function Footer() {
                 <span>United States</span>
               </div>
             </div>
-            <div className="flex flex-wrap gap-3">
-              <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20 inline-flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <div className="text-sm">
-                  <span className="text-muted-foreground">Support: </span>
-                  <span className="text-green-400 font-medium">{responseTime} response</span>
-                </div>
-              </div>
-              <div 
-                className="p-3 rounded-lg inline-flex items-center gap-2 border"
-                style={{ 
-                  background: "linear-gradient(135deg, rgba(30,58,138,0.15) 0%, rgba(127,29,29,0.15) 100%)",
-                  borderColor: "rgba(239,68,68,0.3)"
-                }}
-                data-testid="badge-veteran-owned"
-              >
-                <div className="flex items-center gap-1">
-                  <Star className="h-4 w-4 text-red-400 fill-red-400" />
-                  <Star className="h-4 w-4 text-white fill-white" />
-                  <Star className="h-4 w-4 text-blue-400 fill-blue-400" />
-                </div>
-                <span className="text-sm font-medium text-white">Veteran-Owned</span>
+            <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20 inline-flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <div className="text-sm">
+                <span className="text-muted-foreground">Support: </span>
+                <span className="text-green-400 font-medium">{responseTime} response</span>
               </div>
             </div>
           </div>
@@ -186,6 +169,22 @@ export function Footer() {
                 </li>
               ))}
             </ul>
+            
+            <div 
+              className="mt-6 p-3 rounded-lg inline-flex items-center gap-2 border"
+              style={{ 
+                background: "linear-gradient(135deg, rgba(30,58,138,0.15) 0%, rgba(127,29,29,0.15) 100%)",
+                borderColor: "rgba(239,68,68,0.3)"
+              }}
+              data-testid="badge-veteran-owned"
+            >
+              <div className="flex items-center gap-1">
+                <Star className="h-4 w-4 text-red-400 fill-red-400" />
+                <Star className="h-4 w-4 text-white fill-white" />
+                <Star className="h-4 w-4 text-blue-400 fill-blue-400" />
+              </div>
+              <span className="text-sm font-medium text-white">Veteran-Owned</span>
+            </div>
           </div>
 
         </div>
