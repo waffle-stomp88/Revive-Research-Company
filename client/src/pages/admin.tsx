@@ -888,8 +888,19 @@ function ProductsTab() {
       
       // Load existing dosage stocks or initialize from dosageOptions
       const productWithStock = product as ProductWithDosageStock;
+      
+      // Helper function to extract numeric value from dosage string (e.g., "10mg" -> 10)
+      const getDosageValue = (dosage: string) => {
+        const matches = dosage.match(/(\d+(?:\.\d+)?)/);
+        return matches ? parseFloat(matches[0]) : 0;
+      };
+
       if (productWithStock.dosageStocks && productWithStock.dosageStocks.length > 0) {
-        setDosageStocks(productWithStock.dosageStocks.map(ds => ({
+        // Sort dosage stocks by weight/volume before setting state
+        const sortedStocks = [...productWithStock.dosageStocks].sort((a, b) => {
+          return getDosageValue(a.dosage) - getDosageValue(b.dosage);
+        });
+        setDosageStocks(sortedStocks.map(ds => ({
           dosage: ds.dosage,
           stockAmount: ds.stockAmount,
           inStock: ds.inStock,
@@ -897,8 +908,11 @@ function ProductsTab() {
           originalPrice: ds.originalPrice,
         })));
       } else if (product.dosageOptions && product.dosageOptions.length > 0) {
-        // Initialize from dosageOptions with default values
-        setDosageStocks(product.dosageOptions.map(dosage => ({
+        // Initialize from dosageOptions with default values, sorted
+        const sortedOptions = [...product.dosageOptions].sort((a, b) => {
+          return getDosageValue(a) - getDosageValue(b);
+        });
+        setDosageStocks(sortedOptions.map(dosage => ({
           dosage,
           stockAmount: Math.floor((product.stockAmount || 0) / product.dosageOptions!.length),
           inStock: product.inStock ?? true,

@@ -638,7 +638,15 @@ export default function ProductDetail() {
                       <SelectValue placeholder="Select dosage" />
                     </SelectTrigger>
                     <SelectContent>
-                      {product.dosageOptions.map((dosage) => {
+                      {[...(product.dosageOptions || [])]
+                        .sort((a, b) => {
+                          const getDosageValue = (d: string) => {
+                            const matches = d.match(/(\d+(?:\.\d+)?)/);
+                            return matches ? parseFloat(matches[0]) : 0;
+                          };
+                          return getDosageValue(a) - getDosageValue(b);
+                        })
+                        .map((dosage) => {
                         const dosageStock = getDosageStockInfo(dosage);
                         // Only apply dosage-level stock restrictions if we have dosage stock data
                         const isDosageOutOfStock = hasDosageStockData && dosageStock 
