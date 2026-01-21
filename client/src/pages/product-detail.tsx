@@ -498,7 +498,7 @@ export default function ProductDetail() {
                                 {article.readTimeMinutes} min read
                               </span>
                             </div>
-                            <h4 className="font-display text-sm font-bold group-hover:text-[#ec4899] transition-colors">
+                            <h4 className="font-display text-base md:text-lg font-bold group-hover:text-[#ec4899] transition-colors uppercase tracking-tight leading-tight">
                               {article.title}
                             </h4>
                           </div>
