@@ -130,36 +130,36 @@ export default function AdminPage() {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="products" className="space-y-6">
-          <div className="flex overflow-x-auto pb-2 scrollbar-hide">
+          <TabsList className="flex overflow-x-auto pb-2 scrollbar-hide bg-transparent">
             <TabsTrigger value="products" className="flex items-center gap-2">
               <Package className="h-4 w-4" />
               Products
             </TabsTrigger>
-            <TabsTrigger value="coas" className="flex items-center gap-2 ml-2">
+            <TabsTrigger value="coas" className="flex items-center gap-2">
               <FileCheck className="h-4 w-4" />
               COAs
             </TabsTrigger>
-            <TabsTrigger value="orders" className="flex items-center gap-2 ml-2">
+            <TabsTrigger value="orders" className="flex items-center gap-2">
               <Package className="h-4 w-4" />
               Orders
             </TabsTrigger>
-            <TabsTrigger value="contacts" className="flex items-center gap-2 ml-2">
+            <TabsTrigger value="contacts" className="flex items-center gap-2">
               <Inbox className="h-4 w-4" />
               Messages
             </TabsTrigger>
-            <TabsTrigger value="affiliates" className="flex items-center gap-2 ml-2">
+            <TabsTrigger value="affiliates" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
               Affiliates
             </TabsTrigger>
-            <TabsTrigger value="pricing" className="flex items-center gap-2 ml-2">
+            <TabsTrigger value="pricing" className="flex items-center gap-2">
               <BarChart className="h-4 w-4" />
               Pricing
             </TabsTrigger>
-            <TabsTrigger value="reviews" className="flex items-center gap-2 ml-2">
+            <TabsTrigger value="reviews" className="flex items-center gap-2">
               <Star className="h-4 w-4" />
               Reviews
             </TabsTrigger>
-          </div>
+          </TabsList>
 
           <TabsContent value="products">
             <ProductsTab />
