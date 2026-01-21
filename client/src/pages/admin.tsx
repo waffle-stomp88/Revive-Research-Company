@@ -84,7 +84,7 @@ export default function AdminPage() {
   const { toast } = useToast();
 
   const { data: user, isLoading: userLoading } = useQuery<User>({
-    queryKey: ["/api/user"],
+    queryKey: ["/api/auth/user"],
   });
 
   const logoutMutation = useMutation({
