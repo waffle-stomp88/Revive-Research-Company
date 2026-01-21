@@ -287,7 +287,7 @@ We regularly review and improve our quality systems through:
 
 If you receive a product that does not meet our quality specifications, contact us within 48 hours with your batch number and a description of the issue. Our quality team will investigate and resolve any legitimate concerns.
 
-For questions about our quality program, contact: **quality@reviveresearch.com**`
+For questions about our quality program, contact: **quality@reviveresearch.co**`
       },
       {
         slug: "research-use-disclaimer",
@@ -364,7 +364,7 @@ All purchasers must be at least 21 years of age. By completing a purchase, you c
 
 By placing an order with Revive Research, you acknowledge that you have read, understood, and agree to comply with this Research Use Disclaimer. Violation of these terms may result in order cancellation, account termination, and potential legal action.
 
-For questions about appropriate research use, contact: **compliance@reviveresearch.com**`
+For questions about appropriate research use, contact: **compliance@reviveresearch.co**`
       },
       {
         slug: "shipping-handling-policy",
@@ -457,7 +457,7 @@ If tracking shows delivered but you haven't received your package:
 
 ---
 
-For shipping inquiries, contact: **shipping@reviveresearch.com**`
+For shipping inquiries, contact: **shipping@reviveresearch.co**`
       },
       {
         slug: "returns-refunds-policy",
@@ -540,7 +540,7 @@ Orders can be cancelled **only before shipping**:
 
 If you have concerns about your order:
 
-1. **Contact Us First** - Email support@reviveresearch.com with your order details
+1. **Contact Us First** - Email support@reviveresearch.co with your order details
 2. **Provide Documentation** - Include photos, batch numbers, and specific issue description
 3. **Allow Investigation Time** - We will respond within 2 business days
 4. **Resolution** - We will work with you to find an appropriate solution for legitimate issues
@@ -559,7 +559,7 @@ We encourage you to:
 
 ---
 
-For order issues, contact: **support@reviveresearch.com**`
+For order issues, contact: **support@reviveresearch.co**`
       },
       
       // COMPLIANCE CATEGORY
@@ -669,13 +669,13 @@ Purchasers are responsible for:
 
 ## Reporting
 
-If you become aware of any misuse of products purchased from Revive Research, please report it to: **compliance@reviveresearch.com**
+If you become aware of any misuse of products purchased from Revive Research, please report it to: **compliance@reviveresearch.co**
 
 We take all reports seriously and cooperate fully with law enforcement investigations.
 
 ---
 
-For compliance questions, contact: **compliance@reviveresearch.com**`
+For compliance questions, contact: **compliance@reviveresearch.co**`
       },
       {
         slug: "age-verification-policy",
@@ -750,14 +750,14 @@ Providing false age information:
 
 If you are a parent or guardian and believe a minor has made a purchase:
 
-1. Contact us immediately at support@reviveresearch.com
+1. Contact us immediately at support@reviveresearch.co
 2. Provide order details if available
 3. We will investigate and cancel the order if confirmed
 4. The account will be terminated
 
 ---
 
-For age verification questions, contact: **support@reviveresearch.com**`
+For age verification questions, contact: **support@reviveresearch.co**`
       },
       
       // TERMS & LEGAL CATEGORY
@@ -862,7 +862,7 @@ These Terms, together with our Privacy Policy and other posted policies, constit
 
 ---
 
-For questions about these Terms, contact: **legal@reviveresearch.com**`
+For questions about these Terms, contact: **legal@reviveresearch.co**`
       },
       {
         slug: "privacy-policy",
@@ -955,7 +955,7 @@ Depending on your location, you may have the right to:
 - **Opt-out** of marketing communications
 - **Restrict** certain processing activities
 
-To exercise these rights, contact: **privacy@reviveresearch.com**
+To exercise these rights, contact: **privacy@reviveresearch.co**
 
 ## 6. Data Retention
 
@@ -984,7 +984,7 @@ We may update this Privacy Policy periodically. We will notify you of material c
 
 For privacy-related questions or concerns:
 
-**Email:** privacy@reviveresearch.com  
+**Email:** privacy@reviveresearch.co  
 **Mail:** Revive Research, Privacy Team, [Address]
 
 ---
@@ -1069,11 +1069,11 @@ If you believe content on our Site infringes your copyright:
 4. Provide your contact information
 5. Include required DMCA statements
 
-**DMCA Agent:** legal@reviveresearch.com
+**DMCA Agent:** legal@reviveresearch.co
 
 ---
 
-For intellectual property questions, contact: **legal@reviveresearch.com**`
+For intellectual property questions, contact: **legal@reviveresearch.co**`
       },
       {
         slug: "website-disclaimer",
@@ -1160,7 +1160,7 @@ By using this website, you agree to indemnify Revive Research against any claims
 
 ---
 
-For questions about this disclaimer, contact: **legal@reviveresearch.com**`
+For questions about this disclaimer, contact: **legal@reviveresearch.co**`
       }
     ];
     

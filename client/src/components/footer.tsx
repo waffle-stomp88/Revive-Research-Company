@@ -87,7 +87,7 @@ export function Footer() {
             <div className="space-y-3 text-sm text-muted-foreground mb-6">
               <div className="flex items-center gap-3">
                 <Mail className="h-4 w-4" />
-                <span>research@reviveresearch.com</span>
+                <span>support@reviveresearch.co</span>
               </div>
               <div className="flex items-center gap-3">
                 <MapPin className="h-4 w-4" />

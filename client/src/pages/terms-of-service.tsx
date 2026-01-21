@@ -200,7 +200,7 @@ export default function TermsOfService() {
                 <h2 className="font-display text-2xl font-bold mb-4">14. Contact Information</h2>
                 <p className="text-muted-foreground leading-relaxed">
                   For questions about these Terms of Service, please contact us at 
-                  support@reviveresearch.com.
+                  support@reviveresearch.co.
                 </p>
               </section>
             </div>

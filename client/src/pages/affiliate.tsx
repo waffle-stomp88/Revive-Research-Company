@@ -1043,7 +1043,7 @@ export default function AffiliatePage() {
         <div className="container max-w-4xl mx-auto px-4 text-center relative z-10">
           <p className="text-sm text-muted-foreground">
             Questions about the partner program?{" "}
-            <a href="mailto:partners@reviveresearch.com" className="text-[#9d4edd] hover:underline">
+            <a href="mailto:partners@reviveresearch.co" className="text-[#9d4edd] hover:underline">
               Contact us
             </a>
           </p>

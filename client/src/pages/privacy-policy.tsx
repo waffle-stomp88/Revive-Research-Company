@@ -146,7 +146,7 @@ export default function PrivacyPolicy() {
                   <li>Withdraw consent where applicable</li>
                 </ul>
                 <p className="text-muted-foreground leading-relaxed mt-4">
-                  To exercise these rights, please contact us at privacy@reviveresearch.com.
+                  To exercise these rights, please contact us at privacy@reviveresearch.co.
                 </p>
               </section>
 
@@ -196,7 +196,7 @@ export default function PrivacyPolicy() {
                 </p>
                 <div className="bg-muted/50 p-4 rounded-lg mt-4">
                   <p className="text-foreground font-semibold">Revive Research</p>
-                  <p className="text-muted-foreground">Email: privacy@reviveresearch.com</p>
+                  <p className="text-muted-foreground">Email: privacy@reviveresearch.co</p>
                 </div>
               </section>
             </div>
