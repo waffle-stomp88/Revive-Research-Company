@@ -65,10 +65,14 @@ export function useAuth() {
     }
   };
 
-  // User is authenticated if either Auth0 says so AND we have dbUser,
-  // OR if we have a session user from dev bypass
-  const isAuthenticated = (auth0IsAuthenticated && !!sessionUser) || !!sessionUser;
-  const isLoading = auth0Loading || sessionLoading;
+  // User is authenticated if we have a session user (from Auth0 sync or dev bypass)
+  const isAuthenticated = !!sessionUser;
+  
+  // Only show loading if:
+  // 1. Session is still loading (quick check for existing sessions), OR
+  // 2. Auth0 says authenticated but we're waiting for session sync
+  // Don't block on Auth0 loading if there's no session - show AuthGate immediately
+  const isLoading = sessionLoading || (auth0IsAuthenticated && !sessionUser && auth0Loading);
 
   return {
     user: sessionUser,
