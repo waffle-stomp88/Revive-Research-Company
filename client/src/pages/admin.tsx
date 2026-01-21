@@ -73,8 +73,6 @@ import {
   X,
   DollarSign,
   Loader2,
-  ChevronLeft,
-  ChevronRight,
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
@@ -750,10 +748,6 @@ function ProductsTab() {
   const [newDosage, setNewDosage] = useState("");
   const { toast } = useToast();
 
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20;
-
   // Fetch products with dosage stock data
   const { data: productsWithStock, isLoading } = useQuery<ProductWithDosageStock[]>({
     queryKey: ["/api/admin/products-with-stock"],
@@ -761,19 +755,6 @@ function ProductsTab() {
 
   // Fallback to regular products for non-admin use
   const products = productsWithStock;
-
-  // Reset pagination when products or sorting change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [products?.length, sortField, sortDirection]);
-
-  // Scroll to top of table when page changes
-  useEffect(() => {
-    const tableElement = document.getElementById('products-table-top');
-    if (tableElement) {
-      tableElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, [currentPage]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -815,12 +796,6 @@ function ProductsTab() {
     
     return sortDirection === "asc" ? comparison : -comparison;
   });
-
-  const totalPages = Math.ceil((sortedProducts?.length || 0) / itemsPerPage);
-  const paginatedProducts = sortedProducts?.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -913,19 +888,8 @@ function ProductsTab() {
       
       // Load existing dosage stocks or initialize from dosageOptions
       const productWithStock = product as ProductWithDosageStock;
-      
-      // Helper function to extract numeric value from dosage string (e.g., "10mg" -> 10)
-      const getDosageValue = (dosage: string) => {
-        const matches = dosage.match(/(\d+(?:\.\d+)?)/);
-        return matches ? parseFloat(matches[0]) : 0;
-      };
-
       if (productWithStock.dosageStocks && productWithStock.dosageStocks.length > 0) {
-        // Sort dosage stocks by weight/volume before setting state
-        const sortedStocks = [...productWithStock.dosageStocks].sort((a, b) => {
-          return getDosageValue(a.dosage) - getDosageValue(b.dosage);
-        });
-        setDosageStocks(sortedStocks.map(ds => ({
+        setDosageStocks(productWithStock.dosageStocks.map(ds => ({
           dosage: ds.dosage,
           stockAmount: ds.stockAmount,
           inStock: ds.inStock,
@@ -933,11 +897,8 @@ function ProductsTab() {
           originalPrice: ds.originalPrice,
         })));
       } else if (product.dosageOptions && product.dosageOptions.length > 0) {
-        // Initialize from dosageOptions with default values, sorted
-        const sortedOptions = [...product.dosageOptions].sort((a, b) => {
-          return getDosageValue(a) - getDosageValue(b);
-        });
-        setDosageStocks(sortedOptions.map(dosage => ({
+        // Initialize from dosageOptions with default values
+        setDosageStocks(product.dosageOptions.map(dosage => ({
           dosage,
           stockAmount: Math.floor((product.stockAmount || 0) / product.dosageOptions!.length),
           inStock: product.inStock ?? true,
@@ -976,17 +937,9 @@ function ProductsTab() {
 
   // Dosage stock management helpers
   const updateDosageStock = (index: number, field: keyof DosageStockItem, value: any) => {
-    setDosageStocks(prev => prev.map((ds, i) => {
-      if (i === index) {
-        const updated = { ...ds, [field]: value };
-        // Sync stockAmount to 0 if marking as out of stock
-        if (field === 'inStock' && value === false) {
-          updated.stockAmount = 0;
-        }
-        return updated;
-      }
-      return ds;
-    }));
+    setDosageStocks(prev => prev.map((ds, i) => 
+      i === index ? { ...ds, [field]: value } : ds
+    ));
   };
 
   const addDosage = (e?: React.MouseEvent) => {
@@ -1160,62 +1113,22 @@ function ProductsTab() {
 
   return (
     <div className="space-y-6">
-      <div id="products-table-top" className="flex items-center justify-between">
+      <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Products ({products?.length || 0})</h2>
-        <div className="flex items-center gap-4">
-          {totalPages > 1 && (
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                disabled={currentPage === 1}
-                className="h-8 border-[#21d8ff]/30 hover:bg-[#21d8ff]/10 hover:text-[#21d8ff]"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <div className="flex items-center gap-1">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <Button
-                    key={page}
-                    variant={currentPage === page ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setCurrentPage(page)}
-                    className={`h-8 min-w-[32px] p-0 ${
-                      currentPage === page 
-                        ? "bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90" 
-                        : "border-[#21d8ff]/30 text-muted-foreground hover:bg-[#21d8ff]/10 hover:text-[#21d8ff]"
-                    }`}
-                  >
-                    {page}
-                  </Button>
-                ))}
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                disabled={currentPage === totalPages}
-                className="h-8 border-[#21d8ff]/30 hover:bg-[#21d8ff]/10 hover:text-[#21d8ff]"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          )}
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={() => handleOpenDialog()} data-testid="button-add-product">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Product
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
-                <DialogDescription>
-                  {editingProduct ? "Update the product details below." : "Fill in the details for the new product."}
-                </DialogDescription>
-              </DialogHeader>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button onClick={() => handleOpenDialog()} data-testid="button-add-product">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Product
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
+              <DialogDescription>
+                {editingProduct ? "Update the product details below." : "Fill in the details for the new product."}
+              </DialogDescription>
+            </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
@@ -1375,7 +1288,6 @@ function ProductsTab() {
                             <Input
                               type="number"
                               min="0"
-                              placeholder="0"
                               value={ds.stockAmount}
                               onChange={(e) => updateDosageStock(index, 'stockAmount', parseInt(e.target.value) || 0)}
                               className="w-20 h-9 text-center text-sm bg-background/50 border-[#E7FB10]/20"
@@ -1734,7 +1646,7 @@ function ProductsTab() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedProducts?.map((product) => {
+            {sortedProducts?.map((product) => {
               const productWithStock = product as ProductWithDosageStock;
               const stockSummary = getDosageStockSummary(productWithStock);
               const anyInStock = stockSummary ? stockSummary.inStock > 0 : product.inStock;
@@ -1786,51 +1698,6 @@ function ProductsTab() {
             })}
           </TableBody>
         </Table>
-
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-4 border-t border-border/50 bg-black/20">
-            <div className="text-sm text-muted-foreground">
-              Showing <span className="text-foreground font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> to <span className="text-foreground font-medium">{Math.min(currentPage * itemsPerPage, products?.length || 0)}</span> of <span className="text-foreground font-medium">{products?.length || 0}</span> products
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                disabled={currentPage === 1}
-                className="h-8 border-[#21d8ff]/30 hover:bg-[#21d8ff]/10 hover:text-[#21d8ff]"
-              >
-                Previous
-              </Button>
-              <div className="flex items-center gap-1">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <Button
-                    key={page}
-                    variant={currentPage === page ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setCurrentPage(page)}
-                    className={`h-8 w-8 p-0 ${
-                      currentPage === page 
-                        ? "bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90" 
-                        : "border-[#21d8ff]/30 text-muted-foreground hover:bg-[#21d8ff]/10 hover:text-[#21d8ff]"
-                    }`}
-                  >
-                    {page}
-                  </Button>
-                ))}
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                disabled={currentPage === totalPages}
-                className="h-8 border-[#21d8ff]/30 hover:bg-[#21d8ff]/10 hover:text-[#21d8ff]"
-              >
-                Next
-              </Button>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
