@@ -1249,7 +1249,7 @@ function ProductsTab() {
                       >
                         <div className="flex items-center gap-4 flex-wrap w-full">
                           <div className="min-w-[100px] flex-shrink-0">
-                            <span className="font-display font-bold text-lg text-[#E7FB10]">{ds.dosage}</span>
+                            <span className="font-display font-bold text-lg holographic-text">{ds.dosage}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <Label className="text-xs uppercase tracking-wider text-muted-foreground">Price</Label>
