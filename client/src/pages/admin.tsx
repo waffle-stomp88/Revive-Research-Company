@@ -96,13 +96,18 @@ export default function AdminPage() {
     },
   });
 
+  useEffect(() => {
+    if (!userLoading && (!user || !user.isAdmin)) {
+      setLocation("/");
+    }
+  }, [user, userLoading, setLocation]);
+
   if (userLoading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
 
   if (!user || !user.isAdmin) {
-    setLocation("/");
-    return null;
+    return <div className="flex items-center justify-center min-h-screen">Redirecting...</div>;
   }
 
   return (
