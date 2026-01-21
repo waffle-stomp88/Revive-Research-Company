@@ -35,6 +35,8 @@ import {
   Mail,
   CheckCircle2,
   Grid3X3,
+  Grid2X2,
+  LayoutGrid,
   Tag,
   ChevronDown,
   ChevronRight,
@@ -205,7 +207,7 @@ function ProductsComponent() {
   });
 
   const [searchQuery, setSearchQuery] = useState(savedState?.searchQuery ?? "");
-  const [sortBy, setSortBy] = useState<SortOption>(savedState?.sortBy ?? "name-asc");
+  const [sortBy, setSortBy] = useState<SortOption>(savedState?.sortBy ?? "featured");
   const [stockFilter, setStockFilter] = useState<"all" | "in-stock" | "out-of-stock">(savedState?.stockFilter ?? "in-stock");
   const [activeSection, setActiveSection] = useState<ShopSection>("deals");
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -227,6 +229,10 @@ function ProductsComponent() {
   
   // Mobile filter sheet state
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  
+  // Display controls state - items per page and grid columns
+  const [itemsPerPage, setItemsPerPage] = useState<number>(12);
+  const [gridColumns, setGridColumns] = useState<2 | 3 | 4>(3);
 
   // Weekly Deal dismiss state with localStorage
   const [weeklyDealDismissed, setWeeklyDealDismissed] = useState(() => {
@@ -1091,8 +1097,90 @@ function ProductsComponent() {
                 return null;
               })()}
 
+              {/* Display Controls Bar - Show count, grid layout, sorting */}
+              <div className="flex flex-wrap items-center justify-between gap-4 mb-4 p-3 bg-muted/30 rounded-lg border border-border/50" data-testid="display-controls-bar">
+                {/* Left side: Show count */}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground font-medium">Show:</span>
+                  <div className="flex items-center gap-1">
+                    {[9, 12, 18, 24].map((count) => (
+                      <button
+                        key={count}
+                        onClick={() => setItemsPerPage(count)}
+                        className={`px-2 py-1 text-sm rounded transition-colors ${
+                          itemsPerPage === count
+                            ? "text-[#21d8ff] font-semibold"
+                            : "text-muted-foreground hover:text-foreground"
+                        }`}
+                        data-testid={`button-show-${count}`}
+                      >
+                        {count}
+                      </button>
+                    ))}
+                  </div>
+                  
+                  {/* Grid layout toggles */}
+                  <div className="flex items-center gap-1 ml-4 border-l border-border pl-4">
+                    <button
+                      onClick={() => setGridColumns(2)}
+                      className={`p-1.5 rounded transition-colors ${
+                        gridColumns === 2
+                          ? "text-[#21d8ff] bg-[#21d8ff]/10"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                      title="2 columns"
+                      data-testid="button-grid-2"
+                    >
+                      <Grid2X2 className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => setGridColumns(3)}
+                      className={`p-1.5 rounded transition-colors ${
+                        gridColumns === 3
+                          ? "text-[#21d8ff] bg-[#21d8ff]/10"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                      title="3 columns"
+                      data-testid="button-grid-3"
+                    >
+                      <Grid3X3 className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => setGridColumns(4)}
+                      className={`p-1.5 rounded transition-colors ${
+                        gridColumns === 4
+                          ? "text-[#21d8ff] bg-[#21d8ff]/10"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                      title="4 columns"
+                      data-testid="button-grid-4"
+                    >
+                      <LayoutGrid className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Right side: Sorting dropdown */}
+                <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
+                  <SelectTrigger className="w-[160px] h-8 text-sm" data-testid="select-sort">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="featured">Default sorting</SelectItem>
+                    <SelectItem value="name-asc">Name (A-Z)</SelectItem>
+                    <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+                    <SelectItem value="price-asc">Price: Low to High</SelectItem>
+                    <SelectItem value="price-desc">Price: High to Low</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               {isLoading ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className={`grid gap-4 ${
+                  gridColumns === 2 ? "grid-cols-2" :
+                  gridColumns === 3 ? "grid-cols-2 md:grid-cols-3" :
+                  "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                }`}>
                   {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                     <Card key={i} className="p-3 animate-pulse">
                       <div className="aspect-[4/3] bg-muted rounded-md mb-3" />
@@ -1108,13 +1196,18 @@ function ProductsComponent() {
                   <Button onClick={() => window.location.reload()}>Retry</Button>
                 </Card>
               ) : filteredAndSortedProducts.length > 0 ? (
+                <>
                 <motion.div
                   initial="initial"
                   animate="animate"
                   variants={staggerContainer}
-                  className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4"
+                  className={`grid gap-4 ${
+                    gridColumns === 2 ? "grid-cols-2" :
+                    gridColumns === 3 ? "grid-cols-2 md:grid-cols-3" :
+                    "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                  }`}
                 >
-                  {filteredAndSortedProducts.map((product) => (
+                  {filteredAndSortedProducts.slice(0, itemsPerPage).map((product) => (
                     <motion.div
                       key={product.id}
                       variants={fadeInUp}
@@ -1256,7 +1349,25 @@ function ProductsComponent() {
                     </motion.div>
                   ))}
                 </motion.div>
-                ) : (
+                
+                {/* Show More button if there are more products */}
+                {filteredAndSortedProducts.length > itemsPerPage && (
+                  <div className="mt-6 text-center">
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Showing {Math.min(itemsPerPage, filteredAndSortedProducts.length)} of {filteredAndSortedProducts.length} products
+                    </p>
+                    <Button
+                      variant="outline"
+                      className="border-[#21d8ff]/40 text-[#21d8ff] hover:bg-[#21d8ff]/10"
+                      onClick={() => setItemsPerPage(prev => Math.min(prev + 12, filteredAndSortedProducts.length))}
+                      data-testid="button-show-more"
+                    >
+                      Show More
+                    </Button>
+                  </div>
+                )}
+                </>
+              ) : (
                   <Card className="p-12 text-center">
                     <FlaskConical className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
                     <h3 className="font-display text-xl font-semibold mb-2">No Peptides Found</h3>
