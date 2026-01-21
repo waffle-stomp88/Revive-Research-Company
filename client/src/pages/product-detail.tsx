@@ -309,7 +309,25 @@ export default function ProductDetail() {
 
   const getBasePrice = () => {
     if (!product) return 0;
+    // Use dosage-specific price if available
+    if (hasDosageStockData && selectedDosageStock?.price) {
+      return Number(selectedDosageStock.price);
+    }
+    // Fallback to product price with dosage multiplier
     return Number(product.price) * getDosageMultiplier();
+  };
+
+  const getOriginalPrice = () => {
+    if (!product) return null;
+    // Use dosage-specific original price if available
+    if (hasDosageStockData && selectedDosageStock?.originalPrice) {
+      return Number(selectedDosageStock.originalPrice);
+    }
+    // Fallback to product original price with dosage multiplier
+    if (product.originalPrice) {
+      return Number(product.originalPrice) * getDosageMultiplier();
+    }
+    return null;
   };
 
   const getSelectedDiscount = () => {
@@ -344,7 +362,7 @@ export default function ProductDetail() {
         productId: product.id,
         name: product.name,
         price: getBasePrice(),
-        originalPrice: product.originalPrice ? Number(product.originalPrice) * getDosageMultiplier() : undefined,
+        originalPrice: getOriginalPrice() || undefined,
         quantity,
         dosage: selectedDosage,
         image: product.imageUrl || productImage,
@@ -592,9 +610,9 @@ export default function ProductDetail() {
                 <span className="font-display text-3xl font-bold text-[#E7FB10]" data-testid="text-product-price">
                   ${getBasePrice().toFixed(2)}
                 </span>
-                {product.originalPrice && (
+                {getOriginalPrice() && (
                   <span className="text-lg text-muted-foreground line-through">
-                    ${(Number(product.originalPrice) * getDosageMultiplier()).toFixed(2)}
+                    ${getOriginalPrice()!.toFixed(2)}
                   </span>
                 )}
                 {selectedDosage !== "10mg" && (
@@ -626,6 +644,11 @@ export default function ProductDetail() {
                         const isDosageOutOfStock = hasDosageStockData && dosageStock 
                           ? (!dosageStock.inStock || dosageStock.stockAmount <= 0) 
                           : false;
+                        // Show dosage-specific price if available
+                        const dosagePrice = dosageStock?.price ? `$${Number(dosageStock.price).toFixed(2)}` : null;
+                        const priceLabel = dosagePrice 
+                          ? ` (${dosagePrice})` 
+                          : (dosage !== "10mg" ? ` (+${((dosageMultipliers[dosage] || 1) - 1) * 100}%)` : "");
                         return (
                           <SelectItem 
                             key={dosage} 
@@ -633,7 +656,7 @@ export default function ProductDetail() {
                             disabled={isDosageOutOfStock}
                             className={isDosageOutOfStock ? "opacity-50" : ""}
                           >
-                            {dosage} {dosage !== "10mg" && `(+${((dosageMultipliers[dosage] || 1) - 1) * 100}%)`}
+                            {dosage}{priceLabel}
                             {isDosageOutOfStock && " (Out of Stock)"}
                           </SelectItem>
                         );

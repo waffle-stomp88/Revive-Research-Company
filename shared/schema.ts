@@ -55,13 +55,15 @@ export const insertProductSchema = createInsertSchema(products).omit({ id: true 
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type Product = typeof products.$inferSelect;
 
-// Product Dosage Stock - tracks inventory per dosage option
+// Product Dosage Stock - tracks inventory and pricing per dosage option
 export const productDosageStock = pgTable("product_dosage_stock", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   productId: varchar("product_id").notNull().references(() => products.id, { onDelete: "cascade" }),
   dosage: text("dosage").notNull(),
   stockAmount: integer("stock_amount").notNull().default(0),
   inStock: boolean("in_stock").notNull().default(true),
+  price: decimal("price", { precision: 10, scale: 2 }),
+  originalPrice: decimal("original_price", { precision: 10, scale: 2 }),
 });
 
 export const insertProductDosageStockSchema = createInsertSchema(productDosageStock).omit({ id: true });

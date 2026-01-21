@@ -112,6 +112,8 @@ interface DosageStockItem {
   dosage: string;
   stockAmount: number;
   inStock: boolean;
+  price: string | null;
+  originalPrice: string | null;
 }
 
 const containerVariants = {
@@ -891,6 +893,8 @@ function ProductsTab() {
           dosage: ds.dosage,
           stockAmount: ds.stockAmount,
           inStock: ds.inStock,
+          price: ds.price,
+          originalPrice: ds.originalPrice,
         })));
       } else if (product.dosageOptions && product.dosageOptions.length > 0) {
         // Initialize from dosageOptions with default values
@@ -898,9 +902,11 @@ function ProductsTab() {
           dosage,
           stockAmount: Math.floor((product.stockAmount || 0) / product.dosageOptions!.length),
           inStock: product.inStock ?? true,
+          price: null,
+          originalPrice: null,
         })));
       } else {
-        setDosageStocks([{ dosage: "10mg", stockAmount: product.stockAmount || 0, inStock: product.inStock ?? true }]);
+        setDosageStocks([{ dosage: "10mg", stockAmount: product.stockAmount || 0, inStock: product.inStock ?? true, price: null, originalPrice: null }]);
       }
       
       form.reset({
@@ -922,7 +928,7 @@ function ProductsTab() {
     } else {
       setEditingProduct(null);
       setProductImageUrl(null);
-      setDosageStocks([{ dosage: "10mg", stockAmount: 0, inStock: true }]);
+      setDosageStocks([{ dosage: "10mg", stockAmount: 0, inStock: true, price: null, originalPrice: null }]);
       form.reset();
     }
     setNewDosage("");
@@ -936,11 +942,34 @@ function ProductsTab() {
     ));
   };
 
-  const addDosage = () => {
-    if (newDosage.trim() && !dosageStocks.some(ds => ds.dosage === newDosage.trim())) {
-      setDosageStocks(prev => [...prev, { dosage: newDosage.trim(), stockAmount: 0, inStock: true }]);
-      setNewDosage("");
+  const addDosage = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
     }
+    const trimmedDosage = newDosage.trim().toUpperCase();
+    if (!trimmedDosage) {
+      toast({
+        title: "Enter a dosage",
+        description: "Please enter a dosage value (e.g., 15mg)",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (dosageStocks.some(ds => ds.dosage.toUpperCase() === trimmedDosage)) {
+      toast({
+        title: "Dosage exists",
+        description: `${trimmedDosage} already exists in the inventory`,
+        variant: "destructive",
+      });
+      return;
+    }
+    setDosageStocks(prev => [...prev, { dosage: trimmedDosage, stockAmount: 0, inStock: true, price: null, originalPrice: null }]);
+    setNewDosage("");
+    toast({
+      title: "Dosage added",
+      description: `${trimmedDosage} has been added to inventory`,
+    });
   };
 
   const removeDosage = (index: number) => {
@@ -1211,52 +1240,77 @@ function ProductsTab() {
                     {dosageStocks.map((ds, index) => (
                       <div 
                         key={index}
-                        className={`flex items-center gap-3 p-3 rounded-lg border ${
+                        className={`p-3 rounded-lg border ${
                           ds.inStock ? 'border-green-500/30 bg-green-500/5' : 'border-red-500/30 bg-red-500/5'
                         }`}
                         data-testid={`dosage-row-${index}`}
                       >
-                        <div className="flex-1 min-w-[80px]">
-                          <span className="font-mono font-medium">{ds.dosage}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Input
-                            type="number"
-                            min="0"
-                            value={ds.stockAmount}
-                            onChange={(e) => updateDosageStock(index, 'stockAmount', parseInt(e.target.value) || 0)}
-                            className="w-20 h-8 text-center"
-                            data-testid={`input-stock-${index}`}
-                          />
-                          <span className="text-xs text-muted-foreground">units</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            type="button"
-                            variant={ds.inStock ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => updateDosageStock(index, 'inStock', !ds.inStock)}
-                            className={ds.inStock ? "bg-green-600 hover:bg-green-700" : "border-red-500/50 text-red-500"}
-                            data-testid={`toggle-stock-${index}`}
-                          >
-                            {ds.inStock ? (
-                              <><Check className="h-3 w-3 mr-1" /> In Stock</>
-                            ) : (
-                              <><X className="h-3 w-3 mr-1" /> Out</>
-                            )}
-                          </Button>
-                          {dosageStocks.length > 1 && (
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <div className="min-w-[80px]">
+                            <span className="font-mono font-medium">{ds.dosage}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs text-muted-foreground">$</span>
+                            <Input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              placeholder="Price"
+                              value={ds.price || ""}
+                              onChange={(e) => updateDosageStock(index, 'price', e.target.value || null)}
+                              className="w-16 h-8 text-center text-sm"
+                              data-testid={`input-price-${index}`}
+                            />
+                            <Input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              placeholder="Was"
+                              value={ds.originalPrice || ""}
+                              onChange={(e) => updateDosageStock(index, 'originalPrice', e.target.value || null)}
+                              className="w-16 h-8 text-center text-sm text-muted-foreground"
+                              data-testid={`input-original-price-${index}`}
+                            />
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Input
+                              type="number"
+                              min="0"
+                              value={ds.stockAmount}
+                              onChange={(e) => updateDosageStock(index, 'stockAmount', parseInt(e.target.value) || 0)}
+                              className="w-16 h-8 text-center text-sm"
+                              data-testid={`input-stock-${index}`}
+                            />
+                            <span className="text-xs text-muted-foreground">qty</span>
+                          </div>
+                          <div className="flex items-center gap-2">
                             <Button
                               type="button"
-                              variant="ghost"
+                              variant={ds.inStock ? "default" : "outline"}
                               size="sm"
-                              onClick={() => removeDosage(index)}
-                              className="h-8 w-8 p-0 text-muted-foreground hover:text-red-500"
-                              data-testid={`remove-dosage-${index}`}
+                              onClick={() => updateDosageStock(index, 'inStock', !ds.inStock)}
+                              className={ds.inStock ? "bg-green-600 hover:bg-green-700" : "border-red-500/50 text-red-500"}
+                              data-testid={`toggle-stock-${index}`}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              {ds.inStock ? (
+                                <><Check className="h-3 w-3 mr-1" /> In Stock</>
+                              ) : (
+                                <><X className="h-3 w-3 mr-1" /> Out</>
+                              )}
                             </Button>
-                          )}
+                            {dosageStocks.length > 1 && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeDosage(index)}
+                                className="h-8 w-8 p-0 text-muted-foreground hover:text-red-500"
+                                data-testid={`remove-dosage-${index}`}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -1268,14 +1322,19 @@ function ProductsTab() {
                       placeholder="New dosage (e.g., 15mg)"
                       value={newDosage}
                       onChange={(e) => setNewDosage(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addDosage())}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          addDosage();
+                        }
+                      }}
                       className="flex-1"
                       data-testid="input-new-dosage"
                     />
                     <Button 
                       type="button" 
                       variant="outline" 
-                      onClick={addDosage}
+                      onClick={(e) => addDosage(e)}
                       className="border-[#21d8ff]/50 text-[#21d8ff]"
                       data-testid="button-add-dosage"
                     >

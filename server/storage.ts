@@ -219,9 +219,9 @@ export interface IStorage {
   getAllProductDosageStocks(): Promise<ProductDosageStock[]>;
   getProductWithDosageStock(productId: string): Promise<ProductWithDosageStock | undefined>;
   getAllProductsWithDosageStock(): Promise<ProductWithDosageStock[]>;
-  upsertDosageStock(productId: string, dosage: string, stockAmount: number, inStock: boolean): Promise<ProductDosageStock>;
+  upsertDosageStock(productId: string, dosage: string, stockAmount: number, inStock: boolean, price?: string | null, originalPrice?: string | null): Promise<ProductDosageStock>;
   deleteDosageStock(id: string): Promise<boolean>;
-  syncProductDosageStocks(productId: string, dosageStocks: Array<{ dosage: string; stockAmount: number; inStock: boolean }>): Promise<ProductDosageStock[]>;
+  syncProductDosageStocks(productId: string, dosageStocks: Array<{ dosage: string; stockAmount: number; inStock: boolean; price?: string | null; originalPrice?: string | null }>): Promise<ProductDosageStock[]>;
   initializeDosageStocksFromProduct(productId: string): Promise<ProductDosageStock[]>;
   
   // Price History (Stock Exchange Style Transparency)
@@ -1348,7 +1348,7 @@ export class DatabaseStorage implements IStorage {
     }));
   }
 
-  async upsertDosageStock(productId: string, dosage: string, stockAmount: number, inStock: boolean): Promise<ProductDosageStock> {
+  async upsertDosageStock(productId: string, dosage: string, stockAmount: number, inStock: boolean, price?: string | null, originalPrice?: string | null): Promise<ProductDosageStock> {
     // Check if this dosage stock already exists
     const [existing] = await db.select().from(productDosageStock)
       .where(and(
@@ -1359,14 +1359,14 @@ export class DatabaseStorage implements IStorage {
     if (existing) {
       // Update existing
       const [updated] = await db.update(productDosageStock)
-        .set({ stockAmount, inStock })
+        .set({ stockAmount, inStock, price, originalPrice })
         .where(eq(productDosageStock.id, existing.id))
         .returning();
       return updated;
     } else {
       // Insert new
       const [created] = await db.insert(productDosageStock)
-        .values({ productId, dosage, stockAmount, inStock })
+        .values({ productId, dosage, stockAmount, inStock, price, originalPrice })
         .returning();
       return created;
     }
@@ -1379,7 +1379,7 @@ export class DatabaseStorage implements IStorage {
 
   async syncProductDosageStocks(
     productId: string, 
-    dosageStocks: Array<{ dosage: string; stockAmount: number; inStock: boolean }>
+    dosageStocks: Array<{ dosage: string; stockAmount: number; inStock: boolean; price?: string | null; originalPrice?: string | null }>
   ): Promise<ProductDosageStock[]> {
     // Get current dosage stocks for this product
     const currentStocks = await this.getProductDosageStocks(productId);
@@ -1396,7 +1396,7 @@ export class DatabaseStorage implements IStorage {
     // Upsert all dosage stocks
     const results: ProductDosageStock[] = [];
     for (const ds of dosageStocks) {
-      const result = await this.upsertDosageStock(productId, ds.dosage, ds.stockAmount, ds.inStock);
+      const result = await this.upsertDosageStock(productId, ds.dosage, ds.stockAmount, ds.inStock, ds.price, ds.originalPrice);
       results.push(result);
     }
     
