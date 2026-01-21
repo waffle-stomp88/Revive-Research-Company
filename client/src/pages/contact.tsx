@@ -57,7 +57,7 @@ function getResponseTimeByTimeZone(): string {
   const ctTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Chicago" }));
   const ctHour = ctTime.getHours();
   const isOffHours = ctHour >= 17 || ctHour < 9;
-  return isOffHours ? "12 hours" : "2-4 hours";
+  return isOffHours ? "12 hours" : "3 hours";
 }
 
 export default function Contact() {
@@ -307,6 +307,9 @@ export default function Contact() {
                       <h3 className="font-medium mb-1">Response Time</h3>
                       <p className="text-sm text-muted-foreground">
                         We typically respond within <span className="text-[#21d8ff] font-medium">{responseTime}</span> during business hours.
+                      </p>
+                      <p className="text-[10px] text-muted-foreground/60 mt-2 leading-tight">
+                        Business Hours: 9 AM - 5 PM CT, Mon - Fri (excluding Federal Holidays).
                       </p>
                     </div>
                   </div>
