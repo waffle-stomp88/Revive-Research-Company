@@ -60,7 +60,7 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { ModelViewer3D } from "@/components/model-viewer-3d";
 import { PriceTrendBadge } from "@/components/price-trend-badge";
-import type { Product, Review, ProductStorageProfile, Batch, Coa, EducationArticle } from "@shared/schema";
+import type { Product, Review, ProductStorageProfile, Batch, Coa, EducationArticle, ProductDosageStock } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { SEOHead } from "@/components/seo-head";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -194,6 +194,12 @@ export default function ProductDetail() {
   // Query for related education articles
   const { data: relatedArticles = [] } = useQuery<EducationArticle[]>({
     queryKey: ["/api/products", params.id, "education"],
+    enabled: !!params.id,
+  });
+
+  // Query for dosage-specific stock information
+  const { data: dosageStocks = [] } = useQuery<ProductDosageStock[]>({
+    queryKey: ["/api/products", params.id, "dosage-stocks"],
     enabled: !!params.id,
   });
 
@@ -386,8 +392,36 @@ export default function ProductDetail() {
 
   const benefits = product.benefits || [];
   
-  // Unified out-of-stock check - considers BOTH inStock flag AND stockAmount
-  const isOutOfStock = !product.inStock || (product.stockAmount !== null && product.stockAmount !== undefined && product.stockAmount <= 0);
+  // Helper function to get stock info for a specific dosage
+  const getDosageStockInfo = (dosage: string) => {
+    const dosageStock = dosageStocks.find(ds => ds.dosage === dosage);
+    return dosageStock;
+  };
+
+  // Check if we have dosage-level stock data at all
+  const hasDosageStockData = dosageStocks.length > 0;
+
+  // Get current selected dosage stock info
+  const selectedDosageStock = getDosageStockInfo(selectedDosage);
+  
+  // Unified out-of-stock check - considers dosage-specific stock if available, otherwise falls back to product-level
+  const isOutOfStock = (() => {
+    // If we have dosage-specific stock info for this dosage, use that
+    if (hasDosageStockData && selectedDosageStock) {
+      return !selectedDosageStock.inStock || selectedDosageStock.stockAmount <= 0;
+    }
+    // Fallback to product-level stock check (for products without dosage-level inventory)
+    return !product.inStock || (product.stockAmount !== null && product.stockAmount !== undefined && product.stockAmount <= 0);
+  })();
+  
+  // Get display stock amount for selected dosage
+  const displayStockAmount = (() => {
+    // Only use dosage-specific stock if we have dosage stock data
+    if (hasDosageStockData && selectedDosageStock) {
+      return selectedDosageStock.stockAmount;
+    }
+    return product.stockAmount || 0;
+  })();
 
   const seoTitle = `${product.name} ${selectedDosage} - Research Peptide`;
   const seoDescription = product.description 
@@ -586,11 +620,24 @@ export default function ProductDetail() {
                       <SelectValue placeholder="Select dosage" />
                     </SelectTrigger>
                     <SelectContent>
-                      {product.dosageOptions.map((dosage) => (
-                        <SelectItem key={dosage} value={dosage}>
-                          {dosage} {dosage !== "10mg" && `(+${((dosageMultipliers[dosage] || 1) - 1) * 100}%)`}
-                        </SelectItem>
-                      ))}
+                      {product.dosageOptions.map((dosage) => {
+                        const dosageStock = getDosageStockInfo(dosage);
+                        // Only apply dosage-level stock restrictions if we have dosage stock data
+                        const isDosageOutOfStock = hasDosageStockData && dosageStock 
+                          ? (!dosageStock.inStock || dosageStock.stockAmount <= 0) 
+                          : false;
+                        return (
+                          <SelectItem 
+                            key={dosage} 
+                            value={dosage}
+                            disabled={isDosageOutOfStock}
+                            className={isDosageOutOfStock ? "opacity-50" : ""}
+                          >
+                            {dosage} {dosage !== "10mg" && `(+${((dosageMultipliers[dosage] || 1) - 1) * 100}%)`}
+                            {isDosageOutOfStock && " (Out of Stock)"}
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                 </div>
@@ -714,15 +761,15 @@ export default function ProductDetail() {
                 </span>
               ) : (
                 <span className="flex items-center gap-1">
-                  {product.stockAmount && product.stockAmount <= 20 ? (
+                  {displayStockAmount > 0 && displayStockAmount <= 20 ? (
                     <>
                       <AlertTriangle className="h-3 w-3 text-orange-500" />
-                      <span className="text-orange-500 font-medium">Only {product.stockAmount} left</span>
+                      <span className="text-orange-500 font-medium">Only {displayStockAmount} left</span>
                     </>
                   ) : (
                     <>
                       <CheckCircle className="h-3 w-3 text-green-500" />
-                      {product.stockAmount || 0} in stock
+                      {displayStockAmount} in stock
                     </>
                   )}
                 </span>
