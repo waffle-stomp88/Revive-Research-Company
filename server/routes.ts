@@ -561,6 +561,17 @@ export async function registerRoutes(
     }
   });
 
+  // Get dosage stock information for a product (public endpoint)
+  app.get("/api/products/:id/dosage-stocks", async (req, res) => {
+    try {
+      const dosageStocks = await storage.getProductDosageStocks(req.params.id);
+      res.json(dosageStocks);
+    } catch (error) {
+      console.error("Error fetching dosage stocks:", error);
+      res.status(500).json({ error: "Failed to fetch dosage stocks" });
+    }
+  });
+
   // Get reviewable orders for authenticated user (orders eligible for reviews)
   app.get("/api/reviews/my-reviewable-orders", isAuthenticated, async (req: any, res) => {
     try {
