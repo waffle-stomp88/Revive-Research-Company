@@ -951,9 +951,17 @@ function ProductsTab() {
 
   // Dosage stock management helpers
   const updateDosageStock = (index: number, field: keyof DosageStockItem, value: any) => {
-    setDosageStocks(prev => prev.map((ds, i) => 
-      i === index ? { ...ds, [field]: value } : ds
-    ));
+    setDosageStocks(prev => prev.map((ds, i) => {
+      if (i === index) {
+        const updated = { ...ds, [field]: value };
+        // Sync stockAmount to 0 if marking as out of stock
+        if (field === 'inStock' && value === false) {
+          updated.stockAmount = 0;
+        }
+        return updated;
+      }
+      return ds;
+    }));
   };
 
   const addDosage = (e?: React.MouseEvent) => {
@@ -1302,6 +1310,7 @@ function ProductsTab() {
                             <Input
                               type="number"
                               min="0"
+                              placeholder="0"
                               value={ds.stockAmount}
                               onChange={(e) => updateDosageStock(index, 'stockAmount', parseInt(e.target.value) || 0)}
                               className="w-20 h-9 text-center text-sm bg-background/50 border-[#E7FB10]/20"
