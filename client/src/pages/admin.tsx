@@ -1122,7 +1122,7 @@ function ProductsTab() {
               Add Product
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
               <DialogDescription>
@@ -1170,34 +1170,36 @@ function ProductsTab() {
                     </FormItem>
                   )}
                 />
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="price"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Price ($)</FormLabel>
-                        <FormControl>
-                          <Input {...field} type="text" data-testid="input-product-price" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="originalPrice"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Original Price (optional)</FormLabel>
-                        <FormControl>
-                          <Input {...field} type="text" data-testid="input-product-original-price" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                {!dosageStocks.length && (
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Price ($)</FormLabel>
+                          <FormControl>
+                            <Input {...field} type="text" data-testid="input-product-price" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="originalPrice"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Original Price (optional)</FormLabel>
+                          <FormControl>
+                            <Input {...field} type="text" data-testid="input-product-original-price" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
                 {/* Dosage Inventory Manager */}
                 <div className="space-y-4 p-4 rounded-lg border border-[#21d8ff]/30 bg-[#21d8ff]/5">
                   <div className="flex items-center justify-between">
@@ -1245,66 +1247,75 @@ function ProductsTab() {
                         }`}
                         data-testid={`dosage-row-${index}`}
                       >
-                        <div className="flex items-center gap-3 flex-wrap">
-                          <div className="min-w-[80px]">
-                            <span className="font-mono font-medium">{ds.dosage}</span>
+                        <div className="flex items-center gap-4 flex-wrap w-full">
+                          <div className="min-w-[100px] flex-shrink-0">
+                            <span className="font-display font-bold text-lg text-[#21d8ff]">{ds.dosage}</span>
                           </div>
-                          <div className="flex items-center gap-1">
-                            <span className="text-xs text-muted-foreground">$</span>
-                            <Input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              placeholder="Price"
-                              value={ds.price || ""}
-                              onChange={(e) => updateDosageStock(index, 'price', e.target.value || null)}
-                              className="w-16 h-8 text-center text-sm"
-                              data-testid={`input-price-${index}`}
-                            />
-                            <Input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              placeholder="Was"
-                              value={ds.originalPrice || ""}
-                              onChange={(e) => updateDosageStock(index, 'originalPrice', e.target.value || null)}
-                              className="w-16 h-8 text-center text-sm text-muted-foreground"
-                              data-testid={`input-original-price-${index}`}
-                            />
+                          <div className="flex items-center gap-2">
+                            <Label className="text-xs uppercase tracking-wider text-muted-foreground">Price</Label>
+                            <div className="relative">
+                              <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">$</span>
+                              <Input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="0.00"
+                                value={ds.price || ""}
+                                onChange={(e) => updateDosageStock(index, 'price', e.target.value || null)}
+                                className="w-24 h-9 pl-5 text-sm bg-background/50 border-[#21d8ff]/20 focus:border-[#21d8ff]/50"
+                                data-testid={`input-price-${index}`}
+                              />
+                            </div>
                           </div>
-                          <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-2">
+                            <Label className="text-xs uppercase tracking-wider text-muted-foreground">Was</Label>
+                            <div className="relative">
+                              <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">$</span>
+                              <Input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="0.00"
+                                value={ds.originalPrice || ""}
+                                onChange={(e) => updateDosageStock(index, 'originalPrice', e.target.value || null)}
+                                className="w-24 h-9 pl-5 text-sm bg-background/50 border-white/10 text-muted-foreground"
+                                data-testid={`input-original-price-${index}`}
+                              />
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Label className="text-xs uppercase tracking-wider text-muted-foreground">Stock</Label>
                             <Input
                               type="number"
                               min="0"
                               value={ds.stockAmount}
                               onChange={(e) => updateDosageStock(index, 'stockAmount', parseInt(e.target.value) || 0)}
-                              className="w-16 h-8 text-center text-sm"
+                              className="w-20 h-9 text-center text-sm bg-background/50 border-[#E7FB10]/20"
                               data-testid={`input-stock-${index}`}
                             />
-                            <span className="text-xs text-muted-foreground">qty</span>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-3 ml-auto">
                             <Button
                               type="button"
                               variant={ds.inStock ? "default" : "outline"}
                               size="sm"
                               onClick={() => updateDosageStock(index, 'inStock', !ds.inStock)}
-                              className={ds.inStock ? "bg-green-600 hover:bg-green-700" : "border-red-500/50 text-red-500"}
+                              className={`h-9 min-w-[100px] ${ds.inStock ? "bg-green-600 hover:bg-green-700 text-white" : "border-red-500/50 text-red-500 hover:bg-red-500/10"}`}
                               data-testid={`toggle-stock-${index}`}
                             >
                               {ds.inStock ? (
-                                <><Check className="h-3 w-3 mr-1" /> In Stock</>
+                                <><Check className="h-4 w-4 mr-2" /> In Stock</>
                               ) : (
-                                <><X className="h-3 w-3 mr-1" /> Out</>
+                                <><X className="h-4 w-4 mr-2" /> Out</>
                               )}
                             </Button>
                             {dosageStocks.length > 1 && (
                               <Button
                                 type="button"
                                 variant="ghost"
-                                size="sm"
+                                size="icon"
                                 onClick={() => removeDosage(index)}
-                                className="h-8 w-8 p-0 text-muted-foreground hover:text-red-500"
+                                className="h-9 w-9 text-muted-foreground hover:text-red-500 hover:bg-red-500/10"
                                 data-testid={`remove-dosage-${index}`}
                               >
                                 <Trash2 className="h-4 w-4" />
