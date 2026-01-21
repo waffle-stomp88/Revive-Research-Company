@@ -73,6 +73,8 @@ import {
   X,
   DollarSign,
   Loader2,
+  ChevronLeft,
+  ChevronRight,
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
@@ -1207,13 +1209,13 @@ function ProductsTab() {
                 Add Product
               </Button>
             </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
-              <DialogDescription>
-                {editingProduct ? "Update the product details below." : "Fill in the details for the new product."}
-              </DialogDescription>
-            </DialogHeader>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
+                <DialogDescription>
+                  {editingProduct ? "Update the product details below." : "Fill in the details for the new product."}
+                </DialogDescription>
+              </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
