@@ -788,56 +788,54 @@ function ProductsComponent() {
                   Showing {filteredAndSortedProducts.length} result{filteredAndSortedProducts.length !== 1 ? "s" : ""} for "{searchQuery}"
                 </p>
               )}
-              {!searchQuery && products && (() => {
-                const outOfStockCount = products.filter(p => !p.inStock || (p.stockAmount !== null && p.stockAmount <= 0)).length;
-                if (outOfStockCount > 0) {
-                  if (stockFilter === "in-stock") {
-                    return (
-                      <div className="flex items-center justify-between text-sm text-muted-foreground mb-4 px-3 py-2 bg-muted/30 rounded-lg border border-border/50" data-testid="text-stock-filter-info">
-                        <span>
-                          Showing <span className="font-medium text-foreground">{filteredAndSortedProducts.length}</span> of {products.length} products
-                          <span className="text-muted-foreground/70"> · {outOfStockCount} out of stock hidden</span>
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-xs h-7 text-[#21d8ff] hover:text-[#21d8ff]"
-                          onClick={() => setStockFilter("all")}
-                          data-testid="button-show-all-products"
-                        >
-                          Show all
-                        </Button>
-                      </div>
-                    );
-                  } else if (stockFilter === "all") {
-                    return (
-                      <div className="flex items-center justify-between text-sm text-muted-foreground mb-4 px-3 py-2 bg-muted/30 rounded-lg border border-border/50" data-testid="text-stock-filter-info">
-                        <span>
-                          Showing all <span className="font-medium text-foreground">{filteredAndSortedProducts.length}</span> products
-                          <span className="text-muted-foreground/70"> · including {outOfStockCount} out of stock</span>
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-xs h-7 text-[#21d8ff] hover:text-[#21d8ff]"
-                          onClick={() => setStockFilter("in-stock")}
-                          data-testid="button-hide-oos-products"
-                        >
-                          Hide out of stock
-                        </Button>
-                      </div>
-                    );
-                  }
-                }
-                return null;
-              })()}
-
-              {/* Display Controls Bar - Show count, grid layout, sorting */}
-              <div className="flex flex-wrap items-center justify-between gap-4 mb-4 p-3 bg-muted/30 rounded-lg border border-border/50" data-testid="display-controls-bar">
-                {/* Left side: Show count */}
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground font-medium">Show:</span>
+              {/* Unified Display Controls Bar - Stock info, show count, grid layout, sorting */}
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-4 p-3 bg-muted/30 rounded-lg border border-border/50" data-testid="display-controls-bar">
+                {/* Left side: Stock info & Show count */}
+                <div className="flex flex-wrap items-center gap-3">
+                  {/* Stock filter info */}
+                  {!searchQuery && products && (() => {
+                    const outOfStockCount = products.filter(p => !p.inStock || (p.stockAmount !== null && p.stockAmount <= 0)).length;
+                    if (outOfStockCount > 0) {
+                      if (stockFilter === "in-stock") {
+                        return (
+                          <div className="flex items-center gap-2 text-sm pr-3 border-r border-border" data-testid="text-stock-filter-info">
+                            <span className="text-muted-foreground">
+                              <span className="font-medium text-foreground">{filteredAndSortedProducts.length}</span>/{products.length}
+                              <span className="text-muted-foreground/70 hidden sm:inline"> · {outOfStockCount} hidden</span>
+                            </span>
+                            <button
+                              className="text-xs text-[#21d8ff] hover:underline"
+                              onClick={() => setStockFilter("all")}
+                              data-testid="button-show-all-products"
+                            >
+                              Show all
+                            </button>
+                          </div>
+                        );
+                      } else if (stockFilter === "all") {
+                        return (
+                          <div className="flex items-center gap-2 text-sm pr-3 border-r border-border" data-testid="text-stock-filter-info">
+                            <span className="text-muted-foreground">
+                              All <span className="font-medium text-foreground">{filteredAndSortedProducts.length}</span>
+                              <span className="text-muted-foreground/70 hidden sm:inline"> · {outOfStockCount} OOS</span>
+                            </span>
+                            <button
+                              className="text-xs text-[#21d8ff] hover:underline"
+                              onClick={() => setStockFilter("in-stock")}
+                              data-testid="button-hide-oos-products"
+                            >
+                              Hide OOS
+                            </button>
+                          </div>
+                        );
+                      }
+                    }
+                    return null;
+                  })()}
+                  
+                  {/* Show count */}
                   <div className="flex items-center gap-1">
+                    <span className="text-sm text-muted-foreground">Show:</span>
                     {[9, 12, 18, 24].map((count) => (
                       <button
                         key={count}
@@ -855,7 +853,7 @@ function ProductsComponent() {
                   </div>
                   
                   {/* Grid layout toggles */}
-                  <div className="flex items-center gap-1 ml-4 border-l border-border pl-4">
+                  <div className="flex items-center gap-1 pl-3 border-l border-border">
                     <button
                       onClick={() => setGridColumns(2)}
                       className={`p-1.5 rounded transition-colors ${
