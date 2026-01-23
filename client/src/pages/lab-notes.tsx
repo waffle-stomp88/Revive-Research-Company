@@ -57,7 +57,7 @@ const labNotes = [
     icon: Shield,
     color: "#22c55e",
     date: "2024-10-20",
-    content: "Each peptide batch is handled in dedicated equipment or thoroughly cleaned between runs. We use separate weighing stations, dedicated reconstitution areas, and strict protocols to ensure no batch carries traces of another compound. This is critical for research integrity.",
+    content: "Each compound is handled in dedicated ISO-standard synthesis facilities with strict protocols to ensure no batch carries traces of another compound. As a distributor, we only partner with facilities that maintain these rigorous cross-contamination safeguards to protect research integrity.",
     category: "Process",
   },
   {
@@ -113,11 +113,11 @@ export default function LabNotes() {
             Technical Insights
           </Badge>
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-4" data-testid="text-lab-notes-title">
-            Lab Notes
+            Research Archive
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Short, technical insights about peptide production, testing, and quality. 
-            Understanding the science behind your research compounds.
+            Technical insights regarding peptide synthesis standards, third-party verification, and research protocols. 
+            Understanding the specifications of your research compounds.
           </p>
         </motion.div>
 
@@ -131,11 +131,13 @@ export default function LabNotes() {
             <div className="flex items-start gap-4">
               <Beaker className="h-8 w-8 text-[#9d4edd] flex-shrink-0" />
               <div>
-                <h2 className="font-display text-xl font-bold mb-2">What Are Lab Notes?</h2>
+                <h2 className="font-display text-xl font-bold mb-2">What Is The Research Archive?</h2>
                 <p className="text-muted-foreground">
-                  These are concise technical explanations of the processes, testing, and 
-                  science behind peptide research compounds. Written for researchers who 
-                  want to understand what they're working with.
+                  This archive provides technical explanations regarding the industry-standard synthesis protocols, 
+                  third-party verification methods, and storage science for research peptides. Revive Research is a 
+                  specialized distributor of premium compounds; we do not manufacture these products in-house. 
+                  All production is handled by world-class synthesis facilities and verified by independent, 
+                  third-party laboratories.
                 </p>
               </div>
             </div>

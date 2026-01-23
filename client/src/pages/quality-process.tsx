@@ -54,11 +54,12 @@ export default function QualityProcess() {
                 <Shield className="h-6 w-6 text-[#21d8ff]" />
               </div>
               <div>
-                <h2 className="font-display text-xl font-bold mb-2">Why We Show This</h2>
+                <h2 className="font-display text-xl font-bold mb-2">Our Role in Quality</h2>
                 <p className="text-muted-foreground">
-                  Most vendors hide their process. We believe transparency builds trust. 
-                  When you understand how your research compounds are made and tested, 
-                  you can make informed decisions about your research.
+                  Revive Research is a premium distributor. While we do not manufacture peptides ourselves, 
+                  we oversee a rigorous multi-stage quality protocol that ensures only the highest grade 
+                  compounds from top-tier synthesis facilities reach your laboratory. Every batch is 
+                  independently verified to ensure research integrity.
                 </p>
               </div>
             </div>
