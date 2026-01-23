@@ -22,7 +22,7 @@ const footerLinks = {
   ],
   resources: [
     { label: "Quality Process", href: "/quality-process" },
-    { label: "Lab Notes", href: "/lab-notes" },
+    { label: "Research Archive", href: "/lab-notes" },
     { label: "COA Library", href: "/coa-library" },
     { label: "Batch Archive", href: "/batch-archive" },
   ],
