@@ -32,6 +32,7 @@ import {
   Wrench,
   BookOpen,
   ArrowRight,
+  Truck,
 } from "lucide-react";
 
 const contactFormSchema = z.object({
