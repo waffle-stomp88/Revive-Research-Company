@@ -94,19 +94,26 @@ export default function TermsOfService() {
               </section>
 
               <section>
-                <h2 className="font-display text-2xl font-bold mb-4">4. No Refund Policy</h2>
+                <h2 className="font-display text-2xl font-bold mb-4">4. Return and Refund Policy</h2>
                 <p className="text-muted-foreground leading-relaxed mb-4">
                   Due to the sensitive nature of our products and strict quality control requirements:
                 </p>
                 <div className="bg-muted/50 p-4 rounded-lg border-l-4 border-destructive">
                   <p className="text-foreground font-semibold">
-                    ALL SALES ARE FINAL. NO REFUNDS OR RETURNS ARE ACCEPTED.
+                    ALL SALES ARE GENERALLY FINAL.
                   </p>
                 </div>
                 <p className="text-muted-foreground leading-relaxed mt-4">
                   This policy exists to maintain the integrity of our research compounds. Once a 
                   product leaves our facility, we cannot guarantee that it has been stored properly 
-                  and therefore cannot accept it back into our inventory.
+                  and therefore cannot accept it back into our inventory for resale.
+                </p>
+                <p className="text-muted-foreground leading-relaxed mt-2">
+                  <strong>Exceptions for Errors:</strong> In the rare event that Revive Research 
+                  fulfills an order incorrectly (e.g., incorrect item, damaged product, or missing 
+                  items), we will provide a replacement or refund. You must contact us at 
+                  support@reviveresearch.co within 48 hours of delivery with photographic evidence 
+                  to initiate a review.
                 </p>
               </section>
 

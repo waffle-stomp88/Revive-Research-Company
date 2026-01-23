@@ -62,11 +62,11 @@ const FAQ_CATEGORIES = [
     questions: [
       {
         question: "Do you accept returns?",
-        answer: "Due to the sensitive nature of research compounds and strict quality control protocols, we cannot accept returns on any products. Once a product leaves our facility, we cannot guarantee its integrity for reuse in research applications. All sales are final."
+        answer: "Due to the sensitive nature of research compounds and strict quality control protocols, we generally cannot accept returns on products. However, if we've made an error with your order (e.g., sent the wrong item or a damaged product), we will rectify the situation immediately. Please contact us within 48 hours of delivery to initiate a case-by-case review."
       },
       {
         question: "Do you issue refunds?",
-        answer: "NO REFUNDS are issued due to the nature of our products. This policy exists to maintain the integrity of our research compounds and protect all researchers. Refunds are only considered on a case-by-case basis for shipping errors on our part. If you believe there was an error with your order, provide your order number and detailed issue description including photos to our customer service team."
+        answer: "While all sales are generally final to maintain the integrity of our research compounds, we do issue refunds or replacements in the rare event of a shipping or fulfillment error on our part. If you believe your order qualifies, please provide your order number and detailed photos to our support team for a priority review."
       },
       {
         question: "What if my product arrived defective?",
