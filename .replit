@@ -47,3 +47,7 @@ integrations = ["javascript_mem_db:1.0.0", "javascript_database:1.0.0", "javascr
 VITE_GA_MEASUREMENT_ID = "G-NETP832ZVN"
 VITE_AUTH0_DOMAIN = "dev-5xq04wwsd1n7xn2n.us.auth0.com"
 VITE_AUTH0_CLIENT_ID = "yOXwbImbiTsHffDetLDjqo38XhCKXtzU"
+SES_SMTP_HOST = "email-smtp.us-east-1.amazonaws.com"
+SES_SMTP_PORT = "587"
+SES_FROM_EMAIL = "orders@reviveresearch.co"
+ADMIN_EMAIL = "admin@reviveresearch.co"

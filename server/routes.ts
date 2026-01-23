@@ -7,7 +7,8 @@ import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaS
 import { setupAuth, isAuthenticated } from "./auth0Auth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
-import { sendEmail, sendOrderConfirmationEmail } from "./email";
+import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, isEmailConfigured } from "./email";
+import { sendOrderNotifications, getNotificationStatus } from "./notifications";
 import OpenAI from "openai";
 import { z } from "zod";
 
@@ -347,18 +348,24 @@ export async function registerRoutes(
     }
   });
 
-  // Helper function to mark order as paid and send confirmation email (idempotent)
-  async function markOrderPaidAndNotify(orderId: string): Promise<{ success: boolean; order?: any; error?: string; emailSent?: boolean; alreadyPaid?: boolean }> {
+  // Helper function to mark order as paid and send notifications (email + SMS)
+  async function markOrderPaidAndNotify(orderId: string): Promise<{ 
+    success: boolean; 
+    order?: any; 
+    error?: string; 
+    notifications?: any;
+    alreadyPaid?: boolean 
+  }> {
     try {
       const order = await storage.getOrder(orderId);
       if (!order) {
         return { success: false, error: "Order not found" };
       }
       
-      // Idempotent: if already paid, return success but skip email
+      // Idempotent: if already paid, return success but skip notifications
       if (order.status === 'paid') {
-        console.log(`[Order ${orderId}] Already paid - skipping email (idempotent)`);
-        return { success: true, order, alreadyPaid: true, emailSent: false };
+        console.log(`[Order ${orderId}] Already paid - skipping notifications (idempotent)`);
+        return { success: true, order, alreadyPaid: true, notifications: null };
       }
       
       // Update order status to paid
@@ -369,25 +376,35 @@ export async function registerRoutes(
       
       console.log(`[Order ${orderId}] Marked as paid`);
       
-      // Send confirmation email (only on first successful payment)
-      let emailSent = false;
+      // Send all notifications (email + SMS for customer and admin)
+      let notificationResults = null;
       try {
         const product = await storage.getProduct(updatedOrder.productId);
         const productName = product?.name || updatedOrder.productId;
         
-        const emailResult = await sendOrderConfirmationEmail(updatedOrder, productName);
+        notificationResults = await sendOrderNotifications({
+          orderId: updatedOrder.id,
+          email: updatedOrder.email,
+          phone: (updatedOrder as any).phone || undefined,
+          firstName: updatedOrder.firstName,
+          lastName: updatedOrder.lastName,
+          productId: updatedOrder.productId,
+          productName,
+          quantity: updatedOrder.quantity,
+          totalAmount: updatedOrder.totalAmount,
+          address: updatedOrder.address || undefined,
+          city: updatedOrder.city || undefined,
+          state: updatedOrder.state || undefined,
+          zipCode: updatedOrder.zipCode || undefined,
+          country: updatedOrder.country || undefined,
+        });
         
-        if (emailResult.success) {
-          console.log(`[Order ${orderId}] Confirmation email sent to ${updatedOrder.email}`);
-          emailSent = true;
-        } else {
-          console.error(`[Order ${orderId}] Failed to send confirmation email: ${emailResult.error}`);
-        }
-      } catch (emailError) {
-        console.error(`[Order ${orderId}] Email error:`, emailError);
+        console.log(`[Order ${orderId}] Notification results:`, JSON.stringify(notificationResults));
+      } catch (notificationError) {
+        console.error(`[Order ${orderId}] Notification error:`, notificationError);
       }
       
-      return { success: true, order: updatedOrder, emailSent, alreadyPaid: false };
+      return { success: true, order: updatedOrder, notifications: notificationResults, alreadyPaid: false };
     } catch (error: any) {
       console.error(`[Order ${orderId}] Error marking as paid:`, error);
       return { success: false, error: error.message || "Unknown error" };
@@ -1160,12 +1177,35 @@ export async function registerRoutes(
         }
       }
 
-      // Note: Email is now sent via /api/payments/webhook or /api/admin/orders/:id/mark-paid
-      // for processor-agnostic order flow. Stripe checkout creates orders with 'paid' status
-      // directly, so email is handled by the centralized markOrderPaidAndNotify function
-      // when called from the payment webhook.
+      // Send notifications for Stripe checkout orders (created directly as 'paid')
+      let notificationResults = null;
+      try {
+        const product = await storage.getProduct(order.productId);
+        const productName = product?.name || order.productId;
+        
+        notificationResults = await sendOrderNotifications({
+          orderId: order.id,
+          email: order.email,
+          phone: customerDetails?.phone || undefined,
+          firstName: order.firstName,
+          lastName: order.lastName,
+          productId: order.productId,
+          productName,
+          quantity: order.quantity,
+          totalAmount: order.totalAmount,
+          address: order.address || undefined,
+          city: order.city || undefined,
+          state: order.state || undefined,
+          zipCode: order.zipCode || undefined,
+          country: order.country || undefined,
+        });
+        
+        console.log(`[Order ${order.id}] Stripe checkout notifications:`, JSON.stringify(notificationResults));
+      } catch (notificationError) {
+        console.error(`[Order ${order.id}] Notification error:`, notificationError);
+      }
 
-      res.json({ order, alreadyProcessed: false });
+      res.json({ order, alreadyProcessed: false, notifications: notificationResults });
     } catch (error) {
       console.error("Error verifying checkout session:", error);
       res.status(500).json({ error: "Failed to verify checkout session" });
@@ -1189,6 +1229,29 @@ export async function registerRoutes(
     req.user = { claims: { sub: userId } };
     next();
   };
+
+  // Admin: Get notification system status
+  app.get("/api/admin/notifications/status", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const status = getNotificationStatus();
+      res.json({
+        email: {
+          configured: status.email,
+          provider: 'Amazon SES',
+          fromAddress: process.env.SES_FROM_EMAIL || 'Not configured',
+          adminEmail: process.env.ADMIN_EMAIL || 'Not configured',
+        },
+        sms: {
+          configured: status.sms,
+          provider: 'Amazon SNS',
+          adminPhone: process.env.ADMIN_PHONE ? 'Configured' : 'Not configured',
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching notification status:", error);
+      res.status(500).json({ error: "Failed to fetch notification status" });
+    }
+  });
 
   // Admin: Get dashboard metrics
   app.get("/api/admin/dashboard", isAuthenticated, isAdmin, async (req, res) => {

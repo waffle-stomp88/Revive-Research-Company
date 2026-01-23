@@ -274,3 +274,173 @@ export async function sendOrderConfirmationEmail(order: {
 
   return result;
 }
+
+// Email template: Admin Order Notification
+function getAdminOrderNotificationTemplate(order: {
+  email: string;
+  firstName: string;
+  lastName: string;
+  productId: string;
+  quantity: number;
+  totalAmount: string;
+  id: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
+  phone?: string;
+}, productName?: string): { subject: string; text: string; html: string } {
+  const shortRef = getShortOrderRef(order.id);
+  const { brand } = EMAIL_CONFIG;
+  
+  const subject = `🚨 NEW ORDER #${shortRef} — $${order.totalAmount}`;
+  
+  const text = `
+NEW ORDER RECEIVED
+==================
+
+Order Number: #${shortRef}
+Customer: ${order.firstName} ${order.lastName}
+Email: ${order.email}
+Phone: ${order.phone || 'Not provided'}
+
+PRODUCT
+-------
+${productName || order.productId}
+Quantity: ${order.quantity}
+Total: $${order.totalAmount}
+
+SHIPPING ADDRESS
+----------------
+${order.firstName} ${order.lastName}
+${order.address || ''}
+${order.city || ''}, ${order.state || ''} ${order.zipCode || ''}
+${order.country || ''}
+
+Time: ${new Date().toISOString()}
+`;
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: ${brand.backgroundColor}; color: #ffffff; margin: 0; padding: 20px;">
+  <div style="max-width: 600px; margin: 0 auto; background-color: ${brand.cardColor}; border-radius: 8px; overflow: hidden;">
+    <div style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); padding: 20px; text-align: center;">
+      <h1 style="color: #ffffff; margin: 0; font-size: 24px;">🚨 NEW ORDER</h1>
+      <p style="color: rgba(255,255,255,0.9); margin: 5px 0 0 0; font-size: 32px; font-weight: bold;">#${shortRef}</p>
+    </div>
+    
+    <div style="padding: 25px;">
+      <div style="background-color: ${brand.backgroundColor}; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+        <h3 style="color: ${brand.accentColor}; margin: 0 0 15px 0; font-size: 14px; text-transform: uppercase;">Customer Details</h3>
+        <table style="width: 100%; color: #ffffff;">
+          <tr>
+            <td style="padding: 6px 0; color: #888;">Name:</td>
+            <td style="padding: 6px 0; text-align: right; font-weight: bold;">${order.firstName} ${order.lastName}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #888;">Email:</td>
+            <td style="padding: 6px 0; text-align: right;"><a href="mailto:${order.email}" style="color: ${brand.accentColor};">${order.email}</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #888;">Phone:</td>
+            <td style="padding: 6px 0; text-align: right;">${order.phone || 'Not provided'}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="background-color: ${brand.backgroundColor}; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+        <h3 style="color: ${brand.accentColor}; margin: 0 0 15px 0; font-size: 14px; text-transform: uppercase;">Order Details</h3>
+        <table style="width: 100%; color: #ffffff;">
+          <tr>
+            <td style="padding: 6px 0; color: #888;">Product:</td>
+            <td style="padding: 6px 0; text-align: right;">${productName || order.productId}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #888;">Quantity:</td>
+            <td style="padding: 6px 0; text-align: right;">${order.quantity}</td>
+          </tr>
+          <tr style="border-top: 1px solid #333;">
+            <td style="padding: 12px 0; font-weight: bold;">TOTAL:</td>
+            <td style="padding: 12px 0; text-align: right; font-weight: bold; color: #22c55e; font-size: 24px;">$${order.totalAmount}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="background-color: ${brand.backgroundColor}; border-radius: 8px; padding: 20px;">
+        <h3 style="color: ${brand.accentColor}; margin: 0 0 15px 0; font-size: 14px; text-transform: uppercase;">Shipping Address</h3>
+        <p style="margin: 0; line-height: 1.6; color: #cccccc;">
+          ${order.firstName} ${order.lastName}<br>
+          ${order.address || ''}<br>
+          ${order.city || ''}, ${order.state || ''} ${order.zipCode || ''}<br>
+          ${order.country || ''}
+        </p>
+      </div>
+    </div>
+    
+    <div style="background-color: ${brand.backgroundColor}; padding: 15px; text-align: center; border-top: 1px solid #333;">
+      <p style="margin: 0; color: #666; font-size: 11px;">
+        Order received at ${new Date().toLocaleString()}
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+  return { subject, text, html };
+}
+
+export async function sendAdminOrderNotificationEmail(order: {
+  email: string;
+  firstName: string;
+  lastName: string;
+  productId: string;
+  quantity: number;
+  totalAmount: string;
+  id: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
+  phone?: string;
+}, productName?: string): Promise<EmailResult> {
+  const adminEmail = process.env.ADMIN_EMAIL;
+  
+  if (!adminEmail) {
+    console.warn('[Email] ADMIN_EMAIL not configured, skipping admin notification');
+    return { success: false, error: 'ADMIN_EMAIL not configured' };
+  }
+
+  const template = getAdminOrderNotificationTemplate(order, productName);
+  
+  const result = await sendEmail({
+    to: adminEmail,
+    subject: template.subject,
+    text: template.text,
+    html: template.html,
+  });
+
+  if (result.success) {
+    console.log(`[Email] Admin notification sent for order ${order.id}`);
+  } else {
+    console.error(`[Email] Failed to send admin notification for order ${order.id}:`, result.error);
+  }
+
+  return result;
+}
+
+export function isEmailConfigured(): boolean {
+  return !!(
+    process.env.SES_SMTP_HOST && 
+    process.env.SES_SMTP_USERNAME && 
+    process.env.SES_SMTP_PASSWORD && 
+    process.env.SES_FROM_EMAIL
+  );
+}
