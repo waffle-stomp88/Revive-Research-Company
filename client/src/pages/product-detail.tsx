@@ -1175,25 +1175,11 @@ export default function ProductDetail() {
             className="mt-12"
             data-testid="section-batches"
           >
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <FileCheck className="h-6 w-6 text-[#9d4edd]" />
                 <h2 className="font-display text-2xl font-bold">Recent Batches & COAs</h2>
               </div>
-              
-              {/* Lab Verification Trust Marker - Positioned near Batches */}
-              <Card className="p-3 bg-emerald-950/20 border-emerald-500/30 md:max-w-xs">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-full bg-emerald-500/10">
-                    <Shield className="h-4 w-4 text-emerald-400" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider leading-none mb-1">3rd Party Verified</h4>
-                    <p className="text-[10px] text-muted-foreground leading-tight">Purity and identity confirmed by independent laboratory analysis.</p>
-                  </div>
-                </div>
-              </Card>
-
               <Link href="/coa-library">
                 <Button variant="outline" size="sm" className="border-[#9d4edd]/30 hover:border-[#9d4edd]" data-testid="link-view-all-coas">
                   View All COAs
