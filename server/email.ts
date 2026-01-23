@@ -294,7 +294,7 @@ function getAdminOrderNotificationTemplate(order: {
   const shortRef = getShortOrderRef(order.id);
   const { brand } = EMAIL_CONFIG;
   
-  const subject = `🚨 NEW ORDER #${shortRef} — $${order.totalAmount}`;
+  const subject = `[NEW ORDER] #${shortRef} — $${order.totalAmount}`;
   
   const text = `
 NEW ORDER RECEIVED
@@ -331,7 +331,7 @@ Time: ${new Date().toISOString()}
 <body style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: ${brand.backgroundColor}; color: #ffffff; margin: 0; padding: 20px;">
   <div style="max-width: 600px; margin: 0 auto; background-color: ${brand.cardColor}; border-radius: 8px; overflow: hidden;">
     <div style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); padding: 20px; text-align: center;">
-      <h1 style="color: #ffffff; margin: 0; font-size: 24px;">🚨 NEW ORDER</h1>
+      <h1 style="color: #ffffff; margin: 0; font-size: 24px;">NEW ORDER</h1>
       <p style="color: rgba(255,255,255,0.9); margin: 5px 0 0 0; font-size: 32px; font-weight: bold;">#${shortRef}</p>
     </div>
     

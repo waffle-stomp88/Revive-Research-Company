@@ -1,6 +1,5 @@
 import { sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, isEmailConfigured } from './email';
 import { sendOrderConfirmationSMS, sendAdminOrderAlertSMS, sendShippingUpdateSMS, isSMSConfigured } from './sms';
-import { storage } from './storage';
 
 interface OrderNotificationData {
   orderId: string;
@@ -75,7 +74,10 @@ export async function sendOrderNotifications(data: OrderNotificationData): Promi
         })
     );
   } else {
-    console.log('[Notifications] Email not configured, skipping email notifications');
+    const reason = 'Email service not configured (missing SES credentials)';
+    console.log(`[Notifications] ${reason}`);
+    results.customerEmail = { sent: false, error: reason };
+    results.adminEmail = { sent: false, error: reason };
   }
 
   if (isSMSConfigured()) {
@@ -89,6 +91,8 @@ export async function sendOrderNotifications(data: OrderNotificationData): Promi
             results.customerSMS = { sent: false, error: error.message };
           })
       );
+    } else {
+      results.customerSMS = { sent: false, error: 'Customer phone number not provided' };
     }
 
     const adminPhone = process.env.ADMIN_PHONE;
@@ -102,9 +106,14 @@ export async function sendOrderNotifications(data: OrderNotificationData): Promi
             results.adminSMS = { sent: false, error: error.message };
           })
       );
+    } else {
+      results.adminSMS = { sent: false, error: 'ADMIN_PHONE not configured' };
     }
   } else {
-    console.log('[Notifications] SMS not configured, skipping SMS notifications');
+    const reason = 'SMS service not configured (missing AWS credentials)';
+    console.log(`[Notifications] ${reason}`);
+    results.customerSMS = { sent: false, error: reason };
+    results.adminSMS = { sent: false, error: reason };
   }
 
   await Promise.allSettled(promises);

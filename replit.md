@@ -17,6 +17,7 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **Data Layer**: PostgreSQL database (via Neon serverless driver) with Drizzle ORM for type-safe queries. The schema includes tables for users, products, COAs, orders, contacts, affiliates, and affiliate applications/sales/payouts, and `price_history`.
 - **Object Storage**: Replit Object Storage (Google Cloud Storage) for file uploads using presigned URLs.
 - **Payment Integration**: Stripe Checkout for secure payment processing, including hosted sessions and webhook handling.
+- **Notification System**: Unified email and SMS notifications via Amazon SES (SMTP) and Amazon SNS. Order confirmations sent to customers; admin alerts sent to configured admin email/phone. Files: `server/email.ts`, `server/sms.ts`, `server/notifications.ts`. Required env vars: `SES_SMTP_HOST`, `SES_SMTP_USERNAME`, `SES_SMTP_PASSWORD`, `SES_FROM_EMAIL`, `ADMIN_EMAIL`, optionally `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `ADMIN_PHONE` for SMS.
 
 ### Feature Specifications
 - **Product Navigation**: Tiered navigation with sections for Peptides, Bulk Packs, Supplies (coming soon), and Wholesale Program.
