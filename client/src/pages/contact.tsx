@@ -118,18 +118,19 @@ export default function Contact() {
           animate="visible"
         >
             <motion.div variants={itemVariants} className="text-center mb-12 relative">
-              <div className="absolute inset-0 -top-20 -z-10 bg-gradient-to-b from-[#9d4edd]/5 via-transparent to-transparent blur-3xl rounded-full h-80 w-80 mx-auto opacity-50" />
-              <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-gradient-to-br from-[#9d4edd]/20 to-[#21d8ff]/10 mb-6 border border-[#9d4edd]/20 relative">
-                <div className="absolute inset-0 rounded-full bg-[#9d4edd]/10 animate-ping opacity-20" />
-                <Mail className="h-10 w-10 text-[#9d4edd]" />
+              <div className="absolute inset-0 -top-24 -z-10 bg-gradient-to-b from-[#9d4edd]/20 via-[#21d8ff]/5 to-transparent blur-[80px] rounded-full h-[400px] w-[400px] mx-auto opacity-70" />
+              <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-gradient-to-br from-[#9d4edd]/30 to-[#21d8ff]/20 mb-6 border border-[#9d4edd]/40 relative shadow-[0_0_20px_rgba(157,78,221,0.2)]">
+                <div className="absolute inset-0 rounded-full bg-[#9d4edd]/30 animate-ping opacity-40" />
+                <div className="absolute inset-[-4px] rounded-full bg-gradient-to-br from-[#9d4edd]/20 to-[#21d8ff]/10 blur-sm" />
+                <Mail className="h-10 w-10 text-[#9d4edd] relative z-10" />
               </div>
               <h1 className="font-display text-4xl md:text-5xl font-bold mb-4 tracking-tight" data-testid="text-contact-title">
                 Get In Touch
               </h1>
-              <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
-                Expert research support for those who don't wait for permission. 
-                Our team typically responds within <span className="text-[#21d8ff] font-medium">{responseTime}</span>.
-              </p>
+              <div className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
+                <p>Expert research support for those who don't wait for permission.</p>
+                <p>Our team typically responds within <span className="text-[#21d8ff] font-medium">{responseTime}</span>.</p>
+              </div>
             </motion.div>
 
           {/* Self-Service Resources - Before You Reach Out */}
