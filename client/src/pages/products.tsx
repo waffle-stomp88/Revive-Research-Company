@@ -788,77 +788,64 @@ function ProductsComponent() {
                   Showing {filteredAndSortedProducts.length} result{filteredAndSortedProducts.length !== 1 ? "s" : ""} for "{searchQuery}"
                 </p>
               )}
-              {/* Unified Display Controls Bar - Stock info, show count, grid layout, sorting */}
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-4 p-3 bg-muted/30 rounded-lg border border-border/50" data-testid="display-controls-bar">
-                {/* Left side: Stock info & Show count */}
-                <div className="flex flex-wrap items-center gap-3">
-                  {/* Stock filter info */}
+              {/* Display Controls Bar */}
+              <div className="flex items-center justify-between gap-4 mb-4" data-testid="display-controls-bar">
+                {/* Left: Product count with stock toggle */}
+                <div className="flex items-center gap-2 text-sm" data-testid="text-stock-filter-info">
                   {!searchQuery && products && (() => {
                     const outOfStockCount = products.filter(p => !p.inStock || (p.stockAmount !== null && p.stockAmount <= 0)).length;
                     if (outOfStockCount > 0) {
                       if (stockFilter === "in-stock") {
                         return (
-                          <div className="flex items-center gap-2 text-sm pr-3 border-r border-border" data-testid="text-stock-filter-info">
+                          <>
                             <span className="text-muted-foreground">
-                              <span className="font-medium text-foreground">{filteredAndSortedProducts.length}</span>/{products.length}
-                              <span className="text-muted-foreground/70 hidden sm:inline"> · {outOfStockCount} hidden</span>
+                              Showing <span className="text-foreground font-medium">{filteredAndSortedProducts.length}</span> of {products.length}
                             </span>
+                            <span className="text-muted-foreground/50">|</span>
                             <button
-                              className="text-xs text-[#21d8ff] hover:underline"
+                              className="text-[#21d8ff] hover:underline text-xs"
                               onClick={() => setStockFilter("all")}
                               data-testid="button-show-all-products"
                             >
-                              Show all
+                              +{outOfStockCount} more
                             </button>
-                          </div>
+                          </>
                         );
-                      } else if (stockFilter === "all") {
+                      } else {
                         return (
-                          <div className="flex items-center gap-2 text-sm pr-3 border-r border-border" data-testid="text-stock-filter-info">
+                          <>
                             <span className="text-muted-foreground">
-                              All <span className="font-medium text-foreground">{filteredAndSortedProducts.length}</span>
-                              <span className="text-muted-foreground/70 hidden sm:inline"> · {outOfStockCount} OOS</span>
+                              Showing all <span className="text-foreground font-medium">{filteredAndSortedProducts.length}</span>
                             </span>
+                            <span className="text-muted-foreground/50">|</span>
                             <button
-                              className="text-xs text-[#21d8ff] hover:underline"
+                              className="text-[#21d8ff] hover:underline text-xs"
                               onClick={() => setStockFilter("in-stock")}
                               data-testid="button-hide-oos-products"
                             >
-                              Hide OOS
+                              In stock only
                             </button>
-                          </div>
+                          </>
                         );
                       }
                     }
-                    return null;
+                    return (
+                      <span className="text-muted-foreground">
+                        Showing <span className="text-foreground font-medium">{filteredAndSortedProducts.length}</span> products
+                      </span>
+                    );
                   })()}
-                  
-                  {/* Show count */}
-                  <div className="flex items-center gap-1">
-                    <span className="text-sm text-muted-foreground">Show:</span>
-                    {[9, 12, 18, 24].map((count) => (
-                      <button
-                        key={count}
-                        onClick={() => setItemsPerPage(count)}
-                        className={`px-2 py-1 text-sm rounded transition-colors ${
-                          itemsPerPage === count
-                            ? "text-[#21d8ff] font-semibold"
-                            : "text-muted-foreground hover:text-foreground"
-                        }`}
-                        data-testid={`button-show-${count}`}
-                      >
-                        {count}
-                      </button>
-                    ))}
-                  </div>
-                  
+                </div>
+
+                {/* Right: View controls */}
+                <div className="flex items-center gap-2">
                   {/* Grid layout toggles */}
-                  <div className="flex items-center gap-1 pl-3 border-l border-border">
+                  <div className="hidden sm:flex items-center bg-muted/50 rounded-md p-0.5">
                     <button
                       onClick={() => setGridColumns(2)}
                       className={`p-1.5 rounded transition-colors ${
                         gridColumns === 2
-                          ? "text-[#21d8ff] bg-[#21d8ff]/10"
+                          ? "bg-background text-[#21d8ff] shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
                       }`}
                       title="2 columns"
@@ -870,7 +857,7 @@ function ProductsComponent() {
                       onClick={() => setGridColumns(3)}
                       className={`p-1.5 rounded transition-colors ${
                         gridColumns === 3
-                          ? "text-[#21d8ff] bg-[#21d8ff]/10"
+                          ? "bg-background text-[#21d8ff] shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
                       }`}
                       title="3 columns"
@@ -882,7 +869,7 @@ function ProductsComponent() {
                       onClick={() => setGridColumns(4)}
                       className={`p-1.5 rounded transition-colors ${
                         gridColumns === 4
-                          ? "text-[#21d8ff] bg-[#21d8ff]/10"
+                          ? "bg-background text-[#21d8ff] shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
                       }`}
                       title="4 columns"
@@ -891,21 +878,34 @@ function ProductsComponent() {
                       <LayoutGrid className="h-4 w-4" />
                     </button>
                   </div>
-                </div>
 
-                {/* Right side: Sorting dropdown */}
-                <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
-                  <SelectTrigger className="w-[160px] h-8 text-sm" data-testid="select-sort">
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="featured">Default sorting</SelectItem>
-                    <SelectItem value="name-asc">Name (A-Z)</SelectItem>
-                    <SelectItem value="name-desc">Name (Z-A)</SelectItem>
-                    <SelectItem value="price-asc">Price: Low to High</SelectItem>
-                    <SelectItem value="price-desc">Price: High to Low</SelectItem>
-                  </SelectContent>
-                </Select>
+                  {/* Items per page dropdown */}
+                  <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(Number(value))}>
+                    <SelectTrigger className="w-[70px] h-8 text-sm" data-testid="select-items-per-page">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="9">9</SelectItem>
+                      <SelectItem value="12">12</SelectItem>
+                      <SelectItem value="18">18</SelectItem>
+                      <SelectItem value="24">24</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  {/* Sorting dropdown */}
+                  <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
+                    <SelectTrigger className="w-[140px] h-8 text-sm" data-testid="select-sort">
+                      <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="featured">Default</SelectItem>
+                      <SelectItem value="name-asc">A-Z</SelectItem>
+                      <SelectItem value="name-desc">Z-A</SelectItem>
+                      <SelectItem value="price-asc">Price: Low</SelectItem>
+                      <SelectItem value="price-desc">Price: High</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               {isLoading ? (
