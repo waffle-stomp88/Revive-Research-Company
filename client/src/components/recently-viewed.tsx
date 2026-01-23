@@ -80,25 +80,25 @@ export function RecentlyViewed({ currentProductId, variant = "sidebar" }: Recent
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {recentProducts.map((product) => (
             <Link key={product.id} href={`/peptides/${product.id}`}>
               <Card 
-                className="group p-2 cursor-pointer border-[#2a2a32] hover:border-[#21d8ff]/50 transition-all duration-300 hover:shadow-[0_0_15px_rgba(33,216,255,0.15)] flex items-center gap-3 bg-[#1a1a24]/50"
+                className="group p-3 cursor-pointer border-[#2a2a32] hover:border-[#21d8ff]/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(33,216,255,0.2)] flex items-center gap-4 bg-[#1a1a24]/50"
                 data-testid={`card-recent-${product.id}`}
               >
-                <div className="w-10 h-10 bg-gradient-to-br from-muted to-muted/50 rounded flex-shrink-0 overflow-hidden">
+                <div className="w-16 h-16 bg-gradient-to-br from-muted to-muted/50 rounded-md flex-shrink-0 overflow-hidden">
                   <img 
                     src={product.imageUrl || productImage} 
                     alt={`${product.name} research peptide`}
-                    className="w-full h-full object-contain p-1 group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="font-medium text-[12px] truncate group-hover:text-[#E7FB10] transition-colors leading-tight">
+                  <p className="font-display text-lg font-bold truncate group-hover:text-[#E7FB10] transition-colors leading-tight">
                     {product.name}
                   </p>
-                  <p className="text-[10px] text-[#E7FB10] font-semibold">
+                  <p className="text-sm text-[#E7FB10] font-bold mt-1">
                     ${Number(product.price).toFixed(2)}
                   </p>
                 </div>
