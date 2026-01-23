@@ -117,18 +117,20 @@ export default function Contact() {
           initial="hidden"
           animate="visible"
         >
-          <motion.div variants={itemVariants} className="text-center mb-12">
-            <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-[#9d4edd]/20 mb-6">
-              <Mail className="h-8 w-8 text-[#9d4edd]" />
-            </div>
-            <h1 className="font-display text-3xl md:text-4xl font-bold mb-4" data-testid="text-contact-title">
-              Contact Us
-            </h1>
-            <p className="text-muted-foreground max-w-xl mx-auto">
-              Have questions about our research compounds? Need help with an order? 
-              We're here to help. Send us a message and we'll respond as soon as possible.
-            </p>
-          </motion.div>
+            <motion.div variants={itemVariants} className="text-center mb-12 relative">
+              <div className="absolute inset-0 -top-20 -z-10 bg-gradient-to-b from-[#9d4edd]/5 via-transparent to-transparent blur-3xl rounded-full h-80 w-80 mx-auto opacity-50" />
+              <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-gradient-to-br from-[#9d4edd]/20 to-[#21d8ff]/10 mb-6 border border-[#9d4edd]/20 relative">
+                <div className="absolute inset-0 rounded-full bg-[#9d4edd]/10 animate-ping opacity-20" />
+                <Mail className="h-10 w-10 text-[#9d4edd]" />
+              </div>
+              <h1 className="font-display text-4xl md:text-5xl font-bold mb-4 tracking-tight" data-testid="text-contact-title">
+                Get In Touch
+              </h1>
+              <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
+                Expert research support for those who don't wait for permission. 
+                Our team typically responds within <span className="text-[#21d8ff] font-medium">{responseTime}</span>.
+              </p>
+            </motion.div>
 
           {/* Self-Service Resources - Before You Reach Out */}
           <motion.div variants={itemVariants} className="mb-10">
