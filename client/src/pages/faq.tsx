@@ -62,7 +62,31 @@ const FAQ_CATEGORIES = [
     questions: [
       {
         question: "Do you accept returns?",
-        answer: "Due to the sensitive nature of research compounds and strict quality control protocols, we generally cannot accept returns on products. However, if we've made an error with your order (e.g., sent the wrong item or a damaged product), we will rectify the situation immediately. Please contact us within 48 hours of delivery to initiate a case-by-case review."
+        answer: (
+          <div className="space-y-4">
+            <p>Due to the sensitive nature of research compounds and strict quality control protocols, we generally cannot accept returns on products. However, we fully guarantee our accuracy.</p>
+            <div className="p-4 rounded-lg bg-card border border-border">
+              <p className="text-sm font-semibold mb-3 flex items-center gap-2 text-foreground">
+                <RefreshCcw className="h-4 w-4 text-[#21d8ff]" />
+                Error Resolution Process:
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                <div className="space-y-1">
+                  <p className="font-bold text-[#21d8ff]">1. Contact</p>
+                  <p>Email support within 48 hours of delivery.</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="font-bold text-[#E7FB10]">2. Document</p>
+                  <p>Provide order # and clear photos of the issue.</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="font-bold text-[#9d4edd]">3. Resolve</p>
+                  <p>We'll ship a replacement or issue a refund immediately.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
       },
       {
         question: "Do you issue refunds?",
@@ -204,16 +228,16 @@ export default function FAQ() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-          <Card className="p-6 mb-8 border-destructive/50 bg-destructive/5">
-            <div className="flex items-start gap-4">
-              <AlertTriangle className="h-6 w-6 text-destructive flex-shrink-0 mt-0.5" />
+          <Card className="p-6 mb-8 border-[#21d8ff]/30 bg-[#21d8ff]/5">
+            <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
+              <div className="w-16 h-16 rounded-full bg-[#21d8ff]/20 flex items-center justify-center flex-shrink-0 border border-[#21d8ff]/30">
+                <Shield className="h-8 w-8 text-[#21d8ff]" />
+              </div>
               <div>
-                <h3 className="font-semibold text-lg mb-2">Important: No Refund Policy</h3>
+                <h3 className="font-display text-xl font-bold mb-2">Our Quality & Accuracy Guarantee</h3>
                 <p className="text-muted-foreground">
-                  Due to the sensitive nature of research compounds and strict quality control protocols, 
-                  <span className="font-semibold text-foreground"> all sales are final and no refunds are issued</span>. 
-                  This policy ensures the integrity of our products for all researchers. Please review 
-                  your order carefully before completing your purchase.
+                  While research integrity requires a strict no-return policy, we fully guarantee the accuracy of your order. 
+                  If we make a mistake, we take immediate responsibility with priority resolution.
                 </p>
               </div>
             </div>
