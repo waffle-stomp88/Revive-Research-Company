@@ -38,8 +38,6 @@ const resourceLinks = [
   { href: "/education", label: "Education Center", icon: BookOpen, description: "Learn about peptides & research", color: "#ec4899" },
   { href: "/academy", label: "Research Academy", icon: GraduationCap, description: "Guided learning for researchers", color: "#E7FB10" },
   { href: "/dosage-calculator", label: "Dosage Calculator", icon: Calculator, description: "Calculate peptide dosing volumes", color: "#21d8ff" },
-  { href: "/legal", label: "Legal & Compliance", icon: Scale, description: "Regulatory information & policies", color: "#22c55e" },
-  { href: "/what-we-dont-do", label: "What We Don't Do", icon: BookOpen, description: "Our ethical boundaries", color: "#EF4444" },
   { href: "/faq", label: "FAQ", icon: BookOpen, description: "Common questions answered", color: "#a855f7" },
   { href: "/contact", label: "Support & Contact", icon: Mail, description: "Reach out for research support", color: "#9d4edd" },
 ];

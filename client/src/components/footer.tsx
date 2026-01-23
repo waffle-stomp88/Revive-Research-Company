@@ -34,6 +34,7 @@ const footerLinks = {
   ],
   company: [
     { label: "Our Standards", href: "/what-we-dont-do" },
+    { label: "Legal & Compliance", href: "/legal" },
     { label: "Transparency", href: "/transparency" },
     { label: "Ethical Pricing", href: "/ethical-pricing" },
   ],
