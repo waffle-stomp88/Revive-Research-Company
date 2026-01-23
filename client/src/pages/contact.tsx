@@ -328,22 +328,6 @@ export default function Contact() {
                 </p>
               </div>
 
-              <Card className="border-red-500/40 bg-red-950/20 shadow-[0_0_15px_rgba(239,68,68,0.15)] animate-pulse-subtle">
-                <CardContent className="pt-6">
-                  <div className="flex items-start gap-4">
-                    <div className="h-12 w-12 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
-                      <AlertTriangle className="h-6 w-6 text-red-400" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-red-400 mb-1">Research Use Only</h3>
-                      <p className="text-sm text-muted-foreground">
-                        All products are intended for laboratory research purposes only. Not for human consumption.
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
               <div className="p-4 rounded-lg bg-[#9d4edd]/10 border border-[#9d4edd]/30">
                 <h4 className="font-medium text-[#9d4edd] mb-2">Order Issues?</h4>
                 <p className="text-sm text-muted-foreground">
@@ -352,6 +336,23 @@ export default function Contact() {
               </div>
             </motion.div>
           </div>
+
+          {/* RUO Disclaimer - Full width below the form */}
+          <motion.div variants={itemVariants} className="mt-8">
+            <div className="p-4 rounded-lg border-2 border-red-500/40 bg-red-950/20 shadow-[0_0_15px_rgba(239,68,68,0.15)] animate-pulse-subtle">
+              <div className="flex items-center gap-4">
+                <div className="h-10 w-10 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="h-5 w-5 text-red-400" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-red-400 text-sm">Research Use Only</h3>
+                  <p className="text-sm text-muted-foreground">
+                    All products are intended for laboratory research purposes only. Not for human consumption.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </motion.div>
       </div>
     </main>
