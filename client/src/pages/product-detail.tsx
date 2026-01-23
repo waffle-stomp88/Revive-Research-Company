@@ -601,7 +601,7 @@ export default function ProductDetail() {
               ))}
             </div>
 
-            <h1 className="font-display text-2xl md:text-3xl font-bold mb-2" data-testid="text-product-name">
+            <h1 className="font-display text-3xl md:text-5xl font-bold tracking-tight mb-4" data-testid="text-product-name">
               {product.name}
             </h1>
 

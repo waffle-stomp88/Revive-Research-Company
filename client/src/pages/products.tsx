@@ -490,12 +490,13 @@ function ProductsComponent() {
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         {/* Page Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-8"
+          className="mb-12"
         >
-          <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">Peptides</h1>
+          <h1 className="font-display text-5xl md:text-6xl font-bold tracking-tight mb-4">Peptides</h1>
+          <div className="h-1 w-12 bg-primary rounded-full" />
         </motion.div>
 
         {/* Full-width Weekly Deal Section */}
@@ -557,31 +558,56 @@ function ProductsComponent() {
                   </div>
                   
                   {/* Desktop: Full layout */}
-                  <div className="hidden md:flex flex-row gap-5 items-center">
-                    <div className="flex items-center gap-3 flex-shrink-0">
-                      <Flame className="h-6 w-6 text-red-500" />
+                  <div className="hidden md:flex flex-row gap-8 items-center">
+                    <div className="flex items-center gap-4 flex-shrink-0">
+                      <div className="p-3 rounded-full bg-red-500/10 border border-red-500/20">
+                        <Flame className="h-6 w-6 text-red-500" />
+                      </div>
                       <div>
-                        <span className="font-display text-xs font-bold text-red-400 block">WEEKLY DEAL</span>
-                        <Badge variant="destructive" className="animate-pulse mt-1">
+                        <span className="font-display text-xs font-bold text-red-400 tracking-widest uppercase">Weekly Deal</span>
+                        <Badge variant="destructive" className="mt-1">
                           {SALE_OF_THE_WEEK.badge}
                         </Badge>
                       </div>
                     </div>
 
-                    <div className="w-40 h-40 bg-muted/50 rounded-lg overflow-hidden flex-shrink-0 border border-red-500/20">
+                    <div className="w-48 h-48 bg-muted/30 rounded-2xl overflow-hidden flex-shrink-0 border border-white/5 shadow-inner">
                       <img 
                         src={saleProduct.imageUrl || productImage} 
                         alt={`${saleProduct.name} research peptide - premium quality lab tested compound`}
-                        className="w-full h-full object-contain p-3 group-hover:scale-110 transition-transform"
+                        className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-700 ease-out"
                       />
                     </div>
-                    <div className="flex-1 text-left">
-                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <div className="flex-1 text-left space-y-4">
+                      <div className="flex flex-wrap items-center gap-3">
                         {saleProduct.originalPrice && (
-                          <Badge variant="destructive" className="text-base px-2.5 py-0.5">
+                          <Badge variant="destructive" className="text-lg px-3 py-1 font-bold tracking-tight">
                             {Math.round(((Number(saleProduct.originalPrice) - Number(saleProduct.price)) / Number(saleProduct.originalPrice)) * 100)}% OFF
                           </Badge>
                         )}
+                        <h3 className="font-display text-4xl font-bold text-[#E7FB10] tracking-tight">
+                          {saleProduct.name}
+                        </h3>
+                      </div>
+                      <p className="text-muted-foreground text-lg leading-relaxed max-w-xl line-clamp-2">
+                        {saleProduct.description || SALE_OF_THE_WEEK.description}
+                      </p>
+                      <div className="flex items-center gap-6 pt-2">
+                        <div className="flex flex-col">
+                          <span className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Price</span>
+                          <div className="flex items-baseline gap-2">
+                            <span className="font-display text-3xl font-bold text-foreground">${Number(saleProduct.price).toFixed(2)}</span>
+                            {saleProduct.originalPrice && (
+                              <span className="text-muted-foreground line-through text-lg">${Number(saleProduct.originalPrice).toFixed(2)}</span>
+                            )}
+                          </div>
+                        </div>
+                        <Button size="lg" className="h-14 px-8 text-lg font-bold gap-2 hover-elevate active-elevate-2 bg-foreground text-background hover:bg-foreground/90 transition-all rounded-xl">
+                          Shop Now <ArrowRight className="h-5 w-5" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                         {saleProduct.weeklyDealEndDate && (
                           <span className="text-sm text-muted-foreground">Ends {saleProduct.weeklyDealEndDate}</span>
                         )}
