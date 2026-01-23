@@ -36,6 +36,7 @@ import FAQ from "@/pages/faq";
 import Shipping from "@/pages/shipping";
 import TermsOfService from "@/pages/terms-of-service";
 import PrivacyPolicy from "@/pages/privacy-policy";
+import Disclaimer from "@/pages/disclaimer";
 import Contact from "@/pages/contact";
 import Legal from "@/pages/legal";
 import WhatWeDontDo from "@/pages/what-we-dont-do";
@@ -163,6 +164,7 @@ function Router() {
         <Route path="/shipping" component={Shipping} />
         <Route path="/terms" component={TermsOfService} />
         <Route path="/privacy" component={PrivacyPolicy} />
+        <Route path="/disclaimer" component={Disclaimer} />
         <Route path="/contact" component={Contact} />
         <Route path="/legal" component={Legal} />
         <Route path="/what-we-dont-do" component={WhatWeDontDo} />
