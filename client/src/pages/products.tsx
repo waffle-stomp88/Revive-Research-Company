@@ -194,7 +194,7 @@ interface ProductsPageState {
   scrollY: number;
 }
 
-export default function Products() {
+function ProductsComponent() {
   // Restore state from sessionStorage if available (using useState so we can clear it)
   const [savedState, setSavedState] = useState<ProductsPageState | null>(() => {
     try {
@@ -490,13 +490,12 @@ export default function Products() {
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         {/* Page Header */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-12"
+          className="mb-8"
         >
-          <h1 className="font-display text-5xl md:text-6xl font-bold tracking-tight mb-4">Peptides</h1>
-          <div className="h-1 w-12 bg-primary rounded-full" />
+          <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">Peptides</h1>
         </motion.div>
 
         {/* Full-width Weekly Deal Section */}
@@ -509,9 +508,9 @@ export default function Products() {
             className="mb-12 -mx-4 md:-mx-8 px-4 md:px-8"
           >
             <Link href={`/peptides/${saleProduct.id}`} onClick={savePageState}>
-              <div className="sale-glow-pulse rounded-xl overflow-hidden">
-                <Card className="p-3 md:p-6 border-2 border-[#E7FB10]/50 bg-gradient-to-br from-[#E7FB10]/10 via-background to-background transition-all duration-300 cursor-pointer group hover:scale-[1.01] md:hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(231,251,16,0.3)] hover:border-[#E7FB10] relative overflow-hidden rounded-xl no-default-hover-elevate">
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-[#E7FB10]/10 blur-[100px] -mr-32 -mt-32 pointer-events-none" />
+              <div className="sale-glow-pulse rounded-xl">
+                <Card className="p-3 md:p-6 border-2 border-[#E7FB10]/50 bg-gradient-to-br from-[#E7FB10]/10 via-background to-background transition-all duration-300 cursor-pointer group hover:scale-[1.02] md:hover:scale-105 hover:shadow-[0_0_30px_rgba(231,251,16,0.4)] hover:border-[#E7FB10] relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#E7FB10]/5 blur-3xl -mr-16 -mt-16 pointer-events-none" />
                   {/* Dismiss button */}
                   <button
                     onClick={(e) => {
@@ -519,11 +518,11 @@ export default function Products() {
                       e.stopPropagation();
                       dismissWeeklyDeal();
                     }}
-                    className="absolute top-3 right-3 p-1 hover:bg-white/10 rounded transition-colors z-20"
+                    className="absolute top-3 right-3 p-1 hover:bg-white/10 rounded transition-colors"
                     data-testid="button-dismiss-weekly-deal"
                     aria-label="Hide deal"
                   >
-                    <X className="h-5 w-5 text-muted-foreground hover:text-foreground" />
+                    <X className="h-5 w-5 text-red-400 hover:text-red-300" />
                   </button>
 
                   {/* Mobile: Compact horizontal layout */}
@@ -558,52 +557,50 @@ export default function Products() {
                   </div>
                   
                   {/* Desktop: Full layout */}
-                  <div className="hidden md:flex flex-row gap-12 items-center">
-                    <div className="flex items-center gap-6 flex-shrink-0">
-                      <div className="p-4 rounded-full bg-[#E7FB10]/10 border border-[#E7FB10]/20">
-                        <Flame className="h-8 w-8 text-[#E7FB10]" />
-                      </div>
+                  <div className="hidden md:flex flex-row gap-5 items-center">
+                    <div className="flex items-center gap-3 flex-shrink-0">
+                      <Flame className="h-6 w-6 text-red-500" />
                       <div>
-                        <span className="font-display text-xs font-bold text-primary tracking-widest uppercase">Special Offer</span>
-                        <Badge className="mt-1 bg-primary text-black hover:bg-primary/90">
+                        <span className="font-display text-xs font-bold text-red-400 block">WEEKLY DEAL</span>
+                        <Badge variant="destructive" className="animate-pulse mt-1">
                           {SALE_OF_THE_WEEK.badge}
                         </Badge>
                       </div>
                     </div>
 
-                    <div className="w-56 h-56 bg-muted/20 rounded-2xl overflow-hidden flex-shrink-0 border border-white/5 shadow-inner">
+                    <div className="w-40 h-40 bg-muted/50 rounded-lg overflow-hidden flex-shrink-0 border border-red-500/20">
                       <img 
                         src={saleProduct.imageUrl || productImage} 
                         alt={`${saleProduct.name} research peptide - premium quality lab tested compound`}
-                        className="w-full h-full object-contain p-6 group-hover:scale-105 transition-transform duration-1000 ease-out"
+                        className="w-full h-full object-contain p-3 group-hover:scale-110 transition-transform"
                       />
                     </div>
-                    <div className="flex-1 text-left space-y-6">
-                      <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex-1 text-left">
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
                         {saleProduct.originalPrice && (
-                          <Badge variant="destructive" className="text-xl px-4 py-1.5 font-bold tracking-tight rounded-lg">
+                          <Badge variant="destructive" className="text-base px-2.5 py-0.5">
                             {Math.round(((Number(saleProduct.originalPrice) - Number(saleProduct.price)) / Number(saleProduct.originalPrice)) * 100)}% OFF
                           </Badge>
                         )}
-                        <h3 className="font-display text-5xl font-bold text-foreground tracking-tight">
-                          {saleProduct.name}
-                        </h3>
+                        {saleProduct.weeklyDealEndDate && (
+                          <span className="text-sm text-muted-foreground">Ends {saleProduct.weeklyDealEndDate}</span>
+                        )}
                       </div>
-                      <p className="text-muted-foreground text-xl leading-relaxed max-w-2xl line-clamp-2">
-                        {saleProduct.description || SALE_OF_THE_WEEK.description}
+                      <h3 className="font-display text-3xl font-bold text-[#E7FB10] mb-2">
+                        {saleProduct.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-4 max-w-lg">
+                        {saleProduct.shortDescription}
                       </p>
-                      <div className="flex items-center gap-10 pt-4">
-                        <div className="flex flex-col">
-                          <span className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Research Price</span>
-                          <div className="flex items-baseline gap-3">
-                            <span className="font-display text-4xl font-bold text-primary">${Number(saleProduct.price).toFixed(2)}</span>
-                            {saleProduct.originalPrice && (
-                              <span className="text-muted-foreground line-through text-xl">${Number(saleProduct.originalPrice).toFixed(2)}</span>
-                            )}
-                          </div>
-                        </div>
-                        <Button size="lg" className="h-16 px-10 text-xl font-bold gap-3 hover-elevate active-elevate-2 bg-primary text-black hover:bg-primary/90 transition-all rounded-xl border-none">
-                          Acquire Compound <ArrowRight className="h-6 w-6" />
+                      <div className="flex items-center gap-4">
+                        <span className="font-display text-3xl font-bold">${Number(saleProduct.price).toFixed(2)}</span>
+                        {saleProduct.originalPrice && (
+                          <span className="text-lg text-muted-foreground line-through">
+                            ${Number(saleProduct.originalPrice).toFixed(2)}
+                          </span>
+                        )}
+                        <Button className="ml-2 gap-2">
+                          Shop Now <ArrowRight className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
@@ -614,186 +611,593 @@ export default function Products() {
           </motion.div>
         )}
 
-        {/* Filters and Search Bar */}
-        <div className="flex flex-col lg:flex-row gap-6 mb-12 items-start lg:items-center justify-between sticky top-20 z-40 bg-background/80 backdrop-blur-xl py-4 -mx-4 px-4 border-y border-white/5">
-          <div className="flex items-center gap-4 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0 no-scrollbar">
-            <Button
-              variant={sidebarOpen ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="hidden lg:flex gap-2 rounded-full px-6"
-            >
-              {sidebarOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeft className="h-4 w-4" />}
-              {sidebarOpen ? "Hide Filters" : "Show Filters"}
-            </Button>
-            
-            <div className="relative flex-1 lg:min-w-[400px]">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search compounds by name or sequence..."
-                className="pl-12 h-12 bg-muted/30 border-white/5 rounded-full focus-visible:ring-primary/20 focus-visible:border-primary/50 text-lg transition-all"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                data-testid="input-search-products"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              )}
-            </div>
+        {/* Main Layout with Sidebar */}
+        <div className="flex gap-6">
+          {/* Sidebar */}
+          <AnimatePresence>
+            {sidebarOpen && (
+              <motion.aside
+                initial={{ width: 0, opacity: 0 }}
+                animate={{ width: 280, opacity: 1 }}
+                exit={{ width: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="hidden lg:block flex-shrink-0"
+              >
+                <div className="sticky top-28 space-y-6 pr-2">
+                  {/* Sidebar Header */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Filter className="h-5 w-5 text-muted-foreground" />
+                      <span className="font-semibold">Filters</span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setSidebarOpen(false)}
+                      className="h-8 w-8"
+                      data-testid="button-hide-sidebar"
+                    >
+                      <PanelLeftClose className="h-4 w-4" />
+                    </Button>
+                  </div>
 
-            <div className="flex items-center gap-3">
-              <Select value={sortBy} onValueChange={(value: SortOption) => setSortBy(value)}>
-                <SelectTrigger className="w-[180px] h-12 bg-muted/30 border-white/5 rounded-full px-6">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="featured">Most Relevant</SelectItem>
-                  <SelectItem value="price-asc">Price: Low to High</SelectItem>
-                  <SelectItem value="price-desc">Price: High to Low</SelectItem>
-                  <SelectItem value="name-asc">Alphabetical (A-Z)</SelectItem>
-                  <SelectItem value="name-desc">Alphabetical (Z-A)</SelectItem>
-                </SelectContent>
-              </Select>
+                  {/* Search in Sidebar */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Search</label>
+                    <div className="relative">
+                      <Input
+                        placeholder="Search products..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pr-8"
+                        data-testid="input-sidebar-search"
+                      />
+                      {searchQuery ? (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6"
+                          onClick={() => setSearchQuery("")}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      ) : (
+                        <Search className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      )}
+                    </div>
+                  </div>
 
-              <Sheet open={mobileFilterOpen} onOpenChange={setMobileFilterOpen}>
-                <SheetTrigger asChild>
-                  <Button variant="outline" size="icon" className="lg:hidden h-12 w-12 rounded-full border-white/5 bg-muted/30">
-                    <SlidersHorizontal className="h-5 w-5" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-background border-white/10">
-                  <SheetHeader className="mb-6">
-                    <SheetTitle className="font-display text-2xl font-bold">Refine Research</SheetTitle>
-                  </SheetHeader>
-                  <div className="space-y-8 pr-2">
-                    {/* Replicate Sidebar Content for Mobile */}
-                    <div className="space-y-4">
-                      <h3 className="text-sm font-bold text-muted-foreground tracking-widest uppercase">Stock Status</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {["all", "in-stock", "out-of-stock"].map((status) => (
-                          <Button
-                            key={status}
-                            variant={stockFilter === status ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => setStockFilter(status as any)}
-                            className="capitalize rounded-full px-4"
-                          >
-                            {status.replace("-", " ")}
-                          </Button>
-                        ))}
+                  {/* Price Filter */}
+                  <div className="space-y-4">
+                    <label className="text-sm font-medium">Filter by Price</label>
+                    <Slider
+                      value={priceRange}
+                      onValueChange={(value) => setPriceRange(value as [number, number])}
+                      min={priceStats.min}
+                      max={priceStats.max}
+                      step={5}
+                      className="mt-2"
+                      data-testid="slider-price-range"
+                    />
+                    <div className="flex gap-3">
+                      <div className="flex-1">
+                        <div className="border rounded-md px-3 py-2 text-sm bg-muted/30">
+                          <span className="text-muted-foreground text-xs block">Min</span>
+                          <span className="font-medium">${priceRange[0]}</span>
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="border rounded-md px-3 py-2 text-sm bg-muted/30">
+                          <span className="text-muted-foreground text-xs block">Max</span>
+                          <span className="font-medium">${priceRange[1]}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </SheetContent>
-              </Sheet>
-            </div>
-          </div>
-        </div>
 
-        <div className="flex gap-8 items-start">
+                  {/* Peptide Groups */}
+                  <Collapsible open={peptideGroupsExpanded} onOpenChange={setPeptideGroupsExpanded}>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" className="w-full justify-between px-0 h-8 hover:bg-transparent">
+                        <span className="text-sm font-medium">Peptide Groups</span>
+                        {peptideGroupsExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="space-y-1 pt-2">
+                      {peptideGroups.map((group) => {
+                        const count = peptideGroupCounts[group.id] || 0;
+                        return (
+                          <Button
+                            key={group.id}
+                            variant={peptideGroupFilter === group.id ? "secondary" : "ghost"}
+                            className="w-full justify-between h-8 text-sm"
+                            onClick={() => setPeptideGroupFilter(group.id)}
+                            data-testid={`filter-peptide-group-${group.id}`}
+                          >
+                            <span className="flex items-center gap-2">
+                              <div 
+                                className="w-2 h-2 rounded-full" 
+                                style={{ backgroundColor: group.color }}
+                              />
+                              {group.label}
+                            </span>
+                            <span className="text-muted-foreground">{count}</span>
+                          </Button>
+                        );
+                      })}
+                    </CollapsibleContent>
+                  </Collapsible>
+
+                  {/* Stock Filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Availability</label>
+                    <div className="space-y-1">
+                      {[
+                        { value: "all", label: "All" },
+                        { value: "in-stock", label: "In Stock" },
+                        { value: "out-of-stock", label: "Out of Stock" },
+                      ].map((option) => (
+                        <Button
+                          key={option.value}
+                          variant={stockFilter === option.value ? "secondary" : "ghost"}
+                          className="w-full justify-start h-8 text-sm"
+                          onClick={() => setStockFilter(option.value as typeof stockFilter)}
+                          data-testid={`filter-stock-${option.value}`}
+                        >
+                          {option.label}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Clear Filters */}
+                  {hasActiveFilters && (
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={clearFilters}
+                      data-testid="button-clear-all-filters"
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      Clear All Filters
+                    </Button>
+                  )}
+                </div>
+              </motion.aside>
+            )}
+          </AnimatePresence>
+
           {/* Main Content */}
           <div className="flex-1 min-w-0">
-            {isLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                {[...Array(6)].map((_, i) => (
-                  <Card key={i} className="aspect-[4/5] bg-muted/30 animate-pulse rounded-2xl border-white/5" />
-                ))}
+            {/* All Products Section */}
+            <div ref={productsRef} className="scroll-mt-36">
+              <div className="mb-12">
+                <div className="flex items-center gap-3 mb-3">
+                  <Grid3X3 className="h-6 w-6 text-[#E7FB10]" />
+                  <h2 className="font-display font-bold text-2xl md:text-3xl">All Peptides</h2>
+                  {products && <Badge variant="secondary">{filteredAndSortedProducts.length} of {products.length} items</Badge>}
+                </div>
+                <div>
+                  <p className="text-muted-foreground max-w-2xl mb-6">
+                    Premium research compounds, rigorously tested and verified. Each product includes a Certificate of Analysis.
+                  </p>
+
               </div>
-            ) : error ? (
-              <div className="text-center py-20 bg-muted/10 rounded-3xl border border-dashed border-white/10">
-                <p className="text-muted-foreground text-lg mb-4">Error loading research compounds.</p>
-                <Button onClick={() => window.location.reload()} variant="outline" className="rounded-full px-8">Try Again</Button>
-              </div>
-            ) : filteredAndSortedProducts.length === 0 ? (
-              <div className="text-center py-20 bg-muted/10 rounded-3xl border border-dashed border-white/10 space-y-4">
-                <FlaskConical className="h-12 w-12 text-muted-foreground/30 mx-auto" />
-                <h3 className="font-display text-2xl font-bold">No results found</h3>
-                <p className="text-muted-foreground text-lg max-w-md mx-auto">
-                  We couldn't find any compounds matching your current research criteria. Try adjusting your filters.
+
+              {searchQuery && (
+                <p className="text-sm text-muted-foreground mb-4">
+                  Showing {filteredAndSortedProducts.length} result{filteredAndSortedProducts.length !== 1 ? "s" : ""} for "{searchQuery}"
                 </p>
-                <Button onClick={clearFilters} variant="secondary" className="rounded-full px-8 mt-4">Reset All Filters</Button>
+              )}
+              {/* Display Controls Bar */}
+              <div className="flex items-center justify-between gap-4 mb-4" data-testid="display-controls-bar">
+                {/* Left: Product count with stock toggle */}
+                <div className="flex items-center gap-2 text-sm" data-testid="text-stock-filter-info">
+                  {!searchQuery && products && (() => {
+                    const outOfStockCount = products.filter(p => !p.inStock || (p.stockAmount !== null && p.stockAmount <= 0)).length;
+                    if (outOfStockCount > 0) {
+                      if (stockFilter === "in-stock") {
+                        return (
+                          <>
+                            <span className="text-muted-foreground">
+                              Showing <span className="text-foreground font-medium">{filteredAndSortedProducts.length}</span> of {products.length}
+                            </span>
+                            <span className="text-muted-foreground/50">|</span>
+                            <button
+                              className="text-[#21d8ff] hover:underline text-xs"
+                              onClick={() => setStockFilter("all")}
+                              data-testid="button-show-all-products"
+                            >
+                              +{outOfStockCount} more
+                            </button>
+                          </>
+                        );
+                      } else {
+                        return (
+                          <>
+                            <span className="text-muted-foreground">
+                              Showing all <span className="text-foreground font-medium">{filteredAndSortedProducts.length}</span>
+                            </span>
+                            <span className="text-muted-foreground/50">|</span>
+                            <button
+                              className="text-[#21d8ff] hover:underline text-xs"
+                              onClick={() => setStockFilter("in-stock")}
+                              data-testid="button-hide-oos-products"
+                            >
+                              In stock only
+                            </button>
+                          </>
+                        );
+                      }
+                    }
+                    return (
+                      <span className="text-muted-foreground">
+                        Showing <span className="text-foreground font-medium">{filteredAndSortedProducts.length}</span> products
+                      </span>
+                    );
+                  })()}
+                </div>
+
+                {/* Right: View controls */}
+                <div className="flex items-center gap-2">
+                  {/* Grid layout toggles */}
+                  <div className="hidden sm:flex items-center bg-muted/50 rounded-md p-0.5">
+                    <button
+                      onClick={() => setGridColumns(2)}
+                      className={`p-1.5 rounded transition-colors ${
+                        gridColumns === 2
+                          ? "bg-background text-[#21d8ff] shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                      title="2 columns"
+                      data-testid="button-grid-2"
+                    >
+                      <Grid2X2 className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => setGridColumns(3)}
+                      className={`p-1.5 rounded transition-colors ${
+                        gridColumns === 3
+                          ? "bg-background text-[#21d8ff] shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                      title="3 columns"
+                      data-testid="button-grid-3"
+                    >
+                      <Grid3X3 className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => setGridColumns(4)}
+                      className={`p-1.5 rounded transition-colors ${
+                        gridColumns === 4
+                          ? "bg-background text-[#21d8ff] shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                      title="4 columns"
+                      data-testid="button-grid-4"
+                    >
+                      <LayoutGrid className="h-4 w-4" />
+                    </button>
+                  </div>
+
+                  {/* Items per page dropdown */}
+                  <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(Number(value))}>
+                    <SelectTrigger className="w-[70px] h-8 text-sm" data-testid="select-items-per-page">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="9">9</SelectItem>
+                      <SelectItem value="12">12</SelectItem>
+                      <SelectItem value="18">18</SelectItem>
+                      <SelectItem value="24">24</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  {/* Sorting dropdown */}
+                  <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
+                    <SelectTrigger className="w-[140px] h-8 text-sm" data-testid="select-sort">
+                      <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="featured">Default</SelectItem>
+                      <SelectItem value="name-asc">A-Z</SelectItem>
+                      <SelectItem value="name-desc">Z-A</SelectItem>
+                      <SelectItem value="price-asc">Price: Low</SelectItem>
+                      <SelectItem value="price-desc">Price: High</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-            ) : (
-              <motion.div
-                layout
-                variants={staggerContainer}
-                initial="initial"
-                animate="animate"
-                className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"
-              >
-                <AnimatePresence mode="popLayout">
-                  {filteredAndSortedProducts.map((product) => (
+
+              {isLoading ? (
+                <div className={`grid gap-4 ${
+                  gridColumns === 2 ? "grid-cols-2" :
+                  gridColumns === 3 ? "grid-cols-2 md:grid-cols-3" :
+                  "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                }`}>
+                  {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                    <Card key={i} className="p-3 animate-pulse">
+                      <div className="aspect-[4/3] bg-muted rounded-md mb-3" />
+                      <div className="h-4 bg-muted rounded w-3/4 mb-2" />
+                      <div className="h-3 bg-muted rounded w-full mb-2" />
+                      <div className="h-6 bg-muted rounded w-1/3" />
+                    </Card>
+                  ))}
+                </div>
+              ) : error ? (
+                <Card className="p-12 text-center">
+                  <p className="text-muted-foreground mb-4">Unable to load products. Please try again.</p>
+                  <Button onClick={() => window.location.reload()}>Retry</Button>
+                </Card>
+              ) : filteredAndSortedProducts.length > 0 ? (
+                <>
+                <motion.div
+                  initial="initial"
+                  animate="animate"
+                  variants={staggerContainer}
+                  className={`grid gap-4 ${
+                    gridColumns === 2 ? "grid-cols-2" :
+                    gridColumns === 3 ? "grid-cols-2 md:grid-cols-3" :
+                    "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                  }`}
+                >
+                  {filteredAndSortedProducts.slice(0, itemsPerPage).map((product) => (
                     <motion.div
-                      layout
                       key={product.id}
                       variants={fadeInUp}
-                      className="group"
+                      className="h-full"
                     >
-                      <Link href={`/peptides/${product.id}`} onClick={savePageState}>
-                        <Card className="h-full bg-muted/5 border-white/5 hover:border-primary/20 transition-all duration-500 cursor-pointer overflow-hidden flex flex-col rounded-3xl group/card hover:bg-muted/10 hover-elevate">
-                          <div className="relative aspect-[4/5] overflow-hidden bg-muted/20">
-                            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20 group-hover/card:to-black/40 transition-colors" />
-                            <ImageLoader
-                              src={product.imageUrl || productImage}
-                              alt={product.name}
-                              className="w-full h-full object-contain p-8 group-hover/card:scale-105 transition-transform duration-700 ease-out"
-                            />
-                            <div className="absolute top-4 left-4 flex flex-col gap-2">
-                              {getProductBadges(product, sellingFastIds).map((badge) => (
-                                <Badge key={badge.type} className={`rounded-full px-3 py-1 font-bold tracking-tight shadow-lg border-none ${badge.className}`}>
-                                  {badge.label}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                          <div className="p-8 flex flex-col flex-1 space-y-4">
-                            <div>
-                              <div className="flex items-center gap-2 mb-2">
-                                <Badge variant="secondary" className="text-[10px] uppercase tracking-widest bg-white/5 text-muted-foreground border-none">
-                                  {product.category}
-                                </Badge>
-                                {getPeptideGroup(product.name) && (
-                                  <div className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: getPeptideGroup(product.name)?.color }} />
-                                )}
+                      <Link href={`/peptides/${product.id}`} className="h-full block" onClick={savePageState}>
+                        {/* Check if product is out of stock (either inStock=false OR stockAmount<=0) */}
+                        {(() => {
+                          const isOutOfStock = !product.inStock || (product.stockAmount !== null && product.stockAmount <= 0);
+                          return (
+                            <Card 
+                              className={`group p-3 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 hover:scale-[1.03] relative overflow-hidden ${
+                                isOutOfStock
+                                  ? "border-red-500/60 hover:border-red-500 hover:shadow-[0_0_30px_rgba(239,68,68,0.5),0_0_60px_rgba(239,68,68,0.2)]"
+                                  : "border-[#21d8ff]/40 hover:border-[#21d8ff] hover:shadow-[0_0_30px_rgba(33,216,255,0.5),0_0_60px_rgba(33,216,255,0.2)]"
+                              }`}
+                              data-testid={`card-product-${product.id}`}
+                            >
+                              {isOutOfStock && (
+                                <div 
+                                  className="absolute inset-0 pointer-events-none z-10"
+                                  style={{
+                                    background: "linear-gradient(to bottom right, transparent calc(50% - 2px), rgba(239, 68, 68, 0.7) calc(50% - 1px), rgba(239, 68, 68, 0.9) 50%, rgba(239, 68, 68, 0.7) calc(50% + 1px), transparent calc(50% + 2px))",
+                                  }}
+                                />
+                              )}
+                              <div className="relative aspect-[4/3] mb-3 rounded-md overflow-hidden">
+                                <ImageLoader 
+                                  src={product.imageUrl || productImage} 
+                                  alt={`${product.name} research peptide - third party lab tested`}
+                                  className="w-full h-full object-contain transition-transform duration-300 p-3 group-hover:scale-105"
+                                  containerClassName="relative w-full h-full bg-gradient-to-br from-muted to-muted/50 overflow-hidden rounded-md"
+                                />
+                                {/* Smart badge system - max 2 badges, positioned top-left */}
+                                {(() => {
+                                  const badges = getProductBadges(product, sellingFastIds);
+                                  return (
+                                    <div className="absolute top-2 left-2 z-20 flex flex-col gap-1">
+                                      {badges.map((badge) => (
+                                        <span 
+                                          key={badge.type}
+                                          className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[11px] rounded ${badge.className}`}
+                                        >
+                                          {badge.icon && <badge.icon className="h-3 w-3" />}
+                                          {badge.label}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  );
+                                })()}
                               </div>
-                              <h3 className="font-display text-2xl font-bold group-hover/card:text-primary transition-colors tracking-tight">
-                                {product.name}
-                              </h3>
-                            </div>
-                            <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
-                              {product.description}
-                            </p>
-                            <div className="pt-4 mt-auto flex items-end justify-between border-t border-white/5">
-                              <div className="flex flex-col">
-                                <span className="text-[10px] text-muted-foreground uppercase tracking-widest mb-1">Starting from</span>
-                                <span className="font-display text-3xl font-bold text-foreground">
-                                  ${Number(product.price).toFixed(2)}
-                                </span>
+                              
+                              <div className="flex-1 flex flex-col min-h-0">
+                                <div className="mb-2">
+                                  {(() => {
+                                    const peptideGroup = getPeptideGroup(product.name);
+                                    return peptideGroup ? (
+                                      <Badge 
+                                        variant="outline"
+                                        className="text-[11px] px-2 py-1 opacity-85"
+                                        style={{ 
+                                          borderColor: `${peptideGroup.color}60`,
+                                          color: peptideGroup.color 
+                                        }}
+                                        data-testid={`badge-peptide-group-${peptideGroup.id}`}
+                                      >
+                                        {peptideGroup.label}
+                                      </Badge>
+                                    ) : (
+                                      <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                                        {product.category}
+                                      </span>
+                                    );
+                                  })()}
+                                </div>
+                                <h3 className="font-display text-lg md:text-2xl font-black mb-2 group-hover:text-[#E7FB10] transition-colors line-clamp-2 text-center">
+                                  {product.name}
+                                </h3>
+                                <p className="text-xs text-muted-foreground mb-2 line-clamp-2 min-h-[2rem]">
+                                  {product.shortDescription}
+                                </p>
+                                <div className="flex items-center justify-between mt-auto pt-2 border-t border-border flex-wrap gap-2">
+                                  <div className="flex flex-col">
+                                    <div className="flex items-center gap-2">
+                                      <div className="flex items-baseline gap-1.5">
+                                        <span className="font-display text-lg font-bold text-[#E7FB10]">
+                                          ${Number(product.price).toFixed(2)}
+                                        </span>
+                                        {product.originalPrice && (
+                                          <span className="text-[10px] text-muted-foreground line-through">
+                                            ${Number(product.originalPrice).toFixed(2)}
+                                          </span>
+                                        )}
+                                      </div>
+                                      {/* Price Trend Arrow - Show based on sale status */}
+                                      {product.originalPrice && Number(product.price) < Number(product.originalPrice) && (
+                                        <TrendingDown className="h-4 w-4 text-red-500" data-testid={`icon-price-down-${product.id}`} />
+                                      )}
+                                    </div>
+                                    <span className="text-[9px] text-[#E7FB10]/60">Preview pricing</span>
+                                  </div>
+                                  <div className="flex items-center gap-1.5 ml-auto">
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setQuickViewProduct(product);
+                                      }}
+                                      data-testid={`button-quickview-${product.id}`}
+                                    >
+                                      <Eye className="h-3.5 w-3.5" />
+                                    </Button>
+                                    <button
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        const inCompare = isInCompare(product.id);
+                                        if (inCompare) {
+                                          removeFromCompare(product.id);
+                                        } else {
+                                          addToCompare(product.id);
+                                        }
+                                      }}
+                                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                                      data-testid={`button-compare-icon-${product.id}`}
+                                    >
+                                      <Scale className="h-4 w-4 text-[#21d8ff]" />
+                                    </button>
+                                  </div>
+                                </div>
                               </div>
-                              <div className="h-12 w-12 rounded-full bg-foreground text-background flex items-center justify-center group-hover/card:bg-primary group-hover/card:text-black transition-all duration-300">
-                                <ArrowRight className="h-6 w-6" />
-                              </div>
-                            </div>
-                          </div>
-                        </Card>
+                            </Card>
+                          );
+                        })()}
                       </Link>
                     </motion.div>
                   ))}
-                </AnimatePresence>
-              </motion.div>
-            )}
+                </motion.div>
+                
+                {/* Show More button if there are more products */}
+                {filteredAndSortedProducts.length > itemsPerPage && (
+                  <div className="mt-6 text-center">
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Showing {Math.min(itemsPerPage, filteredAndSortedProducts.length)} of {filteredAndSortedProducts.length} products
+                    </p>
+                    <Button
+                      variant="outline"
+                      className="border-[#21d8ff]/40 text-[#21d8ff] hover:bg-[#21d8ff]/10"
+                      onClick={() => setItemsPerPage(prev => Math.min(prev + 12, filteredAndSortedProducts.length))}
+                      data-testid="button-show-more"
+                    >
+                      Show More
+                    </Button>
+                  </div>
+                )}
+                </>
+              ) : (
+                  <Card className="p-12 text-center">
+                    <FlaskConical className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+                    <h3 className="font-display text-xl font-semibold mb-2">No Peptides Found</h3>
+                    <p className="text-muted-foreground mb-4">
+                      {searchQuery
+                        ? `No products match "${searchQuery}". Try a different search term.`
+                        : "No products match your current filters."}
+                    </p>
+                    {hasActiveFilters && (
+                      <Button variant="outline" onClick={clearFilters}>
+                        Clear Filters
+                      </Button>
+                    )}
+                  </Card>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Research Stacks & Bulk Orders CTAs - Bottom Section */}
+      {!searchQuery && peptideGroupFilter === "all" && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="max-w-7xl mx-auto px-4 md:px-8 mb-12 grid grid-cols-1 md:grid-cols-2 gap-6"
+        >
+          {/* Research Stacks CTA */}
+          <Link href="/research-stacks">
+            <Card className="p-6 border border-[#21d8ff]/20 hover:border-[#21d8ff]/50 cursor-pointer transition-all hover-elevate h-full" data-testid="card-stacks-cta">
+              <div className="flex items-start gap-4 mb-4">
+                <div className="p-3 rounded-lg bg-[#21d8ff]/10 flex-shrink-0">
+                  <Boxes className="h-6 w-6 text-[#21d8ff]" />
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-lg text-[#21d8ff]">RESEARCH STACKS</h3>
+                  <Badge className="mt-1 text-xs bg-[#21d8ff]/20 text-[#21d8ff] border-0">Save More</Badge>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                Expertly curated peptide combinations based on research protocols. Bundle and save on the most popular stacks.
+              </p>
+              <Button className="w-full bg-[#21d8ff] text-black hover:bg-[#1aa3cc] font-semibold" data-testid="button-view-stacks">
+                View Research Stacks
+                <ChevronRight className="h-4 w-4 ml-2" />
+              </Button>
+            </Card>
+          </Link>
+
+          {/* Bulk Orders CTA */}
+          <Link href="/bulk-packs">
+            <Card className="p-6 border border-[#9d4edd]/20 hover:border-[#9d4edd]/50 cursor-pointer transition-all hover-elevate h-full" data-testid="card-bulk-cta">
+              <div className="flex items-start gap-4 mb-4">
+                <div className="p-3 rounded-lg bg-[#9d4edd]/10 flex-shrink-0">
+                  <Package className="h-6 w-6 text-[#9d4edd]" />
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-lg text-[#9d4edd]">BULK ORDERS</h3>
+                  <Badge className="mt-1 text-xs bg-[#9d4edd]/20 text-[#9d4edd] border-0">Volume Pricing</Badge>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                Need larger quantities for your research facility? Contact us for custom bulk pricing with discounts up to 30%.
+              </p>
+              <Button className="w-full bg-[#9d4edd] text-white hover:bg-[#7d2dab] font-semibold" data-testid="button-view-bulk">
+                Explore Bulk Options
+                <ChevronRight className="h-4 w-4 ml-2" />
+              </Button>
+            </Card>
+          </Link>
+        </motion.div>
+      )}
+      
+      {/* Quick View Modal */}
       <QuickViewModal 
-        product={quickViewProduct} 
-        onClose={() => setQuickViewProduct(null)} 
+        product={quickViewProduct}
+        isOpen={!!quickViewProduct}
+        onClose={() => setQuickViewProduct(null)}
       />
+      
+      {/* Compare Bar */}
+      {products && <CompareBar products={products} />}
+      
+      {/* Recently Viewed Section */}
+      <RecentlyViewed variant="section" />
     </main>
+  );
+}
+
+export default function Products() {
+  return (
+    <>
+      <EarlyAccessModal showOnProductPages={true} />
+      <ProductsComponent />
+    </>
   );
 }

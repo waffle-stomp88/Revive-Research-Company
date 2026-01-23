@@ -562,21 +562,21 @@ export default function ProductDetail() {
               </motion.section>
             )}
 
-            {/* RUO Disclaimer - More integrated Apple-style Card */}
-            <Card className="p-6 bg-red-950/20 border-red-500/30 backdrop-blur-sm mt-8" data-testid="card-ruo-disclaimer-desktop">
-              <div className="flex items-start gap-5">
-                <div className="flex-shrink-0">
-                  <div className="p-2 rounded-full bg-red-500/10 border border-red-500/20">
-                    <AlertTriangle className="h-5 w-5 text-red-400" />
-                  </div>
+            {/* RUO Disclaimer - DESKTOP ONLY (compact version shown on mobile in product info section) */}
+            <Card className="p-6 bg-red-950/30 border-2 border-red-500/50 animate-pulse-subtle mt-6 hidden md:block" data-testid="card-ruo-disclaimer-desktop">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-full bg-red-500/20 border border-red-500/30">
+                  <AlertTriangle className="h-6 w-6 text-red-400" />
                 </div>
                 <div>
-                  <h4 className="font-display font-bold text-red-400 uppercase tracking-widest text-sm mb-2">
+                  <h4 className="font-display font-bold text-red-400 uppercase tracking-wider text-lg mb-2">
                     Research Use Only
                   </h4>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Strictly for laboratory research. Not for human or animal consumption. 
-                    Researcher responsibility is required for handling.
+                    This product is sold for research purposes only and is not intended 
+                    for human consumption. By purchasing, you confirm you are a qualified 
+                    researcher and will use this product in accordance with all applicable 
+                    federal and state laws and regulations.
                   </p>
                 </div>
               </div>
@@ -601,7 +601,7 @@ export default function ProductDetail() {
               ))}
             </div>
 
-            <h1 className="font-display text-3xl md:text-5xl font-bold tracking-tight mb-4" data-testid="text-product-name">
+            <h1 className="font-display text-2xl md:text-3xl font-bold mb-2" data-testid="text-product-name">
               {product.name}
             </h1>
 
