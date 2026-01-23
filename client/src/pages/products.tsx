@@ -509,7 +509,8 @@ function ProductsComponent() {
           >
             <Link href={`/peptides/${saleProduct.id}`} onClick={savePageState}>
               <div className="sale-glow-pulse rounded-xl">
-                <Card className="p-3 md:p-6 border-2 border-red-500 bg-gradient-to-br from-red-950/40 via-background to-background transition-all duration-300 cursor-pointer group hover:scale-[1.02] md:hover:scale-105 hover:shadow-[0_0_30px_rgba(239,68,68,0.6)] hover:border-red-400 relative">
+                <Card className="p-3 md:p-6 border-2 border-[#E7FB10]/50 bg-gradient-to-br from-[#E7FB10]/10 via-background to-background transition-all duration-300 cursor-pointer group hover:scale-[1.02] md:hover:scale-105 hover:shadow-[0_0_30px_rgba(231,251,16,0.4)] hover:border-[#E7FB10] relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#E7FB10]/5 blur-3xl -mr-16 -mt-16 pointer-events-none" />
                   {/* Dismiss button */}
                   <button
                     onClick={(e) => {

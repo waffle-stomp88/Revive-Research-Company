@@ -601,6 +601,19 @@ export default function ProductDetail() {
               ))}
             </div>
 
+            {/* Lab Verification Trust Marker */}
+            <Card className="p-4 bg-emerald-950/20 border-emerald-500/30 mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-full bg-emerald-500/10">
+                  <Shield className="h-5 w-5 text-emerald-400" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-emerald-400 uppercase tracking-wider">3rd Party Verified</h4>
+                  <p className="text-xs text-muted-foreground">Purity and identity confirmed by independent laboratory analysis.</p>
+                </div>
+              </div>
+            </Card>
+
             <h1 className="font-display text-2xl md:text-3xl font-bold mb-2" data-testid="text-product-name">
               {product.name}
             </h1>
