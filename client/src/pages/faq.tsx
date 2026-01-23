@@ -281,8 +281,13 @@ export default function FAQ() {
                       className="border-b last:border-b-0"
                       data-testid={`faq-item-${categoryIndex + 1}-${index + 1}`}
                     >
-                      <AccordionTrigger className="px-6 text-left font-medium hover:no-underline">
-                        {item.question}
+                      <AccordionTrigger className="px-6 text-left font-medium hover:no-underline group">
+                        <span className="flex-1">{item.question}</span>
+                        {item.question.toLowerCase().includes("return") && (
+                          <span className="mr-2 text-[10px] uppercase tracking-wider text-[#21d8ff] font-bold opacity-0 group-data-[state=open]:opacity-100 transition-opacity">
+                            Accuracy Guaranteed
+                          </span>
+                        )}
                       </AccordionTrigger>
                       <AccordionContent className="px-6 pb-4 text-muted-foreground">
                         {item.answer}

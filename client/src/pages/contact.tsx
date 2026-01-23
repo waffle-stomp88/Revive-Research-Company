@@ -306,15 +306,26 @@ export default function Contact() {
                     <div>
                       <h3 className="font-medium mb-1">Response Time</h3>
                       <p className="text-sm text-muted-foreground">
-                        We typically respond within <span className="text-[#21d8ff] font-medium">{responseTime}</span> during business hours.
+                        Current expected response: <span className="text-[#21d8ff] font-medium">{responseTime}</span>
                       </p>
                       <p className="text-[10px] text-muted-foreground/60 mt-2 leading-tight">
-                        Business Hours: 9 AM - 5 PM CT, Mon - Fri (excluding Federal Holidays).
+                        Our team is available 9 AM - 5 PM CT, Mon - Fri.
                       </p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
+
+              <div className="p-4 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30">
+                <h4 className="font-medium text-[#E7FB10] mb-2 flex items-center gap-2">
+                  <Truck className="h-4 w-4" />
+                  Shipping Status
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  Orders placed before 12 PM CT ship same-day. 
+                  <Link href="/dashboard" className="text-[#E7FB10] hover:underline ml-1">Track my order →</Link>
+                </p>
+              </div>
 
               <Card className="border-red-500/40 bg-red-950/20 shadow-[0_0_15px_rgba(239,68,68,0.15)] animate-pulse-subtle">
                 <CardContent className="pt-6">
