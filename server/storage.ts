@@ -211,8 +211,10 @@ export interface IStorage {
   subscribeToNewsletter(subscriber: InsertNewsletterSubscriber): Promise<NewsletterSubscriber>;
   getAllNewsletterSubscribers(): Promise<NewsletterSubscriber[]>;
   deleteNewsletterSubscriber(id: string): Promise<boolean>;
-  unsubscribeFromNewsletter(email: string): Promise<NewsletterSubscriber | undefined>;
+  unsubscribeFromNewsletter(email: string, reason?: string): Promise<NewsletterSubscriber | undefined>;
   checkNewsletterSubscription(email: string): Promise<NewsletterSubscriber | undefined>;
+  updateLastEmailSent(email: string): Promise<NewsletterSubscriber | undefined>;
+  getNewsletterStats(): Promise<{ total: number; active: number; unsubscribed: number }>;
   
   // Product Dosage Stock Management
   getProductDosageStocks(productId: string): Promise<ProductDosageStock[]>;
@@ -1306,14 +1308,36 @@ export class DatabaseStorage implements IStorage {
     return db.select().from(newsletterSubscribers).orderBy(desc(newsletterSubscribers.createdAt));
   }
 
-  async unsubscribeFromNewsletter(email: string): Promise<NewsletterSubscriber | undefined> {
-    const [result] = await db.update(newsletterSubscribers).set({ status: "unsubscribed" }).where(eq(newsletterSubscribers.email, email)).returning();
+  async unsubscribeFromNewsletter(email: string, reason?: string): Promise<NewsletterSubscriber | undefined> {
+    const [result] = await db.update(newsletterSubscribers)
+      .set({ 
+        status: "unsubscribed",
+        unsubscribedAt: new Date(),
+        unsubscribeReason: reason || null
+      })
+      .where(eq(newsletterSubscribers.email, email))
+      .returning();
     return result || undefined;
   }
 
   async checkNewsletterSubscription(email: string): Promise<NewsletterSubscriber | undefined> {
     const [result] = await db.select().from(newsletterSubscribers).where(eq(newsletterSubscribers.email, email));
     return result || undefined;
+  }
+
+  async updateLastEmailSent(email: string): Promise<NewsletterSubscriber | undefined> {
+    const [result] = await db.update(newsletterSubscribers)
+      .set({ lastEmailSentAt: new Date() })
+      .where(eq(newsletterSubscribers.email, email))
+      .returning();
+    return result || undefined;
+  }
+
+  async getNewsletterStats(): Promise<{ total: number; active: number; unsubscribed: number }> {
+    const all = await db.select().from(newsletterSubscribers);
+    const active = all.filter(s => s.status === "subscribed").length;
+    const unsubscribed = all.filter(s => s.status === "unsubscribed").length;
+    return { total: all.length, active, unsubscribed };
   }
 
   async deleteNewsletterSubscriber(id: string): Promise<boolean> {

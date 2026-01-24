@@ -392,9 +392,22 @@ export const newsletterSubscribers = pgTable("newsletter_subscribers", {
   source: text("source").default("website"), // website, early_access_modal, footer, etc.
   status: text("status").default("subscribed"), // subscribed, unsubscribed
   createdAt: timestamp("created_at").defaultNow(),
+  lastEmailSentAt: timestamp("last_email_sent_at"),
+  unsubscribedAt: timestamp("unsubscribed_at"),
+  unsubscribeReason: text("unsubscribe_reason"), // Optional reason for unsubscribing
 });
 
-export const insertNewsletterSubscriberSchema = createInsertSchema(newsletterSubscribers).omit({ id: true, status: true, createdAt: true });
+// Predefined unsubscribe reasons
+export const unsubscribeReasons = [
+  "Too many emails",
+  "Content not relevant",
+  "No longer interested",
+  "Never signed up",
+  "Other",
+] as const;
+export type UnsubscribeReason = typeof unsubscribeReasons[number];
+
+export const insertNewsletterSubscriberSchema = createInsertSchema(newsletterSubscribers).omit({ id: true, status: true, createdAt: true, lastEmailSentAt: true, unsubscribedAt: true, unsubscribeReason: true });
 export type InsertNewsletterSubscriber = z.infer<typeof insertNewsletterSubscriberSchema>;
 export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
 
