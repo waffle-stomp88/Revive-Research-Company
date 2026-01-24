@@ -109,6 +109,25 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
   }
 }
 
+// Premium Apple-inspired email base styles
+const getEmailBaseStyles = () => {
+  const { brand } = EMAIL_CONFIG;
+  return {
+    body: `margin: 0; padding: 0; background-color: #0d0d0f; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; -webkit-font-smoothing: antialiased;`,
+    container: `max-width: 600px; margin: 0 auto; background-color: ${brand.backgroundColor}; border-radius: 16px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);`,
+    header: `background: linear-gradient(180deg, ${brand.cardColor} 0%, ${brand.backgroundColor} 100%); padding: 40px 40px 30px 40px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05);`,
+    logo: `color: ${brand.primaryColor}; font-size: 14px; font-weight: 700; letter-spacing: 4px; margin: 0 0 8px 0; text-transform: uppercase;`,
+    content: `padding: 40px;`,
+    card: `background-color: ${brand.cardColor}; border-radius: 12px; padding: 24px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05);`,
+    cardTitle: `color: rgba(255,255,255,0.5); font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 16px 0;`,
+    footer: `background-color: ${brand.cardColor}; padding: 30px 40px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05);`,
+    primaryColor: brand.primaryColor,
+    accentColor: brand.accentColor,
+    glowYellow: `0 0 20px rgba(231, 251, 16, 0.3)`,
+    glowCyan: `0 0 20px rgba(33, 216, 255, 0.3)`,
+  };
+};
+
 // Email template: Order Confirmation
 function getOrderConfirmationTemplate(order: {
   email: string;
@@ -126,40 +145,44 @@ function getOrderConfirmationTemplate(order: {
 }, productName?: string): { subject: string; text: string; html: string } {
   const shortRef = getShortOrderRef(order.id);
   const { brand } = EMAIL_CONFIG;
+  const styles = getEmailBaseStyles();
   const hasFirstName = order.firstName && order.firstName.trim().length > 0;
-  const greeting = hasFirstName 
-    ? `Thank you for your order, ${order.firstName}!` 
-    : 'Thank you for your order!';
   
-  const subject = `Order Confirmation — ${brand.name} (#${shortRef})`;
+  const subject = `Order Confirmed #${shortRef}`;
   
   const text = `
-${greeting}
+REVIVE RESEARCH
+Order Confirmed
 
-ORDER DETAILS
--------------
-Order Number: #${shortRef}
+${hasFirstName ? `Hi ${order.firstName},` : 'Hello,'}
+
+Thank you for your order. We're preparing your research compounds for shipment.
+
+ORDER #${shortRef}
+-------------------
 Product: ${productName || order.productId}
 Quantity: ${order.quantity}
 Total: $${order.totalAmount}
 
-SHIPPING ADDRESS
-----------------
+SHIPPING TO
+-----------
 ${order.firstName} ${order.lastName}
 ${order.address || ''}
 ${order.city || ''}, ${order.state || ''} ${order.zipCode || ''}
 ${order.country || ''}
 
-Your order is being prepared and will ship within 24 hours.
+WHAT'S NEXT
+-----------
+Your order will ship within 24 hours. You'll receive tracking information once shipped.
 
-IMPORTANT NOTICE
-----------------
-All products are for research purposes only.
+RESEARCH USE ONLY
+-----------------
+All products are intended for laboratory research purposes only. 
 Not for human or animal consumption.
 
-Questions? Reply to this email or contact us at ${EMAIL_CONFIG.replyTo}
+Questions? Contact us at ${EMAIL_CONFIG.replyTo}
 
-Thank you for choosing ${brand.name}.
+${brand.name}
 `;
 
   const html = `
@@ -168,68 +191,131 @@ Thank you for choosing ${brand.name}.
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmed</title>
 </head>
-<body style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: ${brand.backgroundColor}; color: #ffffff; margin: 0; padding: 20px;">
-  <div style="max-width: 600px; margin: 0 auto; background-color: ${brand.cardColor}; border-radius: 8px; overflow: hidden;">
-    <div style="background: linear-gradient(135deg, ${brand.primaryColor} 0%, ${brand.accentColor} 100%); padding: 30px; text-align: center;">
-      <h1 style="color: ${brand.backgroundColor}; margin: 0; font-size: 28px; font-weight: bold;">${brand.name.toUpperCase()}</h1>
-    </div>
-    
-    <div style="padding: 30px;">
-      <h2 style="color: ${brand.primaryColor}; margin: 0 0 20px 0;">${greeting}</h2>
-      
-      <div style="background-color: ${brand.backgroundColor}; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-        <h3 style="color: ${brand.accentColor}; margin: 0 0 15px 0; font-size: 16px;">ORDER DETAILS</h3>
-        <table style="width: 100%; color: #ffffff;">
+<body style="${styles.body}">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0d0d0f;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" style="${styles.container}">
+          
+          <!-- Header -->
           <tr>
-            <td style="padding: 8px 0; color: #888;">Order Number:</td>
-            <td style="padding: 8px 0; text-align: right; font-weight: bold;">#${shortRef}</td>
+            <td style="${styles.header}">
+              <p style="${styles.logo}">Revive Research</p>
+              <h1 style="color: #ffffff; font-size: 32px; font-weight: 600; margin: 0; letter-spacing: -0.5px;">
+                Order Confirmed
+              </h1>
+            </td>
           </tr>
+          
+          <!-- Content -->
           <tr>
-            <td style="padding: 8px 0; color: #888;">Product:</td>
-            <td style="padding: 8px 0; text-align: right;">${productName || order.productId}</td>
+            <td style="${styles.content}">
+              
+              <!-- Greeting -->
+              <p style="color: rgba(255,255,255,0.8); font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
+                ${hasFirstName ? `Hi ${order.firstName},` : 'Hello,'}<br><br>
+                Thank you for your order. We're preparing your research compounds for shipment.
+              </p>
+              
+              <!-- Order Number Badge -->
+              <div style="text-align: center; margin-bottom: 30px;">
+                <span style="display: inline-block; background: linear-gradient(135deg, ${styles.primaryColor} 0%, #c4d40d 100%); color: #000000; font-size: 13px; font-weight: 700; padding: 10px 24px; border-radius: 100px; letter-spacing: 1px; box-shadow: ${styles.glowYellow};">
+                  ORDER #${shortRef}
+                </span>
+              </div>
+              
+              <!-- Order Details Card -->
+              <div style="${styles.card}">
+                <p style="${styles.cardTitle}">Order Details</p>
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                      <span style="color: rgba(255,255,255,0.5); font-size: 14px;">Product</span>
+                    </td>
+                    <td style="padding: 12px 0; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                      <span style="color: #ffffff; font-size: 14px; font-weight: 500;">${productName || order.productId}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                      <span style="color: rgba(255,255,255,0.5); font-size: 14px;">Quantity</span>
+                    </td>
+                    <td style="padding: 12px 0; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                      <span style="color: #ffffff; font-size: 14px;">${order.quantity}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 16px 0 0 0;">
+                      <span style="color: #ffffff; font-size: 14px; font-weight: 600;">Total</span>
+                    </td>
+                    <td style="padding: 16px 0 0 0; text-align: right;">
+                      <span style="color: ${styles.primaryColor}; font-size: 24px; font-weight: 700;">$${order.totalAmount}</span>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              
+              <!-- Shipping Address Card -->
+              <div style="${styles.card}">
+                <p style="${styles.cardTitle}">Shipping To</p>
+                <p style="color: #ffffff; font-size: 15px; line-height: 1.7; margin: 0;">
+                  <strong>${order.firstName} ${order.lastName}</strong><br>
+                  <span style="color: rgba(255,255,255,0.7);">
+                    ${order.address || ''}<br>
+                    ${order.city || ''}, ${order.state || ''} ${order.zipCode || ''}<br>
+                    ${order.country || ''}
+                  </span>
+                </p>
+              </div>
+              
+              <!-- Status Timeline -->
+              <div style="${styles.card}; background: linear-gradient(135deg, rgba(33, 216, 255, 0.1) 0%, rgba(33, 216, 255, 0.05) 100%); border-color: rgba(33, 216, 255, 0.2);">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td style="width: 40px; vertical-align: top; padding-right: 15px;">
+                      <div style="width: 32px; height: 32px; background: ${styles.accentColor}; border-radius: 50%; text-align: center; line-height: 32px; box-shadow: ${styles.glowCyan};">
+                        <span style="color: #000; font-size: 14px;">1</span>
+                      </div>
+                    </td>
+                    <td style="vertical-align: top;">
+                      <p style="color: #ffffff; font-size: 14px; font-weight: 600; margin: 0 0 4px 0;">Order Received</p>
+                      <p style="color: rgba(255,255,255,0.5); font-size: 13px; margin: 0;">We're preparing your order for shipment</p>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              
+              <!-- Research Notice -->
+              <div style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; padding: 20px; margin-top: 20px;">
+                <p style="color: rgba(239, 68, 68, 0.9); font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin: 0 0 8px 0;">
+                  Research Use Only
+                </p>
+                <p style="color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.5; margin: 0;">
+                  All products are intended for laboratory research purposes only. Not for human or animal consumption.
+                </p>
+              </div>
+              
+            </td>
           </tr>
+          
+          <!-- Footer -->
           <tr>
-            <td style="padding: 8px 0; color: #888;">Quantity:</td>
-            <td style="padding: 8px 0; text-align: right;">${order.quantity}</td>
+            <td style="${styles.footer}">
+              <p style="color: rgba(255,255,255,0.4); font-size: 13px; margin: 0 0 10px 0;">
+                Questions? Contact us at <a href="mailto:${EMAIL_CONFIG.replyTo}" style="color: ${styles.accentColor}; text-decoration: none;">${EMAIL_CONFIG.replyTo}</a>
+              </p>
+              <p style="color: rgba(255,255,255,0.25); font-size: 11px; margin: 0;">
+                &copy; ${new Date().getFullYear()} Revive Research. All rights reserved.
+              </p>
+            </td>
           </tr>
-          <tr style="border-top: 1px solid #333;">
-            <td style="padding: 12px 0; color: #888; font-weight: bold;">Total:</td>
-            <td style="padding: 12px 0; text-align: right; font-weight: bold; color: ${brand.primaryColor}; font-size: 18px;">$${order.totalAmount}</td>
-          </tr>
+          
         </table>
-      </div>
-      
-      <div style="background-color: ${brand.backgroundColor}; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-        <h3 style="color: ${brand.accentColor}; margin: 0 0 15px 0; font-size: 16px;">SHIPPING ADDRESS</h3>
-        <p style="margin: 0; line-height: 1.6; color: #cccccc;">
-          ${order.firstName} ${order.lastName}<br>
-          ${order.address || ''}<br>
-          ${order.city || ''}, ${order.state || ''} ${order.zipCode || ''}<br>
-          ${order.country || ''}
-        </p>
-      </div>
-      
-      <p style="color: #888; margin: 20px 0; text-align: center;">
-        Your order is being prepared and will ship within 24 hours.
-      </p>
-      
-      <div style="background: linear-gradient(135deg, rgba(236, 72, 153, 0.2) 0%, rgba(236, 72, 153, 0.1) 100%); border: 1px solid rgba(236, 72, 153, 0.5); border-radius: 8px; padding: 15px; margin: 20px 0;">
-        <p style="margin: 0; font-size: 12px; color: #ec4899;">
-          <strong>IMPORTANT:</strong> All products are for research purposes only. Not for human or animal consumption.
-        </p>
-      </div>
-    </div>
-    
-    <div style="background-color: ${brand.backgroundColor}; padding: 20px; text-align: center; border-top: 1px solid #333;">
-      <p style="margin: 0; color: #666; font-size: 12px;">
-        Questions? Reply to this email or contact us at ${EMAIL_CONFIG.replyTo}
-      </p>
-      <p style="margin: 10px 0 0 0; color: #444; font-size: 11px;">
-        &copy; ${new Date().getFullYear()} ${brand.name}. All rights reserved.
-      </p>
-    </div>
-  </div>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>
 `;
@@ -300,9 +386,9 @@ function getAdminOrderNotificationTemplate(order: {
   phone?: string;
 }, productName?: string): { subject: string; text: string; html: string } {
   const shortRef = getShortOrderRef(order.id);
-  const { brand } = EMAIL_CONFIG;
+  const styles = getEmailBaseStyles();
   
-  const subject = `[NEW ORDER] #${shortRef} — $${order.totalAmount}`;
+  const subject = `New Order #${shortRef} - $${order.totalAmount}`;
   
   const text = `
 NEW ORDER RECEIVED
@@ -335,68 +421,110 @@ Time: ${new Date().toISOString()}
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Order</title>
 </head>
-<body style="font-family: 'Helvetica Neue', Arial, sans-serif; background-color: ${brand.backgroundColor}; color: #ffffff; margin: 0; padding: 20px;">
-  <div style="max-width: 600px; margin: 0 auto; background-color: ${brand.cardColor}; border-radius: 8px; overflow: hidden;">
-    <div style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); padding: 20px; text-align: center;">
-      <h1 style="color: #ffffff; margin: 0; font-size: 24px;">NEW ORDER</h1>
-      <p style="color: rgba(255,255,255,0.9); margin: 5px 0 0 0; font-size: 32px; font-weight: bold;">#${shortRef}</p>
-    </div>
-    
-    <div style="padding: 25px;">
-      <div style="background-color: ${brand.backgroundColor}; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
-        <h3 style="color: ${brand.accentColor}; margin: 0 0 15px 0; font-size: 14px; text-transform: uppercase;">Customer Details</h3>
-        <table style="width: 100%; color: #ffffff;">
+<body style="${styles.body}">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0d0d0f;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" style="${styles.container}">
+          
+          <!-- Header -->
           <tr>
-            <td style="padding: 6px 0; color: #888;">Name:</td>
-            <td style="padding: 6px 0; text-align: right; font-weight: bold;">${order.firstName} ${order.lastName}</td>
+            <td style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); padding: 30px 40px; text-align: center;">
+              <p style="color: rgba(255,255,255,0.8); font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 8px 0;">New Order Received</p>
+              <p style="color: #ffffff; font-size: 42px; font-weight: 700; margin: 0; letter-spacing: -1px;">$${order.totalAmount}</p>
+              <p style="color: rgba(255,255,255,0.9); font-size: 14px; margin: 10px 0 0 0;">Order #${shortRef}</p>
+            </td>
           </tr>
+          
+          <!-- Content -->
           <tr>
-            <td style="padding: 6px 0; color: #888;">Email:</td>
-            <td style="padding: 6px 0; text-align: right;"><a href="mailto:${order.email}" style="color: ${brand.accentColor};">${order.email}</a></td>
+            <td style="${styles.content}">
+              
+              <!-- Customer Card -->
+              <div style="${styles.card}">
+                <p style="${styles.cardTitle}">Customer</p>
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                      <span style="color: rgba(255,255,255,0.5); font-size: 13px;">Name</span>
+                    </td>
+                    <td style="padding: 8px 0; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                      <span style="color: #ffffff; font-size: 14px; font-weight: 600;">${order.firstName} ${order.lastName}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                      <span style="color: rgba(255,255,255,0.5); font-size: 13px;">Email</span>
+                    </td>
+                    <td style="padding: 8px 0; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                      <a href="mailto:${order.email}" style="color: ${styles.accentColor}; font-size: 14px; text-decoration: none;">${order.email}</a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0;">
+                      <span style="color: rgba(255,255,255,0.5); font-size: 13px;">Phone</span>
+                    </td>
+                    <td style="padding: 8px 0; text-align: right;">
+                      <span style="color: #ffffff; font-size: 14px;">${order.phone || 'Not provided'}</span>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              
+              <!-- Order Card -->
+              <div style="${styles.card}">
+                <p style="${styles.cardTitle}">Order Details</p>
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                      <span style="color: rgba(255,255,255,0.5); font-size: 13px;">Product</span>
+                    </td>
+                    <td style="padding: 8px 0; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                      <span style="color: #ffffff; font-size: 14px;">${productName || order.productId}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0;">
+                      <span style="color: rgba(255,255,255,0.5); font-size: 13px;">Quantity</span>
+                    </td>
+                    <td style="padding: 8px 0; text-align: right;">
+                      <span style="color: #ffffff; font-size: 14px;">${order.quantity}</span>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              
+              <!-- Shipping Card -->
+              <div style="${styles.card}">
+                <p style="${styles.cardTitle}">Ship To</p>
+                <p style="color: #ffffff; font-size: 14px; line-height: 1.7; margin: 0;">
+                  ${order.firstName} ${order.lastName}<br>
+                  <span style="color: rgba(255,255,255,0.6);">
+                    ${order.address || ''}<br>
+                    ${order.city || ''}, ${order.state || ''} ${order.zipCode || ''}<br>
+                    ${order.country || ''}
+                  </span>
+                </p>
+              </div>
+              
+            </td>
           </tr>
+          
+          <!-- Footer -->
           <tr>
-            <td style="padding: 6px 0; color: #888;">Phone:</td>
-            <td style="padding: 6px 0; text-align: right;">${order.phone || 'Not provided'}</td>
+            <td style="${styles.footer}">
+              <p style="color: rgba(255,255,255,0.3); font-size: 12px; margin: 0;">
+                Received ${new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}
+              </p>
+            </td>
           </tr>
+          
         </table>
-      </div>
-
-      <div style="background-color: ${brand.backgroundColor}; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
-        <h3 style="color: ${brand.accentColor}; margin: 0 0 15px 0; font-size: 14px; text-transform: uppercase;">Order Details</h3>
-        <table style="width: 100%; color: #ffffff;">
-          <tr>
-            <td style="padding: 6px 0; color: #888;">Product:</td>
-            <td style="padding: 6px 0; text-align: right;">${productName || order.productId}</td>
-          </tr>
-          <tr>
-            <td style="padding: 6px 0; color: #888;">Quantity:</td>
-            <td style="padding: 6px 0; text-align: right;">${order.quantity}</td>
-          </tr>
-          <tr style="border-top: 1px solid #333;">
-            <td style="padding: 12px 0; font-weight: bold;">TOTAL:</td>
-            <td style="padding: 12px 0; text-align: right; font-weight: bold; color: #22c55e; font-size: 24px;">$${order.totalAmount}</td>
-          </tr>
-        </table>
-      </div>
-
-      <div style="background-color: ${brand.backgroundColor}; border-radius: 8px; padding: 20px;">
-        <h3 style="color: ${brand.accentColor}; margin: 0 0 15px 0; font-size: 14px; text-transform: uppercase;">Shipping Address</h3>
-        <p style="margin: 0; line-height: 1.6; color: #cccccc;">
-          ${order.firstName} ${order.lastName}<br>
-          ${order.address || ''}<br>
-          ${order.city || ''}, ${order.state || ''} ${order.zipCode || ''}<br>
-          ${order.country || ''}
-        </p>
-      </div>
-    </div>
-    
-    <div style="background-color: ${brand.backgroundColor}; padding: 15px; text-align: center; border-top: 1px solid #333;">
-      <p style="margin: 0; color: #666; font-size: 11px;">
-        Order received at ${new Date().toLocaleString()}
-      </p>
-    </div>
-  </div>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>
 `;
@@ -454,18 +582,19 @@ export function isEmailConfigured(): boolean {
 
 // Newsletter subscription confirmation email template
 function getNewsletterWelcomeTemplate(email: string): { subject: string; text: string; html: string } {
-  const { brand } = EMAIL_CONFIG;
+  const styles = getEmailBaseStyles();
   
-  const subject = 'Welcome to Revive Research - Subscription Confirmed';
+  const subject = 'You\'re In - Welcome to Revive Research';
   
-  const text = `Welcome to Revive Research!
+  const text = `REVIVE RESEARCH
+Welcome to the Community
 
-Thank you for subscribing to our newsletter. You'll be the first to know about:
+You're now part of an exclusive community of researchers. Here's what you can expect:
 
-- New research compounds and product releases
-- Exclusive subscriber-only promotions
-- Educational content and research updates
-- Industry news and insights
+- Early access to new research compounds
+- Exclusive subscriber-only promotions  
+- Educational content and research insights
+- Industry news and updates
 
 Stay curious,
 The Revive Research Team
@@ -480,63 +609,133 @@ If you did not subscribe, please ignore this email.`;
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Revive Research</title>
 </head>
-<body style="margin: 0; padding: 0; background-color: ${brand.backgroundColor}; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: ${brand.backgroundColor};">
+<body style="${styles.body}">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0d0d0f;">
     <tr>
       <td align="center" style="padding: 40px 20px;">
-        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width: 600px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" style="${styles.container}">
           
           <!-- Header -->
           <tr>
-            <td style="text-align: center; padding-bottom: 30px;">
-              <h1 style="color: ${brand.primaryColor}; font-size: 28px; margin: 0; font-weight: 700; letter-spacing: 1px;">
-                REVIVE RESEARCH
+            <td style="${styles.header}">
+              <p style="${styles.logo}">Revive Research</p>
+              <h1 style="color: #ffffff; font-size: 32px; font-weight: 600; margin: 0; letter-spacing: -0.5px;">
+                You're In
               </h1>
             </td>
           </tr>
           
-          <!-- Main Content -->
+          <!-- Content -->
           <tr>
-            <td style="background-color: ${brand.cardColor}; border-radius: 12px; padding: 40px;">
-              <h2 style="color: #ffffff; font-size: 24px; margin: 0 0 20px 0; text-align: center;">
-                Welcome to the Community
-              </h2>
+            <td style="${styles.content}">
               
-              <p style="color: #b0b0b0; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0; text-align: center;">
-                Thank you for subscribing to our newsletter. You're now part of an exclusive community of researchers.
+              <!-- Welcome Badge -->
+              <div style="text-align: center; margin-bottom: 30px;">
+                <span style="display: inline-block; background: linear-gradient(135deg, ${styles.primaryColor} 0%, #c4d40d 100%); color: #000000; font-size: 12px; font-weight: 700; padding: 8px 20px; border-radius: 100px; letter-spacing: 1px; box-shadow: ${styles.glowYellow};">
+                  SUBSCRIBER
+                </span>
+              </div>
+              
+              <p style="color: rgba(255,255,255,0.8); font-size: 16px; line-height: 1.7; margin: 0 0 30px 0; text-align: center;">
+                Welcome to an exclusive community of researchers. You'll be the first to know about new developments.
               </p>
               
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 30px 0;">
-                <tr>
-                  <td style="background-color: ${brand.backgroundColor}; border-radius: 8px; padding: 20px;">
-                    <p style="color: ${brand.primaryColor}; font-size: 14px; font-weight: 600; margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 1px;">
-                      What to Expect
-                    </p>
-                    <ul style="color: #b0b0b0; font-size: 14px; line-height: 1.8; margin: 0; padding-left: 20px;">
-                      <li>New research compounds and product releases</li>
-                      <li>Exclusive subscriber-only promotions</li>
-                      <li>Educational content and research updates</li>
-                      <li>Industry news and insights</li>
-                    </ul>
-                  </td>
-                </tr>
-              </table>
+              <!-- Benefits Card -->
+              <div style="${styles.card}">
+                <p style="${styles.cardTitle}">What to Expect</p>
+                
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                      <table role="presentation" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td style="width: 40px; vertical-align: top;">
+                            <div style="width: 28px; height: 28px; background: rgba(33, 216, 255, 0.15); border-radius: 8px; text-align: center; line-height: 28px;">
+                              <span style="color: ${styles.accentColor}; font-size: 14px;">1</span>
+                            </div>
+                          </td>
+                          <td style="vertical-align: middle;">
+                            <span style="color: #ffffff; font-size: 14px;">Early access to new research compounds</span>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                      <table role="presentation" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td style="width: 40px; vertical-align: top;">
+                            <div style="width: 28px; height: 28px; background: rgba(33, 216, 255, 0.15); border-radius: 8px; text-align: center; line-height: 28px;">
+                              <span style="color: ${styles.accentColor}; font-size: 14px;">2</span>
+                            </div>
+                          </td>
+                          <td style="vertical-align: middle;">
+                            <span style="color: #ffffff; font-size: 14px;">Exclusive subscriber-only promotions</span>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                      <table role="presentation" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td style="width: 40px; vertical-align: top;">
+                            <div style="width: 28px; height: 28px; background: rgba(33, 216, 255, 0.15); border-radius: 8px; text-align: center; line-height: 28px;">
+                              <span style="color: ${styles.accentColor}; font-size: 14px;">3</span>
+                            </div>
+                          </td>
+                          <td style="vertical-align: middle;">
+                            <span style="color: #ffffff; font-size: 14px;">Educational content and research insights</span>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 12px 0;">
+                      <table role="presentation" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td style="width: 40px; vertical-align: top;">
+                            <div style="width: 28px; height: 28px; background: rgba(33, 216, 255, 0.15); border-radius: 8px; text-align: center; line-height: 28px;">
+                              <span style="color: ${styles.accentColor}; font-size: 14px;">4</span>
+                            </div>
+                          </td>
+                          <td style="vertical-align: middle;">
+                            <span style="color: #ffffff; font-size: 14px;">Industry news and updates</span>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </div>
               
-              <p style="color: #888888; font-size: 14px; line-height: 1.6; margin: 20px 0 0 0; text-align: center;">
+              <!-- CTA -->
+              <div style="text-align: center; margin-top: 30px;">
+                <a href="https://reviveresearch.co/peptides" style="display: inline-block; background: linear-gradient(135deg, ${styles.primaryColor} 0%, #c4d40d 100%); color: #000000; font-size: 14px; font-weight: 600; padding: 14px 32px; border-radius: 8px; text-decoration: none; box-shadow: ${styles.glowYellow};">
+                  Browse Research Compounds
+                </a>
+              </div>
+              
+              <p style="color: rgba(255,255,255,0.4); font-size: 14px; line-height: 1.6; margin: 30px 0 0 0; text-align: center;">
                 Stay curious,<br>
-                <strong style="color: #ffffff;">The Revive Research Team</strong>
+                <span style="color: rgba(255,255,255,0.7);">The Revive Research Team</span>
               </p>
+              
             </td>
           </tr>
           
           <!-- Footer -->
           <tr>
-            <td style="padding: 30px 0; text-align: center;">
-              <p style="color: #666666; font-size: 12px; margin: 0;">
+            <td style="${styles.footer}">
+              <p style="color: rgba(255,255,255,0.3); font-size: 12px; margin: 0 0 8px 0;">
                 This email was sent to ${email}
               </p>
-              <p style="color: #666666; font-size: 12px; margin: 10px 0 0 0;">
+              <p style="color: rgba(255,255,255,0.2); font-size: 11px; margin: 0;">
                 If you did not subscribe, please ignore this email.
               </p>
             </td>
