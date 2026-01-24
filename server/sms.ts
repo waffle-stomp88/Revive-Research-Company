@@ -18,7 +18,7 @@ function getSNSClient(): SNSClient | null {
   
   const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
   const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-  const region = process.env.AWS_REGION || 'us-east-1';
+  const region = process.env.AWS_REGION || 'us-east-2';
 
   if (!accessKeyId || !secretAccessKey) {
     console.warn('[SMS] AWS credentials not configured. SMS notifications disabled.');
