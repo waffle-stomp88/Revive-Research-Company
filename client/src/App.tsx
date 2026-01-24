@@ -56,6 +56,7 @@ import ResearchStacks from "@/pages/research-stacks";
 import ResearchStackDetail from "@/pages/research-stack-detail";
 import Academy from "@/pages/academy";
 import DevLogin from "@/pages/dev-login";
+import Unsubscribe from "@/pages/unsubscribe";
 import NotFound from "@/pages/not-found";
 
 const ChatBot = lazy(() => import("@/components/chatbot").then(m => ({ default: m.ChatBot })));
@@ -185,6 +186,7 @@ function Router() {
         <Route path="/lab-notes" component={LabNotes} />
         <Route path="/dosage-calculator" component={DosageCalculator} />
         <Route path="/resources" component={ResourcesHub} />
+        <Route path="/unsubscribe" component={Unsubscribe} />
         <Route path="/dev-login" component={DevLogin} />
         <Route component={NotFound} />
       </Switch>

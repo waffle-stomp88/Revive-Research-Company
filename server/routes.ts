@@ -2721,6 +2721,54 @@ Return ONLY valid JSON in this exact format:
     }
   });
 
+  // Public unsubscribe endpoint - no auth required (accessed via email link)
+  app.post("/api/newsletter/unsubscribe", async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email || typeof email !== 'string') {
+        return res.status(400).json({ error: "Email is required" });
+      }
+
+      // Normalize email
+      const normalizedEmail = email.toLowerCase().trim();
+      
+      const result = await storage.unsubscribeFromNewsletter(normalizedEmail);
+      
+      if (result) {
+        console.log(`[Newsletter] Unsubscribed: ${normalizedEmail}`);
+        res.json({ success: true, message: "Successfully unsubscribed from newsletter" });
+      } else {
+        // Even if email not found, return success for privacy (don't reveal if email exists)
+        res.json({ success: true, message: "Successfully unsubscribed from newsletter" });
+      }
+    } catch (error) {
+      console.error("Error unsubscribing from newsletter:", error);
+      res.status(500).json({ error: "Failed to unsubscribe" });
+    }
+  });
+
+  // Check subscription status (for unsubscribe page)
+  app.get("/api/newsletter/status", async (req, res) => {
+    try {
+      const email = req.query.email as string;
+      
+      if (!email) {
+        return res.status(400).json({ error: "Email is required" });
+      }
+
+      const subscriber = await storage.checkNewsletterSubscription(email.toLowerCase().trim());
+      
+      res.json({ 
+        exists: !!subscriber,
+        status: subscriber?.status || null
+      });
+    } catch (error) {
+      console.error("Error checking newsletter status:", error);
+      res.status(500).json({ error: "Failed to check status" });
+    }
+  });
+
   // Get all newsletter subscribers (admin only)
   app.get("/api/admin/newsletter/subscribers", isAdmin, async (req, res) => {
     try {
