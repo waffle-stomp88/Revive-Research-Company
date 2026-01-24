@@ -582,8 +582,6 @@ export function isEmailConfigured(): boolean {
 
 // Newsletter subscription confirmation email template
 function getNewsletterWelcomeTemplate(email: string): { subject: string; text: string; html: string } {
-  const { brand } = EMAIL_CONFIG;
-  
   // Premium color palette matching website
   const colors = {
     neonYellow: '#E7FB10',
@@ -599,31 +597,37 @@ function getNewsletterWelcomeTemplate(email: string): { subject: string; text: s
     textMuted: 'rgba(255,255,255,0.4)',
   };
   
-  // Logo URL - using the production site
-  const logoUrl = 'https://reviveresearch.co/assets/Revive_PNG_1766012118069.png';
+  // Logo as base64 data URI for reliable email display
+  const logoBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAaAAAACICAMAAACWYM+EAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAuIwAALiMBeKU/dgAAAoJQTFRF////////////AAAA////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////tfOj8QAAANZ0Uk5TRoB7AIz/9eNtHz8ibn++D6ED/nX3TOgz0Ru4CpIm3f1lPPDzR1765CoBiMwXCLMCmsgRDEA7GBITOjI3pwbVixUJ7CO/wvlrgYk06W/hx9kQTlVs/FhS1rbcY/tCXY7udyXJr98cevQ2VwV+n9Oi6iCUJ02TRcPy3qMtphoejQS92CuedjFzYcYheT4NXHy3yoJBnShI5QvOre+K2hQsqHKq4hmglrBb56tK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';
   
-  const subject = 'You\'re In - Welcome to Revive Research';
+  // Unsubscribe URL placeholder (replace with actual unsubscribe system)
+  const unsubscribeUrl = `https://reviveresearch.co/unsubscribe?email=${encodeURIComponent(email)}`;
+  
+  const subject = 'Welcome to Revive Research';
   
   const text = `REVIVE RESEARCH
-Welcome to the Community
 
-You're officially part of our inner circle. Here's what you've unlocked:
+You're In.
 
-EARLY ACCESS - First look at new research compounds before public release
-EXCLUSIVE OFFERS - Subscriber-only promotions and limited drops
-RESEARCH INSIGHTS - Educational content from our science team
-PRIORITY SUPPORT - Faster response times and dedicated assistance
+Welcome to Revive Research. You've been added to our subscriber list.
 
-For Research Use Only - All products are intended for laboratory research purposes only.
+Here's what you can expect as a subscriber:
 
-Stay ahead,
-The Revive Research Team
+- Early Awareness: Be the first to know when new research becomes available or when important platform updates go live, before public announcements.
+
+- Curated Updates: We'll summarize what's new and what's changed so you don't have to monitor the site or social channels.
+
+- Educational Context: When updates matter, we'll include documentation notes and research insights to help you understand what you're seeing.
+
+- Purposeful Emails Only: Low-volume, high-signal emails. No spam, no noise - only when there's something worth sharing.
+
+- Clear Expectations: Occasional updates tied to new research, education, or meaningful platform changes. Nothing sent just to "stay active."
+
+Explore Available Research: https://reviveresearch.co/
 
 ---
-This email was sent to ${email}
-If you did not subscribe, please ignore this email.
-
-reviveresearch.co`;
+You're receiving this email because you subscribed at reviveresearch.co.
+Unsubscribe: ${unsubscribeUrl}`;
 
   const html = `
 <!DOCTYPE html>
@@ -658,7 +662,7 @@ reviveresearch.co`;
             <td style="background: linear-gradient(180deg, rgba(33, 216, 255, 0.08) 0%, rgba(157, 78, 221, 0.05) 50%, transparent 100%); padding: 48px 40px 32px 40px; text-align: center; border-bottom: 1px solid ${colors.cardBorder};">
               
               <!-- Logo -->
-              <img src="${logoUrl}" alt="Revive Research" width="180" style="display: block; margin: 0 auto 24px auto; max-width: 180px; height: auto;" />
+              <img src="${logoBase64}" alt="Revive Research" width="180" style="display: block; margin: 0 auto 24px auto; max-width: 180px; height: auto;" />
               
               <!-- Decorative Line -->
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
@@ -681,7 +685,7 @@ reviveresearch.co`;
                     <table role="presentation" cellspacing="0" cellpadding="0">
                       <tr>
                         <td style="background: #1a1a1f; padding: 10px 24px; border-radius: 100px;">
-                          <span style="color: ${colors.cyan}; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">SUBSCRIBER UNLOCKED</span>
+                          <span style="color: ${colors.cyan}; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">ACCESS CONFIRMED</span>
                         </td>
                       </tr>
                     </table>
@@ -689,92 +693,160 @@ reviveresearch.co`;
                 </tr>
               </table>
               
-              <!-- Main Headline - Holographic Style -->
+              <!-- Main Headline -->
               <h1 style="margin: 0 0 16px 0; font-size: 42px; font-weight: 800; letter-spacing: -1px; line-height: 1.1; color: ${colors.textPrimary};">
-                You're In
+                You're In.
               </h1>
               
               <!-- Subtitle -->
-              <p style="margin: 0; font-size: 17px; line-height: 1.6; color: ${colors.textSecondary}; max-width: 380px; margin: 0 auto;">
-                Welcome to an exclusive community of researchers pushing the boundaries of science.
+              <p style="margin: 0; font-size: 17px; line-height: 1.6; color: ${colors.textSecondary}; max-width: 420px; margin: 0 auto;">
+                Welcome to Revive Research. You've been added to our subscriber list.
               </p>
               
             </td>
           </tr>
           
-          <!-- Benefits Grid -->
+          <!-- Benefits Section -->
           <tr>
             <td style="padding: 0 40px 40px 40px;">
               
               <!-- Benefits Header -->
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 20px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 24px;">
                 <tr>
                   <td style="text-align: center;">
-                    <span style="color: ${colors.textMuted}; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">WHAT YOU'VE UNLOCKED</span>
+                    <span style="color: ${colors.textMuted}; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">HERE'S WHAT YOU CAN EXPECT AS A SUBSCRIBER</span>
                   </td>
                 </tr>
               </table>
               
-              <!-- Benefits Cards - 2x2 Grid -->
+              <!-- Benefits List - Vertical Stack -->
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
-                <!-- Row 1 -->
+                
+                <!-- Benefit 1: Early Awareness -->
                 <tr>
-                  <td width="50%" valign="top" style="padding: 6px;">
+                  <td style="padding: 8px 0;">
                     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: ${colors.cardBg}; border: 1px solid rgba(33, 216, 255, 0.2); border-radius: 12px; overflow: hidden;">
                       <tr>
-                        <td style="padding: 20px; border-left: 3px solid ${colors.cyan};">
-                          <div style="width: 36px; height: 36px; background: rgba(33, 216, 255, 0.15); border-radius: 10px; margin-bottom: 12px; text-align: center; line-height: 36px;">
-                            <span style="font-size: 16px; color: ${colors.cyan};">01</span>
-                          </div>
-                          <p style="margin: 0 0 4px 0; font-size: 14px; font-weight: 600; color: ${colors.textPrimary};">Early Access</p>
-                          <p style="margin: 0; font-size: 12px; color: ${colors.textMuted}; line-height: 1.4;">First look at new compounds</p>
+                        <td style="padding: 16px 20px; border-left: 3px solid ${colors.cyan};">
+                          <table role="presentation" cellspacing="0" cellpadding="0">
+                            <tr>
+                              <td style="width: 44px; vertical-align: top;">
+                                <div style="width: 32px; height: 32px; background: rgba(33, 216, 255, 0.15); border-radius: 8px; text-align: center; line-height: 32px;">
+                                  <span style="font-size: 14px; color: ${colors.cyan};">01</span>
+                                </div>
+                              </td>
+                              <td style="vertical-align: top;">
+                                <p style="margin: 0 0 4px 0; font-size: 14px; font-weight: 600; color: ${colors.textPrimary};">Early Awareness</p>
+                                <p style="margin: 0; font-size: 13px; color: ${colors.textSecondary}; line-height: 1.5;">Be the first to know when new research becomes available or when important platform updates go live, before public announcements.</p>
+                              </td>
+                            </tr>
+                          </table>
                         </td>
                       </tr>
                     </table>
                   </td>
-                  <td width="50%" valign="top" style="padding: 6px;">
+                </tr>
+                
+                <!-- Benefit 2: Curated Updates -->
+                <tr>
+                  <td style="padding: 8px 0;">
                     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: ${colors.cardBg}; border: 1px solid rgba(231, 251, 16, 0.2); border-radius: 12px; overflow: hidden;">
                       <tr>
-                        <td style="padding: 20px; border-left: 3px solid ${colors.neonYellow};">
-                          <div style="width: 36px; height: 36px; background: rgba(231, 251, 16, 0.12); border-radius: 10px; margin-bottom: 12px; text-align: center; line-height: 36px;">
-                            <span style="font-size: 16px; color: ${colors.neonYellow};">02</span>
-                          </div>
-                          <p style="margin: 0 0 4px 0; font-size: 14px; font-weight: 600; color: ${colors.textPrimary};">Exclusive Offers</p>
-                          <p style="margin: 0; font-size: 12px; color: ${colors.textMuted}; line-height: 1.4;">Subscriber-only promotions</p>
+                        <td style="padding: 16px 20px; border-left: 3px solid ${colors.neonYellow};">
+                          <table role="presentation" cellspacing="0" cellpadding="0">
+                            <tr>
+                              <td style="width: 44px; vertical-align: top;">
+                                <div style="width: 32px; height: 32px; background: rgba(231, 251, 16, 0.12); border-radius: 8px; text-align: center; line-height: 32px;">
+                                  <span style="font-size: 14px; color: ${colors.neonYellow};">02</span>
+                                </div>
+                              </td>
+                              <td style="vertical-align: top;">
+                                <p style="margin: 0 0 4px 0; font-size: 14px; font-weight: 600; color: ${colors.textPrimary};">Curated Updates</p>
+                                <p style="margin: 0; font-size: 13px; color: ${colors.textSecondary}; line-height: 1.5;">We'll summarize what's new and what's changed so you don't have to monitor the site or social channels.</p>
+                              </td>
+                            </tr>
+                          </table>
                         </td>
                       </tr>
                     </table>
                   </td>
                 </tr>
-                <!-- Row 2 -->
+                
+                <!-- Benefit 3: Educational Context -->
                 <tr>
-                  <td width="50%" valign="top" style="padding: 6px;">
+                  <td style="padding: 8px 0;">
                     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: ${colors.cardBg}; border: 1px solid rgba(157, 78, 221, 0.2); border-radius: 12px; overflow: hidden;">
                       <tr>
-                        <td style="padding: 20px; border-left: 3px solid ${colors.purple};">
-                          <div style="width: 36px; height: 36px; background: rgba(157, 78, 221, 0.15); border-radius: 10px; margin-bottom: 12px; text-align: center; line-height: 36px;">
-                            <span style="font-size: 16px; color: ${colors.purple};">03</span>
-                          </div>
-                          <p style="margin: 0 0 4px 0; font-size: 14px; font-weight: 600; color: ${colors.textPrimary};">Research Insights</p>
-                          <p style="margin: 0; font-size: 12px; color: ${colors.textMuted}; line-height: 1.4;">Educational content & updates</p>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                  <td width="50%" valign="top" style="padding: 6px;">
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: ${colors.cardBg}; border: 1px solid rgba(236, 72, 153, 0.2); border-radius: 12px; overflow: hidden;">
-                      <tr>
-                        <td style="padding: 20px; border-left: 3px solid ${colors.pink};">
-                          <div style="width: 36px; height: 36px; background: rgba(236, 72, 153, 0.15); border-radius: 10px; margin-bottom: 12px; text-align: center; line-height: 36px;">
-                            <span style="font-size: 16px; color: ${colors.pink};">04</span>
-                          </div>
-                          <p style="margin: 0 0 4px 0; font-size: 14px; font-weight: 600; color: ${colors.textPrimary};">Priority Support</p>
-                          <p style="margin: 0; font-size: 12px; color: ${colors.textMuted}; line-height: 1.4;">Faster response times</p>
+                        <td style="padding: 16px 20px; border-left: 3px solid ${colors.purple};">
+                          <table role="presentation" cellspacing="0" cellpadding="0">
+                            <tr>
+                              <td style="width: 44px; vertical-align: top;">
+                                <div style="width: 32px; height: 32px; background: rgba(157, 78, 221, 0.15); border-radius: 8px; text-align: center; line-height: 32px;">
+                                  <span style="font-size: 14px; color: ${colors.purple};">03</span>
+                                </div>
+                              </td>
+                              <td style="vertical-align: top;">
+                                <p style="margin: 0 0 4px 0; font-size: 14px; font-weight: 600; color: ${colors.textPrimary};">Educational Context</p>
+                                <p style="margin: 0; font-size: 13px; color: ${colors.textSecondary}; line-height: 1.5;">When updates matter, we'll include documentation notes and research insights to help you understand what you're seeing.</p>
+                              </td>
+                            </tr>
+                          </table>
                         </td>
                       </tr>
                     </table>
                   </td>
                 </tr>
+                
+                <!-- Benefit 4: Purposeful Emails Only -->
+                <tr>
+                  <td style="padding: 8px 0;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: ${colors.cardBg}; border: 1px solid rgba(236, 72, 153, 0.2); border-radius: 12px; overflow: hidden;">
+                      <tr>
+                        <td style="padding: 16px 20px; border-left: 3px solid ${colors.pink};">
+                          <table role="presentation" cellspacing="0" cellpadding="0">
+                            <tr>
+                              <td style="width: 44px; vertical-align: top;">
+                                <div style="width: 32px; height: 32px; background: rgba(236, 72, 153, 0.15); border-radius: 8px; text-align: center; line-height: 32px;">
+                                  <span style="font-size: 14px; color: ${colors.pink};">04</span>
+                                </div>
+                              </td>
+                              <td style="vertical-align: top;">
+                                <p style="margin: 0 0 4px 0; font-size: 14px; font-weight: 600; color: ${colors.textPrimary};">Purposeful Emails Only</p>
+                                <p style="margin: 0; font-size: 13px; color: ${colors.textSecondary}; line-height: 1.5;">Low-volume, high-signal emails. No spam, no noise - only when there's something worth sharing.</p>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                
+                <!-- Benefit 5: Clear Expectations -->
+                <tr>
+                  <td style="padding: 8px 0;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: ${colors.cardBg}; border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 12px; overflow: hidden;">
+                      <tr>
+                        <td style="padding: 16px 20px; border-left: 3px solid ${colors.green};">
+                          <table role="presentation" cellspacing="0" cellpadding="0">
+                            <tr>
+                              <td style="width: 44px; vertical-align: top;">
+                                <div style="width: 32px; height: 32px; background: rgba(34, 197, 94, 0.15); border-radius: 8px; text-align: center; line-height: 32px;">
+                                  <span style="font-size: 14px; color: ${colors.green};">05</span>
+                                </div>
+                              </td>
+                              <td style="vertical-align: top;">
+                                <p style="margin: 0 0 4px 0; font-size: 14px; font-weight: 600; color: ${colors.textPrimary};">Clear Expectations</p>
+                                <p style="margin: 0; font-size: 13px; color: ${colors.textSecondary}; line-height: 1.5;">Occasional updates tied to new research, education, or meaningful platform changes. Nothing sent just to "stay active."</p>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                
               </table>
               
             </td>
@@ -788,41 +860,13 @@ reviveresearch.co`;
               <table role="presentation" cellspacing="0" cellpadding="0" align="center">
                 <tr>
                   <td style="background: ${colors.neonYellow}; border-radius: 10px; box-shadow: 0 0 30px rgba(231, 251, 16, 0.5), 0 0 60px rgba(231, 251, 16, 0.25);">
-                    <a href="https://reviveresearch.co/peptides" style="display: inline-block; padding: 16px 40px; font-size: 15px; font-weight: 700; color: #000000; text-decoration: none; letter-spacing: 0.5px;">
-                      Explore Research Compounds
+                    <a href="https://reviveresearch.co/" style="display: inline-block; padding: 16px 40px; font-size: 15px; font-weight: 700; color: #000000; text-decoration: none; letter-spacing: 0.5px;">
+                      Explore Available Research
                     </a>
                   </td>
                 </tr>
               </table>
               
-              <!-- Secondary Links -->
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top: 24px;">
-                <tr>
-                  <td style="text-align: center;">
-                    <a href="https://reviveresearch.co/academy" style="color: ${colors.cyan}; font-size: 13px; text-decoration: none; font-weight: 500;">Peptide Academy</a>
-                    <span style="color: ${colors.textMuted}; margin: 0 12px;">|</span>
-                    <a href="https://reviveresearch.co/education" style="color: ${colors.purple}; font-size: 13px; text-decoration: none; font-weight: 500;">Education Center</a>
-                    <span style="color: ${colors.textMuted}; margin: 0 12px;">|</span>
-                    <a href="https://reviveresearch.co/coa-library" style="color: ${colors.pink}; font-size: 13px; text-decoration: none; font-weight: 500;">COA Library</a>
-                  </td>
-                </tr>
-              </table>
-              
-            </td>
-          </tr>
-          
-          <!-- RUO Disclaimer -->
-          <tr>
-            <td style="padding: 0 40px 32px 40px;">
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 10px;">
-                <tr>
-                  <td style="padding: 16px 20px;">
-                    <p style="margin: 0; font-size: 11px; color: #f87171; text-align: center; line-height: 1.5; letter-spacing: 0.3px;">
-                      <strong>RESEARCH USE ONLY</strong> - All products are intended for laboratory research purposes only. Not for human consumption. Not evaluated by the FDA.
-                    </p>
-                  </td>
-                </tr>
-              </table>
             </td>
           </tr>
           
@@ -831,29 +875,25 @@ reviveresearch.co`;
             <td style="background: ${colors.cardBg}; padding: 32px 40px; text-align: center; border-top: 1px solid ${colors.cardBorder};">
               
               <!-- Sign off -->
-              <p style="margin: 0 0 16px 0; font-size: 14px; color: ${colors.textSecondary};">
-                Stay ahead,<br>
+              <p style="margin: 0 0 20px 0; font-size: 14px; color: ${colors.textSecondary};">
                 <span style="color: ${colors.textPrimary}; font-weight: 500;">The Revive Research Team</span>
               </p>
               
               <!-- Divider -->
-              <table role="presentation" width="60" cellspacing="0" cellpadding="0" align="center" style="margin: 20px auto;">
+              <table role="presentation" width="60" cellspacing="0" cellpadding="0" align="center" style="margin: 0 auto 20px auto;">
                 <tr>
                   <td style="height: 1px; background: linear-gradient(90deg, transparent, ${colors.textMuted}, transparent);"></td>
                 </tr>
               </table>
               
-              <!-- Footer Links -->
-              <p style="margin: 0 0 12px 0; font-size: 12px;">
-                <a href="https://reviveresearch.co" style="color: ${colors.textMuted}; text-decoration: none;">reviveresearch.co</a>
+              <!-- Email info -->
+              <p style="margin: 0 0 8px 0; font-size: 12px; color: rgba(255,255,255,0.4);">
+                You're receiving this email because you subscribed at <a href="https://reviveresearch.co" style="color: rgba(255,255,255,0.5); text-decoration: none;">reviveresearch.co</a>.
               </p>
               
-              <!-- Email info -->
-              <p style="margin: 0 0 4px 0; font-size: 11px; color: rgba(255,255,255,0.25);">
-                This email was sent to ${email}
-              </p>
-              <p style="margin: 0; font-size: 11px; color: rgba(255,255,255,0.2);">
-                If you did not subscribe, you can safely ignore this email.
+              <!-- Unsubscribe Link -->
+              <p style="margin: 0; font-size: 12px;">
+                <a href="${unsubscribeUrl}" style="color: ${colors.cyan}; text-decoration: underline;">Unsubscribe</a>
               </p>
               
             </td>
@@ -881,6 +921,7 @@ export async function sendNewsletterWelcomeEmail(email: string): Promise<EmailRe
     text: template.text,
     html: template.html,
     from: 'noreply',
+    replyTo: 'support@reviveresearch.co',
   });
 
   if (result.success) {
