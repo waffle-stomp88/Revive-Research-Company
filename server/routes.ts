@@ -1253,6 +1253,70 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Send test emails to preview all templates
+  app.post("/api/admin/test-emails", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { email } = req.body;
+      const testEmail = email || process.env.ADMIN_EMAIL;
+      
+      if (!testEmail) {
+        return res.status(400).json({ error: "No email address provided and ADMIN_EMAIL not configured" });
+      }
+
+      const results: { template: string; success: boolean; error?: string }[] = [];
+
+      // Test Order Confirmation
+      const orderResult = await sendOrderConfirmationEmail({
+        id: 'test-' + Date.now(),
+        email: testEmail,
+        firstName: 'Test',
+        lastName: 'Researcher',
+        productId: 'test-product',
+        quantity: 2,
+        totalAmount: '149.99',
+        address: '123 Research Lane',
+        city: 'Science City',
+        state: 'CA',
+        zipCode: '90210',
+        country: 'United States',
+      }, 'BPC-157 5mg');
+      results.push({ template: 'Order Confirmation', success: orderResult.success, error: orderResult.error });
+
+      // Test Admin Notification
+      const adminResult = await sendAdminOrderNotificationEmail({
+        id: 'test-' + Date.now(),
+        email: testEmail,
+        firstName: 'Test',
+        lastName: 'Researcher',
+        productId: 'test-product',
+        quantity: 2,
+        totalAmount: '149.99',
+        address: '123 Research Lane',
+        city: 'Science City',
+        state: 'CA',
+        zipCode: '90210',
+        country: 'United States',
+        phone: '+1 (555) 123-4567',
+      }, 'BPC-157 5mg');
+      results.push({ template: 'Admin Notification', success: adminResult.success, error: adminResult.error });
+
+      // Test Newsletter Welcome
+      const newsletterResult = await sendNewsletterWelcomeEmail(testEmail);
+      results.push({ template: 'Newsletter Welcome', success: newsletterResult.success, error: newsletterResult.error });
+
+      const allSuccess = results.every(r => r.success);
+      res.json({
+        success: allSuccess,
+        message: allSuccess ? `All 3 test emails sent to ${testEmail}` : 'Some emails failed to send',
+        results,
+        sentTo: testEmail,
+      });
+    } catch (error: any) {
+      console.error("Error sending test emails:", error);
+      res.status(500).json({ error: "Failed to send test emails", details: error.message });
+    }
+  });
+
   // Admin: Get dashboard metrics
   app.get("/api/admin/dashboard", isAuthenticated, isAdmin, async (req, res) => {
     try {
