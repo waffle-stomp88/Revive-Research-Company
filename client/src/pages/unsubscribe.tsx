@@ -3,11 +3,20 @@ import { useLocation } from "wouter";
 import { CheckCircle2, MailX, ArrowLeft, Loader2, Sparkles } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
+const UNSUBSCRIBE_REASONS = [
+  "Too many emails",
+  "Content not relevant",
+  "No longer interested",
+  "Never signed up",
+  "Other",
+];
+
 export default function Unsubscribe() {
   const [, setLocation] = useLocation();
   const [email, setEmail] = useState<string | null>(null);
   const [status, setStatus] = useState<"loading" | "confirm" | "success" | "error">("loading");
   const [errorMessage, setErrorMessage] = useState("");
+  const [selectedReason, setSelectedReason] = useState<string | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -28,7 +37,10 @@ export default function Unsubscribe() {
     setStatus("loading");
     
     try {
-      const response = await apiRequest("POST", "/api/newsletter/unsubscribe", { email });
+      const response = await apiRequest("POST", "/api/newsletter/unsubscribe", { 
+        email,
+        reason: selectedReason || undefined
+      });
       const data = await response.json();
       
       if (data.success) {
@@ -82,7 +94,7 @@ export default function Unsubscribe() {
           )}
 
           {status === "confirm" && (
-            <div className="text-center space-y-8">
+            <div className="text-center space-y-6">
               {/* Icon with intense glow */}
               <div className="relative inline-block">
                 <div className="absolute -inset-6 bg-gradient-to-r from-[#21d8ff]/40 to-[#9D4EDD]/40 rounded-full blur-2xl" />
@@ -92,7 +104,7 @@ export default function Unsubscribe() {
               </div>
               
               {/* Heading with gradient */}
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <h1 className="text-4xl font-black bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent">
                   Unsubscribe
                 </h1>
@@ -111,12 +123,31 @@ export default function Unsubscribe() {
                 </div>
               </div>
               
-              <p className="text-white/40 text-base">
-                You will no longer receive newsletter emails from Revive Research.
-              </p>
+              {/* Optional reason selection */}
+              <div className="space-y-3 text-left">
+                <p className="text-white/40 text-sm text-center">
+                  Mind telling us why? <span className="text-white/30">(optional)</span>
+                </p>
+                <div className="grid grid-cols-1 gap-2">
+                  {UNSUBSCRIBE_REASONS.map((reason) => (
+                    <button
+                      key={reason}
+                      onClick={() => setSelectedReason(selectedReason === reason ? null : reason)}
+                      className={`px-4 py-3 rounded-xl text-left text-sm font-medium transition-all duration-200 ${
+                        selectedReason === reason
+                          ? "bg-[#21d8ff]/20 border-[#21d8ff]/50 text-[#21d8ff] border"
+                          : "bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white"
+                      }`}
+                      data-testid={`reason-${reason.toLowerCase().replace(/\s+/g, '-')}`}
+                    >
+                      {reason}
+                    </button>
+                  ))}
+                </div>
+              </div>
               
               {/* Action buttons */}
-              <div className="space-y-4 pt-4">
+              <div className="space-y-4 pt-2">
                 {/* Primary button with intense glow */}
                 <button
                   onClick={handleUnsubscribe}

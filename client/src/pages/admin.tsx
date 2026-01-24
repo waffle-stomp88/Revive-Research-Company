@@ -3024,12 +3024,22 @@ interface NewsletterSubscriber {
   source: string;
   status: string;
   createdAt: string;
+  lastEmailSentAt: string | null;
+  unsubscribedAt: string | null;
+  unsubscribeReason: string | null;
+}
+
+interface NewsletterStats {
+  total: number;
+  active: number;
+  unsubscribed: number;
 }
 
 interface NewsletterData {
-  total: number;
+  stats: NewsletterStats;
   subscribers: NewsletterSubscriber[];
-  bySource: Record<string, string[]>;
+  bySource: Record<string, number>;
+  unsubscribeReasons: Record<string, number>;
 }
 
 function LaunchSubscribersTab() {
@@ -3074,12 +3084,14 @@ function LaunchSubscribersTab() {
     if (!subscriberData?.subscribers) return;
     
     const csv = [
-      ["Email", "Source", "Status", "Signed Up"],
+      ["Email", "Source", "Status", "Signed Up", "Last Email Sent", "Unsubscribe Reason"],
       ...filteredSubscribers.map(sub => [
         sub.email,
         sub.source || "website",
         sub.status,
-        new Date(sub.createdAt).toLocaleDateString()
+        new Date(sub.createdAt).toLocaleDateString(),
+        sub.lastEmailSentAt ? new Date(sub.lastEmailSentAt).toLocaleDateString() : "Never",
+        sub.unsubscribeReason || ""
       ])
     ].map(row => row.map(cell => `"${cell}"`).join(",")).join("\n");
 
@@ -3087,7 +3099,7 @@ function LaunchSubscribersTab() {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `launch-subscribers-${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `newsletter-subscribers-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     
     toast({
@@ -3125,7 +3137,7 @@ function LaunchSubscribersTab() {
     );
   }
 
-  if (!subscriberData || subscriberData.total === 0) {
+  if (!subscriberData || (subscriberData.subscribers?.length || 0) === 0) {
     return (
       <div className="text-center py-12">
         <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4">
@@ -3154,32 +3166,43 @@ function LaunchSubscribersTab() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      {/* Simple Stats Cards */}
+      <div className="grid grid-cols-3 gap-3">
         <Card className="p-4 bg-muted/30">
           <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mb-1">
-            Total
+            Total Subscribers
           </div>
-          <div className="text-2xl font-bold">{subscriberData.total}</div>
+          <div className="text-2xl font-bold">{subscriberData.stats?.total || subscriberData.subscribers?.length || 0}</div>
         </Card>
-        <Card className="p-4 border-l-2 border-l-blue-500">
-          <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mb-1 truncate">
-            Footer Newsletter
+        <Card className="p-4 border-l-2 border-l-emerald-500">
+          <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mb-1">
+            Active
           </div>
-          <div className="text-2xl font-bold">{(subscriberData.bySource['footer'] || []).length}</div>
+          <div className="text-2xl font-bold text-emerald-500">{subscriberData.stats?.active || subscriberData.subscribers?.filter(s => s.status === 'subscribed').length || 0}</div>
         </Card>
-        <Card className="p-4 border-l-2 border-l-purple-500">
-          <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mb-1 truncate">
-            Product Early Access
+        <Card className="p-4 border-l-2 border-l-red-500">
+          <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mb-1">
+            Unsubscribed
           </div>
-          <div className="text-2xl font-bold">{(subscriberData.bySource['product_early_access'] || []).length + (subscriberData.bySource['early_access_modal'] || []).length}</div>
-        </Card>
-        <Card className="p-4 border-l-2 border-l-green-500">
-          <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mb-1 truncate">
-            Checkout Launch Notify
-          </div>
-          <div className="text-2xl font-bold">{(subscriberData.bySource['checkout_launch_notify'] || []).length}</div>
+          <div className="text-2xl font-bold text-red-400">{subscriberData.stats?.unsubscribed || subscriberData.subscribers?.filter(s => s.status === 'unsubscribed').length || 0}</div>
         </Card>
       </div>
+
+      {/* Unsubscribe Reasons Breakdown (if any) */}
+      {subscriberData.unsubscribeReasons && Object.keys(subscriberData.unsubscribeReasons).length > 0 && (
+        <Card className="p-4">
+          <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mb-3">
+            Unsubscribe Reasons
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(subscriberData.unsubscribeReasons).map(([reason, count]) => (
+              <Badge key={reason} variant="outline" className="text-xs">
+                {reason}: {count}
+              </Badge>
+            ))}
+          </div>
+        </Card>
+      )}
 
       <div className="space-y-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
@@ -3224,7 +3247,7 @@ function LaunchSubscribersTab() {
         </div>
 
         <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground px-1">
-          <span>Showing {filteredSubscribers.length} of {subscriberData?.total || 0} subscribers</span>
+          <span>Showing {filteredSubscribers.length} of {subscriberData?.stats?.total || subscriberData?.subscribers?.length || 0} subscribers</span>
         </div>
 
         <div className="rounded-lg border overflow-hidden bg-card">
@@ -3232,16 +3255,17 @@ function LaunchSubscribersTab() {
             <TableHeader>
               <TableRow className="bg-muted/50 hover:bg-muted/50 border-b">
                 <TableHead className="text-[10px] font-bold uppercase tracking-wider">Email Address</TableHead>
-                <TableHead className="w-48 text-[10px] font-bold uppercase tracking-wider">Touchpoint</TableHead>
+                <TableHead className="w-36 text-[10px] font-bold uppercase tracking-wider">Source</TableHead>
                 <TableHead className="w-24 text-[10px] font-bold uppercase tracking-wider">Status</TableHead>
-                <TableHead className="w-32 text-[10px] font-bold uppercase tracking-wider">Date Joined</TableHead>
+                <TableHead className="w-28 text-[10px] font-bold uppercase tracking-wider">Signed Up</TableHead>
+                <TableHead className="w-28 text-[10px] font-bold uppercase tracking-wider">Last Email</TableHead>
                 <TableHead className="w-12"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredSubscribers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-12 text-sm text-muted-foreground">
+                  <TableCell colSpan={6} className="text-center py-12 text-sm text-muted-foreground">
                     No subscribers match your filters
                   </TableCell>
                 </TableRow>
@@ -3255,7 +3279,10 @@ function LaunchSubscribersTab() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={sub.status === "subscribed" ? "default" : "secondary"} className="text-[10px] px-2 py-0 h-5 font-bold uppercase tracking-wider">
+                      <Badge 
+                        variant={sub.status === "subscribed" ? "default" : "secondary"} 
+                        className={`text-[10px] px-2 py-0 h-5 font-bold uppercase tracking-wider ${sub.status === "unsubscribed" ? "bg-red-500/10 text-red-400 border-red-500/20" : ""}`}
+                      >
                         {sub.status}
                       </Badge>
                     </TableCell>
@@ -3265,6 +3292,17 @@ function LaunchSubscribersTab() {
                         day: "numeric",
                         year: "numeric"
                       })}
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {sub.lastEmailSentAt ? (
+                        new Date(sub.lastEmailSentAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric"
+                        })
+                      ) : (
+                        <span className="text-muted-foreground/50">Never</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Button

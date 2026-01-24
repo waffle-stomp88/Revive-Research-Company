@@ -903,6 +903,12 @@ export async function sendNewsletterWelcomeEmail(email: string): Promise<EmailRe
 
   if (result.success) {
     console.log(`[Email] Newsletter welcome sent to ${email}`);
+    // Track last email sent timestamp
+    try {
+      await storage.updateLastEmailSent(email);
+    } catch (err) {
+      console.error(`[Email] Failed to update last email sent for ${email}:`, err);
+    }
   } else {
     console.error(`[Email] Failed to send newsletter welcome to ${email}:`, result.error);
   }

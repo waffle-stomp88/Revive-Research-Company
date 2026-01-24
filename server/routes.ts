@@ -2724,7 +2724,7 @@ Return ONLY valid JSON in this exact format:
   // Public unsubscribe endpoint - no auth required (accessed via email link)
   app.post("/api/newsletter/unsubscribe", async (req, res) => {
     try {
-      const { email } = req.body;
+      const { email, reason } = req.body;
       
       if (!email || typeof email !== 'string') {
         return res.status(400).json({ error: "Email is required" });
@@ -2733,10 +2733,17 @@ Return ONLY valid JSON in this exact format:
       // Normalize email
       const normalizedEmail = email.toLowerCase().trim();
       
-      const result = await storage.unsubscribeFromNewsletter(normalizedEmail);
+      // Validate and sanitize reason (optional)
+      let sanitizedReason: string | undefined;
+      if (reason && typeof reason === 'string') {
+        sanitizedReason = reason.trim().slice(0, 100); // Limit to 100 chars
+      }
+      
+      // Pass optional reason to storage
+      const result = await storage.unsubscribeFromNewsletter(normalizedEmail, sanitizedReason);
       
       if (result) {
-        console.log(`[Newsletter] Unsubscribed: ${normalizedEmail}`);
+        console.log(`[Newsletter] Unsubscribed: ${normalizedEmail}${reason ? ` (Reason: ${reason})` : ''}`);
         res.json({ success: true, message: "Successfully unsubscribed from newsletter" });
       } else {
         // Even if email not found, return success for privacy (don't reveal if email exists)
@@ -2769,20 +2776,46 @@ Return ONLY valid JSON in this exact format:
     }
   });
 
+  // Get newsletter stats (admin only)
+  app.get("/api/admin/newsletter/stats", isAdmin, async (req, res) => {
+    try {
+      const stats = await storage.getNewsletterStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching newsletter stats:", error);
+      res.status(500).json({ error: "Failed to fetch stats" });
+    }
+  });
+
   // Get all newsletter subscribers (admin only)
   app.get("/api/admin/newsletter/subscribers", isAdmin, async (req, res) => {
     try {
       const subscribers = await storage.getAllNewsletterSubscribers();
-      res.json({
-        total: subscribers.length,
-        subscribers,
-        // Group by source for easy analysis
-        bySource: subscribers.reduce((acc, sub) => {
-          const source = sub.source || "unknown";
-          if (!acc[source]) acc[source] = [];
-          acc[source].push(sub.email);
+      const stats = await storage.getNewsletterStats();
+      
+      // Group by source for simple breakdown
+      const bySource = subscribers.reduce((acc, sub) => {
+        const source = sub.source || "unknown";
+        if (!acc[source]) acc[source] = 0;
+        acc[source]++;
+        return acc;
+      }, {} as Record<string, number>);
+
+      // Group unsubscribe reasons
+      const unsubscribeReasons = subscribers
+        .filter(s => s.status === "unsubscribed" && s.unsubscribeReason)
+        .reduce((acc, sub) => {
+          const reason = sub.unsubscribeReason || "No reason given";
+          if (!acc[reason]) acc[reason] = 0;
+          acc[reason]++;
           return acc;
-        }, {} as Record<string, string[]>),
+        }, {} as Record<string, number>);
+
+      res.json({
+        stats,
+        subscribers,
+        bySource,
+        unsubscribeReasons,
       });
     } catch (error) {
       console.error("Error fetching newsletter subscribers:", error);
