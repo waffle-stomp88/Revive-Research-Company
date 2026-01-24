@@ -47,14 +47,18 @@ function createTransporter() {
     throw new Error('Missing SES SMTP configuration. Required: SES_SMTP_HOST, SES_SMTP_USERNAME, SES_SMTP_PASSWORD');
   }
 
+  console.log(`[Email] Creating transporter for ${host}:${port}`);
+  
   return nodemailer.createTransport({
     host,
     port,
     secure: port === 465,
+    requireTLS: port === 587, // Required for AWS SES on port 587
     auth: {
       user,
       pass,
     },
+    debug: true, // Enable debug logging
   });
 }
 
