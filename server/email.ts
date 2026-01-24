@@ -2,10 +2,12 @@ import * as nodemailer from 'nodemailer';
 import { storage } from './storage';
 import type { InsertEmailEvent } from '@shared/schema';
 
-// Email configuration
+// Email configuration with multiple sender addresses
 const EMAIL_CONFIG = {
   from: {
     orders: 'orders@reviveresearch.co',
+    noreply: 'no-reply@reviveresearch.co',
+    support: 'support@reviveresearch.co',
   },
   replyTo: 'support@reviveresearch.co',
   brand: {
@@ -17,12 +19,15 @@ const EMAIL_CONFIG = {
   },
 } as const;
 
+export type EmailSender = keyof typeof EMAIL_CONFIG.from;
+
 interface EmailOptions {
   to: string;
   subject: string;
   text?: string;
   html?: string;
   replyTo?: string;
+  from?: EmailSender;
 }
 
 interface EmailResult {
@@ -60,10 +65,12 @@ function createTransporter() {
 }
 
 export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
-  const fromEmail = process.env.SES_FROM_EMAIL;
+  // Determine the from address based on the sender type
+  const senderType = options.from || 'orders';
+  const fromEmail = EMAIL_CONFIG.from[senderType];
   
   if (!fromEmail) {
-    const error = 'Missing SES_FROM_EMAIL environment variable';
+    const error = `Invalid sender type: ${senderType}`;
     console.error('[Email Error]', error);
     return { success: false, error };
   }
@@ -72,7 +79,7 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
     const transporter = createTransporter();
     
     const mailOptions = {
-      from: fromEmail,
+      from: `Revive Research <${fromEmail}>`,
       to: options.to,
       subject: options.subject,
       text: options.text,
@@ -441,7 +448,127 @@ export function isEmailConfigured(): boolean {
   return !!(
     process.env.SES_SMTP_HOST && 
     process.env.SES_SMTP_USERNAME && 
-    process.env.SES_SMTP_PASSWORD && 
-    process.env.SES_FROM_EMAIL
+    process.env.SES_SMTP_PASSWORD
   );
+}
+
+// Newsletter subscription confirmation email template
+function getNewsletterWelcomeTemplate(email: string): { subject: string; text: string; html: string } {
+  const { brand } = EMAIL_CONFIG;
+  
+  const subject = 'Welcome to Revive Research - Subscription Confirmed';
+  
+  const text = `Welcome to Revive Research!
+
+Thank you for subscribing to our newsletter. You'll be the first to know about:
+
+- New research compounds and product releases
+- Exclusive subscriber-only promotions
+- Educational content and research updates
+- Industry news and insights
+
+Stay curious,
+The Revive Research Team
+
+---
+This email was sent to ${email}
+If you did not subscribe, please ignore this email.`;
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; background-color: ${brand.backgroundColor}; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: ${brand.backgroundColor};">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width: 600px;">
+          
+          <!-- Header -->
+          <tr>
+            <td style="text-align: center; padding-bottom: 30px;">
+              <h1 style="color: ${brand.primaryColor}; font-size: 28px; margin: 0; font-weight: 700; letter-spacing: 1px;">
+                REVIVE RESEARCH
+              </h1>
+            </td>
+          </tr>
+          
+          <!-- Main Content -->
+          <tr>
+            <td style="background-color: ${brand.cardColor}; border-radius: 12px; padding: 40px;">
+              <h2 style="color: #ffffff; font-size: 24px; margin: 0 0 20px 0; text-align: center;">
+                Welcome to the Community
+              </h2>
+              
+              <p style="color: #b0b0b0; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0; text-align: center;">
+                Thank you for subscribing to our newsletter. You're now part of an exclusive community of researchers.
+              </p>
+              
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 30px 0;">
+                <tr>
+                  <td style="background-color: ${brand.backgroundColor}; border-radius: 8px; padding: 20px;">
+                    <p style="color: ${brand.primaryColor}; font-size: 14px; font-weight: 600; margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 1px;">
+                      What to Expect
+                    </p>
+                    <ul style="color: #b0b0b0; font-size: 14px; line-height: 1.8; margin: 0; padding-left: 20px;">
+                      <li>New research compounds and product releases</li>
+                      <li>Exclusive subscriber-only promotions</li>
+                      <li>Educational content and research updates</li>
+                      <li>Industry news and insights</li>
+                    </ul>
+                  </td>
+                </tr>
+              </table>
+              
+              <p style="color: #888888; font-size: 14px; line-height: 1.6; margin: 20px 0 0 0; text-align: center;">
+                Stay curious,<br>
+                <strong style="color: #ffffff;">The Revive Research Team</strong>
+              </p>
+            </td>
+          </tr>
+          
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 30px 0; text-align: center;">
+              <p style="color: #666666; font-size: 12px; margin: 0;">
+                This email was sent to ${email}
+              </p>
+              <p style="color: #666666; font-size: 12px; margin: 10px 0 0 0;">
+                If you did not subscribe, please ignore this email.
+              </p>
+            </td>
+          </tr>
+          
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`;
+
+  return { subject, text, html };
+}
+
+export async function sendNewsletterWelcomeEmail(email: string): Promise<EmailResult> {
+  const template = getNewsletterWelcomeTemplate(email);
+  
+  const result = await sendEmail({
+    to: email,
+    subject: template.subject,
+    text: template.text,
+    html: template.html,
+    from: 'noreply',
+  });
+
+  if (result.success) {
+    console.log(`[Email] Newsletter welcome sent to ${email}`);
+  } else {
+    console.error(`[Email] Failed to send newsletter welcome to ${email}:`, result.error);
+  }
+
+  return result;
 }

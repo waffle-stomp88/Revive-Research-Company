@@ -7,7 +7,7 @@ import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaS
 import { setupAuth, isAuthenticated } from "./auth0Auth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
-import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, isEmailConfigured } from "./email";
+import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendNewsletterWelcomeEmail, isEmailConfigured } from "./email";
 import { sendOrderNotifications, getNotificationStatus } from "./notifications";
 import OpenAI from "openai";
 import { z } from "zod";
@@ -163,19 +163,26 @@ export async function registerRoutes(
     // TEMPORARILY PUBLIC for testing - will restore admin check after verification
     console.log('[Test Email] Endpoint called');
     try {
-      const { to } = req.body;
+      const { to, type } = req.body;
       
       if (!to || typeof to !== 'string') {
         return res.status(400).json({ error: "Missing 'to' email address in request body" });
       }
       
-      console.log(`[Test Email] Attempting to send test email to: ${to}`);
+      console.log(`[Test Email] Attempting to send test email to: ${to}, type: ${type || 'orders'}`);
       
-      const result = await sendEmail({
-        to,
-        subject: "Revive Research - Test Email",
-        text: `This is a test email from Revive Research.\n\nIf you received this, your Amazon SES email configuration is working correctly.\n\nSent at: ${new Date().toISOString()}\n\nFrom: ${process.env.SES_FROM_EMAIL}`,
-      });
+      // Support testing different email types
+      let result;
+      if (type === 'newsletter') {
+        result = await sendNewsletterWelcomeEmail(to);
+      } else {
+        result = await sendEmail({
+          to,
+          subject: "Revive Research - Test Email",
+          text: `This is a test email from Revive Research.\n\nIf you received this, your Amazon SES email configuration is working correctly.\n\nSent at: ${new Date().toISOString()}`,
+          from: type === 'noreply' ? 'noreply' : 'orders',
+        });
+      }
       
       if (result.success) {
         console.log(`[Test Email] Success! MessageId: ${result.messageId}`);
@@ -2634,6 +2641,12 @@ Return ONLY valid JSON in this exact format:
       }
 
       const subscriber = await storage.subscribeToNewsletter(parsed.data);
+      
+      // Send welcome email (don't block on failure)
+      sendNewsletterWelcomeEmail(email).catch(err => {
+        console.error("Failed to send newsletter welcome email:", err);
+      });
+      
       res.status(201).json({ success: true, message: "Successfully subscribed to newsletter!", subscriber });
     } catch (error: any) {
       if (error.code === "23505") {
