@@ -72,6 +72,13 @@ export const productDosageStock = pgTable("product_dosage_stock", {
   inStock: boolean("in_stock").notNull().default(true),
   price: decimal("price", { precision: 10, scale: 2 }),
   originalPrice: decimal("original_price", { precision: 10, scale: 2 }),
+  // Dosage-level baseline pricing (immutable once set, set when dosage first published)
+  baselinePrice: decimal("baseline_price", { precision: 10, scale: 2 }),
+  baselineDate: timestamp("baseline_date"),
+  baselineCost: decimal("baseline_cost", { precision: 10, scale: 2 }),
+  baselineMarginPct: decimal("baseline_margin_pct", { precision: 5, scale: 2 }),
+  // Per-dosage pricing suggestions toggle (default false, must be enabled explicitly)
+  pricingSuggestionsEnabled: boolean("pricing_suggestions_enabled").notNull().default(false),
 });
 
 export const insertProductDosageStockSchema = createInsertSchema(productDosageStock).omit({ id: true });

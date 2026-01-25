@@ -1,0 +1,147 @@
+Decision: Pricing intelligence must operate at product + dosage (variant) level, because each dosage has its own price, stock, and demand behavior.
+
+1) Dosage-level baseline pricing (required)
+
+Extend the dosage/variant model with:
+
+baselinePrice
+
+baselineDate
+
+baselineCost (optional)
+
+baselineMarginPct (optional)
+
+Rules:
+
+Baseline is set when the dosage is first published
+
+Baseline values are never auto-updated
+
+All pricing analysis compares against baseline, not current price
+
+2) Dosage-level behavioral metrics (core signals)
+
+Track these per product + dosage:
+
+views
+
+addToCart
+
+checkoutStarted
+
+purchased
+
+daysSinceLastSale
+
+timeToFirstSale
+
+These metrics are:
+
+Stored internally (not Google Analytics dependent)
+
+Used only for admin pricing analysis
+
+Aggregated daily or via rolling counters
+
+3) Inventory-aware pricing guardrails (critical)
+
+Pricing suggestions must respect stock reality:
+
+If dosage stock === 0
+
+Disable price suggestion
+
+Show status: “No signal (out of stock)”
+
+If dosage has < LOW_STOCK_THRESHOLD
+
+Factor scarcity into reasoning
+
+If dosage has 0 purchases
+
+Confidence cannot exceed low
+
+Reason must explicitly say “No sales history”
+
+4) Pricing suggestion output (explainable only)
+
+Each suggestion must include:
+
+suggestedPrice
+
+confidence → low | medium | high
+
+reasonCodes[], e.g.:
+
+FAST_SELL_THROUGH
+
+HIGH_VIEWS_LOW_CONVERSION
+
+LOW_STOCK_PREMIUM
+
+SLOW_MOVING_OVERSTOCK
+
+NO_SALES_HISTORY
+
+estimatedRevenueImpact (optional, approximate)
+
+No black-box pricing.
+
+5) Advisory-only enforcement (no auto pricing)
+
+Pricing system must be non-autonomous:
+
+Prices NEVER auto-change
+
+Remove or visually de-emphasize “Apply All”
+
+Each dosage requires explicit manual Apply
+
+Add per-dosage toggle:
+
+pricingSuggestionsEnabled (default: false)
+
+If disabled:
+
+Still show insights
+
+Hide Apply button
+
+6) Pricing Signals panel (high-signal, low-noise)
+
+Add a lightweight signals summary:
+
+Dosages with high views, low purchases
+
+Dosages with fast sell-through
+
+Dosages stagnant > X days
+Each item links to filtered dosage list.
+
+7) UI alignment (important)
+
+Pricing tab:
+
+Operates at dosage level
+
+Shows parent product name for grouping
+
+Makes it visually obvious prices live in Inventory → Edit Product
+
+Pricing tab = “insights & suggestions”, not source of truth
+
+8) Future-proofing (do not build yet)
+
+Structure schema so later you can add:
+
+Time-based experiments
+
+Manual A/B price tests
+
+Competitor benchmarks
+…but do not enable automation now.
+
+One-line framing (use this at top if needed)
+
+“Pricing is an advisory intelligence layer operating at the dosage level, not a pricing authority.”
