@@ -44,6 +44,8 @@ export interface DashboardMetrics {
   completedOrders: number;
   lowStockProducts: Array<{ id: string; name: string; stockAmount: number }>;
   outOfStockProducts: Array<{ id: string; name: string }>;
+  outOfStockDosagesCount: number;
+  lowStockDosagesCount: number;
   recentContacts: number;
   pendingAffiliateApplications: number;
   activeAffiliates: number;
@@ -644,12 +646,21 @@ export class DatabaseStorage implements IStorage {
     const completedOrders = allOrders.filter(o => o.status === 'completed' || o.status === 'shipped').length;
 
     const allProducts = await db.select().from(products);
+    // Low-stock threshold for admin alerts (configurable, default 3)
+    const LOW_STOCK_THRESHOLD = 3;
     const lowStockProducts = allProducts
-      .filter(p => p.inStock && p.stockAmount !== null && p.stockAmount > 0 && p.stockAmount <= 20)
+      .filter(p => p.inStock && p.stockAmount !== null && p.stockAmount > 0 && p.stockAmount <= LOW_STOCK_THRESHOLD)
       .map(p => ({ id: p.id, name: p.name, stockAmount: p.stockAmount || 0 }));
     const outOfStockProducts = allProducts
       .filter(p => !p.inStock || p.stockAmount === 0)
       .map(p => ({ id: p.id, name: p.name }));
+
+    // Calculate dosage-level stock counts
+    const allDosageStocks = await db.select().from(productDosageStock);
+    const outOfStockDosagesCount = allDosageStocks.filter(ds => !ds.inStock || ds.stockAmount === 0).length;
+    const lowStockDosagesCount = allDosageStocks.filter(ds => 
+      ds.inStock && ds.stockAmount > 0 && ds.stockAmount <= LOW_STOCK_THRESHOLD
+    ).length;
 
     const allContacts = await db.select().from(contacts).orderBy(desc(contacts.createdAt));
     // Count unread contacts instead of just recent ones
@@ -722,6 +733,8 @@ export class DatabaseStorage implements IStorage {
       completedOrders,
       lowStockProducts,
       outOfStockProducts,
+      outOfStockDosagesCount,
+      lowStockDosagesCount,
       recentContacts,
       pendingAffiliateApplications,
       activeAffiliates,
@@ -1413,6 +1426,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async upsertDosageStock(productId: string, dosage: string, stockAmount: number, inStock: boolean, price?: string | null, originalPrice?: string | null): Promise<ProductDosageStock> {
+    // Enforce rule: if stockAmount = 0, inStock must be false
+    const effectiveInStock = stockAmount <= 0 ? false : inStock;
+    
     // Check if this dosage stock already exists
     const [existing] = await db.select().from(productDosageStock)
       .where(and(
@@ -1423,14 +1439,14 @@ export class DatabaseStorage implements IStorage {
     if (existing) {
       // Update existing
       const [updated] = await db.update(productDosageStock)
-        .set({ stockAmount, inStock, price, originalPrice })
+        .set({ stockAmount, inStock: effectiveInStock, price, originalPrice })
         .where(eq(productDosageStock.id, existing.id))
         .returning();
       return updated;
     } else {
       // Insert new
       const [created] = await db.insert(productDosageStock)
-        .values({ productId, dosage, stockAmount, inStock, price, originalPrice })
+        .values({ productId, dosage, stockAmount, inStock: effectiveInStock, price, originalPrice })
         .returning();
       return created;
     }

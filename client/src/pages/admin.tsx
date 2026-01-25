@@ -159,6 +159,8 @@ interface DashboardMetrics {
   completedOrders: number;
   lowStockProducts: Array<{ id: string; name: string; stockAmount: number }>;
   outOfStockProducts: Array<{ id: string; name: string }>;
+  outOfStockDosagesCount: number;
+  lowStockDosagesCount: number;
   recentContacts: number;
   pendingAffiliateApplications: number;
   activeAffiliates: number;
@@ -499,7 +501,7 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
         {/* Right column - Inventory Alerts + Affiliate Summary */}
         <div className="space-y-4">
           {/* Inventory Alerts */}
-          {(outOfStockCount > 0 || lowStockCount > 0) && (
+          {(outOfStockCount > 0 || lowStockCount > 0 || (metrics.outOfStockDosagesCount || 0) > 0 || (metrics.lowStockDosagesCount || 0) > 0) && (
             <Card className="border-red-500/30">
               <CardHeader className="pb-2 pt-4 px-4">
                 <div className="flex items-center justify-between">
@@ -518,6 +520,18 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
                 </div>
               </CardHeader>
               <CardContent className="px-4 pb-4">
+                {/* Dosage Summary */}
+                <div className="flex items-center gap-3 mb-2 text-xs text-muted-foreground border-b border-muted-foreground/20 pb-2">
+                  {(metrics.outOfStockDosagesCount || 0) > 0 && (
+                    <span className="text-red-400">{metrics.outOfStockDosagesCount} out of stock</span>
+                  )}
+                  {(metrics.lowStockDosagesCount || 0) > 0 && (
+                    <span className="text-orange-400">{metrics.lowStockDosagesCount} low stock</span>
+                  )}
+                  {(metrics.outOfStockDosagesCount || 0) === 0 && (metrics.lowStockDosagesCount || 0) === 0 && (
+                    <span>All dosages stocked</span>
+                  )}
+                </div>
                 <div className="space-y-1.5">
                   {metrics.outOfStockProducts?.slice(0, 3).map((product) => (
                     <div key={product.id} className="flex items-center justify-between p-1.5 rounded bg-red-500/10 text-xs">
@@ -963,7 +977,7 @@ function ProductsTab() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Products ({products?.length || 0})</h2>
+        <h2 className="text-xl font-semibold">Inventory ({products?.length || 0})</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={() => handleOpenDialog()} data-testid="button-add-product">
