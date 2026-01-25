@@ -2129,33 +2129,24 @@ function OrdersTab() {
     return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
-  const needsAttentionOrders = allOrders?.filter((order) => {
+  // Compute needsAttention flag per order:
+  // (paid AND fulfillment ≠ delivered) OR emailStatus = failed OR isRefunded = true
+  const computeNeedsAttention = (order: Order): boolean => {
     const isPaid = order.status === "paid";
+    const notDelivered = order.fulfillmentStatus !== "delivered";
     const emailFailed = order.emailStatus === "failed";
-    const isRefund = order.isRefunded;
-    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const pendingOver24h = isPaid && 
-      (!order.fulfillmentStatus || order.fulfillmentStatus === "pending") &&
-      order.createdAt && new Date(order.createdAt) < twentyFourHoursAgo;
-    return (isPaid && emailFailed) || isRefund || pendingOver24h;
-  }) || [];
+    const isRefunded = order.isRefunded === true;
+    return (isPaid && notDelivered) || emailFailed || isRefunded;
+  };
+
+  const needsAttentionOrders = allOrders?.filter(computeNeedsAttention) || [];
 
   const filteredOrders = allOrders?.filter((order) => {
     if (activeFilter === "all") return true;
-    if (activeFilter === "needs-attention") {
-      const isPaid = order.status === "paid";
-      const emailFailed = order.emailStatus === "failed";
-      const isRefund = order.isRefunded;
-      const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-      const pendingOver24h = isPaid && 
-        (!order.fulfillmentStatus || order.fulfillmentStatus === "pending") &&
-        order.createdAt && new Date(order.createdAt) < twentyFourHoursAgo;
-      return (isPaid && emailFailed) || isRefund || pendingOver24h;
-    }
+    if (activeFilter === "needs-attention") return computeNeedsAttention(order);
     if (activeFilter === "paid") return order.status === "paid";
     if (activeFilter === "pending") {
-      return order.status === "paid" && 
-        (!order.fulfillmentStatus || order.fulfillmentStatus === "pending");
+      return order.status === "paid" && order.fulfillmentStatus !== "delivered";
     }
     if (activeFilter === "email-failed") return order.emailStatus === "failed";
     return true;
@@ -2169,8 +2160,8 @@ function OrdersTab() {
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <div className="grid gap-4 md:grid-cols-5">
-          {[1, 2, 3, 4, 5].map((i) => (
+        <div className="grid gap-4 md:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
             <Skeleton key={i} className="h-24" />
           ))}
         </div>
@@ -2179,13 +2170,9 @@ function OrdersTab() {
     );
   }
 
-  const totalNeedsAttention = (orderStats?.needsAttention.emailFailedPaid || 0) +
-    (orderStats?.needsAttention.pendingOver24h || 0) +
-    (orderStats?.needsAttention.refunds || 0);
-
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-5">
+      <div className="grid gap-4 md:grid-cols-4">
         <Card data-testid="card-orders-revenue" className="border-[#E7FB10]/30 bg-[#E7FB10]/5">
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Gross Revenue</CardTitle>
@@ -2233,41 +2220,23 @@ function OrdersTab() {
         </Card>
       </div>
 
-      {totalNeedsAttention > 0 && (
+      {needsAttentionOrders.length > 0 && (
         <Card className="border-[#E7FB10]/30 bg-[#E7FB10]/5" data-testid="card-needs-attention">
           <CardContent className="py-3">
-            <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4 text-[#E7FB10]" />
-                <span className="font-medium">Needs Attention</span>
+                <span className="font-medium">{needsAttentionOrders.length} orders need attention</span>
               </div>
-              <div className="flex gap-2 text-sm flex-wrap">
-                {(orderStats?.needsAttention.emailFailedPaid || 0) > 0 && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    className="text-destructive"
-                    onClick={() => setActiveFilter("email-failed")}
-                    data-testid="button-filter-email-failed"
-                  >
-                    {orderStats?.needsAttention.emailFailedPaid} email failed
-                  </Button>
-                )}
-                {(orderStats?.needsAttention.pendingOver24h || 0) > 0 && (
-                  <Button 
-                    variant="ghost"
-                    size="sm"
-                    className="text-[#E7FB10]"
-                    onClick={() => setActiveFilter("pending")}
-                    data-testid="button-filter-pending"
-                  >
-                    {orderStats?.needsAttention.pendingOver24h} pending 24h+
-                  </Button>
-                )}
-                {(orderStats?.needsAttention.refunds || 0) > 0 && (
-                  <span className="text-muted-foreground">{orderStats?.needsAttention.refunds} refunds</span>
-                )}
-              </div>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="text-[#E7FB10]"
+                onClick={() => setActiveFilter("needs-attention")}
+                data-testid="button-filter-needs-attention"
+              >
+                View All
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -2336,10 +2305,19 @@ function OrdersTab() {
                 </TableCell>
               </TableRow>
             ) : (
-              filteredOrders.map((order) => (
-                <TableRow key={order.id} data-testid={`row-order-${order.id}`}>
+              filteredOrders.map((order) => {
+                const orderNeedsAttention = computeNeedsAttention(order);
+                return (
+                <TableRow 
+                  key={order.id} 
+                  data-testid={`row-order-${order.id}`}
+                  className={orderNeedsAttention ? "border-l-2 border-l-[#E7FB10]" : ""}
+                >
                   <TableCell>
                     <div className="flex items-center gap-2">
+                      {orderNeedsAttention && (
+                        <AlertTriangle className="h-3 w-3 text-[#E7FB10]" />
+                      )}
                       <span className="font-mono text-sm">{order.id.slice(0, 8).toUpperCase()}</span>
                       {getOrderTypeBadge(order.orderType)}
                     </div>
@@ -2403,7 +2381,8 @@ function OrdersTab() {
                     </Button>
                   </TableCell>
                 </TableRow>
-              ))
+                );
+              })
             )}
           </TableBody>
         </Table>
