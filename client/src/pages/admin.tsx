@@ -556,7 +556,7 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
           <Card>
             <CardContent className="p-4">
               <button 
-                onClick={() => onNavigateToTab("newsletter")}
+                onClick={() => onNavigateToTab("email")}
                 className="w-full flex items-center justify-between hover:opacity-80 transition-opacity"
               >
                 <div className="flex items-center gap-2">
