@@ -177,17 +177,36 @@ export const insertOrderSchema = createInsertSchema(orders).omit({ id: true, cre
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type Order = typeof orders.$inferSelect;
 
-// Contact form submissions
+// Unified contact submissions (Contact Us + Wholesale inquiries)
+export const contactTypeEnum = ["contact", "wholesale"] as const;
+export const contactStatusEnum = ["new", "responded", "archived"] as const;
+
 export const contacts = pgTable("contacts", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  type: text("type").notNull().default("contact"), // "contact" | "wholesale"
+  status: text("status").notNull().default("new"), // "new" | "responded" | "archived"
   name: text("name").notNull(),
   email: text("email").notNull(),
   message: text("message").notNull(),
-  isRead: boolean("is_read").default(false),
+  // Wholesale-specific fields (nullable for contact type)
+  companyName: text("company_name"),
+  phone: text("phone"),
+  orderVolume: text("order_volume"), // e.g., "10-50 units", "100+ units"
+  // Admin fields
+  notes: text("notes"),
+  respondedAt: timestamp("responded_at"),
+  respondedBy: text("responded_by"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertContactSchema = createInsertSchema(contacts).omit({ id: true, isRead: true, createdAt: true });
+export const insertContactSchema = createInsertSchema(contacts).omit({ 
+  id: true, 
+  status: true, 
+  notes: true, 
+  respondedAt: true, 
+  respondedBy: true, 
+  createdAt: true 
+});
 export type InsertContact = z.infer<typeof insertContactSchema>;
 export type Contact = typeof contacts.$inferSelect;
 

@@ -96,8 +96,11 @@ export interface IStorage {
   
   createContact(contact: InsertContact): Promise<Contact>;
   getAllContacts(): Promise<Contact[]>;
-  markContactAsRead(id: string): Promise<Contact | undefined>;
-  getUnreadContactsCount(): Promise<number>;
+  getContactsByType(type: "contact" | "wholesale"): Promise<Contact[]>;
+  getContactsByStatus(status: "new" | "responded" | "archived"): Promise<Contact[]>;
+  updateContactStatus(id: string, status: "new" | "responded" | "archived", respondedBy?: string): Promise<Contact | undefined>;
+  updateContactNotes(id: string, notes: string): Promise<Contact | undefined>;
+  getNewContactsCount(): Promise<number>;
   
   // Affiliate Applications
   createAffiliateApplication(application: InsertAffiliateApplication): Promise<AffiliateApplication>;
@@ -505,13 +508,31 @@ export class DatabaseStorage implements IStorage {
     return db.select().from(contacts).orderBy(desc(contacts.createdAt));
   }
 
-  async markContactAsRead(id: string): Promise<Contact | undefined> {
-    const [contact] = await db.update(contacts).set({ isRead: true }).where(eq(contacts.id, id)).returning();
+  async getContactsByType(type: "contact" | "wholesale"): Promise<Contact[]> {
+    return db.select().from(contacts).where(eq(contacts.type, type)).orderBy(desc(contacts.createdAt));
+  }
+
+  async getContactsByStatus(status: "new" | "responded" | "archived"): Promise<Contact[]> {
+    return db.select().from(contacts).where(eq(contacts.status, status)).orderBy(desc(contacts.createdAt));
+  }
+
+  async updateContactStatus(id: string, status: "new" | "responded" | "archived", respondedBy?: string): Promise<Contact | undefined> {
+    const updateData: Partial<Contact> = { status };
+    if (status === "responded" && respondedBy) {
+      updateData.respondedAt = new Date();
+      updateData.respondedBy = respondedBy;
+    }
+    const [contact] = await db.update(contacts).set(updateData).where(eq(contacts.id, id)).returning();
     return contact || undefined;
   }
 
-  async getUnreadContactsCount(): Promise<number> {
-    const [result] = await db.select({ count: sql<number>`count(*)` }).from(contacts).where(eq(contacts.isRead, false));
+  async updateContactNotes(id: string, notes: string): Promise<Contact | undefined> {
+    const [contact] = await db.update(contacts).set({ notes }).where(eq(contacts.id, id)).returning();
+    return contact || undefined;
+  }
+
+  async getNewContactsCount(): Promise<number> {
+    const [result] = await db.select({ count: sql<number>`count(*)` }).from(contacts).where(eq(contacts.status, "new"));
     return Number(result?.count || 0);
   }
 
