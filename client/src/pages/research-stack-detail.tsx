@@ -464,7 +464,7 @@ export default function ResearchStackDetail() {
                   {stack.educationLinks.slice(0, 1).map((link) => (
                     <a key={link.peptideName} href={link.articleUrl} target="_blank" rel="noopener noreferrer">
                       <Card
-                        className="p-4 border-[#ec4899]/20 hover:border-[#ec4899]/40 transition-all duration-300 cursor-pointer group hover:scale-[1.02]"
+                        className="p-4 border-[#ec4899]/20 hover:border-[#ec4899]/40 transition-all duration-300 cursor-pointer group hover:scale-[1.02] active:scale-[1.02]"
                         data-testid={`card-article-${link.peptideName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}
                       >
                         <div className="flex items-start gap-3">

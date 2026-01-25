@@ -147,14 +147,14 @@ export default function BulkPacks() {
                 return (
                   <motion.div key={product.id} {...fadeInUp}>
                     <Card 
-                      className="group p-4 cursor-pointer transition-all duration-300 border-2 border-[#21d8ff]/40 hover:border-[#21d8ff] hover:shadow-[0_0_30px_rgba(33,216,255,0.3)] hover:scale-[1.02]"
+                      className="group p-4 cursor-pointer transition-all duration-300 border-2 border-[#21d8ff]/40 hover:border-[#21d8ff] hover:shadow-[0_0_30px_rgba(33,216,255,0.3)] hover:scale-[1.02] active:scale-[1.02]"
                       data-testid={`card-bulk-product-${product.id}`}
                     >
                       <div className="relative aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-lg mb-3 overflow-hidden">
                         <img
                           src={product.imageUrl || productImage}
                           alt={`${product.name} bulk pack research peptide`}
-                          className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform"
+                          className="w-full h-full object-contain p-3 group-hover:scale-105 group-active:scale-105 transition-transform"
                         />
                         <Badge className="absolute top-2 left-2 bg-green-500/90 text-white text-[10px]">
                           <CheckCircle2 className="h-3 w-3 mr-1" />

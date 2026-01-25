@@ -202,7 +202,7 @@ export default function ProductsHub() {
                 <a 
                   key={product.id} 
                   href={`/peptides/${product.id}`}
-                  className="block p-4 cursor-pointer transition-all duration-300 border border-border/50 hover:border-[#E7FB10]/50 hover:scale-105 group rounded-lg bg-card focus:outline-none focus-visible:ring-2"
+                  className="block p-4 cursor-pointer transition-all duration-300 border border-border/50 hover:border-[#E7FB10]/50 hover:scale-105 active:scale-105 group rounded-lg bg-card focus:outline-none focus-visible:ring-2"
                   data-testid={`card-featured-${product.id}`}
                 >
                   <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-lg mb-3 flex items-center justify-center">
