@@ -178,18 +178,6 @@ interface StockNotificationWithProduct {
 
 function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string) => void }) {
   const [timeRange, setTimeRange] = useState<number>(30);
-  const [topProductsSort, setTopProductsSort] = useState<"revenue" | "units">("revenue");
-  
-  const { data: pendingNotifications = [] } = useQuery<StockNotificationWithProduct[]>({
-    queryKey: ["/api/admin/stock-notifications"],
-    queryFn: async () => {
-      const response = await fetch("/api/admin/stock-notifications", {
-        credentials: "include"
-      });
-      if (!response.ok) return [];
-      return response.json();
-    }
-  });
   
   const { data: metrics, isLoading } = useQuery<DashboardMetrics>({
     queryKey: ["/api/admin/dashboard", timeRange],
@@ -198,6 +186,16 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
         credentials: "include"
       });
       if (!response.ok) throw new Error("Failed to fetch dashboard metrics");
+      return response.json();
+    }
+  });
+
+  // Fetch newsletter stats for subscriber KPI
+  const { data: newsletterStats } = useQuery<{ total: number; active: number; unsubscribed: number }>({
+    queryKey: ["/api/admin/newsletter/stats"],
+    queryFn: async () => {
+      const response = await fetch("/api/admin/newsletter/stats", { credentials: "include" });
+      if (!response.ok) return { total: 0, active: 0, unsubscribed: 0 };
       return response.json();
     }
   });
@@ -218,23 +216,18 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {[1, 2, 3, 4].map((i) => (
-            <Card key={i} className="p-6">
-              <Skeleton className="h-4 w-24 mb-2" />
-              <Skeleton className="h-8 w-32" />
+            <Card key={i} className="p-4">
+              <Skeleton className="h-3 w-20 mb-2" />
+              <Skeleton className="h-6 w-24" />
             </Card>
           ))}
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-2 p-6">
-            <Skeleton className="h-64 w-full" />
-          </Card>
-          <Card className="p-6">
-            <Skeleton className="h-64 w-full" />
-          </Card>
-        </div>
+        <Card className="p-4">
+          <Skeleton className="h-40 w-full" />
+        </Card>
       </div>
     );
   }
@@ -247,190 +240,122 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
     );
   }
 
-  const attentionItems = [
-    ...(metrics.pendingOrders > 0 ? [{
-      type: "warning",
-      icon: Clock,
-      title: "Pending Orders",
-      count: metrics.pendingOrders,
-      color: "#E7FB10",
-      targetTab: "orders"
-    }] : []),
-    ...(metrics.processingOrders > 0 ? [{
-      type: "info",
-      icon: Package,
-      title: "Processing Orders",
-      count: metrics.processingOrders,
-      color: "#21d8ff",
-      targetTab: "orders"
-    }] : []),
-    ...(metrics.outOfStockProducts.length > 0 ? [{
-      type: "error",
+  // Calculate inventory alert counts
+  const outOfStockCount = metrics.outOfStockProducts?.length || 0;
+  const lowStockCount = metrics.lowStockProducts?.length || 0;
+  const totalInventoryAlerts = outOfStockCount + lowStockCount;
+  
+  // Payment/fulfillment issues (orders with failed/refunded/chargeback status)
+  const paymentIssues = metrics.recentOrders?.filter(o => 
+    o.status === "refunded" || o.status === "failed" || o.status === "chargeback"
+  ).length || 0;
+
+  // Build actionable alert items - only Inventory Alerts and Payment Issues
+  const alertItems = [
+    ...(totalInventoryAlerts > 0 ? [{
       icon: PackageX,
-      title: "Out of Stock",
-      count: metrics.outOfStockProducts.length,
+      title: "Inventory Alerts",
+      count: totalInventoryAlerts,
+      detail: `${outOfStockCount} out, ${lowStockCount} low`,
       color: "#ef4444",
       targetTab: "products"
     }] : []),
-    ...(metrics.lowStockProducts.length > 0 ? [{
-      type: "warning",
-      icon: AlertCircle,
-      title: "Low Stock Items",
-      count: metrics.lowStockProducts.length,
-      color: "#f59e0b",
-      targetTab: "products"
-    }] : []),
-    ...(metrics.pendingAffiliateApplications > 0 ? [{
-      type: "info",
-      icon: Users,
-      title: "Affiliate Applications",
-      count: metrics.pendingAffiliateApplications,
-      color: "#9d4edd",
-      targetTab: "affiliates"
-    }] : []),
-    ...(metrics.pendingPayouts > 0 ? [{
-      type: "warning",
+    ...(paymentIssues > 0 ? [{
       icon: CreditCard,
-      title: "Pending Payouts",
-      count: metrics.pendingPayouts,
-      color: "#21d8ff",
-      targetTab: "affiliates"
-    }] : []),
-    ...(metrics.recentContacts > 0 ? [{
-      type: "info",
-      icon: Inbox,
-      title: "New Messages",
-      count: metrics.recentContacts,
-      color: "#21d8ff",
-      targetTab: "contacts"
-    }] : []),
-    ...(pendingNotifications.length > 0 ? [{
-      type: "info",
-      icon: Bell,
-      title: "Stock Notifications",
-      count: pendingNotifications.length,
-      color: "#21d8ff",
-      targetTab: "notifications"
+      title: "Payment Issues",
+      count: paymentIssues,
+      detail: "Refunded or failed",
+      color: "#f59e0b",
+      targetTab: "orders"
     }] : []),
   ];
 
+  // Get top product by revenue (single product) - only show if 2+ products have sales
+  const topProduct = metrics.topProducts?.length >= 2 
+    ? [...metrics.topProducts].sort((a, b) => b.revenue - a.revenue)[0]
+    : null;
+  
+  // Calculate subscriber net change for the period
+  const subscriberNetChange = (newsletterStats?.active || 0) - (newsletterStats?.unsubscribed || 0);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+      {/* Header with time range */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-display text-xl font-bold" data-testid="text-dashboard-title">Business Overview</h2>
-          <p className="text-muted-foreground text-sm">Your store performance at a glance</p>
+          <h2 className="font-display text-lg font-bold" data-testid="text-dashboard-title">Overview</h2>
+          <p className="text-muted-foreground text-xs">Quick health check</p>
         </div>
         <Select value={timeRange.toString()} onValueChange={(v) => setTimeRange(parseInt(v))}>
-          <SelectTrigger className="w-[140px]" data-testid="select-time-range">
+          <SelectTrigger className="w-[120px] h-8 text-xs" data-testid="select-time-range">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="7">Last 7 days</SelectItem>
             <SelectItem value="30">Last 30 days</SelectItem>
             <SelectItem value="90">Last 90 days</SelectItem>
-            <SelectItem value="365">Last year</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="relative overflow-hidden border-[#E7FB10]/30 hover:border-[#E7FB10]/50 transition-colors">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Total Revenue</p>
-                <p className="text-2xl font-bold text-[#E7FB10]" data-testid="text-total-revenue">
-                  {formatCurrency(metrics.totalRevenue)}
-                </p>
-              </div>
-              <div className="h-12 w-12 rounded-lg bg-[#E7FB10]/10 flex items-center justify-center">
-                <DollarSign className="h-6 w-6 text-[#E7FB10]" />
-              </div>
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#E7FB10]/50 to-[#E7FB10]" />
+      {/* A) Top KPI Row - exactly 4 cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <Card className="border-[#E7FB10]/30">
+          <CardContent className="p-4">
+            <p className="text-xs text-muted-foreground">Revenue</p>
+            <p className="text-xl font-bold text-[#E7FB10]" data-testid="text-total-revenue">
+              {formatCurrency(metrics.totalRevenue)}
+            </p>
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden border-[#21d8ff]/30 hover:border-[#21d8ff]/50 transition-colors">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Total Orders</p>
-                <p className="text-2xl font-bold text-[#21d8ff]" data-testid="text-total-orders">
-                  {metrics.totalOrders}
-                </p>
-              </div>
-              <div className="h-12 w-12 rounded-lg bg-[#21d8ff]/10 flex items-center justify-center">
-                <ShoppingBag className="h-6 w-6 text-[#21d8ff]" />
-              </div>
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#21d8ff]/50 to-[#21d8ff]" />
+        <Card className="border-[#21d8ff]/30">
+          <CardContent className="p-4">
+            <p className="text-xs text-muted-foreground">Orders</p>
+            <p className="text-xl font-bold text-[#21d8ff]" data-testid="text-total-orders">
+              {metrics.totalOrders}
+            </p>
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden border-[#9d4edd]/30 hover:border-[#9d4edd]/50 transition-colors">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Avg Order Value</p>
-                <p className="text-2xl font-bold text-[#9d4edd]" data-testid="text-avg-order">
-                  {formatCurrency(metrics.averageOrderValue)}
-                </p>
-              </div>
-              <div className="h-12 w-12 rounded-lg bg-[#9d4edd]/10 flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-[#9d4edd]" />
-              </div>
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#9d4edd]/50 to-[#9d4edd]" />
+        <Card className="border-[#9d4edd]/30">
+          <CardContent className="p-4">
+            <p className="text-xs text-muted-foreground">AOV</p>
+            <p className="text-xl font-bold text-[#9d4edd]" data-testid="text-avg-order">
+              {formatCurrency(metrics.averageOrderValue)}
+            </p>
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden border-white/20 hover:border-white/40 transition-colors">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Products Sold</p>
-                <p className="text-2xl font-bold" data-testid="text-products-sold">
-                  {metrics.totalProductsSold}
-                </p>
-              </div>
-              <div className="h-12 w-12 rounded-lg bg-white/10 flex items-center justify-center">
-                <Package className="h-6 w-6 text-white" />
-              </div>
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-white/50 to-white" />
+        <Card className="border-white/20">
+          <CardContent className="p-4">
+            <p className="text-xs text-muted-foreground">Products Sold</p>
+            <p className="text-xl font-bold" data-testid="text-products-sold">
+              {metrics.totalProductsSold}
+            </p>
           </CardContent>
         </Card>
       </div>
 
-      {attentionItems.length > 0 && (
+      {/* B) Alert Strip - actionable items only */}
+      {alertItems.length > 0 && (
         <Card className="border-[#E7FB10]/20 bg-[#E7FB10]/5">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-[#E7FB10]" />
-              Items Needing Attention
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-              {attentionItems.map((item, index) => (
+          <CardContent className="p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <AlertCircle className="h-4 w-4 text-[#E7FB10]" />
+              <span className="text-sm font-medium">Needs Attention</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {alertItems.map((item, index) => (
                 <button 
                   key={index}
                   onClick={() => onNavigateToTab(item.targetTab)}
-                  className="flex items-center gap-3 p-3 rounded-lg bg-background/50 border border-border/50 hover:bg-background/80 hover:border-border transition-colors cursor-pointer text-left"
-                  data-testid={`attention-item-${item.targetTab}-${index}`}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-background/60 border border-border/50 hover:bg-background/80 transition-colors text-xs"
+                  data-testid={`alert-item-${item.targetTab}`}
                 >
-                  <div 
-                    className="h-10 w-10 rounded-full flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: `${item.color}20` }}
-                  >
-                    <item.icon className="h-5 w-5" style={{ color: item.color }} />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xl font-bold" style={{ color: item.color }}>{item.count}</p>
-                    <p className="text-xs text-muted-foreground truncate">{item.title}</p>
-                  </div>
+                  <item.icon className="h-3.5 w-3.5" style={{ color: item.color }} />
+                  <span className="font-medium" style={{ color: item.color }}>{item.count}</span>
+                  <span className="text-muted-foreground">{item.title}</span>
                 </button>
               ))}
             </div>
@@ -438,17 +363,17 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
         </Card>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* C) Mid Section - Revenue Trend (smaller) + Top Product OR placeholder */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-[#21d8ff]" />
+          <CardHeader className="pb-2 pt-4 px-4">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-[#21d8ff]" />
               Revenue Trend
             </CardTitle>
-            <CardDescription>Daily revenue over the selected period</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="h-[300px]" data-testid="chart-revenue-trend">
+          <CardContent className="px-4 pb-4">
+            <div className="h-[180px]" data-testid="chart-revenue-trend">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={metrics.revenueTrend}>
                   <defs>
@@ -458,281 +383,197 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                  <XAxis 
-                    dataKey="date" 
-                    tickFormatter={formatDate}
-                    stroke="#666"
-                    fontSize={12}
-                  />
-                  <YAxis 
-                    tickFormatter={(v) => `$${v}`}
-                    stroke="#666"
-                    fontSize={12}
-                  />
+                  <XAxis dataKey="date" tickFormatter={formatDate} stroke="#666" fontSize={10} />
+                  <YAxis tickFormatter={(v) => `$${v}`} stroke="#666" fontSize={10} width={40} />
                   <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: "#1a1a1f", 
-                      border: "1px solid #333",
-                      borderRadius: "8px"
-                    }}
+                    contentStyle={{ backgroundColor: "#1a1a1f", border: "1px solid #333", borderRadius: "6px", fontSize: "12px" }}
                     formatter={(value: number) => [formatCurrency(value), "Revenue"]}
-                    labelFormatter={(label) => new Date(label).toLocaleDateString("en-US", { 
-                      weekday: "short", 
-                      month: "short", 
-                      day: "numeric" 
-                    })}
                   />
-                  <Area 
-                    type="monotone" 
-                    dataKey="revenue" 
-                    stroke="#21d8ff" 
-                    strokeWidth={2}
-                    fill="url(#revenueGradient)" 
-                  />
+                  <Area type="monotone" dataKey="revenue" stroke="#21d8ff" strokeWidth={2} fill="url(#revenueGradient)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between gap-2">
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-[#E7FB10]" />
-                Top Products
+        {/* Top Product - only show if 2+ products have sales */}
+        {topProduct ? (
+          <Card>
+            <CardHeader className="pb-2 pt-4 px-4">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-[#E7FB10]" />
+                Top Product
               </CardTitle>
-              <div className="flex rounded-lg border border-border overflow-hidden text-xs">
-                <button
-                  onClick={() => setTopProductsSort("revenue")}
-                  className={`px-3 py-1.5 transition-colors ${
-                    topProductsSort === "revenue" 
-                      ? "bg-[#E7FB10] text-black font-medium" 
-                      : "bg-background hover:bg-muted"
-                  }`}
-                  data-testid="btn-sort-revenue"
-                >
-                  Revenue
-                </button>
-                <button
-                  onClick={() => setTopProductsSort("units")}
-                  className={`px-3 py-1.5 transition-colors ${
-                    topProductsSort === "units" 
-                      ? "bg-[#21d8ff] text-black font-medium" 
-                      : "bg-background hover:bg-muted"
-                  }`}
-                  data-testid="btn-sort-units"
-                >
-                  Units Sold
-                </button>
+            </CardHeader>
+            <CardContent className="px-4 pb-4">
+              <div className="flex flex-col items-center justify-center h-[140px] text-center">
+                <div className="h-10 w-10 rounded-full bg-[#E7FB10] flex items-center justify-center text-black font-bold mb-3">
+                  1
+                </div>
+                <p className="font-medium text-sm mb-1">{topProduct.productName}</p>
+                <p className="text-xl font-bold text-[#E7FB10]">{formatCurrency(topProduct.revenue)}</p>
+                <p className="text-xs text-muted-foreground">{topProduct.totalSold} units sold</p>
               </div>
-            </div>
-            <CardDescription>
-              {topProductsSort === "revenue" ? "Best sellers by revenue" : "Most popular by quantity"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {metrics.topProducts.length > 0 ? (
-              <div className="space-y-4">
-                {[...metrics.topProducts]
-                  .sort((a, b) => topProductsSort === "revenue" 
-                    ? b.revenue - a.revenue 
-                    : b.totalSold - a.totalSold
-                  )
-                  .map((product, index) => (
-                  <div 
-                    key={product.productId} 
-                    className="flex items-center gap-3"
-                    data-testid={`top-product-${index}`}
-                  >
-                    <div className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                      index === 0 ? "bg-[#E7FB10] text-black" : 
-                      index === 1 ? "bg-[#21d8ff] text-black" : 
-                      index === 2 ? "bg-[#9d4edd] text-white" : 
-                      "bg-white/10 text-white"
-                    }`}>
-                      {index + 1}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{product.productName}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {topProductsSort === "revenue" 
-                          ? `${product.totalSold} sold` 
-                          : formatCurrency(product.revenue)
-                        }
-                      </p>
-                    </div>
-                    <p className={`font-bold ${topProductsSort === "revenue" ? "text-[#E7FB10]" : "text-[#21d8ff]"}`}>
-                      {topProductsSort === "revenue" 
-                        ? formatCurrency(product.revenue)
-                        : `${product.totalSold} units`
-                      }
-                    </p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-48 text-muted-foreground">
-                <Package className="h-12 w-12 mb-3 opacity-50" />
-                <p>No sales data yet</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="bg-muted/30">
+            <CardContent className="p-4 flex flex-col items-center justify-center h-full">
+              <Package className="h-8 w-8 text-muted-foreground/50 mb-2" />
+              <p className="text-xs text-muted-foreground text-center">Top Product shows when 2+ products have sales</p>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5 text-[#21d8ff]" />
-              Recent Orders
-            </CardTitle>
-            <CardDescription>Latest customer orders</CardDescription>
+      {/* D) Bottom Section - Operations */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Recent Orders (5 only) */}
+        <Card className="lg:col-span-2">
+          <CardHeader className="pb-2 pt-4 px-4">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Activity className="h-4 w-4 text-[#21d8ff]" />
+                Recent Orders
+              </CardTitle>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-7 text-xs"
+                onClick={() => onNavigateToTab("orders")}
+              >
+                View All
+              </Button>
+            </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 pb-4">
             {metrics.recentOrders.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {metrics.recentOrders.slice(0, 5).map((order) => (
-                  <div 
+                  <button 
                     key={order.id} 
-                    className="flex items-center justify-between p-3 rounded-lg bg-background/50 border border-border/50"
+                    onClick={() => onNavigateToTab("orders")}
+                    className="w-full flex items-center justify-between p-2 rounded-md bg-background/50 border border-border/50 hover:bg-background/80 transition-colors text-left"
                     data-testid={`recent-order-${order.id}`}
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-[#21d8ff]/10 flex items-center justify-center">
-                        <ShoppingBag className="h-5 w-5 text-[#21d8ff]" />
+                    <div className="flex items-center gap-2">
+                      <div className="h-8 w-8 rounded-full bg-[#21d8ff]/10 flex items-center justify-center">
+                        <ShoppingBag className="h-4 w-4 text-[#21d8ff]" />
                       </div>
                       <div>
-                        <p className="font-medium">{order.firstName} {order.lastName}</p>
+                        <p className="text-sm font-medium">{order.firstName} {order.lastName}</p>
                         <p className="text-xs text-muted-foreground">
                           {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : "N/A"}
                         </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold text-[#E7FB10]">{formatCurrency(parseFloat(order.totalAmount))}</p>
+                    <div className="text-right flex items-center gap-2">
                       <Badge 
-                        variant={order.status === "completed" || order.status === "shipped" ? "default" : "secondary"}
-                        className={
+                        variant="secondary"
+                        className={`text-xs ${
                           order.status === "completed" || order.status === "shipped" 
-                            ? "bg-green-500/20 text-green-400 border-green-500/30" 
+                            ? "bg-green-500/20 text-green-400" 
                             : order.status === "pending" 
-                            ? "bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30"
-                            : "bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30"
-                        }
+                            ? "bg-[#E7FB10]/20 text-[#E7FB10]"
+                            : "bg-[#21d8ff]/20 text-[#21d8ff]"
+                        }`}
                       >
                         {order.status}
                       </Badge>
+                      <p className="text-sm font-bold text-[#E7FB10]">{formatCurrency(parseFloat(order.totalAmount))}</p>
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center h-48 text-muted-foreground">
-                <ShoppingBag className="h-12 w-12 mb-3 opacity-50" />
-                <p>No orders yet</p>
+              <div className="flex flex-col items-center justify-center h-32 text-muted-foreground">
+                <ShoppingBag className="h-8 w-8 mb-2 opacity-50" />
+                <p className="text-sm">No orders yet</p>
               </div>
             )}
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-[#9d4edd]" />
-              Affiliate Overview
-            </CardTitle>
-            <CardDescription>Partner program performance</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 rounded-lg bg-[#9d4edd]/10 border border-[#9d4edd]/30">
-                <p className="text-sm text-muted-foreground mb-1">Active Affiliates</p>
-                <p className="text-2xl font-bold text-[#9d4edd]" data-testid="text-active-affiliates">
-                  {metrics.activeAffiliates}
-                </p>
-              </div>
-              <div className="p-4 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30">
-                <p className="text-sm text-muted-foreground mb-1">Total Commissions</p>
-                <p className="text-2xl font-bold text-[#E7FB10]" data-testid="text-total-commissions">
-                  {formatCurrency(metrics.totalAffiliateCommissions)}
-                </p>
-              </div>
-              <div className="p-4 rounded-lg bg-[#21d8ff]/10 border border-[#21d8ff]/30">
-                <p className="text-sm text-muted-foreground mb-1">Pending Applications</p>
-                <p className="text-2xl font-bold text-[#21d8ff]" data-testid="text-pending-applications">
-                  {metrics.pendingAffiliateApplications}
-                </p>
-              </div>
-              <div className="p-4 rounded-lg bg-orange-500/10 border border-orange-500/30">
-                <p className="text-sm text-muted-foreground mb-1">Pending Payouts</p>
-                <p className="text-2xl font-bold text-orange-400" data-testid="text-pending-payouts">
-                  {metrics.pendingPayouts}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {(metrics.lowStockProducts.length > 0 || metrics.outOfStockProducts.length > 0) && (
-        <Card className="border-red-500/30">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-red-400">
-              <AlertCircle className="h-5 w-5" />
-              Inventory Alerts
-            </CardTitle>
-            <CardDescription>Products requiring attention</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {metrics.outOfStockProducts.length > 0 && (
-                <div>
-                  <h4 className="font-medium text-red-400 mb-3 flex items-center gap-2">
+        {/* Right column - Inventory Alerts + Affiliate Summary */}
+        <div className="space-y-4">
+          {/* Inventory Alerts */}
+          {(outOfStockCount > 0 || lowStockCount > 0) && (
+            <Card className="border-red-500/30">
+              <CardHeader className="pb-2 pt-4 px-4">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm flex items-center gap-2 text-red-400">
                     <PackageX className="h-4 w-4" />
-                    Out of Stock ({metrics.outOfStockProducts.length})
-                  </h4>
-                  <div className="space-y-2">
-                    {metrics.outOfStockProducts.slice(0, 5).map((product) => (
-                      <div 
-                        key={product.id}
-                        className="flex items-center justify-between p-2 rounded bg-red-500/10 border border-red-500/20"
-                        data-testid={`out-of-stock-${product.id}`}
-                      >
-                        <span className="text-sm">{product.name}</span>
-                        <Badge variant="destructive" className="text-xs">Out of Stock</Badge>
-                      </div>
-                    ))}
-                  </div>
+                    Inventory Alerts
+                  </CardTitle>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-7 text-xs"
+                    onClick={() => onNavigateToTab("products")}
+                  >
+                    Fix
+                  </Button>
                 </div>
-              )}
-              {metrics.lowStockProducts.length > 0 && (
-                <div>
-                  <h4 className="font-medium text-orange-400 mb-3 flex items-center gap-2">
-                    <AlertCircle className="h-4 w-4" />
-                    Low Stock ({metrics.lowStockProducts.length})
-                  </h4>
-                  <div className="space-y-2">
-                    {metrics.lowStockProducts.slice(0, 5).map((product) => (
-                      <div 
-                        key={product.id}
-                        className="flex items-center justify-between p-2 rounded bg-orange-500/10 border border-orange-500/20"
-                        data-testid={`low-stock-${product.id}`}
-                      >
-                        <span className="text-sm">{product.name}</span>
-                        <Badge className="text-xs bg-orange-500/20 text-orange-400 border-orange-500/30">
-                          {product.stockAmount} left
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
+              </CardHeader>
+              <CardContent className="px-4 pb-4">
+                <div className="space-y-1.5">
+                  {metrics.outOfStockProducts?.slice(0, 3).map((product) => (
+                    <div key={product.id} className="flex items-center justify-between p-1.5 rounded bg-red-500/10 text-xs">
+                      <span className="truncate">{product.name}</span>
+                      <Badge variant="destructive" className="text-[10px] h-5">Out</Badge>
+                    </div>
+                  ))}
+                  {metrics.lowStockProducts?.slice(0, 2).map((product) => (
+                    <div key={product.id} className="flex items-center justify-between p-1.5 rounded bg-orange-500/10 text-xs">
+                      <span className="truncate">{product.name}</span>
+                      <Badge className="text-[10px] h-5 bg-orange-500/20 text-orange-400">{product.stockAmount}</Badge>
+                    </div>
+                  ))}
                 </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Affiliate Summary - minimized to 1 stat */}
+          <Card>
+            <CardContent className="p-4">
+              <button 
+                onClick={() => onNavigateToTab("affiliates")}
+                className="w-full flex items-center justify-between hover:opacity-80 transition-opacity"
+              >
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-[#9d4edd]" />
+                  <span className="text-sm text-muted-foreground">Affiliate Revenue</span>
+                </div>
+                <span className="text-lg font-bold text-[#9d4edd]">
+                  {formatCurrency(metrics.totalAffiliateCommissions)}
+                </span>
+              </button>
+            </CardContent>
+          </Card>
+
+          {/* Subscriber KPI - always shown */}
+          <Card>
+            <CardContent className="p-4">
+              <button 
+                onClick={() => onNavigateToTab("newsletter")}
+                className="w-full flex items-center justify-between hover:opacity-80 transition-opacity"
+              >
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-[#21d8ff]" />
+                  <span className="text-sm text-muted-foreground">Subscribers</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg font-bold text-[#21d8ff]">{newsletterStats?.total || 0}</span>
+                  <span className={`text-xs ${subscriberNetChange >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    ({subscriberNetChange >= 0 ? '+' : ''}{subscriberNetChange} net)
+                  </span>
+                </div>
+              </button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }
