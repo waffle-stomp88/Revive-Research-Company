@@ -780,9 +780,15 @@ function ProductsTab() {
 
   // Dosage stock management helpers
   const updateDosageStock = (index: number, field: keyof DosageStockItem, value: any) => {
-    setDosageStocks(prev => prev.map((ds, i) => 
-      i === index ? { ...ds, [field]: value } : ds
-    ));
+    setDosageStocks(prev => prev.map((ds, i) => {
+      if (i !== index) return ds;
+      const updated = { ...ds, [field]: value };
+      // Enforce rule: if stockAmount = 0, status must be Out of Stock
+      if (field === 'stockAmount' && value === 0) {
+        updated.inStock = false;
+      }
+      return updated;
+    }));
   };
 
   const addDosage = (e?: React.MouseEvent) => {
@@ -1142,7 +1148,18 @@ function ProductsTab() {
                               type="button"
                               variant={ds.inStock ? "default" : "outline"}
                               size="sm"
-                              onClick={() => updateDosageStock(index, 'inStock', !ds.inStock)}
+                              onClick={() => {
+                                // Cannot mark "In Stock" if quantity is 0
+                                if (!ds.inStock && ds.stockAmount === 0) {
+                                  toast({
+                                    title: "Cannot mark In Stock",
+                                    description: "Add stock quantity first before marking as In Stock",
+                                    variant: "destructive",
+                                  });
+                                  return;
+                                }
+                                updateDosageStock(index, 'inStock', !ds.inStock);
+                              }}
                               className={`h-9 min-w-[100px] ${ds.inStock ? "bg-green-600 hover:bg-green-700 text-white" : "border-red-500/50 text-red-500 hover:bg-red-500/10"}`}
                               data-testid={`toggle-stock-${index}`}
                             >
@@ -5525,7 +5542,7 @@ export default function Admin() {
                 </TabsTrigger>
                 <TabsTrigger value="products" className="flex items-center gap-2" data-testid="tab-products">
                   <Package className="h-4 w-4" />
-                  <span className="hidden sm:inline">Products</span>
+                  <span className="hidden sm:inline">Inventory</span>
                 </TabsTrigger>
                 <TabsTrigger value="pricing" className="flex items-center gap-2" data-testid="tab-pricing">
                   <Zap className="h-4 w-4" />
