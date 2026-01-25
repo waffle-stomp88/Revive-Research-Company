@@ -158,7 +158,7 @@ function HeroSection() {
         >
           <Link href="/peptides" onClick={() => trackEvent('hero_cta_click', 'engagement', 'shop_peptides')}>
             <div className="relative inline-block">
-              <div className="absolute inset-0 rounded-md bg-[#E7FB10]/10 animate-ping opacity-20" />
+              <div className="absolute inset-0 rounded-md bg-[#E7FB10]/10 opacity-20 animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]" />
               <Button size="lg" className="relative font-display text-base sm:text-lg px-6 sm:px-10 gap-2 bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_30px_rgba(231,251,16,0.4)] hover:shadow-[0_0_50px_rgba(231,251,16,0.6)] transition-all duration-300" data-testid="button-hero-shop">
                 Shop Peptides
                 <ArrowRight className="h-4 w-4" />
