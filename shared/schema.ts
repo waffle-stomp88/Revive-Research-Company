@@ -179,7 +179,7 @@ export type Order = typeof orders.$inferSelect;
 
 // Unified contact submissions (Contact Us + Wholesale inquiries)
 export const contactTypeEnum = ["contact", "wholesale"] as const;
-export const contactStatusEnum = ["new", "responded", "archived"] as const;
+export const contactStatusEnum = ["new", "seen", "responded", "archived"] as const;
 
 export const contacts = pgTable("contacts", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
