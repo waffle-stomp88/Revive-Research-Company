@@ -1989,7 +1989,7 @@ export async function registerRoutes(
     }
   });
 
-  // Admin: Get all contacts
+  // Admin: Get all contacts (unified Contact Us + Wholesale)
   app.get("/api/admin/contacts", isAuthenticated, isAdmin, async (req, res) => {
     try {
       const contacts = await storage.getAllContacts();
@@ -2000,17 +2000,56 @@ export async function registerRoutes(
     }
   });
 
-  // Admin: Mark contact as read
-  app.patch("/api/admin/contacts/:id/read", isAuthenticated, isAdmin, async (req, res) => {
+  // Admin: Update contact status (New → Responded → Archived)
+  app.patch("/api/admin/contacts/:id/status", isAuthenticated, isAdmin, async (req, res) => {
     try {
-      const contact = await storage.markContactAsRead(req.params.id);
+      const statusSchema = z.object({
+        status: z.enum(["new", "responded", "archived"]),
+      });
+      const { status } = statusSchema.parse(req.body);
+      const respondedBy = (req as any).user?.email || "admin";
+      
+      const contact = await storage.updateContactStatus(req.params.id, status, respondedBy);
       if (!contact) {
         return res.status(404).json({ error: "Contact not found" });
       }
       res.json(contact);
     } catch (error) {
-      console.error("Error marking contact as read:", error);
-      res.status(500).json({ error: "Failed to mark contact as read" });
+      console.error("Error updating contact status:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid status" });
+      }
+      res.status(500).json({ error: "Failed to update contact status" });
+    }
+  });
+
+  // Admin: Update contact notes
+  app.patch("/api/admin/contacts/:id/notes", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const notesSchema = z.object({
+        notes: z.string(),
+      });
+      const { notes } = notesSchema.parse(req.body);
+      
+      const contact = await storage.updateContactNotes(req.params.id, notes);
+      if (!contact) {
+        return res.status(404).json({ error: "Contact not found" });
+      }
+      res.json(contact);
+    } catch (error) {
+      console.error("Error updating contact notes:", error);
+      res.status(500).json({ error: "Failed to update contact notes" });
+    }
+  });
+
+  // Admin: Get new contacts count
+  app.get("/api/admin/contacts/new-count", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const count = await storage.getNewContactsCount();
+      res.json({ count });
+    } catch (error) {
+      console.error("Error getting new contacts count:", error);
+      res.status(500).json({ error: "Failed to get new contacts count" });
     }
   });
 
