@@ -2938,35 +2938,66 @@ function OrderViewDialog({
 function ContactsTab() {
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState<"all" | "contact" | "wholesale" | "new">("all");
+  const [notes, setNotes] = useState("");
+  const { toast } = useToast();
   
   const { data: contacts, isLoading } = useQuery<Contact[]>({
     queryKey: ["/api/admin/contacts"],
   });
 
-  const markAsReadMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const response = await apiRequest("PATCH", `/api/admin/contacts/${id}/read`);
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: "new" | "responded" | "archived" }) => {
+      const response = await apiRequest("PATCH", `/api/admin/contacts/${id}/status`, { status });
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (updatedContact: Contact) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/contacts"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
+      // Update selected contact with new data
+      setSelectedContact(updatedContact);
+      // Clear selection if it no longer matches "new" filter
+      if (activeFilter === "new" && updatedContact.status !== "new") {
+        setSelectedContact(null);
+      }
+      toast({ title: "Status updated" });
+    },
+    onError: () => {
+      toast({ title: "Failed to update status", variant: "destructive" });
+    },
+  });
+
+  const updateNotesMutation = useMutation({
+    mutationFn: async ({ id, notes }: { id: string; notes: string }) => {
+      const response = await apiRequest("PATCH", `/api/admin/contacts/${id}/notes`, { notes });
+      return response.json();
+    },
+    onSuccess: (updatedContact: Contact) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/contacts"] });
+      // Update selected contact with new data
+      setSelectedContact(updatedContact);
+      toast({ title: "Notes saved" });
+    },
+    onError: () => {
+      toast({ title: "Failed to save notes", variant: "destructive" });
     },
   });
 
   const handleSelectContact = (contact: Contact) => {
     setSelectedContact(contact);
-    if (!contact.isRead) {
-      markAsReadMutation.mutate(contact.id);
+    setNotes(contact.notes || "");
+  };
+
+  const handleStatusChange = (status: "new" | "responded" | "archived") => {
+    if (selectedContact) {
+      updateStatusMutation.mutate({ id: selectedContact.id, status });
     }
   };
 
-  const formatDate = (date: Date | string | null) => {
-    if (!date) return "N/A";
-    return new Date(date).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    });
+  const handleSaveNotes = () => {
+    if (selectedContact) {
+      updateNotesMutation.mutate({ id: selectedContact.id, notes });
+    }
   };
 
   const formatFullDate = (date: Date | string | null) => {
@@ -2993,14 +3024,58 @@ function ContactsTab() {
     if (diffMins < 60) return `${diffMins}m ago`;
     if (diffHours < 24) return `${diffHours}h ago`;
     if (diffDays < 7) return `${diffDays}d ago`;
-    return formatDate(date);
+    return new Date(date).toLocaleDateString("en-US", { month: "short", day: "numeric" });
   };
 
-  const filteredContacts = contacts?.filter(contact => 
-    contact.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    contact.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    contact.message.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "new":
+        return <Badge className="bg-[#E7FB10] text-black">New</Badge>;
+      case "responded":
+        return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Responded</Badge>;
+      case "archived":
+        return <Badge variant="secondary">Archived</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
+  const getTypeBadge = (type: string) => {
+    if (type === "wholesale") {
+      return <Badge className="bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30">Wholesale</Badge>;
+    }
+    return <Badge className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30">Contact</Badge>;
+  };
+
+  // Filter contacts based on active filter and search
+  const filteredContacts = contacts?.filter(contact => {
+    const matchesSearch = 
+      contact.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      contact.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      contact.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (contact.companyName?.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    if (!matchesSearch) return false;
+    
+    switch (activeFilter) {
+      case "contact":
+        return contact.type === "contact";
+      case "wholesale":
+        return contact.type === "wholesale";
+      case "new":
+        return contact.status === "new";
+      default:
+        return true;
+    }
+  }) || [];
+
+  // Count stats
+  const stats = {
+    all: contacts?.length || 0,
+    contact: contacts?.filter(c => c.type === "contact").length || 0,
+    wholesale: contacts?.filter(c => c.type === "wholesale").length || 0,
+    new: contacts?.filter(c => c.status === "new").length || 0,
+  };
 
   if (isLoading) {
     return (
@@ -3019,25 +3094,67 @@ function ContactsTab() {
 
   return (
     <div className="space-y-4">
+      {/* Header with search */}
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-xl font-semibold flex items-center gap-2">
           <Inbox className="h-5 w-5 text-[#21d8ff]" />
-          Contact Submissions ({contacts?.length || 0})
+          Contacts Inbox
         </h2>
         <div className="relative w-64">
           <Input
-            placeholder="Search messages..."
+            placeholder="Search contacts..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
             data-testid="input-search-contacts"
           />
-          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         </div>
+      </div>
+
+      {/* Filter buttons */}
+      <div className="flex gap-2 flex-wrap">
+        <Button
+          variant={activeFilter === "all" ? "default" : "outline"}
+          size="sm"
+          onClick={() => setActiveFilter("all")}
+          data-testid="button-filter-all"
+        >
+          All ({stats.all})
+        </Button>
+        <Button
+          variant={activeFilter === "contact" ? "default" : "outline"}
+          size="sm"
+          onClick={() => setActiveFilter("contact")}
+          data-testid="button-filter-contact"
+        >
+          Contact ({stats.contact})
+        </Button>
+        <Button
+          variant={activeFilter === "wholesale" ? "default" : "outline"}
+          size="sm"
+          onClick={() => setActiveFilter("wholesale")}
+          data-testid="button-filter-wholesale"
+        >
+          Wholesale ({stats.wholesale})
+        </Button>
+        <Button
+          variant={activeFilter === "new" ? "default" : "outline"}
+          size="sm"
+          onClick={() => setActiveFilter("new")}
+          className={activeFilter !== "new" && stats.new > 0 ? "border-[#E7FB10]/50" : ""}
+          data-testid="button-filter-new"
+        >
+          New ({stats.new})
+          {stats.new > 0 && activeFilter !== "new" && (
+            <span className="ml-1 h-2 w-2 rounded-full bg-[#E7FB10]" />
+          )}
+        </Button>
       </div>
 
       {contacts && contacts.length > 0 ? (
         <div className="flex h-[600px] border rounded-lg overflow-hidden">
+          {/* Contact List */}
           <div className="w-1/3 border-r bg-background/50 overflow-y-auto">
             {filteredContacts.length > 0 ? (
               filteredContacts.map((contact) => (
@@ -3047,7 +3164,7 @@ function ContactsTab() {
                   className={`w-full text-left p-4 border-b transition-colors ${
                     selectedContact?.id === contact.id
                       ? "bg-[#21d8ff]/10 border-l-2 border-l-[#21d8ff]"
-                      : !contact.isRead 
+                      : contact.status === "new"
                         ? "bg-[#E7FB10]/5 hover:bg-[#E7FB10]/10 border-l-2 border-l-[#E7FB10]"
                         : "hover:bg-muted/50 border-l-2 border-l-transparent"
                   }`}
@@ -3056,19 +3173,24 @@ function ContactsTab() {
                   <div className="flex items-start justify-between gap-2 mb-1">
                     <div className="flex items-center gap-2 min-w-0">
                       <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${
-                        !contact.isRead ? "bg-[#E7FB10]/20" : "bg-[#9d4edd]/20"
+                        contact.type === "wholesale" ? "bg-[#9d4edd]/20" : "bg-[#21d8ff]/20"
                       }`}>
                         <span className={`text-sm font-bold ${
-                          !contact.isRead ? "text-[#E7FB10]" : "text-[#9d4edd]"
+                          contact.type === "wholesale" ? "text-[#9d4edd]" : "text-[#21d8ff]"
                         }`}>
                           {contact.name.charAt(0).toUpperCase()}
                         </span>
                       </div>
-                      <div className="min-w-0 flex items-center gap-2">
-                        <span className={`font-medium truncate ${!contact.isRead ? "text-foreground" : ""}`}>{contact.name}</span>
-                        {!contact.isRead && (
-                          <Badge className="shrink-0 bg-[#E7FB10] text-black text-[10px] px-1.5 py-0">New</Badge>
-                        )}
+                      <div className="min-w-0 flex flex-col">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium truncate">{contact.name}</span>
+                        </div>
+                        <div className="flex items-center gap-1 mt-0.5">
+                          {getTypeBadge(contact.type)}
+                          {contact.status === "new" && (
+                            <Badge className="bg-[#E7FB10] text-black text-[10px] px-1.5 py-0">New</Badge>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <span className="text-xs text-muted-foreground shrink-0">
@@ -3076,7 +3198,7 @@ function ContactsTab() {
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground truncate pl-10">
-                    {contact.email}
+                    {contact.companyName ? `${contact.companyName} • ` : ""}{contact.email}
                   </p>
                   <p className="text-sm text-muted-foreground truncate mt-1 pl-10">
                     {contact.message}
@@ -3085,91 +3207,155 @@ function ContactsTab() {
               ))
             ) : (
               <div className="p-8 text-center text-muted-foreground">
-                <p>No messages match your search</p>
+                <p>No contacts match your filter</p>
               </div>
             )}
           </div>
 
+          {/* Contact Detail */}
           <div className="flex-1 flex flex-col bg-background">
             {selectedContact ? (
               <>
                 <div className="p-6 border-b">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-full bg-[#9d4edd]/20 flex items-center justify-center">
-                        <span className="text-lg font-bold text-[#9d4edd]">
+                      <div className={`h-12 w-12 rounded-full flex items-center justify-center ${
+                        selectedContact.type === "wholesale" ? "bg-[#9d4edd]/20" : "bg-[#21d8ff]/20"
+                      }`}>
+                        <span className={`text-lg font-bold ${
+                          selectedContact.type === "wholesale" ? "text-[#9d4edd]" : "text-[#21d8ff]"
+                        }`}>
                           {selectedContact.name.charAt(0).toUpperCase()}
                         </span>
                       </div>
                       <div>
-                        <h3 className="font-semibold text-lg" data-testid="text-selected-contact-name">
-                          {selectedContact.name}
-                        </h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold text-lg" data-testid="text-selected-contact-name">
+                            {selectedContact.name}
+                          </h3>
+                          {getTypeBadge(selectedContact.type)}
+                        </div>
                         <p className="text-sm text-muted-foreground">{selectedContact.email}</p>
+                        {selectedContact.companyName && (
+                          <p className="text-sm text-muted-foreground">{selectedContact.companyName}</p>
+                        )}
                       </div>
                     </div>
                     <div className="text-right">
                       <p className="text-sm text-muted-foreground">
                         {formatFullDate(selectedContact.createdAt)}
                       </p>
-                      <a
-                        href={`mailto:${selectedContact.email}?subject=Re: Your inquiry to Revive Research`}
-                        className="inline-flex items-center gap-1 text-sm text-[#21d8ff] hover:underline mt-1"
-                        data-testid="link-reply-email"
-                      >
-                        <Mail className="h-3 w-3" />
-                        Reply via Email
-                      </a>
+                      {getStatusBadge(selectedContact.status)}
                     </div>
                   </div>
+                  
+                  {/* Wholesale-specific info */}
+                  {selectedContact.type === "wholesale" && (
+                    <div className="mt-4 p-3 bg-[#9d4edd]/10 rounded-lg border border-[#9d4edd]/20">
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        {selectedContact.phone && (
+                          <div>
+                            <span className="text-muted-foreground">Phone:</span>{" "}
+                            <span className="font-medium">{selectedContact.phone}</span>
+                          </div>
+                        )}
+                        {selectedContact.orderVolume && (
+                          <div>
+                            <span className="text-muted-foreground">Order Volume:</span>{" "}
+                            <span className="font-medium">{selectedContact.orderVolume}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
-                <div className="flex-1 p-6 overflow-y-auto">
+                <div className="flex-1 p-6 overflow-y-auto space-y-4">
+                  {/* Message */}
                   <div className="bg-muted/30 rounded-lg p-6 border">
                     <p className="whitespace-pre-wrap leading-relaxed" data-testid="text-selected-contact-message">
                       {selectedContact.message}
                     </p>
                   </div>
+                  
+                  {/* Notes */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-muted-foreground">Internal Notes</label>
+                    <Textarea
+                      placeholder="Add notes about this contact..."
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      className="min-h-[100px]"
+                      data-testid="textarea-contact-notes"
+                    />
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleSaveNotes}
+                      disabled={updateNotesMutation.isPending || notes === (selectedContact.notes || "")}
+                      data-testid="button-save-notes"
+                    >
+                      {updateNotesMutation.isPending ? "Saving..." : "Save Notes"}
+                    </Button>
+                  </div>
                 </div>
 
+                {/* Actions footer */}
                 <div className="p-4 border-t bg-muted/20">
-                  <div className="flex items-center gap-3">
-                    <a
-                      href={`mailto:${selectedContact.email}?subject=Re: Your inquiry to Revive Research`}
-                      className="flex-1"
-                    >
-                      <Button className="w-full bg-[#21d8ff] hover:bg-[#21d8ff]/90 text-black" data-testid="btn-reply-contact">
-                        <Mail className="h-4 w-4 mr-2" />
-                        Reply to {selectedContact.name.split(' ')[0]}
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted-foreground">Status:</span>
+                      <Select
+                        value={selectedContact.status}
+                        onValueChange={(value) => handleStatusChange(value as "new" | "responded" | "archived")}
+                      >
+                        <SelectTrigger className="w-[140px]" data-testid="select-status">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="new">New</SelectItem>
+                          <SelectItem value="responded">Responded</SelectItem>
+                          <SelectItem value="archived">Archived</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={`mailto:${selectedContact.email}?subject=Re: Your inquiry to Revive Research`}
+                      >
+                        <Button className="bg-[#21d8ff] text-black" data-testid="btn-reply-contact">
+                          <Mail className="h-4 w-4 mr-2" />
+                          Reply
+                        </Button>
+                      </a>
+                      <Button
+                        variant="outline"
+                        onClick={() => setSelectedContact(null)}
+                        data-testid="btn-close-contact"
+                      >
+                        Close
                       </Button>
-                    </a>
-                    <Button
-                      variant="outline"
-                      onClick={() => setSelectedContact(null)}
-                      data-testid="btn-close-contact"
-                    >
-                      Close
-                    </Button>
+                    </div>
                   </div>
                 </div>
               </>
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground">
                 <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
-                  <Mail className="h-8 w-8" />
+                  <Inbox className="h-8 w-8" />
                 </div>
-                <p className="font-medium mb-1">Select a message</p>
-                <p className="text-sm">Click on a contact to view their full message</p>
+                <p className="font-medium mb-1">Select a contact</p>
+                <p className="text-sm">Click on a contact to view details</p>
               </div>
             )}
           </div>
         </div>
       ) : (
         <Card className="p-12 text-center">
-          <Mail className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
-          <h3 className="font-medium mb-2">No Contact Submissions</h3>
+          <Inbox className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+          <h3 className="font-medium mb-2">No Contacts Yet</h3>
           <p className="text-sm text-muted-foreground">
-            Contact form submissions will appear here.
+            Contact and wholesale inquiries will appear here.
           </p>
         </Card>
       )}
