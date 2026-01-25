@@ -509,7 +509,7 @@ function ProductsComponent() {
           >
             <Link href={`/peptides/${saleProduct.id}`} onClick={savePageState}>
               <div className="sale-glow-pulse rounded-xl">
-                <Card className="p-3 md:p-6 border-2 border-[#E7FB10]/50 bg-gradient-to-br from-[#E7FB10]/10 via-background to-background transition-all duration-300 cursor-pointer group hover:scale-[1.02] md:hover:scale-105 hover:shadow-[0_0_30px_rgba(231,251,16,0.4)] hover:border-[#E7FB10] relative overflow-hidden">
+                <Card className="p-3 md:p-6 border-2 border-[#E7FB10]/50 bg-gradient-to-br from-[#E7FB10]/10 via-background to-background transition-all duration-300 cursor-pointer group hover:scale-[1.02] active:scale-[1.02] md:hover:scale-105 md:active:scale-105 hover:shadow-[0_0_30px_rgba(231,251,16,0.4)] hover:border-[#E7FB10] relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-[#E7FB10]/5 blur-3xl -mr-16 -mt-16 pointer-events-none" />
                   {/* Dismiss button */}
                   <button
@@ -572,7 +572,7 @@ function ProductsComponent() {
                       <img 
                         src={saleProduct.imageUrl || productImage} 
                         alt={`${saleProduct.name} research peptide - premium quality lab tested compound`}
-                        className="w-full h-full object-contain p-3 group-hover:scale-110 transition-transform"
+                        className="w-full h-full object-contain p-3 group-hover:scale-110 group-active:scale-110 transition-transform"
                       />
                     </div>
                     <div className="flex-1 text-left">
@@ -953,7 +953,7 @@ function ProductsComponent() {
                           const isOutOfStock = !product.inStock || (product.stockAmount !== null && product.stockAmount <= 0);
                           return (
                             <Card 
-                              className={`group p-3 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 hover:scale-[1.03] relative overflow-hidden ${
+                              className={`group p-3 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 hover:scale-[1.03] active:scale-[1.03] relative overflow-hidden ${
                                 isOutOfStock
                                   ? "border-red-500/60 hover:border-red-500 hover:shadow-[0_0_30px_rgba(239,68,68,0.5),0_0_60px_rgba(239,68,68,0.2)]"
                                   : "border-[#21d8ff]/40 hover:border-[#21d8ff] hover:shadow-[0_0_30px_rgba(33,216,255,0.5),0_0_60px_rgba(33,216,255,0.2)]"
@@ -972,7 +972,7 @@ function ProductsComponent() {
                                 <ImageLoader 
                                   src={product.imageUrl || productImage} 
                                   alt={`${product.name} research peptide - third party lab tested`}
-                                  className="w-full h-full object-contain transition-transform duration-300 p-3 group-hover:scale-105"
+                                  className="w-full h-full object-contain transition-transform duration-300 p-3 group-hover:scale-105 group-active:scale-105"
                                   containerClassName="relative w-full h-full bg-gradient-to-br from-muted to-muted/50 overflow-hidden rounded-md"
                                 />
                                 {/* Smart badge system - max 2 badges, positioned top-left */}
