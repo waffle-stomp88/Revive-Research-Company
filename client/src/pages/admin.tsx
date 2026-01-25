@@ -99,6 +99,8 @@ import {
   XCircle,
   Settings,
   Download,
+  Eye,
+  AlertTriangle,
 } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { ObjectUploader } from "@/components/ObjectUploader";
@@ -1989,11 +1991,32 @@ function CoasTab() {
   );
 }
 
+type OrderStats = {
+  grossRevenue: number;
+  paidOrders: number;
+  aov: number;
+  refundCount: number;
+  refundAmount: number;
+  emailFailures: number;
+  needsAttention: {
+    emailFailedPaid: number;
+    unfulfilledOver24h: number;
+    refundsChargebacks: number;
+  };
+};
+
 function OrdersTab() {
   const { toast } = useToast();
+  const [activeFilter, setActiveFilter] = useState<string>("all");
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
 
   const { data: allOrders, isLoading } = useQuery<Order[]>({
     queryKey: ["/api/admin/orders"],
+  });
+
+  const { data: orderStats } = useQuery<OrderStats>({
+    queryKey: ["/api/admin/orders/stats"],
   });
 
   const { data: products } = useQuery<Product[]>({
@@ -2007,11 +2030,42 @@ function OrdersTab() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders/stats"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
       toast({ title: "Order status updated" });
     },
     onError: () => {
       toast({ title: "Failed to update order status", variant: "destructive" });
+    },
+  });
+
+  const updateFulfillmentMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: any }) => {
+      const response = await apiRequest("PATCH", `/api/admin/orders/${id}/fulfillment`, data);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders/stats"] });
+      toast({ title: "Fulfillment updated" });
+    },
+    onError: () => {
+      toast({ title: "Failed to update fulfillment", variant: "destructive" });
+    },
+  });
+
+  const resendEmailMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest("POST", `/api/admin/orders/${id}/resend-email`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders/stats"] });
+      toast({ title: "Email sent successfully" });
+    },
+    onError: () => {
+      toast({ title: "Failed to send email", variant: "destructive" });
     },
   });
 
@@ -2022,7 +2076,6 @@ function OrdersTab() {
   const formatDate = (date: Date | string | null) => {
     if (!date) return "N/A";
     return new Date(date).toLocaleDateString("en-US", {
-      year: "numeric",
       month: "short",
       day: "numeric",
       hour: "2-digit",
@@ -2030,77 +2083,541 @@ function OrdersTab() {
     });
   };
 
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
+  };
+
+  const getPaymentStatusBadge = (status: string | null) => {
+    const statusMap: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+      paid: { label: "Paid", variant: "default" },
+      completed: { label: "Paid", variant: "default" },
+      shipped: { label: "Paid", variant: "default" },
+      delivered: { label: "Paid", variant: "default" },
+      pending: { label: "Pending", variant: "secondary" },
+      refunded: { label: "Refunded", variant: "destructive" },
+      chargeback: { label: "Chargeback", variant: "destructive" },
+      cancelled: { label: "Cancelled", variant: "outline" },
+    };
+    const config = statusMap[status || "pending"] || statusMap.pending;
+    return <Badge variant={config.variant}>{config.label}</Badge>;
+  };
+
+  const getFulfillmentStatusBadge = (status: string | null | undefined) => {
+    const statusMap: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+      unfulfilled: { label: "Unfulfilled", variant: "outline" },
+      processing: { label: "Processing", variant: "secondary" },
+      shipped: { label: "Shipped", variant: "default" },
+      completed: { label: "Completed", variant: "default" },
+    };
+    const config = statusMap[status || "unfulfilled"] || statusMap.unfulfilled;
+    return <Badge variant={config.variant}>{config.label}</Badge>;
+  };
+
+  const getEmailStatusBadge = (status: string | null | undefined) => {
+    const statusMap: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+      pending: { label: "Pending", variant: "outline" },
+      sent: { label: "Sent", variant: "default" },
+      failed: { label: "Failed", variant: "destructive" },
+    };
+    const config = statusMap[status || "pending"] || statusMap.pending;
+    return <Badge variant={config.variant}>{config.label}</Badge>;
+  };
+
+  const paidStatuses = ["paid", "completed", "shipped", "delivered"];
+  const needsAttentionOrders = allOrders?.filter((order) => {
+    const isPaid = paidStatuses.includes(order.status || "");
+    const emailFailed = order.emailStatus === "failed";
+    const isRefund = order.status === "refunded" || order.status === "chargeback";
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const unfulfilledOver24h = isPaid && 
+      (!order.fulfillmentStatus || order.fulfillmentStatus === "unfulfilled") &&
+      order.createdAt && new Date(order.createdAt) < twentyFourHoursAgo;
+    return (isPaid && emailFailed) || isRefund || unfulfilledOver24h;
+  }) || [];
+
+  const filteredOrders = allOrders?.filter((order) => {
+    if (activeFilter === "all") return true;
+    if (activeFilter === "needs-attention") {
+      const isPaid = paidStatuses.includes(order.status || "");
+      const emailFailed = order.emailStatus === "failed";
+      const isRefund = order.status === "refunded" || order.status === "chargeback";
+      const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const unfulfilledOver24h = isPaid && 
+        (!order.fulfillmentStatus || order.fulfillmentStatus === "unfulfilled") &&
+        order.createdAt && new Date(order.createdAt) < twentyFourHoursAgo;
+      return (isPaid && emailFailed) || isRefund || unfulfilledOver24h;
+    }
+    if (activeFilter === "paid") return paidStatuses.includes(order.status || "");
+    if (activeFilter === "unfulfilled") {
+      return paidStatuses.includes(order.status || "") && 
+        (!order.fulfillmentStatus || order.fulfillmentStatus === "unfulfilled");
+    }
+    if (activeFilter === "email-failed") return order.emailStatus === "failed";
+    return true;
+  }) || [];
+
+  const handleViewOrder = (order: Order) => {
+    setSelectedOrder(order);
+    setIsViewDialogOpen(true);
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-4">
-        {[1, 2, 3].map((i) => (
-          <Skeleton key={i} className="h-16 w-full" />
-        ))}
+        <div className="grid gap-4 md:grid-cols-5">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <Skeleton key={i} className="h-24" />
+          ))}
+        </div>
+        <Skeleton className="h-64" />
       </div>
     );
   }
 
+  const totalNeedsAttention = (orderStats?.needsAttention.emailFailedPaid || 0) +
+    (orderStats?.needsAttention.unfulfilledOver24h || 0) +
+    (orderStats?.needsAttention.refundsChargebacks || 0);
+
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold">Orders ({allOrders?.length || 0})</h2>
+      <div className="grid gap-4 md:grid-cols-5">
+        <Card data-testid="card-orders-revenue">
+          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Gross Revenue</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{formatCurrency(orderStats?.grossRevenue || 0)}</div>
+            <p className="text-xs text-muted-foreground">Paid orders only (30d)</p>
+          </CardContent>
+        </Card>
+
+        <Card data-testid="card-orders-count">
+          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Paid Orders</CardTitle>
+            <Package className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{orderStats?.paidOrders || 0}</div>
+            <p className="text-xs text-muted-foreground">Last 30 days</p>
+          </CardContent>
+        </Card>
+
+        <Card data-testid="card-orders-aov">
+          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">AOV</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{formatCurrency(orderStats?.aov || 0)}</div>
+            <p className="text-xs text-muted-foreground">Average order value</p>
+          </CardContent>
+        </Card>
+
+        <Card data-testid="card-orders-refunds">
+          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Refunds</CardTitle>
+            <RefreshCw className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{orderStats?.refundCount || 0}</div>
+            <p className="text-xs text-muted-foreground">{formatCurrency(orderStats?.refundAmount || 0)} total</p>
+          </CardContent>
+        </Card>
+
+        <Card data-testid="card-orders-email-failures" className={orderStats?.emailFailures ? "border-destructive" : ""}>
+          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Email Failures</CardTitle>
+            <Mail className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className={`text-2xl font-bold ${orderStats?.emailFailures ? "text-destructive" : ""}`}>
+              {orderStats?.emailFailures || 0}
+            </div>
+            <p className="text-xs text-muted-foreground">Confirmation emails</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {totalNeedsAttention > 0 && (
+        <Card className="border-[#E7FB10]/30 bg-[#E7FB10]/5" data-testid="card-needs-attention">
+          <CardContent className="py-3">
+            <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-[#E7FB10]" />
+                <span className="font-medium">Needs Attention</span>
+              </div>
+              <div className="flex gap-4 text-sm flex-wrap">
+                {(orderStats?.needsAttention.emailFailedPaid || 0) > 0 && (
+                  <button 
+                    className="hover-elevate px-2 py-1 rounded text-destructive"
+                    onClick={() => setActiveFilter("email-failed")}
+                    data-testid="button-filter-email-failed"
+                  >
+                    {orderStats?.needsAttention.emailFailedPaid} email failed
+                  </button>
+                )}
+                {(orderStats?.needsAttention.unfulfilledOver24h || 0) > 0 && (
+                  <button 
+                    className="hover-elevate px-2 py-1 rounded text-[#E7FB10]"
+                    onClick={() => setActiveFilter("unfulfilled")}
+                    data-testid="button-filter-unfulfilled"
+                  >
+                    {orderStats?.needsAttention.unfulfilledOver24h} unfulfilled 24h+
+                  </button>
+                )}
+                {(orderStats?.needsAttention.refundsChargebacks || 0) > 0 && (
+                  <span className="text-muted-foreground">{orderStats?.needsAttention.refundsChargebacks} refunds/chargebacks</span>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      <div className="flex items-center gap-2 flex-wrap">
+        <Button 
+          variant={activeFilter === "all" ? "default" : "outline"} 
+          size="sm"
+          onClick={() => setActiveFilter("all")}
+          data-testid="button-filter-all"
+        >
+          All Orders ({allOrders?.length || 0})
+        </Button>
+        <Button 
+          variant={activeFilter === "needs-attention" ? "default" : "outline"} 
+          size="sm"
+          onClick={() => setActiveFilter("needs-attention")}
+          data-testid="button-filter-needs-attention"
+        >
+          Needs Attention ({needsAttentionOrders.length})
+        </Button>
+        <Button 
+          variant={activeFilter === "paid" ? "default" : "outline"} 
+          size="sm"
+          onClick={() => setActiveFilter("paid")}
+          data-testid="button-filter-paid"
+        >
+          Paid
+        </Button>
+        <Button 
+          variant={activeFilter === "unfulfilled" ? "default" : "outline"} 
+          size="sm"
+          onClick={() => setActiveFilter("unfulfilled")}
+          data-testid="button-filter-unfulfilled-btn"
+        >
+          Unfulfilled
+        </Button>
+        <Button 
+          variant={activeFilter === "email-failed" ? "default" : "outline"} 
+          size="sm"
+          onClick={() => setActiveFilter("email-failed")}
+          data-testid="button-filter-email-failed-btn"
+        >
+          Email Failed
+        </Button>
+      </div>
 
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Order ID</TableHead>
-              <TableHead>Customer</TableHead>
-              <TableHead>Product</TableHead>
-              <TableHead>Total</TableHead>
-              <TableHead>Status</TableHead>
               <TableHead>Date</TableHead>
+              <TableHead>Customer</TableHead>
+              <TableHead>Amount</TableHead>
+              <TableHead>Payment</TableHead>
+              <TableHead>Fulfillment</TableHead>
+              <TableHead>Email</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {allOrders?.map((order) => (
-              <TableRow key={order.id} data-testid={`row-order-${order.id}`}>
-                <TableCell className="font-mono text-sm">{order.id.slice(0, 8)}...</TableCell>
-                <TableCell>
-                  <div>
-                    <p className="font-medium">{order.firstName} {order.lastName}</p>
-                    <p className="text-sm text-muted-foreground">{order.email}</p>
-                  </div>
-                </TableCell>
-                <TableCell>{getProductName(order.productId)}</TableCell>
-                <TableCell>${Number(order.totalAmount).toFixed(2)}</TableCell>
-                <TableCell>
-                  <Select
-                    defaultValue={order.status || "pending"}
-                    onValueChange={(status) => updateStatusMutation.mutate({ id: order.id, status })}
-                    disabled={updateStatusMutation.isPending}
-                  >
-                    <SelectTrigger className="w-32" data-testid={`select-order-status-${order.id}`}>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="processing">Processing</SelectItem>
-                      <SelectItem value="shipped">Shipped</SelectItem>
-                      <SelectItem value="delivered">Delivered</SelectItem>
-                      <SelectItem value="cancelled">Cancelled</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {formatDate(order.createdAt)}
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="text-sm text-muted-foreground">
-                    {order.city}, {order.state}
-                  </div>
+            {filteredOrders.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                  No orders found
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              filteredOrders.map((order) => (
+                <TableRow key={order.id} data-testid={`row-order-${order.id}`}>
+                  <TableCell className="font-mono text-sm">{order.id.slice(0, 8).toUpperCase()}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                    {formatDate(order.createdAt)}
+                  </TableCell>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium">{order.firstName} {order.lastName}</p>
+                      <p className="text-sm text-muted-foreground">{order.email}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-medium">{formatCurrency(Number(order.totalAmount))}</TableCell>
+                  <TableCell>{getPaymentStatusBadge(order.status)}</TableCell>
+                  <TableCell>
+                    <Select
+                      value={order.fulfillmentStatus || "unfulfilled"}
+                      onValueChange={(status) => updateFulfillmentMutation.mutate({ 
+                        id: order.id, 
+                        data: { fulfillmentStatus: status }
+                      })}
+                      disabled={updateFulfillmentMutation.isPending}
+                    >
+                      <SelectTrigger className="w-28" data-testid={`select-fulfillment-${order.id}`}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="unfulfilled">Unfulfilled</SelectItem>
+                        <SelectItem value="processing">Processing</SelectItem>
+                        <SelectItem value="shipped">Shipped</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      {getEmailStatusBadge(order.emailStatus)}
+                      {order.emailStatus === "failed" && (
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-6 w-6"
+                          onClick={() => resendEmailMutation.mutate(order.id)}
+                          disabled={resendEmailMutation.isPending}
+                          data-testid={`button-resend-email-${order.id}`}
+                        >
+                          <RefreshCw className={`h-3 w-3 ${resendEmailMutation.isPending ? "animate-spin" : ""}`} />
+                        </Button>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => handleViewOrder(order)}
+                      data-testid={`button-view-order-${order.id}`}
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
+                      View
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
+
+      <OrderViewDialog 
+        order={selectedOrder}
+        open={isViewDialogOpen}
+        onOpenChange={setIsViewDialogOpen}
+        products={products || []}
+        onUpdateFulfillment={(data) => {
+          if (selectedOrder) {
+            updateFulfillmentMutation.mutate({ id: selectedOrder.id, data });
+          }
+        }}
+        onResendEmail={() => {
+          if (selectedOrder) {
+            resendEmailMutation.mutate(selectedOrder.id);
+          }
+        }}
+        onUpdateStatus={(status) => {
+          if (selectedOrder) {
+            updateStatusMutation.mutate({ id: selectedOrder.id, status });
+          }
+        }}
+      />
     </div>
+  );
+}
+
+function OrderViewDialog({ 
+  order, 
+  open, 
+  onOpenChange, 
+  products,
+  onUpdateFulfillment,
+  onResendEmail,
+  onUpdateStatus
+}: { 
+  order: Order | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  products: Product[];
+  onUpdateFulfillment: (data: any) => void;
+  onResendEmail: () => void;
+  onUpdateStatus: (status: string) => void;
+}) {
+  const [notes, setNotes] = useState(order?.fulfillmentNotes || "");
+  const [paymentConfirmed, setPaymentConfirmed] = useState(order?.paymentConfirmed || false);
+  const [addressCollected, setAddressCollected] = useState(order?.addressCollected || false);
+  const [packed, setPacked] = useState(order?.packed || false);
+
+  useEffect(() => {
+    if (order) {
+      setNotes(order.fulfillmentNotes || "");
+      setPaymentConfirmed(order.paymentConfirmed || false);
+      setAddressCollected(order.addressCollected || false);
+      setPacked(order.packed || false);
+    }
+  }, [order]);
+
+  if (!order) return null;
+
+  const product = products.find(p => p.id === order.productId);
+
+  const handleSaveChecklist = () => {
+    onUpdateFulfillment({
+      paymentConfirmed,
+      addressCollected,
+      packed,
+      fulfillmentNotes: notes,
+    });
+  };
+
+  const handleMarkFulfilled = () => {
+    onUpdateFulfillment({
+      fulfillmentStatus: "completed",
+      paymentConfirmed: true,
+      addressCollected: true,
+      packed: true,
+      fulfillmentNotes: notes,
+    });
+  };
+
+  const paidStatuses = ["paid", "completed", "shipped", "delivered"];
+  const isPaid = paidStatuses.includes(order.status || "");
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            Order {order.id.slice(0, 8).toUpperCase()}
+            <Badge variant={isPaid ? "default" : "secondary"}>
+              {isPaid ? "Paid" : order.status || "Pending"}
+            </Badge>
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-6">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <h4 className="font-medium mb-2">Customer</h4>
+              <div className="text-sm space-y-1">
+                <p>{order.firstName} {order.lastName}</p>
+                <p className="text-muted-foreground">{order.email}</p>
+                {order.address && (
+                  <div className="mt-2 text-muted-foreground">
+                    <p>{order.address}</p>
+                    <p>{order.city}, {order.state} {order.zipCode}</p>
+                    <p>{order.country}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div>
+              <h4 className="font-medium mb-2">Order Details</h4>
+              <div className="text-sm space-y-1">
+                <p><span className="text-muted-foreground">Product:</span> {product?.name || "Unknown"}</p>
+                <p><span className="text-muted-foreground">Quantity:</span> {order.quantity}</p>
+                <p><span className="text-muted-foreground">Total:</span> ${Number(order.totalAmount).toFixed(2)}</p>
+                <p><span className="text-muted-foreground">Date:</span> {new Date(order.createdAt!).toLocaleString()}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t pt-4">
+            <h4 className="font-medium mb-3">Email Status</h4>
+            <div className="flex items-center gap-4">
+              <Badge variant={order.emailStatus === "sent" ? "default" : order.emailStatus === "failed" ? "destructive" : "secondary"}>
+                {order.emailStatus === "sent" ? "Sent" : order.emailStatus === "failed" ? "Failed" : "Pending"}
+              </Badge>
+              {order.emailSentAt && (
+                <span className="text-sm text-muted-foreground">
+                  Sent {new Date(order.emailSentAt).toLocaleString()}
+                </span>
+              )}
+              {order.emailStatus === "failed" && (
+                <Button size="sm" variant="outline" onClick={onResendEmail}>
+                  <RefreshCw className="h-3 w-3 mr-1" />
+                  Retry
+                </Button>
+              )}
+              {order.emailError && (
+                <span className="text-sm text-destructive">{order.emailError}</span>
+              )}
+            </div>
+          </div>
+
+          <div className="border-t pt-4">
+            <h4 className="font-medium mb-3">Fulfillment Checklist</h4>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <Checkbox 
+                  id="payment-confirmed" 
+                  checked={paymentConfirmed}
+                  onCheckedChange={(checked) => setPaymentConfirmed(!!checked)}
+                  data-testid="checkbox-payment-confirmed"
+                />
+                <label htmlFor="payment-confirmed" className="text-sm">Payment confirmed in Stripe</label>
+              </div>
+              <div className="flex items-center gap-3">
+                <Checkbox 
+                  id="address-collected" 
+                  checked={addressCollected}
+                  onCheckedChange={(checked) => setAddressCollected(!!checked)}
+                  data-testid="checkbox-address-collected"
+                />
+                <label htmlFor="address-collected" className="text-sm">Address verified/collected</label>
+              </div>
+              <div className="flex items-center gap-3">
+                <Checkbox 
+                  id="packed" 
+                  checked={packed}
+                  onCheckedChange={(checked) => setPacked(!!checked)}
+                  data-testid="checkbox-packed"
+                />
+                <label htmlFor="packed" className="text-sm">Order packed</label>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t pt-4">
+            <h4 className="font-medium mb-2">Notes</h4>
+            <Textarea 
+              placeholder="Add notes about this order..."
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="resize-none"
+              data-testid="textarea-order-notes"
+            />
+          </div>
+
+          {order.fulfilledAt && (
+            <div className="border-t pt-4 text-sm text-muted-foreground">
+              Fulfilled on {new Date(order.fulfilledAt).toLocaleString()}
+              {order.fulfilledBy && ` by ${order.fulfilledBy}`}
+            </div>
+          )}
+
+          <div className="flex gap-2 justify-end border-t pt-4">
+            <Button variant="outline" onClick={handleSaveChecklist} data-testid="button-save-checklist">
+              Save Changes
+            </Button>
+            {order.fulfillmentStatus !== "completed" && (
+              <Button onClick={handleMarkFulfilled} data-testid="button-mark-fulfilled">
+                <Check className="h-4 w-4 mr-1" />
+                Mark Fulfilled
+              </Button>
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
