@@ -1340,7 +1340,80 @@ export async function registerRoutes(
     }
   });
 
-  // Admin: Update order status
+  // Admin: Get order stats for KPIs
+  app.get("/api/admin/orders/stats", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const days = parseInt(req.query.days as string) || 30;
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+      
+      const allOrders = await storage.getAllOrders();
+      const ordersInRange = allOrders.filter(o => 
+        o.createdAt && new Date(o.createdAt) >= startDate
+      );
+      
+      // Paid orders only (status === 'paid' or 'completed' or 'shipped')
+      const paidStatuses = ['paid', 'completed', 'shipped', 'delivered'];
+      const paidOrders = ordersInRange.filter(o => paidStatuses.includes(o.status || ''));
+      const grossRevenue = paidOrders.reduce((sum, o) => sum + parseFloat(o.totalAmount), 0);
+      const aov = paidOrders.length > 0 ? grossRevenue / paidOrders.length : 0;
+      
+      // Refunds and chargebacks
+      const refundedOrders = ordersInRange.filter(o => o.status === 'refunded' || o.status === 'chargeback');
+      const refundCount = refundedOrders.length;
+      const refundAmount = refundedOrders.reduce((sum, o) => sum + parseFloat(o.totalAmount), 0);
+      
+      // Email failures
+      const emailFailures = ordersInRange.filter(o => o.emailStatus === 'failed').length;
+      
+      // Needs attention items
+      const now = new Date();
+      const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      
+      const emailFailedPaid = ordersInRange.filter(o => 
+        paidStatuses.includes(o.status || '') && o.emailStatus === 'failed'
+      );
+      
+      const unfulfilledOver24h = ordersInRange.filter(o => 
+        paidStatuses.includes(o.status || '') && 
+        (o.fulfillmentStatus === 'unfulfilled' || !o.fulfillmentStatus) &&
+        o.createdAt && new Date(o.createdAt) < twentyFourHoursAgo
+      );
+      
+      res.json({
+        grossRevenue,
+        paidOrders: paidOrders.length,
+        aov,
+        refundCount,
+        refundAmount,
+        emailFailures,
+        needsAttention: {
+          emailFailedPaid: emailFailedPaid.length,
+          unfulfilledOver24h: unfulfilledOver24h.length,
+          refundsChargebacks: refundCount
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching order stats:", error);
+      res.status(500).json({ error: "Failed to fetch order stats" });
+    }
+  });
+
+  // Admin: Get single order
+  app.get("/api/admin/orders/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const order = await storage.getOrder(req.params.id);
+      if (!order) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+      res.json(order);
+    } catch (error) {
+      console.error("Error fetching order:", error);
+      res.status(500).json({ error: "Failed to fetch order" });
+    }
+  });
+
+  // Admin: Update order status (payment status)
   app.patch("/api/admin/orders/:id/status", isAuthenticated, isAdmin, async (req, res) => {
     try {
       const { status } = req.body;
@@ -1355,6 +1428,58 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error updating order status:", error);
       res.status(500).json({ error: "Failed to update order status" });
+    }
+  });
+
+  // Admin: Update order fulfillment
+  app.patch("/api/admin/orders/:id/fulfillment", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { fulfillmentStatus, fulfillmentNotes, paymentConfirmed, addressCollected, packed } = req.body;
+      const userId = (req.user as any)?.id || (req.user as any)?.claims?.sub;
+      
+      const order = await storage.updateOrderFulfillment(req.params.id, {
+        fulfillmentStatus,
+        fulfillmentNotes,
+        fulfilledBy: userId,
+        paymentConfirmed,
+        addressCollected,
+        packed,
+      });
+      
+      if (!order) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+      res.json(order);
+    } catch (error) {
+      console.error("Error updating order fulfillment:", error);
+      res.status(500).json({ error: "Failed to update order fulfillment" });
+    }
+  });
+
+  // Admin: Resend order confirmation email
+  app.post("/api/admin/orders/:id/resend-email", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const order = await storage.getOrder(req.params.id);
+      if (!order) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+      
+      // Get product for email
+      const product = await storage.getProduct(order.productId);
+      
+      // Send email using the correct order format
+      const emailResult = await sendOrderConfirmationEmail(order, product?.name);
+      
+      if (emailResult.success) {
+        await storage.updateOrderEmailStatus(order.id, 'sent');
+        res.json({ success: true, message: "Email sent successfully" });
+      } else {
+        await storage.updateOrderEmailStatus(order.id, 'failed', emailResult.error);
+        res.status(500).json({ success: false, error: emailResult.error || "Failed to send email" });
+      }
+    } catch (error: any) {
+      console.error("Error resending order email:", error);
+      res.status(500).json({ error: error.message || "Failed to resend email" });
     }
   });
 

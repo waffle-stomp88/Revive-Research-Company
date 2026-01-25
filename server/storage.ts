@@ -81,6 +81,15 @@ export interface IStorage {
   getAllOrders(): Promise<Order[]>;
   updateOrderStatus(id: string, status: string): Promise<Order | undefined>;
   getOrderByStripeSessionId(sessionId: string): Promise<Order | undefined>;
+  updateOrderFulfillment(id: string, data: {
+    fulfillmentStatus?: string;
+    fulfillmentNotes?: string;
+    fulfilledBy?: string;
+    paymentConfirmed?: boolean;
+    addressCollected?: boolean;
+    packed?: boolean;
+  }): Promise<Order | undefined>;
+  updateOrderEmailStatus(id: string, status: string, error?: string): Promise<Order | undefined>;
   
   createContact(contact: InsertContact): Promise<Contact>;
   getAllContacts(): Promise<Contact[]>;
@@ -436,6 +445,34 @@ export class DatabaseStorage implements IStorage {
 
   async getOrderByStripeSessionId(sessionId: string): Promise<Order | undefined> {
     const [order] = await db.select().from(orders).where(eq(orders.stripeSessionId, sessionId));
+    return order || undefined;
+  }
+
+  async updateOrderFulfillment(id: string, data: {
+    fulfillmentStatus?: string;
+    fulfillmentNotes?: string;
+    fulfilledBy?: string;
+    paymentConfirmed?: boolean;
+    addressCollected?: boolean;
+    packed?: boolean;
+  }): Promise<Order | undefined> {
+    const updateData: any = { ...data };
+    if (data.fulfillmentStatus === 'completed') {
+      updateData.fulfilledAt = new Date();
+    }
+    const [order] = await db.update(orders).set(updateData).where(eq(orders.id, id)).returning();
+    return order || undefined;
+  }
+
+  async updateOrderEmailStatus(id: string, status: string, error?: string): Promise<Order | undefined> {
+    const updateData: any = { emailStatus: status };
+    if (status === 'sent') {
+      updateData.emailSentAt = new Date();
+      updateData.emailError = null;
+    } else if (status === 'failed' && error) {
+      updateData.emailError = error;
+    }
+    const [order] = await db.update(orders).set(updateData).where(eq(orders.id, id)).returning();
     return order || undefined;
   }
 
