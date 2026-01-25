@@ -1,0 +1,103 @@
+Goal: Pricing tab is advisory only (no automatic price changes). It should learn quietly and become useful later using real store behavior.
+
+1) Product baseline fields (immutable once set)
+
+Add to Product:
+
+baselinePrice (number)
+
+baselineDate (date)
+
+baselineCost (optional number)
+
+baselineMarginPct (optional number)
+
+These should be set once (on first publish) and never overwritten.
+
+2) Behavioral metrics per SKU (lightweight counters)
+
+Track per product + per dosage/variant if you have variants:
+
+productViews
+
+addToCartCount
+
+checkoutStartedCount
+
+purchasedCount
+
+daysSinceLastSale
+
+timeToFirstSale (calculated from publish date → first purchase)
+
+Store these as daily aggregates (or total counters + lastUpdated). Doesn’t need GA.
+
+3) Pricing safeguards (inventory-aware)
+
+If stock = 0 for a dosage/variant:
+
+pricing suggestion is disabled for that variant
+
+show badge: Insufficient signal (OOS)
+
+If product has no sales yet:
+
+confidence cannot exceed low
+
+reasoning should say “No sales history”
+
+4) Pricing tab output should be “signals + suggestions”
+
+For each suggestion show:
+
+suggestedPrice
+
+confidence (low/med/high)
+
+reasonCodes (array) like:
+
+HIGH_VIEWS_LOW_PURCHASE
+
+FAST_SELL_THROUGH
+
+LOW_STOCK
+
+SLOW_MOVING
+
+NO_SALES_HISTORY
+
+expectedImpact (optional estimate)
+
+5) Alerts (warning system)
+
+Add a small “Pricing Signals” panel:
+
+“High views, low conversion” (counts + link to filtered list)
+
+“Fast-selling candidates” (counts)
+
+“Overstock slow movers” (counts)
+
+6) Controls (future-proof switch)
+
+Add to each product:
+
+pricingSuggestionsEnabled boolean (default false)
+
+Pricing tab should still display signals, but only show “Apply” buttons when enabled.
+
+7) UI behavior (keep it clean)
+
+Remove or de-emphasize “Apply All”
+
+Replace with:
+
+“Review Suggestions”
+
+“Enable suggestions for this product” toggle inside product edit
+
+Pricing tab should never change price unless admin explicitly clicks Apply.
+
+One-line summary you can add on top
+
+“Build Pricing tab as an advisory system that stores baseline price + behavioral metrics and generates guarded, explainable suggestions later.

@@ -49,6 +49,14 @@ export const products = pgTable("products", {
   usage: text("usage"),
   imageUrl: text("image_url"),
   model3dUrl: text("model_3d_url"),
+  // Baseline pricing fields (immutable once set)
+  baselinePrice: decimal("baseline_price", { precision: 10, scale: 2 }),
+  baselineDate: timestamp("baseline_date"),
+  baselineCost: decimal("baseline_cost", { precision: 10, scale: 2 }),
+  baselineMarginPct: decimal("baseline_margin_pct", { precision: 5, scale: 2 }),
+  // Pricing advisory system
+  pricingSuggestionsEnabled: boolean("pricing_suggestions_enabled").default(false),
+  publishedAt: timestamp("published_at"),
 });
 
 export const insertProductSchema = createInsertSchema(products).omit({ id: true });
@@ -74,6 +82,27 @@ export type ProductDosageStock = typeof productDosageStock.$inferSelect;
 export type ProductWithDosageStock = Product & {
   dosageStocks: ProductDosageStock[];
 };
+
+// Product Behavioral Metrics - tracks views, cart adds, purchases for pricing insights
+export const productBehavioralMetrics = pgTable("product_behavioral_metrics", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  productId: varchar("product_id").notNull().references(() => products.id, { onDelete: "cascade" }),
+  dosage: text("dosage"), // null means product-level aggregate
+  // Behavioral counters
+  productViews: integer("product_views").notNull().default(0),
+  addToCartCount: integer("add_to_cart_count").notNull().default(0),
+  checkoutStartedCount: integer("checkout_started_count").notNull().default(0),
+  purchasedCount: integer("purchased_count").notNull().default(0),
+  // Time-based metrics
+  lastSaleAt: timestamp("last_sale_at"),
+  firstSaleAt: timestamp("first_sale_at"),
+  // Tracking
+  lastUpdatedAt: timestamp("last_updated_at").defaultNow(),
+});
+
+export const insertProductBehavioralMetricsSchema = createInsertSchema(productBehavioralMetrics).omit({ id: true });
+export type InsertProductBehavioralMetrics = z.infer<typeof insertProductBehavioralMetricsSchema>;
+export type ProductBehavioralMetrics = typeof productBehavioralMetrics.$inferSelect;
 
 // COA (Certificate of Analysis) table
 export const coas = pgTable("coas", {
