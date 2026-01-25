@@ -102,6 +102,7 @@ import {
   Download,
   Eye,
   AlertTriangle,
+  Copy,
 } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { ObjectUploader } from "@/components/ObjectUploader";
@@ -143,6 +144,8 @@ type ProductFormValues = z.infer<typeof productFormSchema>;
 
 const coaFormSchema = insertCoaSchema.extend({
   results: z.string().optional(),
+  publiclyVisible: z.boolean().default(true),
+  notes: z.string().optional(),
 });
 
 type CoaFormValues = z.infer<typeof coaFormSchema>;
@@ -1741,6 +1744,12 @@ function CoasTab() {
     queryKey: ["/api/admin/coas"],
   });
 
+  // Use ProductWithDosageStock for accurate inventory status (matches Inventory tab)
+  const { data: productsWithStock } = useQuery<ProductWithDosageStock[]>({
+    queryKey: ["/api/admin/products-with-stock"],
+  });
+  
+  // Also get basic products list for the form dropdown
   const { data: products } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
@@ -1757,6 +1766,8 @@ function CoasTab() {
       labName: "",
       verified: true,
       results: "",
+      publiclyVisible: true,
+      notes: "",
     },
   });
 
@@ -1821,6 +1832,8 @@ function CoasTab() {
         labName: coa.labName,
         verified: coa.verified ?? true,
         results: coa.results?.join(", ") || "",
+        publiclyVisible: coa.publiclyVisible ?? true,
+        notes: coa.notes || "",
       });
     } else {
       setEditingCoa(null);
@@ -2044,19 +2057,87 @@ function CoasTab() {
                     </FormItem>
                   )}
                 />
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="verified"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center gap-2">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value ?? true}
+                            onCheckedChange={field.onChange}
+                            data-testid="checkbox-coa-verified"
+                          />
+                        </FormControl>
+                        <FormLabel className="!mt-0">Verified</FormLabel>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="publiclyVisible"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center gap-2">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value ?? true}
+                            onCheckedChange={field.onChange}
+                            data-testid="checkbox-coa-publicly-visible"
+                          />
+                        </FormControl>
+                        <FormLabel className="!mt-0">Publicly Visible</FormLabel>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                {/* Read-only Public URL */}
+                {form.watch("batchNumber") && (
+                  <div className="space-y-2">
+                    <Label className="text-muted-foreground">Public URL</Label>
+                    <div className="flex items-center gap-2">
+                      <Input 
+                        value={`/coa/${form.watch("batchNumber")}`}
+                        readOnly
+                        className="bg-muted font-mono text-sm"
+                        data-testid="input-coa-public-url"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`${window.location.origin}/coa/${form.watch("batchNumber")}`);
+                          toast({ title: "URL copied to clipboard" });
+                        }}
+                        data-testid="button-copy-coa-url"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Internal Notes (Admin-only) */}
                 <FormField
                   control={form.control}
-                  name="verified"
+                  name="notes"
                   render={({ field }) => (
-                    <FormItem className="flex items-center gap-2">
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2">
+                        Internal Notes
+                        <Badge variant="secondary" className="text-xs" data-testid="badge-admin-only">Admin Only</Badge>
+                      </FormLabel>
                       <FormControl>
-                        <Checkbox
-                          checked={field.value ?? true}
-                          onCheckedChange={field.onChange}
-                          data-testid="checkbox-coa-verified"
+                        <Textarea 
+                          {...field} 
+                          rows={2} 
+                          placeholder="Internal notes (not visible to customers)" 
+                          data-testid="input-coa-notes"
                         />
                       </FormControl>
-                      <FormLabel className="!mt-0">Verified</FormLabel>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -2132,42 +2213,94 @@ function CoasTab() {
               <TableHead>Product</TableHead>
               <TableHead>Purity</TableHead>
               <TableHead>Lab</TableHead>
+              <TableHead>Visible</TableHead>
+              <TableHead>Stock</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {allCoas?.map((coa) => (
-              <TableRow key={coa.id} data-testid={`row-coa-${coa.id}`}>
-                <TableCell className="font-mono">{coa.batchNumber}</TableCell>
-                <TableCell>{coa.productName}</TableCell>
-                <TableCell>{coa.purity}</TableCell>
-                <TableCell>{coa.labName}</TableCell>
-                <TableCell>
-                  {coa.verified ? (
-                    <Badge variant="secondary">Verified</Badge>
-                  ) : (
-                    <Badge variant="destructive">Unverified</Badge>
-                  )}
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(coa)} data-testid={`button-edit-coa-${coa.id}`}>
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => deleteMutation.mutate(coa.id)}
-                      disabled={deleteMutation.isPending}
-                      data-testid={`button-delete-coa-${coa.id}`}
+            {allCoas?.map((coa) => {
+              // Use ProductWithDosageStock for accurate inventory status (matches Inventory tab)
+              const linkedProduct = productsWithStock?.find(p => p.id === coa.productId);
+              
+              // Exact same logic as Inventory tab's getProductStockStatus function
+              const getStockStatus = (): "Active" | "Low" | "Depleted" | "Unknown" => {
+                if (!linkedProduct) return "Unknown";
+                
+                const stocks = linkedProduct.dosageStocks || [];
+                if (stocks.length === 0) {
+                  return linkedProduct.inStock ? "Active" : "Depleted";
+                }
+                // Match server-side LOW_STOCK_THRESHOLD = 3
+                const allOutOfStock = stocks.every(s => !s.inStock || (s.stockAmount ?? 0) <= 0);
+                if (allOutOfStock) return "Depleted";
+                const hasLowStock = stocks.some(s => s.inStock && (s.stockAmount ?? 0) > 0 && (s.stockAmount ?? 0) <= 3);
+                if (hasLowStock) return "Low";
+                return "Active";
+              };
+              
+              const stockStatus = getStockStatus();
+              
+              return (
+                <TableRow key={coa.id} data-testid={`row-coa-${coa.id}`}>
+                  <TableCell className="font-mono">{coa.batchNumber}</TableCell>
+                  <TableCell>{coa.productName}</TableCell>
+                  <TableCell>{coa.purity}</TableCell>
+                  <TableCell>{coa.labName}</TableCell>
+                  <TableCell>
+                    {coa.publiclyVisible !== false ? (
+                      <Badge variant="secondary" data-testid={`badge-coa-visible-${coa.id}`}>
+                        <Eye className="h-3 w-3 mr-1" />
+                        Public
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-muted-foreground" data-testid={`badge-coa-hidden-${coa.id}`}>
+                        Hidden
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Badge 
+                      variant="outline" 
+                      className={
+                        stockStatus === "Depleted" 
+                          ? "border-red-500/50 text-red-500" 
+                          : stockStatus === "Low" 
+                            ? "border-orange-500/50 text-orange-500" 
+                            : "border-green-500/50 text-green-500"
+                      }
+                      data-testid={`badge-coa-stock-${coa.id}`}
                     >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+                      {stockStatus}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {coa.verified ? (
+                      <Badge variant="secondary">Verified</Badge>
+                    ) : (
+                      <Badge variant="destructive">Unverified</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(coa)} data-testid={`button-edit-coa-${coa.id}`}>
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => deleteMutation.mutate(coa.id)}
+                        disabled={deleteMutation.isPending}
+                        data-testid={`button-delete-coa-${coa.id}`}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>
