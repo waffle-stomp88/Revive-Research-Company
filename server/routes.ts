@@ -1705,6 +1705,64 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Get all dosage-level behavioral metrics
+  app.get("/api/admin/dosage-behavioral-metrics", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const metrics = await storage.getAllDosageBehavioralMetrics();
+      res.json(metrics);
+    } catch (error) {
+      console.error("Error fetching dosage behavioral metrics:", error);
+      res.status(500).json({ error: "Failed to fetch dosage behavioral metrics" });
+    }
+  });
+
+  // Admin: Get dosage behavioral metrics for specific product+dosage
+  app.get("/api/admin/products/:productId/dosage/:dosage/behavioral-metrics", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const metrics = await storage.getDosageBehavioralMetrics(req.params.productId, req.params.dosage);
+      res.json(metrics || null);
+    } catch (error) {
+      console.error("Error fetching dosage behavioral metrics:", error);
+      res.status(500).json({ error: "Failed to fetch dosage behavioral metrics" });
+    }
+  });
+
+  // Admin: Set dosage baseline pricing (immutable once set)
+  app.post("/api/admin/dosage-stock/:id/baseline", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { baselinePrice, baselineCost } = req.body;
+      if (baselinePrice === undefined || baselinePrice <= 0) {
+        return res.status(400).json({ error: "Valid baseline price is required" });
+      }
+      const updated = await storage.setDosageBaseline(req.params.id, baselinePrice, baselineCost);
+      if (!updated) {
+        return res.status(404).json({ error: "Dosage stock not found" });
+      }
+      res.json(updated);
+    } catch (error) {
+      console.error("Error setting dosage baseline:", error);
+      res.status(500).json({ error: "Failed to set dosage baseline" });
+    }
+  });
+
+  // Admin: Toggle dosage pricing suggestions enabled
+  app.patch("/api/admin/dosage-stock/:id/pricing-suggestions", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { enabled } = req.body;
+      if (typeof enabled !== 'boolean') {
+        return res.status(400).json({ error: "Enabled must be a boolean" });
+      }
+      const updated = await storage.updateDosagePricingSuggestionsEnabled(req.params.id, enabled);
+      if (!updated) {
+        return res.status(404).json({ error: "Dosage stock not found" });
+      }
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating dosage pricing suggestions:", error);
+      res.status(500).json({ error: "Failed to update dosage pricing suggestions" });
+    }
+  });
+
   // Track product view (public, no auth required)
   app.post("/api/products/:id/view", async (req, res) => {
     try {

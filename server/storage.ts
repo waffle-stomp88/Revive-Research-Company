@@ -247,11 +247,15 @@ export interface IStorage {
   // Behavioral Metrics (Pricing Advisory System)
   getProductBehavioralMetrics(productId: string): Promise<ProductBehavioralMetrics | undefined>;
   getAllBehavioralMetrics(): Promise<ProductBehavioralMetrics[]>;
+  getDosageBehavioralMetrics(productId: string, dosage: string): Promise<ProductBehavioralMetrics | undefined>;
+  getAllDosageBehavioralMetrics(): Promise<ProductBehavioralMetrics[]>;
   incrementProductView(productId: string): Promise<ProductBehavioralMetrics>;
   incrementAddToCart(productId: string, dosage?: string): Promise<ProductBehavioralMetrics>;
   incrementCheckoutStarted(productId: string, dosage?: string): Promise<ProductBehavioralMetrics>;
   recordPurchase(productId: string, dosage?: string): Promise<ProductBehavioralMetrics>;
   setProductBaseline(productId: string, baselinePrice: number, baselineCost?: number): Promise<Product | undefined>;
+  setDosageBaseline(dosageStockId: string, baselinePrice: number, baselineCost?: number): Promise<ProductDosageStock | undefined>;
+  updateDosagePricingSuggestionsEnabled(dosageStockId: string, enabled: boolean): Promise<ProductDosageStock | undefined>;
   
   // Academy Progress
   getAcademyProgress(userId: string): Promise<AcademyProgress | undefined>;
@@ -1910,6 +1914,58 @@ export class DatabaseStorage implements IStorage {
         publishedAt: product.publishedAt || new Date()
       })
       .where(eq(products.id, productId))
+      .returning();
+    
+    return updated;
+  }
+
+  async getDosageBehavioralMetrics(productId: string, dosage: string): Promise<ProductBehavioralMetrics | undefined> {
+    const [metrics] = await db.select().from(productBehavioralMetrics)
+      .where(and(
+        eq(productBehavioralMetrics.productId, productId),
+        eq(productBehavioralMetrics.dosage, dosage)
+      ));
+    return metrics;
+  }
+
+  async getAllDosageBehavioralMetrics(): Promise<ProductBehavioralMetrics[]> {
+    // Return only dosage-specific metrics (where dosage is not null)
+    return await db.select().from(productBehavioralMetrics)
+      .where(sql`${productBehavioralMetrics.dosage} IS NOT NULL`);
+  }
+
+  async setDosageBaseline(dosageStockId: string, baselinePrice: number, baselineCost?: number): Promise<ProductDosageStock | undefined> {
+    const [dosageStock] = await db.select().from(productDosageStock)
+      .where(eq(productDosageStock.id, dosageStockId));
+    
+    if (!dosageStock) return undefined;
+    
+    // Only set baseline if not already set (immutable once set)
+    if (dosageStock.baselinePrice) {
+      return dosageStock;
+    }
+    
+    const marginPct = baselineCost && baselinePrice > 0 
+      ? ((baselinePrice - baselineCost) / baselinePrice) * 100 
+      : null;
+    
+    const [updated] = await db.update(productDosageStock)
+      .set({
+        baselinePrice: baselinePrice.toFixed(2),
+        baselineDate: new Date(),
+        baselineCost: baselineCost?.toFixed(2) || null,
+        baselineMarginPct: marginPct?.toFixed(2) || null,
+      })
+      .where(eq(productDosageStock.id, dosageStockId))
+      .returning();
+    
+    return updated;
+  }
+
+  async updateDosagePricingSuggestionsEnabled(dosageStockId: string, enabled: boolean): Promise<ProductDosageStock | undefined> {
+    const [updated] = await db.update(productDosageStock)
+      .set({ pricingSuggestionsEnabled: enabled })
+      .where(eq(productDosageStock.id, dosageStockId))
       .returning();
     
     return updated;
