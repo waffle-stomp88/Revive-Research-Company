@@ -157,10 +157,13 @@ function HeroSection() {
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <Link href="/peptides" onClick={() => trackEvent('hero_cta_click', 'engagement', 'shop_peptides')}>
-            <Button size="lg" className="font-display text-base sm:text-lg px-6 sm:px-10 gap-2 bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_30px_rgba(231,251,16,0.4)] hover:shadow-[0_0_50px_rgba(231,251,16,0.6)] transition-all duration-300 animate-[pulse-glow-yellow_2s_ease-in-out_infinite]" data-testid="button-hero-shop">
-              Shop Peptides
-              <ArrowRight className="h-4 w-4" />
-            </Button>
+            <div className="relative inline-block">
+              <div className="absolute inset-0 rounded-md bg-[#E7FB10]/40 animate-ping opacity-50" />
+              <Button size="lg" className="relative font-display text-base sm:text-lg px-6 sm:px-10 gap-2 bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_30px_rgba(231,251,16,0.4)] hover:shadow-[0_0_50px_rgba(231,251,16,0.6)] transition-all duration-300" data-testid="button-hero-shop">
+                Shop Peptides
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
           </Link>
           <Link href="/coa">
             <Button size="lg" variant="outline" className="font-display text-base sm:text-lg px-6 sm:px-10 bg-black/30 backdrop-blur-sm border-white/30 text-white transition-all duration-300 hover:bg-[#21d8ff] hover:text-black hover:border-[#21d8ff]" data-testid="button-hero-coa">
