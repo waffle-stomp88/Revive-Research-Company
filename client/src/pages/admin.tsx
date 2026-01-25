@@ -2314,11 +2314,13 @@ function OrdersTab() {
                   className={orderNeedsAttention ? "border-l-2 border-l-[#E7FB10]" : ""}
                 >
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      {orderNeedsAttention && (
-                        <AlertTriangle className="h-3 w-3 text-[#E7FB10]" />
-                      )}
-                      <span className="font-mono text-sm">{order.id.slice(0, 8).toUpperCase()}</span>
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2">
+                        {orderNeedsAttention && (
+                          <AlertTriangle className="h-3 w-3 text-[#E7FB10]" />
+                        )}
+                        <span className="font-mono text-sm">{order.id.slice(0, 8).toUpperCase()}</span>
+                      </div>
                       {getOrderTypeBadge(order.orderType)}
                     </div>
                   </TableCell>
@@ -2500,6 +2502,7 @@ function OrderViewDialog({
             <div>
               <h4 className="font-medium mb-2">Order Details</h4>
               <div className="text-sm space-y-1">
+                <p><span className="text-muted-foreground">Type:</span> {order.orderType === 'subscription' ? 'Subscription' : 'One-time'}</p>
                 <p><span className="text-muted-foreground">Product:</span> {product?.name || "Unknown"}</p>
                 <p><span className="text-muted-foreground">Quantity:</span> {order.quantity}</p>
                 <p><span className="text-muted-foreground">Total:</span> ${Number(order.totalAmount).toFixed(2)}</p>
