@@ -2630,7 +2630,8 @@ function OrdersTab() {
                 <TableRow 
                   key={order.id} 
                   data-testid={`row-order-${order.id}`}
-                  className={orderNeedsAttention ? "border-l-2 border-l-[#E7FB10]" : ""}
+                  className={`cursor-pointer hover-elevate ${orderNeedsAttention ? "border-l-2 border-l-[#E7FB10]" : ""}`}
+                  onClick={() => handleViewOrder(order)}
                 >
                   <TableCell>
                     <div className="flex flex-col gap-1">
@@ -2654,7 +2655,7 @@ function OrdersTab() {
                   </TableCell>
                   <TableCell className="font-medium">{formatCurrency(Number(order.totalAmount))}</TableCell>
                   <TableCell>{getPaymentStatusBadge(order.status, order.isRefunded ?? undefined)}</TableCell>
-                  <TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <Select
                       value={order.fulfillmentStatus || "pending"}
                       onValueChange={(status) => updateFulfillmentMutation.mutate({ 
@@ -2674,7 +2675,7 @@ function OrdersTab() {
                       </SelectContent>
                     </Select>
                   </TableCell>
-                  <TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center gap-2">
                       {getEmailStatusBadge(order.emailStatus)}
                       {order.emailStatus === "failed" && (
@@ -2690,7 +2691,7 @@ function OrdersTab() {
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell onClick={(e) => e.stopPropagation()} className="text-right">
                     <Button 
                       variant="ghost" 
                       size="sm"
