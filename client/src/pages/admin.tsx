@@ -5196,6 +5196,9 @@ function PricingOptimizerTab() {
   const [appliedSuggestions, setAppliedSuggestions] = useState<string[]>([]);
   const [selectedSignalFilter, setSelectedSignalFilter] = useState<string>("all");
   const [expandedProducts, setExpandedProducts] = useState<Set<string>>(new Set());
+  const [productSearch, setProductSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const PRODUCTS_PER_PAGE = 10;
 
   const { data: productsWithStock = [] } = useQuery<ProductWithDosageStock[]>({
     queryKey: ["/api/admin/products-with-stock"],
@@ -5401,28 +5404,60 @@ function PricingOptimizerTab() {
     return { highViewsLowPurchase, fastSelling, slowMoving };
   }, [dosagePricingSignals]);
 
-  // Filter groups based on selected filter
+  // Filter groups based on selected filter and product search
   const filteredGroups = useMemo(() => {
-    if (selectedSignalFilter === "all") return productDosageGroups;
+    let groups = productDosageGroups;
     
-    return productDosageGroups
-      .map(group => {
-        let filteredDosages = group.dosageSignals;
-        
-        if (selectedSignalFilter === "high-views-low-purchase") {
-          filteredDosages = group.dosageSignals.filter(s => s.reasonCodes.includes("HIGH_VIEWS_LOW_PURCHASE"));
-        } else if (selectedSignalFilter === "fast-selling") {
-          filteredDosages = group.dosageSignals.filter(s => s.reasonCodes.includes("FAST_SELL_THROUGH"));
-        } else if (selectedSignalFilter === "slow-moving") {
-          filteredDosages = group.dosageSignals.filter(s => s.reasonCodes.includes("SLOW_MOVING"));
-        } else if (selectedSignalFilter === "needs-baseline") {
-          filteredDosages = group.dosageSignals.filter(s => !s.hasBaseline);
-        }
-        
-        return { ...group, dosageSignals: filteredDosages };
-      })
-      .filter(group => group.dosageSignals.length > 0);
-  }, [productDosageGroups, selectedSignalFilter]);
+    // Apply product name search filter
+    if (productSearch.trim()) {
+      const searchLower = productSearch.toLowerCase().trim();
+      groups = groups.filter(group => 
+        group.productName.toLowerCase().includes(searchLower) ||
+        group.category.toLowerCase().includes(searchLower)
+      );
+    }
+    
+    // Apply signal filter
+    if (selectedSignalFilter !== "all") {
+      groups = groups
+        .map(group => {
+          let filteredDosages = group.dosageSignals;
+          
+          if (selectedSignalFilter === "high-views-low-purchase") {
+            filteredDosages = group.dosageSignals.filter(s => s.reasonCodes.includes("HIGH_VIEWS_LOW_PURCHASE"));
+          } else if (selectedSignalFilter === "fast-selling") {
+            filteredDosages = group.dosageSignals.filter(s => s.reasonCodes.includes("FAST_SELL_THROUGH"));
+          } else if (selectedSignalFilter === "slow-moving") {
+            filteredDosages = group.dosageSignals.filter(s => s.reasonCodes.includes("SLOW_MOVING"));
+          } else if (selectedSignalFilter === "needs-baseline") {
+            filteredDosages = group.dosageSignals.filter(s => !s.hasBaseline);
+          }
+          
+          return { ...group, dosageSignals: filteredDosages };
+        })
+        .filter(group => group.dosageSignals.length > 0);
+    }
+    
+    return groups;
+  }, [productDosageGroups, selectedSignalFilter, productSearch]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredGroups.length / PRODUCTS_PER_PAGE);
+  const paginatedGroups = useMemo(() => {
+    const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+    return filteredGroups.slice(startIndex, startIndex + PRODUCTS_PER_PAGE);
+  }, [filteredGroups, currentPage]);
+
+  // Reset to page 1 when filters change
+  const handleSearchChange = (value: string) => {
+    setProductSearch(value);
+    setCurrentPage(1);
+  };
+
+  const handleFilterChange = (filter: string) => {
+    setSelectedSignalFilter(filter);
+    setCurrentPage(1);
+  };
 
   const markDosagePriceAsUpdated = (dosageStockId: string) => {
     try {
@@ -5550,7 +5585,7 @@ function PricingOptimizerTab() {
       <div className="grid grid-cols-3 gap-4">
         <Card 
           className={`p-4 cursor-pointer transition-all ${selectedSignalFilter === 'high-views-low-purchase' ? 'border-orange-500/50 bg-orange-500/5' : ''}`}
-          onClick={() => setSelectedSignalFilter(selectedSignalFilter === 'high-views-low-purchase' ? 'all' : 'high-views-low-purchase')}
+          onClick={() => handleFilterChange(selectedSignalFilter === 'high-views-low-purchase' ? 'all' : 'high-views-low-purchase')}
           data-testid="card-signal-high-views"
         >
           <div className="flex items-center gap-3">
@@ -5566,7 +5601,7 @@ function PricingOptimizerTab() {
         
         <Card 
           className={`p-4 cursor-pointer transition-all ${selectedSignalFilter === 'fast-selling' ? 'border-green-500/50 bg-green-500/5' : ''}`}
-          onClick={() => setSelectedSignalFilter(selectedSignalFilter === 'fast-selling' ? 'all' : 'fast-selling')}
+          onClick={() => handleFilterChange(selectedSignalFilter === 'fast-selling' ? 'all' : 'fast-selling')}
           data-testid="card-signal-fast-selling"
         >
           <div className="flex items-center gap-3">
@@ -5582,7 +5617,7 @@ function PricingOptimizerTab() {
         
         <Card 
           className={`p-4 cursor-pointer transition-all ${selectedSignalFilter === 'slow-moving' ? 'border-red-500/50 bg-red-500/5' : ''}`}
-          onClick={() => setSelectedSignalFilter(selectedSignalFilter === 'slow-moving' ? 'all' : 'slow-moving')}
+          onClick={() => handleFilterChange(selectedSignalFilter === 'slow-moving' ? 'all' : 'slow-moving')}
           data-testid="card-signal-slow-moving"
         >
           <div className="flex items-center gap-3">
@@ -5597,29 +5632,52 @@ function PricingOptimizerTab() {
         </Card>
       </div>
 
-      {/* Filter buttons */}
-      <div className="flex gap-2 flex-wrap">
-        <Button
-          variant={selectedSignalFilter === 'all' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setSelectedSignalFilter('all')}
-          data-testid="button-filter-all"
-        >
-          All Dosages ({dosagePricingSignals.length})
-        </Button>
-        <Button
-          variant={selectedSignalFilter === 'needs-baseline' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setSelectedSignalFilter('needs-baseline')}
-          data-testid="button-filter-needs-baseline"
-        >
-          Needs Baseline ({dosagePricingSignals.filter(s => !s.hasBaseline).length})
-        </Button>
+      {/* Search and Filter Controls */}
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+        <div className="relative w-full sm:w-72">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search products..."
+            value={productSearch}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            className="pl-9"
+            data-testid="input-product-search"
+          />
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          <Button
+            variant={selectedSignalFilter === 'all' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => handleFilterChange('all')}
+            data-testid="button-filter-all"
+          >
+            All ({filteredGroups.length})
+          </Button>
+          <Button
+            variant={selectedSignalFilter === 'needs-baseline' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => handleFilterChange('needs-baseline')}
+            data-testid="button-filter-needs-baseline"
+          >
+            Needs Baseline
+          </Button>
+        </div>
+      </div>
+
+      {/* Results count and pagination info */}
+      <div className="flex items-center justify-between text-sm text-muted-foreground">
+        <span>
+          Showing {paginatedGroups.length} of {filteredGroups.length} products
+          {productSearch && ` matching "${productSearch}"`}
+        </span>
+        {totalPages > 1 && (
+          <span>Page {currentPage} of {totalPages}</span>
+        )}
       </div>
 
       {/* Dosage-Level Grouped Table */}
       <div className="space-y-4">
-        {filteredGroups.map((group) => (
+        {paginatedGroups.map((group) => (
           <Card key={group.productId} data-testid={`card-product-group-${group.productId}`}>
             <div className="p-2">
               <Button 
@@ -5784,6 +5842,74 @@ function PricingOptimizerTab() {
           </Card>
         ))}
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(1)}
+            disabled={currentPage === 1}
+            data-testid="button-page-first"
+          >
+            First
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            data-testid="button-page-prev"
+          >
+            Previous
+          </Button>
+          <div className="flex items-center gap-1">
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum: number;
+              if (totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (currentPage <= 3) {
+                pageNum = i + 1;
+              } else if (currentPage >= totalPages - 2) {
+                pageNum = totalPages - 4 + i;
+              } else {
+                pageNum = currentPage - 2 + i;
+              }
+              return (
+                <Button
+                  key={pageNum}
+                  variant={currentPage === pageNum ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setCurrentPage(pageNum)}
+                  className="w-9"
+                  data-testid={`button-page-${pageNum}`}
+                >
+                  {pageNum}
+                </Button>
+              );
+            })}
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            data-testid="button-page-next"
+          >
+            Next
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(totalPages)}
+            disabled={currentPage === totalPages}
+            data-testid="button-page-last"
+          >
+            Last
+          </Button>
+        </div>
+      )}
 
       {/* Empty state */}
       {filteredGroups.length === 0 && (
