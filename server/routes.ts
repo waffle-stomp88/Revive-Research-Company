@@ -353,7 +353,7 @@ export async function registerRoutes(
     success: boolean; 
     order?: any; 
     error?: string; 
-    notifications?: any;
+    emailSent?: boolean;
     alreadyPaid?: boolean 
   }> {
     try {
@@ -363,13 +363,17 @@ export async function registerRoutes(
       }
       
       // Idempotent: if already paid, return success but skip notifications
-      if (order.status === 'paid') {
+      if (order.status === 'paid' || order.status === 'delivered') {
         console.log(`[Order ${orderId}] Already paid - skipping notifications (idempotent)`);
-        return { success: true, order, alreadyPaid: true, notifications: null };
+        return { success: true, order, alreadyPaid: true, emailSent: false };
       }
       
       // Update order status to paid
-      const updatedOrder = await storage.updateOrderStatus(orderId, 'paid');
+      const updatedOrder = await storage.updateOrderFulfillment(orderId, { 
+        status: 'paid',
+        paymentConfirmed: true
+      });
+      
       if (!updatedOrder) {
         return { success: false, error: "Failed to update order status" };
       }
@@ -377,12 +381,12 @@ export async function registerRoutes(
       console.log(`[Order ${orderId}] Marked as paid`);
       
       // Send all notifications (email + SMS for customer and admin)
-      let notificationResults = null;
+      let emailSent = false;
       try {
         const product = await storage.getProduct(updatedOrder.productId);
         const productName = product?.name || updatedOrder.productId;
         
-        notificationResults = await sendOrderNotifications({
+        const notificationResults = await sendOrderNotifications({
           orderId: updatedOrder.id,
           email: updatedOrder.email,
           phone: (updatedOrder as any).phone || undefined,
@@ -399,12 +403,13 @@ export async function registerRoutes(
           country: updatedOrder.country || undefined,
         });
         
+        emailSent = notificationResults?.customerEmail?.success || false;
         console.log(`[Order ${orderId}] Notification results:`, JSON.stringify(notificationResults));
       } catch (notificationError) {
         console.error(`[Order ${orderId}] Notification error:`, notificationError);
       }
       
-      return { success: true, order: updatedOrder, notifications: notificationResults, alreadyPaid: false };
+      return { success: true, order: updatedOrder, emailSent, alreadyPaid: false };
     } catch (error: any) {
       console.error(`[Order ${orderId}] Error marking as paid:`, error);
       return { success: false, error: error.message || "Unknown error" };
@@ -442,16 +447,17 @@ export async function registerRoutes(
       const result = await markOrderPaidAndNotify(id);
       
       if (result.success) {
+        const emailSent = (result as any).emailSent;
         const message = result.alreadyPaid 
           ? "Order already paid - no email sent (idempotent)"
-          : result.emailSent 
+          : emailSent 
             ? "Order marked as paid and confirmation email sent"
             : "Order marked as paid but email failed to send";
         
         res.json({ 
           success: true, 
           message,
-          emailSent: result.emailSent,
+          emailSent: emailSent,
           alreadyPaid: result.alreadyPaid,
           order: result.order 
         });
@@ -1368,19 +1374,17 @@ export async function registerRoutes(
       const emailFailures = ordersInRange.filter(o => o.emailStatus === 'failed').length;
       
       // Needs attention items
-      const now = new Date();
-      const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-      
       const emailFailedPaid = ordersInRange.filter(o => 
         paidStatuses.includes(o.status || '') && o.emailStatus === 'failed'
       );
       
-      // Pending fulfillment over 24h (manual workflow: pending, preparing, ready, delivered)
-      const pendingOver24h = ordersInRange.filter(o => 
-        paidStatuses.includes(o.status || '') && 
-        (o.fulfillmentStatus === 'pending' || !o.fulfillmentStatus) &&
-        o.createdAt && new Date(o.createdAt) < twentyFourHoursAgo
-      );
+      const needsAttentionCount = ordersInRange.filter(o => {
+        const isPaid = paidStatuses.includes(o.status || '');
+        const notDelivered = o.fulfillmentStatus !== 'delivered';
+        const emailFailed = o.emailStatus === 'failed';
+        const isRefunded = o.isRefunded === true;
+        return (isPaid && notDelivered) || emailFailed || isRefunded;
+      }).length;
       
       res.json({
         grossRevenue,
@@ -1389,9 +1393,10 @@ export async function registerRoutes(
         refundCount,
         refundAmount,
         emailFailures,
+        needsAttentionCount,
         needsAttention: {
           emailFailedPaid: emailFailedPaid.length,
-          pendingOver24h: pendingOver24h.length,
+          total: needsAttentionCount,
           refunds: refundCount
         }
       });
@@ -1494,16 +1499,17 @@ export async function registerRoutes(
       const result = await markOrderPaidAndNotify(orderId);
       
       if (result.success) {
+        const emailSent = (result as any).emailSent;
         const message = result.alreadyPaid 
           ? "Order already paid - no email sent (idempotent)"
-          : result.emailSent 
+          : emailSent 
             ? "Order marked as paid and confirmation email sent"
             : "Order marked as paid but email failed to send";
         
         res.json({ 
           success: true, 
           message,
-          emailSent: result.emailSent,
+          emailSent: emailSent,
           alreadyPaid: result.alreadyPaid,
           order: result.order 
         });
