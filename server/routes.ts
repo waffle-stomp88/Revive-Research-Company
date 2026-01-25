@@ -1661,6 +1661,91 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Set product baseline price (immutable once set)
+  app.post("/api/admin/products/:id/set-baseline", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { baselinePrice, baselineCost } = req.body;
+      
+      if (!baselinePrice || typeof baselinePrice !== 'number' || baselinePrice <= 0) {
+        return res.status(400).json({ error: "Valid baseline price is required" });
+      }
+      
+      const product = await storage.setProductBaseline(req.params.id, baselinePrice, baselineCost);
+      
+      if (!product) {
+        return res.status(404).json({ error: "Product not found" });
+      }
+      
+      res.json(product);
+    } catch (error) {
+      console.error("Error setting product baseline:", error);
+      res.status(500).json({ error: "Failed to set product baseline" });
+    }
+  });
+
+  // Admin: Get all behavioral metrics
+  app.get("/api/admin/behavioral-metrics", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const metrics = await storage.getAllBehavioralMetrics();
+      res.json(metrics);
+    } catch (error) {
+      console.error("Error fetching behavioral metrics:", error);
+      res.status(500).json({ error: "Failed to fetch behavioral metrics" });
+    }
+  });
+
+  // Admin: Get behavioral metrics for a specific product
+  app.get("/api/admin/products/:id/behavioral-metrics", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const metrics = await storage.getProductBehavioralMetrics(req.params.id);
+      res.json(metrics || null);
+    } catch (error) {
+      console.error("Error fetching product behavioral metrics:", error);
+      res.status(500).json({ error: "Failed to fetch product behavioral metrics" });
+    }
+  });
+
+  // Track product view (public, no auth required)
+  app.post("/api/products/:id/view", async (req, res) => {
+    try {
+      await storage.incrementProductView(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error tracking product view:", error);
+      res.status(500).json({ error: "Failed to track view" });
+    }
+  });
+
+  // Track add to cart (public, no auth required)
+  app.post("/api/cart/add-track", async (req, res) => {
+    try {
+      const { productId, dosage } = req.body;
+      if (!productId) {
+        return res.status(400).json({ error: "Product ID is required" });
+      }
+      await storage.incrementAddToCart(productId, dosage);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error tracking add to cart:", error);
+      res.status(500).json({ error: "Failed to track add to cart" });
+    }
+  });
+
+  // Track checkout started (public, no auth required)
+  app.post("/api/checkout/started-track", async (req, res) => {
+    try {
+      const { productId, dosage } = req.body;
+      if (!productId) {
+        return res.status(400).json({ error: "Product ID is required" });
+      }
+      await storage.incrementCheckoutStarted(productId, dosage);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error tracking checkout started:", error);
+      res.status(500).json({ error: "Failed to track checkout started" });
+    }
+  });
+
   // Admin: Get all COAs
   app.get("/api/admin/coas", isAuthenticated, isAdmin, async (req, res) => {
     try {

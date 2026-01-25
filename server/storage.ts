@@ -1,7 +1,7 @@
 import { 
   users, products, coas, orders, contacts, affiliateApplications, affiliates, affiliateSales, affiliatePayouts, reviews,
   batches, productStorageProfiles, legalDocuments, faqEntries, educationArticles, coaGlossaryTerms, stockNotifications, discountCodes, newsletterSubscribers,
-  productDosageStock, priceHistory, academyProgress, emailEvents, wishlists, userResearchProfiles,
+  productDosageStock, priceHistory, academyProgress, emailEvents, wishlists, userResearchProfiles, productBehavioralMetrics,
   type User, type UpsertUser,
   type Product, type InsertProduct,
   type ProductDosageStock, type InsertProductDosageStock, type ProductWithDosageStock,
@@ -29,6 +29,7 @@ import {
   type Wishlist, type InsertWishlist,
   type UserResearchProfile, type InsertUserResearchProfile,
   type ResearchPhase, type ResearchTitle,
+  type ProductBehavioralMetrics, type InsertProductBehavioralMetrics,
   priceChangeReasons
 } from "@shared/schema";
 import { db } from "./db";
@@ -242,6 +243,15 @@ export interface IStorage {
   getProductPriceTrend(productId: string): Promise<PriceTrend | null>;
   getProductPriceHistory(productId: string, months?: number): Promise<PriceHistory[]>;
   canChangePrice(productId: string): Promise<{ canChange: boolean; daysUntilAllowed?: number; lastChangeDate?: Date }>;
+  
+  // Behavioral Metrics (Pricing Advisory System)
+  getProductBehavioralMetrics(productId: string): Promise<ProductBehavioralMetrics | undefined>;
+  getAllBehavioralMetrics(): Promise<ProductBehavioralMetrics[]>;
+  incrementProductView(productId: string): Promise<ProductBehavioralMetrics>;
+  incrementAddToCart(productId: string, dosage?: string): Promise<ProductBehavioralMetrics>;
+  incrementCheckoutStarted(productId: string, dosage?: string): Promise<ProductBehavioralMetrics>;
+  recordPurchase(productId: string, dosage?: string): Promise<ProductBehavioralMetrics>;
+  setProductBaseline(productId: string, baselinePrice: number, baselineCost?: number): Promise<Product | undefined>;
   
   // Academy Progress
   getAcademyProgress(userId: string): Promise<AcademyProgress | undefined>;
@@ -1793,6 +1803,116 @@ export class DatabaseStorage implements IStorage {
     if (safetyCompleted) return "Safety-First";
     
     return "Getting Started";
+  }
+
+  // Behavioral Metrics (Pricing Advisory System)
+  async getProductBehavioralMetrics(productId: string): Promise<ProductBehavioralMetrics | undefined> {
+    const [metrics] = await db.select().from(productBehavioralMetrics).where(eq(productBehavioralMetrics.productId, productId));
+    return metrics;
+  }
+
+  async getAllBehavioralMetrics(): Promise<ProductBehavioralMetrics[]> {
+    return await db.select().from(productBehavioralMetrics);
+  }
+
+  private async getOrCreateMetrics(productId: string, dosage?: string): Promise<ProductBehavioralMetrics> {
+    const dosageValue = dosage || null;
+    const existing = await db.select().from(productBehavioralMetrics)
+      .where(and(
+        eq(productBehavioralMetrics.productId, productId),
+        dosageValue ? eq(productBehavioralMetrics.dosage, dosageValue) : sql`${productBehavioralMetrics.dosage} IS NULL`
+      ));
+    
+    if (existing.length > 0) return existing[0];
+    
+    const [created] = await db.insert(productBehavioralMetrics).values({
+      productId,
+      dosage: dosageValue,
+      productViews: 0,
+      addToCartCount: 0,
+      checkoutStartedCount: 0,
+      purchasedCount: 0,
+    }).returning();
+    
+    return created;
+  }
+
+  async incrementProductView(productId: string): Promise<ProductBehavioralMetrics> {
+    const metrics = await this.getOrCreateMetrics(productId);
+    const [updated] = await db.update(productBehavioralMetrics)
+      .set({ 
+        productViews: (metrics.productViews || 0) + 1,
+        lastUpdatedAt: new Date()
+      })
+      .where(eq(productBehavioralMetrics.id, metrics.id))
+      .returning();
+    return updated;
+  }
+
+  async incrementAddToCart(productId: string, dosage?: string): Promise<ProductBehavioralMetrics> {
+    const metrics = await this.getOrCreateMetrics(productId, dosage);
+    const [updated] = await db.update(productBehavioralMetrics)
+      .set({ 
+        addToCartCount: (metrics.addToCartCount || 0) + 1,
+        lastUpdatedAt: new Date()
+      })
+      .where(eq(productBehavioralMetrics.id, metrics.id))
+      .returning();
+    return updated;
+  }
+
+  async incrementCheckoutStarted(productId: string, dosage?: string): Promise<ProductBehavioralMetrics> {
+    const metrics = await this.getOrCreateMetrics(productId, dosage);
+    const [updated] = await db.update(productBehavioralMetrics)
+      .set({ 
+        checkoutStartedCount: (metrics.checkoutStartedCount || 0) + 1,
+        lastUpdatedAt: new Date()
+      })
+      .where(eq(productBehavioralMetrics.id, metrics.id))
+      .returning();
+    return updated;
+  }
+
+  async recordPurchase(productId: string, dosage?: string): Promise<ProductBehavioralMetrics> {
+    const metrics = await this.getOrCreateMetrics(productId, dosage);
+    const now = new Date();
+    const [updated] = await db.update(productBehavioralMetrics)
+      .set({ 
+        purchasedCount: (metrics.purchasedCount || 0) + 1,
+        lastSaleAt: now,
+        firstSaleAt: metrics.firstSaleAt || now,
+        lastUpdatedAt: now
+      })
+      .where(eq(productBehavioralMetrics.id, metrics.id))
+      .returning();
+    return updated;
+  }
+
+  async setProductBaseline(productId: string, baselinePrice: number, baselineCost?: number): Promise<Product | undefined> {
+    const product = await this.getProduct(productId);
+    if (!product) return undefined;
+    
+    // Only set baseline if not already set (immutable once set)
+    if (product.baselinePrice) {
+      return product;
+    }
+    
+    const marginPct = baselineCost && baselinePrice > 0 
+      ? ((baselinePrice - baselineCost) / baselinePrice) * 100 
+      : null;
+    
+    const [updated] = await db.update(products)
+      .set({
+        baselinePrice: baselinePrice.toFixed(2),
+        baselineDate: new Date(),
+        baselineCost: baselineCost?.toFixed(2) || null,
+        baselineMarginPct: marginPct?.toFixed(2) || null,
+        publishedAt: product.publishedAt || new Date()
+      })
+      .where(eq(products.id, productId))
+      .returning();
+    
+    return updated;
   }
 }
 
