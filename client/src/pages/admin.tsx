@@ -5155,9 +5155,12 @@ type ReasonCode =
   | "STABLE_PERFORMER"
   | "INSUFFICIENT_SIGNAL_OOS";
 
-interface PricingSignal {
+// Dosage-level pricing signal
+interface DosagePricingSignal {
+  dosageStockId: string;
   productId: string;
   productName: string;
+  dosage: string;
   suggestedPrice: number | null;
   currentPrice: number;
   confidence: "low" | "medium" | "high";
@@ -5175,218 +5178,285 @@ interface PricingSignal {
   };
   pricingSuggestionsEnabled: boolean;
   hasBaseline: boolean;
+  stockAmount: number;
+  inStock: boolean;
+}
+
+// Grouped by product for display
+interface ProductDosageGroup {
+  productId: string;
+  productName: string;
+  category: string;
+  dosageSignals: DosagePricingSignal[];
 }
 
 function PricingOptimizerTab() {
   const { toast } = useToast();
   const [appliedSuggestions, setAppliedSuggestions] = useState<string[]>([]);
   const [selectedSignalFilter, setSelectedSignalFilter] = useState<string>("all");
-
-  const { data: products = [] } = useQuery<Product[]>({
-    queryKey: ["/api/products"],
-  });
+  const [expandedProducts, setExpandedProducts] = useState<Set<string>>(new Set());
 
   const { data: productsWithStock = [] } = useQuery<ProductWithDosageStock[]>({
     queryKey: ["/api/admin/products-with-stock"],
   });
 
-  const { data: behavioralMetrics = [] } = useQuery<ProductBehavioralMetrics[]>({
-    queryKey: ["/api/admin/behavioral-metrics"],
+  const { data: dosageBehavioralMetrics = [] } = useQuery<ProductBehavioralMetrics[]>({
+    queryKey: ["/api/admin/dosage-behavioral-metrics"],
   });
 
-  // Reuse exact same stock status logic from Inventory tab for parity
-  const getPricingStockStatus = (product: ProductWithDosageStock): "in-stock" | "low-stock" | "out-of-stock" => {
-    const stocks = product.dosageStocks || [];
-    if (stocks.length === 0) {
-      return product.inStock ? "in-stock" : "out-of-stock";
-    }
-    // Match LOW_STOCK_THRESHOLD = 3 exactly
-    const allOutOfStock = stocks.every(s => !s.inStock || (s.stockAmount ?? 0) <= 0);
-    if (allOutOfStock) return "out-of-stock";
-    const hasLowStock = stocks.some(s => s.inStock && (s.stockAmount ?? 0) > 0 && (s.stockAmount ?? 0) <= 3);
-    if (hasLowStock) return "low-stock";
+  const LOW_STOCK_THRESHOLD = 3;
+
+  // Get dosage-level stock status
+  const getDosageStockStatus = (dosageStock: ProductDosageStock): "in-stock" | "low-stock" | "out-of-stock" => {
+    const stock = dosageStock.stockAmount ?? 0;
+    if (!dosageStock.inStock || stock <= 0) return "out-of-stock";
+    if (stock <= LOW_STOCK_THRESHOLD) return "low-stock";
     return "in-stock";
   };
 
-  // Compute pricing signals from products and behavioral metrics
-  const pricingSignals: PricingSignal[] = useMemo(() => {
-    return productsWithStock.map((product) => {
-      const metrics = behavioralMetrics.find(m => m.productId === product.id);
-      const views = metrics?.productViews ?? 0;
-      const addToCart = metrics?.addToCartCount ?? 0;
-      const checkoutStarted = metrics?.checkoutStartedCount ?? 0;
-      const purchased = metrics?.purchasedCount ?? 0;
-      const lastSaleAt = metrics?.lastSaleAt ? new Date(metrics.lastSaleAt) : null;
-      const daysSinceLastSale = lastSaleAt ? Math.floor((Date.now() - lastSaleAt.getTime()) / (1000 * 60 * 60 * 24)) : null;
-      const conversionRate = views > 0 ? (purchased / views) * 100 : 0;
+  const toggleProductExpanded = (productId: string) => {
+    setExpandedProducts(prev => {
+      const next = new Set(prev);
+      if (next.has(productId)) {
+        next.delete(productId);
+      } else {
+        next.add(productId);
+      }
+      return next;
+    });
+  };
+
+  // Compute dosage-level pricing signals
+  const dosagePricingSignals: DosagePricingSignal[] = useMemo(() => {
+    const signals: DosagePricingSignal[] = [];
+    
+    productsWithStock.forEach((product) => {
+      const dosageStocks = product.dosageStocks || [];
       
-      // Use shared stock status function for exact parity with Inventory tab
-      const stockStatus = getPricingStockStatus(product as ProductWithDosageStock);
-      const isOutOfStock = stockStatus === "out-of-stock";
-      const isLowStock = stockStatus === "low-stock";
-      
-      // Determine reason codes - prioritized order
-      const reasonCodes: ReasonCode[] = [];
-      let confidence: "low" | "medium" | "high" = "low"; // Start low, upgrade based on data
-      let isDisabled = false;
-      let disabledReason: string | null = null;
-      let suggestedPrice: number | null = null;
-      let expectedImpact: string | null = null;
-      
-      // Safeguard: OOS products - highest priority, blocks all suggestions
-      if (isOutOfStock) {
-        isDisabled = true;
-        disabledReason = "Out of Stock";
-        reasonCodes.push("INSUFFICIENT_SIGNAL_OOS");
-        // Return early for OOS - no other signals should apply
-        return {
+      dosageStocks.forEach((dosageStock) => {
+        // Find metrics for this specific product+dosage combination
+        const metrics = dosageBehavioralMetrics.find(
+          m => m.productId === product.id && m.dosage === dosageStock.dosage
+        );
+        
+        const views = metrics?.productViews ?? 0;
+        const addToCart = metrics?.addToCartCount ?? 0;
+        const checkoutStarted = metrics?.checkoutStartedCount ?? 0;
+        const purchased = metrics?.purchasedCount ?? 0;
+        const lastSaleAt = metrics?.lastSaleAt ? new Date(metrics.lastSaleAt) : null;
+        const daysSinceLastSale = lastSaleAt 
+          ? Math.floor((Date.now() - lastSaleAt.getTime()) / (1000 * 60 * 60 * 24)) 
+          : null;
+        const conversionRate = views > 0 ? (purchased / views) * 100 : 0;
+        
+        // Use dosage-level stock status
+        const stockStatus = getDosageStockStatus(dosageStock);
+        const isOutOfStock = stockStatus === "out-of-stock";
+        const isLowStock = stockStatus === "low-stock";
+        
+        const currentPrice = Number(dosageStock.price ?? product.price);
+        
+        // Determine reason codes - prioritized order
+        const reasonCodes: ReasonCode[] = [];
+        let confidence: "low" | "medium" | "high" = "low";
+        let isDisabled = false;
+        let disabledReason: string | null = null;
+        let suggestedPrice: number | null = null;
+        let expectedImpact: string | null = null;
+        
+        // Safeguard: OOS dosages - highest priority, blocks all suggestions
+        if (isOutOfStock) {
+          isDisabled = true;
+          disabledReason = "Out of Stock";
+          reasonCodes.push("INSUFFICIENT_SIGNAL_OOS");
+          
+          signals.push({
+            dosageStockId: dosageStock.id,
+            productId: product.id,
+            productName: product.name,
+            dosage: dosageStock.dosage,
+            currentPrice,
+            suggestedPrice: null,
+            confidence: "low",
+            reasonCodes,
+            expectedImpact: null,
+            isDisabled,
+            disabledReason,
+            behavioralMetrics: { views, addToCart, checkoutStarted, purchased, daysSinceLastSale, conversionRate },
+            pricingSuggestionsEnabled: (dosageStock as any).pricingSuggestionsEnabled ?? false,
+            hasBaseline: !!(dosageStock as any).baselinePrice,
+            stockAmount: dosageStock.stockAmount ?? 0,
+            inStock: dosageStock.inStock,
+          });
+          return;
+        }
+        
+        // Data-driven confidence calculation
+        if (views >= 50 && purchased >= 5) {
+          confidence = "high";
+        } else if (views >= 20 && purchased >= 1) {
+          confidence = "medium";
+        } else {
+          confidence = "low";
+        }
+        
+        // Primary signal detection (mutually exclusive, prioritized)
+        let primarySignalSet = false;
+        
+        // 1. High views, low purchase
+        if (views > 50 && conversionRate < 2 && purchased > 0 && !primarySignalSet) {
+          reasonCodes.push("HIGH_VIEWS_LOW_PURCHASE");
+          suggestedPrice = currentPrice * 0.9;
+          expectedImpact = "May increase conversion by 15-25%";
+          primarySignalSet = true;
+        }
+        
+        // 2. Fast sell-through
+        if (conversionRate > 5 && isLowStock && !primarySignalSet) {
+          reasonCodes.push("FAST_SELL_THROUGH");
+          suggestedPrice = currentPrice * 1.1;
+          expectedImpact = "Maximize margin while demand is high";
+          primarySignalSet = true;
+        }
+        
+        // 3. Slow moving
+        if (views < 20 && daysSinceLastSale && daysSinceLastSale > 30 && !primarySignalSet) {
+          reasonCodes.push("SLOW_MOVING");
+          suggestedPrice = currentPrice * 0.85;
+          expectedImpact = "May attract new buyers";
+          primarySignalSet = true;
+        }
+        
+        // Secondary signals
+        if (isLowStock && !reasonCodes.includes("FAST_SELL_THROUGH")) {
+          reasonCodes.push("LOW_STOCK");
+        }
+        
+        if (purchased === 0) {
+          reasonCodes.push("NO_SALES_HISTORY");
+          confidence = "low";
+        }
+        
+        if (reasonCodes.length === 0) {
+          reasonCodes.push("STABLE_PERFORMER");
+        }
+        
+        signals.push({
+          dosageStockId: dosageStock.id,
           productId: product.id,
           productName: product.name,
-          currentPrice: Number(product.price),
-          suggestedPrice: null,
-          confidence: "low" as const,
+          dosage: dosageStock.dosage,
+          currentPrice,
+          suggestedPrice,
+          confidence,
           reasonCodes,
-          expectedImpact: null,
+          expectedImpact,
           isDisabled,
           disabledReason,
-          behavioralMetrics: { views, addToCart, checkoutStarted, purchased, daysSinceLastSale, conversionRate },
-          pricingSuggestionsEnabled: product.pricingSuggestionsEnabled ?? false,
-          hasBaseline: !!product.baselinePrice,
-        };
-      }
-      
-      // Data-driven confidence calculation
-      // Low: < 20 views OR no sales
-      // Medium: 20+ views AND 1-4 sales
-      // High: 50+ views AND 5+ sales
-      if (views >= 50 && purchased >= 5) {
-        confidence = "high";
-      } else if (views >= 20 && purchased >= 1) {
-        confidence = "medium";
-      } else {
-        confidence = "low";
-      }
-      
-      // Primary signal detection (mutually exclusive, prioritized)
-      let primarySignalSet = false;
-      
-      // 1. High views, low purchase (views > 50, conversion < 2%) - indicates price may be too high
-      if (views > 50 && conversionRate < 2 && purchased > 0 && !primarySignalSet) {
-        reasonCodes.push("HIGH_VIEWS_LOW_PURCHASE");
-        suggestedPrice = Number(product.price) * 0.9; // Suggest 10% decrease
-        expectedImpact = "May increase conversion by 15-25%";
-        primarySignalSet = true;
-      }
-      
-      // 2. Fast sell-through (high conversion > 5%, low stock) - demand outpacing supply
-      if (conversionRate > 5 && isLowStock && !primarySignalSet) {
-        reasonCodes.push("FAST_SELL_THROUGH");
-        suggestedPrice = Number(product.price) * 1.1; // Suggest 10% increase
-        expectedImpact = "Maximize margin while demand is high";
-        primarySignalSet = true;
-      }
-      
-      // 3. Slow moving (low views AND no recent sales in 30+ days)
-      if (views < 20 && daysSinceLastSale && daysSinceLastSale > 30 && !primarySignalSet) {
-        reasonCodes.push("SLOW_MOVING");
-        suggestedPrice = Number(product.price) * 0.85; // Suggest 15% decrease
-        expectedImpact = "May attract new buyers";
-        primarySignalSet = true;
-      }
-      
-      // Secondary signals (informational, can coexist with primary)
-      // Low stock warning (not a pricing signal, just informational)
-      if (isLowStock && !reasonCodes.includes("FAST_SELL_THROUGH")) {
-        reasonCodes.push("LOW_STOCK");
-      }
-      
-      // No sales history - informational only
-      if (purchased === 0) {
-        reasonCodes.push("NO_SALES_HISTORY");
-        confidence = "low"; // Override: can never exceed low without any sales data
-      }
-      
-      // Stable performer - no issues detected
-      if (reasonCodes.length === 0) {
-        reasonCodes.push("STABLE_PERFORMER");
-      }
-      
-      return {
-        productId: product.id,
-        productName: product.name,
-        currentPrice: Number(product.price),
-        suggestedPrice,
-        confidence,
-        reasonCodes,
-        expectedImpact,
-        isDisabled,
-        disabledReason,
-        behavioralMetrics: {
-          views,
-          addToCart,
-          checkoutStarted,
-          purchased,
-          daysSinceLastSale,
-          conversionRate,
-        },
-        pricingSuggestionsEnabled: product.pricingSuggestionsEnabled ?? false,
-        hasBaseline: !!product.baselinePrice,
-      };
+          behavioralMetrics: {
+            views,
+            addToCart,
+            checkoutStarted,
+            purchased,
+            daysSinceLastSale,
+            conversionRate,
+          },
+          pricingSuggestionsEnabled: (dosageStock as any).pricingSuggestionsEnabled ?? false,
+          hasBaseline: !!(dosageStock as any).baselinePrice,
+          stockAmount: dosageStock.stockAmount ?? 0,
+          inStock: dosageStock.inStock,
+        });
+      });
     });
-  }, [productsWithStock, behavioralMetrics]);
+    
+    return signals;
+  }, [productsWithStock, dosageBehavioralMetrics]);
 
-  // Compute alert counts
+  // Group signals by product
+  const productDosageGroups: ProductDosageGroup[] = useMemo(() => {
+    const groupMap = new Map<string, ProductDosageGroup>();
+    
+    dosagePricingSignals.forEach((signal) => {
+      if (!groupMap.has(signal.productId)) {
+        const product = productsWithStock.find(p => p.id === signal.productId);
+        groupMap.set(signal.productId, {
+          productId: signal.productId,
+          productName: signal.productName,
+          category: product?.category || "Unknown",
+          dosageSignals: [],
+        });
+      }
+      groupMap.get(signal.productId)!.dosageSignals.push(signal);
+    });
+    
+    return Array.from(groupMap.values());
+  }, [dosagePricingSignals, productsWithStock]);
+
+  // Compute alert counts from dosage-level signals
   const alertCounts = useMemo(() => {
-    const highViewsLowPurchase = pricingSignals.filter(s => s.reasonCodes.includes("HIGH_VIEWS_LOW_PURCHASE")).length;
-    const fastSelling = pricingSignals.filter(s => s.reasonCodes.includes("FAST_SELL_THROUGH")).length;
-    const slowMoving = pricingSignals.filter(s => s.reasonCodes.includes("SLOW_MOVING")).length;
+    const highViewsLowPurchase = dosagePricingSignals.filter(s => s.reasonCodes.includes("HIGH_VIEWS_LOW_PURCHASE")).length;
+    const fastSelling = dosagePricingSignals.filter(s => s.reasonCodes.includes("FAST_SELL_THROUGH")).length;
+    const slowMoving = dosagePricingSignals.filter(s => s.reasonCodes.includes("SLOW_MOVING")).length;
     return { highViewsLowPurchase, fastSelling, slowMoving };
-  }, [pricingSignals]);
+  }, [dosagePricingSignals]);
 
-  // Filter signals based on selected filter
-  const filteredSignals = useMemo(() => {
-    if (selectedSignalFilter === "all") return pricingSignals;
-    if (selectedSignalFilter === "high-views-low-purchase") {
-      return pricingSignals.filter(s => s.reasonCodes.includes("HIGH_VIEWS_LOW_PURCHASE"));
-    }
-    if (selectedSignalFilter === "fast-selling") {
-      return pricingSignals.filter(s => s.reasonCodes.includes("FAST_SELL_THROUGH"));
-    }
-    if (selectedSignalFilter === "slow-moving") {
-      return pricingSignals.filter(s => s.reasonCodes.includes("SLOW_MOVING"));
-    }
-    if (selectedSignalFilter === "needs-baseline") {
-      return pricingSignals.filter(s => !s.hasBaseline);
-    }
-    return pricingSignals;
-  }, [pricingSignals, selectedSignalFilter]);
+  // Filter groups based on selected filter
+  const filteredGroups = useMemo(() => {
+    if (selectedSignalFilter === "all") return productDosageGroups;
+    
+    return productDosageGroups
+      .map(group => {
+        let filteredDosages = group.dosageSignals;
+        
+        if (selectedSignalFilter === "high-views-low-purchase") {
+          filteredDosages = group.dosageSignals.filter(s => s.reasonCodes.includes("HIGH_VIEWS_LOW_PURCHASE"));
+        } else if (selectedSignalFilter === "fast-selling") {
+          filteredDosages = group.dosageSignals.filter(s => s.reasonCodes.includes("FAST_SELL_THROUGH"));
+        } else if (selectedSignalFilter === "slow-moving") {
+          filteredDosages = group.dosageSignals.filter(s => s.reasonCodes.includes("SLOW_MOVING"));
+        } else if (selectedSignalFilter === "needs-baseline") {
+          filteredDosages = group.dosageSignals.filter(s => !s.hasBaseline);
+        }
+        
+        return { ...group, dosageSignals: filteredDosages };
+      })
+      .filter(group => group.dosageSignals.length > 0);
+  }, [productDosageGroups, selectedSignalFilter]);
 
-  const markPriceAsUpdated = (productId: string) => {
+  const markDosagePriceAsUpdated = (dosageStockId: string) => {
     try {
-      const stored = localStorage.getItem("recentPriceUpdates");
+      const stored = localStorage.getItem("recentDosagePriceUpdates");
       const updates = stored ? JSON.parse(stored) : {};
-      updates[productId] = Date.now();
-      localStorage.setItem("recentPriceUpdates", JSON.stringify(updates));
+      updates[dosageStockId] = Date.now();
+      localStorage.setItem("recentDosagePriceUpdates", JSON.stringify(updates));
     } catch (error) {
-      console.error("Failed to mark price as updated:", error);
+      console.error("Failed to mark dosage price as updated:", error);
     }
   };
 
-  const updateProductMutation = useMutation({
-    mutationFn: async ({ id, price, currentPrice, isDisabled }: { id: string; price: string; currentPrice?: number; isDisabled?: boolean }) => {
-      // Hard-block safeguard: prevent mutation when product is disabled (OOS or other safeguard)
+  // Update dosage stock price mutation
+  const updateDosagePriceMutation = useMutation({
+    mutationFn: async ({ dosageStockId, productId, price, currentPrice, isDisabled }: { 
+      dosageStockId: string; 
+      productId: string;
+      price: string; 
+      currentPrice?: number; 
+      isDisabled?: boolean 
+    }) => {
+      // Hard-block safeguard: prevent mutation when dosage is disabled (OOS)
       if (isDisabled) {
-        throw new Error("Cannot apply pricing suggestion - product is disabled");
+        throw new Error("Cannot apply pricing suggestion - dosage is out of stock");
       }
       
-      const response = await apiRequest("PATCH", `/api/admin/products/${id}`, { price });
+      const response = await apiRequest("PATCH", `/api/admin/dosage-stock/${dosageStockId}`, { price });
       
+      // Record price change in product history for transparency
       if (currentPrice && Number(price) !== currentPrice) {
         try {
-          await apiRequest("POST", `/api/admin/products/${id}/price-change`, {
+          await apiRequest("POST", `/api/admin/products/${productId}/price-change`, {
             newPrice: Number(price),
-            reason: "Pricing Advisory Suggestion",
-            notes: `Applied from pricing advisory (from $${currentPrice.toFixed(2)} to $${price})`
+            reason: "Dosage Pricing Advisory",
+            notes: `Dosage price updated (from $${currentPrice.toFixed(2)} to $${price})`
           });
         } catch (error) {
           console.error("Failed to record price change:", error);
@@ -5398,27 +5468,27 @@ function PricingOptimizerTab() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/products-with-stock"] });
-      queryClient.invalidateQueries({ queryKey: ['/api/products', variables.id, 'price-trend'] });
-      markPriceAsUpdated(variables.id);
-      setAppliedSuggestions(prev => [...prev, variables.id]);
+      markDosagePriceAsUpdated(variables.dosageStockId);
+      setAppliedSuggestions(prev => [...prev, variables.dosageStockId]);
       toast({
-        title: "Price Updated",
-        description: "Product price has been updated successfully.",
+        title: "Dosage Price Updated",
+        description: "Dosage price has been updated successfully.",
       });
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to update product price.",
+        description: "Failed to update dosage price.",
         variant: "destructive",
       });
     },
   });
 
-  const togglePricingSuggestionsMutation = useMutation({
-    mutationFn: async ({ id, enabled }: { id: string; enabled: boolean }) => {
-      const response = await apiRequest("PATCH", `/api/admin/products/${id}`, { 
-        pricingSuggestionsEnabled: enabled 
+  // Toggle dosage-level pricing suggestions
+  const toggleDosagePricingSuggestionsMutation = useMutation({
+    mutationFn: async ({ dosageStockId, enabled }: { dosageStockId: string; enabled: boolean }) => {
+      const response = await apiRequest("PATCH", `/api/admin/dosage-stock/${dosageStockId}/pricing-suggestions`, { 
+        enabled 
       });
       return response.json();
     },
@@ -5426,7 +5496,7 @@ function PricingOptimizerTab() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/products-with-stock"] });
       toast({
         title: "Settings Updated",
-        description: "Pricing suggestions setting has been updated.",
+        description: "Dosage pricing suggestions setting has been updated.",
       });
     },
     onError: () => {
@@ -5467,10 +5537,10 @@ function PricingOptimizerTab() {
         <div>
           <h2 className="text-xl font-semibold flex items-center gap-2">
             <BarChart3 className="h-5 w-5 text-[#21d8ff]" />
-            Pricing Advisory
+            Dosage Pricing Advisory
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
-            Behavioral signals and suggestions. Enable per-product to apply changes.
+            Per-dosage behavioral signals and pricing suggestions. Enable individually to apply changes.
           </p>
         </div>
       </div>
@@ -5534,7 +5604,7 @@ function PricingOptimizerTab() {
           onClick={() => setSelectedSignalFilter('all')}
           data-testid="button-filter-all"
         >
-          All Products ({pricingSignals.length})
+          All Dosages ({dosagePricingSignals.length})
         </Button>
         <Button
           variant={selectedSignalFilter === 'needs-baseline' ? 'default' : 'outline'}
@@ -5542,135 +5612,187 @@ function PricingOptimizerTab() {
           onClick={() => setSelectedSignalFilter('needs-baseline')}
           data-testid="button-filter-needs-baseline"
         >
-          Needs Baseline ({pricingSignals.filter(s => !s.hasBaseline).length})
+          Needs Baseline ({dosagePricingSignals.filter(s => !s.hasBaseline).length})
         </Button>
       </div>
 
-      {/* Products Table with Signals */}
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Product</TableHead>
-            <TableHead>Current</TableHead>
-            <TableHead>Suggested</TableHead>
-            <TableHead>Metrics</TableHead>
-            <TableHead>Signals</TableHead>
-            <TableHead>Confidence</TableHead>
-            <TableHead>Enabled</TableHead>
-            <TableHead>Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filteredSignals.map((signal) => (
-            <TableRow key={signal.productId} data-testid={`row-pricing-${signal.productId}`}>
-              <TableCell className="font-medium">{signal.productName}</TableCell>
-              <TableCell>${signal.currentPrice.toFixed(2)}</TableCell>
-              <TableCell>
-                {signal.isDisabled ? (
-                  <Badge variant="secondary" className="text-xs">
-                    {signal.disabledReason}
-                  </Badge>
-                ) : signal.suggestedPrice ? (
-                  <span className={signal.suggestedPrice > signal.currentPrice ? "text-green-400" : "text-red-400"}>
-                    ${signal.suggestedPrice.toFixed(2)}
-                  </span>
-                ) : (
-                  <span className="text-muted-foreground">-</span>
-                )}
-              </TableCell>
-              <TableCell>
-                <div className="text-xs space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Eye className="h-3 w-3 text-muted-foreground" />
-                    <span>{signal.behavioralMetrics.views}</span>
-                    <ShoppingCart className="h-3 w-3 text-muted-foreground ml-2" />
-                    <span>{signal.behavioralMetrics.addToCart}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground">Conv:</span>
-                    <span>{signal.behavioralMetrics.conversionRate.toFixed(1)}%</span>
+      {/* Dosage-Level Grouped Table */}
+      <div className="space-y-4">
+        {filteredGroups.map((group) => (
+          <Card key={group.productId} data-testid={`card-product-group-${group.productId}`}>
+            <div className="p-2">
+              <Button 
+                variant="ghost"
+                className="w-full justify-between"
+                onClick={() => toggleProductExpanded(group.productId)}
+                data-testid={`button-expand-product-${group.productId}`}
+              >
+                <div className="flex items-center gap-3">
+                  <ChevronDown 
+                    className={`h-4 w-4 text-muted-foreground transition-transform ${
+                      expandedProducts.has(group.productId) ? 'rotate-180' : ''
+                    }`} 
+                  />
+                  <div className="text-left">
+                    <h3 className="font-medium">{group.productName}</h3>
+                    <p className="text-sm text-muted-foreground">{group.category}</p>
                   </div>
                 </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex flex-wrap gap-1">
-                  {signal.reasonCodes.slice(0, 2).map((code) => (
-                    <Badge 
-                      key={code} 
-                      variant="outline" 
-                      className="text-xs"
-                      title={getReasonCodeLabel(code)}
-                    >
-                      {code.split("_")[0]}
-                    </Badge>
-                  ))}
-                  {signal.reasonCodes.length > 2 && (
-                    <Badge variant="outline" className="text-xs">
-                      +{signal.reasonCodes.length - 2}
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="text-xs">
+                    {group.dosageSignals.length} dosage{group.dosageSignals.length !== 1 ? 's' : ''}
+                  </Badge>
+                  {group.dosageSignals.some(s => s.suggestedPrice !== null) && (
+                    <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30 text-xs">
+                      Has Suggestions
                     </Badge>
                   )}
                 </div>
-              </TableCell>
-              <TableCell>
-                <Badge variant="outline" className={getConfidenceBadge(signal.confidence)}>
-                  {signal.confidence}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <input
-                  type="checkbox"
-                  checked={signal.pricingSuggestionsEnabled}
-                  onChange={(e) => togglePricingSuggestionsMutation.mutate({
-                    id: signal.productId,
-                    enabled: e.target.checked
-                  })}
-                  className="h-4 w-4 rounded border-border"
-                  data-testid={`checkbox-enable-${signal.productId}`}
-                />
-              </TableCell>
-              <TableCell>
-                {appliedSuggestions.includes(signal.productId) ? (
-                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                    Applied
-                  </Badge>
-                ) : signal.isDisabled || !signal.suggestedPrice ? (
-                  <Badge variant="secondary">N/A</Badge>
-                ) : signal.pricingSuggestionsEnabled ? (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => updateProductMutation.mutate({
-                      id: signal.productId,
-                      price: signal.suggestedPrice!.toFixed(2),
-                      currentPrice: signal.currentPrice,
-                      isDisabled: signal.isDisabled,
-                    })}
-                    disabled={updateProductMutation.isPending || signal.isDisabled}
-                    className="border-[#E7FB10]/50"
-                    data-testid={`button-apply-price-${signal.productId}`}
-                  >
-                    Apply
-                  </Button>
-                ) : (
-                  <Badge variant="outline" className="text-xs text-muted-foreground">
-                    Enable first
-                  </Badge>
-                )}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+              </Button>
+            </div>
+            
+            {expandedProducts.has(group.productId) && (
+              <div className="overflow-hidden">
+                <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/20">
+                    <TableHead>Dosage</TableHead>
+                    <TableHead>Stock</TableHead>
+                    <TableHead>Current</TableHead>
+                    <TableHead>Suggested</TableHead>
+                    <TableHead>Metrics</TableHead>
+                    <TableHead>Signal</TableHead>
+                    <TableHead>Confidence</TableHead>
+                    <TableHead>Enabled</TableHead>
+                    <TableHead>Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {group.dosageSignals.map((signal) => (
+                    <TableRow key={signal.dosageStockId} data-testid={`row-dosage-${signal.dosageStockId}`}>
+                      <TableCell>
+                        <Badge variant="outline" className="font-mono text-xs">
+                          {signal.dosage}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          <span className={`text-sm ${
+                            signal.stockAmount <= 0 ? 'text-red-400' : 
+                            signal.stockAmount <= LOW_STOCK_THRESHOLD ? 'text-yellow-400' : 
+                            'text-green-400'
+                          }`}>
+                            {signal.stockAmount}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-medium">${signal.currentPrice.toFixed(2)}</TableCell>
+                      <TableCell>
+                        {signal.isDisabled ? (
+                          <Badge variant="secondary" className="text-xs">
+                            {signal.disabledReason}
+                          </Badge>
+                        ) : signal.suggestedPrice ? (
+                          <span className={signal.suggestedPrice > signal.currentPrice ? "text-green-400" : "text-red-400"}>
+                            ${signal.suggestedPrice.toFixed(2)}
+                          </span>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-xs space-y-1">
+                          <div className="flex items-center gap-2">
+                            <Eye className="h-3 w-3 text-muted-foreground" />
+                            <span>{signal.behavioralMetrics.views}</span>
+                            <ShoppingCart className="h-3 w-3 text-muted-foreground ml-2" />
+                            <span>{signal.behavioralMetrics.addToCart}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-muted-foreground">Conv:</span>
+                            <span>{signal.behavioralMetrics.conversionRate.toFixed(1)}%</span>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-wrap gap-1">
+                          {signal.reasonCodes.slice(0, 2).map((code) => (
+                            <Badge 
+                              key={code} 
+                              variant="outline" 
+                              className="text-xs"
+                              title={getReasonCodeLabel(code)}
+                            >
+                              {code.split("_")[0]}
+                            </Badge>
+                          ))}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={getConfidenceBadge(signal.confidence)}>
+                          {signal.confidence}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Checkbox
+                          checked={signal.pricingSuggestionsEnabled}
+                          onCheckedChange={(checked) => toggleDosagePricingSuggestionsMutation.mutate({
+                            dosageStockId: signal.dosageStockId,
+                            enabled: checked === true
+                          })}
+                          disabled={signal.isDisabled}
+                          data-testid={`checkbox-enable-${signal.dosageStockId}`}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        {appliedSuggestions.includes(signal.dosageStockId) ? (
+                          <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                            Applied
+                          </Badge>
+                        ) : signal.isDisabled || !signal.suggestedPrice ? (
+                          <Badge variant="secondary">N/A</Badge>
+                        ) : signal.pricingSuggestionsEnabled ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => updateDosagePriceMutation.mutate({
+                              dosageStockId: signal.dosageStockId,
+                              productId: signal.productId,
+                              price: signal.suggestedPrice!.toFixed(2),
+                              currentPrice: signal.currentPrice,
+                              isDisabled: signal.isDisabled,
+                            })}
+                            disabled={updateDosagePriceMutation.isPending || signal.isDisabled}
+                            className="border-[#E7FB10]/50"
+                            data-testid={`button-apply-price-${signal.dosageStockId}`}
+                          >
+                            Apply
+                          </Button>
+                        ) : (
+                          <Badge variant="outline" className="text-xs text-muted-foreground">
+                            Enable first
+                          </Badge>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              </div>
+            )}
+          </Card>
+        ))}
+      </div>
 
       {/* Empty state */}
-      {filteredSignals.length === 0 && (
+      {filteredGroups.length === 0 && (
         <Card className="p-12 text-center">
           <BarChart3 className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
-          <h3 className="font-medium mb-2">No Products Found</h3>
+          <h3 className="font-medium mb-2">No Dosages Found</h3>
           <p className="text-sm text-muted-foreground">
             {selectedSignalFilter !== 'all' 
-              ? "No products match the selected filter. Try selecting a different filter."
-              : "Add products to start seeing pricing signals and suggestions."}
+              ? "No dosages match the selected filter. Try selecting a different filter."
+              : "Add products with dosage options to start seeing pricing signals."}
           </p>
         </Card>
       )}

@@ -1763,6 +1763,29 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Update dosage stock price
+  const updateDosagePriceSchema = z.object({
+    price: z.coerce.number().nonnegative("Price must be non-negative")
+  });
+  
+  app.patch("/api/admin/dosage-stock/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const result = updateDosagePriceSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ error: result.error.errors[0]?.message || "Valid price is required" });
+      }
+      const priceString = result.data.price.toFixed(2);
+      const updated = await storage.updateDosageStockPrice(req.params.id, priceString);
+      if (!updated) {
+        return res.status(404).json({ error: "Dosage stock not found" });
+      }
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating dosage stock price:", error);
+      res.status(500).json({ error: "Failed to update dosage stock price" });
+    }
+  });
+
   // Track product view (public, no auth required)
   app.post("/api/products/:id/view", async (req, res) => {
     try {

@@ -256,6 +256,7 @@ export interface IStorage {
   setProductBaseline(productId: string, baselinePrice: number, baselineCost?: number): Promise<Product | undefined>;
   setDosageBaseline(dosageStockId: string, baselinePrice: number, baselineCost?: number): Promise<ProductDosageStock | undefined>;
   updateDosagePricingSuggestionsEnabled(dosageStockId: string, enabled: boolean): Promise<ProductDosageStock | undefined>;
+  updateDosageStockPrice(dosageStockId: string, price: string): Promise<ProductDosageStock | undefined>;
   
   // Academy Progress
   getAcademyProgress(userId: string): Promise<AcademyProgress | undefined>;
@@ -1965,6 +1966,15 @@ export class DatabaseStorage implements IStorage {
   async updateDosagePricingSuggestionsEnabled(dosageStockId: string, enabled: boolean): Promise<ProductDosageStock | undefined> {
     const [updated] = await db.update(productDosageStock)
       .set({ pricingSuggestionsEnabled: enabled })
+      .where(eq(productDosageStock.id, dosageStockId))
+      .returning();
+    
+    return updated;
+  }
+
+  async updateDosageStockPrice(dosageStockId: string, price: string): Promise<ProductDosageStock | undefined> {
+    const [updated] = await db.update(productDosageStock)
+      .set({ price })
       .where(eq(productDosageStock.id, dosageStockId))
       .returning();
     
