@@ -56,84 +56,71 @@ export default function Unsubscribe() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0c] flex items-center justify-center px-4 py-16 relative overflow-hidden">
+    <div className="min-h-screen bg-[#0a0a0c] flex items-center justify-center px-4 py-8 relative overflow-hidden">
       {/* Animated background orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/3 w-[800px] h-[800px] bg-[#21d8ff]/8 rounded-full blur-[200px] animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/3 w-[600px] h-[600px] bg-[#9D4EDD]/10 rounded-full blur-[180px] animate-pulse" style={{ animationDelay: "1s" }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-[#E7FB10]/5 rounded-full blur-[150px]" />
+        <div className="absolute top-1/4 left-1/3 w-[600px] h-[600px] bg-[#21d8ff]/8 rounded-full blur-[150px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/3 w-[400px] h-[400px] bg-[#9D4EDD]/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: "1s" }} />
       </div>
 
-      {/* Grid pattern overlay */}
-      <div 
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: `linear-gradient(rgba(33, 216, 255, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(33, 216, 255, 0.5) 1px, transparent 1px)`,
-          backgroundSize: '50px 50px'
-        }}
-      />
-
       {/* Main card */}
-      <div className="relative w-full max-w-lg z-10">
+      <div className="relative w-full max-w-md z-10">
         {/* Outer glow ring */}
-        <div className="absolute -inset-[2px] bg-gradient-to-r from-[#21d8ff] via-[#9D4EDD] to-[#21d8ff] rounded-3xl opacity-60 blur-sm" />
-        <div className="absolute -inset-[1px] bg-gradient-to-r from-[#21d8ff] via-[#9D4EDD] to-[#21d8ff] rounded-3xl opacity-80" />
+        <div className="absolute -inset-[1px] bg-gradient-to-r from-[#21d8ff] via-[#9D4EDD] to-[#21d8ff] rounded-2xl opacity-60" />
         
-        <div className="relative bg-[#12121a] rounded-3xl p-10 shadow-[0_0_100px_rgba(33,216,255,0.15)]">
+        <div className="relative bg-[#12121a] rounded-2xl p-6 shadow-[0_0_60px_rgba(33,216,255,0.1)]">
           
           {status === "loading" && (
-            <div className="text-center space-y-8 py-8">
+            <div className="text-center space-y-4 py-4">
               <div className="relative inline-block">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#21d8ff]/30 to-[#9D4EDD]/30 flex items-center justify-center">
-                  <Loader2 className="w-12 h-12 text-[#21d8ff] animate-spin" />
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#21d8ff]/30 to-[#9D4EDD]/30 flex items-center justify-center">
+                  <Loader2 className="w-7 h-7 text-[#21d8ff] animate-spin" />
                 </div>
-                <div className="absolute -inset-4 bg-[#21d8ff]/30 rounded-full blur-2xl animate-pulse" />
               </div>
-              <p className="text-white/70 text-xl font-medium">Processing...</p>
+              <p className="text-white/70 text-base font-medium">Processing...</p>
             </div>
           )}
 
           {status === "confirm" && (
-            <div className="text-center space-y-6">
-              {/* Icon with intense glow */}
+            <div className="text-center space-y-4">
+              {/* Icon */}
               <div className="relative inline-block">
-                <div className="absolute -inset-6 bg-gradient-to-r from-[#21d8ff]/40 to-[#9D4EDD]/40 rounded-full blur-2xl" />
-                <div className="relative w-24 h-24 rounded-2xl bg-gradient-to-br from-[#21d8ff]/20 to-[#9D4EDD]/20 border-2 border-[#21d8ff]/50 flex items-center justify-center shadow-[0_0_40px_rgba(33,216,255,0.4),inset_0_0_30px_rgba(33,216,255,0.1)]">
-                  <MailX className="w-11 h-11 text-[#21d8ff]" />
+                <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-[#21d8ff]/20 to-[#9D4EDD]/20 border border-[#21d8ff]/50 flex items-center justify-center">
+                  <MailX className="w-7 h-7 text-[#21d8ff]" />
                 </div>
               </div>
               
-              {/* Heading with gradient */}
-              <div className="space-y-2">
-                <h1 className="text-4xl font-black bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent">
+              {/* Heading */}
+              <div className="space-y-1">
+                <h1 className="text-2xl font-bold text-white">
                   Unsubscribe
                 </h1>
-                <p className="text-white/50 text-lg">
+                <p className="text-white/50 text-sm">
                   You're about to unsubscribe:
                 </p>
               </div>
               
-              {/* Email display with glow border */}
+              {/* Email display */}
               <div className="relative">
-                <div className="absolute -inset-[1px] bg-gradient-to-r from-[#21d8ff]/50 via-[#9D4EDD]/50 to-[#21d8ff]/50 rounded-xl" />
-                <div className="relative bg-[#1a1a24] rounded-xl px-6 py-4">
-                  <p className="text-white font-bold text-lg break-all">
+                <div className="absolute -inset-[1px] bg-gradient-to-r from-[#21d8ff]/40 via-[#9D4EDD]/40 to-[#21d8ff]/40 rounded-lg" />
+                <div className="relative bg-[#1a1a24] rounded-lg px-4 py-2.5">
+                  <p className="text-white font-semibold text-sm break-all">
                     {email}
                   </p>
                 </div>
               </div>
               
               {/* Optional reason selection */}
-              <div className="space-y-3 text-left">
-                <p className="text-white/40 text-sm text-center">
+              <div className="space-y-2 text-left">
+                <p className="text-white/40 text-xs text-center">
                   Mind telling us why? <span className="text-white/30">(optional)</span>
                 </p>
-                <div className="grid grid-cols-1 gap-2">
+                <div className="grid grid-cols-1 gap-1.5">
                   {UNSUBSCRIBE_REASONS.map((reason) => (
                     <button
                       key={reason}
                       onClick={() => setSelectedReason(selectedReason === reason ? null : reason)}
-                      className={`px-4 py-3 rounded-xl text-left text-sm font-medium transition-all duration-200 ${
+                      className={`px-3 py-2 rounded-lg text-left text-xs font-medium transition-all duration-200 ${
                         selectedReason === reason
                           ? "bg-[#21d8ff]/20 border-[#21d8ff]/50 text-[#21d8ff] border"
                           : "bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white"
@@ -147,25 +134,24 @@ export default function Unsubscribe() {
               </div>
               
               {/* Action buttons */}
-              <div className="space-y-4 pt-2">
-                {/* Primary button with intense glow */}
+              <div className="space-y-3 pt-1">
                 <button
                   onClick={handleUnsubscribe}
                   className="relative w-full group"
                   data-testid="button-confirm-unsubscribe"
                 >
-                  <div className="absolute -inset-1 bg-gradient-to-r from-[#21d8ff] via-[#9D4EDD] to-[#21d8ff] rounded-xl opacity-70 blur-md group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="relative h-14 bg-gradient-to-r from-[#21d8ff] to-[#9D4EDD] rounded-xl flex items-center justify-center font-bold text-lg text-black shadow-[0_0_30px_rgba(33,216,255,0.5)] group-hover:shadow-[0_0_50px_rgba(33,216,255,0.7)] transition-all duration-300">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-[#21d8ff] via-[#9D4EDD] to-[#21d8ff] rounded-lg opacity-60 blur-sm group-hover:opacity-80 transition-opacity duration-300" />
+                  <div className="relative h-10 bg-gradient-to-r from-[#21d8ff] to-[#9D4EDD] rounded-lg flex items-center justify-center font-semibold text-sm text-black">
                     Confirm Unsubscribe
                   </div>
                 </button>
                 
                 <button
                   onClick={() => setLocation("/")}
-                  className="w-full h-12 flex items-center justify-center gap-2 text-[#21d8ff] hover:text-white font-medium transition-colors duration-200"
+                  className="w-full h-9 flex items-center justify-center gap-2 text-[#21d8ff] hover:text-white text-sm font-medium transition-colors duration-200"
                   data-testid="button-cancel-unsubscribe"
                 >
-                  <ArrowLeft className="w-5 h-5" />
+                  <ArrowLeft className="w-4 h-4" />
                   Go Back Home
                 </button>
               </div>
@@ -173,38 +159,36 @@ export default function Unsubscribe() {
           )}
 
           {status === "success" && (
-            <div className="text-center space-y-8">
-              {/* Success icon with green glow */}
+            <div className="text-center space-y-4">
+              {/* Success icon */}
               <div className="relative inline-block">
-                <div className="absolute -inset-6 bg-emerald-500/30 rounded-full blur-2xl animate-pulse" />
-                <div className="relative w-24 h-24 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 border-2 border-emerald-500/50 flex items-center justify-center shadow-[0_0_40px_rgba(16,185,129,0.4),inset_0_0_30px_rgba(16,185,129,0.1)]">
-                  <CheckCircle2 className="w-12 h-12 text-emerald-400" />
+                <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 border border-emerald-500/50 flex items-center justify-center">
+                  <CheckCircle2 className="w-7 h-7 text-emerald-400" />
                 </div>
               </div>
               
-              <div className="space-y-3">
-                <h1 className="text-4xl font-black text-white">
+              <div className="space-y-1">
+                <h1 className="text-2xl font-bold text-white">
                   Unsubscribed
                 </h1>
-                <p className="text-white/50 text-lg">
+                <p className="text-white/50 text-sm">
                   You've been removed from our newsletter.
                 </p>
               </div>
               
-              <p className="text-white/40">
+              <p className="text-white/40 text-xs">
                 If this was a mistake, you can always resubscribe from our website.
               </p>
               
-              {/* Neon yellow return button */}
-              <div className="pt-4">
+              <div className="pt-2">
                 <button
                   onClick={() => setLocation("/")}
                   className="relative w-full group"
                   data-testid="button-return-home"
                 >
-                  <div className="absolute -inset-1 bg-[#E7FB10] rounded-xl opacity-50 blur-md group-hover:opacity-80 transition-opacity duration-300" />
-                  <div className="relative h-14 bg-[#E7FB10] rounded-xl flex items-center justify-center gap-3 font-bold text-lg text-black shadow-[0_0_40px_rgba(231,251,16,0.4)] group-hover:shadow-[0_0_60px_rgba(231,251,16,0.6)] transition-all duration-300">
-                    <Sparkles className="w-5 h-5" />
+                  <div className="absolute -inset-0.5 bg-[#E7FB10] rounded-lg opacity-40 blur-sm group-hover:opacity-60 transition-opacity duration-300" />
+                  <div className="relative h-10 bg-[#E7FB10] rounded-lg flex items-center justify-center gap-2 font-semibold text-sm text-black">
+                    <Sparkles className="w-4 h-4" />
                     Return to Revive Research
                   </div>
                 </button>
@@ -213,33 +197,31 @@ export default function Unsubscribe() {
           )}
 
           {status === "error" && (
-            <div className="text-center space-y-8">
-              {/* Error icon with red glow */}
+            <div className="text-center space-y-4">
+              {/* Error icon */}
               <div className="relative inline-block">
-                <div className="absolute -inset-6 bg-red-500/30 rounded-full blur-2xl" />
-                <div className="relative w-24 h-24 rounded-2xl bg-gradient-to-br from-red-500/20 to-red-600/20 border-2 border-red-500/50 flex items-center justify-center shadow-[0_0_40px_rgba(239,68,68,0.4),inset_0_0_30px_rgba(239,68,68,0.1)]">
-                  <MailX className="w-11 h-11 text-red-400" />
+                <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-red-500/20 to-red-600/20 border border-red-500/50 flex items-center justify-center">
+                  <MailX className="w-7 h-7 text-red-400" />
                 </div>
               </div>
               
-              <div className="space-y-3">
-                <h1 className="text-4xl font-black text-white">
+              <div className="space-y-1">
+                <h1 className="text-2xl font-bold text-white">
                   Something Went Wrong
                 </h1>
-                <p className="text-white/50 text-lg">
+                <p className="text-white/50 text-sm">
                   {errorMessage}
                 </p>
               </div>
               
-              <div className="pt-4">
+              <div className="pt-2">
                 <button
                   onClick={() => setLocation("/")}
                   className="relative w-full group"
                   data-testid="button-error-return-home"
                 >
-                  <div className="absolute -inset-1 bg-white/20 rounded-xl blur-md group-hover:bg-white/30 transition-opacity duration-300" />
-                  <div className="relative h-14 bg-white/10 border border-white/20 rounded-xl flex items-center justify-center gap-2 font-bold text-lg text-white group-hover:bg-white/15 transition-all duration-300">
-                    <ArrowLeft className="w-5 h-5" />
+                  <div className="relative h-10 bg-white/10 border border-white/20 rounded-lg flex items-center justify-center gap-2 font-semibold text-sm text-white hover:bg-white/15 transition-all duration-300">
+                    <ArrowLeft className="w-4 h-4" />
                     Return Home
                   </div>
                 </button>
@@ -247,9 +229,9 @@ export default function Unsubscribe() {
             </div>
           )}
 
-          {/* Bottom branding with glow */}
-          <div className="mt-10 pt-6 border-t border-white/10 text-center">
-            <p className="text-transparent bg-gradient-to-r from-[#21d8ff]/60 via-white/40 to-[#9D4EDD]/60 bg-clip-text text-sm font-bold tracking-[0.3em] uppercase">
+          {/* Bottom branding */}
+          <div className="mt-6 pt-4 border-t border-white/10 text-center">
+            <p className="text-white/30 text-xs font-semibold tracking-[0.2em] uppercase">
               Revive Research
             </p>
           </div>
