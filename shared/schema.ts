@@ -109,9 +109,28 @@ export const orders = pgTable("orders", {
   productId: varchar("product_id").notNull(),
   quantity: integer("quantity").notNull().default(1),
   totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
+  // Payment status: pending, paid, failed, refunded, chargeback
   status: text("status").default("pending"),
   stripeSessionId: text("stripe_session_id"),
   stripePaymentIntentId: text("stripe_payment_intent_id"),
+  // Fulfillment workflow: unfulfilled, processing, shipped, completed
+  fulfillmentStatus: text("fulfillment_status").default("unfulfilled"),
+  fulfillmentNotes: text("fulfillment_notes"),
+  fulfilledAt: timestamp("fulfilled_at"),
+  fulfilledBy: varchar("fulfilled_by"),
+  // Fulfillment checklist
+  paymentConfirmed: boolean("payment_confirmed").default(false),
+  addressCollected: boolean("address_collected").default(true),
+  packed: boolean("packed").default(false),
+  // Email status: pending, sent, failed
+  emailStatus: text("email_status").default("pending"),
+  emailSentAt: timestamp("email_sent_at"),
+  emailError: text("email_error"),
+  // Shipping automation hooks (for future Shippo/ShipStation integration)
+  trackingNumber: text("tracking_number"),
+  trackingCarrier: text("tracking_carrier"),
+  trackingUrl: text("tracking_url"),
+  shippingLabelUrl: text("shipping_label_url"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
