@@ -2988,6 +2988,17 @@ function ContactsTab() {
     setNotes(contact.notes || "");
   };
 
+  // Auto-mark as "responded" after viewing for 5 seconds
+  useEffect(() => {
+    if (!selectedContact || selectedContact.status !== "new") return;
+    
+    const timer = setTimeout(() => {
+      updateStatusMutation.mutate({ id: selectedContact.id, status: "responded" });
+    }, 5000);
+    
+    return () => clearTimeout(timer);
+  }, [selectedContact?.id, selectedContact?.status]);
+
   const handleStatusChange = (status: "new" | "responded" | "archived") => {
     if (selectedContact) {
       updateStatusMutation.mutate({ id: selectedContact.id, status });
