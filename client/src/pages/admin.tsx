@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -103,12 +103,13 @@ import {
   Eye,
   AlertTriangle,
   Copy,
+  ShoppingCart,
 } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { ObjectUploader } from "@/components/ObjectUploader";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertProductSchema, insertCoaSchema, type Product, type Coa, type Order, type Contact, type AffiliateApplication, type Affiliate, type AffiliatePayout, type ProductDosageStock, type ProductWithDosageStock } from "@shared/schema";
+import { insertProductSchema, insertCoaSchema, type Product, type Coa, type Order, type Contact, type AffiliateApplication, type Affiliate, type AffiliatePayout, type ProductDosageStock, type ProductWithDosageStock, type ProductBehavioralMetrics } from "@shared/schema";
 import { z } from "zod";
 
 // Dosage stock item type for local state management
@@ -5144,63 +5145,221 @@ interface PricingResponse {
 const RECENT_UPDATE_WINDOW_HOURS = 24;
 const AUTO_RUN_COOLDOWN_MINUTES = 60;
 
+// Reason codes for pricing suggestions
+type ReasonCode = 
+  | "HIGH_VIEWS_LOW_PURCHASE"
+  | "FAST_SELL_THROUGH"
+  | "LOW_STOCK"
+  | "SLOW_MOVING"
+  | "NO_SALES_HISTORY"
+  | "STABLE_PERFORMER"
+  | "INSUFFICIENT_SIGNAL_OOS";
+
+interface PricingSignal {
+  productId: string;
+  productName: string;
+  suggestedPrice: number | null;
+  currentPrice: number;
+  confidence: "low" | "medium" | "high";
+  reasonCodes: ReasonCode[];
+  expectedImpact: string | null;
+  isDisabled: boolean;
+  disabledReason: string | null;
+  behavioralMetrics: {
+    views: number;
+    addToCart: number;
+    checkoutStarted: number;
+    purchased: number;
+    daysSinceLastSale: number | null;
+    conversionRate: number;
+  };
+  pricingSuggestionsEnabled: boolean;
+  hasBaseline: boolean;
+}
+
 function PricingOptimizerTab() {
   const { toast } = useToast();
-  const [pricingData, setPricingData] = useState<PricingResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [appliedSuggestions, setAppliedSuggestions] = useState<string[]>([]);
-  const [showSettings, setShowSettings] = useState(false);
-  const [inventoryWeight, setInventoryWeight] = useState(1);
-  const [marketWeight, setMarketWeight] = useState(1);
-  const [complexityWeight, setComplexityWeight] = useState(1);
+  const [selectedSignalFilter, setSelectedSignalFilter] = useState<string>("all");
 
   const { data: products = [] } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
 
-  useEffect(() => {
-    // Check if we have cached data from a recent run (within 60 minutes)
-    try {
-      const cached = localStorage.getItem("pricingAnalysisCache");
-      if (cached) {
-        const { data, timestamp } = JSON.parse(cached);
-        const minutesSinceRun = (Date.now() - timestamp) / (1000 * 60);
-        
-        if (minutesSinceRun < AUTO_RUN_COOLDOWN_MINUTES) {
-          // Use cached data instead of auto-running
-          setPricingData(data);
-          return;
-        }
-      }
-    } catch (error) {
-      console.error("Failed to load cached pricing data:", error);
-    }
-    
-    // No recent cached data, run analysis
-    generateSuggestions();
-  }, []);
+  const { data: productsWithStock = [] } = useQuery<ProductWithDosageStock[]>({
+    queryKey: ["/api/admin/products-with-stock"],
+  });
 
-  const getRecentlyUpdatedProducts = (): string[] => {
-    try {
-      const stored = localStorage.getItem("recentPriceUpdates");
-      if (!stored) return [];
-      const updates = JSON.parse(stored) as Record<string, number>;
-      const now = Date.now();
-      const recent: string[] = [];
-      
-      Object.entries(updates).forEach(([productId, timestamp]) => {
-        const hoursSinceUpdate = (now - timestamp) / (1000 * 60 * 60);
-        if (hoursSinceUpdate < RECENT_UPDATE_WINDOW_HOURS) {
-          recent.push(productId);
-        }
-      });
-      
-      return recent;
-    } catch (error) {
-      console.error("Failed to get recent updates:", error);
-      return [];
+  const { data: behavioralMetrics = [] } = useQuery<ProductBehavioralMetrics[]>({
+    queryKey: ["/api/admin/behavioral-metrics"],
+  });
+
+  // Reuse exact same stock status logic from Inventory tab for parity
+  const getPricingStockStatus = (product: ProductWithDosageStock): "in-stock" | "low-stock" | "out-of-stock" => {
+    const stocks = product.dosageStocks || [];
+    if (stocks.length === 0) {
+      return product.inStock ? "in-stock" : "out-of-stock";
     }
+    // Match LOW_STOCK_THRESHOLD = 3 exactly
+    const allOutOfStock = stocks.every(s => !s.inStock || (s.stockAmount ?? 0) <= 0);
+    if (allOutOfStock) return "out-of-stock";
+    const hasLowStock = stocks.some(s => s.inStock && (s.stockAmount ?? 0) > 0 && (s.stockAmount ?? 0) <= 3);
+    if (hasLowStock) return "low-stock";
+    return "in-stock";
   };
+
+  // Compute pricing signals from products and behavioral metrics
+  const pricingSignals: PricingSignal[] = useMemo(() => {
+    return productsWithStock.map((product) => {
+      const metrics = behavioralMetrics.find(m => m.productId === product.id);
+      const views = metrics?.productViews ?? 0;
+      const addToCart = metrics?.addToCartCount ?? 0;
+      const checkoutStarted = metrics?.checkoutStartedCount ?? 0;
+      const purchased = metrics?.purchasedCount ?? 0;
+      const lastSaleAt = metrics?.lastSaleAt ? new Date(metrics.lastSaleAt) : null;
+      const daysSinceLastSale = lastSaleAt ? Math.floor((Date.now() - lastSaleAt.getTime()) / (1000 * 60 * 60 * 24)) : null;
+      const conversionRate = views > 0 ? (purchased / views) * 100 : 0;
+      
+      // Use shared stock status function for exact parity with Inventory tab
+      const stockStatus = getPricingStockStatus(product as ProductWithDosageStock);
+      const isOutOfStock = stockStatus === "out-of-stock";
+      const isLowStock = stockStatus === "low-stock";
+      
+      // Determine reason codes - prioritized order
+      const reasonCodes: ReasonCode[] = [];
+      let confidence: "low" | "medium" | "high" = "low"; // Start low, upgrade based on data
+      let isDisabled = false;
+      let disabledReason: string | null = null;
+      let suggestedPrice: number | null = null;
+      let expectedImpact: string | null = null;
+      
+      // Safeguard: OOS products - highest priority, blocks all suggestions
+      if (isOutOfStock) {
+        isDisabled = true;
+        disabledReason = "Out of Stock";
+        reasonCodes.push("INSUFFICIENT_SIGNAL_OOS");
+        // Return early for OOS - no other signals should apply
+        return {
+          productId: product.id,
+          productName: product.name,
+          currentPrice: Number(product.price),
+          suggestedPrice: null,
+          confidence: "low" as const,
+          reasonCodes,
+          expectedImpact: null,
+          isDisabled,
+          disabledReason,
+          behavioralMetrics: { views, addToCart, checkoutStarted, purchased, daysSinceLastSale, conversionRate },
+          pricingSuggestionsEnabled: product.pricingSuggestionsEnabled ?? false,
+          hasBaseline: !!product.baselinePrice,
+        };
+      }
+      
+      // Data-driven confidence calculation
+      // Low: < 20 views OR no sales
+      // Medium: 20+ views AND 1-4 sales
+      // High: 50+ views AND 5+ sales
+      if (views >= 50 && purchased >= 5) {
+        confidence = "high";
+      } else if (views >= 20 && purchased >= 1) {
+        confidence = "medium";
+      } else {
+        confidence = "low";
+      }
+      
+      // Primary signal detection (mutually exclusive, prioritized)
+      let primarySignalSet = false;
+      
+      // 1. High views, low purchase (views > 50, conversion < 2%) - indicates price may be too high
+      if (views > 50 && conversionRate < 2 && purchased > 0 && !primarySignalSet) {
+        reasonCodes.push("HIGH_VIEWS_LOW_PURCHASE");
+        suggestedPrice = Number(product.price) * 0.9; // Suggest 10% decrease
+        expectedImpact = "May increase conversion by 15-25%";
+        primarySignalSet = true;
+      }
+      
+      // 2. Fast sell-through (high conversion > 5%, low stock) - demand outpacing supply
+      if (conversionRate > 5 && isLowStock && !primarySignalSet) {
+        reasonCodes.push("FAST_SELL_THROUGH");
+        suggestedPrice = Number(product.price) * 1.1; // Suggest 10% increase
+        expectedImpact = "Maximize margin while demand is high";
+        primarySignalSet = true;
+      }
+      
+      // 3. Slow moving (low views AND no recent sales in 30+ days)
+      if (views < 20 && daysSinceLastSale && daysSinceLastSale > 30 && !primarySignalSet) {
+        reasonCodes.push("SLOW_MOVING");
+        suggestedPrice = Number(product.price) * 0.85; // Suggest 15% decrease
+        expectedImpact = "May attract new buyers";
+        primarySignalSet = true;
+      }
+      
+      // Secondary signals (informational, can coexist with primary)
+      // Low stock warning (not a pricing signal, just informational)
+      if (isLowStock && !reasonCodes.includes("FAST_SELL_THROUGH")) {
+        reasonCodes.push("LOW_STOCK");
+      }
+      
+      // No sales history - informational only
+      if (purchased === 0) {
+        reasonCodes.push("NO_SALES_HISTORY");
+        confidence = "low"; // Override: can never exceed low without any sales data
+      }
+      
+      // Stable performer - no issues detected
+      if (reasonCodes.length === 0) {
+        reasonCodes.push("STABLE_PERFORMER");
+      }
+      
+      return {
+        productId: product.id,
+        productName: product.name,
+        currentPrice: Number(product.price),
+        suggestedPrice,
+        confidence,
+        reasonCodes,
+        expectedImpact,
+        isDisabled,
+        disabledReason,
+        behavioralMetrics: {
+          views,
+          addToCart,
+          checkoutStarted,
+          purchased,
+          daysSinceLastSale,
+          conversionRate,
+        },
+        pricingSuggestionsEnabled: product.pricingSuggestionsEnabled ?? false,
+        hasBaseline: !!product.baselinePrice,
+      };
+    });
+  }, [productsWithStock, behavioralMetrics]);
+
+  // Compute alert counts
+  const alertCounts = useMemo(() => {
+    const highViewsLowPurchase = pricingSignals.filter(s => s.reasonCodes.includes("HIGH_VIEWS_LOW_PURCHASE")).length;
+    const fastSelling = pricingSignals.filter(s => s.reasonCodes.includes("FAST_SELL_THROUGH")).length;
+    const slowMoving = pricingSignals.filter(s => s.reasonCodes.includes("SLOW_MOVING")).length;
+    return { highViewsLowPurchase, fastSelling, slowMoving };
+  }, [pricingSignals]);
+
+  // Filter signals based on selected filter
+  const filteredSignals = useMemo(() => {
+    if (selectedSignalFilter === "all") return pricingSignals;
+    if (selectedSignalFilter === "high-views-low-purchase") {
+      return pricingSignals.filter(s => s.reasonCodes.includes("HIGH_VIEWS_LOW_PURCHASE"));
+    }
+    if (selectedSignalFilter === "fast-selling") {
+      return pricingSignals.filter(s => s.reasonCodes.includes("FAST_SELL_THROUGH"));
+    }
+    if (selectedSignalFilter === "slow-moving") {
+      return pricingSignals.filter(s => s.reasonCodes.includes("SLOW_MOVING"));
+    }
+    if (selectedSignalFilter === "needs-baseline") {
+      return pricingSignals.filter(s => !s.hasBaseline);
+    }
+    return pricingSignals;
+  }, [pricingSignals, selectedSignalFilter]);
 
   const markPriceAsUpdated = (productId: string) => {
     try {
@@ -5214,21 +5373,23 @@ function PricingOptimizerTab() {
   };
 
   const updateProductMutation = useMutation({
-    mutationFn: async ({ id, price, currentPrice }: { id: string; price: string; currentPrice?: number }) => {
-      // Update the product price
+    mutationFn: async ({ id, price, currentPrice, isDisabled }: { id: string; price: string; currentPrice?: number; isDisabled?: boolean }) => {
+      // Hard-block safeguard: prevent mutation when product is disabled (OOS or other safeguard)
+      if (isDisabled) {
+        throw new Error("Cannot apply pricing suggestion - product is disabled");
+      }
+      
       const response = await apiRequest("PATCH", `/api/admin/products/${id}`, { price });
       
-      // Record the price change in history
       if (currentPrice && Number(price) !== currentPrice) {
         try {
           await apiRequest("POST", `/api/admin/products/${id}/price-change`, {
             newPrice: Number(price),
-            reason: "AI Pricing Suggestion",
-            notes: `Updated via AI pricing optimization (from $${currentPrice.toFixed(2)} to $${price})`
+            reason: "Pricing Advisory Suggestion",
+            notes: `Applied from pricing advisory (from $${currentPrice.toFixed(2)} to $${price})`
           });
         } catch (error) {
           console.error("Failed to record price change:", error);
-          // Don't fail the mutation if history recording fails
         }
       }
       
@@ -5236,7 +5397,7 @@ function PricingOptimizerTab() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
-      // Invalidate price-trend cache for this product so badge updates
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products-with-stock"] });
       queryClient.invalidateQueries({ queryKey: ['/api/products', variables.id, 'price-trend'] });
       markPriceAsUpdated(variables.id);
       setAppliedSuggestions(prev => [...prev, variables.id]);
@@ -5254,104 +5415,28 @@ function PricingOptimizerTab() {
     },
   });
 
-  const generateSuggestions = async () => {
-    setIsLoading(true);
-    setAppliedSuggestions([]);
-    try {
-      const response = await fetch("/api/admin/pricing-suggestions", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          inventoryWeight,
-          marketWeight,
-          complexityWeight
-        })
+  const togglePricingSuggestionsMutation = useMutation({
+    mutationFn: async ({ id, enabled }: { id: string; enabled: boolean }) => {
+      const response = await apiRequest("PATCH", `/api/admin/products/${id}`, { 
+        pricingSuggestionsEnabled: enabled 
       });
-      
-      if (!response.ok) throw new Error("Failed to generate suggestions");
-      
-      const data = await response.json();
-      const recentlyUpdated = getRecentlyUpdatedProducts();
-      
-      // Filter out recently updated products and mark them
-      const filtered = data.suggestions.map((s: PricingSuggestion) => ({
-        ...s,
-        wasRecentlyUpdated: recentlyUpdated.includes(s.productId)
-      })).filter((s: PricingSuggestion & { wasRecentlyUpdated: boolean }) => !s.wasRecentlyUpdated);
-      
-      const filteredCount = data.suggestions.length - filtered.length;
-      const totalAnalyzed = data.suggestions.length;
-      
-      const pricingResult: PricingResponse = {
-        ...data,
-        suggestions: filtered,
-        filteredCount,
-        totalAnalyzed
-      };
-      
-      setPricingData(pricingResult);
-      
-      // Cache the results with timestamp
-      try {
-        localStorage.setItem("pricingAnalysisCache", JSON.stringify({
-          data: pricingResult,
-          timestamp: Date.now()
-        }));
-      } catch (e) {
-        console.error("Failed to cache pricing data:", e);
-      }
-      
-      const message = filteredCount > 0 
-        ? `Generated ${filtered.length} suggestions (${filteredCount} recently updated products excluded)`
-        : `Generated ${data.suggestions?.length || 0} pricing suggestions.`;
-      
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products-with-stock"] });
       toast({
-        title: "Analysis Complete",
-        description: message,
+        title: "Settings Updated",
+        description: "Pricing suggestions setting has been updated.",
       });
-    } catch (error) {
-      console.error("Pricing generation error:", error);
+    },
+    onError: () => {
       toast({
         title: "Error",
-        description: "Failed to generate pricing suggestions. Please try again.",
+        description: "Failed to update settings.",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const applyAllSuggestions = async () => {
-    if (!pricingData?.suggestions) return;
-    
-    for (const suggestion of pricingData.suggestions) {
-      if (suggestion.action !== "maintain" && !appliedSuggestions.includes(suggestion.productId)) {
-        await updateProductMutation.mutateAsync({
-          id: suggestion.productId,
-          price: suggestion.suggestedPrice.toFixed(2),
-        });
-      }
-    }
-  };
-
-  const getActionColor = (action: string) => {
-    switch (action) {
-      case "increase": return "text-green-500";
-      case "decrease": return "text-red-500";
-      case "sale": return "text-[#E7FB10]";
-      default: return "text-muted-foreground";
-    }
-  };
-
-  const getActionIcon = (action: string) => {
-    switch (action) {
-      case "increase": return <TrendingUp className="h-4 w-4" />;
-      case "decrease": return <TrendingDown className="h-4 w-4" />;
-      case "sale": return <Tag className="h-4 w-4" />;
-      default: return <Activity className="h-4 w-4" />;
-    }
-  };
+    },
+  });
 
   const getConfidenceBadge = (confidence: string) => {
     const colors = {
@@ -5362,388 +5447,233 @@ function PricingOptimizerTab() {
     return colors[confidence as keyof typeof colors] || colors.medium;
   };
 
+  const getReasonCodeLabel = (code: ReasonCode): string => {
+    const labels: Record<ReasonCode, string> = {
+      "HIGH_VIEWS_LOW_PURCHASE": "High views, low conversion",
+      "FAST_SELL_THROUGH": "Fast-selling",
+      "LOW_STOCK": "Low stock",
+      "SLOW_MOVING": "Slow moving",
+      "NO_SALES_HISTORY": "No sales history",
+      "STABLE_PERFORMER": "Stable performer",
+      "INSUFFICIENT_SIGNAL_OOS": "Out of stock",
+    };
+    return labels[code];
+  };
+
   return (
     <div className="space-y-6">
-      {isLoading ? (
-        <div className="flex flex-col items-center justify-center py-12 gap-4">
-          <div className="relative">
-            <div className="absolute inset-0 bg-[#E7FB10]/20 rounded-full blur-xl animate-pulse" />
-            <div className="relative bg-gradient-to-br from-[#E7FB10]/10 to-[#21d8ff]/10 rounded-full p-6 border-2 border-[#E7FB10]/50 animate-pulse">
-              <Loader2 className="h-12 w-12 text-[#E7FB10] animate-spin" />
-            </div>
-          </div>
-          <div className="text-center">
-            <h3 className="text-lg font-semibold text-[#E7FB10] mb-1">Analyzing Your Pricing...</h3>
-            <p className="text-sm text-muted-foreground">Running AI analysis on your product catalog</p>
-          </div>
-        </div>
-      ) : (
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-semibold flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-[#E7FB10]" />
-              AI-Powered Price Optimization
-            </h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Get intelligent pricing suggestions with stable analysis and customizable factor weights.
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setShowSettings(!showSettings)}
-              className="border-border"
-              size="sm"
-              data-testid="button-pricing-settings"
-            >
-              <Settings className="h-4 w-4" />
-            </Button>
-            {pricingData?.suggestions && pricingData.suggestions.length > 0 && (
-              <Button
-                variant="outline"
-                onClick={applyAllSuggestions}
-                disabled={updateProductMutation.isPending}
-                className="border-[#E7FB10]/50 text-[#E7FB10] hover:bg-[#E7FB10]/10"
-                data-testid="button-apply-all-prices"
-              >
-                <CheckCircle className="h-4 w-4 mr-2" />
-                Apply All
-              </Button>
-            )}
-            <Button
-              onClick={generateSuggestions}
-              disabled={isLoading}
-              className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
-              size="lg"
-              data-testid="button-generate-pricing"
-            >
-              <Zap className="h-4 w-4 mr-2" />
-              Generate Suggestions
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {showSettings && (
-        <Card className="p-4 border-[#21d8ff]/30 bg-[#21d8ff]/5">
-          <h3 className="font-medium mb-4">Factor Weights - How Each Affects Pricing</h3>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-3 p-3 rounded-lg border border-border/30">
-              <div>
-                <Label className="text-sm font-semibold">📦 Inventory Impact</Label>
-                <div className="flex items-center gap-2 mt-2">
-                  <RangeSlider
-                    min={0.1}
-                    max={3}
-                    step={0.1}
-                    value={inventoryWeight}
-                    onChange={setInventoryWeight}
-                    className="flex-1"
-                    data-testid="slider-inventory-weight"
-                  />
-                  <span className="w-10 text-right font-medium text-[#E7FB10]">{inventoryWeight.toFixed(1)}x</span>
-                </div>
-              </div>
-              <div className="text-xs space-y-1">
-                <p className="text-muted-foreground"><strong>At {inventoryWeight.toFixed(1)}x:</strong></p>
-                <div className="bg-background/40 p-2 rounded space-y-1">
-                  <p>🟢 <strong>Low stock (5 units)</strong></p>
-                  <p className="text-muted-foreground">→ Increase price to boost margin</p>
-                  <p className="mt-2">🔴 <strong>High stock (100+ units)</strong></p>
-                  <p className="text-muted-foreground">→ Decrease price to move inventory</p>
-                </div>
-                <p className="text-muted-foreground mt-2"><em>0.1x = ignore stock | 3x = heavily prioritize stock levels</em></p>
-              </div>
-            </div>
-            <div className="space-y-3 p-3 rounded-lg border border-border/30">
-              <div>
-                <Label className="text-sm font-semibold">📊 Market Position</Label>
-                <div className="flex items-center gap-2 mt-2">
-                  <RangeSlider
-                    min={0.1}
-                    max={3}
-                    step={0.1}
-                    value={marketWeight}
-                    onChange={setMarketWeight}
-                    className="flex-1"
-                    data-testid="slider-market-weight"
-                  />
-                  <span className="w-10 text-right font-medium text-[#21d8ff]">{marketWeight.toFixed(1)}x</span>
-                </div>
-              </div>
-              <div className="text-xs space-y-1">
-                <p className="text-muted-foreground"><strong>At {marketWeight.toFixed(1)}x:</strong></p>
-                <div className="bg-background/40 p-2 rounded space-y-1">
-                  <p>💰 <strong>Premium vs your catalog</strong></p>
-                  <p className="text-muted-foreground">→ Maintain higher pricing</p>
-                  <p className="mt-2">💵 <strong>Budget vs your catalog</strong></p>
-                  <p className="text-muted-foreground">→ Suggest competitive pricing</p>
-                </div>
-                <p className="text-muted-foreground mt-2"><em>0.1x = ignore positioning | 3x = strongly compete in market</em></p>
-              </div>
-            </div>
-            <div className="space-y-3 p-3 rounded-lg border border-border/30">
-              <div>
-                <Label className="text-sm font-semibold">⚗️ Product Complexity</Label>
-                <div className="flex items-center gap-2 mt-2">
-                  <RangeSlider
-                    min={0.1}
-                    max={3}
-                    step={0.1}
-                    value={complexityWeight}
-                    onChange={setComplexityWeight}
-                    className="flex-1"
-                    data-testid="slider-complexity-weight"
-                  />
-                  <span className="w-10 text-right font-medium text-[#9d4edd]">{complexityWeight.toFixed(1)}x</span>
-                </div>
-              </div>
-              <div className="text-xs space-y-1">
-                <p className="text-muted-foreground"><strong>At {complexityWeight.toFixed(1)}x:</strong></p>
-                <div className="bg-background/40 p-2 rounded space-y-1">
-                  <p>🔬 <strong>Complex peptides</strong></p>
-                  <p className="text-muted-foreground">→ Higher synthesis cost = higher prices</p>
-                  <p className="mt-2">📋 <strong>Simple peptides</strong></p>
-                  <p className="text-muted-foreground">→ Lower cost basis = competitive pricing</p>
-                </div>
-                <p className="text-muted-foreground mt-2"><em>0.1x = ignore complexity | 3x = maximize premium for complex</em></p>
-              </div>
-            </div>
-          </div>
-          <Button
-            onClick={generateSuggestions}
-            disabled={isLoading}
-            className="mt-4 w-full bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90"
-            size="sm"
-            data-testid="button-regenerate-with-weights"
-          >
-            Regenerate with New Weights
-          </Button>
-        </Card>
-      )}
-
-      {pricingData?.marketInsights && pricingData.suggestions.length > 0 && (
-        <Card className="border-[#21d8ff]/30 bg-[#21d8ff]/5">
-          <CardContent className="p-4">
-            <div className="flex items-start gap-3">
-              <div className="h-10 w-10 rounded-lg bg-[#21d8ff]/20 flex items-center justify-center flex-shrink-0">
-                <BarChart3 className="h-5 w-5 text-[#21d8ff]" />
-              </div>
-              <div>
-                <h3 className="font-medium text-[#21d8ff]">Market Insights</h3>
-                <p className="text-sm text-muted-foreground mt-1">{pricingData.marketInsights}</p>
-                {pricingData.totalPotentialRevenue && (
-                  <p className="text-sm mt-2 text-muted-foreground">
-                    <span className="text-[#E7FB10] font-semibold">{pricingData.totalPotentialRevenue}</span>
-                  </p>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {pricingData?.suggestions && pricingData.suggestions.length > 0 ? (
-        <div className="space-y-4">
-          <div className="grid grid-cols-4 gap-4 mb-6">
-            <Card className="p-4">
-              <div className="text-2xl font-bold text-[#E7FB10]">{pricingData.suggestions.length}</div>
-              <div className="text-sm text-muted-foreground">Total Suggestions</div>
-            </Card>
-            <Card className="p-4">
-              <div className="text-2xl font-bold text-green-500">
-                {pricingData.suggestions.filter(s => s.action === "increase").length}
-              </div>
-              <div className="text-sm text-muted-foreground">Price Increases</div>
-            </Card>
-            <Card className="p-4">
-              <div className="text-2xl font-bold text-red-500">
-                {pricingData.suggestions.filter(s => s.action === "decrease").length}
-              </div>
-              <div className="text-sm text-muted-foreground">Price Decreases</div>
-            </Card>
-            <Card className="p-4">
-              <div className="text-2xl font-bold text-muted-foreground">
-                {pricingData.suggestions.filter(s => s.action === "maintain").length}
-              </div>
-              <div className="text-sm text-muted-foreground">No Change</div>
-            </Card>
-          </div>
-
-          <Card className="p-4 mb-4 border-[#E7FB10]/30 bg-[#E7FB10]/5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Sparkles className="h-5 w-5 text-[#E7FB10]" />
-                <div>
-                  <h3 className="font-medium">Ready to optimize your prices?</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Apply all {pricingData.suggestions.filter(s => s.action !== "maintain" && !appliedSuggestions.includes(s.productId)).length} pending suggestions with one click
-                  </p>
-                </div>
-              </div>
-              <Button
-                size="lg"
-                onClick={applyAllSuggestions}
-                disabled={updateProductMutation.isPending || pricingData.suggestions.filter(s => s.action !== "maintain" && !appliedSuggestions.includes(s.productId)).length === 0}
-                className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 font-semibold px-6"
-                data-testid="button-apply-all-suggestions"
-              >
-                {updateProductMutation.isPending ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Applying...
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    Apply All Suggestions
-                  </>
-                )}
-              </Button>
-            </div>
-          </Card>
-
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead>Current Price</TableHead>
-                <TableHead>Suggested Price</TableHead>
-                <TableHead>Change</TableHead>
-                <TableHead>Confidence</TableHead>
-                <TableHead>Reasoning</TableHead>
-                <TableHead>Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {pricingData.suggestions.map((suggestion) => (
-                <TableRow key={suggestion.productId}>
-                  <TableCell className="font-medium">{suggestion.productName}</TableCell>
-                  <TableCell>${suggestion.currentPrice.toFixed(2)}</TableCell>
-                  <TableCell className={getActionColor(suggestion.action)}>
-                    ${suggestion.suggestedPrice.toFixed(2)}
-                  </TableCell>
-                  <TableCell>
-                    <div className={`flex items-center gap-1 ${getActionColor(suggestion.action)}`}>
-                      {getActionIcon(suggestion.action)}
-                      <span>{suggestion.percentChange > 0 ? "+" : ""}{suggestion.percentChange.toFixed(1)}%</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={getConfidenceBadge(suggestion.confidence)}>
-                      {suggestion.confidence}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="max-w-xs">
-                    <p className="text-sm text-muted-foreground truncate" title={suggestion.reasoning}>
-                      {suggestion.reasoning}
-                    </p>
-                  </TableCell>
-                  <TableCell>
-                    {appliedSuggestions.includes(suggestion.productId) ? (
-                      <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                        <CheckCircle className="h-3 w-3 mr-1" />
-                        Applied
-                      </Badge>
-                    ) : suggestion.action === "maintain" ? (
-                      <Badge variant="secondary">No Change</Badge>
-                    ) : (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => updateProductMutation.mutate({
-                          id: suggestion.productId,
-                          price: suggestion.suggestedPrice.toFixed(2),
-                          currentPrice: suggestion.currentPrice,
-                        })}
-                        disabled={updateProductMutation.isPending}
-                        className="border-[#E7FB10]/50 hover:bg-[#E7FB10]/10"
-                        data-testid={`button-apply-price-${suggestion.productId}`}
-                      >
-                        Apply
-                      </Button>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      ) : !isLoading && pricingData ? (
-        // Dashboard with all products recently updated
-        <div className="space-y-4">
-          <div className="grid grid-cols-4 gap-4 mb-6">
-            <Card className="p-4">
-              <div className="text-2xl font-bold text-[#21d8ff]">{pricingData.totalAnalyzed || 0}</div>
-              <div className="text-sm text-muted-foreground">Products Analyzed</div>
-            </Card>
-            <Card className="p-4">
-              <div className="text-2xl font-bold text-[#E7FB10]">{pricingData.filteredCount || 0}</div>
-              <div className="text-sm text-muted-foreground">Recently Updated</div>
-            </Card>
-            <Card className="p-4">
-              <div className="text-2xl font-bold text-green-500">0</div>
-              <div className="text-sm text-muted-foreground">New Suggestions</div>
-            </Card>
-            <Card className="p-4">
-              <div className="text-2xl font-bold text-muted-foreground">24h</div>
-              <div className="text-sm text-muted-foreground">Cooldown Period</div>
-            </Card>
-          </div>
-
-          <Card className="p-6 border-[#21d8ff]/30 bg-[#21d8ff]/5">
-            <div className="flex items-start gap-4">
-              <div className="h-12 w-12 rounded-xl bg-[#21d8ff]/20 flex items-center justify-center flex-shrink-0">
-                <CheckCircle className="h-6 w-6 text-[#21d8ff]" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-[#21d8ff] text-lg">All Products Recently Updated</h3>
-                <p className="text-muted-foreground mt-1">
-                  You've already applied pricing changes to all {pricingData.filteredCount || 0} products in the last 24 hours. 
-                  New suggestions will be available after the cooldown period expires.
-                </p>
-                {pricingData.marketInsights && (
-                  <div className="mt-4 p-3 bg-background/50 rounded-lg">
-                    <p className="text-sm font-medium mb-1">Market Insights</p>
-                    <p className="text-sm text-muted-foreground">{pricingData.marketInsights}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-4 text-center border-dashed">
-            <p className="text-sm text-muted-foreground mb-3">
-              Want to analyze again anyway? You can force a new analysis at any time.
-            </p>
-            <Button
-              variant="outline"
-              onClick={generateSuggestions}
-              className="border-[#E7FB10]/50 hover:bg-[#E7FB10]/10"
-              data-testid="button-force-reanalyze"
-            >
-              <Zap className="h-4 w-4 mr-2" />
-              Force Re-Analyze
-            </Button>
-          </Card>
-        </div>
-      ) : !isLoading ? (
-        <Card className="p-12 text-center">
-          <Sparkles className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
-          <h3 className="font-medium mb-2">No Pricing Suggestions Yet</h3>
-          <p className="text-sm text-muted-foreground mb-6">
-            Click "Generate Suggestions" to analyze your product catalog and get AI-powered pricing recommendations.
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-semibold flex items-center gap-2">
+            <BarChart3 className="h-5 w-5 text-[#21d8ff]" />
+            Pricing Advisory
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Behavioral signals and suggestions. Enable per-product to apply changes.
           </p>
-          <Button
-            onClick={generateSuggestions}
-            className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
-            data-testid="button-generate-pricing-empty"
-          >
-            <Zap className="h-4 w-4 mr-2" />
-            Generate Suggestions
-          </Button>
+        </div>
+      </div>
+
+      {/* Pricing Signals Panel */}
+      <div className="grid grid-cols-3 gap-4">
+        <Card 
+          className={`p-4 cursor-pointer transition-all ${selectedSignalFilter === 'high-views-low-purchase' ? 'border-orange-500/50 bg-orange-500/5' : ''}`}
+          onClick={() => setSelectedSignalFilter(selectedSignalFilter === 'high-views-low-purchase' ? 'all' : 'high-views-low-purchase')}
+          data-testid="card-signal-high-views"
+        >
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-orange-500/20 flex items-center justify-center">
+              <Eye className="h-5 w-5 text-orange-400" />
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-orange-400">{alertCounts.highViewsLowPurchase}</div>
+              <div className="text-sm text-muted-foreground">High views, low conversion</div>
+            </div>
+          </div>
         </Card>
-      ) : null}
+        
+        <Card 
+          className={`p-4 cursor-pointer transition-all ${selectedSignalFilter === 'fast-selling' ? 'border-green-500/50 bg-green-500/5' : ''}`}
+          onClick={() => setSelectedSignalFilter(selectedSignalFilter === 'fast-selling' ? 'all' : 'fast-selling')}
+          data-testid="card-signal-fast-selling"
+        >
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-green-500/20 flex items-center justify-center">
+              <TrendingUp className="h-5 w-5 text-green-400" />
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-green-400">{alertCounts.fastSelling}</div>
+              <div className="text-sm text-muted-foreground">Fast-selling candidates</div>
+            </div>
+          </div>
+        </Card>
+        
+        <Card 
+          className={`p-4 cursor-pointer transition-all ${selectedSignalFilter === 'slow-moving' ? 'border-red-500/50 bg-red-500/5' : ''}`}
+          onClick={() => setSelectedSignalFilter(selectedSignalFilter === 'slow-moving' ? 'all' : 'slow-moving')}
+          data-testid="card-signal-slow-moving"
+        >
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-red-500/20 flex items-center justify-center">
+              <Package className="h-5 w-5 text-red-400" />
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-red-400">{alertCounts.slowMoving}</div>
+              <div className="text-sm text-muted-foreground">Overstock slow movers</div>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Filter buttons */}
+      <div className="flex gap-2 flex-wrap">
+        <Button
+          variant={selectedSignalFilter === 'all' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setSelectedSignalFilter('all')}
+          data-testid="button-filter-all"
+        >
+          All Products ({pricingSignals.length})
+        </Button>
+        <Button
+          variant={selectedSignalFilter === 'needs-baseline' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setSelectedSignalFilter('needs-baseline')}
+          data-testid="button-filter-needs-baseline"
+        >
+          Needs Baseline ({pricingSignals.filter(s => !s.hasBaseline).length})
+        </Button>
+      </div>
+
+      {/* Products Table with Signals */}
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Product</TableHead>
+            <TableHead>Current</TableHead>
+            <TableHead>Suggested</TableHead>
+            <TableHead>Metrics</TableHead>
+            <TableHead>Signals</TableHead>
+            <TableHead>Confidence</TableHead>
+            <TableHead>Enabled</TableHead>
+            <TableHead>Action</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filteredSignals.map((signal) => (
+            <TableRow key={signal.productId} data-testid={`row-pricing-${signal.productId}`}>
+              <TableCell className="font-medium">{signal.productName}</TableCell>
+              <TableCell>${signal.currentPrice.toFixed(2)}</TableCell>
+              <TableCell>
+                {signal.isDisabled ? (
+                  <Badge variant="secondary" className="text-xs">
+                    {signal.disabledReason}
+                  </Badge>
+                ) : signal.suggestedPrice ? (
+                  <span className={signal.suggestedPrice > signal.currentPrice ? "text-green-400" : "text-red-400"}>
+                    ${signal.suggestedPrice.toFixed(2)}
+                  </span>
+                ) : (
+                  <span className="text-muted-foreground">-</span>
+                )}
+              </TableCell>
+              <TableCell>
+                <div className="text-xs space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Eye className="h-3 w-3 text-muted-foreground" />
+                    <span>{signal.behavioralMetrics.views}</span>
+                    <ShoppingCart className="h-3 w-3 text-muted-foreground ml-2" />
+                    <span>{signal.behavioralMetrics.addToCart}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground">Conv:</span>
+                    <span>{signal.behavioralMetrics.conversionRate.toFixed(1)}%</span>
+                  </div>
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className="flex flex-wrap gap-1">
+                  {signal.reasonCodes.slice(0, 2).map((code) => (
+                    <Badge 
+                      key={code} 
+                      variant="outline" 
+                      className="text-xs"
+                      title={getReasonCodeLabel(code)}
+                    >
+                      {code.split("_")[0]}
+                    </Badge>
+                  ))}
+                  {signal.reasonCodes.length > 2 && (
+                    <Badge variant="outline" className="text-xs">
+                      +{signal.reasonCodes.length - 2}
+                    </Badge>
+                  )}
+                </div>
+              </TableCell>
+              <TableCell>
+                <Badge variant="outline" className={getConfidenceBadge(signal.confidence)}>
+                  {signal.confidence}
+                </Badge>
+              </TableCell>
+              <TableCell>
+                <input
+                  type="checkbox"
+                  checked={signal.pricingSuggestionsEnabled}
+                  onChange={(e) => togglePricingSuggestionsMutation.mutate({
+                    id: signal.productId,
+                    enabled: e.target.checked
+                  })}
+                  className="h-4 w-4 rounded border-border"
+                  data-testid={`checkbox-enable-${signal.productId}`}
+                />
+              </TableCell>
+              <TableCell>
+                {appliedSuggestions.includes(signal.productId) ? (
+                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                    Applied
+                  </Badge>
+                ) : signal.isDisabled || !signal.suggestedPrice ? (
+                  <Badge variant="secondary">N/A</Badge>
+                ) : signal.pricingSuggestionsEnabled ? (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => updateProductMutation.mutate({
+                      id: signal.productId,
+                      price: signal.suggestedPrice!.toFixed(2),
+                      currentPrice: signal.currentPrice,
+                      isDisabled: signal.isDisabled,
+                    })}
+                    disabled={updateProductMutation.isPending || signal.isDisabled}
+                    className="border-[#E7FB10]/50"
+                    data-testid={`button-apply-price-${signal.productId}`}
+                  >
+                    Apply
+                  </Button>
+                ) : (
+                  <Badge variant="outline" className="text-xs text-muted-foreground">
+                    Enable first
+                  </Badge>
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+
+      {/* Empty state */}
+      {filteredSignals.length === 0 && (
+        <Card className="p-12 text-center">
+          <BarChart3 className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+          <h3 className="font-medium mb-2">No Products Found</h3>
+          <p className="text-sm text-muted-foreground">
+            {selectedSignalFilter !== 'all' 
+              ? "No products match the selected filter. Try selecting a different filter."
+              : "Add products to start seeing pricing signals and suggestions."}
+          </p>
+        </Card>
+      )}
     </div>
   );
 }
