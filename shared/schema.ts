@@ -88,6 +88,8 @@ export const coas = pgTable("coas", {
   verified: boolean("verified").default(true),
   results: text("results").array(),
   imageUrl: text("image_url"),
+  publiclyVisible: boolean("publicly_visible").default(true),
+  notes: text("notes"),
 });
 
 export const insertCoaSchema = createInsertSchema(coas).omit({ id: true });
