@@ -40,6 +40,15 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **Google Analytics Integration**: GA4 tracking with auto page views and custom event tracking.
 - **Account Deletion Feature**: Users and affiliates can permanently delete their accounts from settings with confirmation.
 - **Dosage-Specific Stock Management**: Admin Products tab manages inventory per dosage, with inline editor, quick actions, and derived product-level stock.
+- **Admin Orders Management**: Redesigned Orders tab with fulfillment workflow:
+  - **KPI Cards**: Gross Revenue (paid only), Paid Orders count, AOV, Refunds (count + $), Email Failures
+  - **Needs Attention Alert**: Highlights orders needing action (email failed, unfulfilled 24h+, refunds/chargebacks)
+  - **Filter System**: Quick filters for All, Needs Attention, Paid, Unfulfilled, Email Failed
+  - **Order Table**: Shows Order ID, Date, Customer, Amount, Payment/Fulfillment/Email status with inline actions
+  - **View Order Dialog**: Fulfillment checklist (Payment Confirmed, Address Collected, Packed), notes field, email retry button
+  - **Fulfillment Status Flow**: unfulfilled → processing → shipped → completed
+  - **Email Status Tracking**: pending → sent → failed with retry capability
+  - **Future Automation Ready**: Schema includes trackingNumber, carrier, shippingLabelUrl hooks for Shippo/ShipStation integration
 - **Trust & Transparency Features**: Includes an Education Center (onboarding course, article library), Quality Process Page (interactive 6-step visualization), Package Warm Guide, Batch Archive, Ethical Pricing Page, Transparency Page, Lab Notes Blog, Buyer Checklist, Troubleshooting Guides, and Support Status Widget.
 - **Peptide Academy**: Gamified learning experience at `/academy` featuring a 4-module curriculum (Orientation, Core Foundations, Research Skills, Lab Confidence) with 17 lessons. Features include:
   - **Persona-Based Personalization**: Three personas (Beginner, Intermediate, Advanced) with distinct unlock modes:

@@ -2247,24 +2247,28 @@ function OrdersTab() {
                 <AlertTriangle className="h-4 w-4 text-[#E7FB10]" />
                 <span className="font-medium">Needs Attention</span>
               </div>
-              <div className="flex gap-4 text-sm flex-wrap">
+              <div className="flex gap-2 text-sm flex-wrap">
                 {(orderStats?.needsAttention.emailFailedPaid || 0) > 0 && (
-                  <button 
-                    className="hover-elevate px-2 py-1 rounded text-destructive"
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    className="text-destructive"
                     onClick={() => setActiveFilter("email-failed")}
                     data-testid="button-filter-email-failed"
                   >
                     {orderStats?.needsAttention.emailFailedPaid} email failed
-                  </button>
+                  </Button>
                 )}
                 {(orderStats?.needsAttention.unfulfilledOver24h || 0) > 0 && (
-                  <button 
-                    className="hover-elevate px-2 py-1 rounded text-[#E7FB10]"
+                  <Button 
+                    variant="ghost"
+                    size="sm"
+                    className="text-[#E7FB10]"
                     onClick={() => setActiveFilter("unfulfilled")}
                     data-testid="button-filter-unfulfilled"
                   >
                     {orderStats?.needsAttention.unfulfilledOver24h} unfulfilled 24h+
-                  </button>
+                  </Button>
                 )}
                 {(orderStats?.needsAttention.refundsChargebacks || 0) > 0 && (
                   <span className="text-muted-foreground">{orderStats?.needsAttention.refundsChargebacks} refunds/chargebacks</span>
@@ -2277,40 +2281,35 @@ function OrdersTab() {
 
       <div className="flex items-center gap-2 flex-wrap">
         <Button 
-          variant={activeFilter === "all" ? "default" : "outline"} 
-          size="sm"
+          variant={activeFilter === "all" ? "default" : "outline"}
           onClick={() => setActiveFilter("all")}
           data-testid="button-filter-all"
         >
           All Orders ({allOrders?.length || 0})
         </Button>
         <Button 
-          variant={activeFilter === "needs-attention" ? "default" : "outline"} 
-          size="sm"
+          variant={activeFilter === "needs-attention" ? "default" : "outline"}
           onClick={() => setActiveFilter("needs-attention")}
           data-testid="button-filter-needs-attention"
         >
           Needs Attention ({needsAttentionOrders.length})
         </Button>
         <Button 
-          variant={activeFilter === "paid" ? "default" : "outline"} 
-          size="sm"
+          variant={activeFilter === "paid" ? "default" : "outline"}
           onClick={() => setActiveFilter("paid")}
           data-testid="button-filter-paid"
         >
           Paid
         </Button>
         <Button 
-          variant={activeFilter === "unfulfilled" ? "default" : "outline"} 
-          size="sm"
+          variant={activeFilter === "unfulfilled" ? "default" : "outline"}
           onClick={() => setActiveFilter("unfulfilled")}
           data-testid="button-filter-unfulfilled-btn"
         >
           Unfulfilled
         </Button>
         <Button 
-          variant={activeFilter === "email-failed" ? "default" : "outline"} 
-          size="sm"
+          variant={activeFilter === "email-failed" ? "default" : "outline"}
           onClick={() => setActiveFilter("email-failed")}
           data-testid="button-filter-email-failed-btn"
         >
@@ -2380,13 +2379,12 @@ function OrdersTab() {
                       {order.emailStatus === "failed" && (
                         <Button 
                           variant="ghost" 
-                          size="icon" 
-                          className="h-6 w-6"
+                          size="icon"
                           onClick={() => resendEmailMutation.mutate(order.id)}
                           disabled={resendEmailMutation.isPending}
                           data-testid={`button-resend-email-${order.id}`}
                         >
-                          <RefreshCw className={`h-3 w-3 ${resendEmailMutation.isPending ? "animate-spin" : ""}`} />
+                          <RefreshCw className={`h-4 w-4 ${resendEmailMutation.isPending ? "animate-spin" : ""}`} />
                         </Button>
                       )}
                     </div>
