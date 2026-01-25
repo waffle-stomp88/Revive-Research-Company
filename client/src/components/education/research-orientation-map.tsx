@@ -77,7 +77,7 @@ export function ResearchOrientationMap() {
                 className="relative h-full"
               >
                 <div
-                    className="group cursor-pointer h-full transform transition-all duration-300 hover:scale-[1.03] hover:-translate-y-1"
+                    className="group cursor-pointer h-full transform transition-all duration-300 hover:scale-[1.03] active:scale-[1.03] hover:-translate-y-1 active:-translate-y-1"
                     data-testid={`domain-card-${domain.id}`}
                     onClick={() => navigate(`/education/${domain.slug}`)}
                   >
@@ -109,7 +109,7 @@ export function ResearchOrientationMap() {
                       <div className="relative z-10 flex flex-col h-full">
                         <div className="flex items-start justify-between mb-3">
                           <div
-                            className="w-11 h-11 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110"
+                            className="w-11 h-11 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 group-active:scale-110"
                             style={{
                               backgroundColor: `${domain.color}20`,
                               boxShadow: `0 0 15px ${domain.color}25`,

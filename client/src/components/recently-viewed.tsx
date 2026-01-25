@@ -91,7 +91,7 @@ export function RecentlyViewed({ currentProductId, variant = "sidebar" }: Recent
                   <img 
                     src={product.imageUrl || productImage} 
                     alt={`${product.name} research peptide`}
-                    className="w-full h-full object-contain p-2 group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-full object-contain p-2 group-hover:scale-110 group-active:scale-110 transition-transform duration-500"
                   />
                 </div>
                 <div className="min-w-0 flex-1">
