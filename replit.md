@@ -51,6 +51,14 @@ The platform features an Apple-inspired design with a dark charcoal background (
   - **Fulfillment Status Flow**: pending → preparing → ready → delivered (fully manual, no shipping automation)
   - **Email Status Tracking**: pending → sent → failed with retry capability
   - **Refund Tracking**: Minimal - isRefunded boolean, optional refundAmount/refundReason, no workflows
+- **Admin Contacts Management**: Unified inbox consolidating Contact Us and Wholesale form submissions:
+  - **Type System**: Contact type field ("contact" | "wholesale") with visual badges
+  - **Status Workflow**: New → Responded → Archived (replaces old isRead boolean)
+  - **Filter Buttons**: All / Contact / Wholesale / New quick filters
+  - **Detail Panel**: Full message view with status dropdown, internal notes field
+  - **Wholesale Info**: Phone number and order volume displayed for wholesale inquiries
+  - **Dashboard Integration**: "New" count updates on dashboard when status changes
+  - **State Management**: Mutations update selectedContact and clear selection when no longer matching filter
 - **Trust & Transparency Features**: Includes an Education Center (onboarding course, article library), Quality Process Page (interactive 6-step visualization), Package Warm Guide, Batch Archive, Ethical Pricing Page, Transparency Page, Lab Notes Blog, Buyer Checklist, Troubleshooting Guides, and Support Status Widget.
 - **Peptide Academy**: Gamified learning experience at `/academy` featuring a 4-module curriculum (Orientation, Core Foundations, Research Skills, Lab Confidence) with 17 lessons. Features include:
   - **Persona-Based Personalization**: Three personas (Beginner, Intermediate, Advanced) with distinct unlock modes:
