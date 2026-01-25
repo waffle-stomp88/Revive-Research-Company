@@ -97,6 +97,7 @@ import {
   RefreshCw,
   CheckCircle,
   XCircle,
+  Search,
   Settings,
   Download,
   Eye,
@@ -604,6 +605,11 @@ function ProductsTab() {
   const [dosageStocks, setDosageStocks] = useState<DosageStockItem[]>([]);
   const [newDosage, setNewDosage] = useState("");
   const { toast } = useToast();
+  
+  // Navigation/filter states
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [stockFilter, setStockFilter] = useState<"all" | "in-stock" | "low-stock" | "out-of-stock">("all");
 
   // Fetch products with dosage stock data
   const { data: productsWithStock, isLoading } = useQuery<ProductWithDosageStock[]>({
@@ -612,6 +618,9 @@ function ProductsTab() {
 
   // Fallback to regular products for non-admin use
   const products = productsWithStock;
+  
+  // Get unique categories for filter tabs
+  const categories = Array.from(new Set(products?.map(p => p.category) || [])).sort();
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -631,7 +640,42 @@ function ProductsTab() {
       : <ArrowDown className="ml-2 h-4 w-4 text-[#E7FB10]" />;
   };
 
-  const sortedProducts = products?.slice().sort((a, b) => {
+  // Helper to check product stock status
+  const getProductStockStatus = (product: ProductWithDosageStock): "in-stock" | "low-stock" | "out-of-stock" => {
+    const stocks = product.dosageStocks || [];
+    if (stocks.length === 0) {
+      return product.inStock ? "in-stock" : "out-of-stock";
+    }
+    const allOutOfStock = stocks.every(s => !s.inStock || s.stockAmount <= 0);
+    if (allOutOfStock) return "out-of-stock";
+    const hasLowStock = stocks.some(s => s.inStock && s.stockAmount > 0 && s.stockAmount <= 3);
+    if (hasLowStock) return "low-stock";
+    return "in-stock";
+  };
+
+  // Filter products based on search, category, and stock filters
+  const filteredProducts = products?.filter(product => {
+    // Search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const matchesName = product.name.toLowerCase().includes(query);
+      const matchesCategory = product.category.toLowerCase().includes(query);
+      if (!matchesName && !matchesCategory) return false;
+    }
+    
+    // Category filter
+    if (categoryFilter !== "all" && product.category !== categoryFilter) return false;
+    
+    // Stock filter
+    if (stockFilter !== "all") {
+      const status = getProductStockStatus(product as ProductWithDosageStock);
+      if (stockFilter !== status) return false;
+    }
+    
+    return true;
+  });
+
+  const sortedProducts = filteredProducts?.slice().sort((a, b) => {
     let comparison = 0;
     
     switch (sortField) {
@@ -975,7 +1019,8 @@ function ProductsTab() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+      {/* Header with title and Add button */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Inventory ({products?.length || 0})</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -1472,9 +1517,117 @@ function ProductsTab() {
         </Dialog>
       </div>
 
-      <div className="rounded-md border">
+      {/* Filter Bar - Search, Category, and Stock filters */}
+      <div className="flex flex-col gap-3 p-4 rounded-lg border bg-card/50">
+        {/* Search Input */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search products by name or category..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+            data-testid="input-search-products"
+          />
+        </div>
+        
+        {/* Filter Buttons Row */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Category Filter */}
+          <div className="flex items-center gap-1 flex-wrap">
+            <span className="text-xs text-muted-foreground mr-1">Category:</span>
+            <Button
+              variant={categoryFilter === "all" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setCategoryFilter("all")}
+              data-testid="filter-category-all"
+            >
+              All
+            </Button>
+            {categories.map(cat => (
+              <Button
+                key={cat}
+                variant={categoryFilter === cat ? "default" : "outline"}
+                size="sm"
+                onClick={() => setCategoryFilter(cat)}
+                data-testid={`filter-category-${cat.toLowerCase().replace(/\s+/g, '-')}`}
+              >
+                {cat}
+              </Button>
+            ))}
+          </div>
+          
+          {/* Divider */}
+          <div className="h-6 w-px bg-border mx-2 hidden sm:block" />
+          
+          {/* Stock Filter */}
+          <div className="flex items-center gap-1 flex-wrap">
+            <span className="text-xs text-muted-foreground mr-1">Stock:</span>
+            <Button
+              variant={stockFilter === "all" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStockFilter("all")}
+              data-testid="filter-stock-all"
+            >
+              All
+            </Button>
+            <Button
+              variant={stockFilter === "in-stock" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStockFilter("in-stock")}
+              className="border-green-500/50 text-green-500"
+              data-testid="filter-stock-in"
+            >
+              In Stock
+            </Button>
+            <Button
+              variant={stockFilter === "low-stock" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStockFilter("low-stock")}
+              className="border-orange-500/50 text-orange-500"
+              data-testid="filter-stock-low"
+            >
+              Low Stock
+            </Button>
+            <Button
+              variant={stockFilter === "out-of-stock" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStockFilter("out-of-stock")}
+              className="border-red-500/50 text-red-500"
+              data-testid="filter-stock-out"
+            >
+              Out of Stock
+            </Button>
+          </div>
+        </div>
+        
+        {/* Results count */}
+        {(searchQuery || categoryFilter !== "all" || stockFilter !== "all") && (
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span>
+              Showing {sortedProducts?.length || 0} of {products?.length || 0} products
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setSearchQuery("");
+                setCategoryFilter("all");
+                setStockFilter("all");
+              }}
+              data-testid="button-clear-filters"
+            >
+              <X className="h-3 w-3 mr-1" />
+              Clear filters
+            </Button>
+          </div>
+        )}
+      </div>
+
+      {/* Product Table with sticky header */}
+      <div className="rounded-md border max-h-[60vh] overflow-auto">
         <Table>
-          <TableHeader>
+          <TableHeader className="sticky top-0 bg-background z-10">
             <TableRow>
               <TableHead>
                 <button
