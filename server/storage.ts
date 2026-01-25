@@ -455,9 +455,12 @@ export class DatabaseStorage implements IStorage {
     paymentConfirmed?: boolean;
     addressCollected?: boolean;
     packed?: boolean;
+    isRefunded?: boolean;
+    refundAmount?: string;
+    refundReason?: string;
   }): Promise<Order | undefined> {
     const updateData: any = { ...data };
-    if (data.fulfillmentStatus === 'completed') {
+    if (data.fulfillmentStatus === 'delivered') {
       updateData.fulfilledAt = new Date();
     }
     const [order] = await db.update(orders).set(updateData).where(eq(orders.id, id)).returning();

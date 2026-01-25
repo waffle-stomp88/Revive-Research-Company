@@ -2000,8 +2000,8 @@ type OrderStats = {
   emailFailures: number;
   needsAttention: {
     emailFailedPaid: number;
-    unfulfilledOver24h: number;
-    refundsChargebacks: number;
+    pendingOver24h: number;
+    refunds: number;
   };
 };
 
@@ -2087,30 +2087,36 @@ function OrdersTab() {
     return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
   };
 
-  const getPaymentStatusBadge = (status: string | null) => {
+  const getPaymentStatusBadge = (status: string | null, isRefunded?: boolean) => {
+    if (isRefunded) {
+      return <Badge variant="destructive">Refunded</Badge>;
+    }
     const statusMap: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
       paid: { label: "Paid", variant: "default" },
-      completed: { label: "Paid", variant: "default" },
-      shipped: { label: "Paid", variant: "default" },
-      delivered: { label: "Paid", variant: "default" },
       pending: { label: "Pending", variant: "secondary" },
-      refunded: { label: "Refunded", variant: "destructive" },
-      chargeback: { label: "Chargeback", variant: "destructive" },
-      cancelled: { label: "Cancelled", variant: "outline" },
+      failed: { label: "Failed", variant: "destructive" },
     };
     const config = statusMap[status || "pending"] || statusMap.pending;
     return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
   const getFulfillmentStatusBadge = (status: string | null | undefined) => {
+    // Manual fulfillment: pending → preparing → ready → delivered
     const statusMap: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-      unfulfilled: { label: "Unfulfilled", variant: "outline" },
-      processing: { label: "Processing", variant: "secondary" },
-      shipped: { label: "Shipped", variant: "default" },
-      completed: { label: "Completed", variant: "default" },
+      pending: { label: "Pending", variant: "outline" },
+      preparing: { label: "Preparing", variant: "secondary" },
+      ready: { label: "Ready", variant: "default" },
+      delivered: { label: "Delivered", variant: "default" },
     };
-    const config = statusMap[status || "unfulfilled"] || statusMap.unfulfilled;
+    const config = statusMap[status || "pending"] || statusMap.pending;
     return <Badge variant={config.variant}>{config.label}</Badge>;
+  };
+
+  const getOrderTypeBadge = (orderType: string | null | undefined) => {
+    if (orderType === "subscription") {
+      return <Badge className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30">Sub</Badge>;
+    }
+    return null;
   };
 
   const getEmailStatusBadge = (status: string | null | undefined) => {
@@ -2123,34 +2129,33 @@ function OrdersTab() {
     return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
-  const paidStatuses = ["paid", "completed", "shipped", "delivered"];
   const needsAttentionOrders = allOrders?.filter((order) => {
-    const isPaid = paidStatuses.includes(order.status || "");
+    const isPaid = order.status === "paid";
     const emailFailed = order.emailStatus === "failed";
-    const isRefund = order.status === "refunded" || order.status === "chargeback";
+    const isRefund = order.isRefunded;
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const unfulfilledOver24h = isPaid && 
-      (!order.fulfillmentStatus || order.fulfillmentStatus === "unfulfilled") &&
+    const pendingOver24h = isPaid && 
+      (!order.fulfillmentStatus || order.fulfillmentStatus === "pending") &&
       order.createdAt && new Date(order.createdAt) < twentyFourHoursAgo;
-    return (isPaid && emailFailed) || isRefund || unfulfilledOver24h;
+    return (isPaid && emailFailed) || isRefund || pendingOver24h;
   }) || [];
 
   const filteredOrders = allOrders?.filter((order) => {
     if (activeFilter === "all") return true;
     if (activeFilter === "needs-attention") {
-      const isPaid = paidStatuses.includes(order.status || "");
+      const isPaid = order.status === "paid";
       const emailFailed = order.emailStatus === "failed";
-      const isRefund = order.status === "refunded" || order.status === "chargeback";
+      const isRefund = order.isRefunded;
       const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-      const unfulfilledOver24h = isPaid && 
-        (!order.fulfillmentStatus || order.fulfillmentStatus === "unfulfilled") &&
+      const pendingOver24h = isPaid && 
+        (!order.fulfillmentStatus || order.fulfillmentStatus === "pending") &&
         order.createdAt && new Date(order.createdAt) < twentyFourHoursAgo;
-      return (isPaid && emailFailed) || isRefund || unfulfilledOver24h;
+      return (isPaid && emailFailed) || isRefund || pendingOver24h;
     }
-    if (activeFilter === "paid") return paidStatuses.includes(order.status || "");
-    if (activeFilter === "unfulfilled") {
-      return paidStatuses.includes(order.status || "") && 
-        (!order.fulfillmentStatus || order.fulfillmentStatus === "unfulfilled");
+    if (activeFilter === "paid") return order.status === "paid";
+    if (activeFilter === "pending") {
+      return order.status === "paid" && 
+        (!order.fulfillmentStatus || order.fulfillmentStatus === "pending");
     }
     if (activeFilter === "email-failed") return order.emailStatus === "failed";
     return true;
@@ -2175,30 +2180,30 @@ function OrdersTab() {
   }
 
   const totalNeedsAttention = (orderStats?.needsAttention.emailFailedPaid || 0) +
-    (orderStats?.needsAttention.unfulfilledOver24h || 0) +
-    (orderStats?.needsAttention.refundsChargebacks || 0);
+    (orderStats?.needsAttention.pendingOver24h || 0) +
+    (orderStats?.needsAttention.refunds || 0);
 
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-5">
-        <Card data-testid="card-orders-revenue">
+        <Card data-testid="card-orders-revenue" className="border-[#E7FB10]/30 bg-[#E7FB10]/5">
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Gross Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <DollarSign className="h-4 w-4 text-[#E7FB10]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(orderStats?.grossRevenue || 0)}</div>
-            <p className="text-xs text-muted-foreground">Paid orders only (30d)</p>
+            <div className="text-2xl font-bold text-[#E7FB10]">{formatCurrency(orderStats?.grossRevenue || 0)}</div>
+            <p className="text-xs text-muted-foreground">Paid orders (30d)</p>
           </CardContent>
         </Card>
 
-        <Card data-testid="card-orders-count">
+        <Card data-testid="card-orders-count" className="border-[#21d8ff]/30 bg-[#21d8ff]/5">
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Paid Orders</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+            <Package className="h-4 w-4 text-[#21d8ff]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{orderStats?.paidOrders || 0}</div>
+            <div className="text-2xl font-bold text-[#21d8ff]">{orderStats?.paidOrders || 0}</div>
             <p className="text-xs text-muted-foreground">Last 30 days</p>
           </CardContent>
         </Card>
@@ -2210,31 +2215,20 @@ function OrdersTab() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(orderStats?.aov || 0)}</div>
-            <p className="text-xs text-muted-foreground">Average order value</p>
+            <p className="text-xs text-muted-foreground">Avg order value</p>
           </CardContent>
         </Card>
 
-        <Card data-testid="card-orders-refunds">
+        <Card data-testid="card-orders-email-failures" className={orderStats?.emailFailures ? "border-destructive/50 bg-destructive/5" : ""}>
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Refunds</CardTitle>
-            <RefreshCw className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{orderStats?.refundCount || 0}</div>
-            <p className="text-xs text-muted-foreground">{formatCurrency(orderStats?.refundAmount || 0)} total</p>
-          </CardContent>
-        </Card>
-
-        <Card data-testid="card-orders-email-failures" className={orderStats?.emailFailures ? "border-destructive" : ""}>
-          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Email Failures</CardTitle>
-            <Mail className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Email Issues</CardTitle>
+            <Mail className={`h-4 w-4 ${orderStats?.emailFailures ? "text-destructive" : "text-muted-foreground"}`} />
           </CardHeader>
           <CardContent>
             <div className={`text-2xl font-bold ${orderStats?.emailFailures ? "text-destructive" : ""}`}>
               {orderStats?.emailFailures || 0}
             </div>
-            <p className="text-xs text-muted-foreground">Confirmation emails</p>
+            <p className="text-xs text-muted-foreground">Failed emails</p>
           </CardContent>
         </Card>
       </div>
@@ -2259,19 +2253,19 @@ function OrdersTab() {
                     {orderStats?.needsAttention.emailFailedPaid} email failed
                   </Button>
                 )}
-                {(orderStats?.needsAttention.unfulfilledOver24h || 0) > 0 && (
+                {(orderStats?.needsAttention.pendingOver24h || 0) > 0 && (
                   <Button 
                     variant="ghost"
                     size="sm"
                     className="text-[#E7FB10]"
-                    onClick={() => setActiveFilter("unfulfilled")}
-                    data-testid="button-filter-unfulfilled"
+                    onClick={() => setActiveFilter("pending")}
+                    data-testid="button-filter-pending"
                   >
-                    {orderStats?.needsAttention.unfulfilledOver24h} unfulfilled 24h+
+                    {orderStats?.needsAttention.pendingOver24h} pending 24h+
                   </Button>
                 )}
-                {(orderStats?.needsAttention.refundsChargebacks || 0) > 0 && (
-                  <span className="text-muted-foreground">{orderStats?.needsAttention.refundsChargebacks} refunds/chargebacks</span>
+                {(orderStats?.needsAttention.refunds || 0) > 0 && (
+                  <span className="text-muted-foreground">{orderStats?.needsAttention.refunds} refunds</span>
                 )}
               </div>
             </div>
@@ -2285,15 +2279,18 @@ function OrdersTab() {
           onClick={() => setActiveFilter("all")}
           data-testid="button-filter-all"
         >
-          All Orders ({allOrders?.length || 0})
+          All ({allOrders?.length || 0})
         </Button>
-        <Button 
-          variant={activeFilter === "needs-attention" ? "default" : "outline"}
-          onClick={() => setActiveFilter("needs-attention")}
-          data-testid="button-filter-needs-attention"
-        >
-          Needs Attention ({needsAttentionOrders.length})
-        </Button>
+        {needsAttentionOrders.length > 0 && (
+          <Button 
+            variant={activeFilter === "needs-attention" ? "default" : "outline"}
+            className={activeFilter !== "needs-attention" ? "border-[#E7FB10]/50 text-[#E7FB10]" : ""}
+            onClick={() => setActiveFilter("needs-attention")}
+            data-testid="button-filter-needs-attention"
+          >
+            Needs Attention ({needsAttentionOrders.length})
+          </Button>
+        )}
         <Button 
           variant={activeFilter === "paid" ? "default" : "outline"}
           onClick={() => setActiveFilter("paid")}
@@ -2302,11 +2299,11 @@ function OrdersTab() {
           Paid
         </Button>
         <Button 
-          variant={activeFilter === "unfulfilled" ? "default" : "outline"}
-          onClick={() => setActiveFilter("unfulfilled")}
-          data-testid="button-filter-unfulfilled-btn"
+          variant={activeFilter === "pending" ? "default" : "outline"}
+          onClick={() => setActiveFilter("pending")}
+          data-testid="button-filter-pending-btn"
         >
-          Unfulfilled
+          Pending
         </Button>
         <Button 
           variant={activeFilter === "email-failed" ? "default" : "outline"}
@@ -2341,7 +2338,12 @@ function OrdersTab() {
             ) : (
               filteredOrders.map((order) => (
                 <TableRow key={order.id} data-testid={`row-order-${order.id}`}>
-                  <TableCell className="font-mono text-sm">{order.id.slice(0, 8).toUpperCase()}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-sm">{order.id.slice(0, 8).toUpperCase()}</span>
+                      {getOrderTypeBadge(order.orderType)}
+                    </div>
+                  </TableCell>
                   <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
                     {formatDate(order.createdAt)}
                   </TableCell>
@@ -2352,10 +2354,10 @@ function OrdersTab() {
                     </div>
                   </TableCell>
                   <TableCell className="font-medium">{formatCurrency(Number(order.totalAmount))}</TableCell>
-                  <TableCell>{getPaymentStatusBadge(order.status)}</TableCell>
+                  <TableCell>{getPaymentStatusBadge(order.status, order.isRefunded ?? undefined)}</TableCell>
                   <TableCell>
                     <Select
-                      value={order.fulfillmentStatus || "unfulfilled"}
+                      value={order.fulfillmentStatus || "pending"}
                       onValueChange={(status) => updateFulfillmentMutation.mutate({ 
                         id: order.id, 
                         data: { fulfillmentStatus: status }
@@ -2366,10 +2368,10 @@ function OrdersTab() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="unfulfilled">Unfulfilled</SelectItem>
-                        <SelectItem value="processing">Processing</SelectItem>
-                        <SelectItem value="shipped">Shipped</SelectItem>
-                        <SelectItem value="completed">Completed</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="preparing">Preparing</SelectItem>
+                        <SelectItem value="ready">Ready</SelectItem>
+                        <SelectItem value="delivered">Delivered</SelectItem>
                       </SelectContent>
                     </Select>
                   </TableCell>
@@ -2476,9 +2478,9 @@ function OrderViewDialog({
     });
   };
 
-  const handleMarkFulfilled = () => {
+  const handleMarkDelivered = () => {
     onUpdateFulfillment({
-      fulfillmentStatus: "completed",
+      fulfillmentStatus: "delivered",
       paymentConfirmed: true,
       addressCollected: true,
       packed: true,
@@ -2486,8 +2488,7 @@ function OrderViewDialog({
     });
   };
 
-  const paidStatuses = ["paid", "completed", "shipped", "delivered"];
-  const isPaid = paidStatuses.includes(order.status || "");
+  const isPaid = order.status === "paid";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -2597,8 +2598,22 @@ function OrderViewDialog({
 
           {order.fulfilledAt && (
             <div className="border-t pt-4 text-sm text-muted-foreground">
-              Fulfilled on {new Date(order.fulfilledAt).toLocaleString()}
+              Delivered on {new Date(order.fulfilledAt).toLocaleString()}
               {order.fulfilledBy && ` by ${order.fulfilledBy}`}
+            </div>
+          )}
+
+          {order.isRefunded && (
+            <div className="border-t pt-4">
+              <div className="flex items-center gap-2 text-destructive">
+                <Badge variant="destructive">Refunded</Badge>
+                {order.refundAmount && (
+                  <span className="text-sm">${Number(order.refundAmount).toFixed(2)}</span>
+                )}
+              </div>
+              {order.refundReason && (
+                <p className="text-sm text-muted-foreground mt-1">{order.refundReason}</p>
+              )}
             </div>
           )}
 
@@ -2606,10 +2621,10 @@ function OrderViewDialog({
             <Button variant="outline" onClick={handleSaveChecklist} data-testid="button-save-checklist">
               Save Changes
             </Button>
-            {order.fulfillmentStatus !== "completed" && (
-              <Button onClick={handleMarkFulfilled} data-testid="button-mark-fulfilled">
+            {order.fulfillmentStatus !== "delivered" && (
+              <Button onClick={handleMarkDelivered} data-testid="button-mark-delivered">
                 <Check className="h-4 w-4 mr-1" />
-                Mark Fulfilled
+                Mark Delivered
               </Button>
             )}
           </div>

@@ -1352,16 +1352,17 @@ export async function registerRoutes(
         o.createdAt && new Date(o.createdAt) >= startDate
       );
       
-      // Paid orders only (status === 'paid' or 'completed' or 'shipped')
-      const paidStatuses = ['paid', 'completed', 'shipped', 'delivered'];
+      // Paid orders only
+      const paidStatuses = ['paid'];
       const paidOrders = ordersInRange.filter(o => paidStatuses.includes(o.status || ''));
       const grossRevenue = paidOrders.reduce((sum, o) => sum + parseFloat(o.totalAmount), 0);
       const aov = paidOrders.length > 0 ? grossRevenue / paidOrders.length : 0;
       
-      // Refunds and chargebacks
-      const refundedOrders = ordersInRange.filter(o => o.status === 'refunded' || o.status === 'chargeback');
+      // Refunds (using new isRefunded flag)
+      const refundedOrders = ordersInRange.filter(o => o.isRefunded);
       const refundCount = refundedOrders.length;
-      const refundAmount = refundedOrders.reduce((sum, o) => sum + parseFloat(o.totalAmount), 0);
+      const refundAmount = refundedOrders.reduce((sum, o) => 
+        sum + (o.refundAmount ? parseFloat(o.refundAmount) : parseFloat(o.totalAmount)), 0);
       
       // Email failures
       const emailFailures = ordersInRange.filter(o => o.emailStatus === 'failed').length;
@@ -1374,9 +1375,10 @@ export async function registerRoutes(
         paidStatuses.includes(o.status || '') && o.emailStatus === 'failed'
       );
       
-      const unfulfilledOver24h = ordersInRange.filter(o => 
+      // Pending fulfillment over 24h (manual workflow: pending, preparing, ready, delivered)
+      const pendingOver24h = ordersInRange.filter(o => 
         paidStatuses.includes(o.status || '') && 
-        (o.fulfillmentStatus === 'unfulfilled' || !o.fulfillmentStatus) &&
+        (o.fulfillmentStatus === 'pending' || !o.fulfillmentStatus) &&
         o.createdAt && new Date(o.createdAt) < twentyFourHoursAgo
       );
       
@@ -1389,8 +1391,8 @@ export async function registerRoutes(
         emailFailures,
         needsAttention: {
           emailFailedPaid: emailFailedPaid.length,
-          unfulfilledOver24h: unfulfilledOver24h.length,
-          refundsChargebacks: refundCount
+          pendingOver24h: pendingOver24h.length,
+          refunds: refundCount
         }
       });
     } catch (error) {

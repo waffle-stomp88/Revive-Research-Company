@@ -109,12 +109,14 @@ export const orders = pgTable("orders", {
   productId: varchar("product_id").notNull(),
   quantity: integer("quantity").notNull().default(1),
   totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
-  // Payment status: pending, paid, failed, refunded, chargeback
+  // Order type: one_time, subscription
+  orderType: text("order_type").default("one_time"),
+  // Payment status: pending, paid, failed
   status: text("status").default("pending"),
   stripeSessionId: text("stripe_session_id"),
   stripePaymentIntentId: text("stripe_payment_intent_id"),
-  // Fulfillment workflow: unfulfilled, processing, shipped, completed
-  fulfillmentStatus: text("fulfillment_status").default("unfulfilled"),
+  // Manual fulfillment workflow: pending, preparing, ready, delivered
+  fulfillmentStatus: text("fulfillment_status").default("pending"),
   fulfillmentNotes: text("fulfillment_notes"),
   fulfilledAt: timestamp("fulfilled_at"),
   fulfilledBy: varchar("fulfilled_by"),
@@ -122,15 +124,14 @@ export const orders = pgTable("orders", {
   paymentConfirmed: boolean("payment_confirmed").default(false),
   addressCollected: boolean("address_collected").default(true),
   packed: boolean("packed").default(false),
+  // Refund tracking (manual)
+  isRefunded: boolean("is_refunded").default(false),
+  refundAmount: decimal("refund_amount", { precision: 10, scale: 2 }),
+  refundReason: text("refund_reason"),
   // Email status: pending, sent, failed
   emailStatus: text("email_status").default("pending"),
   emailSentAt: timestamp("email_sent_at"),
   emailError: text("email_error"),
-  // Shipping automation hooks (for future Shippo/ShipStation integration)
-  trackingNumber: text("tracking_number"),
-  trackingCarrier: text("tracking_carrier"),
-  trackingUrl: text("tracking_url"),
-  shippingLabelUrl: text("shipping_label_url"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
