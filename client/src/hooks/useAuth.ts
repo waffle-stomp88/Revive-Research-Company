@@ -69,10 +69,11 @@ export function useAuth() {
   const isAuthenticated = !!sessionUser;
   
   // Only show loading if:
-  // 1. Session is still loading (quick check for existing sessions), OR
+  // 1. Session is loading AND Auth0 is also loading (initial page load)
   // 2. Auth0 says authenticated but we're waiting for session sync
-  // Don't block on Auth0 loading if there's no session - show AuthGate immediately
-  const isLoading = sessionLoading || (auth0IsAuthenticated && !sessionUser && auth0Loading);
+  // Key: If session check is done (not loading) and no user, show AuthGate immediately
+  // This prevents infinite loading when user is not authenticated
+  const isLoading = (sessionLoading && auth0Loading) || (auth0IsAuthenticated && !sessionUser);
 
   return {
     user: sessionUser,
