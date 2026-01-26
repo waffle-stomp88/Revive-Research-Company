@@ -158,6 +158,27 @@ export async function registerRoutes(
     }
   });
 
+  // Logout - clear server session
+  app.post('/api/auth/logout', (req: any, res) => {
+    try {
+      if (req.session) {
+        req.session.destroy((err: any) => {
+          if (err) {
+            console.error("Error destroying session:", err);
+            return res.status(500).json({ message: "Failed to logout" });
+          }
+          res.clearCookie('connect.sid');
+          res.json({ success: true });
+        });
+      } else {
+        res.json({ success: true });
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+      res.status(500).json({ message: "Failed to logout" });
+    }
+  });
+
   // Test email endpoint - sends a plain text email to verify SES configuration
   app.post("/api/test-email", async (req: any, res) => {
     // TEMPORARILY PUBLIC for testing - will restore admin check after verification
