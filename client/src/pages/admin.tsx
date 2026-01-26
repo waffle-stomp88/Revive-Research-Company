@@ -1195,6 +1195,9 @@ function ProductsTab() {
                                 data-testid={`input-original-price-${index}`}
                               />
                             </div>
+                            {ds.originalPrice && Number(ds.originalPrice) > Number(ds.price) && (
+                              <Badge className="h-5 bg-red-600 text-[10px] animate-pulse">SALE</Badge>
+                            )}
                           </div>
                           <div className="flex items-center gap-2">
                             <Label className="text-xs uppercase tracking-wider text-muted-foreground">Stock</Label>
