@@ -210,7 +210,7 @@ function ProductsComponent() {
   const [sortBy, setSortBy] = useState<SortOption>(savedState?.sortBy ?? "featured");
   const [stockFilter, setStockFilter] = useState<"all" | "in-stock" | "out-of-stock">(savedState?.stockFilter ?? "in-stock");
   const [activeSection, setActiveSection] = useState<ShopSection>("deals");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>(savedState?.selectedCategory ?? "all");
   const [peptideGroupFilter, setPeptideGroupFilter] = useState<string>(savedState?.peptideGroupFilter ?? "all");
   const [priceRange, setPriceRange] = useState<[number, number]>(savedState?.priceRange ?? [0, 300]);
@@ -232,7 +232,7 @@ function ProductsComponent() {
   
   // Display controls state - items per page and grid columns
   const [itemsPerPage, setItemsPerPage] = useState<number>(12);
-  const [gridColumns, setGridColumns] = useState<2 | 3 | 4>(3);
+  const [gridColumns, setGridColumns] = useState<2 | 3 | 4>(4);
 
   // Weekly Deal dismiss state with localStorage
   const [weeklyDealDismissed, setWeeklyDealDismissed] = useState(() => {
@@ -506,12 +506,13 @@ function ProductsComponent() {
             <div className="hidden lg:block absolute left-0 top-1 z-20">
               <Button
                 variant="outline"
-                size="icon"
+                size="default"
                 onClick={() => setSidebarOpen(true)}
-                className="h-10 w-10 bg-background/80 backdrop-blur-sm border-[#E7FB10]/30 hover:border-[#E7FB10] hover:bg-[#E7FB10]/10"
+                className="h-10 px-3 bg-background/80 backdrop-blur-sm border-[#E7FB10]/30 hover:border-[#E7FB10] hover:bg-[#E7FB10]/10 gap-2 group"
                 data-testid="button-show-sidebar"
               >
                 <PanelLeft className="h-5 w-5 text-[#E7FB10]" />
+                <span className="text-xs font-medium text-muted-foreground group-hover:text-[#E7FB10] transition-colors">Filters</span>
               </Button>
             </div>
           )}
