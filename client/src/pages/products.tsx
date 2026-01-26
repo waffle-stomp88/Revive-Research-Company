@@ -405,6 +405,7 @@ function ProductsComponent() {
         product.category.toLowerCase().includes(searchQuery.toLowerCase());
 
       const matchesStock =
+        searchQuery !== "" || // If there's a search query, ignore the stock filter
         stockFilter === "all" ||
         (stockFilter === "in-stock" && product.inStock) ||
         (stockFilter === "out-of-stock" && !product.inStock);
