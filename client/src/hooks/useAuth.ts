@@ -42,25 +42,26 @@ export function useAuth() {
   };
 
   const logout = async () => {
+    // Clear server session first
+    try {
+      await fetch("/api/auth/logout", { 
+        method: "POST",
+        credentials: "include" 
+      });
+    } catch (e) {
+      // Ignore errors, proceed with logout
+    }
+    
     // If we're authenticated via Auth0, do Auth0 logout
     if (auth0IsAuthenticated) {
-      // Clear server session first
-      try {
-        await fetch("/api/auth/logout", { 
-          method: "POST",
-          credentials: "include" 
-        });
-      } catch (e) {
-        // Ignore errors, proceed with Auth0 logout
-      }
       auth0Logout({
         logoutParams: {
           returnTo: window.location.origin,
         },
       });
     } else {
-      // For Replit Auth (OIDC), use the proper logout endpoint that clears OIDC session
-      window.location.href = "/api/logout";
+      // For session-based auth, redirect to home after clearing session
+      window.location.href = "/";
     }
   };
 
