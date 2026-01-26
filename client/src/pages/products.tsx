@@ -612,7 +612,22 @@ function ProductsComponent() {
         )}
 
         {/* Main Layout with Sidebar */}
-        <div className="flex gap-6">
+        <div className="flex gap-6 relative">
+          {/* Sidebar Toggle (Visible only when sidebar is closed) */}
+          {!sidebarOpen && (
+            <div className="hidden lg:block absolute left-0 top-0 z-20">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setSidebarOpen(true)}
+                className="h-10 w-10 bg-background/80 backdrop-blur-sm border-[#E7FB10]/30 hover:border-[#E7FB10] hover:bg-[#E7FB10]/10"
+                data-testid="button-show-sidebar"
+              >
+                <PanelLeft className="h-5 w-5 text-[#E7FB10]" />
+              </Button>
+            </div>
+          )}
+
           {/* Sidebar */}
           <AnimatePresence>
             {sidebarOpen && (
@@ -627,14 +642,14 @@ function ProductsComponent() {
                   {/* Sidebar Header */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Filter className="h-5 w-5 text-muted-foreground" />
-                      <span className="font-semibold">Filters</span>
+                      <Filter className="h-5 w-5 text-[#E7FB10]" />
+                      <span className="font-semibold text-white">Filters</span>
                     </div>
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => setSidebarOpen(false)}
-                      className="h-8 w-8"
+                      className="h-8 w-8 hover:bg-white/10"
                       data-testid="button-hide-sidebar"
                     >
                       <PanelLeftClose className="h-4 w-4" />
