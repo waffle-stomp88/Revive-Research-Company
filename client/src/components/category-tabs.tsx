@@ -44,33 +44,28 @@ export function CategoryTabs() {
   };
 
   return (
-    <div className="relative">
-      <div className="w-full overflow-x-auto scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
-        <div className="flex gap-2 min-w-max pb-1 pr-8 md:pr-0">
-          {categories.map((tab) => {
-            const active = isActive(tab);
-            const Icon = tab.icon;
-            
-            return (
-              <Link
-                key={tab.href}
-                href={tab.href}
-                className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
-                  active
-                    ? "bg-[#E7FB10] text-black shadow-[0_0_20px_rgba(231,251,16,0.3)]"
-                    : "bg-card border border-border/50 text-muted-foreground hover-elevate"
-                }`}
-                data-testid={`tab-${tab.label.toLowerCase().replace(/ /g, "-")}`}
-              >
-                <Icon className="h-4 w-4" />
-                <span>{tab.label}</span>
-              </Link>
-            );
-          })}
-        </div>
-      </div>
-      {/* Scroll indicator gradient - mobile only */}
-      <div className="absolute right-0 top-0 bottom-1 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none md:hidden" />
+    <div className="flex gap-2 justify-center md:justify-start">
+      {categories.map((tab) => {
+        const active = isActive(tab);
+        const Icon = tab.icon;
+        
+        return (
+          <Link
+            key={tab.href}
+            href={tab.href}
+            className={`flex items-center justify-center gap-2 p-3 md:px-4 md:py-2 rounded-full text-sm font-medium transition-all ${
+              active
+                ? "bg-[#E7FB10] text-black shadow-[0_0_20px_rgba(231,251,16,0.3)]"
+                : "bg-card border border-border/50 text-muted-foreground hover-elevate"
+            }`}
+            data-testid={`tab-${tab.label.toLowerCase().replace(/ /g, "-")}`}
+            title={tab.label}
+          >
+            <Icon className="h-5 w-5" />
+            <span className="hidden md:inline">{tab.label}</span>
+          </Link>
+        );
+      })}
     </div>
   );
 }
