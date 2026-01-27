@@ -177,64 +177,67 @@ export default function CartPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <Card className="p-4" data-testid={`cart-item-${item.productId}`}>
-                  <div className="flex gap-4">
+                <Card className="p-3 md:p-4" data-testid={`cart-item-${item.productId}`}>
+                  <div className="flex gap-3 md:gap-4">
+                    {/* Product Image - smaller on mobile */}
                     <Link 
                       href={item.bundleId ? `/bundles/${item.bundleId}` : `/products/${item.productId}`}
-                      className="w-24 h-24 bg-muted rounded-lg flex-shrink-0 overflow-hidden cursor-pointer hover:ring-2 hover:ring-[#E7FB10]/50 transition-all"
+                      className="w-16 h-16 md:w-24 md:h-24 bg-muted rounded-lg flex-shrink-0 overflow-hidden cursor-pointer md:hover:ring-2 md:hover:ring-[#E7FB10]/50 transition-all"
                       data-testid={`link-cart-item-image-${item.productId}`}
                     >
                       <img
                         src={productImage}
                         alt={`${item.name} ${item.dosage} research peptide`}
-                        className="w-full h-full object-contain p-2"
+                        className="w-full h-full object-contain p-1 md:p-2"
                       />
                     </Link>
                     
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
+                      {/* Header row: Name + Delete button */}
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
                           <Link 
                             href={item.bundleId ? `/bundles/${item.bundleId}` : `/products/${item.productId}`}
                             data-testid={`link-cart-item-name-${item.productId}`}
                           >
-                            <h3 className="font-display font-semibold text-lg hover:text-[#E7FB10] transition-colors cursor-pointer" data-testid={`cart-item-name-${item.productId}`}>
+                            <h3 className="font-display font-semibold text-base md:text-lg md:hover:text-[#E7FB10] transition-colors cursor-pointer truncate" data-testid={`cart-item-name-${item.productId}`}>
                               {item.name}
                             </h3>
                           </Link>
-                          <p className="text-sm text-muted-foreground">
-                            Dosage: {item.dosage}
+                          <p className="text-xs md:text-sm text-muted-foreground">
+                            {item.dosage}
                           </p>
                         </div>
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="text-red-400 hover:text-red-500 hover:bg-red-500/10"
+                          className="h-7 w-7 md:h-9 md:w-9 text-red-400 md:hover:text-red-500 md:hover:bg-red-500/10 flex-shrink-0"
                           onClick={() => removeFromCart(item.productId, item.dosage)}
                           data-testid={`button-remove-${item.productId}`}
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
                         </Button>
                       </div>
                       
-                      <div className="flex items-center justify-between mt-4">
+                      {/* Bottom row: Quantity + Price inline */}
+                      <div className="flex items-center justify-between mt-2 md:mt-4">
                         <div className="flex items-center border border-border rounded-md">
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-7 w-7 md:h-8 md:w-8"
                             onClick={() => updateQuantity(item.productId, item.dosage, item.quantity - 1)}
                             data-testid={`button-decrease-${item.productId}`}
                           >
                             <Minus className="h-3 w-3" />
                           </Button>
-                          <span className="w-10 text-center font-medium text-sm">
+                          <span className="w-8 md:w-10 text-center font-medium text-sm">
                             {item.quantity}
                           </span>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-7 w-7 md:h-8 md:w-8"
                             onClick={() => updateQuantity(item.productId, item.dosage, item.quantity + 1)}
                             disabled={item.quantity >= 10}
                             data-testid={`button-increase-${item.productId}`}
@@ -243,14 +246,22 @@ export default function CartPage() {
                           </Button>
                         </div>
                         
+                        {/* Price - condensed on mobile */}
                         <div className="text-right">
-                          <p className="font-display font-bold text-lg text-[#E7FB10]" data-testid={`cart-item-total-${item.productId}`}>
+                          <p className="font-display font-bold text-base md:text-lg text-[#E7FB10]" data-testid={`cart-item-total-${item.productId}`}>
                             ${(item.price * item.quantity).toFixed(2)}
                           </p>
-                          <p className="text-xs text-muted-foreground">
-                            ${item.price.toFixed(2)} each
-                          </p>
-                          <span className="text-xs font-semibold text-[#E7FB10]">Early access pricing preview</span>
+                          {/* Show "each" price only on desktop OR when quantity > 1 */}
+                          {item.quantity > 1 ? (
+                            <p className="text-[10px] md:text-xs text-muted-foreground">
+                              ${item.price.toFixed(2)} ea
+                            </p>
+                          ) : (
+                            <p className="hidden md:block text-xs text-muted-foreground">
+                              ${item.price.toFixed(2)} each
+                            </p>
+                          )}
+                          <span className="hidden md:inline text-xs font-semibold text-[#E7FB10]">Early access pricing preview</span>
                         </div>
                       </div>
                     </div>
