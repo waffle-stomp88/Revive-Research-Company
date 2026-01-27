@@ -29,6 +29,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Safe area for notched mobile devices */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 /* Range input slider styling - uses dynamic gradient background set by JS */
 .range-slider {
   -webkit-appearance: none;

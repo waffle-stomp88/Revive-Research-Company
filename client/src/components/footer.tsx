@@ -40,7 +40,11 @@ const footerLinks = {
   ],
 };
 
-export function Footer() {
+interface FooterProps {
+  className?: string;
+}
+
+export function Footer({ className }: FooterProps) {
   const [responseTime, setResponseTime] = useState("2-4 hours");
 
   useEffect(() => {
@@ -52,7 +56,7 @@ export function Footer() {
   }, []);
 
   return (
-    <footer className="bg-card border-t border-border">
+    <footer className={`bg-card border-t border-border ${className || ""}`}>
       <div className="max-w-7xl mx-auto px-4 md:px-8 pt-2 md:pt-4 pb-16 md:pb-24">
         {/* Newsletter Signup - Prominent at top */}
         <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-[#21d8ff]/10 via-[#E7FB10]/5 to-[#21d8ff]/10 border border-[#21d8ff]/40" data-testid="section-footer-newsletter">

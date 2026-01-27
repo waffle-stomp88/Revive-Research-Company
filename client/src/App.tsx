@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { CartProvider } from "@/contexts/CartContext";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
+import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 import { AgeVerificationModal } from "@/components/age-verification-modal";
 import { FreeShippingBanner } from "@/components/free-shipping-banner";
 import { ProtectedRoute } from "@/components/protected-route";
@@ -258,11 +259,12 @@ function App() {
               <div className="min-h-screen flex flex-col bg-background text-foreground select-none">
                 <FreeShippingBanner />
                 <Navigation />
-                <div className="flex-1">
+                <div className="flex-1 pb-16 md:pb-0">
                   <Router />
                 </div>
-                <Footer />
+                <Footer className="hidden md:block" />
               </div>
+              <MobileBottomNav />
               <Suspense fallback={null}>
                 <ChatBot />
                 <BackToTopButton />
