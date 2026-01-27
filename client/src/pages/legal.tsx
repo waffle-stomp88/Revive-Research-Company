@@ -120,7 +120,7 @@ export default function LegalHub() {
             {quickLinks.map((link) => (
               <Link key={link.href} href={link.href}>
                 <Card
-                  className="p-4 h-full cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[1.02]"
+                  className="p-4 h-full cursor-pointer transition-all duration-300 md:hover:scale-[1.02] md:active:scale-[1.02]"
                   style={{ borderColor: `${link.color}30` }}
                   data-testid={`link-${link.href.replace("/", "")}`}
                 >

@@ -863,7 +863,7 @@ function ProductsComponent() {
                           const isOutOfStock = !product.inStock || (product.stockAmount !== null && product.stockAmount <= 0);
                           return (
                             <Card 
-                              className={`group p-3 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 hover:scale-[1.03] active:scale-[1.03] relative overflow-hidden ${
+                              className={`group p-3 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 md:hover:scale-[1.03] md:active:scale-[1.03] relative overflow-hidden ${
                                 isOutOfStock
                                   ? "border-red-500/60 hover:border-red-500 hover:shadow-[0_0_30px_rgba(239,68,68,0.5),0_0_60px_rgba(239,68,68,0.2)]"
                                   : "border-[#21d8ff]/40 hover:border-[#21d8ff] hover:shadow-[0_0_30px_rgba(33,216,255,0.5),0_0_60px_rgba(33,216,255,0.2)]"
@@ -882,7 +882,7 @@ function ProductsComponent() {
                                 <ImageLoader 
                                   src={product.imageUrl || productImage} 
                                   alt={`${product.name} research peptide - third party lab tested`}
-                                  className="w-full h-full object-contain transition-transform duration-300 p-3 group-hover:scale-105 group-active:scale-105"
+                                  className="w-full h-full object-contain transition-transform duration-300 p-3 md:group-hover:scale-105 md:group-active:scale-105"
                                   containerClassName="relative w-full h-full bg-gradient-to-br from-muted to-muted/50 overflow-hidden rounded-md"
                                 />
                                 {/* Smart badge system - max 2 badges, positioned top-left */}
@@ -998,7 +998,7 @@ function ProductsComponent() {
           className="w-full flex items-center justify-center gap-3 py-4 px-6 rounded-lg border-2 border-[#21d8ff]/30 bg-[#21d8ff]/5 hover:border-[#21d8ff] hover:bg-[#21d8ff]/10 transition-all group"
           data-testid="button-need-help-cta"
         >
-          <MessageCircle className="h-5 w-5 text-[#21d8ff] group-hover:scale-110 transition-transform" />
+          <MessageCircle className="h-5 w-5 text-[#21d8ff] md:group-hover:scale-110 transition-transform" />
           <span className="font-display font-bold text-[#21d8ff]">Need Help Choosing?</span>
         </button>
       </div>

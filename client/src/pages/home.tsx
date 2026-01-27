@@ -304,7 +304,7 @@ function EducationTeaser() {
 
                 <Link href="/academy" onClick={() => trackEvent('education_cta_click', 'engagement', 'academy')}>
                   <Button 
-                    className="w-full font-display gap-2 bg-[#21d8ff] text-black transition-all duration-300 hover:scale-105 active:scale-105 hover:shadow-[0_0_25px_rgba(33,216,255,0.6)]" 
+                    className="w-full font-display gap-2 bg-[#21d8ff] text-black transition-all duration-300 md:hover:scale-105 md:active:scale-105 md:hover:shadow-[0_0_25px_rgba(33,216,255,0.6)]" 
                     data-testid="button-start-academy"
                   >
                     Start Learning
@@ -372,7 +372,7 @@ function EducationTeaser() {
 
                 <Link href="/education" onClick={() => trackEvent('education_cta_click', 'engagement', 'education_center')}>
                   <Button 
-                    className="w-full font-display gap-2 bg-[#9d4edd] text-white transition-all duration-300 hover:scale-105 active:scale-105 hover:shadow-[0_0_25px_rgba(157,78,221,0.6)]" 
+                    className="w-full font-display gap-2 bg-[#9d4edd] text-white transition-all duration-300 md:hover:scale-105 md:active:scale-105 md:hover:shadow-[0_0_25px_rgba(157,78,221,0.6)]" 
                     data-testid="button-browse-articles"
                   >
                     Browse Articles

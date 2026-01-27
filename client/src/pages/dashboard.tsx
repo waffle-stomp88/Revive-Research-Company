@@ -1880,7 +1880,7 @@ export default function Dashboard() {
                     key={star}
                     type="button"
                     onClick={() => setReviewRating(star)}
-                    className="p-1 hover:scale-110 transition-transform"
+                    className="p-1 md:hover:scale-110 transition-transform"
                     data-testid={`button-star-${star}`}
                   >
                     <Star

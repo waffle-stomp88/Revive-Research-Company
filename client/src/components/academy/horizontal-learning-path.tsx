@@ -95,7 +95,7 @@ export function HorizontalLearningPath({ modules, completedLessons, onModuleClic
                     <div className="relative z-10 flex flex-col h-full">
                       <div className="flex items-center justify-between mb-4">
                         <div
-                          className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 group-active:scale-110"
+                          className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform md:group-hover:scale-110 md:group-active:scale-110"
                           style={{
                             backgroundColor: `${module.color}25`,
                             boxShadow: `0 0 20px ${module.color}30`,
