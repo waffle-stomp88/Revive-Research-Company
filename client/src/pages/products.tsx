@@ -772,8 +772,8 @@ function ProductsComponent() {
                   </div>
                 </div>
 
-                {/* Right: Pagination + Category filter dropdown */}
-                <div className="flex items-center gap-3 ml-auto">
+                {/* Left: Pagination + Category filter dropdown */}
+                <div className="flex items-center gap-3">
                   {/* Inline Pagination Controls */}
                   {totalPages > 1 && (
                     <div className="flex items-center gap-1">
