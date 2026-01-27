@@ -491,20 +491,29 @@ function ProductsComponent() {
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
       <SEOHead title="Research Peptides Collection" description="Browse our complete catalog of premium research peptides. Third-party lab tested, COA verified. BPC-157, TB-500, Semaglutide & more." canonicalPath="/products" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
-        {/* Page Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-8"
-        >
-          <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">Peptides</h1>
-        </motion.div>
-
         {/* Category Navigation Tabs */}
         <div className="mb-6">
           <CategoryTabs />
         </div>
+
+        {/* Page Header - Centered like other product pages */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-8"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#21d8ff]/10 border border-[#21d8ff]/30 mb-4">
+            <FlaskConical className="h-4 w-4 text-[#21d8ff]" />
+            <span className="text-sm font-medium text-[#21d8ff]">Research Peptides</span>
+          </div>
+          <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">
+            Peptides
+          </h1>
+          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+            Premium research compounds, rigorously tested and verified. Each product includes a Certificate of Analysis.
+          </p>
+        </motion.div>
 
         {/* Main Layout with Sidebar */}
         <div className="flex gap-6 relative">
@@ -699,59 +708,12 @@ function ProductsComponent() {
                   Showing {filteredAndSortedProducts.length} result{filteredAndSortedProducts.length !== 1 ? "s" : ""} for "{searchQuery}"
                 </p>
               )}
-              {/* Display Controls Bar */}
+              {/* Display Controls Bar - Mobile optimized */}
               <div className="flex items-center justify-between gap-4 mb-4" data-testid="display-controls-bar">
-                {/* Left: Product count with stock toggle */}
-                <div className="flex items-center gap-2 text-sm" data-testid="text-stock-filter-info">
-                  {!searchQuery && products && (() => {
-                    const outOfStockCount = products.filter(p => !p.inStock || (p.stockAmount !== null && p.stockAmount <= 0)).length;
-                    if (outOfStockCount > 0) {
-                      if (stockFilter === "in-stock") {
-                        return (
-                          <>
-                            <span className="text-muted-foreground">
-                              Showing <span className="text-foreground font-medium">{filteredAndSortedProducts.length}</span> of {products.length}
-                            </span>
-                            <span className="text-muted-foreground/50">|</span>
-                            <button
-                              className="text-[#21d8ff] hover:underline text-xs"
-                              onClick={() => setStockFilter("all")}
-                              data-testid="button-show-all-products"
-                            >
-                              +{outOfStockCount} more
-                            </button>
-                          </>
-                        );
-                      } else {
-                        return (
-                          <>
-                            <span className="text-muted-foreground">
-                              Showing all <span className="text-foreground font-medium">{filteredAndSortedProducts.length}</span>
-                            </span>
-                            <span className="text-muted-foreground/50">|</span>
-                            <button
-                              className="text-[#21d8ff] hover:underline text-xs"
-                              onClick={() => setStockFilter("in-stock")}
-                              data-testid="button-hide-oos-products"
-                            >
-                              In stock only
-                            </button>
-                          </>
-                        );
-                      }
-                    }
-                    return (
-                      <span className="text-muted-foreground">
-                        Showing <span className="text-foreground font-medium">{filteredAndSortedProducts.length}</span> products
-                      </span>
-                    );
-                  })()}
-                </div>
-
-                {/* Right: View controls */}
-                <div className="flex items-center gap-2">
-                  {/* Grid layout toggles */}
-                  <div className="hidden sm:flex items-center bg-muted/50 rounded-md p-0.5">
+                {/* Left: Empty on mobile, grid toggles on desktop */}
+                <div className="hidden sm:flex items-center gap-2">
+                  {/* Grid layout toggles - Desktop only */}
+                  <div className="flex items-center bg-muted/50 rounded-md p-0.5">
                     <button
                       onClick={() => setGridColumns(2)}
                       className={`p-1.5 rounded transition-colors ${
@@ -789,31 +751,33 @@ function ProductsComponent() {
                       <LayoutGrid className="h-4 w-4" />
                     </button>
                   </div>
+                </div>
 
-                  {/* Items per page dropdown */}
-                  <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(Number(value))}>
-                    <SelectTrigger className="w-[70px] h-8 text-sm" data-testid="select-items-per-page">
-                      <SelectValue />
+                {/* Right: Category filter dropdown */}
+                <div className="flex items-center gap-2 ml-auto">
+                  {/* Category filter dropdown - replaces sort dropdown */}
+                  <Select value={peptideGroupFilter} onValueChange={(value) => setPeptideGroupFilter(value)}>
+                    <SelectTrigger className="w-[160px] h-8 text-sm" data-testid="select-category-filter">
+                      <SelectValue placeholder="Category" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="9">9</SelectItem>
-                      <SelectItem value="12">12</SelectItem>
-                      <SelectItem value="18">18</SelectItem>
-                      <SelectItem value="24">24</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  {/* Sorting dropdown */}
-                  <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
-                    <SelectTrigger className="w-[140px] h-8 text-sm" data-testid="select-sort">
-                      <SelectValue placeholder="Sort by" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="featured">Default</SelectItem>
-                      <SelectItem value="name-asc">A-Z</SelectItem>
-                      <SelectItem value="name-desc">Z-A</SelectItem>
-                      <SelectItem value="price-asc">Price: Low</SelectItem>
-                      <SelectItem value="price-desc">Price: High</SelectItem>
+                      <SelectItem value="all">
+                        <span className="flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-muted-foreground"></span>
+                          Default
+                        </span>
+                      </SelectItem>
+                      {peptideGroups.filter(g => g.id !== "all").map((group) => (
+                        <SelectItem key={group.id} value={group.id}>
+                          <span className="flex items-center gap-2">
+                            <span 
+                              className="w-2 h-2 rounded-full" 
+                              style={{ backgroundColor: group.color }}
+                            ></span>
+                            <span style={{ color: group.color }}>{group.label}</span>
+                          </span>
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -905,7 +869,7 @@ function ProductsComponent() {
                               </div>
                               
                               <div className="flex-1 flex flex-col min-h-0">
-                                <div className="mb-1">
+                                <div className="mb-1 text-center">
                                   {(() => {
                                     const peptideGroup = getPeptideGroup(product.name);
                                     return peptideGroup ? (
