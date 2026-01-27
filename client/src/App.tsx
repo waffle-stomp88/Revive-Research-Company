@@ -201,6 +201,7 @@ function PreventScrollbarHiding() {
       const html = document.documentElement;
       const body = document.body;
       
+      // Prevent overflow hidden (causes scrollbar to disappear)
       if (html.style.overflow === 'hidden' || body.style.overflow === 'hidden') {
         html.style.overflow = 'auto';
         html.style.overflowY = 'auto';
@@ -208,6 +209,20 @@ function PreventScrollbarHiding() {
         body.style.overflow = 'auto';
         body.style.overflowY = 'auto';
         body.style.overflowX = 'auto';
+      }
+      
+      // Prevent padding-right compensation (causes layout shift)
+      if (html.style.paddingRight) {
+        html.style.paddingRight = '';
+      }
+      if (body.style.paddingRight) {
+        body.style.paddingRight = '';
+      }
+      if (html.style.marginRight) {
+        html.style.marginRight = '';
+      }
+      if (body.style.marginRight) {
+        body.style.marginRight = '';
       }
     });
 
