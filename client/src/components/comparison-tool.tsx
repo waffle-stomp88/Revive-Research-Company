@@ -166,7 +166,7 @@ export function CompareBar({ products }: CompareBarProps) {
                   />
                 </div>
                 <button
-                  className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 flex items-center justify-center opacity-0 md:group-hover:opacity-100 transition-opacity"
                   onClick={() => removeFromCompare(product.id)}
                   data-testid={`button-remove-compare-${product.id}`}
                 >

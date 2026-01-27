@@ -163,7 +163,7 @@ export function AnimatedTrustStats() {
             data-testid={`stat-card-${index}`}
           >
             <div 
-              className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"
+              className="absolute inset-0 rounded-2xl opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 blur-xl"
               style={{ backgroundColor: `${stat.color}20` }}
             />
             

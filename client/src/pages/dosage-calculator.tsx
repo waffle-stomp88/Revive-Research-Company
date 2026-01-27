@@ -742,7 +742,7 @@ function PremiumFormulaCard({ step, title, description, example, color, icon }: 
       transition={{ duration: 0.2 }}
     >
       <div 
-        className="absolute -inset-0.5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md"
+        className="absolute -inset-0.5 rounded-2xl opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 blur-md"
         style={{ background: `linear-gradient(135deg, ${color}40, transparent)` }}
       />
       

@@ -86,7 +86,7 @@ export function HorizontalLearningPath({ modules, completedLessons, onModuleClic
                     }}
                   >
                     <div 
-                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      className="absolute inset-0 opacity-0 md:group-hover:opacity-100 transition-opacity duration-300"
                       style={{
                         background: `radial-gradient(circle at center, ${module.color}20 0%, transparent 70%)`,
                       }}

@@ -62,7 +62,7 @@ function ReasonCard({ reason, index }: { reason: typeof reasons[0]; index: numbe
       transition={{ delay: index * 0.1, duration: 0.5 }}
     >
       <div 
-        className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        className="absolute inset-0 rounded-xl opacity-0 md:group-hover:opacity-100 transition-opacity duration-500"
         style={{
           background: `radial-gradient(circle at center, ${reason.color}10 0%, transparent 70%)`,
         }}
@@ -105,7 +105,7 @@ function ReasonCard({ reason, index }: { reason: typeof reasons[0]; index: numbe
         </p>
         
         <motion.div
-          className="absolute bottom-0 left-0 right-0 h-1 rounded-b-xl opacity-0 group-hover:opacity-100"
+          className="absolute bottom-0 left-0 right-0 h-1 rounded-b-xl opacity-0 md:group-hover:opacity-100"
           style={{ background: `linear-gradient(90deg, transparent, ${reason.color}, transparent)` }}
           initial={{ scaleX: 0 }}
           whileHover={{ scaleX: 1 }}

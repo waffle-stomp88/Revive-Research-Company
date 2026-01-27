@@ -140,7 +140,7 @@ export default function Unsubscribe() {
                   className="relative w-full group"
                   data-testid="button-confirm-unsubscribe"
                 >
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-[#21d8ff] via-[#9D4EDD] to-[#21d8ff] rounded-lg opacity-60 blur-sm group-hover:opacity-80 transition-opacity duration-300" />
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-[#21d8ff] via-[#9D4EDD] to-[#21d8ff] rounded-lg opacity-60 blur-sm md:group-hover:opacity-80 transition-opacity duration-300" />
                   <div className="relative h-10 bg-gradient-to-r from-[#21d8ff] to-[#9D4EDD] rounded-lg flex items-center justify-center font-semibold text-sm text-black">
                     Confirm Unsubscribe
                   </div>
@@ -186,7 +186,7 @@ export default function Unsubscribe() {
                   className="relative w-full group"
                   data-testid="button-return-home"
                 >
-                  <div className="absolute -inset-0.5 bg-[#E7FB10] rounded-lg opacity-40 blur-sm group-hover:opacity-60 transition-opacity duration-300" />
+                  <div className="absolute -inset-0.5 bg-[#E7FB10] rounded-lg opacity-40 blur-sm md:group-hover:opacity-60 transition-opacity duration-300" />
                   <div className="relative h-10 bg-[#E7FB10] rounded-lg flex items-center justify-center gap-2 font-semibold text-sm text-black">
                     <Sparkles className="w-4 h-4" />
                     Return to Revive Research

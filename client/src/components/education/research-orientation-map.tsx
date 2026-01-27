@@ -93,13 +93,13 @@ export function ResearchOrientationMap() {
                       } as any}
                     >
                       <div 
-                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        className="absolute inset-0 opacity-0 md:group-hover:opacity-100 transition-opacity duration-300"
                         style={{
                           background: `radial-gradient(circle at center, ${domain.color}30 0%, transparent 70%)`,
                         }}
                       />
                       <div 
-                        className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                        className="absolute inset-0 rounded-xl opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
                         style={{
                           boxShadow: `0 0 35px ${domain.color}40, 0 8px 30px ${domain.color}25, inset 0 0 20px ${domain.color}10`,
                           border: `2px solid ${domain.color}`,
