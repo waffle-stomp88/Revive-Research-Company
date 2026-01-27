@@ -221,7 +221,7 @@ export default function ComingSoon() {
                     <Button
                       type="submit"
                       disabled={isSubmitting || !email}
-                      className="h-12 px-6 bg-[#21d8ff] text-black font-bold border-0 shadow-[0_0_20px_rgba(33,216,255,0.4)] hover:shadow-[0_0_30px_rgba(33,216,255,0.6)] transition-all duration-300"
+                      className="h-12 px-6 bg-[#21d8ff] text-black font-bold border-0 shadow-[0_0_20px_rgba(33,216,255,0.4)] md:hover:shadow-[0_0_30px_rgba(33,216,255,0.6)] transition-all duration-300"
                       data-testid="button-notify"
                     >
                       {isSubmitting ? (

@@ -835,8 +835,8 @@ export default function ProductDetail() {
                     size="lg"
                     className={`flex-1 font-display gap-2 transition-shadow duration-300 text-black ${
                       purchaseType === "subscription" 
-                        ? "bg-[#21d8ff] border-[#21d8ff] hover:bg-[#21d8ff]/90 shadow-[0_0_20px_rgba(33,216,255,0.4)] hover:shadow-[0_0_40px_rgba(33,216,255,0.6)]" 
-                        : "bg-[#E7FB10] border-[#E7FB10] hover:bg-[#E7FB10]/90 shadow-[0_0_20px_rgba(231,251,16,0.4)] hover:shadow-[0_0_40px_rgba(231,251,16,0.6)]"
+                        ? "bg-[#21d8ff] border-[#21d8ff] md:hover:bg-[#21d8ff]/90 shadow-[0_0_20px_rgba(33,216,255,0.4)] md:hover:shadow-[0_0_40px_rgba(33,216,255,0.6)]" 
+                        : "bg-[#E7FB10] border-[#E7FB10] md:hover:bg-[#E7FB10]/90 shadow-[0_0_20px_rgba(231,251,16,0.4)] md:hover:shadow-[0_0_40px_rgba(231,251,16,0.6)]"
                     }`}
                     onClick={handleBuyNow}
                     data-testid="button-buy-now"
@@ -1054,7 +1054,7 @@ export default function ProductDetail() {
                     whileTap={{ scale: 0.98 }}
                   >
                     <Button 
-                      className="gap-2 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold hover:shadow-[0_0_20px_rgba(33,216,255,0.6)] transition-shadow" 
+                      className="gap-2 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold md:hover:shadow-[0_0_20px_rgba(33,216,255,0.6)] transition-shadow" 
                       data-testid="link-learn-storage"
                     >
                       <BookOpen className="h-4 w-4" />

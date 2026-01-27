@@ -334,8 +334,8 @@ export default function BundleDetail() {
                 size="lg"
                 className={`flex-1 font-display gap-2 transition-shadow duration-300 text-black ${
                   purchaseType === "subscription" 
-                    ? "bg-[#21d8ff] border-[#21d8ff] hover:bg-[#21d8ff]/90 shadow-[0_0_20px_rgba(33,216,255,0.4)] hover:shadow-[0_0_40px_rgba(33,216,255,0.6)]" 
-                    : "bg-[#E7FB10] border-[#E7FB10] hover:bg-[#E7FB10]/90 shadow-[0_0_20px_rgba(231,251,16,0.4)] hover:shadow-[0_0_40px_rgba(231,251,16,0.6)]"
+                    ? "bg-[#21d8ff] border-[#21d8ff] md:hover:bg-[#21d8ff]/90 shadow-[0_0_20px_rgba(33,216,255,0.4)] md:hover:shadow-[0_0_40px_rgba(33,216,255,0.6)]" 
+                    : "bg-[#E7FB10] border-[#E7FB10] md:hover:bg-[#E7FB10]/90 shadow-[0_0_20px_rgba(231,251,16,0.4)] md:hover:shadow-[0_0_40px_rgba(231,251,16,0.6)]"
                 }`}
                 onClick={handleBuyNow}
                 data-testid="button-buy-now"

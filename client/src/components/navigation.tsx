@@ -673,7 +673,7 @@ export function Navigation() {
                 
                 <Link href="/peptides">
                   <Button
-                    className="hidden md:inline-flex font-display bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_15px_rgba(231,251,16,0.3)] hover:shadow-[0_0_25px_rgba(231,251,16,0.5)] hover:bg-[#E7FB10] transition-all duration-300"
+                    className="hidden md:inline-flex font-display bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_15px_rgba(231,251,16,0.3)] md:hover:shadow-[0_0_25px_rgba(231,251,16,0.5)] md:hover:bg-[#E7FB10] transition-all duration-300"
                     data-testid="button-shop-products"
                   >
                     Shop Peptides

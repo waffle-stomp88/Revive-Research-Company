@@ -665,7 +665,7 @@ export default function Education() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 20 }}
                   onClick={() => setExpandedArticle(null)}
-                  className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-5 py-3 rounded-full bg-[#1a1a1f]/95 border border-[#21d8ff]/40 shadow-lg shadow-black/30 backdrop-blur-sm hover:border-[#21d8ff] hover:shadow-[#21d8ff]/20 transition-all cursor-pointer lg:left-auto lg:right-8 lg:translate-x-0"
+                  className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-5 py-3 rounded-full bg-[#1a1a1f]/95 border border-[#21d8ff]/40 shadow-lg shadow-black/30 backdrop-blur-sm md:hover:border-[#21d8ff] md:hover:shadow-[#21d8ff]/20 transition-all cursor-pointer lg:left-auto lg:right-8 lg:translate-x-0"
                   data-testid="button-floating-back"
                 >
                   <ArrowLeft className="h-4 w-4 text-[#21d8ff]" />

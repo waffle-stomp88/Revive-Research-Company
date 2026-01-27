@@ -159,7 +159,7 @@ function HeroSection() {
           <Link href="/peptides" onClick={() => trackEvent('hero_cta_click', 'engagement', 'shop_peptides')}>
             <div className="relative inline-block">
               <div className="absolute inset-0 rounded-md bg-[#E7FB10]/10 opacity-20 animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]" />
-              <Button size="lg" className="relative font-display text-base sm:text-lg px-6 sm:px-10 gap-2 bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_30px_rgba(231,251,16,0.4)] hover:shadow-[0_0_50px_rgba(231,251,16,0.6)] transition-all duration-300" data-testid="button-hero-shop">
+              <Button size="lg" className="relative font-display text-base sm:text-lg px-6 sm:px-10 gap-2 bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_30px_rgba(231,251,16,0.4)] md:hover:shadow-[0_0_50px_rgba(231,251,16,0.6)] transition-all duration-300" data-testid="button-hero-shop">
                 Shop Peptides
                 <ArrowRight className="h-4 w-4" />
               </Button>
@@ -428,7 +428,7 @@ function CTASection() {
               >
                 <Button 
                   size="lg" 
-                  className="font-display text-base px-8 gap-2 bg-[#21d8ff] text-black transition-all duration-300 hover:shadow-[0_0_20px_rgba(33,216,255,0.6)]"
+                  className="font-display text-base px-8 gap-2 bg-[#21d8ff] text-black transition-all duration-300 md:hover:shadow-[0_0_20px_rgba(33,216,255,0.6)]"
                 >
                   Browse Peptides
                   <ArrowRight className="h-4 w-4" />
@@ -442,7 +442,7 @@ function CTASection() {
               >
                 <Button 
                   size="lg"
-                  className="font-display text-base px-8 bg-[#1a1a1f] text-white font-bold transition-all duration-300 hover:shadow-[0_0_30px_rgba(26,26,31,0.6)]"
+                  className="font-display text-base px-8 bg-[#1a1a1f] text-white font-bold transition-all duration-300 md:hover:shadow-[0_0_30px_rgba(26,26,31,0.6)]"
                   data-testid="button-join-affiliate"
                 >
                   Join Affiliate Program

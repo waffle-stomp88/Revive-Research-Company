@@ -367,7 +367,7 @@ export default function CartPage() {
 
                 <Button
                   size="lg"
-                  className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 gap-2 shadow-glow-sm hover:shadow-glow-lg transition-shadow"
+                  className="w-full bg-[#E7FB10] text-black md:hover:bg-[#E7FB10]/90 gap-2 shadow-glow-sm md:hover:shadow-glow-lg transition-shadow"
                   onClick={handleCheckout}
                   data-testid="button-checkout"
                 >

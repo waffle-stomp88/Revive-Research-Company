@@ -168,7 +168,7 @@ export default function CoaVerification() {
                 <Button
                   type="submit"
                   size="lg"
-                  className="font-display gap-2 h-12 bg-[#E7FB10] border-2 border-[#E7FB10] shadow-glow-sm hover:shadow-glow-lg transition-shadow duration-300"
+                  className="font-display gap-2 h-12 bg-[#E7FB10] border-2 border-[#E7FB10] shadow-glow-sm md:hover:shadow-glow-lg transition-shadow duration-300"
                   disabled={searchMutation.isPending}
                   data-testid="button-verify-coa"
                 >
@@ -383,7 +383,7 @@ export default function CoaVerification() {
             >
               <div className="grid md:grid-cols-3 gap-6">
               <Link href="/education/how-to-read-coas">
-                <Card className="p-6 cursor-pointer h-full border-2 border-[#ec4899]/40 hover:border-[#ec4899]/100 hover:shadow-[0_0_20px_rgba(236,72,153,0.3)] transition-all duration-300 flex flex-col items-center text-center">
+                <Card className="p-6 cursor-pointer h-full border-2 border-[#ec4899]/40 md:hover:border-[#ec4899]/100 md:hover:shadow-[0_0_20px_rgba(236,72,153,0.3)] transition-all duration-300 flex flex-col items-center text-center">
                   <div className="p-4 rounded-full bg-[#ec4899]/10 mb-4">
                     <GraduationCap className="h-8 w-8 text-[#ec4899]" />
                   </div>
@@ -398,7 +398,7 @@ export default function CoaVerification() {
                 </Card>
               </Link>
 
-              <Card className="p-6 h-full border-2 border-white/20 hover:border-white/60 hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all duration-300 flex flex-col items-center text-center">
+              <Card className="p-6 h-full border-2 border-white/20 md:hover:border-white/60 md:hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all duration-300 flex flex-col items-center text-center">
                 <div className="p-4 rounded-full bg-foreground/10 mb-4">
                   <FileCheck className="h-8 w-8 text-foreground" />
                 </div>
@@ -409,7 +409,7 @@ export default function CoaVerification() {
               </Card>
 
               <Link href="/coa-library">
-                <Card className="p-6 cursor-pointer h-full border-2 border-[#21d8ff]/40 hover:border-[#21d8ff]/100 hover:shadow-[0_0_20px_rgba(33,216,255,0.3)] transition-all duration-300 flex flex-col items-center text-center">
+                <Card className="p-6 cursor-pointer h-full border-2 border-[#21d8ff]/40 md:hover:border-[#21d8ff]/100 md:hover:shadow-[0_0_20px_rgba(33,216,255,0.3)] transition-all duration-300 flex flex-col items-center text-center">
                   <div className="p-4 rounded-full bg-[#21d8ff]/10 mb-4">
                     <Archive className="h-8 w-8 text-[#21d8ff]" />
                   </div>

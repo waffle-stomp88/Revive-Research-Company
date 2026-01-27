@@ -509,7 +509,7 @@ export default function ResearchStackDetail() {
                   whileTap={{ scale: 0.98 }}
                 >
                   <Button 
-                    className="gap-2 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold hover:shadow-[0_0_20px_rgba(33,216,255,0.6)] transition-shadow" 
+                    className="gap-2 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold md:hover:shadow-[0_0_20px_rgba(33,216,255,0.6)] transition-shadow" 
                     data-testid="link-learn-storage"
                   >
                     <BookOpen className="h-4 w-4" />

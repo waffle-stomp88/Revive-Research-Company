@@ -666,7 +666,7 @@ export default function Checkout() {
                       >
                         <Button
                           size="sm"
-                          className="bg-[#21d8ff] text-black font-semibold transition-all duration-300 hover:shadow-[0_0_15px_rgba(33,216,255,0.5)]"
+                          className="bg-[#21d8ff] text-black font-semibold transition-all duration-300 md:hover:shadow-[0_0_15px_rgba(33,216,255,0.5)]"
                           onClick={handleAddBacWater}
                           data-testid="button-add-bac-water"
                         >
@@ -703,7 +703,7 @@ export default function Checkout() {
                       >
                         <Button
                           size="sm"
-                          className={`transition-all duration-300 ${hasColdPackShipping ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-[#21d8ff] text-black font-semibold hover:shadow-[0_0_15px_rgba(33,216,255,0.5)]"}`}
+                          className={`transition-all duration-300 ${hasColdPackShipping ? "bg-blue-600 md:hover:bg-blue-700 text-white" : "bg-[#21d8ff] text-black font-semibold md:hover:shadow-[0_0_15px_rgba(33,216,255,0.5)]"}`}
                           onClick={() => setHasColdPackShipping(!hasColdPackShipping)}
                           data-testid="button-cold-pack-shipping"
                         >
@@ -799,7 +799,7 @@ export default function Checkout() {
                     className={`w-full font-display text-lg gap-2 transition-all duration-300 ${
                       EARLY_ACCESS_MODE 
                         ? "bg-muted text-muted-foreground cursor-not-allowed" 
-                        : "bg-[#E7FB10] hover:bg-[#E7FB10]/90 hover:shadow-[0_0_30px_rgba(231,251,16,0.6)]"
+                        : "bg-[#E7FB10] md:hover:bg-[#E7FB10]/90 md:hover:shadow-[0_0_30px_rgba(231,251,16,0.6)]"
                     }`}
                     onClick={handleCheckout}
                     disabled={checkoutMutation.isPending || EARLY_ACCESS_MODE}

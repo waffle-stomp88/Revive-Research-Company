@@ -84,7 +84,7 @@ export function RecentlyViewed({ currentProductId, variant = "sidebar" }: Recent
           {recentProducts.map((product) => (
             <Link key={product.id} href={`/peptides/${product.id}`}>
               <Card 
-                className="group p-4 cursor-pointer border-[#2a2a32] hover:border-[#21d8ff]/50 transition-all duration-300 hover:shadow-[0_0_25px_rgba(33,216,255,0.25)] flex items-center gap-5 bg-[#1a1a24]/50"
+                className="group p-4 cursor-pointer border-[#2a2a32] md:hover:border-[#21d8ff]/50 transition-all duration-300 md:hover:shadow-[0_0_25px_rgba(33,216,255,0.25)] flex items-center gap-5 bg-[#1a1a24]/50"
                 data-testid={`card-recent-${product.id}`}
               >
                 <div className="w-20 h-20 bg-gradient-to-br from-muted to-muted/50 rounded-lg flex-shrink-0 overflow-hidden">
