@@ -7,22 +7,30 @@
     scrollbar-gutter: stable;
     overflow-y: auto !important;
     overflow-x: auto !important;
+    padding-right: 0 !important;
+    margin-right: 0 !important;
   }
 
   /* Prevent Radix UI from hiding scrollbars when dropdowns/popovers open */
   html[style] {
     overflow-y: auto !important;
     overflow-x: auto !important;
+    padding-right: 0 !important;
+    margin-right: 0 !important;
   }
 
   body {
     overflow-y: auto !important;
     overflow-x: auto !important;
+    padding-right: 0 !important;
+    margin-right: 0 !important;
   }
 
   body[style] {
     overflow-y: auto !important;
     overflow-x: auto !important;
+    padding-right: 0 !important;
+    margin-right: 0 !important;
   }
 }
 
