@@ -772,9 +772,9 @@ function ProductsComponent() {
                   </div>
                 </div>
 
-                {/* Left: Pagination Controls */}
+                {/* Left: Pagination Controls - Fixed width to prevent layout shift */}
                 {totalPages > 1 && (
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 min-w-[200px]">
                     <Button
                       variant="outline"
                       size="icon"
