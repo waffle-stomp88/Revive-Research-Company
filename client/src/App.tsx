@@ -198,31 +198,35 @@ function Router() {
 function PreventScrollbarHiding() {
   useEffect(() => {
     const stripScrollLockStyles = (el: HTMLElement) => {
-      const style = el.getAttribute('style');
-      if (!style) return;
-      
-      // If Radix has added any scroll-locking styles, remove the entire style attribute
-      if (style.includes('overflow') || style.includes('padding-right') || 
-          style.includes('margin-right') || style.includes('--removed-body')) {
+      // Remove any inline styles that could cause layout shift
+      if (el.style.cssText) {
+        el.style.cssText = '';
+      }
+      if (el.hasAttribute('style')) {
         el.removeAttribute('style');
+      }
+      // Remove data attributes that Radix uses for scroll lock
+      if (el.hasAttribute('data-scroll-locked')) {
+        el.removeAttribute('data-scroll-locked');
       }
     };
     
     const observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-          stripScrollLockStyles(mutation.target as HTMLElement);
+        const target = mutation.target as HTMLElement;
+        if (target === document.body || target === document.documentElement) {
+          stripScrollLockStyles(target);
         }
       }
     });
 
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['style'],
+      attributeFilter: ['style', 'data-scroll-locked'],
     });
     observer.observe(document.body, {
       attributes: true,
-      attributeFilter: ['style'],
+      attributeFilter: ['style', 'data-scroll-locked'],
     });
 
     return () => observer.disconnect();
@@ -261,7 +265,7 @@ function App() {
               <AgeVerificationModal />
               <AffiliateTracker />
               <ScrollToTop />
-              <div className="min-h-screen flex flex-col bg-background text-foreground select-none">
+              <div className="min-h-screen flex flex-col bg-background text-foreground select-none overflow-x-hidden">
                 <FreeShippingBanner />
                 <Navigation />
                 <div className="flex-1 pb-16 md:pb-0">
