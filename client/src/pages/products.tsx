@@ -772,11 +772,64 @@ function ProductsComponent() {
                   </div>
                 </div>
 
-                {/* Right: Category filter dropdown */}
-                <div className="flex items-center gap-2 ml-auto">
-                  {/* Category filter dropdown - replaces sort dropdown */}
+                {/* Right: Pagination + Category filter dropdown */}
+                <div className="flex items-center gap-3 ml-auto">
+                  {/* Inline Pagination Controls */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="h-8 w-8"
+                        data-testid="button-prev-page-inline"
+                      >
+                        <ChevronRight className="h-4 w-4 rotate-180" />
+                      </Button>
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                        const showPage = page === 1 || page === totalPages || 
+                                         Math.abs(page - currentPage) <= 1;
+                        const showEllipsis = page === 2 && currentPage > 3 ||
+                                             page === totalPages - 1 && currentPage < totalPages - 2;
+                        
+                        if (showEllipsis && !showPage) {
+                          return (
+                            <span key={page} className="px-1 text-muted-foreground text-sm" data-testid={`text-ellipsis-${page}-inline`}>..</span>
+                          );
+                        }
+                        
+                        if (!showPage) return null;
+                        
+                        return (
+                          <Button
+                            key={page}
+                            variant={currentPage === page ? "default" : "outline"}
+                            size="icon"
+                            onClick={() => handlePageChange(page)}
+                            className="h-8 w-8"
+                            data-testid={`button-page-${page}-inline`}
+                          >
+                            {page}
+                          </Button>
+                        );
+                      })}
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="h-8 w-8"
+                        data-testid="button-next-page-inline"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                  
+                  {/* Category filter dropdown */}
                   <Select value={peptideGroupFilter} onValueChange={(value) => setPeptideGroupFilter(value)}>
-                    <SelectTrigger className="w-[160px] h-8 text-sm" data-testid="select-category-filter">
+                    <SelectTrigger className="w-[130px] h-8 text-sm" data-testid="select-category-filter">
                       <SelectValue placeholder="Category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -824,60 +877,6 @@ function ProductsComponent() {
                 </Card>
               ) : filteredAndSortedProducts.length > 0 ? (
                 <>
-                {/* Pagination Controls - Top */}
-                {totalPages > 1 && (
-                  <div className="mb-6 flex flex-col items-center gap-3">
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        data-testid="button-prev-page-top"
-                      >
-                        <ChevronRight className="h-4 w-4 rotate-180" />
-                      </Button>
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                        const showPage = page === 1 || page === totalPages || 
-                                         Math.abs(page - currentPage) <= 1;
-                        const showEllipsis = page === 2 && currentPage > 3 ||
-                                             page === totalPages - 1 && currentPage < totalPages - 2;
-                        
-                        if (showEllipsis && !showPage) {
-                          return (
-                            <span key={page} className="px-2 text-muted-foreground" data-testid={`text-ellipsis-${page}-top`}>...</span>
-                          );
-                        }
-                        
-                        if (!showPage) return null;
-                        
-                        return (
-                          <Button
-                            key={page}
-                            variant={currentPage === page ? "default" : "outline"}
-                            size="icon"
-                            onClick={() => handlePageChange(page)}
-                            data-testid={`button-page-${page}-top`}
-                          >
-                            {page}
-                          </Button>
-                        );
-                      })}
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        data-testid="button-next-page-top"
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <p className="text-xs text-muted-foreground" data-testid="text-pagination-info-top">
-                      Page {currentPage} of {totalPages} ({filteredAndSortedProducts.length} products)
-                    </p>
-                  </div>
-                )}
                 <motion.div
                   initial="initial"
                   animate="animate"
