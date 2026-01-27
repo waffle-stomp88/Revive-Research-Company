@@ -211,11 +211,11 @@ export default function CartPage() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-7 w-7 md:h-9 md:w-9 text-red-400 md:hover:text-red-500 md:hover:bg-red-500/10 flex-shrink-0"
+                          className="text-red-400 flex-shrink-0"
                           onClick={() => removeFromCart(item.productId, item.dosage)}
                           data-testid={`button-remove-${item.productId}`}
                         >
-                          <Trash2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                       
@@ -224,20 +224,20 @@ export default function CartPage() {
                         <div className="flex items-center border border-border rounded-md">
                           <Button
                             variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 md:h-8 md:w-8"
+                            size="sm"
+                            className="h-8 w-8 p-0"
                             onClick={() => updateQuantity(item.productId, item.dosage, item.quantity - 1)}
                             data-testid={`button-decrease-${item.productId}`}
                           >
                             <Minus className="h-3 w-3" />
                           </Button>
-                          <span className="w-8 md:w-10 text-center font-medium text-sm">
+                          <span className="w-8 text-center font-medium text-sm">
                             {item.quantity}
                           </span>
                           <Button
                             variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 md:h-8 md:w-8"
+                            size="sm"
+                            className="h-8 w-8 p-0"
                             onClick={() => updateQuantity(item.productId, item.dosage, item.quantity + 1)}
                             disabled={item.quantity >= 10}
                             data-testid={`button-increase-${item.productId}`}
