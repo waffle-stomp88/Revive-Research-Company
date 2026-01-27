@@ -19,7 +19,7 @@ const navItems: NavItem[] = [
   },
   { 
     label: "Shop", 
-    href: "/shop", 
+    href: "/peptides", 
     icon: ShoppingBag,
     matchPaths: ["/shop", "/peptides", "/products", "/research-stacks", "/bulk-packs"]
   },
