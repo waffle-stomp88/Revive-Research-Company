@@ -691,17 +691,6 @@ function ProductsComponent() {
           <div className="flex-1 min-w-0">
             {/* All Products Section */}
             <div ref={productsRef} className="scroll-mt-36">
-              <div className="flex flex-col items-center text-center mb-10">
-                <div className="flex items-center justify-center gap-3 mb-3">
-                  <Grid3X3 className="h-6 w-6 text-[#E7FB10]" />
-                  <h2 className="font-display font-bold text-2xl md:text-3xl uppercase tracking-tight">All Peptides</h2>
-                  {products && <Badge variant="secondary" className="font-mono">{filteredAndSortedProducts.length} of {products.length} items</Badge>}
-                </div>
-                <p className="text-muted-foreground max-w-2xl text-lg">
-                  Premium research compounds, rigorously tested and verified. Each product includes a Certificate of Analysis.
-                </p>
-              </div>
-
               <div>
               {searchQuery && (
                 <p className="text-sm text-muted-foreground mb-4">
