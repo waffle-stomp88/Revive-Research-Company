@@ -440,32 +440,36 @@ export default function Checkout() {
     return (
       <>
         <RuoReminderDialog />
-        <main className="min-h-screen pt-32 md:pt-40 pb-24">
+        <main className="min-h-screen pt-32 md:pt-40 pb-40 md:pb-24">
           <SEOHead title="Secure Checkout" description="Complete your order securely. All research compounds ship same-day before 12 PM CT with discreet packaging." canonicalPath="/checkout" />
           <div className="max-w-4xl mx-auto px-4 md:px-8">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="mb-8"
-            >
+            {/* Mobile Header - Compact */}
+            <div className="flex items-center justify-between mb-4 md:mb-8">
               <Link href="/cart" onClick={() => sessionStorage.removeItem('checkoutRuoAcknowledged')}>
-                <Button variant="ghost" className="gap-2 -ml-4" data-testid="button-back-cart">
+                <Button variant="ghost" size="sm" className="gap-1 -ml-2 md:-ml-4" data-testid="button-back-cart">
                   <ArrowLeft className="h-4 w-4" />
-                  Back to Cart
+                  <span className="hidden sm:inline">Back to Cart</span>
+                  <span className="sm:hidden">Cart</span>
                 </Button>
               </Link>
-            </motion.div>
+              {/* Mobile: Show total in header */}
+              <div className="md:hidden text-right">
+                <p className="text-xs text-muted-foreground">Total</p>
+                <p className="font-display font-bold text-lg" data-testid="text-mobile-total">${cartTotal.toFixed(2)}</p>
+              </div>
+            </div>
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="font-display text-3xl md:text-4xl font-bold mb-8"
+              className="font-display text-2xl md:text-4xl font-bold mb-4 md:mb-8"
               data-testid="text-checkout-title"
             >
               Checkout
             </motion.h1>
 
-          <div className="grid md:grid-cols-2 gap-12">
+          {/* Mobile: Order items first, then account/trust. Desktop: Two columns */}
+          <div className="grid md:grid-cols-2 gap-6 md:gap-12">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -604,34 +608,39 @@ export default function Checkout() {
               </Card>
             </motion.div>
 
+            {/* Order Summary - Shows FIRST on mobile */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: 0.1 }}
+              className="order-first md:order-last"
             >
-              <Card className="p-6 sticky top-32">
-                <h2 className="font-display text-xl font-semibold mb-6">
+              <Card className="p-4 md:p-6 md:sticky md:top-32">
+                <h2 className="font-display text-lg md:text-xl font-semibold mb-4 md:mb-6">
                   Order Summary ({cartItems.length} {cartItems.length === 1 ? 'item' : 'items'})
                 </h2>
 
-                <div className="space-y-4 mb-6">
+                {/* Compact item list on mobile */}
+                <div className="space-y-3 md:space-y-4 mb-4 md:mb-6">
                   {cartItems.map((item) => (
-                    <div key={`${item.productId}-${item.dosage}`} className="flex gap-4">
-                      <div className="w-16 h-16 bg-gradient-to-br from-muted to-muted/50 rounded-md flex items-center justify-center flex-shrink-0 overflow-hidden">
+                    <div key={`${item.productId}-${item.dosage}`} className="flex gap-3 md:gap-4">
+                      <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-muted to-muted/50 rounded-md flex items-center justify-center flex-shrink-0 overflow-hidden">
                         <img 
                           src={productImage} 
                           alt={`${item.name} ${item.dosage} research peptide`}
                           className="w-full h-full object-contain p-1"
                         />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-display font-semibold text-sm truncate">
-                          {item.name}
-                        </h3>
-                        <p className="text-xs text-muted-foreground">
-                          {item.dosage} × {item.quantity}
-                        </p>
-                        <p className="font-semibold text-sm mt-1">
+                      <div className="flex-1 min-w-0 flex items-center justify-between">
+                        <div>
+                          <h3 className="font-display font-semibold text-sm truncate">
+                            {item.name}
+                          </h3>
+                          <p className="text-xs text-muted-foreground">
+                            {item.dosage} × {item.quantity}
+                          </p>
+                        </div>
+                        <p className="font-semibold text-sm">
                           ${(item.price * item.quantity).toFixed(2)}
                         </p>
                       </div>
@@ -824,11 +833,44 @@ export default function Checkout() {
                   </Button>
                 </motion.div>
 
-                <p className="text-xs text-muted-foreground text-center mt-4">
+                {/* Desktop: Show terms here */}
+                <p className="hidden md:block text-xs text-muted-foreground text-center mt-4">
                   By proceeding, you agree to our terms of service and privacy policy.
                 </p>
               </Card>
             </motion.div>
+          </div>
+        </div>
+
+        {/* Mobile Sticky Checkout Footer */}
+        <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-background border-t border-border p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.3)]">
+          <div className="flex items-center justify-between gap-4 max-w-lg mx-auto">
+            <div>
+              <p className="text-xs text-muted-foreground">Total</p>
+              <p className="font-display font-bold text-xl" data-testid="text-sticky-total">${cartTotal.toFixed(2)}</p>
+              {baseShipping === 0 && (
+                <p className="text-xs text-green-500">Free shipping</p>
+              )}
+            </div>
+            <Button
+              size="lg"
+              variant={EARLY_ACCESS_MODE ? "secondary" : "default"}
+              className="flex-1 max-w-[200px] font-display gap-2"
+              onClick={handleCheckout}
+              disabled={checkoutMutation.isPending || EARLY_ACCESS_MODE}
+              data-testid="button-checkout-mobile"
+            >
+              {checkoutMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : EARLY_ACCESS_MODE ? (
+                "Coming Soon"
+              ) : (
+                <>
+                  <Lock className="h-4 w-4" />
+                  Pay Now
+                </>
+              )}
+            </Button>
           </div>
         </div>
       </main>
