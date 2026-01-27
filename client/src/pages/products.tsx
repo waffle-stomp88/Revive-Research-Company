@@ -772,62 +772,61 @@ function ProductsComponent() {
                   </div>
                 </div>
 
-                {/* Left: Pagination + Category filter dropdown */}
-                <div className="flex items-center gap-3">
-                  {/* Inline Pagination Controls */}
-                  {totalPages > 1 && (
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className="h-8 w-8"
-                        data-testid="button-prev-page-inline"
-                      >
-                        <ChevronRight className="h-4 w-4 rotate-180" />
-                      </Button>
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                        const showPage = page === 1 || page === totalPages || 
-                                         Math.abs(page - currentPage) <= 1;
-                        const showEllipsis = page === 2 && currentPage > 3 ||
-                                             page === totalPages - 1 && currentPage < totalPages - 2;
-                        
-                        if (showEllipsis && !showPage) {
-                          return (
-                            <span key={page} className="px-1 text-muted-foreground text-sm" data-testid={`text-ellipsis-${page}-inline`}>..</span>
-                          );
-                        }
-                        
-                        if (!showPage) return null;
-                        
+                {/* Left: Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="h-8 w-8"
+                      data-testid="button-prev-page-inline"
+                    >
+                      <ChevronRight className="h-4 w-4 rotate-180" />
+                    </Button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                      const showPage = page === 1 || page === totalPages || 
+                                       Math.abs(page - currentPage) <= 1;
+                      const showEllipsis = page === 2 && currentPage > 3 ||
+                                           page === totalPages - 1 && currentPage < totalPages - 2;
+                      
+                      if (showEllipsis && !showPage) {
                         return (
-                          <Button
-                            key={page}
-                            variant={currentPage === page ? "default" : "outline"}
-                            size="icon"
-                            onClick={() => handlePageChange(page)}
-                            className="h-8 w-8"
-                            data-testid={`button-page-${page}-inline`}
-                          >
-                            {page}
-                          </Button>
+                          <span key={page} className="px-1 text-muted-foreground text-sm" data-testid={`text-ellipsis-${page}-inline`}>..</span>
                         );
-                      })}
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        className="h-8 w-8"
-                        data-testid="button-next-page-inline"
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  )}
-                  
-                  {/* Category filter dropdown */}
+                      }
+                      
+                      if (!showPage) return null;
+                      
+                      return (
+                        <Button
+                          key={page}
+                          variant={currentPage === page ? "default" : "outline"}
+                          size="icon"
+                          onClick={() => handlePageChange(page)}
+                          className="h-8 w-8"
+                          data-testid={`button-page-${page}-inline`}
+                        >
+                          {page}
+                        </Button>
+                      );
+                    })}
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="h-8 w-8"
+                      data-testid="button-next-page-inline"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+                
+                {/* Right: Category filter dropdown */}
+                <div className="ml-auto">
                   <Select value={peptideGroupFilter} onValueChange={(value) => setPeptideGroupFilter(value)}>
                     <SelectTrigger className="w-[130px] h-8 text-sm" data-testid="select-category-filter">
                       <SelectValue placeholder="Category" />
