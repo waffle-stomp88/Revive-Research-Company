@@ -75,12 +75,12 @@ function getProductBadges(
 ): ProductBadge[] {
   const badges: ProductBadge[] = [];
   
-  // Priority 1: Out of Stock (highest priority) - ONLY show this badge when out of stock
+  // Priority 1: Coming Soon (for out of stock items) - Soft gray styling instead of harsh red
   if (!product.inStock || (product.stockAmount !== null && product.stockAmount <= 0)) {
     badges.push({
       type: "out-of-stock",
-      label: "OUT OF STOCK",
-      className: "bg-destructive text-destructive-foreground font-bold"
+      label: "Coming Soon",
+      className: "bg-muted-foreground/80 text-background font-medium"
     });
     // Return early - don't show any other badges when out of stock
     return badges;
@@ -233,7 +233,8 @@ function ProductsComponent() {
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   
   // Display controls state - items per page and grid columns
-  const [itemsPerPage, setItemsPerPage] = useState<number>(12);
+  const itemsPerPage = 12; // Fixed at 12 items per page
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [gridColumns, setGridColumns] = useState<2 | 3 | 4>(4);
 
   // Weekly Deal dismiss state with localStorage
@@ -427,23 +428,31 @@ function ProductsComponent() {
       return matchesSearch && matchesStock && matchesCategory && matchesPeptideGroup && matchesPrice;
     });
 
-    switch (sortBy) {
-      case "name-asc":
-        filtered.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      case "name-desc":
-        filtered.sort((a, b) => b.name.localeCompare(a.name));
-        break;
-      case "price-asc":
-        filtered.sort((a, b) => Number(a.price) - Number(b.price));
-        break;
-      case "price-desc":
-        filtered.sort((a, b) => Number(b.price) - Number(a.price));
-        break;
-      case "featured":
-        filtered.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
-        break;
-    }
+    // First, always sort in-stock items before out-of-stock items
+    // Then apply the secondary sort within each group
+    filtered.sort((a, b) => {
+      const aInStock = a.inStock && (a.stockAmount === null || a.stockAmount > 0);
+      const bInStock = b.inStock && (b.stockAmount === null || b.stockAmount > 0);
+      
+      // In-stock items come first
+      if (aInStock && !bInStock) return -1;
+      if (!aInStock && bInStock) return 1;
+      
+      // Within the same stock status, apply secondary sort
+      switch (sortBy) {
+        case "name-asc":
+          return a.name.localeCompare(b.name);
+        case "name-desc":
+          return b.name.localeCompare(a.name);
+        case "price-asc":
+          return Number(a.price) - Number(b.price);
+        case "price-desc":
+          return Number(b.price) - Number(a.price);
+        case "featured":
+        default:
+          return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+      }
+    });
 
     return filtered;
   }, [products, searchQuery, sortBy, stockFilter, selectedCategory, peptideGroupFilter, priceRange]);
@@ -458,6 +467,27 @@ function ProductsComponent() {
   };
 
   const hasActiveFilters = searchQuery !== "" || sortBy !== "featured" || stockFilter !== "in-stock" || selectedCategory !== "all" || peptideGroupFilter !== "all" || priceRange[0] !== priceStats.min || priceRange[1] !== priceStats.max;
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredAndSortedProducts.length / itemsPerPage);
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredAndSortedProducts.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredAndSortedProducts, currentPage, itemsPerPage]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, sortBy, stockFilter, selectedCategory, peptideGroupFilter, priceRange]);
+
+  // Scroll to top of products section when page changes
+  const handlePageChange = (page: number) => {
+    const clampedPage = Math.max(1, Math.min(totalPages, page));
+    if (clampedPage !== currentPage) {
+      setCurrentPage(clampedPage);
+      productsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   const uniqueCategories = useMemo(() => {
     if (!products) return [];
@@ -794,6 +824,60 @@ function ProductsComponent() {
                 </Card>
               ) : filteredAndSortedProducts.length > 0 ? (
                 <>
+                {/* Pagination Controls - Top */}
+                {totalPages > 1 && (
+                  <div className="mb-6 flex flex-col items-center gap-3">
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        data-testid="button-prev-page-top"
+                      >
+                        <ChevronRight className="h-4 w-4 rotate-180" />
+                      </Button>
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                        const showPage = page === 1 || page === totalPages || 
+                                         Math.abs(page - currentPage) <= 1;
+                        const showEllipsis = page === 2 && currentPage > 3 ||
+                                             page === totalPages - 1 && currentPage < totalPages - 2;
+                        
+                        if (showEllipsis && !showPage) {
+                          return (
+                            <span key={page} className="px-2 text-muted-foreground" data-testid={`text-ellipsis-${page}-top`}>...</span>
+                          );
+                        }
+                        
+                        if (!showPage) return null;
+                        
+                        return (
+                          <Button
+                            key={page}
+                            variant={currentPage === page ? "default" : "outline"}
+                            size="icon"
+                            onClick={() => handlePageChange(page)}
+                            data-testid={`button-page-${page}-top`}
+                          >
+                            {page}
+                          </Button>
+                        );
+                      })}
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        data-testid="button-next-page-top"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground" data-testid="text-pagination-info-top">
+                      Page {currentPage} of {totalPages} ({filteredAndSortedProducts.length} products)
+                    </p>
+                  </div>
+                )}
                 <motion.div
                   initial="initial"
                   animate="animate"
@@ -804,7 +888,7 @@ function ProductsComponent() {
                     "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
                   }`}
                 >
-                  {filteredAndSortedProducts.slice(0, itemsPerPage).map((product) => (
+                  {paginatedProducts.map((product) => (
                     <motion.div
                       key={product.id}
                       variants={fadeInUp}
@@ -818,19 +902,11 @@ function ProductsComponent() {
                             <Card 
                               className={`group p-3 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 md:hover:scale-[1.03] md:active:scale-[1.03] relative overflow-hidden ${
                                 isOutOfStock
-                                  ? "border-red-500/60 md:hover:border-red-500 md:hover:shadow-[0_0_30px_rgba(239,68,68,0.5),0_0_60px_rgba(239,68,68,0.2)]"
+                                  ? "border-muted-foreground/30 opacity-70 md:hover:border-muted-foreground/50 md:hover:opacity-90"
                                   : "border-[#21d8ff]/40 md:hover:border-[#21d8ff] md:hover:shadow-[0_0_30px_rgba(33,216,255,0.5),0_0_60px_rgba(33,216,255,0.2)]"
                               }`}
                               data-testid={`card-product-${product.id}`}
                             >
-                              {isOutOfStock && (
-                                <div 
-                                  className="absolute inset-0 pointer-events-none z-10"
-                                  style={{
-                                    background: "linear-gradient(to bottom right, transparent calc(50% - 2px), rgba(239, 68, 68, 0.7) calc(50% - 1px), rgba(239, 68, 68, 0.9) 50%, rgba(239, 68, 68, 0.7) calc(50% + 1px), transparent calc(50% + 2px))",
-                                  }}
-                                />
-                              )}
                               <div className="relative aspect-[4/3] mb-3 rounded-md overflow-hidden">
                                 <ImageLoader 
                                   src={product.imageUrl || productImage} 
@@ -847,6 +923,7 @@ function ProductsComponent() {
                                         <span 
                                           key={badge.type}
                                           className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[11px] rounded ${badge.className}`}
+                                          data-testid={`badge-${badge.type}-${product.id}`}
                                         >
                                           {badge.icon && <badge.icon className="h-3 w-3" />}
                                           {badge.label}
@@ -905,20 +982,58 @@ function ProductsComponent() {
                   ))}
                 </motion.div>
                 
-                {/* Show More button if there are more products */}
-                {filteredAndSortedProducts.length > itemsPerPage && (
-                  <div className="mt-6 text-center">
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Showing {Math.min(itemsPerPage, filteredAndSortedProducts.length)} of {filteredAndSortedProducts.length} products
+                {/* Pagination Controls - Bottom */}
+                {totalPages > 1 && (
+                  <div className="mt-8 flex flex-col items-center gap-3">
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        data-testid="button-prev-page-bottom"
+                      >
+                        <ChevronRight className="h-4 w-4 rotate-180" />
+                      </Button>
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                        const showPage = page === 1 || page === totalPages || 
+                                         Math.abs(page - currentPage) <= 1;
+                        const showEllipsis = page === 2 && currentPage > 3 ||
+                                             page === totalPages - 1 && currentPage < totalPages - 2;
+                        
+                        if (showEllipsis && !showPage) {
+                          return (
+                            <span key={page} className="px-2 text-muted-foreground" data-testid={`text-ellipsis-${page}-bottom`}>...</span>
+                          );
+                        }
+                        
+                        if (!showPage) return null;
+                        
+                        return (
+                          <Button
+                            key={page}
+                            variant={currentPage === page ? "default" : "outline"}
+                            size="icon"
+                            onClick={() => handlePageChange(page)}
+                            data-testid={`button-page-${page}-bottom`}
+                          >
+                            {page}
+                          </Button>
+                        );
+                      })}
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        data-testid="button-next-page-bottom"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground" data-testid="text-pagination-info-bottom">
+                      Page {currentPage} of {totalPages} ({filteredAndSortedProducts.length} products)
                     </p>
-                    <Button
-                      variant="outline"
-                      className="border-[#21d8ff]/40 text-[#21d8ff] hover:bg-[#21d8ff]/10"
-                      onClick={() => setItemsPerPage(prev => Math.min(prev + 12, filteredAndSortedProducts.length))}
-                      data-testid="button-show-more"
-                    >
-                      Show More
-                    </Button>
                   </div>
                 )}
                 </>
