@@ -278,7 +278,7 @@ export default function CartPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <Card className="p-6 sticky top-24">
+              <Card className="p-4 md:p-6 md:sticky md:top-24">
                 <h2 className="font-display font-semibold text-lg mb-4">Order Summary</h2>
                 
                 <div className="space-y-3 text-sm">
@@ -375,7 +375,15 @@ export default function CartPage() {
                   <ArrowRight className="h-5 w-5" />
                 </Button>
 
-                <div className="mt-6 space-y-2">
+                {/* Mobile: Compact icon row */}
+                <div className="flex items-center justify-center gap-4 mt-4 md:hidden">
+                  <Shield className="h-4 w-4 text-[#21d8ff]" />
+                  <Truck className="h-4 w-4 text-[#E7FB10]" />
+                  <FileCheck className="h-4 w-4 text-[#9d4edd]" />
+                </div>
+                
+                {/* Desktop: Full trust indicators */}
+                <div className="hidden md:block mt-6 space-y-2">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Shield className="h-4 w-4 text-[#21d8ff]" />
                     <span>Secure checkout</span>
@@ -390,10 +398,10 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                <Separator className="my-4" />
+                <Separator className="my-4 hidden md:block" />
 
-                {/* Helpful Shipping Info */}
-                <Card className="p-4 border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 to-transparent mb-4">
+                {/* Helpful Shipping Info - Desktop only */}
+                <Card className="hidden md:block p-4 border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 to-transparent mb-4">
                   <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
                     <Thermometer className="h-4 w-4 text-[#21d8ff]" />
                     What to Expect
@@ -415,16 +423,15 @@ export default function CartPage() {
                   </div>
                 </Card>
 
-                <Separator className="my-4" />
+                <Separator className="my-4 hidden md:block" />
 
-                <div className="p-4 bg-red-950/30 border border-red-500/40 rounded-lg animate-pulse-subtle">
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 rounded-full bg-red-500/20 flex-shrink-0">
-                      <AlertTriangle className="h-5 w-5 text-red-400" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-red-400 mb-1">Research Use Only</p>
-                      <p className="text-xs text-muted-foreground">
+                {/* RUO Warning - Compact on mobile */}
+                <div className="p-3 md:p-4 bg-red-950/30 border border-red-500/40 rounded-lg animate-pulse-subtle">
+                  <div className="flex items-center md:items-start gap-2 md:gap-3">
+                    <AlertTriangle className="h-4 w-4 md:h-5 md:w-5 text-red-400 flex-shrink-0" />
+                    <div className="flex md:flex-col items-center md:items-start gap-1 md:gap-0">
+                      <p className="text-xs md:text-sm font-semibold text-red-400">Research Use Only</p>
+                      <p className="hidden md:block text-xs text-muted-foreground">
                         Not for human consumption. All products are intended for laboratory research purposes only.
                       </p>
                     </div>
