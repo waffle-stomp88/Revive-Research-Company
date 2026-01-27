@@ -430,6 +430,7 @@ function ProductsComponent() {
 
     // First, always sort in-stock items before out-of-stock items
     // Then apply the secondary sort within each group
+    // Out-of-stock items are always sorted alphabetically
     filtered.sort((a, b) => {
       const aInStock = a.inStock && (a.stockAmount === null || a.stockAmount > 0);
       const bInStock = b.inStock && (b.stockAmount === null || b.stockAmount > 0);
@@ -438,7 +439,12 @@ function ProductsComponent() {
       if (aInStock && !bInStock) return -1;
       if (!aInStock && bInStock) return 1;
       
-      // Within the same stock status, apply secondary sort
+      // Out-of-stock items are always sorted alphabetically
+      if (!aInStock && !bInStock) {
+        return a.name.localeCompare(b.name);
+      }
+      
+      // Within in-stock items, apply the selected sort
       switch (sortBy) {
         case "name-asc":
           return a.name.localeCompare(b.name);
