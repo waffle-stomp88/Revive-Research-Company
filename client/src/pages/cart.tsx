@@ -376,7 +376,7 @@ export default function CartPage() {
                 </Button>
 
                 {/* Mobile: Compact icon row */}
-                <div className="flex items-center justify-center gap-4 mt-4 md:hidden">
+                <div className="flex items-center justify-center gap-4 mt-4 md:hidden" data-testid="cart-mobile-trust-icons">
                   <Shield className="h-4 w-4 text-[#21d8ff]" />
                   <Truck className="h-4 w-4 text-[#E7FB10]" />
                   <FileCheck className="h-4 w-4 text-[#9d4edd]" />
@@ -426,12 +426,12 @@ export default function CartPage() {
                 <Separator className="my-4 hidden md:block" />
 
                 {/* RUO Warning - Compact on mobile */}
-                <div className="p-3 md:p-4 bg-red-950/30 border border-red-500/40 rounded-lg animate-pulse-subtle">
+                <div className="p-3 md:p-4 bg-red-950/30 border border-red-500/40 rounded-lg animate-pulse-subtle" data-testid="cart-ruo-warning">
                   <div className="flex items-center md:items-start gap-2 md:gap-3">
                     <AlertTriangle className="h-4 w-4 md:h-5 md:w-5 text-red-400 flex-shrink-0" />
                     <div className="flex md:flex-col items-center md:items-start gap-1 md:gap-0">
-                      <p className="text-xs md:text-sm font-semibold text-red-400">Research Use Only</p>
-                      <p className="hidden md:block text-xs text-muted-foreground">
+                      <p className="text-xs md:text-sm font-semibold text-red-400" data-testid="cart-ruo-title">Research Use Only</p>
+                      <p className="hidden md:block text-xs text-muted-foreground" data-testid="cart-ruo-description">
                         Not for human consumption. All products are intended for laboratory research purposes only.
                       </p>
                     </div>
