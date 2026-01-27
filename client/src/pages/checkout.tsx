@@ -440,7 +440,7 @@ export default function Checkout() {
     return (
       <>
         <RuoReminderDialog />
-        <main className="min-h-screen pt-32 md:pt-40 pb-40 md:pb-24">
+        <main className="min-h-screen pt-32 md:pt-40 pb-24">
           <SEOHead title="Secure Checkout" description="Complete your order securely. All research compounds ship same-day before 12 PM CT with discreet packaging." canonicalPath="/checkout" />
           <div className="max-w-4xl mx-auto px-4 md:px-8">
             {/* Mobile Header - Compact */}
@@ -475,41 +475,40 @@ export default function Checkout() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              {/* Account Section */}
-              <Card className="p-6 mb-6">
-                <h2 className="font-display text-xl font-semibold mb-4 flex items-center gap-2">
-                  <User className="h-5 w-5" />
+              {/* Account Section - Compact on mobile */}
+              <Card className="p-3 md:p-6 mb-4 md:mb-6">
+                <h2 className="font-display text-base md:text-xl font-semibold mb-2 md:mb-4 flex items-center gap-2">
+                  <User className="h-4 w-4 md:h-5 md:w-5" />
                   Your Account
                 </h2>
                 
                 {userLoading ? (
-                  <div className="flex justify-center py-4">
-                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                  <div className="flex justify-center py-2 md:py-4">
+                    <Loader2 className="h-5 w-5 md:h-6 md:w-6 animate-spin text-muted-foreground" />
                   </div>
                 ) : isAuthenticated ? (
-                  <div className="bg-[#E7FB10]/10 border border-[#E7FB10]/30 rounded-lg p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-[#E7FB10]/20 flex items-center justify-center">
-                          <CheckCircle className="h-5 w-5 text-[#E7FB10]" />
+                  <div className="bg-[#E7FB10]/10 border border-[#E7FB10]/30 rounded-lg p-2 md:p-4">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 md:gap-3 min-w-0">
+                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#E7FB10]/20 flex items-center justify-center flex-shrink-0">
+                          <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-[#E7FB10]" />
                         </div>
-                        <div>
-                          <p className="font-medium">Welcome back, {user?.firstName || 'Researcher'}!</p>
-                          <p className="text-sm text-muted-foreground">{user?.email}</p>
+                        <div className="min-w-0">
+                          <p className="font-medium text-sm md:text-base truncate">{user?.firstName || 'Researcher'}</p>
+                          <p className="text-xs md:text-sm text-muted-foreground truncate">{user?.email}</p>
                         </div>
                       </div>
                       <Button
                         variant="ghost"
-                        size="sm"
-                        className="text-muted-foreground hover:text-foreground"
+                        size="icon"
+                        className="text-muted-foreground flex-shrink-0"
                         onClick={() => logout()}
                         data-testid="button-checkout-logout"
                       >
-                        <LogOut className="h-4 w-4 mr-1" />
-                        Sign out
+                        <LogOut className="h-4 w-4" />
                       </Button>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-3">
+                    <p className="hidden md:block text-sm text-muted-foreground mt-3">
                       Your order will be saved to your account for easy tracking and future reference.
                     </p>
                   </div>
@@ -557,8 +556,21 @@ export default function Checkout() {
                 )}
               </Card>
 
-              {/* Combined Payment & Expectations Card */}
-              <Card className="p-5 mb-4">
+              {/* Trust Indicators - Compact row on mobile, full card on desktop */}
+              <div className="flex items-center justify-between gap-2 p-2 md:p-0 mb-4 md:mb-0 bg-muted/30 md:bg-transparent rounded-lg md:rounded-none">
+                <div className="flex items-center gap-1 md:hidden">
+                  <Lock className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">Secure Checkout</span>
+                </div>
+                <div className="flex items-center gap-3 md:hidden">
+                  <ShieldCheck className="h-4 w-4 text-[#21d8ff]" />
+                  <Truck className="h-4 w-4 text-[#E7FB10]" />
+                  <FlaskConical className="h-4 w-4 text-[#9d4edd]" />
+                </div>
+              </div>
+              
+              {/* Desktop: Full Payment Card */}
+              <Card className="hidden md:block p-5 mb-4">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="p-2 rounded-lg bg-muted">
                     <Lock className="h-5 w-5 text-muted-foreground" />
@@ -584,8 +596,8 @@ export default function Checkout() {
                 </div>
               </Card>
 
-              {/* Compact Trust & Verification Links */}
-              <Card className="p-4 border-[#9d4edd]/50 bg-gradient-to-br from-[#9d4edd]/20 to-transparent">
+              {/* Buying With Confidence - Desktop only */}
+              <Card className="hidden md:block p-4 border-[#9d4edd]/50 bg-gradient-to-br from-[#9d4edd]/20 to-transparent">
                 <h3 className="text-sm font-semibold mb-1 flex items-center gap-2">
                   <ClipboardCheck className="h-4 w-4 text-[#9d4edd]" />
                   Buying With Confidence
@@ -593,13 +605,13 @@ export default function Checkout() {
                 <p className="text-xs text-muted-foreground mb-3">Review our standards and quality assurance before you purchase</p>
                 <div className="grid grid-cols-2 gap-2">
                   <Link href="/buyer-checklist">
-                    <div className="flex items-center gap-2 p-2 rounded-lg border border-border hover:border-[#E7FB10] transition-all duration-300 cursor-pointer group" style={{ boxShadow: '0 0 0 2px rgba(231, 251, 16, 0.1)' }} onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 0 12px rgba(231, 251, 16, 0.6), 0 0 24px rgba(231, 251, 16, 0.3)'} onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 0 0 2px rgba(231, 251, 16, 0.1)'} data-testid="link-buyer-checklist">
+                    <div className="flex items-center gap-2 p-2 rounded-lg border border-border md:hover:border-[#E7FB10] transition-all duration-300 cursor-pointer group" data-testid="link-buyer-checklist">
                       <CheckCircle className="h-3.5 w-3.5 text-[#E7FB10]" />
                       <span className="text-xs font-medium text-[#E7FB10]">Vendor Checklist</span>
                     </div>
                   </Link>
                   <Link href="/quality-process">
-                    <div className="flex items-center gap-2 p-2 rounded-lg border border-border hover:border-[#21d8ff] transition-all duration-300 cursor-pointer group" style={{ boxShadow: '0 0 0 2px rgba(33, 216, 255, 0.1)' }} onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 0 12px rgba(33, 216, 255, 0.6), 0 0 24px rgba(33, 216, 255, 0.3)'} onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 0 0 2px rgba(33, 216, 255, 0.1)'} data-testid="link-quality-process">
+                    <div className="flex items-center gap-2 p-2 rounded-lg border border-border md:hover:border-[#21d8ff] transition-all duration-300 cursor-pointer group" data-testid="link-quality-process">
                       <Target className="h-3.5 w-3.5 text-[#21d8ff]" />
                       <span className="text-xs font-medium">Quality Process</span>
                     </div>
@@ -648,77 +660,67 @@ export default function Checkout() {
                   ))}
                 </div>
 
-                {/* BAC Water Upsell */}
+                {/* BAC Water Upsell - Compact on mobile */}
                 {shouldShowBacUpsell && bacWater && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="mb-4 p-4 rounded-lg bg-gradient-to-r from-[#21d8ff]/10 to-[#9d4edd]/10 border border-[#21d8ff]/30 shadow-[0_0_20px_rgba(33,216,255,0.2)] animate-pulse-glow-upsell"
+                    className="mb-3 md:mb-4 p-2 md:p-4 rounded-lg bg-gradient-to-r from-[#21d8ff]/10 to-[#9d4edd]/10 border border-[#21d8ff]/30"
                   >
-                    <div className="flex items-start gap-3 mb-3">
-                      <Beaker className="h-5 w-5 text-[#21d8ff] flex-shrink-0 mt-0.5" />
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-display font-semibold text-sm">Don't Forget: Reconstitution Supplies</h4>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Add bacteriostatic water to reconstitute your peptides properly and extend shelf life.
-                        </p>
-                      </div>
-                    </div>
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-sm font-semibold text-[#21d8ff]">
-                        ${Number(bacWater.price).toFixed(2)}
-                      </span>
-                      <motion.div
-                        whileHover={!hasBacWater ? { scale: 1.05 } : {}}
-                        whileTap={!hasBacWater ? { scale: 0.95 } : {}}
-                      >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Beaker className="h-4 w-4 md:h-5 md:w-5 text-[#21d8ff] flex-shrink-0" />
+                        <div className="min-w-0">
+                          <h4 className="font-display font-semibold text-xs md:text-sm truncate">Bacteriostatic Water</h4>
+                          <p className="text-xs text-muted-foreground hidden md:block">Reconstitute peptides properly</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="text-xs md:text-sm font-semibold text-[#21d8ff]">
+                          ${Number(bacWater.price).toFixed(2)}
+                        </span>
                         <Button
                           size="sm"
-                          className="bg-[#21d8ff] text-black font-semibold transition-all duration-300 md:hover:shadow-[0_0_15px_rgba(33,216,255,0.5)]"
+                          className="bg-[#21d8ff] text-black font-semibold text-xs px-2 md:px-3"
                           onClick={handleAddBacWater}
                           data-testid="button-add-bac-water"
                         >
-                          {hasBacWater ? "✓ Added" : "Add to Cart"}
+                          {hasBacWater ? "✓" : "Add"}
                         </Button>
-                      </motion.div>
+                      </div>
                     </div>
                   </motion.div>
                 )}
 
-                {/* Cold Pack Shipping Upsell */}
+                {/* Cold Pack Shipping Upsell - Compact on mobile */}
                 {hasPeptides && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-6 p-4 rounded-lg bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/30 shadow-[0_0_20px_rgba(33,216,255,0.2)] animate-pulse-glow-upsell"
+                    className="mb-4 md:mb-6 p-2 md:p-4 rounded-lg bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/30"
                   >
-                    <div className="flex items-start gap-3 mb-3">
-                      <Package className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-display font-semibold text-sm">Protect Your Order: Next-Day Cold Pack Shipping</h4>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Ensure optimal stability with insulated cold packs. Recommended for peptide orders.
-                        </p>
-                      </div>
-                    </div>
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-sm font-semibold text-blue-400">
-                        +${COLD_PACK_FEE.toFixed(2)}
-                      </span>
-                      <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Package className="h-4 w-4 md:h-5 md:w-5 text-blue-400 flex-shrink-0" />
+                        <div className="min-w-0">
+                          <h4 className="font-display font-semibold text-xs md:text-sm truncate">Cold Pack Shipping</h4>
+                          <p className="text-xs text-muted-foreground hidden md:block">Insulated for peptide stability</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="text-xs md:text-sm font-semibold text-blue-400">
+                          +${COLD_PACK_FEE.toFixed(2)}
+                        </span>
                         <Button
                           size="sm"
-                          className={`transition-all duration-300 ${hasColdPackShipping ? "bg-blue-600 md:hover:bg-blue-700 text-white" : "bg-[#21d8ff] text-black font-semibold md:hover:shadow-[0_0_15px_rgba(33,216,255,0.5)]"}`}
+                          className={`text-xs px-2 md:px-3 ${hasColdPackShipping ? "bg-blue-600 text-white" : "bg-[#21d8ff] text-black font-semibold"}`}
                           onClick={() => setHasColdPackShipping(!hasColdPackShipping)}
                           data-testid="button-cold-pack-shipping"
                         >
-                          {hasColdPackShipping ? "✓ Added" : "Add Cold Pack"}
+                          {hasColdPackShipping ? "✓" : "Add"}
                         </Button>
-                      </motion.div>
+                      </div>
                     </div>
                   </motion.div>
                 )}
@@ -842,37 +844,6 @@ export default function Checkout() {
           </div>
         </div>
 
-        {/* Mobile Sticky Checkout Footer */}
-        <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-background border-t border-border p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.3)]">
-          <div className="flex items-center justify-between gap-4 max-w-lg mx-auto">
-            <div>
-              <p className="text-xs text-muted-foreground">Total</p>
-              <p className="font-display font-bold text-xl" data-testid="text-sticky-total">${cartTotal.toFixed(2)}</p>
-              {baseShipping === 0 && (
-                <p className="text-xs text-green-500">Free shipping</p>
-              )}
-            </div>
-            <Button
-              size="lg"
-              variant={EARLY_ACCESS_MODE ? "secondary" : "default"}
-              className="flex-1 max-w-[200px] font-display gap-2"
-              onClick={handleCheckout}
-              disabled={checkoutMutation.isPending || EARLY_ACCESS_MODE}
-              data-testid="button-checkout-mobile"
-            >
-              {checkoutMutation.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : EARLY_ACCESS_MODE ? (
-                "Coming Soon"
-              ) : (
-                <>
-                  <Lock className="h-4 w-4" />
-                  Pay Now
-                </>
-              )}
-            </Button>
-          </div>
-        </div>
       </main>
       </>
     );
