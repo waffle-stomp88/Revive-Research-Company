@@ -772,9 +772,9 @@ function ProductsComponent() {
                   </div>
                 </div>
 
-                {/* Left: Pagination Controls - Fixed width to prevent layout shift */}
+                {/* Left: Pagination Controls - Fixed compact format */}
                 {totalPages > 1 && (
-                  <div className="flex items-center gap-1 min-w-[200px]">
+                  <div className="flex items-center gap-1">
                     <Button
                       variant="outline"
                       size="icon"
@@ -785,33 +785,9 @@ function ProductsComponent() {
                     >
                       <ChevronRight className="h-4 w-4 rotate-180" />
                     </Button>
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                      const showPage = page === 1 || page === totalPages || 
-                                       Math.abs(page - currentPage) <= 1;
-                      const showEllipsis = page === 2 && currentPage > 3 ||
-                                           page === totalPages - 1 && currentPage < totalPages - 2;
-                      
-                      if (showEllipsis && !showPage) {
-                        return (
-                          <span key={page} className="px-1 text-muted-foreground text-sm" data-testid={`text-ellipsis-${page}-inline`}>..</span>
-                        );
-                      }
-                      
-                      if (!showPage) return null;
-                      
-                      return (
-                        <Button
-                          key={page}
-                          variant={currentPage === page ? "default" : "outline"}
-                          size="icon"
-                          onClick={() => handlePageChange(page)}
-                          className="h-8 w-8"
-                          data-testid={`button-page-${page}-inline`}
-                        >
-                          {page}
-                        </Button>
-                      );
-                    })}
+                    <span className="px-3 text-sm font-medium min-w-[60px] text-center" data-testid="text-page-info-inline">
+                      {currentPage} / {totalPages}
+                    </span>
                     <Button
                       variant="outline"
                       size="icon"
