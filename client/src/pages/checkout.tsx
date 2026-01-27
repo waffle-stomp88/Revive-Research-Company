@@ -262,8 +262,8 @@ export default function Checkout() {
 
   if (fromCart && cartItems.length === 0) {
     return (
-      <main className="min-h-screen pt-32 md:pt-40 pb-24 flex items-center justify-center">
-        <Card className="p-12 text-center max-w-md">
+      <main className="min-h-screen pt-32 md:pt-40 pb-24 px-4 md:px-8 flex items-center justify-center">
+        <Card className="p-8 md:p-12 text-center max-w-md w-full">
           <FlaskConical className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
           <h2 className="font-display text-xl font-semibold mb-2">Your Cart is Empty</h2>
           <p className="text-muted-foreground mb-6">
@@ -279,8 +279,8 @@ export default function Checkout() {
 
   if (!productId && !bundleId && !fromCart) {
     return (
-      <main className="min-h-screen pt-32 md:pt-40 pb-24 flex items-center justify-center">
-        <Card className="p-12 text-center max-w-md">
+      <main className="min-h-screen pt-32 md:pt-40 pb-24 px-4 md:px-8 flex items-center justify-center">
+        <Card className="p-8 md:p-12 text-center max-w-md w-full">
           <FlaskConical className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
           <h2 className="font-display text-xl font-semibold mb-2">No Product Selected</h2>
           <p className="text-muted-foreground mb-6">
@@ -296,8 +296,8 @@ export default function Checkout() {
 
   if (productLoading) {
     return (
-      <main className="min-h-screen pt-32 md:pt-40 pb-24">
-        <div className="max-w-4xl mx-auto px-4 md:px-8">
+      <main className="min-h-screen pt-32 md:pt-40 pb-24 px-4 md:px-8">
+        <div className="max-w-4xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12">
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
