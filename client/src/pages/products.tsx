@@ -926,21 +926,21 @@ function ProductsComponent() {
                                     );
                                   })()}
                                 </div>
-                                <h3 className="font-display text-sm md:text-base font-black mb-0.5 group-hover:text-[#E7FB10] transition-colors line-clamp-2 leading-tight">
+                                <h3 className="font-display text-base md:text-lg font-black mb-0.5 group-hover:text-[#E7FB10] transition-colors line-clamp-2 leading-tight text-center">
                                   {product.name}
                                 </h3>
-                                <p className="text-[10px] text-muted-foreground/70 mb-1 line-clamp-1">
+                                <p className="text-[10px] text-muted-foreground/70 mb-1 line-clamp-1 text-center">
                                   {product.shortDescription}
                                 </p>
-                                <div className="flex items-center justify-between mt-auto">
-                                  <span className="font-display text-xl font-black text-[#E7FB10]">
+                                <div className="flex items-center justify-center mt-auto gap-1.5">
+                                  <span className="font-display text-base font-bold text-[#E7FB10]">
                                     ${Number(product.price).toFixed(2)}
-                                    {product.originalPrice && (
-                                      <span className="text-[10px] text-muted-foreground line-through ml-1.5">
-                                        ${Number(product.originalPrice).toFixed(2)}
-                                      </span>
-                                    )}
                                   </span>
+                                  {product.originalPrice && (
+                                    <span className="text-[10px] text-muted-foreground line-through">
+                                      ${Number(product.originalPrice).toFixed(2)}
+                                    </span>
+                                  )}
                                 </div>
                               </div>
                             </Card>
