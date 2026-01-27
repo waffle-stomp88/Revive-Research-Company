@@ -171,7 +171,7 @@ export function Navigation() {
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
         className={`fixed left-0 right-0 z-50 transition-all duration-300`}
-        style={{ top: 'var(--banner-height, 40px)' }}
+        style={{ top: 'var(--banner-height, 36px)' }}
       >
         <div className={`transition-all duration-300 ${
           isScrolled
@@ -706,7 +706,7 @@ export function Navigation() {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
             className="fixed inset-0 z-40 bg-background/98 backdrop-blur-lg md:hidden"
-            style={{ paddingTop: 'calc(var(--banner-height, 40px) + 64px)' }}
+            style={{ paddingTop: 'calc(var(--banner-height, 36px) + 64px)' }}
           >
             <nav className="flex flex-col h-full overflow-y-auto pb-8">
               {/* Mobile Search Bar */}

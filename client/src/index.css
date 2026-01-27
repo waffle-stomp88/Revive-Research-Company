@@ -173,7 +173,7 @@
 
 /* Banner height CSS variable - controlled by FreeShippingBanner component */
 :root {
-  --banner-height: 40px;
+  --banner-height: 36px;
 }
 
 /* LIGHT MODE */
