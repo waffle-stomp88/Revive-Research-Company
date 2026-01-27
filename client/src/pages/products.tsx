@@ -904,13 +904,13 @@ function ProductsComponent() {
                               </div>
                               
                               <div className="flex-1 flex flex-col min-h-0">
-                                <div className="mb-2">
+                                <div className="mb-1">
                                   {(() => {
                                     const peptideGroup = getPeptideGroup(product.name);
                                     return peptideGroup ? (
                                       <Badge 
                                         variant="outline"
-                                        className="text-[11px] px-2 py-1 opacity-85"
+                                        className="text-[10px] px-1.5 py-0.5 opacity-80"
                                         style={{ 
                                           borderColor: `${peptideGroup.color}60`,
                                           color: peptideGroup.color 
@@ -920,69 +920,27 @@ function ProductsComponent() {
                                         {peptideGroup.label}
                                       </Badge>
                                     ) : (
-                                      <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                                      <span className="text-[9px] text-muted-foreground uppercase tracking-wider">
                                         {product.category}
                                       </span>
                                     );
                                   })()}
                                 </div>
-                                <h3 className="font-display text-lg md:text-2xl font-black mb-2 group-hover:text-[#E7FB10] transition-colors line-clamp-2 text-center">
+                                <h3 className="font-display text-sm md:text-base font-black mb-0.5 group-hover:text-[#E7FB10] transition-colors line-clamp-2 leading-tight">
                                   {product.name}
                                 </h3>
-                                <p className="text-xs text-muted-foreground mb-2 line-clamp-2 min-h-[2rem]">
+                                <p className="text-[10px] text-muted-foreground/70 mb-1 line-clamp-1">
                                   {product.shortDescription}
                                 </p>
-                                <div className="flex items-center justify-between mt-auto pt-2 border-t border-border flex-wrap gap-2">
-                                  <div className="flex flex-col">
-                                    <div className="flex items-center gap-2">
-                                      <div className="flex items-baseline gap-1.5">
-                                        <span className="font-display text-lg font-bold text-[#E7FB10]">
-                                          ${Number(product.price).toFixed(2)}
-                                        </span>
-                                        {product.originalPrice && (
-                                          <span className="text-[10px] text-muted-foreground line-through">
-                                            ${Number(product.originalPrice).toFixed(2)}
-                                          </span>
-                                        )}
-                                      </div>
-                                      {/* Price Trend Arrow - Show based on sale status */}
-                                      {product.originalPrice && Number(product.price) < Number(product.originalPrice) && (
-                                        <TrendingDown className="h-4 w-4 text-red-500" data-testid={`icon-price-down-${product.id}`} />
-                                      )}
-                                    </div>
-                                    <span className="text-[9px] text-[#E7FB10]/60">Preview pricing</span>
-                                  </div>
-                                  <div className="flex items-center gap-1.5 ml-auto">
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        setQuickViewProduct(product);
-                                      }}
-                                      data-testid={`button-quickview-${product.id}`}
-                                    >
-                                      <Eye className="h-3.5 w-3.5" />
-                                    </Button>
-                                    <button
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        const inCompare = isInCompare(product.id);
-                                        if (inCompare) {
-                                          removeFromCompare(product.id);
-                                        } else {
-                                          addToCompare(product.id);
-                                        }
-                                      }}
-                                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                                      data-testid={`button-compare-icon-${product.id}`}
-                                    >
-                                      <Scale className="h-4 w-4 text-[#21d8ff]" />
-                                    </button>
-                                  </div>
+                                <div className="flex items-center justify-between mt-auto">
+                                  <span className="font-display text-xl font-black text-[#E7FB10]">
+                                    ${Number(product.price).toFixed(2)}
+                                    {product.originalPrice && (
+                                      <span className="text-[10px] text-muted-foreground line-through ml-1.5">
+                                        ${Number(product.originalPrice).toFixed(2)}
+                                      </span>
+                                    )}
+                                  </span>
                                 </div>
                               </div>
                             </Card>
