@@ -210,7 +210,7 @@ function ProductsComponent() {
 
   const [searchQuery, setSearchQuery] = useState(savedState?.searchQuery ?? "");
   const [sortBy, setSortBy] = useState<SortOption>(savedState?.sortBy ?? "featured");
-  const [stockFilter, setStockFilter] = useState<"all" | "in-stock" | "out-of-stock">(savedState?.stockFilter ?? "in-stock");
+  const [stockFilter, setStockFilter] = useState<"all" | "in-stock" | "out-of-stock">(savedState?.stockFilter ?? "all");
   const [activeSection, setActiveSection] = useState<ShopSection>("deals");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>(savedState?.selectedCategory ?? "all");
@@ -460,13 +460,13 @@ function ProductsComponent() {
   const clearFilters = () => {
     setSearchQuery("");
     setSortBy("featured");
-    setStockFilter("in-stock");
+    setStockFilter("all");
     setSelectedCategory("all");
     setPeptideGroupFilter("all");
     setPriceRange([priceStats.min, priceStats.max]);
   };
 
-  const hasActiveFilters = searchQuery !== "" || sortBy !== "featured" || stockFilter !== "in-stock" || selectedCategory !== "all" || peptideGroupFilter !== "all" || priceRange[0] !== priceStats.min || priceRange[1] !== priceStats.max;
+  const hasActiveFilters = searchQuery !== "" || sortBy !== "featured" || stockFilter !== "all" || selectedCategory !== "all" || peptideGroupFilter !== "all" || priceRange[0] !== priceStats.min || priceRange[1] !== priceStats.max;
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredAndSortedProducts.length / itemsPerPage);
