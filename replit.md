@@ -35,6 +35,7 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **Subscription System**: Weekly (15% off), bi-weekly (12% off), and monthly (10% off) subscription options.
 - **Legal Compliance**: Footer contains consolidated sections for FDA & Regulatory Compliance and Researcher Responsibility, with "Research Use Only" disclaimers across all pages.
 - **Cart & Checkout UX**: Clickable cart items navigate to detail pages. Checkout shows login option for unauthenticated users.
+- **Shop Page Pagination**: Products page displays 12 items per page with numbered pagination controls above and below the product grid. Products are sorted with in-stock items first, followed by "Coming Soon" items (out-of-stock). Out-of-stock products display a soft muted gray "Coming Soon" badge instead of harsh red styling, creating a more positive browsing experience while showing the full catalog.
 - **Discount Code System**: Cart page input with validation for affiliate (Basic Referral 10%, Personal 20%) and promotional codes.
 - **Price Transparency System**: Stock exchange-style pricing transparency showing price trends (green ↓ for decreases, red ↑ for increases, gray "Stable") with tooltips and 30-day minimum between changes.
 - **Google Analytics Integration**: GA4 tracking with auto page views and custom event tracking.
