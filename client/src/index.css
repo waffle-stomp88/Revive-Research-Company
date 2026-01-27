@@ -3,32 +3,45 @@
 @tailwind base;
 
 @layer base {
+  /* Prevent Radix UI scroll lock from causing layout shifts */
+  :root {
+    --removed-body-scroll-bar-size: 0px !important;
+  }
+
   html {
     scrollbar-gutter: stable;
-    overflow-y: auto !important;
-    overflow-x: auto !important;
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
     padding-right: 0 !important;
     margin-right: 0 !important;
   }
 
-  /* Prevent Radix UI from hiding scrollbars when dropdowns/popovers open */
-  html[style] {
-    overflow-y: auto !important;
-    overflow-x: auto !important;
+  html[style],
+  html[data-scroll-locked] {
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
     padding-right: 0 !important;
     margin-right: 0 !important;
   }
 
   body {
-    overflow-y: auto !important;
-    overflow-x: auto !important;
+    overflow-y: visible !important;
+    overflow-x: hidden !important;
     padding-right: 0 !important;
     margin-right: 0 !important;
   }
 
-  body[style] {
-    overflow-y: auto !important;
-    overflow-x: auto !important;
+  body[style],
+  body[data-scroll-locked] {
+    overflow-y: visible !important;
+    overflow-x: hidden !important;
+    padding-right: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  /* Override any element using the Radix scroll bar size variable */
+  [style*="--removed-body-scroll-bar-size"] {
+    --removed-body-scroll-bar-size: 0px !important;
     padding-right: 0 !important;
     margin-right: 0 !important;
   }
