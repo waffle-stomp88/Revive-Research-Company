@@ -315,8 +315,8 @@ export default function Checkout() {
 
   if (!fromCart && !product && !bundle) {
     return (
-      <main className="min-h-screen pt-32 md:pt-40 pb-24 flex items-center justify-center">
-        <Card className="p-12 text-center max-w-md">
+      <main className="min-h-screen pt-32 md:pt-40 pb-24 px-4 md:px-8 flex items-center justify-center">
+        <Card className="p-8 md:p-12 text-center max-w-md w-full">
           <FlaskConical className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
           <h2 className="font-display text-xl font-semibold mb-2">Product Not Found</h2>
           <p className="text-muted-foreground mb-6">
@@ -440,9 +440,9 @@ export default function Checkout() {
     return (
       <>
         <RuoReminderDialog />
-        <main className="min-h-screen pt-32 md:pt-40 pb-24">
+        <main className="min-h-screen pt-32 md:pt-40 pb-24 px-4 md:px-8">
           <SEOHead title="Secure Checkout" description="Complete your order securely. All research compounds ship same-day before 12 PM CT with discreet packaging." canonicalPath="/checkout" />
-          <div className="max-w-4xl mx-auto px-4 md:px-8">
+          <div className="max-w-4xl mx-auto">
             {/* Mobile Header - Compact */}
             <div className="flex items-center justify-between mb-4 md:mb-8">
               <Link href="/cart" onClick={() => sessionStorage.removeItem('checkoutRuoAcknowledged')}>
@@ -467,6 +467,19 @@ export default function Checkout() {
             >
               Checkout
             </motion.h1>
+
+            {/* Mobile Trust Indicators - Above everything on mobile */}
+            <div className="flex items-center justify-between gap-2 p-2 mb-4 bg-muted/30 rounded-lg md:hidden" data-testid="mobile-trust-indicators">
+              <div className="flex items-center gap-1">
+                <Lock className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-xs text-muted-foreground">Secure Checkout</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <ShieldCheck className="h-4 w-4 text-[#21d8ff]" />
+                <Truck className="h-4 w-4 text-[#E7FB10]" />
+                <FlaskConical className="h-4 w-4 text-[#9d4edd]" />
+              </div>
+            </div>
 
           {/* Mobile: Order items first, then account/trust. Desktop: Two columns */}
           <div className="grid md:grid-cols-2 gap-6 md:gap-12">
@@ -556,19 +569,6 @@ export default function Checkout() {
                 )}
               </Card>
 
-              {/* Trust Indicators - Compact row on mobile, full card on desktop */}
-              <div className="flex items-center justify-between gap-2 p-2 md:p-0 mb-4 md:mb-0 bg-muted/30 md:bg-transparent rounded-lg md:rounded-none">
-                <div className="flex items-center gap-1 md:hidden">
-                  <Lock className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">Secure Checkout</span>
-                </div>
-                <div className="flex items-center gap-3 md:hidden">
-                  <ShieldCheck className="h-4 w-4 text-[#21d8ff]" />
-                  <Truck className="h-4 w-4 text-[#E7FB10]" />
-                  <FlaskConical className="h-4 w-4 text-[#9d4edd]" />
-                </div>
-              </div>
-              
               {/* Desktop: Full Payment Card */}
               <Card className="hidden md:block p-5 mb-4">
                 <div className="flex items-center gap-3 mb-4">
