@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
+import { CategoryTabs } from "@/components/category-tabs";
 import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -147,6 +148,11 @@ function ResearchStacks() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
+          {/* Category Navigation Tabs */}
+          <div className="mb-6">
+            <CategoryTabs />
+          </div>
+
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#a855f7]/10 border border-[#a855f7]/30 mb-4">
             <Layers className="h-4 w-4 text-[#a855f7]" />
             <span className="text-sm font-medium text-[#a855f7]">Multi-Compound Research</span>

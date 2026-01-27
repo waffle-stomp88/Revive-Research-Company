@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
+import { CategoryTabs } from "@/components/category-tabs";
 import { Boxes, Package, ShoppingCart, ArrowRight, Percent, CheckCircle2, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -55,6 +56,11 @@ export default function BulkPacks() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
+          {/* Category Navigation Tabs */}
+          <div className="mb-6">
+            <CategoryTabs />
+          </div>
+
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#E7FB10]/10 border border-[#E7FB10]/30 mb-4">
             <Boxes className="h-4 w-4 text-[#E7FB10]" />
             <span className="text-sm font-medium text-[#E7FB10]">Volume Savings</span>

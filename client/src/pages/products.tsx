@@ -53,6 +53,7 @@ import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { BUNDLES } from "@/lib/bundles";
 import { SEOHead } from "@/components/seo-head";
+import { CategoryTabs } from "@/components/category-tabs";
 
 // Badge priority system - max 2 badges per product
 // Priority: Out of Stock > Low Stock > Sale > Selling Fast > Featured
@@ -498,6 +499,11 @@ function ProductsComponent() {
         >
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">Peptides</h1>
         </motion.div>
+
+        {/* Category Navigation Tabs */}
+        <div className="mb-6">
+          <CategoryTabs />
+        </div>
 
         {/* Main Layout with Sidebar */}
         <div className="flex gap-6 relative">

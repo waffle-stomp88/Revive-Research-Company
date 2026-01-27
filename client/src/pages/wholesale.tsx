@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
+import { CategoryTabs } from "@/components/category-tabs";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -274,6 +275,11 @@ ${data.additionalInfo || "None provided"}`.trim(),
     <main className="min-h-screen pt-32 md:pt-40 pb-12">
       <SEOHead title="Wholesale Program" description="Wholesale pricing for institutions and resellers. Contact us for volume discounts." canonicalPath="/wholesale" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
+        {/* Category Navigation Tabs */}
+        <div className="mb-6">
+          <CategoryTabs />
+        </div>
+
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
