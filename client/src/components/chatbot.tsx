@@ -50,6 +50,13 @@ export function ChatBot() {
     }
   }, [isOpen]);
 
+  // Listen for global open chatbot event
+  useEffect(() => {
+    const handleOpenChat = () => setIsOpen(true);
+    window.addEventListener('openChatbot', handleOpenChat);
+    return () => window.removeEventListener('openChatbot', handleOpenChat);
+  }, []);
+
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
 

@@ -46,7 +46,8 @@ import {
   TrendingUp,
   AlertTriangle,
   Eye,
-  Scale
+  Scale,
+  MessageCircle
 } from "lucide-react";
 import { isInCompare, addToCompare, removeFromCompare } from "@/components/comparison-tool";
 import type { Product } from "@shared/schema";
@@ -988,6 +989,18 @@ function ProductsComponent() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Need Help Choosing CTA */}
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
+        <button
+          onClick={() => window.dispatchEvent(new Event('openChatbot'))}
+          className="w-full flex items-center justify-center gap-3 py-4 px-6 rounded-lg border-2 border-[#21d8ff]/30 bg-[#21d8ff]/5 hover:border-[#21d8ff] hover:bg-[#21d8ff]/10 transition-all group"
+          data-testid="button-need-help-cta"
+        >
+          <MessageCircle className="h-5 w-5 text-[#21d8ff] group-hover:scale-110 transition-transform" />
+          <span className="font-display font-bold text-[#21d8ff]">Need Help Choosing?</span>
+        </button>
       </div>
 
       {/* Quick View Modal */}
