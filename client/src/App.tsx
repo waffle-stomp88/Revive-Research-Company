@@ -197,32 +197,22 @@ function Router() {
 
 function PreventScrollbarHiding() {
   useEffect(() => {
-    const observer = new MutationObserver(() => {
-      const html = document.documentElement;
-      const body = document.body;
+    const stripScrollLockStyles = (el: HTMLElement) => {
+      const style = el.getAttribute('style');
+      if (!style) return;
       
-      // Prevent overflow hidden (causes scrollbar to disappear)
-      if (html.style.overflow === 'hidden' || body.style.overflow === 'hidden') {
-        html.style.overflow = 'auto';
-        html.style.overflowY = 'auto';
-        html.style.overflowX = 'auto';
-        body.style.overflow = 'auto';
-        body.style.overflowY = 'auto';
-        body.style.overflowX = 'auto';
+      // If Radix has added any scroll-locking styles, remove the entire style attribute
+      if (style.includes('overflow') || style.includes('padding-right') || 
+          style.includes('margin-right') || style.includes('--removed-body')) {
+        el.removeAttribute('style');
       }
-      
-      // Prevent padding-right compensation (causes layout shift)
-      if (html.style.paddingRight) {
-        html.style.paddingRight = '';
-      }
-      if (body.style.paddingRight) {
-        body.style.paddingRight = '';
-      }
-      if (html.style.marginRight) {
-        html.style.marginRight = '';
-      }
-      if (body.style.marginRight) {
-        body.style.marginRight = '';
+    };
+    
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+          stripScrollLockStyles(mutation.target as HTMLElement);
+        }
       }
     });
 
