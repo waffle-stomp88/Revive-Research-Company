@@ -6,32 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      "paypal-button": React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement>,
-        HTMLElement
-      >;
-      "paypal-card-number-field": React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement>,
-        HTMLElement
-      >;
-      "paypal-card-expiry-field": React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement>,
-        HTMLElement
-      >;
-      "paypal-card-cvv-field": React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement>,
-        HTMLElement
-      >;
-      "paypal-card-name-field": React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement>,
-        HTMLElement
-      >;
-    }
-  }
-}
 
 type PaymentMethod = "paypal" | "card";
 
@@ -66,10 +40,11 @@ export default function PayPalCheckout({
   const [error, setError] = useState<string | null>(null);
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>("card");
   const [isProcessingCard, setIsProcessingCard] = useState(false);
+  const [isProcessingPayPal, setIsProcessingPayPal] = useState(false);
   const [cardFieldsReady, setCardFieldsReady] = useState(false);
   const cleanupRef = useRef<(() => void) | null>(null);
   const cardSessionRef = useRef<any>(null);
-  const buttonId = useRef(`paypal-button-${Math.random().toString(36).substr(2, 9)}`);
+  const paypalSessionRef = useRef<any>(null);
 
   const createOrder = async () => {
     const orderPayload = {
@@ -181,26 +156,13 @@ export default function PayPalCheckout({
           components,
         });
 
-        // Initialize PayPal button session
+        // Initialize PayPal button session and store in ref
         const paypalCheckout = sdkInstance.createPayPalOneTimePaymentSession({
           onApprove: handleApprove,
           onCancel: handleCancel,
           onError: handleError,
         });
-
-        const onClick = async () => {
-          if (disabled) return;
-          try {
-            const checkoutOptionsPromise = createOrder();
-            await paypalCheckout.start(
-              { paymentFlow: "auto" },
-              checkoutOptionsPromise,
-            );
-          } catch (e) {
-            console.error("PayPal checkout error:", e);
-            handleError(e);
-          }
-        };
+        paypalSessionRef.current = paypalCheckout;
 
         // Initialize Card Fields if enabled
         if (showCardFields) {
@@ -233,17 +195,8 @@ export default function PayPalCheckout({
           }
         }
 
-        // Wait for DOM to be ready
-        setTimeout(() => {
-          const paypalButton = document.getElementById(buttonId.current);
-          if (paypalButton) {
-            paypalButton.addEventListener("click", onClick);
-            cleanupRef.current = () => {
-              paypalButton.removeEventListener("click", onClick);
-            };
-          }
-          if (isMounted) setIsLoading(false);
-        }, 100);
+        // Mark as ready
+        if (isMounted) setIsLoading(false);
       } catch (e) {
         console.error("PayPal init error:", e);
         if (isMounted) {
@@ -260,6 +213,25 @@ export default function PayPalCheckout({
       cleanupRef.current?.();
     };
   }, [amount, currency, intent, disabled]);
+
+  // Handle PayPal button click
+  const handlePayPalClick = async () => {
+    if (disabled || !paypalSessionRef.current) return;
+    
+    setIsProcessingPayPal(true);
+    try {
+      const checkoutOptionsPromise = createOrder();
+      await paypalSessionRef.current.start(
+        { paymentFlow: "auto" },
+        checkoutOptionsPromise,
+      );
+    } catch (e) {
+      console.error("PayPal checkout error:", e);
+      onError?.(e);
+    } finally {
+      setIsProcessingPayPal(false);
+    }
+  };
 
   // Handle card payment submission
   const handleCardSubmit = async () => {
@@ -400,12 +372,27 @@ export default function PayPalCheckout({
           {/* PayPal Button Section - show when PayPal selected OR when card fields not available */}
           {(selectedMethod === "paypal" || !cardFieldsReady) && (
             <div className="space-y-3">
-              <paypal-button 
-                id={buttonId.current}
-                className={`w-full cursor-pointer block ${disabled ? 'opacity-50 pointer-events-none' : ''}`}
-                style={{ minHeight: '48px', display: 'block' }}
+              <Button
+                onClick={handlePayPalClick}
+                disabled={disabled || isProcessingPayPal || !paypalSessionRef.current}
+                className="w-full bg-[#0070ba] hover:bg-[#003087] text-white font-semibold text-base gap-2"
+                size="lg"
                 data-testid="button-paypal"
-              />
+              >
+                {isProcessingPayPal ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Connecting to PayPal...
+                  </>
+                ) : (
+                  <>
+                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 2.9A.77.77 0 0 1 5.7 2.26h6.988c2.277 0 4.115.6 5.333 1.797.638.626 1.082 1.376 1.324 2.23.257.909.266 1.984.016 3.239l-.001.008v.006c-.432 2.2-1.408 3.938-2.858 5.098-1.425 1.14-3.22 1.695-5.328 1.695h-1.76a.76.76 0 0 0-.758.668l-.001.007-.74 4.7a.59.59 0 0 1-.587.506H7.076v.123z"/>
+                    </svg>
+                    Pay with PayPal
+                  </>
+                )}
+              </Button>
               <p className="text-xs text-center text-muted-foreground">
                 {cardFieldsReady 
                   ? "You'll be redirected to PayPal to complete your purchase"
@@ -419,12 +406,27 @@ export default function PayPalCheckout({
 
       {/* Fallback to just PayPal button if card fields not enabled */}
       {!isLoading && !showCardFields && (
-        <paypal-button 
-          id={buttonId.current}
-          className={`w-full cursor-pointer block ${disabled ? 'opacity-50 pointer-events-none' : ''}`}
-          style={{ minHeight: '48px', display: 'block' }}
+        <Button
+          onClick={handlePayPalClick}
+          disabled={disabled || isProcessingPayPal || !paypalSessionRef.current}
+          className="w-full bg-[#0070ba] hover:bg-[#003087] text-white font-semibold text-base gap-2"
+          size="lg"
           data-testid="button-paypal"
-        />
+        >
+          {isProcessingPayPal ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Connecting to PayPal...
+            </>
+          ) : (
+            <>
+              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 2.9A.77.77 0 0 1 5.7 2.26h6.988c2.277 0 4.115.6 5.333 1.797.638.626 1.082 1.376 1.324 2.23.257.909.266 1.984.016 3.239l-.001.008v.006c-.432 2.2-1.408 3.938-2.858 5.098-1.425 1.14-3.22 1.695-5.328 1.695h-1.76a.76.76 0 0 0-.758.668l-.001.007-.74 4.7a.59.59 0 0 1-.587.506H7.076v.123z"/>
+              </svg>
+              Pay with PayPal
+            </>
+          )}
+        </Button>
       )}
     </div>
   );
