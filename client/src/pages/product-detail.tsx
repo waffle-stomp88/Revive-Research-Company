@@ -447,7 +447,7 @@ export default function ProductDetail() {
     : `Premium ${product.name} research peptide. Third-party lab tested with Certificate of Analysis. For research use only.`;
 
   return (
-    <main className="min-h-screen pt-32 md:pt-40 pb-12">
+    <main className="min-h-screen pt-24 md:pt-40 pb-12">
       <SEOHead 
         title={seoTitle}
         description={seoDescription}
@@ -457,12 +457,13 @@ export default function ProductDetail() {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="mb-4"
+          className="mb-2 md:mb-4"
         >
           <Link href="/products">
-            <Button variant="ghost" className="gap-2 -ml-4" data-testid="button-back-products">
-              <ArrowLeft className="h-4 w-4" />
-              Back to Products
+            <Button variant="ghost" size="sm" className="gap-1.5 -ml-2 md:-ml-4 md:gap-2" data-testid="button-back-products">
+              <ArrowLeft className="h-3.5 w-3.5 md:h-4 md:w-4" />
+              <span className="hidden md:inline">Back to Products</span>
+              <span className="md:hidden">Back</span>
             </Button>
           </Link>
         </motion.div>
@@ -482,11 +483,11 @@ export default function ProductDetail() {
                 />
               </div>
             ) : (
-              <div className={`relative aspect-square sticky top-24 overflow-hidden rounded-lg ${isOutOfStock ? 'border-2 border-red-500' : ''}`}>
+              <div className={`relative h-48 md:h-auto md:aspect-square md:sticky md:top-24 overflow-hidden rounded-lg ${isOutOfStock ? 'border-2 border-red-500' : ''}`}>
                 <ImageLoader 
                   src={product.imageUrl || productImage} 
                   alt={`${product.name} ${selectedDosage} research peptide - COA verified`}
-                  className={`w-full h-full object-contain p-6 ${isOutOfStock ? 'opacity-60' : ''}`}
+                  className={`w-full h-full object-contain p-4 md:p-6 ${isOutOfStock ? 'opacity-60' : ''}`}
                   containerClassName="relative w-full h-full bg-gradient-to-br from-muted to-muted/50 overflow-hidden rounded-lg"
                 />
               {/* Out of Stock Overlay */}
@@ -601,13 +602,13 @@ export default function ProductDetail() {
               ))}
             </div>
 
-            <h1 className="font-display text-4xl md:text-6xl font-bold mb-2 uppercase tracking-tighter leading-none" data-testid="text-product-name">
+            <h1 className="font-display text-3xl md:text-6xl font-bold mb-1 md:mb-2 uppercase tracking-tighter leading-none" data-testid="text-product-name">
               {product.name}
             </h1>
 
-            <div className="mb-3">
-              <div className="flex items-baseline gap-3 flex-wrap">
-                <span className="font-display text-3xl font-bold text-[#E7FB10]" data-testid="text-product-price">
+            <div className="mb-2 md:mb-3">
+              <div className="flex items-baseline gap-2 md:gap-3 flex-wrap">
+                <span className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10]" data-testid="text-product-price">
                   ${getBasePrice().toFixed(2)}
                 </span>
                 {getOriginalPrice() && (
@@ -625,11 +626,12 @@ export default function ProductDetail() {
               <span className="text-xs font-semibold text-[#E7FB10] mt-1 block">Early access pricing preview — subject to change at launch</span>
             </div>
 
-            <p className="text-sm text-muted-foreground leading-relaxed mb-4" data-testid="text-product-description">
+            {/* Description - Desktop only (mobile shows below buttons) */}
+            <p className="hidden md:block text-sm text-muted-foreground leading-relaxed mb-4" data-testid="text-product-description">
               {product.description}
             </p>
 
-            <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="grid grid-cols-2 gap-3 mb-3 md:mb-4">
               {product.dosageOptions && product.dosageOptions.length > 0 && (
                 <div>
                   <Label className="text-xs font-medium mb-1.5 block text-muted-foreground">Dosage</Label>
@@ -706,7 +708,7 @@ export default function ProductDetail() {
 
             {/* Purchase Options - Hidden when out of stock */}
             {!isOutOfStock && (
-              <div className="mb-4">
+              <div className="mb-3 md:mb-4">
                 <Label className="text-xs font-medium mb-1.5 block text-muted-foreground">Purchase Option</Label>
                 <div className="grid grid-cols-2 gap-2">
                   <div 
@@ -758,7 +760,7 @@ export default function ProductDetail() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mb-4"
+                className="mb-3 md:mb-4"
               >
                 <Label className="text-xs font-medium mb-1.5 block text-muted-foreground">Delivery Frequency</Label>
                 <div className="grid grid-cols-3 gap-2">
@@ -784,7 +786,7 @@ export default function ProductDetail() {
               </motion.div>
             )}
 
-            <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">
+            <div className="flex items-center justify-between text-xs text-muted-foreground mb-2 md:mb-3">
               {isOutOfStock ? (
                 <span className="flex items-center gap-1.5 text-red-400 font-medium">
                   <AlertTriangle className="h-3.5 w-3.5" />
@@ -812,7 +814,7 @@ export default function ProductDetail() {
             </div>
 
             {/* Mobile-only compact RUO notice */}
-            <div className="md:hidden flex items-center gap-2 p-3 rounded-lg bg-red-950/30 border border-red-500/40 mb-4" data-testid="card-ruo-mobile">
+            <div className="md:hidden flex items-center gap-2 p-2.5 rounded-lg bg-red-950/30 border border-red-500/40 mb-3" data-testid="card-ruo-mobile">
               <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0" />
               <span className="text-xs text-red-400 font-medium">Research Use Only - Not for human consumption</span>
             </div>
@@ -965,9 +967,28 @@ export default function ProductDetail() {
               </motion.div>
             )}
 
-            <Separator className="my-6" />
+            {/* Mobile-only collapsible description - shown below purchase actions */}
+            <Collapsible className="md:hidden mt-4">
+              <CollapsibleTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  className="w-full justify-between text-sm p-0 h-auto"
+                  data-testid="button-toggle-description-mobile"
+                >
+                  <span className="text-muted-foreground">About this product</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pt-2">
+                <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-product-description-mobile">
+                  {product.description}
+                </p>
+              </CollapsibleContent>
+            </Collapsible>
 
-            <div className="grid grid-cols-4 gap-2 text-center mb-6">
+            <Separator className="my-4 md:my-6" />
+
+            <div className="grid grid-cols-4 gap-2 text-center mb-4 md:mb-6">
               <div className="flex flex-col items-center gap-1">
                 <Shield className="h-4 w-4 text-[#21d8ff]" />
                 <span className="text-[10px] text-muted-foreground">3rd Party Tested</span>
