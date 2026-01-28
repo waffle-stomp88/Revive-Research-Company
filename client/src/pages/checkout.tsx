@@ -252,6 +252,7 @@ export default function Checkout() {
       sessionStorage.setItem('orderSummary', JSON.stringify(orderSummary));
       
       clearCart();
+      localStorage.removeItem("appliedDiscount");
       // Redirect to order confirmation or orders page
       window.location.href = `/order-confirmation?orderId=${data.id}&manual=true&method=${data.paymentMethod || selectedPaymentMethod}`;
     },
@@ -346,6 +347,7 @@ export default function Checkout() {
     sessionStorage.setItem('orderSummary', JSON.stringify(orderSummary));
     
     clearCart();
+    localStorage.removeItem("appliedDiscount");
     window.location.href = `/order-confirmation?paypalOrderId=${paypalOrderId}`;
   };
 
@@ -1446,6 +1448,7 @@ export default function Checkout() {
                               description: "Your subscription is now active.",
                             });
                             clearCart();
+                            localStorage.removeItem("appliedDiscount");
                           }}
                           onError={handlePayPalError}
                           className="w-full"
@@ -1464,6 +1467,7 @@ export default function Checkout() {
                               description: "Your subscription is now active.",
                             });
                             clearCart();
+                            localStorage.removeItem("appliedDiscount");
                           }}
                           onError={handlePayPalError}
                           className="w-full"

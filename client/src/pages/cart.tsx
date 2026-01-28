@@ -358,12 +358,23 @@ export default function CartPage() {
                   </div>
                 ) : (
                   <div className="mb-4 p-3 bg-green-950/30 border border-green-500/30 rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <Tag className="h-4 w-4 text-green-500" />
-                      <span className="text-sm font-medium text-green-500" data-testid="text-applied-code">
-                        {appliedDiscount.code}
-                      </span>
-                      <span className="text-xs text-muted-foreground">applied</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Tag className="h-4 w-4 text-green-500" />
+                        <span className="text-sm font-medium text-green-500" data-testid="text-applied-code">
+                          {appliedDiscount.code}
+                        </span>
+                        <span className="text-xs text-muted-foreground">applied</span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 text-muted-foreground md:hover:text-red-500"
+                        onClick={removeDiscount}
+                        data-testid="button-remove-discount"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 )}
