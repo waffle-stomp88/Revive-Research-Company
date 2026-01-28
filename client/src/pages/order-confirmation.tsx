@@ -52,6 +52,9 @@ export default function OrderConfirmation() {
   
   const CASHAPP_TAG = "$reviveresearchco";
   const ZELLE_INFO = "payments@reviveresearch.co";
+  
+  // Format order ID to short reference (last 8 chars, uppercase) - matches email format
+  const getShortOrderRef = (id: string) => id.slice(-8).toUpperCase();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -183,12 +186,12 @@ export default function OrderConfirmation() {
                     <div className="rounded-lg p-4 mb-4 bg-muted/30 border border-border/50">
                       <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Your Order Number</p>
                       <div className="flex items-center gap-2">
-                        <p className="font-mono text-lg font-bold text-[#E7FB10]">{orderId}</p>
+                        <p className="font-mono text-lg font-bold text-[#E7FB10]">#{getShortOrderRef(orderId)}</p>
                         <Button 
                           size="sm" 
                           variant="ghost" 
                           className="h-7 px-2"
-                          onClick={() => copyToClipboard(orderId)}
+                          onClick={() => copyToClipboard(getShortOrderRef(orderId))}
                           data-testid="button-copy-order-id"
                         >
                           <Copy className="h-3 w-3" />
@@ -230,7 +233,7 @@ export default function OrderConfirmation() {
                       </div>
                       <div>
                         <p className="text-muted-foreground">
-                          In the payment note, enter <span className="font-semibold text-foreground">ONLY</span> your order number: <span className="font-mono font-bold" style={{ color }}>{orderId || "your order #"}</span>
+                          In the payment note, enter <span className="font-semibold text-foreground">ONLY</span> your order number: <span className="font-mono font-bold" style={{ color }}>{orderId ? `#${getShortOrderRef(orderId)}` : "your order #"}</span>
                         </p>
                         <p className="text-xs text-[#E7FB10] mt-1 flex items-center gap-1">
                           <AlertTriangle className="h-3 w-3" />
@@ -274,7 +277,9 @@ export default function OrderConfirmation() {
               {(paypalOrderId || orderId) && (
                 <div className="bg-gradient-to-r from-[#E7FB10]/5 to-[#21d8ff]/5 border border-[#E7FB10]/20 rounded-lg p-4 mb-5">
                   <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Order Reference</p>
-                  <p className="font-mono text-sm font-medium text-[#E7FB10]">{paypalOrderId || orderId}</p>
+                  <p className="font-mono text-sm font-medium text-[#E7FB10]">
+                    #{getShortOrderRef(paypalOrderId || orderId || '')}
+                  </p>
                 </div>
               )}
 
