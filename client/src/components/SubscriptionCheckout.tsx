@@ -48,8 +48,10 @@ export default function SubscriptionCheckout({
   const [step, setStep] = useState<"ready" | "creating" | "redirecting">("ready");
 
   const discountPercent = discountPercents[frequency];
-  const discountedPrice = Math.round(basePrice * (1 - discountPercent / 100) * 100) / 100;
-  const totalPrice = discountedPrice * quantity;
+  // Calculate total before discount (what we send to server)
+  const totalBeforeDiscount = basePrice * quantity;
+  // Calculate discounted total (for display only - server applies discount)
+  const discountedPrice = Math.round(totalBeforeDiscount * (1 - discountPercent / 100) * 100) / 100;
 
   const handleSubscribe = async () => {
     setIsLoading(true);
@@ -57,9 +59,10 @@ export default function SubscriptionCheckout({
 
     try {
       // Step 1: Create a subscription plan
+      // Send the pre-discount total price - server will apply the discount
       const planResponse = await apiRequest("POST", "/api/subscriptions/plan", {
         frequency,
-        basePrice: totalPrice.toFixed(2),
+        basePrice: totalBeforeDiscount.toFixed(2),
       });
 
       if (!planResponse.ok) {
@@ -130,20 +133,16 @@ export default function SubscriptionCheckout({
 
         <div className="mt-4 pt-4 border-t border-border/50 space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Regular price</span>
-            <span className="line-through text-muted-foreground">${basePrice.toFixed(2)}</span>
+            <span className="text-muted-foreground">Regular price ({quantity}x)</span>
+            <span className="line-through text-muted-foreground">${totalBeforeDiscount.toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Subscription discount</span>
             <span className="text-green-500">-{discountPercent}%</span>
           </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Quantity</span>
-            <span>x{quantity}</span>
-          </div>
           <div className="flex justify-between font-medium pt-2 border-t border-border/50">
             <span>You pay {frequencyLabels[frequency].toLowerCase()}</span>
-            <span className="text-primary">${totalPrice.toFixed(2)}</span>
+            <span className="text-primary">${discountedPrice.toFixed(2)}</span>
           </div>
         </div>
       </Card>

@@ -16,7 +16,7 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **Backend**: Express.js with TypeScript for a RESTful API. API endpoints are prefixed with `/api` and feature Zod schema validation.
 - **Data Layer**: PostgreSQL database (via Neon serverless driver) with Drizzle ORM for type-safe queries. The schema includes tables for users, products, COAs, orders, contacts, affiliates, and affiliate applications/sales/payouts, and `price_history`.
 - **Object Storage**: Replit Object Storage (Google Cloud Storage) for file uploads using presigned URLs.
-- **Payment Integration**: Stripe Checkout for secure payment processing, including hosted sessions and webhook handling.
+- **Payment Integration**: PayPal for payments with both one-time purchases and recurring subscriptions. Uses PayPal REST API for order creation, capture, and subscription management. Files: `server/paypal.ts`, `client/src/components/PayPalCheckout.tsx`, `client/src/components/SubscriptionCheckout.tsx`. Required secrets: `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`.
 - **Notification System**: Unified email and SMS notifications via Amazon SES (SMTP) and Amazon SNS. Order confirmations sent to customers; admin alerts sent to configured admin email/phone. Files: `server/email.ts`, `server/sms.ts`, `server/notifications.ts`. Required env vars: `SES_SMTP_HOST`, `SES_SMTP_USERNAME`, `SES_SMTP_PASSWORD`, `SES_FROM_EMAIL`, `ADMIN_EMAIL`, optionally `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `ADMIN_PHONE` for SMS.
 
 ### Feature Specifications
@@ -32,7 +32,7 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **Sale of the Week**: Prominently displayed promotions with a "HOT DEAL" badge and countdown.
 - **AI Chatbot**: Floating chat button powered by OpenAI (gpt-4o-mini) for customer support with product context.
 - **AI Dynamic Pricing**: Admin panel "Pricing" tab uses OpenAI (gpt-4o-mini) to suggest optimal product prices with confidence ratings, reasoning, and one-click apply functionality.
-- **Subscription System**: Weekly (15% off), bi-weekly (12% off), and monthly (10% off) subscription options.
+- **Subscription System**: PayPal-based recurring subscriptions with three frequency options - Weekly (15% off), Bi-weekly (12% off), and Monthly (10% off). Product detail pages have a subscription toggle with frequency selector. Checkout page uses `SubscriptionCheckout` component which creates PayPal plans and subscriptions. Success page at `/subscription/success` confirms activation. Webhook handler at `/api/paypal/webhook` processes subscription events (activated, cancelled, payment failed, etc.). Naming convention uses generic "Revive Research - Supplies" to avoid payment processor flags.
 - **Legal Compliance**: Footer contains consolidated sections for FDA & Regulatory Compliance and Researcher Responsibility, with "Research Use Only" disclaimers across all pages.
 - **Cart & Checkout UX**: Clickable cart items navigate to detail pages. Checkout shows login option for unauthenticated users.
 - **Shop Page Pagination**: Products page displays 12 items per page with numbered pagination controls above and below the product grid. Products are sorted with in-stock items first, followed by "Coming Soon" items (out-of-stock). Out-of-stock products display a soft muted gray "Coming Soon" badge instead of harsh red styling, creating a more positive browsing experience while showing the full catalog.
@@ -83,7 +83,7 @@ The platform features an Apple-inspired design with a dark charcoal background (
 ## External Dependencies
 
 - **Database**: Neon Database (PostgreSQL)
-- **Payment Gateway**: Stripe
+- **Payment Gateway**: PayPal (one-time and subscription payments)
 - **AI Chatbot**: OpenAI (gpt-4o-mini) via Replit AI Integrations
 - **CDN**: Google Fonts (DM Sans, Bebas Neue)
 - **UI Libraries**: Radix UI, shadcn/ui, cmdk, embla-carousel-react, lucide-react
