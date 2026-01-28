@@ -383,6 +383,78 @@ export async function registerRoutes(
     }
   });
 
+  // Create manual payment order (CashApp/Zelle) with pending_payment status
+  app.post("/api/orders/manual", async (req: any, res) => {
+    try {
+      const { 
+        paymentMethod, 
+        customerEmail, 
+        customerName, 
+        shippingAddress, 
+        items, 
+        total 
+      } = req.body;
+
+      // Validate required fields
+      if (!paymentMethod || !customerEmail || !customerName || !shippingAddress || !items || !total) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      if (!['cashapp', 'zelle'].includes(paymentMethod)) {
+        return res.status(400).json({ error: "Invalid payment method" });
+      }
+
+      // Build order data from cart items
+      const [firstName, ...lastNameParts] = customerName.split(' ');
+      const lastName = lastNameParts.join(' ') || '';
+
+      // For multi-item orders, we'll create a consolidated order
+      // Using the first product as the primary, with items stored in notes
+      const primaryItem = items[0];
+      
+      const orderData: any = {
+        // Use first product ID, or a special multi-item ID
+        productId: primaryItem?.productId || 'multi-item',
+        quantity: items.reduce((sum: number, item: any) => sum + item.quantity, 0),
+        totalAmount: total.toString(),
+        email: customerEmail,
+        firstName,
+        lastName,
+        address: shippingAddress.street,
+        city: shippingAddress.city,
+        state: shippingAddress.state,
+        zipCode: shippingAddress.zip,
+        country: 'USA',
+        status: 'pending_payment',
+        fulfillmentStatus: 'pending',
+        paymentMethod: paymentMethod,
+        notes: `Manual ${paymentMethod.toUpperCase()} payment. Items: ${items.map((i: any) => `${i.name} (${i.dosage}) x${i.quantity}`).join(', ')}`,
+      };
+
+      // If user is authenticated, link order to their account
+      if (req.isAuthenticated && req.isAuthenticated() && req.user?.claims?.sub) {
+        orderData.userId = req.user.claims.sub;
+      }
+
+      const validatedData = insertOrderSchema.parse(orderData);
+      const order = await storage.createOrder(validatedData);
+      
+      console.log(`[Manual Order ${order.id}] Created with ${paymentMethod} - awaiting payment`);
+      
+      res.status(201).json({ 
+        id: order.id,
+        order, 
+        message: `Order created. Please send $${total.toFixed(2)} via ${paymentMethod.toUpperCase()} and include your email in the note.`
+      });
+    } catch (error) {
+      console.error("Error creating manual order:", error);
+      if (error instanceof Error && error.name === "ZodError") {
+        return res.status(400).json({ error: "Invalid order data" });
+      }
+      res.status(500).json({ error: "Failed to create order" });
+    }
+  });
+
   // Helper function to mark order as paid and send notifications (email + SMS)
   async function markOrderPaidAndNotify(orderId: string): Promise<{ 
     success: boolean; 
