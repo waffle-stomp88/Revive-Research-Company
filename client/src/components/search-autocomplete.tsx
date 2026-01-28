@@ -50,7 +50,7 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
   });
 
   const { data: articles, isLoading: articlesLoading } = useQuery<any[]>({
-    queryKey: ["/api/education"],
+    queryKey: ["/api/education/search"],
   });
 
   const isLoading = productsLoading || articlesLoading;

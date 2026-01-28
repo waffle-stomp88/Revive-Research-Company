@@ -2748,6 +2748,21 @@ export async function registerRoutes(
   // EDUCATION ARTICLES ROUTES
   // ============================================
   
+  // Get all education articles (lightweight version for search - no content)
+  app.get("/api/education/search", async (req, res) => {
+    try {
+      const articles = await storage.getAllEducationArticles();
+      // Return only fields needed for search - exclude heavy content field
+      const lightweight = articles.map(({ id, slug, title, summary, category }) => ({
+        id, slug, title, summary, category
+      }));
+      res.json(lightweight);
+    } catch (error) {
+      console.error("Error fetching education articles for search:", error);
+      res.status(500).json({ error: "Failed to fetch education articles" });
+    }
+  });
+
   // Get all education articles
   app.get("/api/education", async (req, res) => {
     try {
