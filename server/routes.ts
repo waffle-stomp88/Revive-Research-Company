@@ -541,13 +541,18 @@ export async function registerRoutes(
       
       console.log(`[PayPal Order ${order.id}] Created as PAID - PayPal ID: ${paypalOrderId}`);
       
-      // Get product info for email
-      const product = primaryItem ? await storage.getProduct(primaryItem.productId) : null;
+      // Build order items array for email (includes all cart items)
+      const orderItems = items.map((item: any) => ({
+        name: item.name || 'Product',
+        dosage: item.dosage || '',
+        quantity: item.quantity || 1,
+        price: parseFloat(item.price) || 0,
+      }));
       
-      // Send confirmation email
+      // Send confirmation email with all items
       let emailSent = false;
       try {
-        const emailResult = await sendOrderConfirmationEmail(order, product?.name);
+        const emailResult = await sendOrderConfirmationEmail(order, undefined, orderItems);
         if (emailResult.success) {
           await storage.updateOrderEmailStatus(order.id, 'sent');
           emailSent = true;
@@ -561,9 +566,9 @@ export async function registerRoutes(
         await storage.updateOrderEmailStatus(order.id, 'failed', emailError.message);
       }
 
-      // Send admin notification
+      // Send admin notification with all items
       try {
-        await sendAdminOrderNotificationEmail(order, product?.name);
+        await sendAdminOrderNotificationEmail(order, undefined, orderItems);
         console.log(`[PayPal Order ${order.id}] Admin notification sent`);
       } catch (adminEmailError: any) {
         console.error(`[PayPal Order ${order.id}] Admin notification failed:`, adminEmailError.message);

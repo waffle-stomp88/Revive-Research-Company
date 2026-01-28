@@ -128,6 +128,14 @@ const getEmailBaseStyles = () => {
   };
 };
 
+// Cart item type for multi-item orders
+interface OrderItem {
+  name: string;
+  dosage?: string;
+  quantity: number;
+  price: number;
+}
+
 // Email template: Order Confirmation
 function getOrderConfirmationTemplate(order: {
   email: string;
@@ -142,13 +150,25 @@ function getOrderConfirmationTemplate(order: {
   state?: string;
   zipCode?: string;
   country?: string;
-}, productName?: string): { subject: string; text: string; html: string } {
+}, productName?: string, items?: OrderItem[]): { subject: string; text: string; html: string } {
   const shortRef = getShortOrderRef(order.id);
   const { brand } = EMAIL_CONFIG;
   const styles = getEmailBaseStyles();
   const hasFirstName = order.firstName && order.firstName.trim().length > 0;
   
+  // Use items array if provided, otherwise fall back to single product
+  const orderItems = items && items.length > 0 ? items : [{ 
+    name: productName || order.productId, 
+    quantity: order.quantity, 
+    price: parseFloat(order.totalAmount) 
+  }];
+  
   const subject = `Order Confirmed #${shortRef}`;
+  
+  // Build items text
+  const itemsText = orderItems.map(item => 
+    `${item.name}${item.dosage ? ` (${item.dosage})` : ''} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`
+  ).join('\n');
   
   const text = `
 REVIVE RESEARCH
@@ -160,8 +180,8 @@ Thank you for your order. We're preparing your research compounds for shipment.
 
 ORDER #${shortRef}
 -------------------
-Product: ${productName || order.productId}
-Quantity: ${order.quantity}
+${itemsText}
+
 Total: $${order.totalAmount}
 
 SHIPPING TO
@@ -230,24 +250,22 @@ ${brand.name}
               <div style="${styles.card}">
                 <p style="${styles.cardTitle}">Order Details</p>
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                  ${orderItems.map((item, idx) => `
                   <tr>
                     <td style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                      <span style="color: rgba(255,255,255,0.5); font-size: 14px;">Product</span>
+                      <span style="color: #ffffff; font-size: 14px; font-weight: 500;">${item.name}</span>
+                      ${item.dosage ? `<br><span style="color: rgba(255,255,255,0.5); font-size: 12px;">${item.dosage}</span>` : ''}
+                    </td>
+                    <td style="padding: 12px 0; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                      <span style="color: rgba(255,255,255,0.7); font-size: 14px;">x${item.quantity}</span>
                     </td>
                     <td style="padding: 12px 0; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                      <span style="color: #ffffff; font-size: 14px; font-weight: 500;">${productName || order.productId}</span>
+                      <span style="color: ${styles.accentColor}; font-size: 14px; font-weight: 500;">$${(item.price * item.quantity).toFixed(2)}</span>
                     </td>
                   </tr>
+                  `).join('')}
                   <tr>
-                    <td style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                      <span style="color: rgba(255,255,255,0.5); font-size: 14px;">Quantity</span>
-                    </td>
-                    <td style="padding: 12px 0; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                      <span style="color: #ffffff; font-size: 14px;">${order.quantity}</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="padding: 16px 0 0 0;">
+                    <td colspan="2" style="padding: 16px 0 0 0;">
                       <span style="color: #ffffff; font-size: 14px; font-weight: 600;">Total</span>
                     </td>
                     <td style="padding: 16px 0 0 0; text-align: right;">
@@ -336,8 +354,8 @@ export async function sendOrderConfirmationEmail(order: {
   state?: string;
   zipCode?: string;
   country?: string;
-}, productName?: string): Promise<EmailResult> {
-  const template = getOrderConfirmationTemplate(order, productName);
+}, productName?: string, items?: OrderItem[]): Promise<EmailResult> {
+  const template = getOrderConfirmationTemplate(order, productName, items);
   const timestamp = new Date().toISOString();
   
   const result = await sendEmail({
@@ -384,9 +402,21 @@ function getAdminOrderNotificationTemplate(order: {
   zipCode?: string;
   country?: string;
   phone?: string;
-}, productName?: string): { subject: string; text: string; html: string } {
+}, productName?: string, items?: OrderItem[]): { subject: string; text: string; html: string } {
   const shortRef = getShortOrderRef(order.id);
   const styles = getEmailBaseStyles();
+  
+  // Use items array if provided, otherwise fall back to single product
+  const orderItems = items && items.length > 0 ? items : [{ 
+    name: productName || order.productId, 
+    quantity: order.quantity, 
+    price: parseFloat(order.totalAmount) 
+  }];
+  
+  // Build items text for plain text email
+  const itemsText = orderItems.map(item => 
+    `${item.name}${item.dosage ? ` (${item.dosage})` : ''} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`
+  ).join('\n');
   
   const subject = `New Order #${shortRef} - $${order.totalAmount}`;
   
@@ -399,10 +429,9 @@ Customer: ${order.firstName} ${order.lastName}
 Email: ${order.email}
 Phone: ${order.phone || 'Not provided'}
 
-PRODUCT
--------
-${productName || order.productId}
-Quantity: ${order.quantity}
+PRODUCTS
+--------
+${itemsText}
 Total: $${order.totalAmount}
 
 SHIPPING ADDRESS
@@ -477,24 +506,22 @@ Time: ${new Date().toISOString()}
               <div style="margin-bottom: 24px;">
                 <p style="color: #16a34a; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 16px 0; padding-bottom: 8px; border-bottom: 2px solid #22c55e;">Order Details</p>
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                  ${orderItems.map(item => `
                   <tr>
                     <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">
-                      <span style="color: #6b7280; font-size: 13px;">Product</span>
+                      <span style="color: #111827; font-size: 14px; font-weight: 600;">${item.name}</span>
+                      ${item.dosage ? `<br><span style="color: #6b7280; font-size: 12px;">${item.dosage}</span>` : ''}
+                    </td>
+                    <td style="padding: 10px 0; text-align: center; border-bottom: 1px solid #e5e7eb;">
+                      <span style="color: #6b7280; font-size: 14px;">x${item.quantity}</span>
                     </td>
                     <td style="padding: 10px 0; text-align: right; border-bottom: 1px solid #e5e7eb;">
-                      <span style="color: #111827; font-size: 14px; font-weight: 600;">${productName || order.productId}</span>
+                      <span style="color: #16a34a; font-size: 14px; font-weight: 600;">$${(item.price * item.quantity).toFixed(2)}</span>
                     </td>
                   </tr>
+                  `).join('')}
                   <tr>
-                    <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">
-                      <span style="color: #6b7280; font-size: 13px;">Quantity</span>
-                    </td>
-                    <td style="padding: 10px 0; text-align: right; border-bottom: 1px solid #e5e7eb;">
-                      <span style="color: #111827; font-size: 14px; font-weight: 600;">${order.quantity}</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="padding: 10px 0;">
+                    <td colspan="2" style="padding: 10px 0;">
                       <span style="color: #6b7280; font-size: 13px;">Total</span>
                     </td>
                     <td style="padding: 10px 0; text-align: right;">
@@ -552,7 +579,7 @@ export async function sendAdminOrderNotificationEmail(order: {
   zipCode?: string;
   country?: string;
   phone?: string;
-}, productName?: string): Promise<EmailResult> {
+}, productName?: string, items?: OrderItem[]): Promise<EmailResult> {
   const adminEmail = process.env.ADMIN_EMAIL;
   
   if (!adminEmail) {
@@ -560,7 +587,7 @@ export async function sendAdminOrderNotificationEmail(order: {
     return { success: false, error: 'ADMIN_EMAIL not configured' };
   }
 
-  const template = getAdminOrderNotificationTemplate(order, productName);
+  const template = getAdminOrderNotificationTemplate(order, productName, items);
   
   const result = await sendEmail({
     to: adminEmail,
