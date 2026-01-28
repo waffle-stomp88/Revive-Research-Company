@@ -2836,9 +2836,16 @@ function OrdersTab() {
         open={isViewDialogOpen}
         onOpenChange={setIsViewDialogOpen}
         products={products || []}
-        onUpdateFulfillment={(data) => {
+        isFulfillmentPending={updateFulfillmentMutation.isPending}
+        onUpdateFulfillment={(data, closeAfter = false) => {
           if (selectedOrder) {
-            updateFulfillmentMutation.mutate({ id: selectedOrder.id, data });
+            updateFulfillmentMutation.mutate({ id: selectedOrder.id, data }, {
+              onSuccess: () => {
+                if (closeAfter) {
+                  setIsViewDialogOpen(false);
+                }
+              }
+            });
           }
         }}
         onResendEmail={() => {
@@ -2861,6 +2868,7 @@ function OrderViewDialog({
   open, 
   onOpenChange, 
   products,
+  isFulfillmentPending,
   onUpdateFulfillment,
   onResendEmail,
   onUpdateStatus
@@ -2869,7 +2877,8 @@ function OrderViewDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   products: Product[];
-  onUpdateFulfillment: (data: any) => void;
+  isFulfillmentPending?: boolean;
+  onUpdateFulfillment: (data: any, closeAfter?: boolean) => void;
   onResendEmail: () => void;
   onUpdateStatus: (status: string) => void;
 }) {
@@ -2907,7 +2916,7 @@ function OrderViewDialog({
       addressCollected: true,
       packed: true,
       fulfillmentNotes: notes,
-    });
+    }, true); // Close dialog after success
   };
 
   const isPaid = order.status === "paid";
@@ -3059,9 +3068,22 @@ function OrderViewDialog({
               Save Changes
             </Button>
             {order.fulfillmentStatus !== "delivered" && (
-              <Button onClick={handleMarkDelivered} data-testid="button-mark-delivered">
-                <Check className="h-4 w-4 mr-1" />
-                Mark Delivered
+              <Button 
+                onClick={handleMarkDelivered} 
+                disabled={isFulfillmentPending}
+                data-testid="button-mark-delivered"
+              >
+                {isFulfillmentPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                    Updating...
+                  </>
+                ) : (
+                  <>
+                    <Check className="h-4 w-4 mr-1" />
+                    Mark Delivered
+                  </>
+                )}
               </Button>
             )}
           </div>
