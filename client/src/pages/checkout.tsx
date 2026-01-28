@@ -689,16 +689,10 @@ export default function Checkout() {
     const color = selectedPaymentMethod === "cashapp" ? "#00D632" : "#6D1ED4";
     const name = selectedPaymentMethod === "cashapp" ? "CashApp" : "Zelle";
 
+    if (manualPaymentStep !== "instructions") return null;
+    
     return (
-      <AnimatePresence mode="wait">
-        {manualPaymentStep === "instructions" && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="mt-4"
-          >
+          <div className="mt-4">
             <Card className="p-4" style={{ borderColor: `${color}50` }}>
               <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
                 <Smartphone className="h-4 w-4" style={{ color }} />
@@ -841,9 +835,7 @@ export default function Checkout() {
                 </p>
               </div>
             </Card>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
     );
   };
 
