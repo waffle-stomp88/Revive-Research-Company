@@ -236,7 +236,7 @@ export default function Checkout() {
       });
       clearCart();
       // Redirect to order confirmation or orders page
-      window.location.href = `/order-confirmation?orderId=${data.id}&manual=true`;
+      window.location.href = `/order-confirmation?orderId=${data.id}&manual=true&method=${data.paymentMethod || selectedPaymentMethod}`;
     },
     onError: (error: Error) => {
       toast({

@@ -16,8 +16,12 @@ import {
   Truck,
   Sparkles,
   FlaskConical,
-  AlertTriangle
+  AlertTriangle,
+  Smartphone,
+  Copy,
+  DollarSign
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface OrderItem {
   name: string;
@@ -40,11 +44,26 @@ export default function OrderConfirmation() {
   const [, setLocation] = useLocation();
   const [paypalOrderId, setPaypalOrderId] = useState<string | null>(null);
   const [orderSummary, setOrderSummary] = useState<OrderSummary | null>(null);
+  const [isManualPayment, setIsManualPayment] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
+  const [orderId, setOrderId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const { toast } = useToast();
+  
+  const CASHAPP_TAG = "$reviveresearchco";
+  const ZELLE_INFO = "payments@reviveresearch.co";
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const orderId = params.get("paypalOrderId");
-    setPaypalOrderId(orderId);
+    const paypalId = params.get("paypalOrderId");
+    const manualParam = params.get("manual");
+    const orderIdParam = params.get("orderId");
+    const methodParam = params.get("method");
+    
+    setPaypalOrderId(paypalId);
+    setIsManualPayment(manualParam === "true");
+    setOrderId(orderIdParam);
+    setPaymentMethod(methodParam);
     
     // Retrieve order summary from sessionStorage
     const storedSummary = sessionStorage.getItem('orderSummary');
@@ -59,6 +78,16 @@ export default function OrderConfirmation() {
       }
     }
   }, []);
+  
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    toast({
+      title: "Copied!",
+      description: "Payment info copied to clipboard.",
+    });
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <>
@@ -124,6 +153,81 @@ export default function OrderConfirmation() {
               </p>
             </motion.div>
           </motion.div>
+
+          {/* Manual Payment Instructions - Show for CashApp/Zelle orders */}
+          {isManualPayment && (() => {
+            const isCashApp = paymentMethod === "cashapp" || !paymentMethod;
+            const color = isCashApp ? "#00D632" : "#6D1ED4";
+            const methodName = isCashApp ? "CashApp" : "Zelle";
+            const paymentInfo = isCashApp ? CASHAPP_TAG : ZELLE_INFO;
+            
+            return (
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.45 }}
+              >
+                <Card className="p-6 mb-6" style={{ borderColor: `${color}80` }}>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 rounded-lg" style={{ backgroundColor: `${color}20` }}>
+                      <DollarSign className="w-5 h-5" style={{ color }} />
+                    </div>
+                    <div>
+                      <h2 className="font-display text-xl font-semibold" style={{ color }}>Complete Your Payment</h2>
+                      <p className="text-xs text-muted-foreground">Your order is pending until payment is received</p>
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg p-4 mb-4" style={{ backgroundColor: `${color}10`, borderColor: `${color}30`, borderWidth: 1 }}>
+                    <div className="flex items-center gap-3 mb-3">
+                      <Smartphone className="w-5 h-5" style={{ color }} />
+                      <span className="font-semibold">Send payment via {methodName}:</span>
+                    </div>
+                    <div 
+                      className="flex items-center gap-2 p-3 rounded-md bg-background cursor-pointer md:hover:bg-muted transition-colors"
+                      onClick={() => copyToClipboard(paymentInfo)}
+                    >
+                      <span className="font-mono font-bold text-lg flex-1" style={{ color }}>
+                        {paymentInfo}
+                      </span>
+                      <Button size="sm" variant="outline" style={{ borderColor: `${color}50` }}>
+                        {copied ? <CheckCircle className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                        <span className="ml-2">{copied ? "Copied!" : "Copy"}</span>
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: color }}>
+                        1
+                      </div>
+                      <p className="text-muted-foreground">Open {methodName} and send payment to <span className="font-mono font-semibold" style={{ color }}>{paymentInfo}</span></p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: color }}>
+                        2
+                      </div>
+                      <p className="text-muted-foreground">Include your <span className="font-semibold text-foreground">email address</span> in the payment note</p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: color }}>
+                        3
+                      </div>
+                      <p className="text-muted-foreground">We'll verify payment and ship within <span className="font-semibold text-foreground">1-2 business hours</span></p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-4" style={{ borderTopColor: `${color}30`, borderTopWidth: 1 }}>
+                    <p className="text-xs text-muted-foreground flex items-center gap-2">
+                      <AlertTriangle className="h-3 w-3 text-[#E7FB10]" />
+                      Your order status will update to "Paid" once we confirm your {methodName} transfer.
+                    </p>
+                  </div>
+                </Card>
+              </motion.div>
+            );
+          })()}
 
           {/* Order Details Card */}
           <motion.div

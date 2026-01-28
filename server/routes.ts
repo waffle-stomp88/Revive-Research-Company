@@ -473,9 +473,42 @@ export async function registerRoutes(
       
       console.log(`[Manual Order ${order.id}] Created with ${paymentMethod} - awaiting payment`);
       
+      // Calculate order details for email
+      const orderSubtotal = items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
+      const orderShipping = 0; // Will be calculated at fulfillment
+      const orderTax = total - orderSubtotal; // Tax is included in total
+      const orderTaxState = shippingAddress.state || '';
+      
+      // Send customer email with pending payment notice
+      let emailSent = false;
+      try {
+        const emailResult = await sendOrderConfirmationEmail(order, undefined, items, orderSubtotal, orderShipping, orderTax, orderTaxState);
+        if (emailResult.success) {
+          await storage.updateOrderEmailStatus(order.id, 'sent');
+          emailSent = true;
+          console.log(`[Manual Order ${order.id}] Confirmation email sent to ${customerEmail}`);
+        } else {
+          await storage.updateOrderEmailStatus(order.id, 'failed', emailResult.error);
+          console.error(`[Manual Order ${order.id}] Email failed:`, emailResult.error);
+        }
+      } catch (emailError: any) {
+        console.error(`[Manual Order ${order.id}] Email error:`, emailError.message);
+        await storage.updateOrderEmailStatus(order.id, 'failed', emailError.message);
+      }
+
+      // Send admin notification
+      try {
+        await sendAdminOrderNotificationEmail(order, undefined, items, orderSubtotal, orderShipping, orderTax, orderTaxState);
+        console.log(`[Manual Order ${order.id}] Admin notification sent`);
+      } catch (adminEmailError: any) {
+        console.error(`[Manual Order ${order.id}] Admin notification failed:`, adminEmailError.message);
+      }
+      
       res.status(201).json({ 
         id: order.id,
-        order, 
+        order,
+        paymentMethod,
+        emailSent,
         message: `Order created. Please send $${total.toFixed(2)} via ${paymentMethod.toUpperCase()} and include your email in the note.`
       });
     } catch (error) {
