@@ -337,39 +337,43 @@ export default function OrderConfirmation() {
                 </>
               )}
 
-              {/* Status Items - Condensed */}
+              {/* Status Items - Tighter spacing */}
               <div className="space-y-2">
-                <div className="flex items-center gap-3 p-2 rounded-lg md:hover:bg-muted/20 transition-colors">
-                  <div className="w-8 h-8 rounded-full bg-[#21d8ff]/10 flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-4 h-4 text-[#21d8ff]" />
+                <div className="flex items-start gap-4 p-3 rounded-lg md:hover:bg-muted/20 transition-colors">
+                  <div className="w-10 h-10 rounded-full bg-[#21d8ff]/10 flex items-center justify-center flex-shrink-0">
+                    <Mail className="w-5 h-5 text-[#21d8ff]" />
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div>
                     <p className="font-semibold text-sm">Confirmation Email</p>
-                    <p className="text-xs text-muted-foreground truncate">
+                    <p className="text-sm text-muted-foreground">
                       {orderSummary?.customerEmail 
                         ? `Sent to ${orderSummary.customerEmail}`
-                        : "You'll receive an email confirmation shortly."}
+                        : "You'll receive an email confirmation with your order details shortly."}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-2 rounded-lg md:hover:bg-muted/20 transition-colors">
-                  <div className="w-8 h-8 rounded-full bg-[#E7FB10]/10 flex items-center justify-center flex-shrink-0">
-                    <Clock className="w-4 h-4 text-[#E7FB10]" />
+                <div className="flex items-start gap-4 p-3 rounded-lg md:hover:bg-muted/20 transition-colors">
+                  <div className="w-10 h-10 rounded-full bg-[#E7FB10]/10 flex items-center justify-center flex-shrink-0">
+                    <Clock className="w-5 h-5 text-[#E7FB10]" />
                   </div>
                   <div>
                     <p className="font-semibold text-sm">Processing Time</p>
-                    <p className="text-xs text-muted-foreground">Typically within 24 hours on business days</p>
+                    <p className="text-sm text-muted-foreground">
+                      Orders are typically processed within 24 hours on business days.
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-2 rounded-lg md:hover:bg-muted/20 transition-colors">
-                  <div className="w-8 h-8 rounded-full bg-[#21d8ff]/10 flex items-center justify-center flex-shrink-0">
-                    <Truck className="w-4 h-4 text-[#21d8ff]" />
+                <div className="flex items-start gap-4 p-3 rounded-lg md:hover:bg-muted/20 transition-colors">
+                  <div className="w-10 h-10 rounded-full bg-[#21d8ff]/10 flex items-center justify-center flex-shrink-0">
+                    <Truck className="w-5 h-5 text-[#21d8ff]" />
                   </div>
                   <div>
                     <p className="font-semibold text-sm">Shipping</p>
-                    <p className="text-xs text-muted-foreground">Tracking info sent when shipped (2-5 business days)</p>
+                    <p className="text-sm text-muted-foreground">
+                      You'll receive tracking information once your order ships (2-5 business days).
+                    </p>
                   </div>
                 </div>
               </div>
