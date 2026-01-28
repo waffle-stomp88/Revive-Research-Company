@@ -2803,31 +2803,20 @@ function OrdersTab() {
                     </div>
                   </TableCell>
                   <TableCell onClick={(e) => e.stopPropagation()} className="text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => handleViewOrder(order)}
-                        data-testid={`button-view-order-${order.id}`}
-                      >
-                        <Eye className="h-4 w-4 mr-1" />
-                        View
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-muted-foreground md:hover:text-red-500 md:hover:bg-red-500/10"
-                        onClick={() => {
-                          if (confirm(`Delete order #${order.id.slice(-8).toUpperCase()}? This cannot be undone.`)) {
-                            deleteOrderMutation.mutate(order.id);
-                          }
-                        }}
-                        disabled={deleteOrderMutation.isPending}
-                        data-testid={`button-delete-order-${order.id}`}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground md:hover:text-red-500 md:hover:bg-red-500/10"
+                      onClick={() => {
+                        if (confirm(`Delete order #${order.id.slice(-8).toUpperCase()}? This cannot be undone.`)) {
+                          deleteOrderMutation.mutate(order.id);
+                        }
+                      }}
+                      disabled={deleteOrderMutation.isPending}
+                      data-testid={`button-delete-order-${order.id}`}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </TableCell>
                 </TableRow>
                 );
