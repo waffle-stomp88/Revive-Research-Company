@@ -186,8 +186,19 @@ interface StockNotificationWithProduct {
   createdAt: string;
 }
 
+interface RecentOrderInfo {
+  id: string;
+  firstName: string;
+  lastName: string;
+  totalAmount: string;
+  status: string | null;
+  createdAt: Date | null;
+}
+
 function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string) => void }) {
   const [timeRange, setTimeRange] = useState<number>(30);
+  const [topProductSort, setTopProductSort] = useState<'revenue' | 'units'>('revenue');
+  const [selectedOrder, setSelectedOrder] = useState<RecentOrderInfo | null>(null);
   
   const { data: metrics, isLoading } = useQuery<DashboardMetrics>({
     queryKey: ["/api/admin/dashboard", timeRange],
@@ -280,10 +291,17 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
     }] : []),
   ];
 
-  // Get top product by revenue (single product) - only show if 2+ products have sales
-  const topProduct = metrics.topProducts?.length >= 2 
-    ? [...metrics.topProducts].sort((a, b) => b.revenue - a.revenue)[0]
+  // Get top 5 products by selected metric - only show if 2+ products have sales
+  const topProducts = metrics.topProducts?.length >= 2 
+    ? [...metrics.topProducts]
+        .sort((a, b) => topProductSort === 'revenue' ? b.revenue - a.revenue : b.totalSold - a.totalSold)
+        .slice(0, 5)
     : null;
+  
+  // Get max value for bar chart scaling
+  const maxValue = topProducts 
+    ? Math.max(...topProducts.map(p => topProductSort === 'revenue' ? p.revenue : p.totalSold))
+    : 0;
   
   // Calculate subscriber net change for the period
   const subscriberNetChange = (newsletterStats?.active || 0) - (newsletterStats?.unsubscribed || 0);
@@ -406,23 +424,63 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
           </CardContent>
         </Card>
 
-        {/* Top Product - only show if 2+ products have sales */}
-        {topProduct ? (
+        {/* Top 5 Products Chart - only show if 2+ products have sales */}
+        {topProducts ? (
           <Card>
             <CardHeader className="pb-2 pt-4 px-4">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-[#E7FB10]" />
-                Top Product
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-[#E7FB10]" />
+                  Top Products
+                </CardTitle>
+                <div className="flex gap-1">
+                  <Button
+                    size="sm"
+                    variant={topProductSort === 'revenue' ? 'default' : 'ghost'}
+                    className={`h-6 px-2 text-xs ${topProductSort === 'revenue' ? 'bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90' : ''}`}
+                    onClick={() => setTopProductSort('revenue')}
+                    data-testid="button-sort-revenue"
+                  >
+                    Revenue
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={topProductSort === 'units' ? 'default' : 'ghost'}
+                    className={`h-6 px-2 text-xs ${topProductSort === 'units' ? 'bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90' : ''}`}
+                    onClick={() => setTopProductSort('units')}
+                    data-testid="button-sort-units"
+                  >
+                    Units
+                  </Button>
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="px-4 pb-4">
-              <div className="flex flex-col items-center justify-center h-[140px] text-center">
-                <div className="h-10 w-10 rounded-full bg-[#E7FB10] flex items-center justify-center text-black font-bold mb-3">
-                  1
-                </div>
-                <p className="font-medium text-sm mb-1">{topProduct.productName}</p>
-                <p className="text-xl font-bold text-[#E7FB10]">{formatCurrency(topProduct.revenue)}</p>
-                <p className="text-xs text-muted-foreground">{topProduct.totalSold} units sold</p>
+              <div className="space-y-2">
+                {topProducts.map((product, index) => {
+                  const value = topProductSort === 'revenue' ? product.revenue : product.totalSold;
+                  const barWidth = maxValue > 0 ? (value / maxValue) * 100 : 0;
+                  const barColor = topProductSort === 'revenue' ? '#E7FB10' : '#21d8ff';
+                  return (
+                    <div key={product.productId} className="flex items-center gap-2" data-testid={`top-product-${index}`}>
+                      <span className="text-xs text-muted-foreground w-4 shrink-0">{index + 1}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-0.5">
+                          <span className="text-xs font-medium truncate pr-2">{product.productName}</span>
+                          <span className="text-xs font-bold shrink-0" style={{ color: barColor }}>
+                            {topProductSort === 'revenue' ? formatCurrency(product.revenue) : `${product.totalSold} units`}
+                          </span>
+                        </div>
+                        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                          <div 
+                            className="h-full rounded-full transition-all duration-300"
+                            style={{ width: `${barWidth}%`, backgroundColor: barColor }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
@@ -430,7 +488,7 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
           <Card className="bg-muted/30">
             <CardContent className="p-4 flex flex-col items-center justify-center h-full">
               <Package className="h-8 w-8 text-muted-foreground/50 mb-2" />
-              <p className="text-xs text-muted-foreground text-center">Top Product shows when 2+ products have sales</p>
+              <p className="text-xs text-muted-foreground text-center">Top Products shows when 2+ products have sales</p>
             </CardContent>
           </Card>
         )}
@@ -447,10 +505,11 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
                 Recent Orders
               </CardTitle>
               <Button 
-                variant="ghost" 
+                variant="outline" 
                 size="sm" 
-                className="h-7 text-xs"
+                className="h-7 text-xs border-[#E7FB10] text-[#E7FB10] hover:bg-[#E7FB10]/10 hover:text-[#E7FB10] shadow-[0_0_8px_rgba(231,251,16,0.3)]"
                 onClick={() => onNavigateToTab("orders")}
+                data-testid="button-view-all-orders"
               >
                 View All
               </Button>
@@ -462,8 +521,8 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
                 {metrics.recentOrders.slice(0, 5).map((order) => (
                   <button 
                     key={order.id} 
-                    onClick={() => onNavigateToTab("orders")}
-                    className="w-full flex items-center justify-between p-2 rounded-md bg-background/50 border border-border/50 hover:bg-background/80 transition-colors text-left"
+                    onClick={() => setSelectedOrder(order)}
+                    className="w-full flex items-center justify-between p-2 rounded-md bg-background/50 border border-border/50 md:hover:bg-background/80 md:hover:border-[#21d8ff]/50 transition-colors text-left cursor-pointer"
                     data-testid={`recent-order-${order.id}`}
                   >
                     <div className="flex items-center gap-2">
@@ -596,6 +655,74 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
           </Card>
         </div>
       </div>
+
+      {/* Order Quick View Dialog */}
+      <Dialog open={!!selectedOrder} onOpenChange={(open) => !open && setSelectedOrder(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ShoppingBag className="h-5 w-5 text-[#21d8ff]" />
+              Order #{selectedOrder?.id?.toString().slice(-8).toUpperCase()}
+            </DialogTitle>
+            <DialogDescription>
+              {selectedOrder?.createdAt ? (selectedOrder.createdAt instanceof Date ? selectedOrder.createdAt : new Date(selectedOrder.createdAt)).toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              }) : 'N/A'}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedOrder && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                <div>
+                  <p className="text-sm text-muted-foreground">Customer</p>
+                  <p className="font-medium">{selectedOrder.firstName} {selectedOrder.lastName}</p>
+                </div>
+                <Badge 
+                  variant="secondary"
+                  className={`${
+                    selectedOrder.status === "completed" || selectedOrder.status === "shipped" 
+                      ? "bg-green-500/20 text-green-400" 
+                      : selectedOrder.status === "pending" 
+                      ? "bg-[#E7FB10]/20 text-[#E7FB10]"
+                      : "bg-[#21d8ff]/20 text-[#21d8ff]"
+                  }`}
+                >
+                  {selectedOrder.status}
+                </Badge>
+              </div>
+              
+              <div className="p-3 rounded-lg bg-muted/50">
+                <p className="text-sm text-muted-foreground mb-1">Order Total</p>
+                <p className="text-2xl font-bold text-[#E7FB10]">
+                  {formatCurrency(parseFloat(selectedOrder.totalAmount))}
+                </p>
+              </div>
+
+              <DialogFooter className="gap-2 sm:gap-0">
+                <Button
+                  variant="outline"
+                  onClick={() => setSelectedOrder(null)}
+                >
+                  Close
+                </Button>
+                <Button
+                  className="bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90"
+                  onClick={() => {
+                    setSelectedOrder(null);
+                    onNavigateToTab("orders");
+                  }}
+                  data-testid="button-view-full-order"
+                >
+                  View Full Details
+                </Button>
+              </DialogFooter>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -2370,7 +2497,7 @@ function OrdersTab() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/orders/stats"] });
-      toast({ title: "Fulfillment updated" });
+      toast({ title: "Fulfillment updated", duration: 3000 });
     },
     onError: () => {
       toast({ title: "Failed to update fulfillment", variant: "destructive" });
@@ -2836,9 +2963,16 @@ function OrdersTab() {
         open={isViewDialogOpen}
         onOpenChange={setIsViewDialogOpen}
         products={products || []}
-        onUpdateFulfillment={(data) => {
+        isFulfillmentPending={updateFulfillmentMutation.isPending}
+        onUpdateFulfillment={(data, closeAfter = false) => {
           if (selectedOrder) {
-            updateFulfillmentMutation.mutate({ id: selectedOrder.id, data });
+            updateFulfillmentMutation.mutate({ id: selectedOrder.id, data }, {
+              onSuccess: () => {
+                if (closeAfter) {
+                  setIsViewDialogOpen(false);
+                }
+              }
+            });
           }
         }}
         onResendEmail={() => {
@@ -2861,6 +2995,7 @@ function OrderViewDialog({
   open, 
   onOpenChange, 
   products,
+  isFulfillmentPending,
   onUpdateFulfillment,
   onResendEmail,
   onUpdateStatus
@@ -2869,7 +3004,8 @@ function OrderViewDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   products: Product[];
-  onUpdateFulfillment: (data: any) => void;
+  isFulfillmentPending?: boolean;
+  onUpdateFulfillment: (data: any, closeAfter?: boolean) => void;
   onResendEmail: () => void;
   onUpdateStatus: (status: string) => void;
 }) {
@@ -2907,7 +3043,7 @@ function OrderViewDialog({
       addressCollected: true,
       packed: true,
       fulfillmentNotes: notes,
-    });
+    }, true); // Close dialog after success
   };
 
   const isPaid = order.status === "paid";
@@ -3059,9 +3195,22 @@ function OrderViewDialog({
               Save Changes
             </Button>
             {order.fulfillmentStatus !== "delivered" && (
-              <Button onClick={handleMarkDelivered} data-testid="button-mark-delivered">
-                <Check className="h-4 w-4 mr-1" />
-                Mark Delivered
+              <Button 
+                onClick={handleMarkDelivered} 
+                disabled={isFulfillmentPending}
+                data-testid="button-mark-delivered"
+              >
+                {isFulfillmentPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                    Updating...
+                  </>
+                ) : (
+                  <>
+                    <Check className="h-4 w-4 mr-1" />
+                    Mark Delivered
+                  </>
+                )}
               </Button>
             )}
           </div>
