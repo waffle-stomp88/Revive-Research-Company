@@ -837,7 +837,7 @@ function ProductsComponent() {
               </div>
 
               {isLoading ? (
-                <div className={`grid gap-6 p-2 -m-2 ${
+                <div className={`grid gap-4 overflow-hidden ${
                   gridColumns === 2 ? "grid-cols-2" :
                   gridColumns === 3 ? "grid-cols-2 md:grid-cols-3" :
                   "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
@@ -862,7 +862,7 @@ function ProductsComponent() {
                   initial="initial"
                   animate="animate"
                   variants={staggerContainer}
-                  className={`grid gap-6 p-2 -m-2 ${
+                  className={`grid gap-4 overflow-hidden ${
                     gridColumns === 2 ? "grid-cols-2" :
                     gridColumns === 3 ? "grid-cols-2 md:grid-cols-3" :
                     "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"

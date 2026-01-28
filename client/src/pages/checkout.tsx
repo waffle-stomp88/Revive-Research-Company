@@ -66,7 +66,7 @@ const intervalLabels: { [key: string]: string } = {
 
 export default function Checkout() {
   const { toast } = useToast();
-  const { items: cartItems, getSubtotal, clearCart, addToCart, removeFromCart } = useCart();
+  const { items: cartItems, getSubtotal, clearCart, addToCart } = useCart();
   const { login, logout } = useAuth();
   const [hasColdPackShipping, setHasColdPackShipping] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>("paypal");
@@ -102,26 +102,9 @@ export default function Checkout() {
 
   const bacWater = bacWaterProducts?.find(p => p.name.toLowerCase().includes("bacteriostatic"));
   
-  // Query for bac water dosage stocks (sizes)
-  const { data: bacWaterStocks } = useQuery<Array<{ dosage: string; price: string | null; inStock: boolean }>>({
-    queryKey: ["/api/products", bacWater?.id, "dosage-stocks"],
-    queryFn: async () => {
-      if (!bacWater?.id) return [];
-      const res = await fetch(`/api/products/${bacWater.id}/dosage-stocks`);
-      if (!res.ok) return [];
-      return res.json();
-    },
-    enabled: !!bacWater?.id,
-  });
-  
-  // Get available bac water sizes
-  const bacWaterSizes = bacWaterStocks?.filter(s => s.inStock) || [];
-  const [selectedBacWaterSize, setSelectedBacWaterSize] = useState<string>("30ML");
-  
   // Check if cart has peptides and BAC water
   const hasPeptides = cartItems.some(item => !item.name.toLowerCase().includes("bacteriostatic") && !item.name.toLowerCase().includes("supplies"));
-  const bacWaterInCart = cartItems.find(item => item.name.toLowerCase().includes("bacteriostatic"));
-  const hasBacWater = !!bacWaterInCart;
+  const hasBacWater = cartItems.some(item => item.name.toLowerCase().includes("bacteriostatic"));
   const shouldShowBacUpsell = hasPeptides && bacWater;
   
   // Detect subscription items in cart
@@ -134,32 +117,19 @@ export default function Checkout() {
   // For single subscription item from cart (used in payment section)
   const cartSubscriptionItem = subscriptionItems.length === 1 ? subscriptionItems[0] : null;
 
-  const handleAddBacWater = (size?: string) => {
+  const handleAddBacWater = () => {
     if (bacWater && !hasBacWater) {
-      const selectedSize = size || selectedBacWaterSize;
-      const sizeStock = bacWaterStocks?.find(s => s.dosage === selectedSize);
-      const price = sizeStock?.price ? Number(sizeStock.price) : Number(bacWater.price);
       addToCart({
         productId: bacWater.id,
         name: bacWater.name,
-        price: price,
+        price: Number(bacWater.price),
         quantity: 1,
-        dosage: selectedSize,
+        dosage: bacWater.dosageOptions?.[0] || "30ML",
         image: productImage,
       });
       toast({
         title: "Added to cart",
-        description: `${bacWater.name} (${selectedSize}) added to your cart.`,
-      });
-    }
-  };
-  
-  const handleRemoveBacWater = () => {
-    if (bacWater && bacWaterInCart) {
-      removeFromCart(bacWater.id, bacWaterInCart.dosage);
-      toast({
-        title: "Removed from cart",
-        description: "Bacteriostatic Water removed.",
+        description: `${bacWater.name} added to your cart.`,
       });
     }
   };
@@ -1227,68 +1197,33 @@ export default function Checkout() {
                   </div>
 
                   {/* BAC Water Upsell */}
-                  {shouldShowBacUpsell && bacWater && (
+                  {shouldShowBacUpsell && bacWater && !hasBacWater && (
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`mb-3 md:mb-4 p-3 md:p-4 rounded-lg border ${hasBacWater ? 'bg-[#21d8ff]/5 border-[#21d8ff]/50' : 'bg-gradient-to-r from-[#21d8ff]/10 to-[#9d4edd]/10 border-[#21d8ff]/30'}`}
+                      className="mb-3 md:mb-4 p-2 md:p-4 rounded-lg bg-gradient-to-r from-[#21d8ff]/10 to-[#9d4edd]/10 border border-[#21d8ff]/30"
                     >
-                      <div className="flex items-center gap-3">
-                        <Beaker className="h-5 w-5 text-[#21d8ff] flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-display font-semibold text-sm">Bacteriostatic Water</h4>
-                          <p className="text-xs text-muted-foreground">Reconstitute peptides properly</p>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Beaker className="h-4 w-4 md:h-5 md:w-5 text-[#21d8ff] flex-shrink-0" />
+                          <div className="min-w-0">
+                            <h4 className="font-display font-semibold text-xs md:text-sm truncate">Bacteriostatic Water</h4>
+                            <p className="text-xs text-muted-foreground hidden md:block">Reconstitute peptides properly</p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-center justify-between gap-3 mt-3 pt-3 border-t border-border/30">
-                        {hasBacWater ? (
-                          <>
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm text-[#21d8ff] font-medium">{bacWaterInCart?.dosage}</span>
-                              <span className="text-sm font-bold text-[#21d8ff]">
-                                ${bacWaterInCart?.price.toFixed(2)}
-                              </span>
-                            </div>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="text-xs px-3 border-red-500/50 text-red-400 hover:bg-red-500/10"
-                              onClick={handleRemoveBacWater}
-                              data-testid="button-remove-bac-water"
-                            >
-                              Remove
-                            </Button>
-                          </>
-                        ) : (
-                          <>
-                            {bacWaterSizes.length > 1 ? (
-                              <select
-                                value={selectedBacWaterSize}
-                                onChange={(e) => setSelectedBacWaterSize(e.target.value)}
-                                className="bg-background border border-border rounded-md px-3 py-1.5 text-sm flex-1"
-                                data-testid="select-bac-water-size"
-                              >
-                                {bacWaterSizes.map((size) => (
-                                  <option key={size.dosage} value={size.dosage}>
-                                    {size.dosage} - ${Number(size.price || bacWater.price).toFixed(2)}
-                                  </option>
-                                ))}
-                              </select>
-                            ) : (
-                              <span className="text-sm font-bold text-[#21d8ff]">
-                                ${Number(bacWater.price).toFixed(2)}
-                              </span>
-                            )}
-                            <Button
-                              size="sm"
-                              className="bg-[#21d8ff] text-black font-semibold text-xs px-4"
-                              onClick={() => handleAddBacWater()}
-                              data-testid="button-add-bac-water"
-                            >
-                              Add
-                            </Button>
-                          </>
-                        )}
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <span className="text-xs md:text-sm font-semibold text-[#21d8ff]">
+                            ${Number(bacWater.price).toFixed(2)}
+                          </span>
+                          <Button
+                            size="sm"
+                            className="bg-[#21d8ff] text-black font-semibold text-xs px-2 md:px-3"
+                            onClick={handleAddBacWater}
+                            data-testid="button-add-bac-water"
+                          >
+                            Add
+                          </Button>
+                        </div>
                       </div>
                     </motion.div>
                   )}
@@ -1298,39 +1233,29 @@ export default function Checkout() {
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`mb-4 md:mb-6 p-3 md:p-4 rounded-lg border ${hasColdPackShipping ? 'bg-blue-500/5 border-blue-500/50' : 'bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border-blue-500/30'}`}
+                      className="mb-4 md:mb-6 p-2 md:p-4 rounded-lg bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/30"
                     >
-                      <div className="flex items-center gap-3">
-                        <Package className="h-5 w-5 text-blue-400 flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-display font-semibold text-sm">Cold Pack Shipping</h4>
-                          <p className="text-xs text-muted-foreground">Insulated for peptide stability</p>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Package className="h-4 w-4 md:h-5 md:w-5 text-blue-400 flex-shrink-0" />
+                          <div className="min-w-0">
+                            <h4 className="font-display font-semibold text-xs md:text-sm truncate">Cold Pack Shipping</h4>
+                            <p className="text-xs text-muted-foreground hidden md:block">Insulated for peptide stability</p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-center justify-between gap-3 mt-3 pt-3 border-t border-border/30">
-                        <span className="text-sm font-bold text-blue-400">
-                          +${COLD_PACK_FEE.toFixed(2)}
-                        </span>
-                        {hasColdPackShipping ? (
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <span className="text-xs md:text-sm font-semibold text-blue-400">
+                            +${COLD_PACK_FEE.toFixed(2)}
+                          </span>
                           <Button
                             size="sm"
-                            variant="outline"
-                            className="text-xs px-3 border-red-500/50 text-red-400 hover:bg-red-500/10"
-                            onClick={() => setHasColdPackShipping(false)}
-                            data-testid="button-remove-cold-pack"
+                            className={`text-xs px-2 md:px-3 ${hasColdPackShipping ? "bg-blue-600 text-white" : "bg-[#21d8ff] text-black font-semibold"}`}
+                            onClick={() => setHasColdPackShipping(!hasColdPackShipping)}
+                            data-testid="button-cold-pack-shipping"
                           >
-                            Remove
+                            {hasColdPackShipping ? "✓" : "Add"}
                           </Button>
-                        ) : (
-                          <Button
-                            size="sm"
-                            className="bg-[#21d8ff] text-black font-semibold text-xs px-4"
-                            onClick={() => setHasColdPackShipping(true)}
-                            data-testid="button-add-cold-pack"
-                          >
-                            Add
-                          </Button>
-                        )}
+                        </div>
                       </div>
                     </motion.div>
                   )}
