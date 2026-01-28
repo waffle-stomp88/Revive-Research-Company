@@ -734,40 +734,11 @@ function ProductsComponent() {
                 </p>
               )}
               {/* Display Controls Bar - Mobile optimized */}
-              <div className={`flex items-center justify-between gap-4 mb-4 ${!sidebarOpen ? 'lg:pl-28' : ''}`} data-testid="display-controls-bar">
-                {/* Left: Pagination Controls + Grid toggles */}
-                <div className="flex items-center gap-3">
-                  {/* Pagination Controls - Fixed compact format */}
-                  {totalPages > 1 && (
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className="h-8 w-8"
-                        data-testid="button-prev-page-inline"
-                      >
-                        <ChevronRight className="h-4 w-4 rotate-180" />
-                      </Button>
-                      <span className="px-3 text-sm font-medium min-w-[60px] text-center" data-testid="text-page-info-inline">
-                        {currentPage} / {totalPages}
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        className="h-8 w-8"
-                        data-testid="button-next-page-inline"
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  )}
-                  
-                  {/* Grid layout toggles - Desktop only, right of pagination */}
-                  <div className="hidden sm:flex items-center bg-muted/50 rounded-md p-0.5">
+              <div className="flex items-center justify-between gap-4 mb-4" data-testid="display-controls-bar">
+                {/* Left: Empty on mobile, grid toggles on desktop */}
+                <div className="hidden sm:flex items-center gap-2">
+                  {/* Grid layout toggles - Desktop only */}
+                  <div className="flex items-center bg-muted/50 rounded-md p-0.5">
                     <button
                       onClick={() => setGridColumns(2)}
                       className={`p-1.5 rounded transition-colors ${
@@ -806,11 +777,40 @@ function ProductsComponent() {
                     </button>
                   </div>
                 </div>
+
+                {/* Left: Pagination Controls - Fixed compact format */}
+                {totalPages > 1 && (
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="h-8 w-8"
+                      data-testid="button-prev-page-inline"
+                    >
+                      <ChevronRight className="h-4 w-4 rotate-180" />
+                    </Button>
+                    <span className="px-3 text-sm font-medium min-w-[60px] text-center" data-testid="text-page-info-inline">
+                      {currentPage} / {totalPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="h-8 w-8"
+                      data-testid="button-next-page-inline"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
                 
                 {/* Right: Category filter dropdown */}
                 <div className="ml-auto">
                   <Select value={peptideGroupFilter} onValueChange={(value) => setPeptideGroupFilter(value)}>
-                    <SelectTrigger className="w-auto min-w-[160px] h-8 text-sm" data-testid="select-category-filter">
+                    <SelectTrigger className="w-[130px] h-8 text-sm" data-testid="select-category-filter">
                       <SelectValue placeholder="Category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -880,7 +880,7 @@ function ProductsComponent() {
                           const isOutOfStock = !product.inStock || (product.stockAmount !== null && product.stockAmount <= 0);
                           return (
                             <Card 
-                              className={`group p-3 cursor-pointer transition-[transform,border-color,box-shadow,opacity] duration-300 h-full flex flex-col border-2 md:hover:scale-[1.03] md:active:scale-[1.03] relative overflow-hidden ${
+                              className={`group p-3 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 md:hover:scale-[1.03] md:active:scale-[1.03] relative overflow-hidden ${
                                 isOutOfStock
                                   ? "border-muted-foreground/30 opacity-70 md:hover:border-muted-foreground/50 md:hover:opacity-90"
                                   : "border-[#21d8ff]/40 md:hover:border-[#21d8ff] md:hover:shadow-[0_0_30px_rgba(33,216,255,0.5),0_0_60px_rgba(33,216,255,0.2)]"
