@@ -188,6 +188,7 @@ interface StockNotificationWithProduct {
 
 function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string) => void }) {
   const [timeRange, setTimeRange] = useState<number>(30);
+  const [topProductSort, setTopProductSort] = useState<'revenue' | 'units'>('revenue');
   
   const { data: metrics, isLoading } = useQuery<DashboardMetrics>({
     queryKey: ["/api/admin/dashboard", timeRange],
@@ -280,9 +281,11 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
     }] : []),
   ];
 
-  // Get top product by revenue (single product) - only show if 2+ products have sales
+  // Get top product by selected metric - only show if 2+ products have sales
   const topProduct = metrics.topProducts?.length >= 2 
-    ? [...metrics.topProducts].sort((a, b) => b.revenue - a.revenue)[0]
+    ? [...metrics.topProducts].sort((a, b) => 
+        topProductSort === 'revenue' ? b.revenue - a.revenue : b.totalSold - a.totalSold
+      )[0]
     : null;
   
   // Calculate subscriber net change for the period
@@ -410,19 +413,50 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
         {topProduct ? (
           <Card>
             <CardHeader className="pb-2 pt-4 px-4">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-[#E7FB10]" />
-                Top Product
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-[#E7FB10]" />
+                  Top Product
+                </CardTitle>
+                <div className="flex gap-1">
+                  <Button
+                    size="sm"
+                    variant={topProductSort === 'revenue' ? 'default' : 'ghost'}
+                    className={`h-6 px-2 text-xs ${topProductSort === 'revenue' ? 'bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90' : ''}`}
+                    onClick={() => setTopProductSort('revenue')}
+                    data-testid="button-sort-revenue"
+                  >
+                    Revenue
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={topProductSort === 'units' ? 'default' : 'ghost'}
+                    className={`h-6 px-2 text-xs ${topProductSort === 'units' ? 'bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90' : ''}`}
+                    onClick={() => setTopProductSort('units')}
+                    data-testid="button-sort-units"
+                  >
+                    Units
+                  </Button>
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="px-4 pb-4">
               <div className="flex flex-col items-center justify-center h-[140px] text-center">
-                <div className="h-10 w-10 rounded-full bg-[#E7FB10] flex items-center justify-center text-black font-bold mb-3">
+                <div className={`h-10 w-10 rounded-full flex items-center justify-center text-black font-bold mb-3 ${topProductSort === 'revenue' ? 'bg-[#E7FB10]' : 'bg-[#21d8ff]'}`}>
                   1
                 </div>
                 <p className="font-medium text-sm mb-1">{topProduct.productName}</p>
-                <p className="text-xl font-bold text-[#E7FB10]">{formatCurrency(topProduct.revenue)}</p>
-                <p className="text-xs text-muted-foreground">{topProduct.totalSold} units sold</p>
+                {topProductSort === 'revenue' ? (
+                  <>
+                    <p className="text-xl font-bold text-[#E7FB10]">{formatCurrency(topProduct.revenue)}</p>
+                    <p className="text-xs text-muted-foreground">{topProduct.totalSold} units sold</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-xl font-bold text-[#21d8ff]">{topProduct.totalSold} units</p>
+                    <p className="text-xs text-muted-foreground">{formatCurrency(topProduct.revenue)} revenue</p>
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>
