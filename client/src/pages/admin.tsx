@@ -105,7 +105,6 @@ import {
   Copy,
   ShoppingCart,
   ChevronDown,
-  Trash2,
 } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { ObjectUploader } from "@/components/ObjectUploader";
