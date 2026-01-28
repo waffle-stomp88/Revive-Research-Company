@@ -681,164 +681,6 @@ export default function Checkout() {
     </div>
   );
 
-  // Manual Payment Instructions Component
-  const ManualPaymentInstructions = () => {
-    if (selectedPaymentMethod === "paypal") return null;
-
-    const paymentInfo = selectedPaymentMethod === "cashapp" ? CASHAPP_TAG : ZELLE_INFO;
-    const color = selectedPaymentMethod === "cashapp" ? "#00D632" : "#6D1ED4";
-    const name = selectedPaymentMethod === "cashapp" ? "CashApp" : "Zelle";
-
-    if (manualPaymentStep !== "instructions") return null;
-    
-    return (
-          <div className="mt-4">
-            <Card className="p-4" style={{ borderColor: `${color}50` }}>
-              <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
-                <Smartphone className="h-4 w-4" style={{ color }} />
-                {name} Payment Instructions
-              </h4>
-              
-              <div className="space-y-4">
-                {/* Step 1: Payment Info */}
-                <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: color }}>
-                    1
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium mb-2">Send ${cartTotal.toFixed(2)} to:</p>
-                    <div 
-                      className="flex items-center gap-2 p-2 rounded-md bg-muted cursor-pointer md:hover:bg-muted/80 transition-colors"
-                      onClick={() => copyToClipboard(paymentInfo)}
-                    >
-                      <span className="font-mono font-bold text-sm flex-1" style={{ color }}>
-                        {paymentInfo}
-                      </span>
-                      <Button size="icon" variant="ghost" className="h-6 w-6">
-                        {copied ? <CheckCircle className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Step 2: Include Order Info */}
-                <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: color }}>
-                    2
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">Include in the note:</p>
-                    <p className="text-xs text-muted-foreground">Your email address for order confirmation</p>
-                  </div>
-                </div>
-
-                {/* Step 3: Submit Order */}
-                <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: color }}>
-                    3
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">Fill in your shipping details below</p>
-                    <p className="text-xs text-muted-foreground">We'll verify payment and ship your order</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Shipping Form */}
-              <div className="mt-4 pt-4 border-t border-border space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label htmlFor="customerName" className="text-xs">Full Name *</Label>
-                    <Input
-                      id="customerName"
-                      value={customerName}
-                      onChange={(e) => setCustomerName(e.target.value)}
-                      placeholder="John Doe"
-                      className="mt-1"
-                      data-testid="input-customer-name"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="customerEmail" className="text-xs">Email *</Label>
-                    <Input
-                      id="customerEmail"
-                      type="email"
-                      value={customerEmail}
-                      onChange={(e) => setCustomerEmail(e.target.value)}
-                      placeholder="john@example.com"
-                      className="mt-1"
-                      data-testid="input-customer-email"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="street" className="text-xs">Street Address *</Label>
-                  <Input
-                    id="street"
-                    value={shippingAddress.street}
-                    onChange={(e) => setShippingAddress({...shippingAddress, street: e.target.value})}
-                    placeholder="123 Research Lane"
-                    className="mt-1"
-                    data-testid="input-street"
-                  />
-                </div>
-                <div className="grid grid-cols-3 gap-3">
-                  <div>
-                    <Label htmlFor="city" className="text-xs">City *</Label>
-                    <Input
-                      id="city"
-                      value={shippingAddress.city}
-                      onChange={(e) => setShippingAddress({...shippingAddress, city: e.target.value})}
-                      placeholder="Austin"
-                      className="mt-1"
-                      data-testid="input-city"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="state" className="text-xs">State *</Label>
-                    <Input
-                      id="state"
-                      value={shippingAddress.state}
-                      onChange={(e) => setShippingAddress({...shippingAddress, state: e.target.value})}
-                      placeholder="TX"
-                      className="mt-1"
-                      data-testid="input-state"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="zip" className="text-xs">ZIP * {hasValidZip && taxState && <span className="text-green-500 ml-1">({taxState})</span>}</Label>
-                    <Input
-                      id="zip"
-                      value={shippingAddress.zip}
-                      onChange={(e) => {
-                        const newZip = e.target.value;
-                        const detectedState = getStateFromZip(newZip);
-                        setShippingAddress({
-                          ...shippingAddress, 
-                          zip: newZip,
-                          state: detectedState || shippingAddress.state
-                        });
-                      }}
-                      placeholder="78701"
-                      className="mt-1"
-                      data-testid="input-zip"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-4 p-3 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30">
-                <p className="text-xs text-muted-foreground">
-                  <AlertTriangle className="h-3 w-3 inline mr-1 text-[#E7FB10]" />
-                  Your order will be marked as "Pending Payment" until we verify your {name} transfer.
-                  Processing typically takes 1-2 business hours.
-                </p>
-              </div>
-            </Card>
-          </div>
-    );
-  };
-
   // Main Cart Checkout Flow
   if (fromCart) {
     return (
@@ -958,7 +800,294 @@ export default function Checkout() {
                   </div>
 
                   <PaymentMethodSelector />
-                  <ManualPaymentInstructions />
+                  
+                  {/* Manual Payment Instructions - CashApp */}
+                  {selectedPaymentMethod === "cashapp" && manualPaymentStep === "instructions" && (
+                    <div className="mt-4">
+                      <Card className="p-4" style={{ borderColor: "#00D63250" }}>
+                        <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                          <Smartphone className="h-4 w-4" style={{ color: "#00D632" }} />
+                          CashApp Payment Instructions
+                        </h4>
+                        
+                        <div className="space-y-4">
+                          <div className="flex items-start gap-3">
+                            <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: "#00D632" }}>
+                              1
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium mb-2">Send ${cartTotal.toFixed(2)} to:</p>
+                              <div 
+                                className="flex items-center gap-2 p-2 rounded-md bg-muted cursor-pointer md:hover:bg-muted/80 transition-colors"
+                                onClick={() => copyToClipboard(CASHAPP_TAG)}
+                              >
+                                <span className="font-mono font-bold text-sm flex-1" style={{ color: "#00D632" }}>
+                                  {CASHAPP_TAG}
+                                </span>
+                                <Button size="icon" variant="ghost" className="h-6 w-6">
+                                  {copied ? <CheckCircle className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-start gap-3">
+                            <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: "#00D632" }}>
+                              2
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium">Include in the note:</p>
+                              <p className="text-xs text-muted-foreground">Your email address for order confirmation</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-start gap-3">
+                            <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: "#00D632" }}>
+                              3
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium">Fill in your shipping details below</p>
+                              <p className="text-xs text-muted-foreground">We'll verify payment and ship your order</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 pt-4 border-t border-border space-y-3">
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <Label htmlFor="mp-customerName" className="text-xs">Full Name *</Label>
+                              <Input
+                                id="mp-customerName"
+                                value={customerName}
+                                onChange={(e) => setCustomerName(e.target.value)}
+                                placeholder="John Doe"
+                                className="mt-1"
+                                data-testid="input-mp-customer-name"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="mp-customerEmail" className="text-xs">Email *</Label>
+                              <Input
+                                id="mp-customerEmail"
+                                type="email"
+                                value={customerEmail}
+                                onChange={(e) => setCustomerEmail(e.target.value)}
+                                placeholder="john@example.com"
+                                className="mt-1"
+                                data-testid="input-mp-customer-email"
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <Label htmlFor="mp-street" className="text-xs">Street Address *</Label>
+                            <Input
+                              id="mp-street"
+                              value={shippingAddress.street}
+                              onChange={(e) => setShippingAddress({...shippingAddress, street: e.target.value})}
+                              placeholder="123 Research Lane"
+                              className="mt-1"
+                              data-testid="input-mp-street"
+                            />
+                          </div>
+                          <div className="grid grid-cols-3 gap-3">
+                            <div>
+                              <Label htmlFor="mp-city" className="text-xs">City *</Label>
+                              <Input
+                                id="mp-city"
+                                value={shippingAddress.city}
+                                onChange={(e) => setShippingAddress({...shippingAddress, city: e.target.value})}
+                                placeholder="Austin"
+                                className="mt-1"
+                                data-testid="input-mp-city"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="mp-state" className="text-xs">State *</Label>
+                              <Input
+                                id="mp-state"
+                                value={shippingAddress.state}
+                                onChange={(e) => setShippingAddress({...shippingAddress, state: e.target.value})}
+                                placeholder="TX"
+                                className="mt-1"
+                                data-testid="input-mp-state"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="mp-zip" className="text-xs">ZIP * {hasValidZip && taxState && <span className="text-green-500 ml-1">({taxState})</span>}</Label>
+                              <Input
+                                id="mp-zip"
+                                value={shippingAddress.zip}
+                                onChange={(e) => {
+                                  const newZip = e.target.value;
+                                  const detectedState = getStateFromZip(newZip);
+                                  setShippingAddress({
+                                    ...shippingAddress, 
+                                    zip: newZip,
+                                    state: detectedState || shippingAddress.state
+                                  });
+                                }}
+                                placeholder="78701"
+                                className="mt-1"
+                                data-testid="input-mp-zip"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 p-3 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30">
+                          <p className="text-xs text-muted-foreground">
+                            <AlertTriangle className="h-3 w-3 inline mr-1 text-[#E7FB10]" />
+                            Your order will be marked as "Pending Payment" until we verify your CashApp transfer.
+                            Processing typically takes 1-2 business hours.
+                          </p>
+                        </div>
+                      </Card>
+                    </div>
+                  )}
+
+                  {/* Manual Payment Instructions - Zelle */}
+                  {selectedPaymentMethod === "zelle" && manualPaymentStep === "instructions" && (
+                    <div className="mt-4">
+                      <Card className="p-4" style={{ borderColor: "#6D1ED450" }}>
+                        <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                          <Smartphone className="h-4 w-4" style={{ color: "#6D1ED4" }} />
+                          Zelle Payment Instructions
+                        </h4>
+                        
+                        <div className="space-y-4">
+                          <div className="flex items-start gap-3">
+                            <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: "#6D1ED4" }}>
+                              1
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium mb-2">Send ${cartTotal.toFixed(2)} to:</p>
+                              <div 
+                                className="flex items-center gap-2 p-2 rounded-md bg-muted cursor-pointer md:hover:bg-muted/80 transition-colors"
+                                onClick={() => copyToClipboard(ZELLE_INFO)}
+                              >
+                                <span className="font-mono font-bold text-sm flex-1" style={{ color: "#6D1ED4" }}>
+                                  {ZELLE_INFO}
+                                </span>
+                                <Button size="icon" variant="ghost" className="h-6 w-6">
+                                  {copied ? <CheckCircle className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-start gap-3">
+                            <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: "#6D1ED4" }}>
+                              2
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium">Include in the note:</p>
+                              <p className="text-xs text-muted-foreground">Your email address for order confirmation</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-start gap-3">
+                            <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: "#6D1ED4" }}>
+                              3
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium">Fill in your shipping details below</p>
+                              <p className="text-xs text-muted-foreground">We'll verify payment and ship your order</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 pt-4 border-t border-border space-y-3">
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <Label htmlFor="zelle-customerName" className="text-xs">Full Name *</Label>
+                              <Input
+                                id="zelle-customerName"
+                                value={customerName}
+                                onChange={(e) => setCustomerName(e.target.value)}
+                                placeholder="John Doe"
+                                className="mt-1"
+                                data-testid="input-zelle-customer-name"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="zelle-customerEmail" className="text-xs">Email *</Label>
+                              <Input
+                                id="zelle-customerEmail"
+                                type="email"
+                                value={customerEmail}
+                                onChange={(e) => setCustomerEmail(e.target.value)}
+                                placeholder="john@example.com"
+                                className="mt-1"
+                                data-testid="input-zelle-customer-email"
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <Label htmlFor="zelle-street" className="text-xs">Street Address *</Label>
+                            <Input
+                              id="zelle-street"
+                              value={shippingAddress.street}
+                              onChange={(e) => setShippingAddress({...shippingAddress, street: e.target.value})}
+                              placeholder="123 Research Lane"
+                              className="mt-1"
+                              data-testid="input-zelle-street"
+                            />
+                          </div>
+                          <div className="grid grid-cols-3 gap-3">
+                            <div>
+                              <Label htmlFor="zelle-city" className="text-xs">City *</Label>
+                              <Input
+                                id="zelle-city"
+                                value={shippingAddress.city}
+                                onChange={(e) => setShippingAddress({...shippingAddress, city: e.target.value})}
+                                placeholder="Austin"
+                                className="mt-1"
+                                data-testid="input-zelle-city"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="zelle-state" className="text-xs">State *</Label>
+                              <Input
+                                id="zelle-state"
+                                value={shippingAddress.state}
+                                onChange={(e) => setShippingAddress({...shippingAddress, state: e.target.value})}
+                                placeholder="TX"
+                                className="mt-1"
+                                data-testid="input-zelle-state"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="zelle-zip" className="text-xs">ZIP * {hasValidZip && taxState && <span className="text-green-500 ml-1">({taxState})</span>}</Label>
+                              <Input
+                                id="zelle-zip"
+                                value={shippingAddress.zip}
+                                onChange={(e) => {
+                                  const newZip = e.target.value;
+                                  const detectedState = getStateFromZip(newZip);
+                                  setShippingAddress({
+                                    ...shippingAddress, 
+                                    zip: newZip,
+                                    state: detectedState || shippingAddress.state
+                                  });
+                                }}
+                                placeholder="78701"
+                                className="mt-1"
+                                data-testid="input-zelle-zip"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 p-3 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30">
+                          <p className="text-xs text-muted-foreground">
+                            <AlertTriangle className="h-3 w-3 inline mr-1 text-[#E7FB10]" />
+                            Your order will be marked as "Pending Payment" until we verify your Zelle transfer.
+                            Processing typically takes 1-2 business hours.
+                          </p>
+                        </div>
+                      </Card>
+                    </div>
+                  )}
                 </Card>
 
                 {/* Trust & Verification Links - Desktop only */}
