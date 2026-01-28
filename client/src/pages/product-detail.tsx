@@ -588,6 +588,7 @@ export default function ProductDetail() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
+            className="min-w-0 overflow-hidden"
           >
             <div className="flex items-center gap-2 mb-2 flex-wrap">
               <Badge variant="secondary" className="text-xs uppercase tracking-wider">
