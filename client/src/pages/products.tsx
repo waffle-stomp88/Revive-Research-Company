@@ -810,7 +810,7 @@ function ProductsComponent() {
                 {/* Right: Category filter dropdown */}
                 <div className="ml-auto">
                   <Select value={peptideGroupFilter} onValueChange={(value) => setPeptideGroupFilter(value)}>
-                    <SelectTrigger className="w-[130px] h-8 text-sm" data-testid="select-category-filter">
+                    <SelectTrigger className="w-auto min-w-[160px] h-8 text-sm" data-testid="select-category-filter">
                       <SelectValue placeholder="Category" />
                     </SelectTrigger>
                     <SelectContent>
