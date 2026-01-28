@@ -66,7 +66,7 @@ const intervalLabels: { [key: string]: string } = {
 
 export default function Checkout() {
   const { toast } = useToast();
-  const { items: cartItems, getSubtotal, clearCart, addToCart } = useCart();
+  const { items: cartItems, getSubtotal, clearCart, addToCart, removeFromCart } = useCart();
   const { login, logout } = useAuth();
   const [hasColdPackShipping, setHasColdPackShipping] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>("paypal");
@@ -102,9 +102,26 @@ export default function Checkout() {
 
   const bacWater = bacWaterProducts?.find(p => p.name.toLowerCase().includes("bacteriostatic"));
   
+  // Query for bac water dosage stocks (sizes)
+  const { data: bacWaterStocks } = useQuery<Array<{ dosage: string; price: string | null; inStock: boolean }>>({
+    queryKey: ["/api/products", bacWater?.id, "dosage-stocks"],
+    queryFn: async () => {
+      if (!bacWater?.id) return [];
+      const res = await fetch(`/api/products/${bacWater.id}/dosage-stocks`);
+      if (!res.ok) return [];
+      return res.json();
+    },
+    enabled: !!bacWater?.id,
+  });
+  
+  // Get available bac water sizes
+  const bacWaterSizes = bacWaterStocks?.filter(s => s.inStock) || [];
+  const [selectedBacWaterSize, setSelectedBacWaterSize] = useState<string>("30ML");
+  
   // Check if cart has peptides and BAC water
   const hasPeptides = cartItems.some(item => !item.name.toLowerCase().includes("bacteriostatic") && !item.name.toLowerCase().includes("supplies"));
-  const hasBacWater = cartItems.some(item => item.name.toLowerCase().includes("bacteriostatic"));
+  const bacWaterInCart = cartItems.find(item => item.name.toLowerCase().includes("bacteriostatic"));
+  const hasBacWater = !!bacWaterInCart;
   const shouldShowBacUpsell = hasPeptides && bacWater;
   
   // Detect subscription items in cart
@@ -117,19 +134,32 @@ export default function Checkout() {
   // For single subscription item from cart (used in payment section)
   const cartSubscriptionItem = subscriptionItems.length === 1 ? subscriptionItems[0] : null;
 
-  const handleAddBacWater = () => {
+  const handleAddBacWater = (size?: string) => {
     if (bacWater && !hasBacWater) {
+      const selectedSize = size || selectedBacWaterSize;
+      const sizeStock = bacWaterStocks?.find(s => s.dosage === selectedSize);
+      const price = sizeStock?.price ? Number(sizeStock.price) : Number(bacWater.price);
       addToCart({
         productId: bacWater.id,
         name: bacWater.name,
-        price: Number(bacWater.price),
+        price: price,
         quantity: 1,
-        dosage: bacWater.dosageOptions?.[0] || "30ML",
+        dosage: selectedSize,
         image: productImage,
       });
       toast({
         title: "Added to cart",
-        description: `${bacWater.name} added to your cart.`,
+        description: `${bacWater.name} (${selectedSize}) added to your cart.`,
+      });
+    }
+  };
+  
+  const handleRemoveBacWater = () => {
+    if (bacWater && bacWaterInCart) {
+      removeFromCart(bacWater.id, bacWaterInCart.dosage);
+      toast({
+        title: "Removed from cart",
+        description: "Bacteriostatic Water removed.",
       });
     }
   };
@@ -1197,11 +1227,11 @@ export default function Checkout() {
                   </div>
 
                   {/* BAC Water Upsell */}
-                  {shouldShowBacUpsell && bacWater && !hasBacWater && (
+                  {shouldShowBacUpsell && bacWater && (
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="mb-3 md:mb-4 p-2 md:p-4 rounded-lg bg-gradient-to-r from-[#21d8ff]/10 to-[#9d4edd]/10 border border-[#21d8ff]/30"
+                      className={`mb-3 md:mb-4 p-2 md:p-4 rounded-lg border ${hasBacWater ? 'bg-[#21d8ff]/5 border-[#21d8ff]/50' : 'bg-gradient-to-r from-[#21d8ff]/10 to-[#9d4edd]/10 border-[#21d8ff]/30'}`}
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2 min-w-0">
@@ -1212,17 +1242,53 @@ export default function Checkout() {
                           </div>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
-                          <span className="text-xs md:text-sm font-semibold text-[#21d8ff]">
-                            ${Number(bacWater.price).toFixed(2)}
-                          </span>
-                          <Button
-                            size="sm"
-                            className="bg-[#21d8ff] text-black font-semibold text-xs px-2 md:px-3"
-                            onClick={handleAddBacWater}
-                            data-testid="button-add-bac-water"
-                          >
-                            Add
-                          </Button>
+                          {!hasBacWater && bacWaterSizes.length > 1 && (
+                            <select
+                              value={selectedBacWaterSize}
+                              onChange={(e) => setSelectedBacWaterSize(e.target.value)}
+                              className="bg-background border border-border rounded px-2 py-1 text-xs"
+                              data-testid="select-bac-water-size"
+                            >
+                              {bacWaterSizes.map((size) => (
+                                <option key={size.dosage} value={size.dosage}>
+                                  {size.dosage} {size.price && `- $${Number(size.price).toFixed(2)}`}
+                                </option>
+                              ))}
+                            </select>
+                          )}
+                          {hasBacWater ? (
+                            <>
+                              <span className="text-xs text-[#21d8ff]">{bacWaterInCart?.dosage}</span>
+                              <span className="text-xs md:text-sm font-semibold text-[#21d8ff]">
+                                ${bacWaterInCart?.price.toFixed(2)}
+                              </span>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-xs px-2 md:px-3 border-red-500/50 text-red-400 hover:bg-red-500/10"
+                                onClick={handleRemoveBacWater}
+                                data-testid="button-remove-bac-water"
+                              >
+                                Remove
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <span className="text-xs md:text-sm font-semibold text-[#21d8ff]">
+                                ${(bacWaterStocks?.find(s => s.dosage === selectedBacWaterSize)?.price 
+                                  ? Number(bacWaterStocks.find(s => s.dosage === selectedBacWaterSize)?.price) 
+                                  : Number(bacWater.price)).toFixed(2)}
+                              </span>
+                              <Button
+                                size="sm"
+                                className="bg-[#21d8ff] text-black font-semibold text-xs px-2 md:px-3"
+                                onClick={() => handleAddBacWater()}
+                                data-testid="button-add-bac-water"
+                              >
+                                Add
+                              </Button>
+                            </>
+                          )}
                         </div>
                       </div>
                     </motion.div>
@@ -1233,7 +1299,7 @@ export default function Checkout() {
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="mb-4 md:mb-6 p-2 md:p-4 rounded-lg bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/30"
+                      className={`mb-4 md:mb-6 p-2 md:p-4 rounded-lg border ${hasColdPackShipping ? 'bg-blue-500/5 border-blue-500/50' : 'bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border-blue-500/30'}`}
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2 min-w-0">
@@ -1247,14 +1313,26 @@ export default function Checkout() {
                           <span className="text-xs md:text-sm font-semibold text-blue-400">
                             +${COLD_PACK_FEE.toFixed(2)}
                           </span>
-                          <Button
-                            size="sm"
-                            className={`text-xs px-2 md:px-3 ${hasColdPackShipping ? "bg-blue-600 text-white" : "bg-[#21d8ff] text-black font-semibold"}`}
-                            onClick={() => setHasColdPackShipping(!hasColdPackShipping)}
-                            data-testid="button-cold-pack-shipping"
-                          >
-                            {hasColdPackShipping ? "✓" : "Add"}
-                          </Button>
+                          {hasColdPackShipping ? (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-xs px-2 md:px-3 border-red-500/50 text-red-400 hover:bg-red-500/10"
+                              onClick={() => setHasColdPackShipping(false)}
+                              data-testid="button-remove-cold-pack"
+                            >
+                              Remove
+                            </Button>
+                          ) : (
+                            <Button
+                              size="sm"
+                              className="bg-[#21d8ff] text-black font-semibold text-xs px-2 md:px-3"
+                              onClick={() => setHasColdPackShipping(true)}
+                              data-testid="button-add-cold-pack"
+                            >
+                              Add
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </motion.div>
