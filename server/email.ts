@@ -423,89 +423,95 @@ Time: ${new Date().toISOString()}
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>New Order</title>
 </head>
-<body style="${styles.body}">
-  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0d0d0f;">
+<body style="margin: 0; padding: 0; background-color: #f4f4f5; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; -webkit-font-smoothing: antialiased;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f4f4f5;">
     <tr>
       <td align="center" style="padding: 40px 20px;">
-        <table role="presentation" cellspacing="0" cellpadding="0" style="${styles.container}">
+        <table role="presentation" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
           
           <!-- Header -->
           <tr>
             <td style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); padding: 30px 40px; text-align: center;">
-              <p style="color: rgba(255,255,255,0.8); font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 8px 0;">New Order Received</p>
+              <p style="color: rgba(255,255,255,0.9); font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 8px 0;">New Order Received</p>
               <p style="color: #ffffff; font-size: 42px; font-weight: 700; margin: 0; letter-spacing: -1px;">$${order.totalAmount}</p>
-              <p style="color: rgba(255,255,255,0.9); font-size: 14px; margin: 10px 0 0 0;">Order #${shortRef}</p>
+              <p style="color: rgba(255,255,255,0.95); font-size: 14px; margin: 10px 0 0 0;">Order #${shortRef}</p>
             </td>
           </tr>
           
           <!-- Content -->
           <tr>
-            <td style="${styles.content}">
+            <td style="padding: 32px 40px;">
               
-              <!-- Customer Card -->
-              <div style="${styles.card}">
-                <p style="${styles.cardTitle}">Customer</p>
+              <!-- Customer Section -->
+              <div style="margin-bottom: 24px;">
+                <p style="color: #16a34a; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 16px 0; padding-bottom: 8px; border-bottom: 2px solid #22c55e;">Customer</p>
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                   <tr>
-                    <td style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                      <span style="color: rgba(255,255,255,0.5); font-size: 13px;">Name</span>
+                    <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">
+                      <span style="color: #6b7280; font-size: 13px;">Name</span>
                     </td>
-                    <td style="padding: 8px 0; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                      <span style="color: #ffffff; font-size: 14px; font-weight: 600;">${order.firstName} ${order.lastName}</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                      <span style="color: rgba(255,255,255,0.5); font-size: 13px;">Email</span>
-                    </td>
-                    <td style="padding: 8px 0; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                      <a href="mailto:${order.email}" style="color: ${styles.accentColor}; font-size: 14px; text-decoration: none;">${order.email}</a>
+                    <td style="padding: 10px 0; text-align: right; border-bottom: 1px solid #e5e7eb;">
+                      <span style="color: #111827; font-size: 14px; font-weight: 600;">${order.firstName} ${order.lastName}</span>
                     </td>
                   </tr>
                   <tr>
-                    <td style="padding: 8px 0;">
-                      <span style="color: rgba(255,255,255,0.5); font-size: 13px;">Phone</span>
+                    <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">
+                      <span style="color: #6b7280; font-size: 13px;">Email</span>
                     </td>
-                    <td style="padding: 8px 0; text-align: right;">
-                      <span style="color: #ffffff; font-size: 14px;">${order.phone || 'Not provided'}</span>
+                    <td style="padding: 10px 0; text-align: right; border-bottom: 1px solid #e5e7eb;">
+                      <a href="mailto:${order.email}" style="color: #16a34a; font-size: 14px; text-decoration: none; font-weight: 500;">${order.email}</a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 10px 0;">
+                      <span style="color: #6b7280; font-size: 13px;">Phone</span>
+                    </td>
+                    <td style="padding: 10px 0; text-align: right;">
+                      <span style="color: #111827; font-size: 14px;">${order.phone || 'Not provided'}</span>
                     </td>
                   </tr>
                 </table>
               </div>
               
-              <!-- Order Card -->
-              <div style="${styles.card}">
-                <p style="${styles.cardTitle}">Order Details</p>
+              <!-- Order Section -->
+              <div style="margin-bottom: 24px;">
+                <p style="color: #16a34a; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 16px 0; padding-bottom: 8px; border-bottom: 2px solid #22c55e;">Order Details</p>
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                   <tr>
-                    <td style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                      <span style="color: rgba(255,255,255,0.5); font-size: 13px;">Product</span>
+                    <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">
+                      <span style="color: #6b7280; font-size: 13px;">Product</span>
                     </td>
-                    <td style="padding: 8px 0; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                      <span style="color: #ffffff; font-size: 14px;">${productName || order.productId}</span>
+                    <td style="padding: 10px 0; text-align: right; border-bottom: 1px solid #e5e7eb;">
+                      <span style="color: #111827; font-size: 14px; font-weight: 600;">${productName || order.productId}</span>
                     </td>
                   </tr>
                   <tr>
-                    <td style="padding: 8px 0;">
-                      <span style="color: rgba(255,255,255,0.5); font-size: 13px;">Quantity</span>
+                    <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">
+                      <span style="color: #6b7280; font-size: 13px;">Quantity</span>
                     </td>
-                    <td style="padding: 8px 0; text-align: right;">
-                      <span style="color: #ffffff; font-size: 14px;">${order.quantity}</span>
+                    <td style="padding: 10px 0; text-align: right; border-bottom: 1px solid #e5e7eb;">
+                      <span style="color: #111827; font-size: 14px; font-weight: 600;">${order.quantity}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 10px 0;">
+                      <span style="color: #6b7280; font-size: 13px;">Total</span>
+                    </td>
+                    <td style="padding: 10px 0; text-align: right;">
+                      <span style="color: #16a34a; font-size: 18px; font-weight: 700;">$${order.totalAmount}</span>
                     </td>
                   </tr>
                 </table>
               </div>
               
-              <!-- Shipping Card -->
-              <div style="${styles.card}">
-                <p style="${styles.cardTitle}">Ship To</p>
-                <p style="color: #ffffff; font-size: 14px; line-height: 1.7; margin: 0;">
-                  ${order.firstName} ${order.lastName}<br>
-                  <span style="color: rgba(255,255,255,0.6);">
-                    ${order.address || ''}<br>
-                    ${order.city || ''}, ${order.state || ''} ${order.zipCode || ''}<br>
-                    ${order.country || ''}
-                  </span>
+              <!-- Shipping Section -->
+              <div style="background-color: #f9fafb; border-radius: 8px; padding: 20px;">
+                <p style="color: #16a34a; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 12px 0;">Ship To</p>
+                <p style="color: #111827; font-size: 15px; font-weight: 600; margin: 0 0 4px 0;">${order.firstName} ${order.lastName}</p>
+                <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin: 0;">
+                  ${order.address || ''}<br>
+                  ${order.city || ''}, ${order.state || ''} ${order.zipCode || ''}<br>
+                  ${order.country || ''}
                 </p>
               </div>
               
@@ -514,8 +520,8 @@ Time: ${new Date().toISOString()}
           
           <!-- Footer -->
           <tr>
-            <td style="${styles.footer}">
-              <p style="color: rgba(255,255,255,0.3); font-size: 12px; margin: 0;">
+            <td style="background-color: #f9fafb; padding: 20px 40px; text-align: center; border-top: 1px solid #e5e7eb;">
+              <p style="color: #9ca3af; font-size: 12px; margin: 0;">
                 Received ${new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}
               </p>
             </td>
