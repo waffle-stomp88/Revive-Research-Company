@@ -1,7 +1,10 @@
-// PayPal Checkout Wrapper Component
-// Wraps the base PayPalButton with order creation and success handling for Revive Research
+// PayPal Advanced Checkout Component
+// Supports both PayPal button and embedded card fields for direct card entry
 import { useEffect, useRef, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, CreditCard, Lock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 declare global {
   namespace JSX {
@@ -10,9 +13,27 @@ declare global {
         React.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;
+      "paypal-card-number-field": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >;
+      "paypal-card-expiry-field": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >;
+      "paypal-card-cvv-field": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >;
+      "paypal-card-name-field": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >;
     }
   }
 }
+
+type PaymentMethod = "paypal" | "card";
 
 interface PayPalCheckoutProps {
   amount: string;
@@ -25,6 +46,7 @@ interface PayPalCheckoutProps {
   onCancel?: () => void;
   disabled?: boolean;
   className?: string;
+  showCardFields?: boolean;
 }
 
 export default function PayPalCheckout({
@@ -38,10 +60,15 @@ export default function PayPalCheckout({
   onCancel,
   disabled = false,
   className = "",
+  showCardFields = true,
 }: PayPalCheckoutProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>("card");
+  const [isProcessingCard, setIsProcessingCard] = useState(false);
+  const [cardFieldsReady, setCardFieldsReady] = useState(false);
   const cleanupRef = useRef<(() => void) | null>(null);
+  const cardSessionRef = useRef<any>(null);
   const buttonId = useRef(`paypal-button-${Math.random().toString(36).substr(2, 9)}`);
 
   const createOrder = async () => {
@@ -144,11 +171,17 @@ export default function PayPalCheckout({
         const data = await response.json();
         const clientToken = data.clientToken;
 
+        // Initialize SDK with both PayPal payments and card fields
+        const components = showCardFields 
+          ? ["paypal-payments", "card-fields"]
+          : ["paypal-payments"];
+
         const sdkInstance = await (window as any).paypal.createInstance({
           clientToken,
-          components: ["paypal-payments"],
+          components,
         });
 
+        // Initialize PayPal button session
         const paypalCheckout = sdkInstance.createPayPalOneTimePaymentSession({
           onApprove: handleApprove,
           onCancel: handleCancel,
@@ -169,7 +202,38 @@ export default function PayPalCheckout({
           }
         };
 
-        // Wait a bit for DOM to be ready
+        // Initialize Card Fields if enabled
+        if (showCardFields) {
+          try {
+            const cardSession = sdkInstance.createCardPaymentSession();
+            cardSessionRef.current = cardSession;
+            
+            // Render card fields to their containers
+            setTimeout(() => {
+              const numberField = document.getElementById("card-number-field-container");
+              const expiryField = document.getElementById("card-expiry-field-container");
+              const cvvField = document.getElementById("card-cvv-field-container");
+              const nameField = document.getElementById("card-name-field-container");
+              
+              if (numberField && expiryField && cvvField && nameField) {
+                cardSession.NumberField().render(numberField);
+                cardSession.ExpiryField().render(expiryField);
+                cardSession.CVVField().render(cvvField);
+                cardSession.NameField().render(nameField);
+                if (isMounted) setCardFieldsReady(true);
+              }
+            }, 200);
+          } catch (cardError) {
+            console.warn("Card fields not available - PayPal Advanced Checkout may not be enabled:", cardError);
+            // Card fields not enabled - switch to PayPal as default
+            if (isMounted) {
+              setSelectedMethod("paypal");
+              setCardFieldsReady(false);
+            }
+          }
+        }
+
+        // Wait for DOM to be ready
         setTimeout(() => {
           const paypalButton = document.getElementById(buttonId.current);
           if (paypalButton) {
@@ -197,6 +261,38 @@ export default function PayPalCheckout({
     };
   }, [amount, currency, intent, disabled]);
 
+  // Handle card payment submission
+  const handleCardSubmit = async () => {
+    if (!cardSessionRef.current || isProcessingCard || disabled) return;
+    
+    setIsProcessingCard(true);
+    try {
+      // Create the order first
+      const orderResult = await createOrder();
+      
+      // Submit the card payment
+      const result = await cardSessionRef.current.submit({
+        orderId: orderResult.orderId,
+      });
+      
+      if (result.liabilityShift === 'POSSIBLE' || result.liabilityShift === 'YES' || result.status === 'COMPLETED') {
+        // Card payment successful - capture the order
+        const captureResult = await captureOrder(result.orderId || orderResult.orderId);
+        onSuccess?.(captureResult, result.orderId || orderResult.orderId);
+      } else if (result.status === 'PAYER_ACTION_REQUIRED') {
+        // 3D Secure required - PayPal will handle this
+        console.log("3D Secure required", result);
+      } else {
+        throw new Error("Card payment failed. Please try again.");
+      }
+    } catch (e: any) {
+      console.error("Card payment error:", e);
+      onError?.(e);
+    } finally {
+      setIsProcessingCard(false);
+    }
+  };
+
   if (error) {
     return (
       <div className={`w-full p-3 bg-red-500/10 border border-red-500/30 rounded-md text-center text-sm text-red-400 ${className}`} data-testid="paypal-error">
@@ -206,18 +302,130 @@ export default function PayPalCheckout({
   }
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`space-y-4 ${className}`}>
       {isLoading && (
-        <div className="absolute inset-0 bg-[#0070ba] rounded-md flex items-center justify-center z-10" data-testid="paypal-loading">
-          <Loader2 className="h-5 w-5 animate-spin text-white" />
+        <div className="h-32 bg-muted/50 rounded-lg flex items-center justify-center" data-testid="paypal-loading">
+          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+          <span className="ml-2 text-sm text-muted-foreground">Loading payment options...</span>
         </div>
       )}
-      <paypal-button 
-        id={buttonId.current}
-        className={`w-full cursor-pointer block ${disabled ? 'opacity-50 pointer-events-none' : ''}`}
-        style={{ minHeight: '48px', display: 'block' }}
-        data-testid="button-paypal"
-      />
+      
+      {!isLoading && showCardFields && (
+        <>
+          {/* Payment Method Tabs - only show if card fields are available */}
+          {cardFieldsReady && (
+            <div className="flex gap-2 p-1 bg-muted/30 rounded-lg">
+              <button
+                type="button"
+                onClick={() => setSelectedMethod("card")}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-md text-sm font-medium transition-all ${
+                  selectedMethod === "card"
+                    ? "bg-background shadow-sm text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                data-testid="tab-card"
+              >
+                <CreditCard className="h-4 w-4" />
+                <span>Card</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedMethod("paypal")}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-md text-sm font-medium transition-all ${
+                  selectedMethod === "paypal"
+                    ? "bg-background shadow-sm text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                data-testid="tab-paypal"
+              >
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 2.9A.77.77 0 0 1 5.7 2.26h6.988c2.277 0 4.115.6 5.333 1.797.638.626 1.082 1.376 1.324 2.23.257.909.266 1.984.016 3.239l-.001.008v.006c-.432 2.2-1.408 3.938-2.858 5.098-1.425 1.14-3.22 1.695-5.328 1.695h-1.76a.76.76 0 0 0-.758.668l-.001.007-.74 4.7a.59.59 0 0 1-.587.506H7.076v.123z"/>
+                </svg>
+                <span>PayPal</span>
+              </button>
+            </div>
+          )}
+
+          {/* Card Fields Section - only show if card fields are ready */}
+          {selectedMethod === "card" && cardFieldsReady && (
+            <div className="space-y-4">
+              <div className="space-y-3">
+                <div>
+                  <Label htmlFor="card-name" className="text-xs text-muted-foreground mb-1.5 block">Name on Card</Label>
+                  <div id="card-name-field-container" className="min-h-[42px] bg-background border border-border rounded-md" />
+                </div>
+                <div>
+                  <Label htmlFor="card-number" className="text-xs text-muted-foreground mb-1.5 block">Card Number</Label>
+                  <div id="card-number-field-container" className="min-h-[42px] bg-background border border-border rounded-md" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="card-expiry" className="text-xs text-muted-foreground mb-1.5 block">Expiry</Label>
+                    <div id="card-expiry-field-container" className="min-h-[42px] bg-background border border-border rounded-md" />
+                  </div>
+                  <div>
+                    <Label htmlFor="card-cvv" className="text-xs text-muted-foreground mb-1.5 block">CVV</Label>
+                    <div id="card-cvv-field-container" className="min-h-[42px] bg-background border border-border rounded-md" />
+                  </div>
+                </div>
+              </div>
+              
+              <Button
+                onClick={handleCardSubmit}
+                disabled={disabled || isProcessingCard || !cardFieldsReady}
+                className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 font-display text-base gap-2"
+                size="lg"
+                data-testid="button-pay-card"
+              >
+                {isProcessingCard ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <Lock className="h-4 w-4" />
+                    Pay ${amount}
+                  </>
+                )}
+              </Button>
+              
+              <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                <Lock className="h-3 w-3" />
+                <span>Secured by PayPal</span>
+              </div>
+            </div>
+          )}
+
+          {/* PayPal Button Section - show when PayPal selected OR when card fields not available */}
+          {(selectedMethod === "paypal" || !cardFieldsReady) && (
+            <div className="space-y-3">
+              <paypal-button 
+                id={buttonId.current}
+                className={`w-full cursor-pointer block ${disabled ? 'opacity-50 pointer-events-none' : ''}`}
+                style={{ minHeight: '48px', display: 'block' }}
+                data-testid="button-paypal"
+              />
+              <p className="text-xs text-center text-muted-foreground">
+                {cardFieldsReady 
+                  ? "You'll be redirected to PayPal to complete your purchase"
+                  : "Pay securely with PayPal or your saved cards"
+                }
+              </p>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Fallback to just PayPal button if card fields not enabled */}
+      {!isLoading && !showCardFields && (
+        <paypal-button 
+          id={buttonId.current}
+          className={`w-full cursor-pointer block ${disabled ? 'opacity-50 pointer-events-none' : ''}`}
+          style={{ minHeight: '48px', display: 'block' }}
+          data-testid="button-paypal"
+        />
+      )}
     </div>
   );
 }
