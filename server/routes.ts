@@ -9,7 +9,16 @@ import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClie
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendNewsletterWelcomeEmail, isEmailConfigured } from "./email";
 import { sendOrderNotifications, getNotificationStatus } from "./notifications";
-import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
+import { 
+  createPaypalOrder, 
+  capturePaypalOrder, 
+  loadPaypalDefault,
+  createPayPalSubscription,
+  cancelPayPalSubscription,
+  getOrCreateSubscriptionPlan,
+  getSubscriptionDiscounts,
+  SUBSCRIPTION_DISCOUNTS,
+} from "./paypal";
 import OpenAI from "openai";
 import { z } from "zod";
 
@@ -71,6 +80,23 @@ export async function registerRoutes(
 
   app.post("/paypal/order/:orderID/capture", async (req, res) => {
     await capturePaypalOrder(req, res);
+  });
+
+  // PayPal Subscription routes
+  app.get("/api/subscriptions/discounts", (req, res) => {
+    getSubscriptionDiscounts(req, res);
+  });
+
+  app.post("/api/subscriptions/plan", async (req, res) => {
+    await getOrCreateSubscriptionPlan(req, res);
+  });
+
+  app.post("/api/subscriptions/create", async (req, res) => {
+    await createPayPalSubscription(req, res);
+  });
+
+  app.post("/api/subscriptions/cancel", async (req, res) => {
+    await cancelPayPalSubscription(req, res);
   });
 
   // Sync Auth0 user to database

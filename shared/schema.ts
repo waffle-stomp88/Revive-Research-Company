@@ -635,3 +635,51 @@ export const wishlists = pgTable("wishlists", {
 export const insertWishlistSchema = createInsertSchema(wishlists).omit({ id: true, createdAt: true });
 export type InsertWishlist = z.infer<typeof insertWishlistSchema>;
 export type Wishlist = typeof wishlists.$inferSelect;
+
+// Subscriptions table - Track PayPal subscriptions
+export const subscriptionFrequencyEnum = ["weekly", "biweekly", "monthly"] as const;
+export const subscriptionStatusEnum = ["pending", "active", "cancelled", "suspended", "expired"] as const;
+
+export const subscriptions = pgTable("subscriptions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  // PayPal subscription details
+  paypalSubscriptionId: varchar("paypal_subscription_id").unique(),
+  paypalPlanId: varchar("paypal_plan_id"),
+  paypalProductId: varchar("paypal_product_id"),
+  // Subscription configuration
+  frequency: text("frequency").notNull(), // weekly, biweekly, monthly
+  status: text("status").default("pending"), // pending, active, cancelled, suspended, expired
+  // Pricing
+  basePrice: decimal("base_price", { precision: 10, scale: 2 }).notNull(),
+  discountPercent: decimal("discount_percent", { precision: 5, scale: 2 }).notNull(),
+  finalPrice: decimal("final_price", { precision: 10, scale: 2 }).notNull(),
+  // Product details (JSON for flexibility - can have multiple products)
+  items: jsonb("items").$type<Array<{
+    productId: string;
+    productName: string;
+    dosage?: string;
+    quantity: number;
+    price: number;
+  }>>(),
+  // Shipping info
+  shippingAddress: jsonb("shipping_address").$type<{
+    firstName: string;
+    lastName: string;
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  }>(),
+  // Timestamps
+  nextBillingDate: timestamp("next_billing_date"),
+  lastBilledAt: timestamp("last_billed_at"),
+  cancelledAt: timestamp("cancelled_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertSubscriptionSchema = createInsertSchema(subscriptions).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertSubscription = z.infer<typeof insertSubscriptionSchema>;
+export type Subscription = typeof subscriptions.$inferSelect;

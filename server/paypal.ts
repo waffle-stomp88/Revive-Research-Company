@@ -4,6 +4,32 @@ import { Request, Response } from "express";
 
 const { Client, Environment, LogLevel, OAuthAuthorizationController, OrdersController } = PayPalSDK;
 
+// Naming convention for PayPal (generic to avoid flags)
+const PAYPAL_PRODUCT_NAME = "Revive Research – Supplies";
+const SUBSCRIPTION_PLAN_NAMES = {
+  weekly: "Revive Research - Weekly Supply Subscription",
+  biweekly: "Revive Research - Bi-Weekly Supply Subscription", 
+  monthly: "Revive Research - Monthly Supply Subscription",
+};
+
+// Rotating descriptions
+const INDIVIDUAL_DESCRIPTIONS = ["Supply delivery", "Order fulfillment"];
+const SUBSCRIPTION_DESCRIPTIONS = ["Recurring supply delivery", "Subscription fulfillment"];
+
+function getRandomDescription(isSubscription: boolean): string {
+  const descriptions = isSubscription ? SUBSCRIPTION_DESCRIPTIONS : INDIVIDUAL_DESCRIPTIONS;
+  return descriptions[Math.floor(Math.random() * descriptions.length)];
+}
+
+// Subscription discount rates
+export const SUBSCRIPTION_DISCOUNTS = {
+  weekly: 0.15,    // 15% off
+  biweekly: 0.12,  // 12% off
+  monthly: 0.10,   // 10% off
+} as const;
+
+export type SubscriptionFrequency = keyof typeof SUBSCRIPTION_DISCOUNTS;
+
 /* PayPal Controllers Setup - Lazy initialization */
 
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
@@ -151,4 +177,304 @@ export async function loadPaypalDefault(req: Request, res: Response) {
     console.error("Failed to load PayPal:", error);
     res.status(500).json({ error: error.message || "Failed to initialize PayPal." });
   }
+}
+
+/* ========================================
+   PayPal Subscriptions API
+   ======================================== */
+
+// Get PayPal access token for REST API calls
+async function getAccessToken(): Promise<string> {
+  const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`).toString("base64");
+  const baseUrl = process.env.NODE_ENV === "production" 
+    ? "https://api-m.paypal.com" 
+    : "https://api-m.sandbox.paypal.com";
+  
+  const response = await fetch(`${baseUrl}/v1/oauth2/token`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Basic ${auth}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: "grant_type=client_credentials",
+  });
+  
+  if (!response.ok) {
+    throw new Error("Failed to get PayPal access token");
+  }
+  
+  const data = await response.json();
+  return data.access_token;
+}
+
+function getPayPalBaseUrl(): string {
+  return process.env.NODE_ENV === "production" 
+    ? "https://api-m.paypal.com" 
+    : "https://api-m.sandbox.paypal.com";
+}
+
+// Create a PayPal product (required before creating plans)
+export async function createPayPalProduct(): Promise<string> {
+  const accessToken = await getAccessToken();
+  const baseUrl = getPayPalBaseUrl();
+  
+  const response = await fetch(`${baseUrl}/v1/catalogs/products`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+      "PayPal-Request-Id": `product-${Date.now()}`,
+    },
+    body: JSON.stringify({
+      name: PAYPAL_PRODUCT_NAME,
+      description: getRandomDescription(true),
+      type: "SERVICE",
+      category: "SOFTWARE",
+    }),
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Failed to create PayPal product");
+  }
+  
+  const data = await response.json();
+  return data.id;
+}
+
+// Create a subscription plan
+export async function createSubscriptionPlan(
+  productId: string,
+  frequency: SubscriptionFrequency,
+  basePrice: number
+): Promise<{ planId: string; discountedPrice: number }> {
+  const accessToken = await getAccessToken();
+  const baseUrl = getPayPalBaseUrl();
+  
+  const discount = SUBSCRIPTION_DISCOUNTS[frequency];
+  const discountedPrice = Math.round(basePrice * (1 - discount) * 100) / 100;
+  
+  // Determine billing interval
+  let intervalUnit: string;
+  let intervalCount: number;
+  
+  switch (frequency) {
+    case "weekly":
+      intervalUnit = "WEEK";
+      intervalCount = 1;
+      break;
+    case "biweekly":
+      intervalUnit = "WEEK";
+      intervalCount = 2;
+      break;
+    case "monthly":
+      intervalUnit = "MONTH";
+      intervalCount = 1;
+      break;
+  }
+  
+  const response = await fetch(`${baseUrl}/v1/billing/plans`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+      "PayPal-Request-Id": `plan-${frequency}-${Date.now()}`,
+    },
+    body: JSON.stringify({
+      product_id: productId,
+      name: SUBSCRIPTION_PLAN_NAMES[frequency],
+      description: getRandomDescription(true),
+      status: "ACTIVE",
+      billing_cycles: [
+        {
+          frequency: {
+            interval_unit: intervalUnit,
+            interval_count: intervalCount,
+          },
+          tenure_type: "REGULAR",
+          sequence: 1,
+          total_cycles: 0, // Infinite
+          pricing_scheme: {
+            fixed_price: {
+              value: discountedPrice.toFixed(2),
+              currency_code: "USD",
+            },
+          },
+        },
+      ],
+      payment_preferences: {
+        auto_bill_outstanding: true,
+        setup_fee: {
+          value: "0",
+          currency_code: "USD",
+        },
+        setup_fee_failure_action: "CONTINUE",
+        payment_failure_threshold: 3,
+      },
+    }),
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    console.error("PayPal plan creation error:", error);
+    throw new Error(error.message || "Failed to create subscription plan");
+  }
+  
+  const data = await response.json();
+  return { planId: data.id, discountedPrice };
+}
+
+// Create a subscription for a customer
+export async function createPayPalSubscription(req: Request, res: Response) {
+  try {
+    const { planId, returnUrl, cancelUrl } = req.body;
+    
+    if (!planId) {
+      return res.status(400).json({ error: "Plan ID is required" });
+    }
+    
+    const accessToken = await getAccessToken();
+    const baseUrl = getPayPalBaseUrl();
+    
+    const response = await fetch(`${baseUrl}/v1/billing/subscriptions`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "PayPal-Request-Id": `sub-${Date.now()}`,
+      },
+      body: JSON.stringify({
+        plan_id: planId,
+        application_context: {
+          brand_name: "Revive Research",
+          locale: "en-US",
+          shipping_preference: "GET_FROM_FILE",
+          user_action: "SUBSCRIBE_NOW",
+          payment_method: {
+            payer_selected: "PAYPAL",
+            payee_preferred: "IMMEDIATE_PAYMENT_REQUIRED",
+          },
+          return_url: returnUrl || `${process.env.REPLIT_DEPLOYMENT_URL || 'http://localhost:5000'}/subscription/success`,
+          cancel_url: cancelUrl || `${process.env.REPLIT_DEPLOYMENT_URL || 'http://localhost:5000'}/subscription/cancel`,
+        },
+      }),
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      console.error("PayPal subscription creation error:", error);
+      return res.status(400).json({ error: error.message || "Failed to create subscription" });
+    }
+    
+    const data = await response.json();
+    res.json({
+      subscriptionId: data.id,
+      status: data.status,
+      approvalUrl: data.links?.find((l: any) => l.rel === "approve")?.href,
+    });
+  } catch (error: any) {
+    console.error("Failed to create subscription:", error);
+    res.status(500).json({ error: error.message || "Failed to create subscription" });
+  }
+}
+
+// Get subscription details
+export async function getSubscriptionDetails(subscriptionId: string) {
+  const accessToken = await getAccessToken();
+  const baseUrl = getPayPalBaseUrl();
+  
+  const response = await fetch(`${baseUrl}/v1/billing/subscriptions/${subscriptionId}`, {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+  });
+  
+  if (!response.ok) {
+    throw new Error("Failed to get subscription details");
+  }
+  
+  return await response.json();
+}
+
+// Cancel a subscription
+export async function cancelPayPalSubscription(req: Request, res: Response) {
+  try {
+    const { subscriptionId, reason } = req.body;
+    
+    if (!subscriptionId) {
+      return res.status(400).json({ error: "Subscription ID is required" });
+    }
+    
+    const accessToken = await getAccessToken();
+    const baseUrl = getPayPalBaseUrl();
+    
+    const response = await fetch(`${baseUrl}/v1/billing/subscriptions/${subscriptionId}/cancel`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        reason: reason || "Customer requested cancellation",
+      }),
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      return res.status(400).json({ error: error.message || "Failed to cancel subscription" });
+    }
+    
+    res.json({ success: true, message: "Subscription cancelled" });
+  } catch (error: any) {
+    console.error("Failed to cancel subscription:", error);
+    res.status(500).json({ error: error.message || "Failed to cancel subscription" });
+  }
+}
+
+// Create or get subscription plan endpoint
+export async function getOrCreateSubscriptionPlan(req: Request, res: Response) {
+  try {
+    const { frequency, basePrice } = req.body;
+    
+    if (!frequency || !["weekly", "biweekly", "monthly"].includes(frequency)) {
+      return res.status(400).json({ error: "Valid frequency is required (weekly, biweekly, monthly)" });
+    }
+    
+    if (!basePrice || isNaN(parseFloat(basePrice)) || parseFloat(basePrice) <= 0) {
+      return res.status(400).json({ error: "Valid base price is required" });
+    }
+    
+    // Create a new product for this subscription
+    const productId = await createPayPalProduct();
+    
+    // Create the plan
+    const { planId, discountedPrice } = await createSubscriptionPlan(
+      productId,
+      frequency as SubscriptionFrequency,
+      parseFloat(basePrice)
+    );
+    
+    res.json({
+      planId,
+      productId,
+      frequency,
+      basePrice: parseFloat(basePrice),
+      discountedPrice,
+      discountPercent: SUBSCRIPTION_DISCOUNTS[frequency as SubscriptionFrequency] * 100,
+    });
+  } catch (error: any) {
+    console.error("Failed to create subscription plan:", error);
+    res.status(500).json({ error: error.message || "Failed to create subscription plan" });
+  }
+}
+
+// Get subscription discounts
+export function getSubscriptionDiscounts(req: Request, res: Response) {
+  res.json({
+    weekly: { discount: SUBSCRIPTION_DISCOUNTS.weekly, label: "15% off", frequency: "Weekly" },
+    biweekly: { discount: SUBSCRIPTION_DISCOUNTS.biweekly, label: "12% off", frequency: "Every 2 Weeks" },
+    monthly: { discount: SUBSCRIPTION_DISCOUNTS.monthly, label: "10% off", frequency: "Monthly" },
+  });
 }
