@@ -348,11 +348,21 @@ export default function ProductDetail() {
 
   const handleBuyNow = () => {
     if (product) {
-      let url = `/checkout?productId=${product.id}&quantity=${quantity}&dosage=${selectedDosage}`;
-      if (purchaseType === "subscription") {
-        url += `&subscription=true&interval=${subscriptionInterval}`;
-      }
-      setLocation(url);
+      const isSubPurchase = purchaseType === "subscription";
+      // Add to cart first, then go to checkout
+      addToCart({
+        productId: product.id,
+        name: product.name,
+        price: getBasePrice(),
+        originalPrice: getOriginalPrice() || undefined,
+        quantity,
+        dosage: selectedDosage,
+        image: product.imageUrl || productImage,
+        isSubscription: isSubPurchase,
+        subscriptionInterval: isSubPurchase ? subscriptionInterval : undefined,
+      });
+      // Navigate directly to checkout
+      setLocation('/checkout?fromCart=true');
     }
   };
 

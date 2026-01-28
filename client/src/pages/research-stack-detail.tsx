@@ -367,8 +367,19 @@ export default function ResearchStackDetail() {
   };
 
   const handleBuyNow = () => {
-    // Navigate to checkout with stack parameters
-    window.location.href = `/checkout?stackId=${stack.id}&quantity=${quantity}${purchaseType === "subscription" ? `&subscription=true&interval=${subscriptionInterval}` : ""}`;
+    // Add to cart first, then go to checkout
+    addToCart({
+      productId: stack.id,
+      bundleId: stack.id,
+      name: stack.name,
+      price: getBasePrice(),
+      quantity,
+      dosage: "Research Stack",
+      image: productImage,
+      isBundle: true,
+    });
+    // Navigate directly to checkout
+    window.location.href = '/checkout?fromCart=true';
   };
 
   return (

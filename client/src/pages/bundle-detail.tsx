@@ -74,11 +74,20 @@ export default function BundleDetail() {
 
   const handleBuyNow = () => {
     if (bundle) {
-      let url = `/checkout?bundleId=${bundle.id}&quantity=${quantity}`;
-      if (purchaseType === "subscription") {
-        url += `&subscription=true&interval=${subscriptionInterval}`;
-      }
-      setLocation(url);
+      // Add to cart first, then go to checkout
+      addToCart({
+        productId: `bundle-${bundle.id}`,
+        bundleId: bundle.id,
+        name: bundle.name,
+        price: getDiscountedPrice(),
+        originalPrice: bundle.originalPrice,
+        quantity,
+        dosage: "Bundle",
+        isBundle: true,
+        image: productImage,
+      });
+      // Navigate directly to checkout
+      setLocation('/checkout?fromCart=true');
     }
   };
 
