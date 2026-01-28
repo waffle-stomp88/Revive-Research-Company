@@ -366,7 +366,7 @@ export default function ResearchStackDetail() {
       title: "Added to Cart",
       description: `${stack.name} has been added to your cart.`,
       action: (
-        <ToastAction altText="View Cart" onClick={() => setLocation('/cart')}>
+        <ToastAction altText="View Cart" onClick={() => setLocation('/cart')} className="bg-[#E7FB10] text-black border-[#E7FB10] hover:bg-[#E7FB10]/90 font-semibold">
           View Cart
         </ToastAction>
       ),

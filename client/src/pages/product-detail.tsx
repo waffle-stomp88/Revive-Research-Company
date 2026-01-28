@@ -387,7 +387,7 @@ export default function ProductDetail() {
           ? `${quantity}x ${product.name} (${selectedDosage}) - ${subscriptionInterval} subscription added.`
           : `${quantity}x ${product.name} (${selectedDosage}) added to your cart.`,
         action: (
-          <ToastAction altText="View Cart" onClick={() => setLocation('/cart')}>
+          <ToastAction altText="View Cart" onClick={() => setLocation('/cart')} className="bg-[#E7FB10] text-black border-[#E7FB10] hover:bg-[#E7FB10]/90 font-semibold">
             View Cart
           </ToastAction>
         ),
