@@ -2980,7 +2980,21 @@ function OrderViewDialog({
                   onCheckedChange={(checked) => setPaymentConfirmed(!!checked)}
                   data-testid="checkbox-payment-confirmed"
                 />
-                <label htmlFor="payment-confirmed" className="text-sm">Payment confirmed in Stripe</label>
+                <label htmlFor="payment-confirmed" className="text-sm flex items-center gap-2">
+                  Payment confirmed:
+                  {order.paymentMethod === 'paypal' && (
+                    <Badge variant="outline" className="bg-[#0070ba]/10 text-[#0070ba] border-[#0070ba]/30">PayPal</Badge>
+                  )}
+                  {order.paymentMethod === 'cashapp' && (
+                    <Badge variant="outline" className="bg-[#00D632]/10 text-[#00D632] border-[#00D632]/30">CashApp</Badge>
+                  )}
+                  {order.paymentMethod === 'zelle' && (
+                    <Badge variant="outline" className="bg-[#6D1ED4]/10 text-[#6D1ED4] border-[#6D1ED4]/30">Zelle</Badge>
+                  )}
+                  {!order.paymentMethod && (
+                    <Badge variant="secondary">Unknown</Badge>
+                  )}
+                </label>
               </div>
               <div className="flex items-center gap-3">
                 <Checkbox 

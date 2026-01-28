@@ -151,6 +151,8 @@ export const orders = pgTable("orders", {
   orderType: text("order_type").default("one_time"),
   // Payment status: pending, paid, failed
   status: text("status").default("pending"),
+  // Payment method: paypal, cashapp, zelle
+  paymentMethod: text("payment_method"),
   stripeSessionId: text("stripe_session_id"),
   stripePaymentIntentId: text("stripe_payment_intent_id"),
   // Manual fulfillment workflow: pending, preparing, ready, delivered
