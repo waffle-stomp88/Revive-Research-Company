@@ -378,8 +378,9 @@ export default function Checkout() {
   const FLAT_RATE_SHIPPING = 20;
   const COLD_PACK_FEE = 14.99;
   const cartSubtotal = getSubtotal();
-  const baseShipping = cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING;
-  const coldPackFee = hasColdPackShipping ? COLD_PACK_FEE : 0;
+  // Subscriptions always ship free
+  const baseShipping = hasSubscriptionItems ? 0 : (cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING);
+  const coldPackFee = hasColdPackShipping && !hasSubscriptionItems ? COLD_PACK_FEE : 0;
   const cartShipping = baseShipping + coldPackFee;
   const cartTotal = cartSubtotal + cartShipping;
 
