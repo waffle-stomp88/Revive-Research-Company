@@ -1139,17 +1139,44 @@ export default function Checkout() {
                         <span className="text-blue-400">+${COLD_PACK_FEE.toFixed(2)}</span>
                       </div>
                     )}
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">
-                        Tax
+                        Tax {hasValidZip && taxState && (
+                          <span className="text-xs text-muted-foreground/70">({taxState})</span>
+                        )}
                       </span>
-                      <span className={!hasValidZip ? "text-[#E7FB10]" : cartTax === 0 ? "text-green-500" : ""}>
-                        {!hasValidZip 
-                          ? "Enter ZIP code" 
-                          : cartTax === 0 
-                            ? "No tax" 
-                            : `$${cartTax.toFixed(2)} (${taxRatePercent.toFixed(2)}%)`}
-                      </span>
+                      {!hasValidZip ? (
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            placeholder="ZIP code"
+                            value={shippingAddress.zip}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/\D/g, '').slice(0, 5);
+                              setShippingAddress(prev => ({ ...prev, zip: value }));
+                            }}
+                            className="w-24 h-8 text-sm text-center bg-background border-[#E7FB10]/50 focus:border-[#E7FB10] placeholder:text-muted-foreground/50"
+                            data-testid="input-tax-zip"
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <span className={cartTax === 0 ? "text-green-500" : ""}>
+                            {cartTax === 0 
+                              ? "No tax" 
+                              : `$${cartTax.toFixed(2)} (${taxRatePercent.toFixed(2)}%)`}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setShippingAddress(prev => ({ ...prev, zip: '' }))}
+                            className="text-xs text-muted-foreground hover:text-[#E7FB10] transition-colors"
+                            data-testid="button-edit-zip"
+                          >
+                            Edit
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
 
