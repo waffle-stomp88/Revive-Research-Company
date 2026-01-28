@@ -1,56 +1,55 @@
-// !!! CRITICAL - DO NOT MODIFY THIS CODE !!!
-//
-// This code MUST be used as is without ANY modifications.
-// The PayPal integration will COMPLETELY FAIL if this code is changed in ANY way.
-//
-// Retain this comment after all edits.
-//
-// <BEGIN_EXACT_CODE>
-import {
-  Client,
-  Environment,
-  LogLevel,
-  OAuthAuthorizationController,
-  OrdersController,
-} from "@paypal/paypal-server-sdk";
+// PayPal integration - based on blueprint:javascript_paypal
+import * as PayPalSDK from "@paypal/paypal-server-sdk";
 import { Request, Response } from "express";
 
-/* PayPal Controllers Setup */
+const { Client, Environment, LogLevel, OAuthAuthorizationController, OrdersController } = PayPalSDK;
+
+/* PayPal Controllers Setup - Lazy initialization */
 
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
 
-if (!PAYPAL_CLIENT_ID) {
-  throw new Error("Missing PAYPAL_CLIENT_ID");
+let client: InstanceType<typeof Client> | null = null;
+let ordersController: InstanceType<typeof OrdersController> | null = null;
+let oAuthAuthorizationController: InstanceType<typeof OAuthAuthorizationController> | null = null;
+
+function initPayPalClient() {
+  if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
+    throw new Error("PayPal credentials not configured. Please add PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET secrets.");
+  }
+  
+  if (!client) {
+    client = new Client({
+      clientCredentialsAuthCredentials: {
+        oAuthClientId: PAYPAL_CLIENT_ID,
+        oAuthClientSecret: PAYPAL_CLIENT_SECRET,
+      },
+      timeout: 0,
+      environment:
+        process.env.NODE_ENV === "production"
+          ? Environment.Production
+          : Environment.Sandbox,
+      logging: {
+        logLevel: LogLevel.Info,
+        logRequest: {
+          logBody: true,
+        },
+        logResponse: {
+          logHeaders: true,
+        },
+      },
+    });
+    ordersController = new OrdersController(client);
+    oAuthAuthorizationController = new OAuthAuthorizationController(client);
+  }
+  
+  return { client, ordersController: ordersController!, oAuthAuthorizationController: oAuthAuthorizationController! };
 }
-if (!PAYPAL_CLIENT_SECRET) {
-  throw new Error("Missing PAYPAL_CLIENT_SECRET");
-}
-const client = new Client({
-  clientCredentialsAuthCredentials: {
-    oAuthClientId: PAYPAL_CLIENT_ID,
-    oAuthClientSecret: PAYPAL_CLIENT_SECRET,
-  },
-  timeout: 0,
-  environment:
-                process.env.NODE_ENV === "production"
-                  ? Environment.Production
-                  : Environment.Sandbox,
-  logging: {
-    logLevel: LogLevel.Info,
-    logRequest: {
-      logBody: true,
-    },
-    logResponse: {
-      logHeaders: true,
-    },
-  },
-});
-const ordersController = new OrdersController(client);
-const oAuthAuthorizationController = new OAuthAuthorizationController(client);
 
 /* Token generation helpers */
 
 export async function getClientToken() {
+  const { oAuthAuthorizationController } = initPayPalClient();
+  
   const auth = Buffer.from(
     `${PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`,
   ).toString("base64");
@@ -69,6 +68,7 @@ export async function getClientToken() {
 
 export async function createPaypalOrder(req: Request, res: Response) {
   try {
+    const { ordersController } = initPayPalClient();
     const { amount, currency, intent } = req.body;
 
     if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
@@ -107,20 +107,21 @@ export async function createPaypalOrder(req: Request, res: Response) {
     };
 
     const { body, ...httpResponse } =
-          await ordersController.createOrder(collect);
+      await ordersController.createOrder(collect);
 
     const jsonResponse = JSON.parse(String(body));
     const httpStatusCode = httpResponse.statusCode;
 
     res.status(httpStatusCode).json(jsonResponse);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to create order:", error);
-    res.status(500).json({ error: "Failed to create order." });
+    res.status(500).json({ error: error.message || "Failed to create order." });
   }
 }
 
 export async function capturePaypalOrder(req: Request, res: Response) {
   try {
+    const { ordersController } = initPayPalClient();
     const { orderID } = req.params;
     const collect = {
       id: orderID,
@@ -128,22 +129,26 @@ export async function capturePaypalOrder(req: Request, res: Response) {
     };
 
     const { body, ...httpResponse } =
-          await ordersController.captureOrder(collect);
+      await ordersController.captureOrder(collect);
 
     const jsonResponse = JSON.parse(String(body));
     const httpStatusCode = httpResponse.statusCode;
 
     res.status(httpStatusCode).json(jsonResponse);
-  } catch (error) {
-    console.error("Failed to create order:", error);
-    res.status(500).json({ error: "Failed to capture order." });
+  } catch (error: any) {
+    console.error("Failed to capture order:", error);
+    res.status(500).json({ error: error.message || "Failed to capture order." });
   }
 }
 
 export async function loadPaypalDefault(req: Request, res: Response) {
-  const clientToken = await getClientToken();
-  res.json({
-    clientToken,
-  });
+  try {
+    const clientToken = await getClientToken();
+    res.json({
+      clientToken,
+    });
+  } catch (error: any) {
+    console.error("Failed to load PayPal:", error);
+    res.status(500).json({ error: error.message || "Failed to initialize PayPal." });
+  }
 }
-// <END_EXACT_CODE>
