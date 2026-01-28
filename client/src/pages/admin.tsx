@@ -105,6 +105,7 @@ import {
   Copy,
   ShoppingCart,
   ChevronDown,
+  Trash2,
 } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { ObjectUploader } from "@/components/ObjectUploader";
@@ -2391,6 +2392,23 @@ function OrdersTab() {
     },
   });
 
+  const deleteOrderMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest("DELETE", `/api/admin/orders/${id}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders/stats"] });
+      setIsViewDialogOpen(false);
+      setSelectedOrder(null);
+      toast({ title: "Order deleted successfully" });
+    },
+    onError: () => {
+      toast({ title: "Failed to delete order", variant: "destructive" });
+    },
+  });
+
   const getProductName = (productId: string) => {
     return products?.find((p) => p.id === productId)?.name || "Unknown Product";
   };
@@ -2695,15 +2713,31 @@ function OrdersTab() {
                     </div>
                   </TableCell>
                   <TableCell onClick={(e) => e.stopPropagation()} className="text-right">
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => handleViewOrder(order)}
-                      data-testid={`button-view-order-${order.id}`}
-                    >
-                      <Eye className="h-4 w-4 mr-1" />
-                      View
-                    </Button>
+                    <div className="flex items-center justify-end gap-1">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleViewOrder(order)}
+                        data-testid={`button-view-order-${order.id}`}
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        View
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground md:hover:text-red-500 md:hover:bg-red-500/10"
+                        onClick={() => {
+                          if (confirm(`Delete order #${order.id.slice(-8).toUpperCase()}? This cannot be undone.`)) {
+                            deleteOrderMutation.mutate(order.id);
+                          }
+                        }}
+                        disabled={deleteOrderMutation.isPending}
+                        data-testid={`button-delete-order-${order.id}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
                 );

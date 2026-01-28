@@ -1812,6 +1812,25 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Delete order
+  app.delete("/api/admin/orders/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const orderId = req.params.id;
+      console.log(`[Admin] Deleting order ${orderId}`);
+      
+      const deleted = await storage.deleteOrder(orderId);
+      if (!deleted) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+      
+      console.log(`[Admin] Order ${orderId} deleted successfully`);
+      res.json({ success: true, message: "Order deleted successfully" });
+    } catch (error: any) {
+      console.error("[Admin Delete Order] Error:", error);
+      res.status(500).json({ error: error.message || "Failed to delete order" });
+    }
+  });
+
   // Admin: Create product
   app.post("/api/admin/products", isAuthenticated, isAdmin, async (req, res) => {
     try {
