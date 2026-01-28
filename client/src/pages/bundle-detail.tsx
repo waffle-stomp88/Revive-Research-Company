@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 import { useCart } from "@/contexts/CartContext";
 import {
   ArrowLeft,
@@ -107,6 +108,11 @@ export default function BundleDetail() {
       toast({
         title: "Added to cart",
         description: `${quantity}x ${bundle.name} added to your cart.`,
+        action: (
+          <ToastAction altText="View Cart" onClick={() => setLocation('/cart')}>
+            View Cart
+          </ToastAction>
+        ),
       });
     }
   };

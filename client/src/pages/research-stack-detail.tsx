@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useRoute, Link } from "wouter";
+import { useRoute, Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { ImageLoader } from "@/components/image-loader";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 import { useAuth } from "@/hooks/useAuth";
 import type { Review } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
@@ -290,6 +291,7 @@ const researchStacksData: Record<string, ResearchStack> = {
 
 export default function ResearchStackDetail() {
   const [match, params] = useRoute("/research-stacks/:id");
+  const [, setLocation] = useLocation();
   const { addToCart } = useCart();
   const { toast } = useToast();
   const { isAuthenticated, login } = useAuth();
@@ -363,6 +365,11 @@ export default function ResearchStackDetail() {
     toast({
       title: "Added to Cart",
       description: `${stack.name} has been added to your cart.`,
+      action: (
+        <ToastAction altText="View Cart" onClick={() => setLocation('/cart')}>
+          View Cart
+        </ToastAction>
+      ),
     });
   };
 

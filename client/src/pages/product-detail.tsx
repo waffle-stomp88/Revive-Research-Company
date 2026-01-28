@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -385,6 +386,11 @@ export default function ProductDetail() {
         description: isSubPurchase 
           ? `${quantity}x ${product.name} (${selectedDosage}) - ${subscriptionInterval} subscription added.`
           : `${quantity}x ${product.name} (${selectedDosage}) added to your cart.`,
+        action: (
+          <ToastAction altText="View Cart" onClick={() => setLocation('/cart')}>
+            View Cart
+          </ToastAction>
+        ),
       });
     }
   };

@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
+import { useLocation } from "wouter";
 import { ImageLoader } from "@/components/image-loader";
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
@@ -21,6 +23,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   if (!product) return null;
 
@@ -46,6 +49,11 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
     toast({
       title: "Added to Cart",
       description: `${quantity}x ${product.name} added to your cart.`,
+      action: (
+        <ToastAction altText="View Cart" onClick={() => setLocation('/cart')}>
+          View Cart
+        </ToastAction>
+      ),
     });
     
     setQuantity(1);
