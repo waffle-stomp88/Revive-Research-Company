@@ -1619,6 +1619,17 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Get all customers with stats
+  app.get("/api/admin/customers", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const customers = await storage.getAllCustomersWithStats();
+      res.json(customers);
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+      res.status(500).json({ error: "Failed to fetch customers" });
+    }
+  });
+
   // Admin: Get all orders
   app.get("/api/admin/orders", isAuthenticated, isAdmin, async (req, res) => {
     try {

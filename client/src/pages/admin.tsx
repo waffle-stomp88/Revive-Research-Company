@@ -105,6 +105,8 @@ import {
   Copy,
   ShoppingCart,
   ChevronDown,
+  UserCircle,
+  Calendar,
 } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { ObjectUploader } from "@/components/ObjectUploader";
@@ -3217,6 +3219,311 @@ function OrderViewDialog({
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+interface CustomerWithStats {
+  id: string;
+  email: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  profileImageUrl: string | null;
+  isAdmin: boolean | null;
+  createdAt: Date | null;
+  orderCount: number;
+  totalSpent: number;
+  lastOrderDate: Date | null;
+}
+
+function CustomersTab() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCustomer, setSelectedCustomer] = useState<CustomerWithStats | null>(null);
+  const [sortBy, setSortBy] = useState<"recent" | "orders" | "spent">("recent");
+
+  const { data: customers, isLoading } = useQuery<CustomerWithStats[]>({
+    queryKey: ["/api/admin/customers"],
+  });
+
+  const { data: orders } = useQuery<Order[]>({
+    queryKey: ["/api/admin/orders"],
+  });
+
+  const filteredCustomers = useMemo(() => {
+    if (!customers) return [];
+    
+    let filtered = customers.filter(customer => {
+      const searchLower = searchQuery.toLowerCase();
+      return (
+        customer.email?.toLowerCase().includes(searchLower) ||
+        customer.firstName?.toLowerCase().includes(searchLower) ||
+        customer.lastName?.toLowerCase().includes(searchLower)
+      );
+    });
+
+    switch (sortBy) {
+      case "orders":
+        filtered.sort((a, b) => b.orderCount - a.orderCount);
+        break;
+      case "spent":
+        filtered.sort((a, b) => b.totalSpent - a.totalSpent);
+        break;
+      case "recent":
+      default:
+        filtered.sort((a, b) => {
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return dateB - dateA;
+        });
+    }
+
+    return filtered;
+  }, [customers, searchQuery, sortBy]);
+
+  const customerOrders = useMemo(() => {
+    if (!orders || !selectedCustomer) return [];
+    return orders.filter(order => order.userId === selectedCustomer.id);
+  }, [orders, selectedCustomer]);
+
+  const stats = useMemo(() => {
+    if (!customers) return { total: 0, thisWeek: 0, thisMonth: 0 };
+    
+    const now = new Date();
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    
+    return {
+      total: customers.length,
+      thisWeek: customers.filter(c => c.createdAt && new Date(c.createdAt) >= weekAgo).length,
+      thisMonth: customers.filter(c => c.createdAt && new Date(c.createdAt) >= monthAgo).length,
+    };
+  }, [customers]);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">Customers</h2>
+          <p className="text-muted-foreground">Manage and view your customer base</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-[#E7FB10]/10">
+              <Users className="h-5 w-5 text-[#E7FB10]" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold">{stats.total}</p>
+              <p className="text-sm text-muted-foreground">Total Customers</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-[#21d8ff]/10">
+              <Calendar className="h-5 w-5 text-[#21d8ff]" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold">{stats.thisWeek}</p>
+              <p className="text-sm text-muted-foreground">New This Week</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-emerald-500/10">
+              <TrendingUp className="h-5 w-5 text-emerald-500" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold">{stats.thisMonth}</p>
+              <p className="text-sm text-muted-foreground">New This Month</p>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search by email or name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+            data-testid="input-customer-search"
+          />
+        </div>
+        <Select value={sortBy} onValueChange={(v) => setSortBy(v as "recent" | "orders" | "spent")}>
+          <SelectTrigger className="w-[180px]" data-testid="select-customer-sort">
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="recent">Most Recent</SelectItem>
+            <SelectItem value="orders">Most Orders</SelectItem>
+            <SelectItem value="spent">Highest Spent</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="border rounded-lg overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Customer</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead className="text-center">Orders</TableHead>
+              <TableHead className="text-right">Total Spent</TableHead>
+              <TableHead>Joined</TableHead>
+              <TableHead>Last Order</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredCustomers.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                  {searchQuery ? "No customers found matching your search" : "No customers yet"}
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredCustomers.map((customer) => (
+                <TableRow 
+                  key={customer.id} 
+                  className="cursor-pointer hover:bg-muted/50"
+                  onClick={() => setSelectedCustomer(customer)}
+                  data-testid={`row-customer-${customer.id}`}
+                >
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+                        {customer.profileImageUrl ? (
+                          <img src={customer.profileImageUrl} alt="" className="h-8 w-8 rounded-full object-cover" />
+                        ) : (
+                          <UserCircle className="h-5 w-5 text-muted-foreground" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-medium">
+                          {customer.firstName || customer.lastName 
+                            ? `${customer.firstName || ''} ${customer.lastName || ''}`.trim()
+                            : 'Unknown'}
+                        </p>
+                        {customer.isAdmin && (
+                          <Badge variant="secondary" className="text-xs">Admin</Badge>
+                        )}
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">{customer.email || '-'}</TableCell>
+                  <TableCell className="text-center">
+                    <Badge variant={customer.orderCount > 0 ? "default" : "secondary"}>
+                      {customer.orderCount}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right font-medium">
+                    ${customer.totalSpent.toFixed(2)}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {customer.createdAt 
+                      ? new Date(customer.createdAt).toLocaleDateString()
+                      : '-'}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {customer.lastOrderDate 
+                      ? new Date(customer.lastOrderDate).toLocaleDateString()
+                      : '-'}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      <Dialog open={!!selectedCustomer} onOpenChange={(open) => !open && setSelectedCustomer(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                {selectedCustomer?.profileImageUrl ? (
+                  <img src={selectedCustomer.profileImageUrl} alt="" className="h-10 w-10 rounded-full object-cover" />
+                ) : (
+                  <UserCircle className="h-6 w-6 text-muted-foreground" />
+                )}
+              </div>
+              <div>
+                <span>
+                  {selectedCustomer?.firstName || selectedCustomer?.lastName 
+                    ? `${selectedCustomer?.firstName || ''} ${selectedCustomer?.lastName || ''}`.trim()
+                    : 'Unknown Customer'}
+                </span>
+                {selectedCustomer?.isAdmin && (
+                  <Badge variant="secondary" className="ml-2">Admin</Badge>
+                )}
+              </div>
+            </DialogTitle>
+            <DialogDescription>
+              {selectedCustomer?.email}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid grid-cols-3 gap-4 py-4">
+            <Card className="p-3 text-center">
+              <p className="text-2xl font-bold text-[#E7FB10]">{selectedCustomer?.orderCount || 0}</p>
+              <p className="text-xs text-muted-foreground">Orders</p>
+            </Card>
+            <Card className="p-3 text-center">
+              <p className="text-2xl font-bold text-[#21d8ff]">${selectedCustomer?.totalSpent.toFixed(2) || '0.00'}</p>
+              <p className="text-xs text-muted-foreground">Total Spent</p>
+            </Card>
+            <Card className="p-3 text-center">
+              <p className="text-2xl font-bold text-emerald-500">
+                {selectedCustomer?.createdAt 
+                  ? new Date(selectedCustomer.createdAt).toLocaleDateString()
+                  : '-'}
+              </p>
+              <p className="text-xs text-muted-foreground">Member Since</p>
+            </Card>
+          </div>
+
+          {customerOrders.length > 0 && (
+            <div className="space-y-3">
+              <h4 className="font-semibold">Order History</h4>
+              <div className="max-h-64 overflow-y-auto space-y-2">
+                {customerOrders.map((order) => (
+                  <div key={order.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div>
+                      <p className="font-medium">#{order.id.slice(-8).toUpperCase()}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {order.createdAt && new Date(order.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium">${Number(order.totalAmount).toFixed(2)}</p>
+                      <Badge 
+                        variant={order.status === 'paid' ? 'default' : 'secondary'}
+                        className="text-xs"
+                      >
+                        {order.status}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
 
@@ -6497,7 +6804,7 @@ export default function Admin() {
 
           <motion.div variants={itemVariants}>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full max-w-6xl grid-cols-10">
+              <TabsList className="grid w-full max-w-7xl grid-cols-12">
                 <TabsTrigger value="overview" className="flex items-center gap-2" data-testid="tab-overview">
                   <LayoutDashboard className="h-4 w-4" />
                   <span className="hidden sm:inline">Overview</span>
@@ -6517,6 +6824,10 @@ export default function Admin() {
                 <TabsTrigger value="orders" className="flex items-center gap-2" data-testid="tab-orders">
                   <ShoppingBag className="h-4 w-4" />
                   <span className="hidden sm:inline">Orders</span>
+                </TabsTrigger>
+                <TabsTrigger value="customers" className="flex items-center gap-2" data-testid="tab-customers">
+                  <UserCircle className="h-4 w-4" />
+                  <span className="hidden sm:inline">Customers</span>
                 </TabsTrigger>
                 <TabsTrigger value="reviews" className="flex items-center gap-2" data-testid="tab-reviews">
                   <Star className="h-4 w-4" />
@@ -6569,6 +6880,12 @@ export default function Admin() {
               <TabsContent value="orders">
                 <Card className="p-6">
                   <OrdersTab />
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="customers">
+                <Card className="p-6">
+                  <CustomersTab />
                 </Card>
               </TabsContent>
 

@@ -57,11 +57,25 @@ export interface DashboardMetrics {
   revenueTrend: Array<{ date: string; revenue: number; orders: number }>;
 }
 
+export interface CustomerWithStats {
+  id: string;
+  email: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  profileImageUrl: string | null;
+  isAdmin: boolean | null;
+  createdAt: Date | null;
+  orderCount: number;
+  totalSpent: number;
+  lastOrderDate: Date | null;
+}
+
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
   deleteUser(id: string): Promise<boolean>;
   setUserAdmin(id: string, isAdmin: boolean): Promise<User | undefined>;
+  getAllCustomersWithStats(): Promise<CustomerWithStats[]>;
   
   getAllProducts(): Promise<Product[]>;
   getProduct(id: string): Promise<Product | undefined>;
@@ -352,6 +366,33 @@ export class DatabaseStorage implements IStorage {
   async setUserAdmin(id: string, isAdmin: boolean): Promise<User | undefined> {
     const [user] = await db.update(users).set({ isAdmin, updatedAt: new Date() }).where(eq(users.id, id)).returning();
     return user || undefined;
+  }
+
+  async getAllCustomersWithStats(): Promise<CustomerWithStats[]> {
+    const allUsers = await db.select().from(users).orderBy(desc(users.createdAt));
+    const allOrders = await db.select().from(orders);
+    
+    return allUsers.map(user => {
+      const userOrders = allOrders.filter(order => order.userId === user.id && order.status === 'paid');
+      const orderCount = userOrders.length;
+      const totalSpent = userOrders.reduce((sum, order) => sum + Number(order.totalAmount || 0), 0);
+      const lastOrderDate = userOrders.length > 0 
+        ? new Date(Math.max(...userOrders.map(o => new Date(o.createdAt!).getTime())))
+        : null;
+      
+      return {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        profileImageUrl: user.profileImageUrl,
+        isAdmin: user.isAdmin,
+        createdAt: user.createdAt,
+        orderCount,
+        totalSpent,
+        lastOrderDate
+      };
+    });
   }
 
   async getAllProducts(): Promise<Product[]> {
