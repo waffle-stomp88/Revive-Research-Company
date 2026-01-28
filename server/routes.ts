@@ -497,6 +497,8 @@ export async function registerRoutes(
         customerName, 
         shippingAddress, 
         items, 
+        subtotal,
+        shipping,
         total 
       } = req.body;
 
@@ -549,10 +551,14 @@ export async function registerRoutes(
         price: parseFloat(item.price) || 0,
       }));
       
-      // Send confirmation email with all items
+      // Calculate shipping info for email (use passed values or calculate from items)
+      const orderSubtotal = subtotal || orderItems.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
+      const orderShipping = typeof shipping === 'number' ? shipping : parseFloat(shipping) || 0;
+      
+      // Send confirmation email with all items and shipping info
       let emailSent = false;
       try {
-        const emailResult = await sendOrderConfirmationEmail(order, undefined, orderItems);
+        const emailResult = await sendOrderConfirmationEmail(order, undefined, orderItems, orderSubtotal, orderShipping);
         if (emailResult.success) {
           await storage.updateOrderEmailStatus(order.id, 'sent');
           emailSent = true;
@@ -566,9 +572,9 @@ export async function registerRoutes(
         await storage.updateOrderEmailStatus(order.id, 'failed', emailError.message);
       }
 
-      // Send admin notification with all items
+      // Send admin notification with all items and shipping info
       try {
-        await sendAdminOrderNotificationEmail(order, undefined, orderItems);
+        await sendAdminOrderNotificationEmail(order, undefined, orderItems, orderSubtotal, orderShipping);
         console.log(`[PayPal Order ${order.id}] Admin notification sent`);
       } catch (adminEmailError: any) {
         console.error(`[PayPal Order ${order.id}] Admin notification failed:`, adminEmailError.message);

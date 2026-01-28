@@ -273,6 +273,8 @@ export default function Checkout() {
             quantity: item.quantity,
             price: item.price,
           })),
+          subtotal: cartSubtotal,
+          shipping: cartShipping,
           total: cartTotal,
         }),
       });
