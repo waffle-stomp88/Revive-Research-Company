@@ -972,7 +972,8 @@ export default function ProductDetail() {
               <CollapsibleTrigger asChild>
                 <Button 
                   variant="ghost" 
-                  className="w-full justify-between text-sm p-0 h-auto"
+                  size="sm"
+                  className="w-full justify-between text-sm"
                   data-testid="button-toggle-description-mobile"
                 >
                   <span className="text-muted-foreground">About this product</span>
