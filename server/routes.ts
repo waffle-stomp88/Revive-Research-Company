@@ -487,6 +487,103 @@ export async function registerRoutes(
     }
   });
 
+  // Create order from successful PayPal payment (already paid)
+  app.post("/api/orders/paypal", async (req: any, res) => {
+    try {
+      const { 
+        paypalOrderId,
+        paypalPayerId,
+        customerEmail, 
+        customerName, 
+        shippingAddress, 
+        items, 
+        total 
+      } = req.body;
+
+      // Validate required fields
+      if (!paypalOrderId || !customerEmail || !customerName || !shippingAddress || !items || !total) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      // Build order data from cart items
+      const [firstName, ...lastNameParts] = customerName.split(' ');
+      const lastName = lastNameParts.join(' ') || '';
+
+      // For multi-item orders, use the first product as primary
+      const primaryItem = items[0];
+      
+      const orderData: any = {
+        productId: primaryItem?.productId || 'multi-item',
+        quantity: items.reduce((sum: number, item: any) => sum + item.quantity, 0),
+        totalAmount: total.toString(),
+        email: customerEmail,
+        firstName,
+        lastName,
+        address: shippingAddress?.street || '',
+        city: shippingAddress?.city || '',
+        state: shippingAddress?.state || '',
+        zipCode: shippingAddress?.zip || '',
+        country: 'USA',
+        status: 'paid', // PayPal already captured payment
+        fulfillmentStatus: 'pending',
+        paymentMethod: 'paypal',
+        paymentConfirmed: true,
+        notes: `PayPal Order: ${paypalOrderId}. Payer: ${paypalPayerId || 'N/A'}. Items: ${items.map((i: any) => `${i.name} (${i.dosage}) x${i.quantity}`).join(', ')}`,
+      };
+
+      // If user is authenticated, link order to their account
+      if (req.isAuthenticated && req.isAuthenticated() && req.user?.claims?.sub) {
+        orderData.userId = req.user.claims.sub;
+      }
+
+      const validatedData = insertOrderSchema.parse(orderData);
+      const order = await storage.createOrder(validatedData);
+      
+      console.log(`[PayPal Order ${order.id}] Created as PAID - PayPal ID: ${paypalOrderId}`);
+      
+      // Get product info for email
+      const product = primaryItem ? await storage.getProduct(primaryItem.productId) : null;
+      
+      // Send confirmation email
+      let emailSent = false;
+      try {
+        const emailResult = await sendOrderConfirmationEmail(order, product?.name);
+        if (emailResult.success) {
+          await storage.updateOrderEmailStatus(order.id, 'sent');
+          emailSent = true;
+          console.log(`[PayPal Order ${order.id}] Confirmation email sent to ${customerEmail}`);
+        } else {
+          await storage.updateOrderEmailStatus(order.id, 'failed', emailResult.error);
+          console.error(`[PayPal Order ${order.id}] Email failed:`, emailResult.error);
+        }
+      } catch (emailError: any) {
+        console.error(`[PayPal Order ${order.id}] Email error:`, emailError.message);
+        await storage.updateOrderEmailStatus(order.id, 'failed', emailError.message);
+      }
+
+      // Send admin notification
+      try {
+        await sendAdminOrderNotificationEmail(order, product?.name);
+        console.log(`[PayPal Order ${order.id}] Admin notification sent`);
+      } catch (adminEmailError: any) {
+        console.error(`[PayPal Order ${order.id}] Admin notification failed:`, adminEmailError.message);
+      }
+
+      res.status(201).json({ 
+        id: order.id,
+        order,
+        emailSent,
+        message: "Order created and payment confirmed. Confirmation email sent."
+      });
+    } catch (error) {
+      console.error("Error creating PayPal order:", error);
+      if (error instanceof Error && error.name === "ZodError") {
+        return res.status(400).json({ error: "Invalid order data" });
+      }
+      res.status(500).json({ error: "Failed to create order" });
+    }
+  });
+
   // Helper function to mark order as paid and send notifications (email + SMS)
   async function markOrderPaidAndNotify(orderId: string): Promise<{ 
     success: boolean; 
@@ -508,8 +605,8 @@ export async function registerRoutes(
       }
       
       // Update order status to paid
+      await storage.updateOrderStatus(orderId, 'paid');
       const updatedOrder = await storage.updateOrderFulfillment(orderId, { 
-        status: 'paid',
         paymentConfirmed: true
       });
       
@@ -542,7 +639,7 @@ export async function registerRoutes(
           country: updatedOrder.country || undefined,
         });
         
-        emailSent = notificationResults?.customerEmail?.success || false;
+        emailSent = notificationResults?.customerEmail?.sent || false;
         console.log(`[Order ${orderId}] Notification results:`, JSON.stringify(notificationResults));
       } catch (notificationError) {
         console.error(`[Order ${orderId}] Notification error:`, notificationError);

@@ -255,12 +255,56 @@ export default function Checkout() {
   const EARLY_ACCESS_MODE = false; // Disabled for sandbox testing
 
   const handlePayPalSuccess = async (orderData: any, paypalOrderId: string) => {
-    toast({
-      title: "Payment Successful!",
-      description: "Your order has been placed. Thank you for your purchase!",
-    });
+    try {
+      // Create order in our system with PayPal payment details
+      const response = await fetch("/api/orders/paypal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          paypalOrderId,
+          paypalPayerId: orderData?.payer?.payer_id || orderData?.payment_source?.paypal?.account_id,
+          customerEmail: user?.email || customerEmail,
+          customerName: customerName || `${user?.firstName || ''} ${user?.lastName || ''}`.trim(),
+          shippingAddress,
+          items: cartItems.map(item => ({
+            productId: item.productId,
+            name: item.name,
+            dosage: item.dosage,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+          total: cartTotal,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Failed to create order:", errorData);
+        // Still redirect but show warning
+        toast({
+          title: "Payment Successful",
+          description: "Payment received, but there was an issue creating your order record. Please contact support.",
+          variant: "destructive",
+        });
+      } else {
+        const result = await response.json();
+        console.log("Order created:", result);
+        toast({
+          title: "Payment Successful!",
+          description: result.emailSent 
+            ? "Your order has been placed and confirmation email sent!"
+            : "Your order has been placed. Thank you for your purchase!",
+        });
+      }
+    } catch (error) {
+      console.error("Error creating order:", error);
+      toast({
+        title: "Payment Successful",
+        description: "Payment received. Confirmation email will be sent shortly.",
+      });
+    }
+    
     clearCart();
-    // Create order in our system and redirect
     window.location.href = `/order-confirmation?paypalOrderId=${paypalOrderId}`;
   };
 
