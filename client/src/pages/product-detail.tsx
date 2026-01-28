@@ -856,24 +856,27 @@ export default function ProductDetail() {
                       </>
                     )}
                   </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className={`border-2 transition-all duration-300 ${
-                      isInWishlist 
-                        ? "border-[#ec4899] bg-[#ec4899]/10 text-[#ec4899]" 
-                        : "border-[#2a2a32] text-muted-foreground hover:border-[#ec4899] hover:text-[#ec4899]"
-                    }`}
-                    onClick={handleToggleWishlist}
-                    disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
-                    data-testid="button-toggle-wishlist"
-                  >
-                    <Heart className={`h-5 w-5 ${isInWishlist ? "fill-current" : ""}`} />
-                  </Button>
                 </div>
 
+                {/* Wishlist button - below main action buttons */}
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className={`w-full mt-2 gap-2 transition-all duration-300 ${
+                    isInWishlist 
+                      ? "text-[#ec4899]" 
+                      : "text-muted-foreground"
+                  }`}
+                  onClick={handleToggleWishlist}
+                  disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
+                  data-testid="button-toggle-wishlist"
+                >
+                  <Heart className={`h-4 w-4 ${isInWishlist ? "fill-current" : ""}`} />
+                  {isInWishlist ? "Saved to Wishlist" : "Save to Wishlist"}
+                </Button>
+
                 {purchaseType === "subscription" && (
-                  <p className="text-[10px] text-center text-muted-foreground mt-2">
+                  <p className="text-[10px] text-center text-muted-foreground mt-1">
                     Save ${((getBasePrice() - getDiscountedPrice()) * quantity).toFixed(2)} per order • Cancel anytime
                   </p>
                 )}
