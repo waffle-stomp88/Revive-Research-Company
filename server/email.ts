@@ -150,7 +150,7 @@ function getOrderConfirmationTemplate(order: {
   state?: string;
   zipCode?: string;
   country?: string;
-}, productName?: string, items?: OrderItem[]): { subject: string; text: string; html: string } {
+}, productName?: string, items?: OrderItem[], subtotal?: number, shipping?: number): { subject: string; text: string; html: string } {
   const shortRef = getShortOrderRef(order.id);
   const { brand } = EMAIL_CONFIG;
   const styles = getEmailBaseStyles();
@@ -162,6 +162,11 @@ function getOrderConfirmationTemplate(order: {
     quantity: order.quantity, 
     price: parseFloat(order.totalAmount) 
   }];
+  
+  // Calculate subtotal from items if not provided
+  const calculatedSubtotal = subtotal ?? orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const shippingCost = shipping ?? 0;
+  const shippingDisplay = shippingCost === 0 ? 'FREE' : `$${shippingCost.toFixed(2)}`;
   
   const subject = `Order Confirmed #${shortRef}`;
   
@@ -182,6 +187,8 @@ ORDER #${shortRef}
 -------------------
 ${itemsText}
 
+Subtotal: $${calculatedSubtotal.toFixed(2)}
+Shipping: ${shippingDisplay}
 Total: $${order.totalAmount}
 
 SHIPPING TO
@@ -265,10 +272,26 @@ ${brand.name}
                   </tr>
                   `).join('')}
                   <tr>
-                    <td colspan="2" style="padding: 16px 0 0 0;">
+                    <td colspan="2" style="padding: 12px 0 0 0;">
+                      <span style="color: rgba(255,255,255,0.7); font-size: 14px;">Subtotal</span>
+                    </td>
+                    <td style="padding: 12px 0 0 0; text-align: right;">
+                      <span style="color: rgba(255,255,255,0.7); font-size: 14px;">$${calculatedSubtotal.toFixed(2)}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" style="padding: 8px 0 0 0;">
+                      <span style="color: rgba(255,255,255,0.7); font-size: 14px;">Shipping</span>
+                    </td>
+                    <td style="padding: 8px 0 0 0; text-align: right;">
+                      <span style="color: ${shippingCost === 0 ? '#22c55e' : 'rgba(255,255,255,0.7)'}; font-size: 14px; font-weight: ${shippingCost === 0 ? '600' : '400'};">${shippingDisplay}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" style="padding: 16px 0 0 0; border-top: 1px solid rgba(255,255,255,0.1);">
                       <span style="color: #ffffff; font-size: 14px; font-weight: 600;">Total</span>
                     </td>
-                    <td style="padding: 16px 0 0 0; text-align: right;">
+                    <td style="padding: 16px 0 0 0; text-align: right; border-top: 1px solid rgba(255,255,255,0.1);">
                       <span style="color: ${styles.primaryColor}; font-size: 24px; font-weight: 700;">$${order.totalAmount}</span>
                     </td>
                   </tr>
@@ -354,8 +377,8 @@ export async function sendOrderConfirmationEmail(order: {
   state?: string;
   zipCode?: string;
   country?: string;
-}, productName?: string, items?: OrderItem[]): Promise<EmailResult> {
-  const template = getOrderConfirmationTemplate(order, productName, items);
+}, productName?: string, items?: OrderItem[], subtotal?: number, shipping?: number): Promise<EmailResult> {
+  const template = getOrderConfirmationTemplate(order, productName, items, subtotal, shipping);
   const timestamp = new Date().toISOString();
   
   const result = await sendEmail({
@@ -402,7 +425,7 @@ function getAdminOrderNotificationTemplate(order: {
   zipCode?: string;
   country?: string;
   phone?: string;
-}, productName?: string, items?: OrderItem[]): { subject: string; text: string; html: string } {
+}, productName?: string, items?: OrderItem[], subtotal?: number, shipping?: number): { subject: string; text: string; html: string } {
   const shortRef = getShortOrderRef(order.id);
   const styles = getEmailBaseStyles();
   
@@ -412,6 +435,11 @@ function getAdminOrderNotificationTemplate(order: {
     quantity: order.quantity, 
     price: parseFloat(order.totalAmount) 
   }];
+  
+  // Calculate subtotal from items if not provided
+  const calculatedSubtotal = subtotal ?? orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const shippingCost = shipping ?? 0;
+  const shippingDisplay = shippingCost === 0 ? 'FREE' : `$${shippingCost.toFixed(2)}`;
   
   // Build items text for plain text email
   const itemsText = orderItems.map(item => 
@@ -432,6 +460,9 @@ Phone: ${order.phone || 'Not provided'}
 PRODUCTS
 --------
 ${itemsText}
+
+Subtotal: $${calculatedSubtotal.toFixed(2)}
+Shipping: ${shippingDisplay}
 Total: $${order.totalAmount}
 
 SHIPPING ADDRESS
@@ -521,10 +552,26 @@ Time: ${new Date().toISOString()}
                   </tr>
                   `).join('')}
                   <tr>
-                    <td colspan="2" style="padding: 10px 0;">
-                      <span style="color: #6b7280; font-size: 13px;">Total</span>
+                    <td colspan="2" style="padding: 8px 0;">
+                      <span style="color: #6b7280; font-size: 13px;">Subtotal</span>
                     </td>
-                    <td style="padding: 10px 0; text-align: right;">
+                    <td style="padding: 8px 0; text-align: right;">
+                      <span style="color: #6b7280; font-size: 14px;">$${calculatedSubtotal.toFixed(2)}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" style="padding: 8px 0;">
+                      <span style="color: #6b7280; font-size: 13px;">Shipping</span>
+                    </td>
+                    <td style="padding: 8px 0; text-align: right;">
+                      <span style="color: ${shippingCost === 0 ? '#16a34a' : '#6b7280'}; font-size: 14px; font-weight: ${shippingCost === 0 ? '600' : '400'};">${shippingDisplay}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" style="padding: 10px 0; border-top: 1px solid #e5e7eb;">
+                      <span style="color: #111827; font-size: 14px; font-weight: 600;">Total</span>
+                    </td>
+                    <td style="padding: 10px 0; text-align: right; border-top: 1px solid #e5e7eb;">
                       <span style="color: #16a34a; font-size: 18px; font-weight: 700;">$${order.totalAmount}</span>
                     </td>
                   </tr>
@@ -579,7 +626,7 @@ export async function sendAdminOrderNotificationEmail(order: {
   zipCode?: string;
   country?: string;
   phone?: string;
-}, productName?: string, items?: OrderItem[]): Promise<EmailResult> {
+}, productName?: string, items?: OrderItem[], subtotal?: number, shipping?: number): Promise<EmailResult> {
   const adminEmail = process.env.ADMIN_EMAIL;
   
   if (!adminEmail) {
@@ -587,7 +634,7 @@ export async function sendAdminOrderNotificationEmail(order: {
     return { success: false, error: 'ADMIN_EMAIL not configured' };
   }
 
-  const template = getAdminOrderNotificationTemplate(order, productName, items);
+  const template = getAdminOrderNotificationTemplate(order, productName, items, subtotal, shipping);
   
   const result = await sendEmail({
     to: adminEmail,
