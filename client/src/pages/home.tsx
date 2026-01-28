@@ -50,20 +50,41 @@ function HeroSection() {
           data-testid="img-hero-background"
         />
       </motion.div>
-      {/* Static overlays - no animations for performance */}
+      {/* Animated overlays - hidden on mobile for performance */}
       <div className="absolute inset-0 z-[1] overflow-hidden pointer-events-none hidden md:block">
-        <div
-          className="absolute -left-1/4 bottom-0 w-[150%] h-[60%] opacity-30"
+        <motion.div
+          className="absolute -left-1/4 bottom-0 w-[150%] h-[60%] opacity-40"
           style={{
             background: "radial-gradient(ellipse at center, rgba(100,100,120,0.4) 0%, transparent 70%)",
-            filter: "blur(30px)",
+            filter: "blur(40px)",
+            y: overlayY,
+          }}
+          animate={{
+            x: ["-10%", "10%", "-10%"],
+            y: ["0%", "-5%", "0%"],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "easeInOut",
           }}
         />
-        <div
-          className="absolute -right-1/4 bottom-0 w-[150%] h-[50%] opacity-20"
+        <motion.div
+          className="absolute -right-1/4 bottom-0 w-[150%] h-[50%] opacity-30"
           style={{
             background: "radial-gradient(ellipse at center, rgba(80,90,110,0.5) 0%, transparent 65%)",
-            filter: "blur(30px)",
+            filter: "blur(50px)",
+            y: overlayY,
+          }}
+          animate={{
+            x: ["10%", "-15%", "10%"],
+            y: ["0%", "-8%", "0%"],
+          }}
+          transition={{
+            duration: 25,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2,
           }}
         />
       </div>
