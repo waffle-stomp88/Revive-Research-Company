@@ -14,6 +14,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import PayPalCheckout from "@/components/PayPalCheckout";
+import SubscriptionCheckout from "@/components/SubscriptionCheckout";
 import {
   ArrowLeft,
   FlaskConical,
@@ -1094,6 +1095,24 @@ export default function Checkout() {
                           <Clock className="h-5 w-5" />
                           Coming Soon
                         </Button>
+                      ) : isSubscription && product ? (
+                        <SubscriptionCheckout
+                          basePrice={Number(product.price) * quantity}
+                          frequency={interval as "weekly" | "biweekly" | "monthly"}
+                          productName={product.name}
+                          productId={product.id}
+                          dosage={searchParams.get("dosage") || undefined}
+                          quantity={quantity}
+                          onSuccess={(data) => {
+                            toast({
+                              title: "Subscription Created!",
+                              description: "Your subscription is now active.",
+                            });
+                            clearCart();
+                          }}
+                          onError={handlePayPalError}
+                          className="w-full"
+                        />
                       ) : (
                         <PayPalCheckout
                           amount={cartTotal.toFixed(2)}

@@ -58,6 +58,7 @@ import ResearchStackDetail from "@/pages/research-stack-detail";
 import Academy from "@/pages/academy";
 import DevLogin from "@/pages/dev-login";
 import Unsubscribe from "@/pages/unsubscribe";
+import SubscriptionSuccess from "@/pages/subscription-success";
 import NotFound from "@/pages/not-found";
 
 const ChatBot = lazy(() => import("@/components/chatbot").then(m => ({ default: m.ChatBot })));
@@ -150,6 +151,7 @@ function Router() {
         <Route path="/cart" component={Cart} />
         <Route path="/checkout" component={Checkout} />
         <Route path="/checkout/success" component={CheckoutSuccess} />
+        <Route path="/subscription/success" component={SubscriptionSuccess} />
         <Route path="/coa" component={CoaVerification} />
         <Route path="/coa-library">
           <ProtectedRoute title="COA Library" description="Access our complete library of Certificates of Analysis for verified research compounds.">
