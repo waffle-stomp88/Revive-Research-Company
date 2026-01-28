@@ -2660,7 +2660,7 @@ function OrdersTab() {
                         {orderNeedsAttention && (
                           <AlertTriangle className="h-3 w-3 text-[#E7FB10]" />
                         )}
-                        <span className="font-mono text-sm">{order.id.slice(0, 8).toUpperCase()}</span>
+                        <span className="font-mono text-sm">{order.id.slice(-8).toUpperCase()}</span>
                       </div>
                       {getOrderTypeBadge(order.orderType)}
                     </div>
@@ -2833,7 +2833,7 @@ function OrderViewDialog({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            Order {order.id.slice(0, 8).toUpperCase()}
+            Order {order.id.slice(-8).toUpperCase()}
             <Badge variant={isPaid ? "default" : "secondary"}>
               {isPaid ? "Paid" : order.status || "Pending"}
             </Badge>

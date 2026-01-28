@@ -109,7 +109,7 @@ export default function CheckoutSuccess() {
           >
             <p className="text-sm text-muted-foreground mb-1">Order ID</p>
             <p className="font-mono text-lg font-semibold" data-testid="text-order-id">
-              {order.id.slice(0, 8).toUpperCase()}
+              {order.id.slice(-8).toUpperCase()}
             </p>
           </motion.div>
 

@@ -1455,7 +1455,7 @@ export default function AffiliateDashboard() {
                           data-testid={`sale-${sale.id}`}
                         >
                           <div>
-                            <p className="font-medium">Order #{sale.orderId.slice(0, 8)}</p>
+                            <p className="font-medium">Order #{sale.orderId.slice(-8).toUpperCase()}</p>
                             <p className="text-sm text-muted-foreground">
                               {new Date(sale.createdAt).toLocaleDateString()}
                             </p>
