@@ -2729,11 +2729,16 @@ function OrdersTab() {
             ) : (
               filteredOrders.map((order) => {
                 const orderNeedsAttention = computeNeedsAttention(order);
+                const fulfillmentBgClass = 
+                  order.fulfillmentStatus === 'pending' ? 'bg-amber-500/5' :
+                  order.fulfillmentStatus === 'preparing' ? 'bg-cyan-500/8' :
+                  order.fulfillmentStatus === 'ready' ? 'bg-emerald-500/8' :
+                  order.fulfillmentStatus === 'delivered' ? 'bg-green-500/10' : '';
                 return (
                 <TableRow 
                   key={order.id} 
                   data-testid={`row-order-${order.id}`}
-                  className={`cursor-pointer hover-elevate ${orderNeedsAttention ? "border-l-2 border-l-[#E7FB10]" : ""} ${selectedOrderIds.has(order.id) ? "bg-muted/50" : ""}`}
+                  className={`cursor-pointer hover-elevate ${fulfillmentBgClass} ${orderNeedsAttention ? "border-l-2 border-l-[#E7FB10]" : ""} ${selectedOrderIds.has(order.id) ? "bg-muted/50" : ""}`}
                   onClick={() => handleViewOrder(order)}
                 >
                   <TableCell onClick={(e) => e.stopPropagation()}>
