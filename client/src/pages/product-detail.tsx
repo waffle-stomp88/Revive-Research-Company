@@ -447,13 +447,13 @@ export default function ProductDetail() {
     : `Premium ${product.name} research peptide. Third-party lab tested with Certificate of Analysis. For research use only.`;
 
   return (
-    <main className="min-h-screen pt-24 md:pt-40 pb-12">
+    <main className="min-h-screen pt-24 md:pt-40 pb-12 overflow-x-hidden">
       <SEOHead 
         title={seoTitle}
         description={seoDescription}
         canonicalPath={`/products/${product.id}`}
       />
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
+      <div className="max-w-7xl mx-auto px-4 pr-6 md:px-8">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -492,9 +492,9 @@ export default function ProductDetail() {
                 />
               {/* Out of Stock Overlay */}
               {isOutOfStock && (
-                <div className="absolute inset-0 pointer-events-none" data-testid="overlay-out-of-stock">
+                <div className="absolute inset-0 pointer-events-none overflow-hidden" data-testid="overlay-out-of-stock">
                   {/* Diagonal red stripe */}
-                  <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
                     <div className="absolute w-[150%] h-8 bg-red-600/90 transform -rotate-45 flex items-center justify-center shadow-lg">
                       <span className="text-white font-display font-bold text-sm uppercase tracking-wider">
                         Out of Stock
