@@ -2370,7 +2370,7 @@ function OrdersTab() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/orders/stats"] });
-      toast({ title: "Fulfillment updated" });
+      toast({ title: "Fulfillment updated", duration: 3000 });
     },
     onError: () => {
       toast({ title: "Failed to update fulfillment", variant: "destructive" });
