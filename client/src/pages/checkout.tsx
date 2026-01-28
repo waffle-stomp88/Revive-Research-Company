@@ -15,7 +15,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import PayPalCheckout from "@/components/PayPalCheckout";
 import SubscriptionCheckout from "@/components/SubscriptionCheckout";
-import { calculateTax, getTaxRateDisplay } from "@shared/taxRates";
+import { calculateTaxFromZip, getTaxRateDisplay, getStateFromZip, isValidZipCode } from "@shared/taxRates";
 import {
   ArrowLeft,
   FlaskConical,
@@ -387,8 +387,12 @@ export default function Checkout() {
   const baseShipping = hasSubscriptionItems ? 0 : (cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING);
   const coldPackFee = hasColdPackShipping && !hasSubscriptionItems ? COLD_PACK_FEE : 0;
   const cartShipping = baseShipping + coldPackFee;
-  // Calculate tax based on shipping state (applied to subtotal only, not shipping)
-  const cartTax = shippingAddress.state ? calculateTax(shippingAddress.state, cartSubtotal) : 0;
+  // Calculate tax based on ZIP code (applied to subtotal only, not shipping)
+  const taxInfo = calculateTaxFromZip(shippingAddress.zip || '', cartSubtotal);
+  const cartTax = taxInfo.tax;
+  const taxState = taxInfo.state;
+  const taxRatePercent = taxInfo.rate * 100;
+  const hasValidZip = isValidZipCode(shippingAddress.zip || '');
   const cartTotal = cartSubtotal + cartShipping + cartTax;
 
   // Payment method info
@@ -807,11 +811,19 @@ export default function Checkout() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="zip" className="text-xs">ZIP *</Label>
+                    <Label htmlFor="zip" className="text-xs">ZIP * {hasValidZip && taxState && <span className="text-green-500 ml-1">({taxState})</span>}</Label>
                     <Input
                       id="zip"
                       value={shippingAddress.zip}
-                      onChange={(e) => setShippingAddress({...shippingAddress, zip: e.target.value})}
+                      onChange={(e) => {
+                        const newZip = e.target.value;
+                        const detectedState = getStateFromZip(newZip);
+                        setShippingAddress({
+                          ...shippingAddress, 
+                          zip: newZip,
+                          state: detectedState || shippingAddress.state
+                        });
+                      }}
                       placeholder="78701"
                       className="mt-1"
                       data-testid="input-zip"
@@ -1129,10 +1141,14 @@ export default function Checkout() {
                     )}
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">
-                        Tax {shippingAddress.state && `(${shippingAddress.state} ${getTaxRateDisplay(shippingAddress.state)})`}
+                        Tax
                       </span>
-                      <span className={cartTax === 0 ? "text-green-500" : ""}>
-                        {cartTax === 0 ? (shippingAddress.state ? "No tax" : "Enter state") : `$${cartTax.toFixed(2)}`}
+                      <span className={!hasValidZip ? "text-[#E7FB10]" : cartTax === 0 ? "text-green-500" : ""}>
+                        {!hasValidZip 
+                          ? "Enter ZIP code" 
+                          : cartTax === 0 
+                            ? "No tax" 
+                            : `$${cartTax.toFixed(2)} (${taxRatePercent.toFixed(2)}%)`}
                       </span>
                     </div>
                   </div>
@@ -1194,10 +1210,53 @@ export default function Checkout() {
                     </div>
                   )}
 
+                  {/* ZIP Code for Tax Calculation - PayPal only */}
+                  {selectedPaymentMethod === "paypal" && (
+                    <div className="mb-4 p-3 rounded-lg bg-muted/50 border border-border">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Truck className="h-4 w-4 text-[#E7FB10]" />
+                        <Label className="text-sm font-medium">Shipping ZIP Code</Label>
+                        {hasValidZip && taxState && (
+                          <Badge variant="secondary" className="text-xs bg-green-500/20 text-green-400 border-green-500/30">
+                            {taxState}
+                          </Badge>
+                        )}
+                      </div>
+                      <Input
+                        placeholder="Enter ZIP code for tax calculation"
+                        value={shippingAddress.zip}
+                        onChange={(e) => {
+                          const newZip = e.target.value;
+                          const detectedState = getStateFromZip(newZip);
+                          setShippingAddress({
+                            ...shippingAddress, 
+                            zip: newZip,
+                            state: detectedState || shippingAddress.state
+                          });
+                        }}
+                        className="mt-1"
+                        data-testid="input-paypal-zip"
+                      />
+                      {!hasValidZip && (
+                        <p className="text-xs text-[#E7FB10] mt-1">Enter your 5-digit ZIP code to calculate tax</p>
+                      )}
+                    </div>
+                  )}
+
                   {/* Payment Button */}
                   {selectedPaymentMethod === "paypal" ? (
                     <div className="space-y-3">
-                      {EARLY_ACCESS_MODE ? (
+                      {!hasValidZip ? (
+                        <Button
+                          size="lg"
+                          className="w-full font-display text-lg gap-2 bg-[#E7FB10]/20 text-[#E7FB10] border border-[#E7FB10]/30 cursor-not-allowed"
+                          disabled
+                          data-testid="button-enter-zip-required"
+                        >
+                          <AlertTriangle className="h-5 w-5" />
+                          Enter ZIP Code to Continue
+                        </Button>
+                      ) : EARLY_ACCESS_MODE ? (
                         <Button
                           size="lg"
                           className="w-full font-display text-lg gap-2 bg-muted text-muted-foreground cursor-not-allowed"
