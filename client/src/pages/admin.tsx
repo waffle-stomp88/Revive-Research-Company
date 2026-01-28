@@ -281,12 +281,17 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
     }] : []),
   ];
 
-  // Get top product by selected metric - only show if 2+ products have sales
-  const topProduct = metrics.topProducts?.length >= 2 
-    ? [...metrics.topProducts].sort((a, b) => 
-        topProductSort === 'revenue' ? b.revenue - a.revenue : b.totalSold - a.totalSold
-      )[0]
+  // Get top 5 products by selected metric - only show if 2+ products have sales
+  const topProducts = metrics.topProducts?.length >= 2 
+    ? [...metrics.topProducts]
+        .sort((a, b) => topProductSort === 'revenue' ? b.revenue - a.revenue : b.totalSold - a.totalSold)
+        .slice(0, 5)
     : null;
+  
+  // Get max value for bar chart scaling
+  const maxValue = topProducts 
+    ? Math.max(...topProducts.map(p => topProductSort === 'revenue' ? p.revenue : p.totalSold))
+    : 0;
   
   // Calculate subscriber net change for the period
   const subscriberNetChange = (newsletterStats?.active || 0) - (newsletterStats?.unsubscribed || 0);
@@ -409,14 +414,14 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
           </CardContent>
         </Card>
 
-        {/* Top Product - only show if 2+ products have sales */}
-        {topProduct ? (
+        {/* Top 5 Products Chart - only show if 2+ products have sales */}
+        {topProducts ? (
           <Card>
             <CardHeader className="pb-2 pt-4 px-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm flex items-center gap-2">
                   <TrendingUp className="h-4 w-4 text-[#E7FB10]" />
-                  Top Product
+                  Top Products
                 </CardTitle>
                 <div className="flex gap-1">
                   <Button
@@ -441,22 +446,31 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
               </div>
             </CardHeader>
             <CardContent className="px-4 pb-4">
-              <div className="flex flex-col items-center justify-center h-[140px] text-center">
-                <div className={`h-10 w-10 rounded-full flex items-center justify-center text-black font-bold mb-3 ${topProductSort === 'revenue' ? 'bg-[#E7FB10]' : 'bg-[#21d8ff]'}`}>
-                  1
-                </div>
-                <p className="font-medium text-sm mb-1">{topProduct.productName}</p>
-                {topProductSort === 'revenue' ? (
-                  <>
-                    <p className="text-xl font-bold text-[#E7FB10]">{formatCurrency(topProduct.revenue)}</p>
-                    <p className="text-xs text-muted-foreground">{topProduct.totalSold} units sold</p>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-xl font-bold text-[#21d8ff]">{topProduct.totalSold} units</p>
-                    <p className="text-xs text-muted-foreground">{formatCurrency(topProduct.revenue)} revenue</p>
-                  </>
-                )}
+              <div className="space-y-2">
+                {topProducts.map((product, index) => {
+                  const value = topProductSort === 'revenue' ? product.revenue : product.totalSold;
+                  const barWidth = maxValue > 0 ? (value / maxValue) * 100 : 0;
+                  const barColor = topProductSort === 'revenue' ? '#E7FB10' : '#21d8ff';
+                  return (
+                    <div key={product.productId} className="flex items-center gap-2" data-testid={`top-product-${index}`}>
+                      <span className="text-xs text-muted-foreground w-4 shrink-0">{index + 1}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-0.5">
+                          <span className="text-xs font-medium truncate pr-2">{product.productName}</span>
+                          <span className="text-xs font-bold shrink-0" style={{ color: barColor }}>
+                            {topProductSort === 'revenue' ? formatCurrency(product.revenue) : `${product.totalSold} units`}
+                          </span>
+                        </div>
+                        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                          <div 
+                            className="h-full rounded-full transition-all duration-300"
+                            style={{ width: `${barWidth}%`, backgroundColor: barColor }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
@@ -464,7 +478,7 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
           <Card className="bg-muted/30">
             <CardContent className="p-4 flex flex-col items-center justify-center h-full">
               <Package className="h-8 w-8 text-muted-foreground/50 mb-2" />
-              <p className="text-xs text-muted-foreground text-center">Top Product shows when 2+ products have sales</p>
+              <p className="text-xs text-muted-foreground text-center">Top Products shows when 2+ products have sales</p>
             </CardContent>
           </Card>
         )}
