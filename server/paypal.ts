@@ -478,3 +478,103 @@ export function getSubscriptionDiscounts(req: Request, res: Response) {
     monthly: { discount: SUBSCRIPTION_DISCOUNTS.monthly, label: "10% off", frequency: "Monthly" },
   });
 }
+
+/* ========================================
+   PayPal Webhook Handler
+   ======================================== */
+
+export interface PayPalWebhookEvent {
+  id: string;
+  event_type: string;
+  event_version: string;
+  create_time: string;
+  resource_type: string;
+  resource: {
+    id: string;
+    status: string;
+    billing_info?: {
+      last_payment?: {
+        amount: {
+          value: string;
+          currency_code: string;
+        };
+        time: string;
+      };
+      next_billing_time?: string;
+    };
+    subscriber?: {
+      email_address?: string;
+      name?: {
+        given_name?: string;
+        surname?: string;
+      };
+    };
+    [key: string]: any;
+  };
+  links?: Array<{ href: string; rel: string; method: string }>;
+}
+
+// Webhook event types we handle
+export const SUBSCRIPTION_WEBHOOK_EVENTS = {
+  ACTIVATED: "BILLING.SUBSCRIPTION.ACTIVATED",
+  CANCELLED: "BILLING.SUBSCRIPTION.CANCELLED",
+  CREATED: "BILLING.SUBSCRIPTION.CREATED",
+  EXPIRED: "BILLING.SUBSCRIPTION.EXPIRED",
+  PAYMENT_FAILED: "BILLING.SUBSCRIPTION.PAYMENT.FAILED",
+  SUSPENDED: "BILLING.SUBSCRIPTION.SUSPENDED",
+  UPDATED: "BILLING.SUBSCRIPTION.UPDATED",
+  SALE_COMPLETED: "PAYMENT.SALE.COMPLETED",
+} as const;
+
+// Handler for PayPal subscription webhooks
+export async function handlePayPalWebhook(req: Request, res: Response) {
+  try {
+    const webhookEvent = req.body as PayPalWebhookEvent;
+    
+    console.log(`[PayPal Webhook] Received event: ${webhookEvent.event_type}`);
+    console.log(`[PayPal Webhook] Resource ID: ${webhookEvent.resource?.id}`);
+    
+    // Process based on event type
+    switch (webhookEvent.event_type) {
+      case SUBSCRIPTION_WEBHOOK_EVENTS.ACTIVATED:
+        console.log(`[PayPal Webhook] Subscription activated: ${webhookEvent.resource.id}`);
+        // Subscription is now active - update database status
+        break;
+        
+      case SUBSCRIPTION_WEBHOOK_EVENTS.CANCELLED:
+        console.log(`[PayPal Webhook] Subscription cancelled: ${webhookEvent.resource.id}`);
+        // Update subscription status in database
+        break;
+        
+      case SUBSCRIPTION_WEBHOOK_EVENTS.PAYMENT_FAILED:
+        console.log(`[PayPal Webhook] Payment failed for subscription: ${webhookEvent.resource.id}`);
+        // Handle payment failure - maybe send notification
+        break;
+        
+      case SUBSCRIPTION_WEBHOOK_EVENTS.SUSPENDED:
+        console.log(`[PayPal Webhook] Subscription suspended: ${webhookEvent.resource.id}`);
+        // Update status to suspended
+        break;
+        
+      case SUBSCRIPTION_WEBHOOK_EVENTS.EXPIRED:
+        console.log(`[PayPal Webhook] Subscription expired: ${webhookEvent.resource.id}`);
+        // Mark subscription as expired
+        break;
+        
+      case SUBSCRIPTION_WEBHOOK_EVENTS.SALE_COMPLETED:
+        console.log(`[PayPal Webhook] Payment completed for subscription`);
+        // Record the payment
+        break;
+        
+      default:
+        console.log(`[PayPal Webhook] Unhandled event type: ${webhookEvent.event_type}`);
+    }
+    
+    // Always return 200 to acknowledge receipt
+    res.status(200).json({ received: true, event_type: webhookEvent.event_type });
+  } catch (error: any) {
+    console.error("[PayPal Webhook] Error processing webhook:", error);
+    // Still return 200 to prevent PayPal from retrying
+    res.status(200).json({ received: true, error: "Processing error" });
+  }
+}

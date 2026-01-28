@@ -17,6 +17,7 @@ import {
   cancelPayPalSubscription,
   getOrCreateSubscriptionPlan,
   getSubscriptionDiscounts,
+  handlePayPalWebhook,
   SUBSCRIPTION_DISCOUNTS,
 } from "./paypal";
 import OpenAI from "openai";
@@ -97,6 +98,11 @@ export async function registerRoutes(
 
   app.post("/api/subscriptions/cancel", async (req, res) => {
     await cancelPayPalSubscription(req, res);
+  });
+
+  // PayPal Webhook handler
+  app.post("/api/paypal/webhook", async (req, res) => {
+    await handlePayPalWebhook(req, res);
   });
 
   // Sync Auth0 user to database
