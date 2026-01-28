@@ -735,10 +735,39 @@ function ProductsComponent() {
               )}
               {/* Display Controls Bar - Mobile optimized */}
               <div className="flex items-center justify-between gap-4 mb-4" data-testid="display-controls-bar">
-                {/* Left: Empty on mobile, grid toggles on desktop */}
-                <div className="hidden sm:flex items-center gap-2">
-                  {/* Grid layout toggles - Desktop only */}
-                  <div className="flex items-center bg-muted/50 rounded-md p-0.5">
+                {/* Left: Pagination Controls + Grid toggles */}
+                <div className="flex items-center gap-3">
+                  {/* Pagination Controls - Fixed compact format */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="h-8 w-8"
+                        data-testid="button-prev-page-inline"
+                      >
+                        <ChevronRight className="h-4 w-4 rotate-180" />
+                      </Button>
+                      <span className="px-3 text-sm font-medium min-w-[60px] text-center" data-testid="text-page-info-inline">
+                        {currentPage} / {totalPages}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="h-8 w-8"
+                        data-testid="button-next-page-inline"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                  
+                  {/* Grid layout toggles - Desktop only, right of pagination */}
+                  <div className="hidden sm:flex items-center bg-muted/50 rounded-md p-0.5">
                     <button
                       onClick={() => setGridColumns(2)}
                       className={`p-1.5 rounded transition-colors ${
@@ -777,35 +806,6 @@ function ProductsComponent() {
                     </button>
                   </div>
                 </div>
-
-                {/* Left: Pagination Controls - Fixed compact format */}
-                {totalPages > 1 && (
-                  <div className="flex items-center gap-1">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1}
-                      className="h-8 w-8"
-                      data-testid="button-prev-page-inline"
-                    >
-                      <ChevronRight className="h-4 w-4 rotate-180" />
-                    </Button>
-                    <span className="px-3 text-sm font-medium min-w-[60px] text-center" data-testid="text-page-info-inline">
-                      {currentPage} / {totalPages}
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                      className="h-8 w-8"
-                      data-testid="button-next-page-inline"
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-                )}
                 
                 {/* Right: Category filter dropdown */}
                 <div className="ml-auto">
