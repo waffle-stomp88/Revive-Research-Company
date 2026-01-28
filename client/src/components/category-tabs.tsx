@@ -7,6 +7,8 @@ interface CategoryTab {
   href: string;
   icon: typeof FlaskConical;
   matchPaths: string[];
+  color: string;
+  glowColor: string;
 }
 
 const categories: CategoryTab[] = [
@@ -14,25 +16,33 @@ const categories: CategoryTab[] = [
     label: "Peptides",
     href: "/peptides",
     icon: FlaskConical,
-    matchPaths: ["/peptides", "/products"]
+    matchPaths: ["/peptides", "/products"],
+    color: "#E7FB10",
+    glowColor: "rgba(231,251,16,0.3)"
   },
   {
     label: "Bulk Packs",
     href: "/bulk-packs",
     icon: Boxes,
-    matchPaths: ["/bulk-packs"]
+    matchPaths: ["/bulk-packs"],
+    color: "#21d8ff",
+    glowColor: "rgba(33,216,255,0.3)"
   },
   {
     label: "Stacks",
     href: "/research-stacks",
     icon: Layers,
-    matchPaths: ["/research-stacks"]
+    matchPaths: ["/research-stacks"],
+    color: "#9d4edd",
+    glowColor: "rgba(157,78,221,0.3)"
   },
   {
     label: "Wholesale",
     href: "/wholesale",
     icon: Building2,
-    matchPaths: ["/wholesale"]
+    matchPaths: ["/wholesale"],
+    color: "#10b981",
+    glowColor: "rgba(16,185,129,0.3)"
   },
 ];
 
@@ -44,7 +54,7 @@ export function CategoryTabs() {
   };
 
   return (
-    <div className="flex gap-2 justify-center md:justify-start">
+    <div className="flex gap-2 justify-center flex-wrap">
       {categories.map((tab) => {
         const active = isActive(tab);
         const Icon = tab.icon;
@@ -55,9 +65,13 @@ export function CategoryTabs() {
             href={tab.href}
             className={`flex items-center justify-center gap-2 p-3 md:px-4 md:py-2 rounded-full text-sm font-medium transition-all ${
               active
-                ? "bg-[#E7FB10] text-black shadow-[0_0_20px_rgba(231,251,16,0.3)]"
+                ? "text-black"
                 : "bg-card border border-border/50 text-muted-foreground hover-elevate"
             }`}
+            style={active ? {
+              backgroundColor: tab.color,
+              boxShadow: `0 0 20px ${tab.glowColor}`
+            } : undefined}
             data-testid={`tab-${tab.label.toLowerCase().replace(/ /g, "-")}`}
             title={tab.label}
           >
