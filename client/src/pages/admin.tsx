@@ -186,9 +186,19 @@ interface StockNotificationWithProduct {
   createdAt: string;
 }
 
+interface RecentOrderInfo {
+  id: string;
+  firstName: string;
+  lastName: string;
+  totalAmount: string;
+  status: string | null;
+  createdAt: Date | null;
+}
+
 function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string) => void }) {
   const [timeRange, setTimeRange] = useState<number>(30);
   const [topProductSort, setTopProductSort] = useState<'revenue' | 'units'>('revenue');
+  const [selectedOrder, setSelectedOrder] = useState<RecentOrderInfo | null>(null);
   
   const { data: metrics, isLoading } = useQuery<DashboardMetrics>({
     queryKey: ["/api/admin/dashboard", timeRange],
@@ -495,10 +505,11 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
                 Recent Orders
               </CardTitle>
               <Button 
-                variant="ghost" 
+                variant="outline" 
                 size="sm" 
-                className="h-7 text-xs"
+                className="h-7 text-xs border-[#E7FB10] text-[#E7FB10] hover:bg-[#E7FB10]/10 hover:text-[#E7FB10] shadow-[0_0_8px_rgba(231,251,16,0.3)]"
                 onClick={() => onNavigateToTab("orders")}
+                data-testid="button-view-all-orders"
               >
                 View All
               </Button>
@@ -510,8 +521,8 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
                 {metrics.recentOrders.slice(0, 5).map((order) => (
                   <button 
                     key={order.id} 
-                    onClick={() => onNavigateToTab("orders")}
-                    className="w-full flex items-center justify-between p-2 rounded-md bg-background/50 border border-border/50 hover:bg-background/80 transition-colors text-left"
+                    onClick={() => setSelectedOrder(order)}
+                    className="w-full flex items-center justify-between p-2 rounded-md bg-background/50 border border-border/50 md:hover:bg-background/80 md:hover:border-[#21d8ff]/50 transition-colors text-left cursor-pointer"
                     data-testid={`recent-order-${order.id}`}
                   >
                     <div className="flex items-center gap-2">
@@ -644,6 +655,74 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
           </Card>
         </div>
       </div>
+
+      {/* Order Quick View Dialog */}
+      <Dialog open={!!selectedOrder} onOpenChange={(open) => !open && setSelectedOrder(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ShoppingBag className="h-5 w-5 text-[#21d8ff]" />
+              Order #{selectedOrder?.id?.toString().slice(-8).toUpperCase()}
+            </DialogTitle>
+            <DialogDescription>
+              {selectedOrder?.createdAt ? (selectedOrder.createdAt instanceof Date ? selectedOrder.createdAt : new Date(selectedOrder.createdAt)).toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              }) : 'N/A'}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedOrder && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                <div>
+                  <p className="text-sm text-muted-foreground">Customer</p>
+                  <p className="font-medium">{selectedOrder.firstName} {selectedOrder.lastName}</p>
+                </div>
+                <Badge 
+                  variant="secondary"
+                  className={`${
+                    selectedOrder.status === "completed" || selectedOrder.status === "shipped" 
+                      ? "bg-green-500/20 text-green-400" 
+                      : selectedOrder.status === "pending" 
+                      ? "bg-[#E7FB10]/20 text-[#E7FB10]"
+                      : "bg-[#21d8ff]/20 text-[#21d8ff]"
+                  }`}
+                >
+                  {selectedOrder.status}
+                </Badge>
+              </div>
+              
+              <div className="p-3 rounded-lg bg-muted/50">
+                <p className="text-sm text-muted-foreground mb-1">Order Total</p>
+                <p className="text-2xl font-bold text-[#E7FB10]">
+                  {formatCurrency(parseFloat(selectedOrder.totalAmount))}
+                </p>
+              </div>
+
+              <DialogFooter className="gap-2 sm:gap-0">
+                <Button
+                  variant="outline"
+                  onClick={() => setSelectedOrder(null)}
+                >
+                  Close
+                </Button>
+                <Button
+                  className="bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90"
+                  onClick={() => {
+                    setSelectedOrder(null);
+                    onNavigateToTab("orders");
+                  }}
+                  data-testid="button-view-full-order"
+                >
+                  View Full Details
+                </Button>
+              </DialogFooter>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
