@@ -9,6 +9,7 @@ import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClie
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendNewsletterWelcomeEmail, isEmailConfigured } from "./email";
 import { sendOrderNotifications, getNotificationStatus } from "./notifications";
+import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import OpenAI from "openai";
 import { z } from "zod";
 
@@ -58,6 +59,19 @@ export async function registerRoutes(
   
   // Setup authentication
   await setupAuth(app);
+
+  // PayPal payment routes
+  app.get("/paypal/setup", async (req, res) => {
+    await loadPaypalDefault(req, res);
+  });
+
+  app.post("/paypal/order", async (req, res) => {
+    await createPaypalOrder(req, res);
+  });
+
+  app.post("/paypal/order/:orderID/capture", async (req, res) => {
+    await capturePaypalOrder(req, res);
+  });
 
   // Sync Auth0 user to database
   app.post('/api/auth/sync', async (req, res) => {
