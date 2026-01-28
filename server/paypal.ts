@@ -1,5 +1,5 @@
 // PayPal integration - based on blueprint:javascript_paypal
-import * as PayPalSDK from "@paypal/paypal-server-sdk";
+import PayPalSDK from "@paypal/paypal-server-sdk";
 import { Request, Response } from "express";
 
 const { Client, Environment, LogLevel, OAuthAuthorizationController, OrdersController } = PayPalSDK;
