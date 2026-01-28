@@ -4,25 +4,56 @@ import { Link, useLocation } from "wouter";
 import { SEOHead } from "@/components/seo-head";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { 
   CheckCircle, 
   Package, 
   Mail, 
-  ArrowRight, 
   Home,
   ShoppingBag,
   Clock,
   Truck
 } from "lucide-react";
 
+interface OrderItem {
+  name: string;
+  dosage: string;
+  quantity: number;
+  price: number;
+}
+
+interface OrderSummary {
+  paypalOrderId: string;
+  items: OrderItem[];
+  subtotal: number;
+  shipping: number;
+  discount: number;
+  total: number;
+  customerEmail: string;
+}
+
 export default function OrderConfirmation() {
   const [, setLocation] = useLocation();
   const [paypalOrderId, setPaypalOrderId] = useState<string | null>(null);
+  const [orderSummary, setOrderSummary] = useState<OrderSummary | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const orderId = params.get("paypalOrderId");
     setPaypalOrderId(orderId);
+    
+    // Retrieve order summary from sessionStorage
+    const storedSummary = sessionStorage.getItem('orderSummary');
+    if (storedSummary) {
+      try {
+        const summary = JSON.parse(storedSummary);
+        setOrderSummary(summary);
+        // Clear after reading so it doesn't persist
+        sessionStorage.removeItem('orderSummary');
+      } catch (e) {
+        console.error('Failed to parse order summary:', e);
+      }
+    }
   }, []);
 
   return (
@@ -70,6 +101,49 @@ export default function OrderConfirmation() {
                 </div>
               )}
 
+              {/* Order Items */}
+              {orderSummary && orderSummary.items.length > 0 && (
+                <>
+                  <div className="space-y-3 mb-4">
+                    {orderSummary.items.map((item, index) => (
+                      <div key={index} className="flex justify-between items-center">
+                        <div>
+                          <p className="font-medium text-sm">{item.name}</p>
+                          <p className="text-xs text-muted-foreground">{item.dosage} × {item.quantity}</p>
+                        </div>
+                        <p className="font-medium text-sm">${(item.price * item.quantity).toFixed(2)}</p>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <Separator className="my-4" />
+                  
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Subtotal</span>
+                      <span>${orderSummary.subtotal.toFixed(2)}</span>
+                    </div>
+                    {orderSummary.discount > 0 && (
+                      <div className="flex justify-between text-green-500">
+                        <span>Discount</span>
+                        <span>-${orderSummary.discount.toFixed(2)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Shipping</span>
+                      <span>{orderSummary.shipping === 0 ? 'FREE' : `$${orderSummary.shipping.toFixed(2)}`}</span>
+                    </div>
+                    <Separator className="my-2" />
+                    <div className="flex justify-between font-semibold text-base">
+                      <span>Total</span>
+                      <span className="text-primary">${orderSummary.total.toFixed(2)}</span>
+                    </div>
+                  </div>
+                  
+                  <Separator className="my-4" />
+                </>
+              )}
+
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -78,7 +152,9 @@ export default function OrderConfirmation() {
                   <div>
                     <p className="font-medium text-sm">Confirmation Email</p>
                     <p className="text-sm text-muted-foreground">
-                      You'll receive an email confirmation with your order details shortly.
+                      {orderSummary?.customerEmail 
+                        ? `Sent to ${orderSummary.customerEmail}`
+                        : "You'll receive an email confirmation with your order details shortly."}
                     </p>
                   </div>
                 </div>

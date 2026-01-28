@@ -304,6 +304,25 @@ export default function Checkout() {
       });
     }
     
+    // Store order details for confirmation page before clearing cart
+    const subTotal = getSubtotal();
+    const shippingCost = subTotal >= 175 ? 0 : 20;
+    const orderSummary = {
+      paypalOrderId,
+      items: cartItems.map(item => ({
+        name: item.name,
+        dosage: item.dosage,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+      subtotal: subTotal,
+      shipping: shippingCost,
+      discount: 0, // Discount already applied to item prices
+      total: subTotal + shippingCost,
+      customerEmail: user?.email || customerEmail,
+    };
+    sessionStorage.setItem('orderSummary', JSON.stringify(orderSummary));
+    
     clearCart();
     window.location.href = `/order-confirmation?paypalOrderId=${paypalOrderId}`;
   };
