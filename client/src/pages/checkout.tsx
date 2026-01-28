@@ -241,7 +241,7 @@ export default function Checkout() {
   };
 
   // Early Access Mode - block actual purchases
-  const EARLY_ACCESS_MODE = true;
+  const EARLY_ACCESS_MODE = false; // Disabled for sandbox testing
 
   const handlePayPalSuccess = async (orderData: any, paypalOrderId: string) => {
     toast({
