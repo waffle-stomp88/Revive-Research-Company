@@ -15,6 +15,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import PayPalCheckout from "@/components/PayPalCheckout";
 import SubscriptionCheckout from "@/components/SubscriptionCheckout";
+import { calculateTax, getTaxRateDisplay } from "@shared/taxRates";
 import {
   ArrowLeft,
   FlaskConical,
@@ -275,6 +276,8 @@ export default function Checkout() {
           })),
           subtotal: cartSubtotal,
           shipping: cartShipping,
+          tax: cartTax,
+          taxState: shippingAddress.state,
           total: cartTotal,
         }),
       });
@@ -384,7 +387,9 @@ export default function Checkout() {
   const baseShipping = hasSubscriptionItems ? 0 : (cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING);
   const coldPackFee = hasColdPackShipping && !hasSubscriptionItems ? COLD_PACK_FEE : 0;
   const cartShipping = baseShipping + coldPackFee;
-  const cartTotal = cartSubtotal + cartShipping;
+  // Calculate tax based on shipping state (applied to subtotal only, not shipping)
+  const cartTax = shippingAddress.state ? calculateTax(shippingAddress.state, cartSubtotal) : 0;
+  const cartTotal = cartSubtotal + cartShipping + cartTax;
 
   // Payment method info
   const CASHAPP_TAG = "$reviveresearchco";
@@ -1122,6 +1127,14 @@ export default function Checkout() {
                         <span className="text-blue-400">+${COLD_PACK_FEE.toFixed(2)}</span>
                       </div>
                     )}
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">
+                        Tax {shippingAddress.state && `(${shippingAddress.state} ${getTaxRateDisplay(shippingAddress.state)})`}
+                      </span>
+                      <span className={cartTax === 0 ? "text-green-500" : ""}>
+                        {cartTax === 0 ? (shippingAddress.state ? "No tax" : "Enter state") : `$${cartTax.toFixed(2)}`}
+                      </span>
+                    </div>
                   </div>
 
                   <Separator className="my-4 md:my-6" />

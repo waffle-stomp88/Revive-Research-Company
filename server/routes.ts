@@ -499,6 +499,8 @@ export async function registerRoutes(
         items, 
         subtotal,
         shipping,
+        tax,
+        taxState,
         total 
       } = req.body;
 
@@ -551,14 +553,16 @@ export async function registerRoutes(
         price: parseFloat(item.price) || 0,
       }));
       
-      // Calculate shipping info for email (use passed values or calculate from items)
+      // Calculate shipping and tax info for email (use passed values or calculate from items)
       const orderSubtotal = subtotal || orderItems.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
       const orderShipping = typeof shipping === 'number' ? shipping : parseFloat(shipping) || 0;
+      const orderTax = typeof tax === 'number' ? tax : parseFloat(tax) || 0;
+      const orderTaxState = taxState || shippingAddress?.state || '';
       
-      // Send confirmation email with all items and shipping info
+      // Send confirmation email with all items, shipping, and tax info
       let emailSent = false;
       try {
-        const emailResult = await sendOrderConfirmationEmail(order, undefined, orderItems, orderSubtotal, orderShipping);
+        const emailResult = await sendOrderConfirmationEmail(order, undefined, orderItems, orderSubtotal, orderShipping, orderTax, orderTaxState);
         if (emailResult.success) {
           await storage.updateOrderEmailStatus(order.id, 'sent');
           emailSent = true;
@@ -572,9 +576,9 @@ export async function registerRoutes(
         await storage.updateOrderEmailStatus(order.id, 'failed', emailError.message);
       }
 
-      // Send admin notification with all items and shipping info
+      // Send admin notification with all items, shipping, and tax info
       try {
-        await sendAdminOrderNotificationEmail(order, undefined, orderItems, orderSubtotal, orderShipping);
+        await sendAdminOrderNotificationEmail(order, undefined, orderItems, orderSubtotal, orderShipping, orderTax, orderTaxState);
         console.log(`[PayPal Order ${order.id}] Admin notification sent`);
       } catch (adminEmailError: any) {
         console.error(`[PayPal Order ${order.id}] Admin notification failed:`, adminEmailError.message);

@@ -150,7 +150,7 @@ function getOrderConfirmationTemplate(order: {
   state?: string;
   zipCode?: string;
   country?: string;
-}, productName?: string, items?: OrderItem[], subtotal?: number, shipping?: number): { subject: string; text: string; html: string } {
+}, productName?: string, items?: OrderItem[], subtotal?: number, shipping?: number, tax?: number, taxState?: string): { subject: string; text: string; html: string } {
   const shortRef = getShortOrderRef(order.id);
   const { brand } = EMAIL_CONFIG;
   const styles = getEmailBaseStyles();
@@ -167,6 +167,9 @@ function getOrderConfirmationTemplate(order: {
   const calculatedSubtotal = subtotal ?? orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const shippingCost = shipping ?? 0;
   const shippingDisplay = shippingCost === 0 ? 'FREE' : `$${shippingCost.toFixed(2)}`;
+  const taxAmount = tax ?? 0;
+  const taxDisplay = taxAmount === 0 ? 'No tax' : `$${taxAmount.toFixed(2)}`;
+  const taxLabel = taxState ? `Tax (${taxState})` : 'Tax';
   
   const subject = `Order Confirmed #${shortRef}`;
   
@@ -189,6 +192,7 @@ ${itemsText}
 
 Subtotal: $${calculatedSubtotal.toFixed(2)}
 Shipping: ${shippingDisplay}
+${taxLabel}: ${taxDisplay}
 Total: $${order.totalAmount}
 
 SHIPPING TO
@@ -288,6 +292,14 @@ ${brand.name}
                     </td>
                   </tr>
                   <tr>
+                    <td colspan="2" style="padding: 8px 0 0 0;">
+                      <span style="color: rgba(255,255,255,0.7); font-size: 14px;">${taxLabel}</span>
+                    </td>
+                    <td style="padding: 8px 0 0 0; text-align: right;">
+                      <span style="color: ${taxAmount === 0 ? '#22c55e' : 'rgba(255,255,255,0.7)'}; font-size: 14px; font-weight: ${taxAmount === 0 ? '600' : '400'};">${taxDisplay}</span>
+                    </td>
+                  </tr>
+                  <tr>
                     <td colspan="2" style="padding: 16px 0 0 0; border-top: 1px solid rgba(255,255,255,0.1);">
                       <span style="color: #ffffff; font-size: 14px; font-weight: 600;">Total</span>
                     </td>
@@ -377,8 +389,8 @@ export async function sendOrderConfirmationEmail(order: {
   state?: string;
   zipCode?: string;
   country?: string;
-}, productName?: string, items?: OrderItem[], subtotal?: number, shipping?: number): Promise<EmailResult> {
-  const template = getOrderConfirmationTemplate(order, productName, items, subtotal, shipping);
+}, productName?: string, items?: OrderItem[], subtotal?: number, shipping?: number, tax?: number, taxState?: string): Promise<EmailResult> {
+  const template = getOrderConfirmationTemplate(order, productName, items, subtotal, shipping, tax, taxState);
   const timestamp = new Date().toISOString();
   
   const result = await sendEmail({
@@ -425,7 +437,7 @@ function getAdminOrderNotificationTemplate(order: {
   zipCode?: string;
   country?: string;
   phone?: string;
-}, productName?: string, items?: OrderItem[], subtotal?: number, shipping?: number): { subject: string; text: string; html: string } {
+}, productName?: string, items?: OrderItem[], subtotal?: number, shipping?: number, tax?: number, taxState?: string): { subject: string; text: string; html: string } {
   const shortRef = getShortOrderRef(order.id);
   const styles = getEmailBaseStyles();
   
@@ -440,6 +452,9 @@ function getAdminOrderNotificationTemplate(order: {
   const calculatedSubtotal = subtotal ?? orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const shippingCost = shipping ?? 0;
   const shippingDisplay = shippingCost === 0 ? 'FREE' : `$${shippingCost.toFixed(2)}`;
+  const taxAmount = tax ?? 0;
+  const taxDisplay = taxAmount === 0 ? 'No tax' : `$${taxAmount.toFixed(2)}`;
+  const taxLabel = taxState ? `Tax (${taxState})` : 'Tax';
   
   // Build items text for plain text email
   const itemsText = orderItems.map(item => 
@@ -463,6 +478,7 @@ ${itemsText}
 
 Subtotal: $${calculatedSubtotal.toFixed(2)}
 Shipping: ${shippingDisplay}
+${taxLabel}: ${taxDisplay}
 Total: $${order.totalAmount}
 
 SHIPPING ADDRESS
@@ -568,6 +584,14 @@ Time: ${new Date().toISOString()}
                     </td>
                   </tr>
                   <tr>
+                    <td colspan="2" style="padding: 8px 0;">
+                      <span style="color: #6b7280; font-size: 13px;">${taxLabel}</span>
+                    </td>
+                    <td style="padding: 8px 0; text-align: right;">
+                      <span style="color: ${taxAmount === 0 ? '#16a34a' : '#6b7280'}; font-size: 14px; font-weight: ${taxAmount === 0 ? '600' : '400'};">${taxDisplay}</span>
+                    </td>
+                  </tr>
+                  <tr>
                     <td colspan="2" style="padding: 10px 0; border-top: 1px solid #e5e7eb;">
                       <span style="color: #111827; font-size: 14px; font-weight: 600;">Total</span>
                     </td>
@@ -626,7 +650,7 @@ export async function sendAdminOrderNotificationEmail(order: {
   zipCode?: string;
   country?: string;
   phone?: string;
-}, productName?: string, items?: OrderItem[], subtotal?: number, shipping?: number): Promise<EmailResult> {
+}, productName?: string, items?: OrderItem[], subtotal?: number, shipping?: number, tax?: number, taxState?: string): Promise<EmailResult> {
   const adminEmail = process.env.ADMIN_EMAIL;
   
   if (!adminEmail) {
@@ -634,7 +658,7 @@ export async function sendAdminOrderNotificationEmail(order: {
     return { success: false, error: 'ADMIN_EMAIL not configured' };
   }
 
-  const template = getAdminOrderNotificationTemplate(order, productName, items, subtotal, shipping);
+  const template = getAdminOrderNotificationTemplate(order, productName, items, subtotal, shipping, tax, taxState);
   
   const result = await sendEmail({
     to: adminEmail,
