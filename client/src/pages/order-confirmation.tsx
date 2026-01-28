@@ -32,7 +32,7 @@ export default function OrderConfirmation() {
         description="Your order has been successfully placed. Thank you for choosing Revive Research."
       />
       
-      <div className="min-h-screen bg-background py-12 px-4">
+      <div className="min-h-screen bg-background pt-24 pb-12 px-4">
         <div className="max-w-2xl mx-auto">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -115,8 +115,8 @@ export default function OrderConfirmation() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <Card className="p-6 mb-6 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-              <h3 className="font-display font-semibold mb-2">Research Use Only</h3>
+            <Card className="p-6 mb-6 border-red-500/30 bg-gradient-to-br from-red-500/10 to-transparent">
+              <h3 className="font-display font-semibold mb-2 text-red-400">Research Use Only</h3>
               <p className="text-sm text-muted-foreground">
                 All products are intended for laboratory research purposes only. 
                 Not for human consumption. By completing this purchase, you confirm 
