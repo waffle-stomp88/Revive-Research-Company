@@ -244,7 +244,7 @@ export default function Checkout() {
           price: item.price,
         })),
         subtotal: cartSubtotal,
-        shipping: 0, // Manual orders - shipping calculated at fulfillment
+        shipping: cartShipping,
         discount: 0,
         total: cartTotal,
         customerEmail: customerEmail,
