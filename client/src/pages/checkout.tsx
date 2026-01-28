@@ -234,6 +234,23 @@ export default function Checkout() {
         title: "Order Created!",
         description: "Your order has been placed. Please complete the payment as instructed.",
       });
+      
+      // Store order summary for confirmation page
+      const orderSummary = {
+        items: cartItems.map(item => ({
+          name: item.name,
+          dosage: item.dosage,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+        subtotal: cartSubtotal,
+        shipping: 0, // Manual orders - shipping calculated at fulfillment
+        discount: 0,
+        total: cartTotal,
+        customerEmail: customerEmail,
+      };
+      sessionStorage.setItem('orderSummary', JSON.stringify(orderSummary));
+      
       clearCart();
       // Redirect to order confirmation or orders page
       window.location.href = `/order-confirmation?orderId=${data.id}&manual=true&method=${data.paymentMethod || selectedPaymentMethod}`;

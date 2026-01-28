@@ -178,6 +178,25 @@ export default function OrderConfirmation() {
                     </div>
                   </div>
 
+                  {/* Order Number Display */}
+                  {orderId && (
+                    <div className="rounded-lg p-4 mb-4 bg-muted/30 border border-border/50">
+                      <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Your Order Number</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-mono text-lg font-bold text-[#E7FB10]">{orderId}</p>
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          className="h-7 px-2"
+                          onClick={() => copyToClipboard(orderId)}
+                          data-testid="button-copy-order-id"
+                        >
+                          <Copy className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="rounded-lg p-4 mb-4" style={{ backgroundColor: `${color}10`, borderColor: `${color}30`, borderWidth: 1 }}>
                     <div className="flex items-center gap-3 mb-3">
                       <Smartphone className="w-5 h-5" style={{ color }} />
@@ -186,6 +205,7 @@ export default function OrderConfirmation() {
                     <div 
                       className="flex items-center gap-2 p-3 rounded-md bg-background cursor-pointer md:hover:bg-muted transition-colors"
                       onClick={() => copyToClipboard(paymentInfo)}
+                      data-testid="button-copy-payment-info"
                     >
                       <span className="font-mono font-bold text-lg flex-1" style={{ color }}>
                         {paymentInfo}
@@ -208,7 +228,15 @@ export default function OrderConfirmation() {
                       <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: color }}>
                         2
                       </div>
-                      <p className="text-muted-foreground">Include your <span className="font-semibold text-foreground">email address</span> in the payment note</p>
+                      <div>
+                        <p className="text-muted-foreground">
+                          In the payment note, enter <span className="font-semibold text-foreground">ONLY</span> your order number: <span className="font-mono font-bold" style={{ color }}>{orderId || "your order #"}</span>
+                        </p>
+                        <p className="text-xs text-[#E7FB10] mt-1 flex items-center gap-1">
+                          <AlertTriangle className="h-3 w-3" />
+                          Important: Do not include any other text — only the order number
+                        </p>
+                      </div>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: color }}>
@@ -243,10 +271,10 @@ export default function OrderConfirmation() {
                 <h2 className="font-display text-xl font-semibold">Order Details</h2>
               </div>
               
-              {paypalOrderId && (
+              {(paypalOrderId || orderId) && (
                 <div className="bg-gradient-to-r from-[#E7FB10]/5 to-[#21d8ff]/5 border border-[#E7FB10]/20 rounded-lg p-4 mb-5">
                   <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Order Reference</p>
-                  <p className="font-mono text-sm font-medium text-[#E7FB10]">{paypalOrderId}</p>
+                  <p className="font-mono text-sm font-medium text-[#E7FB10]">{paypalOrderId || orderId}</p>
                 </div>
               )}
 
