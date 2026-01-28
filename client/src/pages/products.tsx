@@ -880,7 +880,7 @@ function ProductsComponent() {
                           const isOutOfStock = !product.inStock || (product.stockAmount !== null && product.stockAmount <= 0);
                           return (
                             <Card 
-                              className={`group p-3 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 md:hover:scale-[1.03] md:active:scale-[1.03] relative overflow-hidden ${
+                              className={`group p-3 cursor-pointer transition-[transform,border-color,box-shadow,opacity] duration-300 h-full flex flex-col border-2 md:hover:scale-[1.03] md:active:scale-[1.03] relative overflow-hidden ${
                                 isOutOfStock
                                   ? "border-muted-foreground/30 opacity-70 md:hover:border-muted-foreground/50 md:hover:opacity-90"
                                   : "border-[#21d8ff]/40 md:hover:border-[#21d8ff] md:hover:shadow-[0_0_30px_rgba(33,216,255,0.5),0_0_60px_rgba(33,216,255,0.2)]"
