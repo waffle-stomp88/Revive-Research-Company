@@ -2332,6 +2332,7 @@ function OrdersTab() {
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(new Set());
 
   const { data: allOrders, isLoading } = useQuery<Order[]>({
     queryKey: ["/api/admin/orders"],
@@ -2407,6 +2408,52 @@ function OrdersTab() {
       toast({ title: "Failed to delete order", variant: "destructive" });
     },
   });
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      const results = await Promise.all(
+        ids.map(id => apiRequest("DELETE", `/api/admin/orders/${id}`).then(r => r.json()).catch(() => null))
+      );
+      return results;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders/stats"] });
+      setSelectedOrderIds(new Set());
+      toast({ title: `${selectedOrderIds.size} order(s) deleted successfully` });
+    },
+    onError: () => {
+      toast({ title: "Failed to delete some orders", variant: "destructive" });
+    },
+  });
+
+  const toggleOrderSelection = (orderId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedOrderIds(prev => {
+      const next = new Set(prev);
+      if (next.has(orderId)) {
+        next.delete(orderId);
+      } else {
+        next.add(orderId);
+      }
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedOrderIds.size === filteredOrders.length) {
+      setSelectedOrderIds(new Set());
+    } else {
+      setSelectedOrderIds(new Set(filteredOrders.map(o => o.id)));
+    }
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedOrderIds.size === 0) return;
+    if (confirm(`Delete ${selectedOrderIds.size} order(s)? This cannot be undone.`)) {
+      bulkDeleteMutation.mutate(Array.from(selectedOrderIds));
+    }
+  };
 
   const getProductName = (productId: string) => {
     return products?.find((p) => p.id === productId)?.name || "Unknown Product";
@@ -2622,10 +2669,46 @@ function OrdersTab() {
         </Button>
       </div>
 
+      {/* Bulk Action Bar */}
+      {selectedOrderIds.size > 0 && (
+        <div className="flex items-center justify-between p-3 bg-muted/50 border rounded-lg">
+          <span className="text-sm font-medium">
+            {selectedOrderIds.size} order{selectedOrderIds.size !== 1 ? 's' : ''} selected
+          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setSelectedOrderIds(new Set())}
+            >
+              Clear Selection
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleBulkDelete}
+              disabled={bulkDeleteMutation.isPending}
+              data-testid="button-bulk-delete"
+            >
+              <Trash2 className="h-4 w-4 mr-1" />
+              {bulkDeleteMutation.isPending ? "Deleting..." : `Delete ${selectedOrderIds.size}`}
+            </Button>
+          </div>
+        </div>
+      )}
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-10">
+                <Checkbox
+                  checked={filteredOrders.length > 0 && selectedOrderIds.size === filteredOrders.length}
+                  onCheckedChange={toggleSelectAll}
+                  aria-label="Select all orders"
+                  data-testid="checkbox-select-all"
+                />
+              </TableHead>
               <TableHead>Order ID</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Customer</TableHead>
@@ -2639,7 +2722,7 @@ function OrdersTab() {
           <TableBody>
             {filteredOrders.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                   No orders found
                 </TableCell>
               </TableRow>
@@ -2650,9 +2733,17 @@ function OrdersTab() {
                 <TableRow 
                   key={order.id} 
                   data-testid={`row-order-${order.id}`}
-                  className={`cursor-pointer hover-elevate ${orderNeedsAttention ? "border-l-2 border-l-[#E7FB10]" : ""}`}
+                  className={`cursor-pointer hover-elevate ${orderNeedsAttention ? "border-l-2 border-l-[#E7FB10]" : ""} ${selectedOrderIds.has(order.id) ? "bg-muted/50" : ""}`}
                   onClick={() => handleViewOrder(order)}
                 >
+                  <TableCell onClick={(e) => e.stopPropagation()}>
+                    <Checkbox
+                      checked={selectedOrderIds.has(order.id)}
+                      onCheckedChange={() => toggleOrderSelection(order.id, { stopPropagation: () => {} } as React.MouseEvent)}
+                      aria-label={`Select order ${order.id.slice(-8)}`}
+                      data-testid={`checkbox-order-${order.id}`}
+                    />
+                  </TableCell>
                   <TableCell>
                     <div className="flex flex-col gap-1">
                       <div className="flex items-center gap-2">
