@@ -105,6 +105,16 @@ export default function Checkout() {
   const hasPeptides = cartItems.some(item => !item.name.toLowerCase().includes("bacteriostatic") && !item.name.toLowerCase().includes("supplies"));
   const hasBacWater = cartItems.some(item => item.name.toLowerCase().includes("bacteriostatic"));
   const shouldShowBacUpsell = hasPeptides && bacWater;
+  
+  // Detect subscription items in cart
+  const subscriptionItems = cartItems.filter(item => item.isSubscription);
+  const oneTimeItems = cartItems.filter(item => !item.isSubscription);
+  const hasSubscriptionItems = subscriptionItems.length > 0;
+  const hasOneTimeItems = oneTimeItems.length > 0;
+  const hasMixedCart = hasSubscriptionItems && hasOneTimeItems;
+  
+  // For single subscription item from cart (used in payment section)
+  const cartSubscriptionItem = subscriptionItems.length === 1 ? subscriptionItems[0] : null;
 
   const handleAddBacWater = () => {
     if (bacWater && !hasBacWater) {
@@ -911,16 +921,34 @@ export default function Checkout() {
                     Order Summary ({cartItems.length} {cartItems.length === 1 ? 'item' : 'items'})
                   </h2>
 
+                  {/* Mixed cart warning */}
+                  {hasMixedCart && (
+                    <div className="mb-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                      <div className="flex items-start gap-2">
+                        <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                        <div className="text-xs text-amber-200">
+                          <p className="font-medium mb-1">Subscription items need separate checkout</p>
+                          <p className="text-muted-foreground">Subscriptions and one-time purchases must be checked out separately. We'll process your subscription item below.</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Item list */}
                   <div className="space-y-3 md:space-y-4 mb-4 md:mb-6">
                     {cartItems.map((item) => (
-                      <div key={`${item.productId}-${item.dosage}`} className="flex gap-3 md:gap-4">
-                        <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-muted to-muted/50 rounded-md flex items-center justify-center flex-shrink-0 overflow-hidden">
+                      <div key={`${item.productId}-${item.dosage}-${item.isSubscription ? 'sub' : 'one'}`} className="flex gap-3 md:gap-4">
+                        <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-muted to-muted/50 rounded-md flex items-center justify-center flex-shrink-0 overflow-hidden relative">
                           <img 
                             src={productImage} 
                             alt={`${item.name} ${item.dosage} research peptide`}
                             className="w-full h-full object-contain p-1"
                           />
+                          {item.isSubscription && (
+                            <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
+                              <Repeat className="h-3 w-3 text-primary-foreground" />
+                            </div>
+                          )}
                         </div>
                         <div className="flex-1 min-w-0 flex items-center justify-between">
                           <div>
@@ -929,6 +957,11 @@ export default function Checkout() {
                             </h3>
                             <p className="text-xs text-muted-foreground">
                               {item.dosage} × {item.quantity}
+                              {item.isSubscription && item.subscriptionInterval && (
+                                <span className="ml-1 text-primary">
+                                  • {intervalLabels[item.subscriptionInterval]} Sub
+                                </span>
+                              )}
                             </p>
                           </div>
                           <p className="font-semibold text-sm">
@@ -1103,6 +1136,24 @@ export default function Checkout() {
                           productId={product.id}
                           dosage={searchParams.get("dosage") || undefined}
                           quantity={quantity}
+                          onSuccess={(data) => {
+                            toast({
+                              title: "Subscription Created!",
+                              description: "Your subscription is now active.",
+                            });
+                            clearCart();
+                          }}
+                          onError={handlePayPalError}
+                          className="w-full"
+                        />
+                      ) : cartSubscriptionItem ? (
+                        <SubscriptionCheckout
+                          basePrice={cartSubscriptionItem.price}
+                          frequency={cartSubscriptionItem.subscriptionInterval || "monthly"}
+                          productName={cartSubscriptionItem.name}
+                          productId={cartSubscriptionItem.productId}
+                          dosage={cartSubscriptionItem.dosage}
+                          quantity={cartSubscriptionItem.quantity}
                           onSuccess={(data) => {
                             toast({
                               title: "Subscription Created!",

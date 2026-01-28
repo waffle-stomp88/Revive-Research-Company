@@ -358,6 +358,7 @@ export default function ProductDetail() {
 
   const handleAddToCart = () => {
     if (product) {
+      const isSubPurchase = purchaseType === "subscription";
       addToCart({
         productId: product.id,
         name: product.name,
@@ -366,10 +367,14 @@ export default function ProductDetail() {
         quantity,
         dosage: selectedDosage,
         image: product.imageUrl || productImage,
+        isSubscription: isSubPurchase,
+        subscriptionInterval: isSubPurchase ? subscriptionInterval : undefined,
       });
       toast({
-        title: "Added to cart",
-        description: `${quantity}x ${product.name} (${selectedDosage}) added to your cart.`,
+        title: isSubPurchase ? "Subscription added to cart" : "Added to cart",
+        description: isSubPurchase 
+          ? `${quantity}x ${product.name} (${selectedDosage}) - ${subscriptionInterval} subscription added.`
+          : `${quantity}x ${product.name} (${selectedDosage}) added to your cart.`,
       });
     }
   };

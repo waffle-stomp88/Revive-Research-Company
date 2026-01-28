@@ -10,6 +10,8 @@ export interface CartItem {
   dosage: string;
   image?: string;
   isBundle?: boolean;
+  isSubscription?: boolean;
+  subscriptionInterval?: "weekly" | "biweekly" | "monthly";
 }
 
 interface CartContextType {
@@ -46,7 +48,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
           if (item.bundleId) {
             return i.bundleId === item.bundleId && i.dosage === item.dosage;
           }
-          return i.productId === item.productId && i.dosage === item.dosage;
+          // Subscription items should not merge with one-time items
+          const sameSubscriptionType = i.isSubscription === item.isSubscription && 
+            i.subscriptionInterval === item.subscriptionInterval;
+          return i.productId === item.productId && i.dosage === item.dosage && sameSubscriptionType;
         }
       );
 
