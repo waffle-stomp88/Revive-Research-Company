@@ -1142,7 +1142,7 @@ export default function Checkout() {
                     <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">
                         Tax {hasValidZip && taxState && (
-                          <span className="text-xs text-muted-foreground/70">({taxState})</span>
+                          <span className="text-xs text-muted-foreground/70">({taxState} - {taxRatePercent.toFixed(2)}%)</span>
                         )}
                       </span>
                       {!hasValidZip ? (
@@ -1165,7 +1165,7 @@ export default function Checkout() {
                           <span className={cartTax === 0 ? "text-green-500" : ""}>
                             {cartTax === 0 
                               ? "No tax" 
-                              : `$${cartTax.toFixed(2)} (${taxRatePercent.toFixed(2)}%)`}
+                              : `$${cartTax.toFixed(2)}`}
                           </span>
                           <button
                             type="button"
