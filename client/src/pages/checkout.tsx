@@ -1378,39 +1378,6 @@ export default function Checkout() {
                     </div>
                   )}
 
-                  {/* ZIP Code for Tax Calculation - PayPal only */}
-                  {selectedPaymentMethod === "paypal" && (
-                    <div className="mb-4 p-3 rounded-lg bg-muted/50 border border-border">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Truck className="h-4 w-4 text-[#E7FB10]" />
-                        <Label className="text-sm font-medium">Shipping ZIP Code</Label>
-                        {hasValidZip && taxState && (
-                          <Badge variant="secondary" className="text-xs bg-green-500/20 text-green-400 border-green-500/30">
-                            {taxState}
-                          </Badge>
-                        )}
-                      </div>
-                      <Input
-                        placeholder="Enter ZIP code for tax calculation"
-                        value={shippingAddress.zip}
-                        onChange={(e) => {
-                          const newZip = e.target.value;
-                          const detectedState = getStateFromZip(newZip);
-                          setShippingAddress({
-                            ...shippingAddress, 
-                            zip: newZip,
-                            state: detectedState || shippingAddress.state
-                          });
-                        }}
-                        className="mt-1"
-                        data-testid="input-paypal-zip"
-                      />
-                      {!hasValidZip && (
-                        <p className="text-xs text-[#E7FB10] mt-1">Enter your 5-digit ZIP code to calculate tax</p>
-                      )}
-                    </div>
-                  )}
-
                   {/* Payment Button */}
                   {selectedPaymentMethod === "paypal" ? (
                     <div className="space-y-3">
