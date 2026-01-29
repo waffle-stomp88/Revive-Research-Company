@@ -869,7 +869,14 @@ Unsubscribe: ${unsubscribeUrl}`;
             <td style="background: linear-gradient(180deg, rgba(33, 216, 255, 0.08) 0%, rgba(157, 78, 221, 0.05) 50%, transparent 100%); padding: 48px 40px 32px 40px; text-align: center; border-bottom: 1px solid ${colors.cardBorder};">
               
               <!-- Logo -->
-              <img src="${logoUrl}" alt="Revive Research" width="180" style="display: block; margin: 0 auto 24px auto; max-width: 180px; height: auto;" />
+              <a href="https://reviveresearch.co" target="_blank" style="display: inline-block; text-decoration: none;">
+                <img src="${logoUrl}" alt="Revive Research" width="280" style="display: block; margin: 0 auto 16px auto; max-width: 280px; height: auto;" />
+              </a>
+              
+              <!-- Tagline -->
+              <p style="color: #cccccc; font-size: 11px; letter-spacing: 2px; margin: 0 0 24px 0; text-transform: uppercase;">
+                Premium Research Compounds
+              </p>
               
               <!-- Decorative Line -->
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
