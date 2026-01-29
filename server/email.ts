@@ -401,7 +401,7 @@ ${brand.name}
                         <span style="color: #000; font-size: 16px; font-weight: 700;">1</span>
                       </div>
                       <p style="color: #ffffff; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Confirmed</p>
-                      <p style="color: rgba(255,255,255,0.7); font-size: 11px; margin: 0;">Just now</p>
+                      <p style="color: rgba(255,255,255,0.9); font-size: 11px; margin: 0;">Just now</p>
                     </td>
                     <!-- Connector -->
                     <td style="width: 1%; vertical-align: top; padding-top: 20px;">
@@ -410,10 +410,10 @@ ${brand.name}
                     <!-- Step 2 - Pending -->
                     <td style="width: 33%; text-align: center; vertical-align: top;">
                       <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); border-radius: 50%; margin: 0 auto 12px auto; line-height: 36px;">
-                        <span style="color: rgba(255,255,255,0.6); font-size: 16px; font-weight: 700;">2</span>
+                        <span style="color: #ffffff; font-size: 16px; font-weight: 700;">2</span>
                       </div>
-                      <p style="color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Shipped</p>
-                      <p style="color: rgba(255,255,255,0.5); font-size: 11px; margin: 0;">Pending</p>
+                      <p style="color: #ffffff; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Shipped</p>
+                      <p style="color: rgba(255,255,255,0.8); font-size: 11px; margin: 0;">Pending</p>
                     </td>
                     <!-- Connector -->
                     <td style="width: 1%; vertical-align: top; padding-top: 20px;">
@@ -422,10 +422,10 @@ ${brand.name}
                     <!-- Step 3 - Pending -->
                     <td style="width: 33%; text-align: center; vertical-align: top;">
                       <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); border-radius: 50%; margin: 0 auto 12px auto; line-height: 36px;">
-                        <span style="color: rgba(255,255,255,0.6); font-size: 16px; font-weight: 700;">3</span>
+                        <span style="color: #ffffff; font-size: 16px; font-weight: 700;">3</span>
                       </div>
-                      <p style="color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Delivered</p>
-                      <p style="color: rgba(255,255,255,0.5); font-size: 11px; margin: 0;">Pending</p>
+                      <p style="color: #ffffff; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Delivered</p>
+                      <p style="color: rgba(255,255,255,0.8); font-size: 11px; margin: 0;">Pending</p>
                     </td>
                   </tr>
                 </table>
@@ -436,7 +436,7 @@ ${brand.name}
                 <p style="color: #ef4444; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 8px 0;">
                   RESEARCH USE ONLY
                 </p>
-                <p style="color: rgba(255,255,255,0.85); font-size: 13px; line-height: 1.5; margin: 0;">
+                <p style="color: #ffffff; font-size: 13px; line-height: 1.5; margin: 0;">
                   All products are intended for laboratory research purposes only.<br>
                   Not for human or animal consumption.
                 </p>
@@ -449,7 +449,7 @@ ${brand.name}
           <tr>
             <td style="background-color: #1a1a1f; padding: 32px 40px; text-align: center;">
               <!-- Social/Support Links -->
-              <p style="color: rgba(255,255,255,0.85); font-size: 13px; margin: 0 0 16px 0;">
+              <p style="color: #ffffff; font-size: 13px; margin: 0 0 16px 0;">
                 Questions about your order?
               </p>
               <a href="mailto:${EMAIL_CONFIG.replyTo}" style="display: inline-block; background: transparent; border: 1px solid ${styles.accentColor}; color: ${styles.accentColor}; font-size: 13px; font-weight: 600; padding: 10px 24px; border-radius: 100px; text-decoration: none; margin-bottom: 20px;">
@@ -463,7 +463,7 @@ ${brand.name}
               <p style="color: ${styles.primaryColor}; font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; margin: 0 0 8px 0;">
                 Revive Research
               </p>
-              <p style="color: rgba(255,255,255,0.6); font-size: 11px; margin: 0;">
+              <p style="color: rgba(255,255,255,0.9); font-size: 11px; margin: 0;">
                 &copy; ${new Date().getFullYear()} Revive Research. All rights reserved.
               </p>
             </td>
