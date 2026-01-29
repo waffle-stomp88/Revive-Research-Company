@@ -228,125 +228,224 @@ ${brand.name}
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0d0d0f;">
     <tr>
       <td align="center" style="padding: 40px 20px;">
-        <table role="presentation" cellspacing="0" cellpadding="0" style="${styles.container}">
+        <table role="presentation" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; background-color: #1a1a1f; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05);">
           
-          <!-- Header -->
+          <!-- Premium Header with Logo -->
           <tr>
-            <td style="${styles.header}">
-              <p style="${styles.logo}">Revive Research</p>
-              <h1 style="color: #ffffff; font-size: 32px; font-weight: 600; margin: 0; letter-spacing: -0.5px;">
-                Order Confirmed
-              </h1>
+            <td style="background: linear-gradient(180deg, #252529 0%, #1a1a1f 100%); padding: 0; text-align: center; position: relative;">
+              <!-- Top Gradient Accent Bar -->
+              <div style="height: 4px; background: linear-gradient(90deg, ${styles.primaryColor} 0%, ${styles.accentColor} 50%, ${styles.primaryColor} 100%);"></div>
+              
+              <!-- Logo Section -->
+              <div style="padding: 40px 40px 20px 40px;">
+                <!-- Text-based Logo (Outlook compatible) -->
+                <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto 16px auto;">
+                  <tr>
+                    <td style="width: 48px; height: 48px; border: 2px solid ${styles.primaryColor}; border-radius: 50%; text-align: center; vertical-align: middle;">
+                      <span style="color: ${styles.primaryColor}; font-size: 20px; font-weight: 700;">RR</span>
+                    </td>
+                  </tr>
+                </table>
+                
+                <!-- Brand Name -->
+                <p style="color: ${styles.primaryColor}; font-size: 13px; font-weight: 700; letter-spacing: 4px; margin: 0 0 4px 0; text-transform: uppercase;">
+                  REVIVE RESEARCH
+                </p>
+                <p style="color: rgba(255,255,255,0.4); font-size: 11px; letter-spacing: 2px; margin: 0; text-transform: uppercase;">
+                  Premium Research Compounds
+                </p>
+              </div>
+              
+              <!-- Order Confirmed Title -->
+              <div style="padding: 20px 40px 40px 40px;">
+                <h1 style="color: #ffffff; font-size: 36px; font-weight: 700; margin: 0 0 16px 0; letter-spacing: -1px;">
+                  Order Confirmed
+                </h1>
+                <!-- Order Number Badge -->
+                <span style="display: inline-block; background: linear-gradient(135deg, ${styles.primaryColor} 0%, #c4d40d 100%); color: #000000; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 100px; letter-spacing: 1.5px; box-shadow: 0 0 30px rgba(231, 251, 16, 0.4);">
+                  ORDER #${shortRef}
+                </span>
+              </div>
+            </td>
+          </tr>
+          
+          <!-- Thank You Message -->
+          <tr>
+            <td style="padding: 0 40px;">
+              <div style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.05) 100%); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 16px; padding: 24px; text-align: center;">
+                <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto 12px auto;">
+                  <tr>
+                    <td style="width: 48px; height: 48px; background: rgba(34, 197, 94, 0.2); border-radius: 50%; text-align: center; vertical-align: middle;">
+                      <span style="color: #22c55e; font-size: 20px; font-weight: 700;">OK</span>
+                    </td>
+                  </tr>
+                </table>
+                <p style="color: #22c55e; font-size: 18px; font-weight: 600; margin: 0 0 8px 0;">
+                  Thank you${hasFirstName ? `, ${order.firstName}` : ''}!
+                </p>
+                <p style="color: rgba(255,255,255,0.7); font-size: 14px; line-height: 1.6; margin: 0;">
+                  Your order has been received and is being prepared for shipment.<br>
+                  You'll receive tracking information once your order ships.
+                </p>
+              </div>
             </td>
           </tr>
           
           <!-- Content -->
           <tr>
-            <td style="${styles.content}">
-              
-              <!-- Greeting -->
-              <p style="color: rgba(255,255,255,0.8); font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
-                ${hasFirstName ? `Hi ${order.firstName},` : 'Hello,'}<br><br>
-                Thank you for your order. We're preparing your research compounds for shipment.
-              </p>
-              
-              <!-- Order Number Badge -->
-              <div style="text-align: center; margin-bottom: 30px;">
-                <span style="display: inline-block; background: linear-gradient(135deg, ${styles.primaryColor} 0%, #c4d40d 100%); color: #000000; font-size: 13px; font-weight: 700; padding: 10px 24px; border-radius: 100px; letter-spacing: 1px; box-shadow: ${styles.glowYellow};">
-                  ORDER #${shortRef}
-                </span>
-              </div>
+            <td style="padding: 30px 40px 40px 40px;">
               
               <!-- Order Details Card -->
-              <div style="${styles.card}">
-                <p style="${styles.cardTitle}">Order Details</p>
+              <div style="background-color: #252529; border-radius: 16px; padding: 28px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.08);">
+                <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 0 20px 0;">
+                  <tr>
+                    <td style="width: 20px; padding-right: 12px; vertical-align: middle;">
+                      <div style="width: 20px; height: 2px; background: ${styles.accentColor};"></div>
+                    </td>
+                    <td style="vertical-align: middle;">
+                      <span style="color: ${styles.accentColor}; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">Order Details</span>
+                    </td>
+                  </tr>
+                </table>
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                   ${orderItems.map((item, idx) => `
                   <tr>
-                    <td style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                      <span style="color: #ffffff; font-size: 14px; font-weight: 500;">${item.name}</span>
-                      ${item.dosage ? `<br><span style="color: rgba(255,255,255,0.5); font-size: 12px;">${item.dosage}</span>` : ''}
+                    <td style="padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                      <span style="color: #ffffff; font-size: 15px; font-weight: 600;">${item.name}</span>
+                      ${item.dosage ? `<br><span style="color: rgba(255,255,255,0.5); font-size: 13px;">${item.dosage}</span>` : ''}
                     </td>
-                    <td style="padding: 12px 0; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                      <span style="color: rgba(255,255,255,0.7); font-size: 14px;">x${item.quantity}</span>
+                    <td style="padding: 14px 0; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.06); width: 60px;">
+                      <span style="color: rgba(255,255,255,0.6); font-size: 14px;">x${item.quantity}</span>
                     </td>
-                    <td style="padding: 12px 0; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                      <span style="color: ${styles.accentColor}; font-size: 14px; font-weight: 500;">$${(item.price * item.quantity).toFixed(2)}</span>
+                    <td style="padding: 14px 0; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.06); width: 90px;">
+                      <span style="color: ${styles.primaryColor}; font-size: 15px; font-weight: 600;">$${(item.price * item.quantity).toFixed(2)}</span>
                     </td>
                   </tr>
                   `).join('')}
                   <tr>
-                    <td colspan="2" style="padding: 12px 0 0 0;">
-                      <span style="color: rgba(255,255,255,0.7); font-size: 14px;">Subtotal</span>
+                    <td colspan="2" style="padding: 14px 0 8px 0;">
+                      <span style="color: rgba(255,255,255,0.6); font-size: 14px;">Subtotal</span>
                     </td>
-                    <td style="padding: 12px 0 0 0; text-align: right;">
-                      <span style="color: rgba(255,255,255,0.7); font-size: 14px;">$${calculatedSubtotal.toFixed(2)}</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td colspan="2" style="padding: 8px 0 0 0;">
-                      <span style="color: rgba(255,255,255,0.7); font-size: 14px;">Shipping</span>
-                    </td>
-                    <td style="padding: 8px 0 0 0; text-align: right;">
-                      <span style="color: ${shippingCost === 0 ? '#22c55e' : 'rgba(255,255,255,0.7)'}; font-size: 14px; font-weight: ${shippingCost === 0 ? '600' : '400'};">${shippingDisplay}</span>
+                    <td style="padding: 14px 0 8px 0; text-align: right;">
+                      <span style="color: rgba(255,255,255,0.8); font-size: 14px;">$${calculatedSubtotal.toFixed(2)}</span>
                     </td>
                   </tr>
                   <tr>
-                    <td colspan="2" style="padding: 8px 0 0 0;">
-                      <span style="color: rgba(255,255,255,0.7); font-size: 14px;">${taxLabel}</span>
+                    <td colspan="2" style="padding: 6px 0;">
+                      <span style="color: rgba(255,255,255,0.6); font-size: 14px;">Shipping</span>
                     </td>
-                    <td style="padding: 8px 0 0 0; text-align: right;">
-                      <span style="color: ${taxAmount === 0 ? '#22c55e' : 'rgba(255,255,255,0.7)'}; font-size: 14px; font-weight: ${taxAmount === 0 ? '600' : '400'};">${taxDisplay}</span>
+                    <td style="padding: 6px 0; text-align: right;">
+                      <span style="color: ${shippingCost === 0 ? '#22c55e' : 'rgba(255,255,255,0.8)'}; font-size: 14px; font-weight: ${shippingCost === 0 ? '600' : '400'};">${shippingDisplay}</span>
                     </td>
                   </tr>
                   <tr>
-                    <td colspan="2" style="padding: 16px 0 0 0; border-top: 1px solid rgba(255,255,255,0.1);">
-                      <span style="color: #ffffff; font-size: 14px; font-weight: 600;">Total</span>
+                    <td colspan="2" style="padding: 6px 0;">
+                      <span style="color: rgba(255,255,255,0.6); font-size: 14px;">${taxLabel}</span>
                     </td>
-                    <td style="padding: 16px 0 0 0; text-align: right; border-top: 1px solid rgba(255,255,255,0.1);">
-                      <span style="color: ${styles.primaryColor}; font-size: 24px; font-weight: 700;">$${order.totalAmount}</span>
+                    <td style="padding: 6px 0; text-align: right;">
+                      <span style="color: rgba(255,255,255,0.8); font-size: 14px;">${taxDisplay}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" style="padding: 18px 0 0 0; border-top: 2px solid rgba(255,255,255,0.1);">
+                      <span style="color: #ffffff; font-size: 16px; font-weight: 700;">Total</span>
+                    </td>
+                    <td style="padding: 18px 0 0 0; text-align: right; border-top: 2px solid rgba(255,255,255,0.1);">
+                      <span style="color: ${styles.primaryColor}; font-size: 26px; font-weight: 700;">$${order.totalAmount}</span>
                     </td>
                   </tr>
                 </table>
               </div>
               
-              <!-- Shipping Address Card -->
-              <div style="${styles.card}">
-                <p style="${styles.cardTitle}">Shipping To</p>
-                <p style="color: #ffffff; font-size: 15px; line-height: 1.7; margin: 0;">
-                  <strong>${order.firstName} ${order.lastName}</strong><br>
-                  <span style="color: rgba(255,255,255,0.7);">
-                    ${order.address || ''}<br>
-                    ${order.city || ''}, ${order.state || ''} ${order.zipCode || ''}<br>
-                    ${order.country || ''}
-                  </span>
-                </p>
-              </div>
+              <!-- Two Column: Shipping & Status -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 20px;">
+                <tr>
+                  <td style="width: 48%; vertical-align: top;">
+                    <!-- Shipping Address Card -->
+                    <div style="background-color: #252529; border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.08); height: 100%;">
+                      <p style="color: ${styles.primaryColor}; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 16px 0;">
+                        SHIPPING TO
+                      </p>
+                      <p style="color: #ffffff; font-size: 15px; font-weight: 600; margin: 0 0 8px 0;">
+                        ${order.firstName} ${order.lastName}
+                      </p>
+                      <p style="color: rgba(255,255,255,0.6); font-size: 14px; line-height: 1.6; margin: 0;">
+                        ${order.address || ''}<br>
+                        ${order.city || ''}, ${order.state || ''} ${order.zipCode || ''}<br>
+                        ${order.country || 'USA'}
+                      </p>
+                    </div>
+                  </td>
+                  <td style="width: 4%;"></td>
+                  <td style="width: 48%; vertical-align: top;">
+                    <!-- Estimated Delivery Card -->
+                    <div style="background-color: #252529; border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.08); height: 100%;">
+                      <p style="color: ${styles.accentColor}; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 16px 0;">
+                        ESTIMATED DELIVERY
+                      </p>
+                      <p style="color: #ffffff; font-size: 15px; font-weight: 600; margin: 0 0 8px 0;">
+                        2-5 Business Days
+                      </p>
+                      <p style="color: rgba(255,255,255,0.6); font-size: 14px; line-height: 1.6; margin: 0;">
+                        Ships within 24 hours<br>
+                        Tracking sent via email
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              </table>
               
-              <!-- Status Timeline -->
-              <div style="${styles.card}; background: linear-gradient(135deg, rgba(33, 216, 255, 0.1) 0%, rgba(33, 216, 255, 0.05) 100%); border-color: rgba(33, 216, 255, 0.2);">
+              <!-- Order Progress Timeline -->
+              <div style="background: linear-gradient(135deg, rgba(33, 216, 255, 0.12) 0%, rgba(33, 216, 255, 0.04) 100%); border: 1px solid rgba(33, 216, 255, 0.25); border-radius: 16px; padding: 24px;">
+                <p style="color: ${styles.accentColor}; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 20px 0;">
+                  Order Progress
+                </p>
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                   <tr>
-                    <td style="width: 40px; vertical-align: top; padding-right: 15px;">
-                      <div style="width: 32px; height: 32px; background: ${styles.accentColor}; border-radius: 50%; text-align: center; line-height: 32px; box-shadow: ${styles.glowCyan};">
-                        <span style="color: #000; font-size: 14px;">1</span>
+                    <!-- Step 1 - Active -->
+                    <td style="width: 33%; text-align: center; vertical-align: top;">
+                      <div style="width: 40px; height: 40px; background: ${styles.accentColor}; border-radius: 50%; margin: 0 auto 12px auto; line-height: 40px; box-shadow: 0 0 20px rgba(33, 216, 255, 0.5);">
+                        <span style="color: #000; font-size: 16px; font-weight: 700;">1</span>
                       </div>
+                      <p style="color: #ffffff; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Confirmed</p>
+                      <p style="color: rgba(255,255,255,0.5); font-size: 11px; margin: 0;">Just now</p>
                     </td>
-                    <td style="vertical-align: top;">
-                      <p style="color: #ffffff; font-size: 14px; font-weight: 600; margin: 0 0 4px 0;">Order Received</p>
-                      <p style="color: rgba(255,255,255,0.5); font-size: 13px; margin: 0;">We're preparing your order for shipment</p>
+                    <!-- Connector -->
+                    <td style="width: 1%; vertical-align: top; padding-top: 20px;">
+                      <div style="height: 2px; background: linear-gradient(90deg, ${styles.accentColor} 0%, rgba(255,255,255,0.2) 100%); width: 100%;"></div>
+                    </td>
+                    <!-- Step 2 - Pending -->
+                    <td style="width: 33%; text-align: center; vertical-align: top;">
+                      <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); border-radius: 50%; margin: 0 auto 12px auto; line-height: 36px;">
+                        <span style="color: rgba(255,255,255,0.4); font-size: 16px; font-weight: 700;">2</span>
+                      </div>
+                      <p style="color: rgba(255,255,255,0.5); font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Shipped</p>
+                      <p style="color: rgba(255,255,255,0.3); font-size: 11px; margin: 0;">Pending</p>
+                    </td>
+                    <!-- Connector -->
+                    <td style="width: 1%; vertical-align: top; padding-top: 20px;">
+                      <div style="height: 2px; background: rgba(255,255,255,0.1); width: 100%;"></div>
+                    </td>
+                    <!-- Step 3 - Pending -->
+                    <td style="width: 33%; text-align: center; vertical-align: top;">
+                      <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); border-radius: 50%; margin: 0 auto 12px auto; line-height: 36px;">
+                        <span style="color: rgba(255,255,255,0.4); font-size: 16px; font-weight: 700;">3</span>
+                      </div>
+                      <p style="color: rgba(255,255,255,0.5); font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Delivered</p>
+                      <p style="color: rgba(255,255,255,0.3); font-size: 11px; margin: 0;">Pending</p>
                     </td>
                   </tr>
                 </table>
               </div>
               
               <!-- Research Notice -->
-              <div style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; padding: 20px; margin-top: 20px;">
-                <p style="color: rgba(239, 68, 68, 0.9); font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin: 0 0 8px 0;">
-                  Research Use Only
+              <div style="background: linear-gradient(135deg, rgba(251, 191, 36, 0.12) 0%, rgba(251, 191, 36, 0.04) 100%); border: 1px solid rgba(251, 191, 36, 0.25); border-radius: 16px; padding: 20px; margin-top: 20px; text-align: center;">
+                <p style="color: rgba(251, 191, 36, 0.9); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 8px 0;">
+                  RESEARCH USE ONLY
                 </p>
-                <p style="color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.5; margin: 0;">
-                  All products are intended for laboratory research purposes only. Not for human or animal consumption.
+                <p style="color: rgba(255,255,255,0.55); font-size: 13px; line-height: 1.5; margin: 0;">
+                  All products are intended for laboratory research purposes only.<br>
+                  Not for human or animal consumption.
                 </p>
               </div>
               
@@ -355,11 +454,23 @@ ${brand.name}
           
           <!-- Footer -->
           <tr>
-            <td style="${styles.footer}">
-              <p style="color: rgba(255,255,255,0.4); font-size: 13px; margin: 0 0 10px 0;">
-                Questions? Contact us at <a href="mailto:${EMAIL_CONFIG.replyTo}" style="color: ${styles.accentColor}; text-decoration: none;">${EMAIL_CONFIG.replyTo}</a>
+            <td style="background-color: #252529; padding: 32px 40px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05);">
+              <!-- Social/Support Links -->
+              <p style="color: rgba(255,255,255,0.5); font-size: 13px; margin: 0 0 16px 0;">
+                Questions about your order?
               </p>
-              <p style="color: rgba(255,255,255,0.25); font-size: 11px; margin: 0;">
+              <a href="mailto:${EMAIL_CONFIG.replyTo}" style="display: inline-block; background: transparent; border: 1px solid ${styles.accentColor}; color: ${styles.accentColor}; font-size: 13px; font-weight: 600; padding: 10px 24px; border-radius: 100px; text-decoration: none; margin-bottom: 20px;">
+                Contact Support
+              </a>
+              
+              <!-- Divider -->
+              <div style="height: 1px; background: rgba(255,255,255,0.08); margin: 20px 0;"></div>
+              
+              <!-- Brand Footer -->
+              <p style="color: ${styles.primaryColor}; font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; margin: 0 0 8px 0;">
+                Revive Research
+              </p>
+              <p style="color: rgba(255,255,255,0.3); font-size: 11px; margin: 0;">
                 &copy; ${new Date().getFullYear()} Revive Research. All rights reserved.
               </p>
             </td>
