@@ -53,6 +53,10 @@ import {
   ExternalLink,
   Trash2,
   AlertTriangle,
+  Diamond,
+  Gem,
+  Rocket,
+  FlaskConical,
 } from "lucide-react";
 import type { Order, Product, ReviewableOrder, Coa, ResearchPhase, ResearchTitle } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -365,37 +369,74 @@ export default function Dashboard() {
               <div className="flex items-center justify-between gap-4 pt-4 pb-6">
                 <div className="flex items-center gap-4">
                   <div className="relative">
-                    <Avatar className="h-16 w-16 ring-2 ring-[#21d8ff]/50 ring-offset-2 ring-offset-background shadow-lg shadow-[#21d8ff]/20">
+                    <Avatar className={`h-16 w-16 ring-2 ring-offset-2 ring-offset-background shadow-lg ${affiliate?.id ? 'ring-[#9d4edd]/70 shadow-[#9d4edd]/30' : 'ring-[#21d8ff]/50 shadow-[#21d8ff]/20'}`}>
                       {user?.profileImageUrl && (
                         <AvatarImage src={user.profileImageUrl} alt={user?.firstName || "User"} className="object-cover" />
                       )}
-                      <AvatarFallback className="text-xl font-bold bg-gradient-to-br from-[#E7FB10]/30 to-[#21d8ff]/30">
+                      <AvatarFallback className={`text-xl font-bold ${affiliate?.id ? 'bg-gradient-to-br from-[#9d4edd]/30 to-[#ec4899]/30' : 'bg-gradient-to-br from-[#E7FB10]/30 to-[#21d8ff]/30'}`}>
                         {getInitials()}
                       </AvatarFallback>
                     </Avatar>
-                    {/* Status indicator */}
-                    <div className="absolute -bottom-1 -right-1 h-5 w-5 bg-green-500 rounded-full border-2 border-background flex items-center justify-center">
-                      <Sparkles className="h-3 w-3 text-white" />
-                    </div>
+                    {/* Affiliate diamond or member sparkle indicator */}
+                    {affiliate?.id ? (
+                      <div className="absolute -bottom-1 -right-1 h-6 w-6 bg-gradient-to-br from-[#9d4edd] to-[#ec4899] rounded-full border-2 border-background flex items-center justify-center diamond-sparkle">
+                        <Diamond className="h-3.5 w-3.5 text-white" />
+                      </div>
+                    ) : (
+                      <div className="absolute -bottom-1 -right-1 h-5 w-5 bg-green-500 rounded-full border-2 border-background flex items-center justify-center">
+                        <Sparkles className="h-3 w-3 text-white" />
+                      </div>
+                    )}
                   </div>
                   <div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-white/80 bg-clip-text" data-testid="text-user-name">
-                        {user?.firstName ? `${user.firstName}${user?.lastName ? ` ${user.lastName}` : ''}` : 'My Account'}
-                      </h1>
+                    {/* Holographic Name */}
+                    <h1 className="text-2xl font-bold holographic-text" data-testid="text-user-name">
+                      {user?.firstName ? `${user.firstName}${user?.lastName ? ` ${user.lastName}` : ''}` : 'My Account'}
+                    </h1>
+                    
+                    {/* Status Badges Row */}
+                    <div className="flex items-center gap-2 flex-wrap mt-1.5">
+                      {/* Early Access Badge - based on join date before 2026 */}
+                      {user?.createdAt && new Date(user.createdAt) < new Date('2026-02-01') && (
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Badge className="bg-[#E7FB10]/15 border-[#E7FB10]/50 text-[#E7FB10] badge-glow-yellow text-xs px-2 py-0.5">
+                              <Rocket className="h-3 w-3 mr-1" />
+                              Early Access
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>Joined during Early Access phase</TooltipContent>
+                        </Tooltip>
+                      )}
+                      
+                      {/* Affiliate Partner Badge */}
                       {affiliate?.id && (
                         <Tooltip>
                           <TooltipTrigger>
-                            <Badge className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-500/50 text-green-400 animate-pulse">
-                              <CheckCircle className="h-3 w-3 mr-1" />
-                              Affiliate
+                            <Badge className="bg-[#9d4edd]/15 border-[#9d4edd]/50 text-[#9d4edd] badge-glow-purple text-xs px-2 py-0.5">
+                              <Diamond className="h-3 w-3 mr-1" />
+                              Affiliate Partner
                             </Badge>
                           </TooltipTrigger>
-                          <TooltipContent>Verified Affiliate Partner</TooltipContent>
+                          <TooltipContent>Verified affiliate earning commissions</TooltipContent>
+                        </Tooltip>
+                      )}
+                      
+                      {/* Verified Researcher Badge - based on education progress */}
+                      {researchProfile && researchProfile.phase !== 'Observer' && (
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Badge className="bg-[#21d8ff]/15 border-[#21d8ff]/50 text-[#21d8ff] badge-glow-cyan text-xs px-2 py-0.5">
+                              <FlaskConical className="h-3 w-3 mr-1" />
+                              {researchProfile.phase}
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>Research phase: {researchProfile.phase}</TooltipContent>
                         </Tooltip>
                       )}
                     </div>
-                    <p className="text-sm text-muted-foreground" data-testid="text-user-email">{user?.email}</p>
+                    
+                    <p className="text-sm text-muted-foreground mt-1" data-testid="text-user-email">{user?.email}</p>
                   </div>
                 </div>
                 <a href="/api/logout">
@@ -583,6 +624,101 @@ export default function Dashboard() {
                           </Link>
                         </div>
                       )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Achievements Trophy Case */}
+                  <Card className="border-[#f97316]/20 bg-gradient-to-br from-[#f97316]/5 via-transparent to-transparent">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="flex items-center gap-2 text-base">
+                          <div className="p-1.5 rounded-lg bg-[#f97316]/20">
+                            <Trophy className="h-4 w-4 text-[#f97316]" />
+                          </div>
+                          Achievements
+                        </CardTitle>
+                        <Badge variant="outline" className="bg-[#f97316]/10 border-[#f97316]/30 text-[#f97316] text-xs">
+                          {(() => {
+                            let count = 0;
+                            if (orders && orders.length > 0) count++; // First Order
+                            if (orders && orders.length >= 5) count++; // Loyal Customer
+                            if (researchProfile && researchProfile.educationCount >= 3) count++; // Academy Scholar
+                            if (researchProfile && researchProfile.batchVerificationCount > 0) count++; // COA Verified
+                            if (affiliate?.id) count++; // Affiliate Achievement
+                            return count;
+                          })()}/5 Unlocked
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                        {/* First Order Achievement */}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className={`flex flex-col items-center p-3 rounded-xl border transition-all ${orders && orders.length > 0 ? 'bg-[#E7FB10]/10 border-[#E7FB10]/40 badge-glow-yellow' : 'bg-muted/30 border-muted/20 opacity-40'}`} data-testid="achievement-first-order">
+                              <div className={`p-2 rounded-full mb-1 ${orders && orders.length > 0 ? 'bg-[#E7FB10]/20' : 'bg-muted/30'}`}>
+                                <ShoppingBag className={`h-5 w-5 ${orders && orders.length > 0 ? 'text-[#E7FB10]' : 'text-muted-foreground'}`} />
+                              </div>
+                              <span className="text-[10px] text-center font-medium">First Order</span>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>{orders && orders.length > 0 ? 'You made your first purchase!' : 'Make your first purchase to unlock'}</TooltipContent>
+                        </Tooltip>
+
+                        {/* Loyal Customer Achievement */}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className={`flex flex-col items-center p-3 rounded-xl border transition-all ${orders && orders.length >= 5 ? 'bg-[#21d8ff]/10 border-[#21d8ff]/40 badge-glow-cyan' : 'bg-muted/30 border-muted/20 opacity-40'}`} data-testid="achievement-loyal">
+                              <div className={`p-2 rounded-full mb-1 ${orders && orders.length >= 5 ? 'bg-[#21d8ff]/20' : 'bg-muted/30'}`}>
+                                <Crown className={`h-5 w-5 ${orders && orders.length >= 5 ? 'text-[#21d8ff]' : 'text-muted-foreground'}`} />
+                              </div>
+                              <span className="text-[10px] text-center font-medium">Loyal</span>
+                              {orders && orders.length < 5 && <span className="text-[8px] text-muted-foreground">{orders?.length || 0}/5</span>}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>{orders && orders.length >= 5 ? 'Loyal customer with 5+ orders!' : `Complete 5 orders to unlock (${orders?.length || 0}/5)`}</TooltipContent>
+                        </Tooltip>
+
+                        {/* Academy Scholar Achievement */}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className={`flex flex-col items-center p-3 rounded-xl border transition-all ${researchProfile && researchProfile.educationCount >= 3 ? 'bg-[#9d4edd]/10 border-[#9d4edd]/40 badge-glow-purple' : 'bg-muted/30 border-muted/20 opacity-40'}`} data-testid="achievement-scholar">
+                              <div className={`p-2 rounded-full mb-1 ${researchProfile && researchProfile.educationCount >= 3 ? 'bg-[#9d4edd]/20' : 'bg-muted/30'}`}>
+                                <GraduationCap className={`h-5 w-5 ${researchProfile && researchProfile.educationCount >= 3 ? 'text-[#9d4edd]' : 'text-muted-foreground'}`} />
+                              </div>
+                              <span className="text-[10px] text-center font-medium">Scholar</span>
+                              {researchProfile && researchProfile.educationCount < 3 && <span className="text-[8px] text-muted-foreground">{researchProfile?.educationCount || 0}/3</span>}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>{researchProfile && researchProfile.educationCount >= 3 ? 'Academy scholar - completed 3+ lessons!' : `Complete 3 lessons in Academy (${researchProfile?.educationCount || 0}/3)`}</TooltipContent>
+                        </Tooltip>
+
+                        {/* COA Verified Achievement */}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className={`flex flex-col items-center p-3 rounded-xl border transition-all ${researchProfile && researchProfile.batchVerificationCount > 0 ? 'bg-[#ec4899]/10 border-[#ec4899]/40 badge-glow-pink' : 'bg-muted/30 border-muted/20 opacity-40'}`} data-testid="achievement-coa">
+                              <div className={`p-2 rounded-full mb-1 ${researchProfile && researchProfile.batchVerificationCount > 0 ? 'bg-[#ec4899]/20' : 'bg-muted/30'}`}>
+                                <FileCheck className={`h-5 w-5 ${researchProfile && researchProfile.batchVerificationCount > 0 ? 'text-[#ec4899]' : 'text-muted-foreground'}`} />
+                              </div>
+                              <span className="text-[10px] text-center font-medium">Verified</span>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>{researchProfile && researchProfile.batchVerificationCount > 0 ? 'Verified a batch COA!' : 'Verify your first batch COA to unlock'}</TooltipContent>
+                        </Tooltip>
+
+                        {/* Affiliate Achievement */}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className={`flex flex-col items-center p-3 rounded-xl border transition-all ${affiliate?.id ? 'bg-green-500/10 border-green-500/40 badge-glow-green' : 'bg-muted/30 border-muted/20 opacity-40'}`} data-testid="achievement-affiliate">
+                              <div className={`p-2 rounded-full mb-1 ${affiliate?.id ? 'bg-green-500/20' : 'bg-muted/30'}`}>
+                                <Diamond className={`h-5 w-5 ${affiliate?.id ? 'text-green-500' : 'text-muted-foreground'}`} />
+                              </div>
+                              <span className="text-[10px] text-center font-medium">Partner</span>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>{affiliate?.id ? 'Affiliate Partner!' : 'Join the affiliate program to unlock'}</TooltipContent>
+                        </Tooltip>
+                      </div>
                     </CardContent>
                   </Card>
 

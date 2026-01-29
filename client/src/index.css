@@ -130,35 +130,6 @@
   border-radius: 3px;
 }
 
-@keyframes holographic-shimmer {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-
-.holographic-text {
-  background: linear-gradient(
-    90deg,
-    #21d8ff 0%,
-    #E7FB10 20%,
-    #ec4899 40%,
-    #9d4edd 60%,
-    #21d8ff 80%,
-    #E7FB10 100%
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: holographic-shimmer 4s linear infinite;
-}
 
 @layer utilities {
   .group-hover\:wipe-animation {
@@ -613,4 +584,70 @@ body.modal-open {
   box-shadow: 0 0 40px rgba(231, 251, 16, 0.3), 0 0 60px rgba(33, 216, 255, 0.2), 0 25px 50px -12px rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+}
+
+/* Holographic text shimmer effect */
+@keyframes holographic-shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.holographic-text {
+  background: linear-gradient(
+    90deg,
+    #ffffff 0%,
+    #E7FB10 15%,
+    #21d8ff 30%,
+    #9d4edd 45%,
+    #ec4899 60%,
+    #21d8ff 75%,
+    #E7FB10 90%,
+    #ffffff 100%
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: holographic-shimmer 4s linear infinite;
+}
+
+/* Status badge glow effects */
+.badge-glow-yellow {
+  box-shadow: 0 0 8px rgba(231, 251, 16, 0.4), inset 0 0 4px rgba(231, 251, 16, 0.2);
+}
+
+.badge-glow-cyan {
+  box-shadow: 0 0 8px rgba(33, 216, 255, 0.4), inset 0 0 4px rgba(33, 216, 255, 0.2);
+}
+
+.badge-glow-purple {
+  box-shadow: 0 0 8px rgba(157, 78, 221, 0.4), inset 0 0 4px rgba(157, 78, 221, 0.2);
+}
+
+.badge-glow-pink {
+  box-shadow: 0 0 8px rgba(236, 72, 153, 0.4), inset 0 0 4px rgba(236, 72, 153, 0.2);
+}
+
+.badge-glow-green {
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.4), inset 0 0 4px rgba(34, 197, 94, 0.2);
+}
+
+/* Diamond sparkle for affiliates */
+@keyframes diamond-sparkle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+.diamond-sparkle {
+  animation: diamond-sparkle 2s ease-in-out infinite;
 }
