@@ -254,11 +254,14 @@ export default function Dashboard() {
 
   const { data: notificationPrefs, isLoading: prefsLoading } = useQuery<{
     id: string;
-    orderUpdates: boolean;
-    promotions: boolean;
-    newsletter: boolean;
-    smsAlerts: boolean;
-    emailDigest: string;
+    emailOrderConfirmation: boolean | null;
+    emailShippingUpdates: boolean | null;
+    emailPromotions: boolean | null;
+    emailNewsletter: boolean | null;
+    emailAcademyUpdates: boolean | null;
+    emailStockAlerts: boolean | null;
+    smsOrderUpdates: boolean | null;
+    smsPromotions: boolean | null;
   }>({
     queryKey: ["/api/notification-preferences"],
     enabled: isAuthenticated,
@@ -360,7 +363,7 @@ export default function Dashboard() {
   });
 
   const updateNotificationPrefsMutation = useMutation({
-    mutationFn: async (data: Partial<{orderUpdates: boolean; promotions: boolean; newsletter: boolean; smsAlerts: boolean; emailDigest: string}>) => {
+    mutationFn: async (data: Partial<{emailOrderConfirmation: boolean; emailShippingUpdates: boolean; emailPromotions: boolean; emailNewsletter: boolean; emailAcademyUpdates: boolean; emailStockAlerts: boolean; smsOrderUpdates: boolean; smsPromotions: boolean}>) => {
       return apiRequest("PATCH", "/api/notification-preferences", data);
     },
     onSuccess: () => {
@@ -1722,12 +1725,12 @@ export default function Dashboard() {
                             </div>
                             <Button 
                               size="sm" 
-                              variant={notificationPrefs.orderUpdates ? "default" : "outline"}
+                              variant={notificationPrefs.emailShippingUpdates ? "default" : "outline"}
                               disabled={updateNotificationPrefsMutation.isPending}
-                              onClick={() => updateNotificationPrefsMutation.mutate({ orderUpdates: !notificationPrefs.orderUpdates })}
+                              onClick={() => updateNotificationPrefsMutation.mutate({ emailShippingUpdates: !notificationPrefs.emailShippingUpdates })}
                               data-testid="toggle-order-updates"
                             >
-                              {updateNotificationPrefsMutation.isPending ? "..." : notificationPrefs.orderUpdates ? "On" : "Off"}
+                              {updateNotificationPrefsMutation.isPending ? "..." : notificationPrefs.emailShippingUpdates ? "On" : "Off"}
                             </Button>
                           </div>
                           <div className="flex items-center justify-between p-3 rounded-lg border border-white/10">
@@ -1740,12 +1743,12 @@ export default function Dashboard() {
                             </div>
                             <Button 
                               size="sm" 
-                              variant={notificationPrefs.promotions ? "default" : "outline"}
+                              variant={notificationPrefs.emailPromotions ? "default" : "outline"}
                               disabled={updateNotificationPrefsMutation.isPending}
-                              onClick={() => updateNotificationPrefsMutation.mutate({ promotions: !notificationPrefs.promotions })}
+                              onClick={() => updateNotificationPrefsMutation.mutate({ emailPromotions: !notificationPrefs.emailPromotions })}
                               data-testid="toggle-promotions"
                             >
-                              {updateNotificationPrefsMutation.isPending ? "..." : notificationPrefs.promotions ? "On" : "Off"}
+                              {updateNotificationPrefsMutation.isPending ? "..." : notificationPrefs.emailPromotions ? "On" : "Off"}
                             </Button>
                           </div>
                           <div className="flex items-center justify-between p-3 rounded-lg border border-white/10">
@@ -1758,12 +1761,12 @@ export default function Dashboard() {
                             </div>
                             <Button 
                               size="sm" 
-                              variant={notificationPrefs.newsletter ? "default" : "outline"}
+                              variant={notificationPrefs.emailNewsletter ? "default" : "outline"}
                               disabled={updateNotificationPrefsMutation.isPending}
-                              onClick={() => updateNotificationPrefsMutation.mutate({ newsletter: !notificationPrefs.newsletter })}
+                              onClick={() => updateNotificationPrefsMutation.mutate({ emailNewsletter: !notificationPrefs.emailNewsletter })}
                               data-testid="toggle-newsletter"
                             >
-                              {updateNotificationPrefsMutation.isPending ? "..." : notificationPrefs.newsletter ? "On" : "Off"}
+                              {updateNotificationPrefsMutation.isPending ? "..." : notificationPrefs.emailNewsletter ? "On" : "Off"}
                             </Button>
                           </div>
                           <div className="flex items-center justify-between p-3 rounded-lg border border-white/10">
@@ -1776,12 +1779,12 @@ export default function Dashboard() {
                             </div>
                             <Button 
                               size="sm" 
-                              variant={notificationPrefs.smsAlerts ? "default" : "outline"}
+                              variant={notificationPrefs.smsOrderUpdates ? "default" : "outline"}
                               disabled={updateNotificationPrefsMutation.isPending}
-                              onClick={() => updateNotificationPrefsMutation.mutate({ smsAlerts: !notificationPrefs.smsAlerts })}
+                              onClick={() => updateNotificationPrefsMutation.mutate({ smsOrderUpdates: !notificationPrefs.smsOrderUpdates })}
                               data-testid="toggle-sms"
                             >
-                              {updateNotificationPrefsMutation.isPending ? "..." : notificationPrefs.smsAlerts ? "On" : "Off"}
+                              {updateNotificationPrefsMutation.isPending ? "..." : notificationPrefs.smsOrderUpdates ? "On" : "Off"}
                             </Button>
                           </div>
                         </div>
