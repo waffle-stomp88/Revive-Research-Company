@@ -550,6 +550,343 @@ export async function sendOrderConfirmationEmail(order: {
   return result;
 }
 
+// Carrier tracking URL generators
+function getCarrierTrackingUrl(carrier: string, trackingNumber: string): string {
+  const carrierLower = carrier.toLowerCase();
+  if (carrierLower.includes('usps')) {
+    return `https://tools.usps.com/go/TrackConfirmAction?tLabels=${trackingNumber}`;
+  } else if (carrierLower.includes('ups')) {
+    return `https://www.ups.com/track?tracknum=${trackingNumber}`;
+  } else if (carrierLower.includes('fedex')) {
+    return `https://www.fedex.com/fedextrack/?trknbr=${trackingNumber}`;
+  } else if (carrierLower.includes('dhl')) {
+    return `https://www.dhl.com/en/express/tracking.html?AWB=${trackingNumber}`;
+  }
+  // Default to USPS if unknown
+  return `https://tools.usps.com/go/TrackConfirmAction?tLabels=${trackingNumber}`;
+}
+
+// Email template: Shipped Notification
+function getShippedNotificationTemplate(order: {
+  email: string;
+  firstName: string;
+  lastName: string;
+  id: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
+}, trackingNumber: string, carrier: string, estimatedDelivery?: string): { subject: string; text: string; html: string } {
+  const shortRef = getShortOrderRef(order.id);
+  const { brand } = EMAIL_CONFIG;
+  const styles = getEmailBaseStyles();
+  const hasFirstName = order.firstName && order.firstName.trim().length > 0;
+  const trackingUrl = getCarrierTrackingUrl(carrier, trackingNumber);
+  const deliveryEstimate = estimatedDelivery || '2-5 Business Days';
+  
+  const subject = `Your Order Has Shipped! #${shortRef}`;
+  
+  const text = `
+REVIVE RESEARCH
+Your Order Has Shipped!
+
+${hasFirstName ? `Hi ${order.firstName},` : 'Hello,'}
+
+Great news! Your order #${shortRef} is on its way.
+
+TRACKING INFORMATION
+--------------------
+Carrier: ${carrier}
+Tracking Number: ${trackingNumber}
+Track your package: ${trackingUrl}
+
+SHIPPING TO
+-----------
+${order.firstName} ${order.lastName}
+${order.address || ''}
+${order.city || ''}, ${order.state || ''} ${order.zipCode || ''}
+${order.country || 'USA'}
+
+Estimated Delivery: ${deliveryEstimate}
+
+RESEARCH USE ONLY
+-----------------
+All products are intended for laboratory research purposes only. 
+Not for human or animal consumption.
+
+Questions? Contact us at ${EMAIL_CONFIG.replyTo}
+
+${brand.name}
+`;
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Order Has Shipped</title>
+</head>
+<body style="${styles.body}">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0d0d0f;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; background-color: #1a1a1f; border-radius: 20px; overflow: hidden; border: 1px solid #333333;">
+          
+          <!-- Premium Header with Logo -->
+          <tr>
+            <td style="background-color: #252529; padding: 0; text-align: center;">
+              <!-- Top Accent Bar -->
+              <div style="height: 4px; background-color: ${styles.accentColor};"></div>
+              
+              <!-- Logo Section -->
+              <div style="padding: 40px 40px 20px 40px;">
+                <!-- Clickable Logo Image -->
+                <a href="https://reviveresearch.co" target="_blank" style="display: inline-block; text-decoration: none;">
+                  <img src="https://reviveresearch.co/assets/email-logo.png" alt="Revive Research" width="280" style="display: block; margin: 0 auto 16px auto; max-width: 280px; height: auto;" />
+                </a>
+                
+                <!-- Tagline -->
+                <p style="color: #cccccc; font-size: 11px; letter-spacing: 2px; margin: 0 0 20px 0; text-transform: uppercase;">
+                  Premium Research Compounds
+                </p>
+                
+                <!-- Accent Line -->
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td style="height: 2px; background-color: ${styles.accentColor};"></td>
+                  </tr>
+                </table>
+              </div>
+              
+              <!-- Shipped Title Section -->
+              <div style="padding: 30px 40px 40px 40px;">
+                <!-- Shipped Badge -->
+                <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto 20px auto;">
+                  <tr>
+                    <td style="background-color: ${styles.accentColor}; padding: 2px; border-radius: 100px;">
+                      <table role="presentation" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td style="background: #1a1a1f; padding: 10px 24px; border-radius: 100px;">
+                            <span style="color: ${styles.accentColor}; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">ORDER SHIPPED</span>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+                
+                <!-- Main Headline -->
+                <h1 style="color: #ffffff; font-size: 42px; font-weight: 800; margin: 0 0 20px 0; letter-spacing: -1px; line-height: 1.1;">
+                  On Its Way!
+                </h1>
+                
+                <!-- Order Number Badge -->
+                <span style="display: inline-block; background-color: ${styles.primaryColor}; color: #000000; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 100px; letter-spacing: 1.5px;">
+                  ORDER #${shortRef}
+                </span>
+              </div>
+            </td>
+          </tr>
+          
+          <!-- Tracking Info Card -->
+          <tr>
+            <td style="padding: 0 40px;">
+              <div style="background-color: #1a3540; border: 2px solid ${styles.accentColor}; border-radius: 16px; padding: 28px; text-align: center;">
+                <p style="color: ${styles.accentColor}; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 16px 0;">
+                  TRACKING INFORMATION
+                </p>
+                <p style="color: #ffffff; font-size: 14px; font-weight: 600; margin: 0 0 8px 0;">
+                  ${carrier}
+                </p>
+                <p style="color: ${styles.primaryColor}; font-size: 18px; font-weight: 700; font-family: monospace; letter-spacing: 2px; margin: 0 0 20px 0;">
+                  ${trackingNumber}
+                </p>
+                <a href="${trackingUrl}" target="_blank" style="display: inline-block; background-color: ${styles.accentColor}; color: #000000; font-size: 14px; font-weight: 700; padding: 14px 32px; border-radius: 100px; text-decoration: none; letter-spacing: 1px;">
+                  TRACK PACKAGE &rarr;
+                </a>
+              </div>
+            </td>
+          </tr>
+          
+          <!-- Content -->
+          <tr>
+            <td style="padding: 30px 40px 40px 40px;">
+              
+              <!-- Two Column: Shipping & Estimated Delivery -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 20px;">
+                <tr>
+                  <td style="width: 48%; vertical-align: top;">
+                    <!-- Shipping Address Card -->
+                    <div style="background-color: #2a2a30; border-radius: 16px; padding: 24px; border: 1px solid #3a3a40; height: 100%;">
+                      <p style="color: ${styles.primaryColor}; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 16px 0;">
+                        SHIPPING TO
+                      </p>
+                      <p style="color: #ffffff; font-size: 15px; font-weight: 600; margin: 0 0 8px 0;">
+                        ${order.firstName} ${order.lastName}
+                      </p>
+                      <p style="color: #eeeeee; font-size: 14px; line-height: 1.6; margin: 0;">
+                        ${order.address || ''}<br>
+                        ${order.city || ''}, ${order.state || ''} ${order.zipCode || ''}<br>
+                        ${order.country || 'USA'}
+                      </p>
+                    </div>
+                  </td>
+                  <td style="width: 4%;"></td>
+                  <td style="width: 48%; vertical-align: top;">
+                    <!-- Estimated Delivery Card -->
+                    <div style="background-color: #2a2a30; border-radius: 16px; padding: 24px; border: 1px solid #3a3a40; height: 100%;">
+                      <p style="color: ${styles.accentColor}; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 16px 0;">
+                        ESTIMATED DELIVERY
+                      </p>
+                      <p style="color: #ffffff; font-size: 15px; font-weight: 600; margin: 0 0 8px 0;">
+                        ${deliveryEstimate}
+                      </p>
+                      <p style="color: #eeeeee; font-size: 14px; line-height: 1.6; margin: 0;">
+                        Carrier: ${carrier}<br>
+                        Updates sent via email
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+              
+              <!-- Order Progress Timeline - Step 2 Active -->
+              <div style="background-color: #1a3540; border: 1px solid #2a5a6a; border-radius: 16px; padding: 24px;">
+                <p style="color: ${styles.accentColor}; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 24px 0; text-align: center;">
+                  Order Progress
+                </p>
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <!-- Step 1 - Completed -->
+                    <td style="width: 28%; text-align: center; vertical-align: top;">
+                      <div style="width: 44px; height: 44px; background: #22c55e; border-radius: 50%; margin: 0 auto 12px auto; line-height: 44px;">
+                        <span style="color: #000; font-size: 18px; font-weight: 700;">&#10003;</span>
+                      </div>
+                      <p style="color: #22c55e; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Confirmed</p>
+                      <p style="color: #666666; font-size: 11px; margin: 0;">Complete</p>
+                    </td>
+                    <!-- Arrow Connector 1 - Active -->
+                    <td style="width: 8%; text-align: center; vertical-align: top; padding-top: 8px;">
+                      <span style="color: #22c55e; font-size: 24px; font-weight: 300;">&rarr;</span>
+                    </td>
+                    <!-- Step 2 - Active (Shipped) -->
+                    <td style="width: 28%; text-align: center; vertical-align: top;">
+                      <div style="width: 44px; height: 44px; background: ${styles.accentColor}; border-radius: 50%; margin: 0 auto 12px auto; line-height: 44px;">
+                        <span style="color: #000; font-size: 18px; font-weight: 700;">2</span>
+                      </div>
+                      <p style="color: #ffffff; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Shipped</p>
+                      <p style="color: ${styles.accentColor}; font-size: 11px; font-weight: 600; margin: 0;">In Transit</p>
+                    </td>
+                    <!-- Arrow Connector 2 - Pending -->
+                    <td style="width: 8%; text-align: center; vertical-align: top; padding-top: 8px;">
+                      <span style="color: #4a4a50; font-size: 24px; font-weight: 300;">&rarr;</span>
+                    </td>
+                    <!-- Step 3 - Pending -->
+                    <td style="width: 28%; text-align: center; vertical-align: top;">
+                      <div style="width: 44px; height: 44px; background: #2a2a30; border: 2px solid #4a4a50; border-radius: 50%; margin: 0 auto 12px auto; line-height: 40px;">
+                        <span style="color: #999999; font-size: 18px; font-weight: 700;">3</span>
+                      </div>
+                      <p style="color: #999999; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Delivered</p>
+                      <p style="color: #666666; font-size: 11px; margin: 0;">Pending</p>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              
+              <!-- Research Notice -->
+              <div style="background-color: #301818; border: 1px solid #5a2a2a; border-radius: 16px; padding: 20px; margin-top: 20px; text-align: center;">
+                <p style="color: #ef4444; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 8px 0;">
+                  RESEARCH USE ONLY
+                </p>
+                <p style="color: #ffffff; font-size: 13px; line-height: 1.5; margin: 0;">
+                  All products are intended for laboratory research purposes only.<br>
+                  Not for human or animal consumption.
+                </p>
+              </div>
+              
+            </td>
+          </tr>
+          
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #1a1a1f; padding: 32px 40px; text-align: center;">
+              <!-- Social/Support Links -->
+              <p style="color: #ffffff; font-size: 13px; margin: 0 0 16px 0;">
+                Questions about your shipment?
+              </p>
+              <a href="mailto:${EMAIL_CONFIG.replyTo}" style="display: inline-block; background: transparent; border: 1px solid ${styles.accentColor}; color: ${styles.accentColor}; font-size: 13px; font-weight: 600; padding: 10px 24px; border-radius: 100px; text-decoration: none; margin-bottom: 20px;">
+                Contact Support
+              </a>
+              
+              <!-- Divider -->
+              <div style="height: 1px; background: #333333; margin: 20px 0;"></div>
+              
+              <!-- Brand Footer -->
+              <p style="color: ${styles.primaryColor}; font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; margin: 0 0 8px 0;">
+                Revive Research
+              </p>
+              <p style="color: #eeeeee; font-size: 11px; margin: 0;">
+                &copy; ${new Date().getFullYear()} Revive Research. All rights reserved.
+              </p>
+            </td>
+          </tr>
+          
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`;
+
+  return { subject, text, html };
+}
+
+export async function sendShippedNotificationEmail(order: {
+  email: string;
+  firstName: string;
+  lastName: string;
+  id: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
+}, trackingNumber: string, carrier: string, estimatedDelivery?: string): Promise<EmailResult> {
+  const template = getShippedNotificationTemplate(order, trackingNumber, carrier, estimatedDelivery);
+  const timestamp = new Date().toISOString();
+  
+  const result = await sendEmail({
+    to: order.email,
+    subject: template.subject,
+    text: template.text,
+    html: template.html,
+    replyTo: EMAIL_CONFIG.replyTo,
+  });
+
+  // Log email event to database
+  const emailEvent: InsertEmailEvent = {
+    orderId: order.id,
+    type: 'shipped_notification',
+    recipientEmail: order.email,
+    subject: template.subject,
+    status: result.success ? 'sent' : 'failed',
+    sesMessageId: result.messageId || null,
+    error: result.error || null,
+  };
+
+  try {
+    await storage.createEmailEvent(emailEvent);
+    console.log(`[Email Event] Logged: orderId=${order.id}, type=shipped_notification, status=${emailEvent.status}, sesMessageId=${result.messageId || 'N/A'}, timestamp=${timestamp}`);
+  } catch (logError) {
+    console.error('[Email Event] Failed to log event to database:', logError);
+  }
+
+  return result;
+}
+
 // Email template: Admin Order Notification
 function getAdminOrderNotificationTemplate(order: {
   email: string;
