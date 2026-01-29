@@ -240,11 +240,11 @@ ${brand.name}
               <div style="padding: 40px 40px 20px 40px;">
                 <!-- Clickable Logo Image -->
                 <a href="https://reviveresearch.co" target="_blank" style="display: inline-block; text-decoration: none;">
-                  <img src="https://reviveresearch.co/assets/email-logo.png" alt="Revive Research" width="180" style="display: block; margin: 0 auto 16px auto; max-width: 180px; height: auto;" />
+                  <img src="https://reviveresearch.co/assets/email-logo.png" alt="Revive Research" width="280" style="display: block; margin: 0 auto 16px auto; max-width: 280px; height: auto;" />
                 </a>
                 
                 <!-- Tagline -->
-                <p style="color: rgba(255,255,255,0.4); font-size: 11px; letter-spacing: 2px; margin: 0; text-transform: uppercase;">
+                <p style="color: #cccccc; font-size: 11px; letter-spacing: 2px; margin: 0; text-transform: uppercase;">
                   Premium Research Compounds
                 </p>
               </div>
