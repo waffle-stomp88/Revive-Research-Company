@@ -636,7 +636,7 @@ ${brand.name}
           
           <!-- Premium Header with Logo -->
           <tr>
-            <td bgcolor="#252529" style="background-color: #252529; padding: 0; text-align: center;">
+            <td bgcolor="#f8f8f8" style="background-color: #f8f8f8; padding: 0; text-align: center;">
               <!-- Top Accent Bar -->
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
@@ -675,7 +675,7 @@ ${brand.name}
                   </tr>
                 </table>
                 
-                <!-- Main Headline - Dark text for mobile compatibility -->
+                <!-- Main Headline -->
                 <h1 style="color: #1a1a1f; font-size: 42px; font-weight: 800; margin: 0 0 20px 0; letter-spacing: -1px; line-height: 1.1;">
                   On Its Way!
                 </h1>
@@ -694,11 +694,11 @@ ${brand.name}
           
           <!-- Tracking Info Card -->
           <tr>
-            <td style="padding: 0 40px;">
+            <td bgcolor="#f8f8f8" style="background-color: #f8f8f8; padding: 0 40px 20px 40px;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td bgcolor="#1a3540" style="background-color: #1a3540; border: 2px solid ${styles.accentColor}; border-radius: 16px; padding: 28px; text-align: center;">
-                    <p style="color: ${styles.accentColor}; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 16px 0;">
+                  <td bgcolor="#e0f7fa" style="background-color: #e0f7fa; border: 2px solid ${styles.accentColor}; border-radius: 16px; padding: 28px; text-align: center;">
+                    <p style="color: #0891b2; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 16px 0;">
                       TRACKING INFORMATION
                     </p>
                     <p style="color: #1a1a1f; font-size: 14px; font-weight: 600; margin: 0 0 8px 0;">
@@ -722,7 +722,7 @@ ${brand.name}
           
           <!-- Content -->
           <tr>
-            <td style="padding: 30px 40px 40px 40px;">
+            <td bgcolor="#f8f8f8" style="background-color: #f8f8f8; padding: 30px 40px 40px 40px;">
               
               <!-- Two Column: Shipping & Estimated Delivery -->
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 20px;">
@@ -773,8 +773,8 @@ ${brand.name}
               <!-- Order Progress Timeline - Step 2 Active -->
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td bgcolor="#1a3540" style="background-color: #1a3540; border: 1px solid #2a5a6a; border-radius: 16px; padding: 24px;">
-                    <p style="color: ${styles.accentColor}; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 24px 0; text-align: center;">
+                  <td bgcolor="#e8f4f8" style="background-color: #e8f4f8; border: 1px solid #b8d4dc; border-radius: 16px; padding: 24px;">
+                    <p style="color: #0891b2; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 24px 0; text-align: center;">
                       Order Progress
                     </p>
                     <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
@@ -805,7 +805,7 @@ ${brand.name}
                             </tr>
                           </table>
                           <p style="color: #1a1a1f; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Shipped</p>
-                          <p style="color: ${styles.accentColor}; font-size: 11px; font-weight: 600; margin: 0;">In Transit</p>
+                          <p style="color: #0891b2; font-size: 11px; font-weight: 600; margin: 0;">In Transit</p>
                         </td>
                         <!-- Arrow Connector 2 - Pending -->
                         <td style="width: 8%; text-align: center; vertical-align: top; padding-top: 8px;">
