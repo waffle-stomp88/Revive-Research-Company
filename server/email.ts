@@ -276,7 +276,7 @@ ${brand.name}
                 <p style="color: #22c55e; font-size: 18px; font-weight: 600; margin: 0 0 8px 0;">
                   Thank you${hasFirstName ? `, ${order.firstName}` : ''}!
                 </p>
-                <p style="color: rgba(255,255,255,0.9); font-size: 14px; line-height: 1.6; margin: 0;">
+                <p style="color: #eeeeee; font-size: 14px; line-height: 1.6; margin: 0;">
                   Your order has been received and is being prepared for shipment.<br>
                   You'll receive tracking information once your order ships.
                 </p>
@@ -305,10 +305,10 @@ ${brand.name}
                   <tr>
                     <td style="padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
                       <span style="color: #ffffff; font-size: 15px; font-weight: 600;">${item.name}</span>
-                      ${item.dosage ? `<br><span style="color: rgba(255,255,255,0.75); font-size: 13px;">${item.dosage}</span>` : ''}
+                      ${item.dosage ? `<br><span style="color: #cccccc; font-size: 13px;">${item.dosage}</span>` : ''}
                     </td>
                     <td style="padding: 14px 0; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.06); width: 60px;">
-                      <span style="color: rgba(255,255,255,0.85); font-size: 14px;">x${item.quantity}</span>
+                      <span style="color: #dddddd; font-size: 14px;">x${item.quantity}</span>
                     </td>
                     <td style="padding: 14px 0; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.06); width: 90px;">
                       <span style="color: ${styles.primaryColor}; font-size: 15px; font-weight: 600;">$${(item.price * item.quantity).toFixed(2)}</span>
@@ -317,7 +317,7 @@ ${brand.name}
                   `).join('')}
                   <tr>
                     <td colspan="2" style="padding: 14px 0 8px 0;">
-                      <span style="color: rgba(255,255,255,0.85); font-size: 14px;">Subtotal</span>
+                      <span style="color: #dddddd; font-size: 14px;">Subtotal</span>
                     </td>
                     <td style="padding: 14px 0 8px 0; text-align: right;">
                       <span style="color: #ffffff; font-size: 14px;">$${calculatedSubtotal.toFixed(2)}</span>
@@ -325,7 +325,7 @@ ${brand.name}
                   </tr>
                   <tr>
                     <td colspan="2" style="padding: 6px 0;">
-                      <span style="color: rgba(255,255,255,0.85); font-size: 14px;">Shipping</span>
+                      <span style="color: #dddddd; font-size: 14px;">Shipping</span>
                     </td>
                     <td style="padding: 6px 0; text-align: right;">
                       <span style="color: ${shippingCost === 0 ? '#22c55e' : 'rgba(255,255,255,0.8)'}; font-size: 14px; font-weight: ${shippingCost === 0 ? '600' : '400'};">${shippingDisplay}</span>
@@ -333,7 +333,7 @@ ${brand.name}
                   </tr>
                   <tr>
                     <td colspan="2" style="padding: 6px 0;">
-                      <span style="color: rgba(255,255,255,0.85); font-size: 14px;">${taxLabel}</span>
+                      <span style="color: #dddddd; font-size: 14px;">${taxLabel}</span>
                     </td>
                     <td style="padding: 6px 0; text-align: right;">
                       <span style="color: #ffffff; font-size: 14px;">${taxDisplay}</span>
@@ -362,7 +362,7 @@ ${brand.name}
                       <p style="color: #ffffff; font-size: 15px; font-weight: 600; margin: 0 0 8px 0;">
                         ${order.firstName} ${order.lastName}
                       </p>
-                      <p style="color: rgba(255,255,255,0.9); font-size: 14px; line-height: 1.6; margin: 0;">
+                      <p style="color: #eeeeee; font-size: 14px; line-height: 1.6; margin: 0;">
                         ${order.address || ''}<br>
                         ${order.city || ''}, ${order.state || ''} ${order.zipCode || ''}<br>
                         ${order.country || 'USA'}
@@ -379,7 +379,7 @@ ${brand.name}
                       <p style="color: #ffffff; font-size: 15px; font-weight: 600; margin: 0 0 8px 0;">
                         2-5 Business Days
                       </p>
-                      <p style="color: rgba(255,255,255,0.9); font-size: 14px; line-height: 1.6; margin: 0;">
+                      <p style="color: #eeeeee; font-size: 14px; line-height: 1.6; margin: 0;">
                         Ships within 24 hours<br>
                         Tracking sent via email
                       </p>
@@ -401,7 +401,7 @@ ${brand.name}
                         <span style="color: #000; font-size: 16px; font-weight: 700;">1</span>
                       </div>
                       <p style="color: #ffffff; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Confirmed</p>
-                      <p style="color: rgba(255,255,255,0.9); font-size: 11px; margin: 0;">Just now</p>
+                      <p style="color: #eeeeee; font-size: 11px; margin: 0;">Just now</p>
                     </td>
                     <!-- Connector -->
                     <td style="width: 1%; vertical-align: top; padding-top: 20px;">
@@ -413,7 +413,7 @@ ${brand.name}
                         <span style="color: #ffffff; font-size: 16px; font-weight: 700;">2</span>
                       </div>
                       <p style="color: #ffffff; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Shipped</p>
-                      <p style="color: rgba(255,255,255,0.8); font-size: 11px; margin: 0;">Pending</p>
+                      <p style="color: #dddddd; font-size: 11px; margin: 0;">Pending</p>
                     </td>
                     <!-- Connector -->
                     <td style="width: 1%; vertical-align: top; padding-top: 20px;">
@@ -425,7 +425,7 @@ ${brand.name}
                         <span style="color: #ffffff; font-size: 16px; font-weight: 700;">3</span>
                       </div>
                       <p style="color: #ffffff; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Delivered</p>
-                      <p style="color: rgba(255,255,255,0.8); font-size: 11px; margin: 0;">Pending</p>
+                      <p style="color: #dddddd; font-size: 11px; margin: 0;">Pending</p>
                     </td>
                   </tr>
                 </table>
@@ -463,7 +463,7 @@ ${brand.name}
               <p style="color: ${styles.primaryColor}; font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; margin: 0 0 8px 0;">
                 Revive Research
               </p>
-              <p style="color: rgba(255,255,255,0.9); font-size: 11px; margin: 0;">
+              <p style="color: #eeeeee; font-size: 11px; margin: 0;">
                 &copy; ${new Date().getFullYear()} Revive Research. All rights reserved.
               </p>
             </td>
