@@ -27,7 +27,6 @@ import Checkout from "@/pages/checkout";
 import CheckoutSuccess from "@/pages/checkout-success";
 import CoaVerification from "@/pages/coa";
 import CoaLibrary from "@/pages/coa-library";
-import BatchLookup from "@/pages/batch-lookup";
 import Dashboard from "@/pages/dashboard";
 import AccountSettings from "@/pages/account-settings";
 import Admin from "@/pages/admin";
@@ -160,7 +159,6 @@ function Router() {
             <CoaLibrary />
           </ProtectedRoute>
         </Route>
-        <Route path="/batch" component={BatchLookup} />
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/account-settings" component={AccountSettings} />
         <Route path="/admin" component={Admin} />
