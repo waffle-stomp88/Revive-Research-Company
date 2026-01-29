@@ -1545,7 +1545,10 @@ export default function Dashboard() {
                 </TabsContent>
 
                 {/* Settings Tab */}
-                <TabsContent value="settings" className="space-y-6">
+                <TabsContent value="settings">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Left Column */}
+                    <div className="space-y-6">
                   <Card className="border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 via-transparent to-transparent">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
@@ -1592,6 +1595,123 @@ export default function Dashboard() {
                     </CardContent>
                   </Card>
 
+                  {/* Security & Login Activity - in left column */}
+                  <Card className="border-[#f97316]/20 bg-gradient-to-br from-[#f97316]/5 via-transparent to-transparent">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <div className="p-2 rounded-lg bg-[#f97316]/20">
+                          <Lock className="h-5 w-5 text-[#f97316]" />
+                        </div>
+                        <span>Security & Login Activity</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="p-3 rounded-lg border border-white/10 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Shield className="h-4 w-4 text-green-500" />
+                            <div>
+                              <p className="text-sm font-medium">Account Security</p>
+                              <p className="text-xs text-muted-foreground">Your account is protected</p>
+                            </div>
+                          </div>
+                          <Badge className="bg-green-500/10 text-green-500 border-green-500/30">Secure</Badge>
+                        </div>
+                        
+                        <div className="p-3 rounded-lg border border-white/10 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Lock className="h-4 w-4 text-muted-foreground" />
+                            <div>
+                              <p className="text-sm font-medium">Password & Account</p>
+                              <p className="text-xs text-muted-foreground">Managed securely by Auth0</p>
+                            </div>
+                          </div>
+                          <Badge className="bg-orange-500/10 text-orange-400 border-orange-500/30">Auth0</Badge>
+                        </div>
+                        
+                        <div className="pt-2">
+                          <p className="text-sm font-medium mb-3 flex items-center gap-2">
+                            <History className="h-4 w-4" />
+                            Recent Login Activity
+                          </p>
+                          {loginHistoryLoading ? (
+                            <div className="space-y-2">
+                              {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
+                            </div>
+                          ) : loginHistory && loginHistory.length > 0 ? (
+                            <div className="space-y-2">
+                              {loginHistory.slice(0, 3).map((login, idx) => (
+                                <div key={login.id} className="flex items-center gap-3 p-2 rounded-lg bg-muted/20 text-sm" data-testid={`login-${login.id}`}>
+                                  <Monitor className="h-4 w-4 text-muted-foreground shrink-0" />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="truncate text-xs text-muted-foreground">
+                                      {login.userAgent?.split(' ').slice(0, 3).join(' ') || 'Unknown device'}
+                                    </p>
+                                  </div>
+                                  <span className="text-xs text-muted-foreground shrink-0">{formatDate(login.loginAt)}</span>
+                                  {idx === 0 && <Badge className="bg-green-500/10 text-green-500 border-green-500/30 text-xs">Current</Badge>}
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-sm text-muted-foreground text-center py-4">No login history available</p>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Affiliate Status - in left column */}
+                  <Card className="border-[#9d4edd]/20 bg-gradient-to-br from-[#9d4edd]/5 via-transparent to-transparent">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <div className="p-2 rounded-lg bg-[#9d4edd]/20">
+                          <Award className="h-5 w-5 text-[#9d4edd]" />
+                        </div>
+                        <span>Affiliate Program</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {affiliate?.id ? (
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-green-500/20 to-emerald-500/10 border border-green-500/40">
+                            <div className="p-2 rounded-full bg-green-500/20">
+                              <CheckCircle className="h-5 w-5 text-green-500" />
+                            </div>
+                            <div>
+                              <span className="text-green-400 font-semibold">Active Affiliate</span>
+                              <p className="text-xs text-muted-foreground">Earning commissions on referrals</p>
+                            </div>
+                          </div>
+                          <Link href="/affiliate/dashboard">
+                            <Button variant="outline" className="w-full border-[#9d4edd]/40" data-testid="button-affiliate-dashboard">
+                              View Dashboard
+                              <ExternalLink className="h-4 w-4 ml-2" />
+                            </Button>
+                          </Link>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          <div className="p-4 rounded-xl border border-[#9d4edd]/20 bg-[#9d4edd]/5">
+                            <p className="text-sm text-muted-foreground flex items-start gap-2">
+                              <Sparkles className="h-4 w-4 text-[#9d4edd] shrink-0 mt-0.5" />
+                              Join our affiliate program and earn commissions on referrals. Get 10% on every sale!
+                            </p>
+                          </div>
+                          <Link href="/affiliate">
+                            <Button className="w-full bg-gradient-to-r from-[#9d4edd] to-[#9d4edd]/80 text-white" data-testid="button-join-affiliate">
+                              Join Now
+                              <ArrowRight className="h-4 w-4 ml-2" />
+                            </Button>
+                          </Link>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                    </div>
+
+                    {/* Right Column */}
+                    <div className="space-y-6">
                   {/* Saved Addresses */}
                   <Card className="border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 via-transparent to-transparent">
                     <CardHeader>
@@ -1796,122 +1916,11 @@ export default function Dashboard() {
                       )}
                     </CardContent>
                   </Card>
+                    </div>
+                  </div>
 
-                  {/* Security & Login Activity */}
-                  <Card className="border-[#f97316]/20 bg-gradient-to-br from-[#f97316]/5 via-transparent to-transparent">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <div className="p-2 rounded-lg bg-[#f97316]/20">
-                          <Lock className="h-5 w-5 text-[#f97316]" />
-                        </div>
-                        <span>Security & Login Activity</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div className="p-3 rounded-lg border border-white/10 flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <Shield className="h-4 w-4 text-green-500" />
-                            <div>
-                              <p className="text-sm font-medium">Account Security</p>
-                              <p className="text-xs text-muted-foreground">Your account is protected</p>
-                            </div>
-                          </div>
-                          <Badge className="bg-green-500/10 text-green-500 border-green-500/30">Secure</Badge>
-                        </div>
-                        
-                        <div className="p-3 rounded-lg border border-white/10 flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <Lock className="h-4 w-4 text-muted-foreground" />
-                            <div>
-                              <p className="text-sm font-medium">Password & Account</p>
-                              <p className="text-xs text-muted-foreground">Managed securely by Auth0</p>
-                            </div>
-                          </div>
-                          <Badge className="bg-orange-500/10 text-orange-400 border-orange-500/30">Auth0</Badge>
-                        </div>
-                        
-                        <div className="pt-2">
-                          <p className="text-sm font-medium mb-3 flex items-center gap-2">
-                            <History className="h-4 w-4" />
-                            Recent Login Activity
-                          </p>
-                          {loginHistoryLoading ? (
-                            <div className="space-y-2">
-                              {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
-                            </div>
-                          ) : loginHistory && loginHistory.length > 0 ? (
-                            <div className="space-y-2">
-                              {loginHistory.slice(0, 5).map((login, idx) => (
-                                <div key={login.id} className="flex items-center gap-3 p-2 rounded-lg bg-muted/20 text-sm" data-testid={`login-${login.id}`}>
-                                  <Monitor className="h-4 w-4 text-muted-foreground shrink-0" />
-                                  <div className="flex-1 min-w-0">
-                                    <p className="truncate text-xs text-muted-foreground">
-                                      {login.userAgent?.split(' ').slice(0, 3).join(' ') || 'Unknown device'}
-                                    </p>
-                                  </div>
-                                  <span className="text-xs text-muted-foreground shrink-0">{formatDate(login.loginAt)}</span>
-                                  {idx === 0 && <Badge className="bg-green-500/10 text-green-500 border-green-500/30 text-xs">Current</Badge>}
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <p className="text-sm text-muted-foreground text-center py-4">No login history available</p>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Affiliate Status */}
-                  <Card className="border-[#9d4edd]/20 bg-gradient-to-br from-[#9d4edd]/5 via-transparent to-transparent">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <div className="p-2 rounded-lg bg-[#9d4edd]/20">
-                          <Award className="h-5 w-5 text-[#9d4edd]" />
-                        </div>
-                        <span>Affiliate Program</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {affiliate?.id ? (
-                        <div className="space-y-4">
-                          <div className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-green-500/20 to-emerald-500/10 border border-green-500/40">
-                            <div className="p-2 rounded-full bg-green-500/20">
-                              <CheckCircle className="h-5 w-5 text-green-500" />
-                            </div>
-                            <div>
-                              <span className="text-green-400 font-semibold">Active Affiliate</span>
-                              <p className="text-xs text-muted-foreground">Earning commissions on referrals</p>
-                            </div>
-                          </div>
-                          <Link href="/affiliate/dashboard">
-                            <Button variant="outline" className="w-full border-[#9d4edd]/40" data-testid="button-affiliate-dashboard">
-                              View Dashboard
-                              <ExternalLink className="h-4 w-4 ml-2" />
-                            </Button>
-                          </Link>
-                        </div>
-                      ) : (
-                        <div className="space-y-4">
-                          <div className="p-4 rounded-xl border border-[#9d4edd]/20 bg-[#9d4edd]/5">
-                            <p className="text-sm text-muted-foreground flex items-start gap-2">
-                              <Sparkles className="h-4 w-4 text-[#9d4edd] shrink-0 mt-0.5" />
-                              Join our affiliate program and earn commissions on referrals. Get 10% on every sale!
-                            </p>
-                          </div>
-                          <Link href="/affiliate">
-                            <Button className="w-full bg-gradient-to-r from-[#9d4edd] to-[#9d4edd]/80 hover:from-[#9d4edd]/90 hover:to-[#9d4edd]/70 text-white" data-testid="button-join-affiliate">
-                              Join Now
-                              <ArrowRight className="h-4 w-4 ml-2" />
-                            </Button>
-                          </Link>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-
-                  {/* Danger Zone */}
+                  {/* Danger Zone - Full Width */}
+                  <div className="mt-6">
                   <Card className="border-red-500/20">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2 text-red-500">
@@ -1925,7 +1934,7 @@ export default function Dashboard() {
                       </p>
                       <Button 
                         variant="outline" 
-                        className="border-red-500/50 text-red-500 hover:bg-red-500/10"
+                        className="border-red-500/50 text-red-500"
                         onClick={() => setDeleteDialogOpen(true)}
                         data-testid="button-delete-account"
                       >
@@ -1934,6 +1943,7 @@ export default function Dashboard() {
                       </Button>
                     </CardContent>
                   </Card>
+                  </div>
                 </TabsContent>
               </Tabs>
             </motion.div>
