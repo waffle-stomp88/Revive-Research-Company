@@ -785,11 +785,11 @@ export default function Checkout() {
                 transition={{ delay: 0.1 }}
                 className="order-2 md:order-1"
               >
-                {/* Account Section - Compact on mobile */}
+                {/* Account Section - Guest Checkout Friendly */}
                 <Card className="p-3 md:p-6 mb-4 md:mb-6">
                   <h2 className="font-display text-base md:text-xl font-semibold mb-2 md:mb-4 flex items-center gap-2">
                     <User className="h-4 w-4 md:h-5 md:w-5" />
-                    Your Account
+                    {isAuthenticated ? "Your Account" : "Checkout as Guest"}
                   </h2>
                   
                   {userLoading ? (
@@ -820,18 +820,57 @@ export default function Checkout() {
                       </div>
                     </div>
                   ) : (
-                    <div className="space-y-3">
-                      <p className="text-muted-foreground text-sm">
-                        Sign in to save your order history and speed up future checkouts.
-                      </p>
-                      <Button
-                        className="w-full gap-2 bg-[#E7FB10] hover:bg-[#E7FB10]/90"
-                        onClick={() => window.location.href = "/api/login"}
-                        data-testid="button-checkout-login"
-                      >
-                        <LogIn className="h-4 w-4" />
-                        Sign In with Replit
-                      </Button>
+                    <div className="space-y-4">
+                      {/* Guest checkout confirmation */}
+                      <div className="bg-[#21d8ff]/10 border border-[#21d8ff]/30 rounded-lg p-3">
+                        <div className="flex items-center gap-2 mb-2">
+                          <CheckCircle className="h-4 w-4 text-[#21d8ff]" />
+                          <span className="font-medium text-sm">No account needed</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          You can complete your purchase as a guest. We'll send order confirmation to your email.
+                        </p>
+                      </div>
+                      
+                      {/* Create account benefits */}
+                      <div className="border border-border rounded-lg p-3 bg-muted/30">
+                        <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                          <UserPlus className="h-4 w-4 text-[#E7FB10]" />
+                          Want to save your order?
+                        </p>
+                        <ul className="text-xs text-muted-foreground space-y-1.5 mb-3 ml-6">
+                          <li className="flex items-center gap-2">
+                            <Package className="h-3 w-3 flex-shrink-0" />
+                            View order history
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <Truck className="h-3 w-3 flex-shrink-0" />
+                            Track shipments
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <Clock className="h-3 w-3 flex-shrink-0" />
+                            Faster future checkouts
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <Target className="h-3 w-3 flex-shrink-0" />
+                            Save wishlist items
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <Percent className="h-3 w-3 flex-shrink-0" />
+                            Earn rewards & discounts
+                          </li>
+                        </ul>
+                        <Button
+                          variant="outline"
+                          className="w-full gap-2 border-[#E7FB10]/50 text-[#E7FB10] hover:bg-[#E7FB10]/10"
+                          size="sm"
+                          onClick={() => window.location.href = "/api/login"}
+                          data-testid="button-checkout-login"
+                        >
+                          <LogIn className="h-3 w-3" />
+                          Create Account / Sign In
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </Card>
