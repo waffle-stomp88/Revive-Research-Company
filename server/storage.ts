@@ -2,6 +2,7 @@ import {
   users, products, coas, orders, contacts, affiliateApplications, affiliates, affiliateSales, affiliatePayouts, reviews,
   batches, productStorageProfiles, legalDocuments, faqEntries, educationArticles, coaGlossaryTerms, stockNotifications, discountCodes, newsletterSubscribers,
   productDosageStock, priceHistory, academyProgress, emailEvents, wishlists, userResearchProfiles, productBehavioralMetrics,
+  savedAddresses, notificationPreferences, researchNotes, loginHistory, batchVerificationHistory,
   type User, type UpsertUser,
   type Product, type InsertProduct,
   type ProductDosageStock, type InsertProductDosageStock, type ProductWithDosageStock,
@@ -30,6 +31,11 @@ import {
   type UserResearchProfile, type InsertUserResearchProfile,
   type ResearchPhase, type ResearchTitle,
   type ProductBehavioralMetrics, type InsertProductBehavioralMetrics,
+  type SavedAddress, type InsertSavedAddress,
+  type NotificationPreferences, type InsertNotificationPreferences,
+  type ResearchNote, type InsertResearchNote,
+  type LoginHistory, type InsertLoginHistory,
+  type BatchVerificationHistory, type InsertBatchVerificationHistory,
   priceChangeReasons
 } from "@shared/schema";
 import { db } from "./db";
@@ -301,6 +307,34 @@ export interface IStorage {
   markCoaEducationViewed(userId: string): Promise<UserResearchProfile>;
   computeResearchPhase(profile: UserResearchProfile): ResearchPhase;
   computeResearchTitle(profile: UserResearchProfile): ResearchTitle;
+  
+  // Saved Addresses
+  getSavedAddresses(userId: string): Promise<SavedAddress[]>;
+  getSavedAddress(id: string): Promise<SavedAddress | undefined>;
+  createSavedAddress(address: InsertSavedAddress): Promise<SavedAddress>;
+  updateSavedAddress(id: string, data: Partial<InsertSavedAddress>): Promise<SavedAddress | undefined>;
+  deleteSavedAddress(id: string): Promise<boolean>;
+  setDefaultAddress(userId: string, addressId: string): Promise<SavedAddress | undefined>;
+  
+  // Notification Preferences
+  getNotificationPreferences(userId: string): Promise<NotificationPreferences | undefined>;
+  createOrUpdateNotificationPreferences(userId: string, prefs: Partial<InsertNotificationPreferences>): Promise<NotificationPreferences>;
+  
+  // Research Notes
+  getResearchNotes(userId: string): Promise<ResearchNote[]>;
+  getResearchNote(id: string): Promise<ResearchNote | undefined>;
+  createResearchNote(note: InsertResearchNote): Promise<ResearchNote>;
+  updateResearchNote(id: string, data: Partial<InsertResearchNote>): Promise<ResearchNote | undefined>;
+  deleteResearchNote(id: string): Promise<boolean>;
+  toggleResearchNotePin(id: string): Promise<ResearchNote | undefined>;
+  
+  // Login History
+  recordLogin(userId: string, data: Partial<InsertLoginHistory>): Promise<LoginHistory>;
+  getLoginHistory(userId: string, limit?: number): Promise<LoginHistory[]>;
+  
+  // Batch Verification History
+  recordBatchVerification(userId: string, batchNumber: string, productName?: string): Promise<BatchVerificationHistory>;
+  getBatchVerificationHistory(userId: string): Promise<BatchVerificationHistory[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -2047,6 +2081,155 @@ export class DatabaseStorage implements IStorage {
       .returning();
     
     return updated;
+  }
+
+  // Saved Addresses
+  async getSavedAddresses(userId: string): Promise<SavedAddress[]> {
+    return await db.select().from(savedAddresses)
+      .where(eq(savedAddresses.userId, userId))
+      .orderBy(desc(savedAddresses.isDefault), desc(savedAddresses.createdAt));
+  }
+
+  async getSavedAddress(id: string): Promise<SavedAddress | undefined> {
+    const [address] = await db.select().from(savedAddresses).where(eq(savedAddresses.id, id));
+    return address;
+  }
+
+  async createSavedAddress(address: InsertSavedAddress): Promise<SavedAddress> {
+    // If this is the first address or marked as default, handle accordingly
+    if (address.isDefault) {
+      await db.update(savedAddresses)
+        .set({ isDefault: false })
+        .where(eq(savedAddresses.userId, address.userId));
+    }
+    const [created] = await db.insert(savedAddresses).values(address).returning();
+    return created;
+  }
+
+  async updateSavedAddress(id: string, data: Partial<InsertSavedAddress>): Promise<SavedAddress | undefined> {
+    const existing = await this.getSavedAddress(id);
+    if (!existing) return undefined;
+    
+    if (data.isDefault) {
+      await db.update(savedAddresses)
+        .set({ isDefault: false })
+        .where(eq(savedAddresses.userId, existing.userId));
+    }
+    
+    const [updated] = await db.update(savedAddresses)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(savedAddresses.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteSavedAddress(id: string): Promise<boolean> {
+    const result = await db.delete(savedAddresses).where(eq(savedAddresses.id, id));
+    return true;
+  }
+
+  async setDefaultAddress(userId: string, addressId: string): Promise<SavedAddress | undefined> {
+    await db.update(savedAddresses)
+      .set({ isDefault: false })
+      .where(eq(savedAddresses.userId, userId));
+    
+    const [updated] = await db.update(savedAddresses)
+      .set({ isDefault: true, updatedAt: new Date() })
+      .where(eq(savedAddresses.id, addressId))
+      .returning();
+    return updated;
+  }
+
+  // Notification Preferences
+  async getNotificationPreferences(userId: string): Promise<NotificationPreferences | undefined> {
+    const [prefs] = await db.select().from(notificationPreferences)
+      .where(eq(notificationPreferences.userId, userId));
+    return prefs;
+  }
+
+  async createOrUpdateNotificationPreferences(userId: string, prefs: Partial<InsertNotificationPreferences>): Promise<NotificationPreferences> {
+    const existing = await this.getNotificationPreferences(userId);
+    if (existing) {
+      const [updated] = await db.update(notificationPreferences)
+        .set({ ...prefs, updatedAt: new Date() })
+        .where(eq(notificationPreferences.userId, userId))
+        .returning();
+      return updated;
+    }
+    const [created] = await db.insert(notificationPreferences)
+      .values({ ...prefs, userId })
+      .returning();
+    return created;
+  }
+
+  // Research Notes
+  async getResearchNotes(userId: string): Promise<ResearchNote[]> {
+    return await db.select().from(researchNotes)
+      .where(eq(researchNotes.userId, userId))
+      .orderBy(desc(researchNotes.isPinned), desc(researchNotes.updatedAt));
+  }
+
+  async getResearchNote(id: string): Promise<ResearchNote | undefined> {
+    const [note] = await db.select().from(researchNotes).where(eq(researchNotes.id, id));
+    return note;
+  }
+
+  async createResearchNote(note: InsertResearchNote): Promise<ResearchNote> {
+    const [created] = await db.insert(researchNotes).values(note).returning();
+    return created;
+  }
+
+  async updateResearchNote(id: string, data: Partial<InsertResearchNote>): Promise<ResearchNote | undefined> {
+    const [updated] = await db.update(researchNotes)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(researchNotes.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteResearchNote(id: string): Promise<boolean> {
+    await db.delete(researchNotes).where(eq(researchNotes.id, id));
+    return true;
+  }
+
+  async toggleResearchNotePin(id: string): Promise<ResearchNote | undefined> {
+    const note = await this.getResearchNote(id);
+    if (!note) return undefined;
+    
+    const [updated] = await db.update(researchNotes)
+      .set({ isPinned: !note.isPinned, updatedAt: new Date() })
+      .where(eq(researchNotes.id, id))
+      .returning();
+    return updated;
+  }
+
+  // Login History
+  async recordLogin(userId: string, data: Partial<InsertLoginHistory>): Promise<LoginHistory> {
+    const [created] = await db.insert(loginHistory)
+      .values({ ...data, userId })
+      .returning();
+    return created;
+  }
+
+  async getLoginHistory(userId: string, limit: number = 10): Promise<LoginHistory[]> {
+    return await db.select().from(loginHistory)
+      .where(eq(loginHistory.userId, userId))
+      .orderBy(desc(loginHistory.createdAt))
+      .limit(limit);
+  }
+
+  // Batch Verification History
+  async recordBatchVerification(userId: string, batchNumber: string, productName?: string): Promise<BatchVerificationHistory> {
+    const [created] = await db.insert(batchVerificationHistory)
+      .values({ userId, batchNumber, productName })
+      .returning();
+    return created;
+  }
+
+  async getBatchVerificationHistory(userId: string): Promise<BatchVerificationHistory[]> {
+    return await db.select().from(batchVerificationHistory)
+      .where(eq(batchVerificationHistory.userId, userId))
+      .orderBy(desc(batchVerificationHistory.createdAt));
   }
 }
 

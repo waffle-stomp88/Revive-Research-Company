@@ -685,3 +685,96 @@ export const subscriptions = pgTable("subscriptions", {
 export const insertSubscriptionSchema = createInsertSchema(subscriptions).omit({ id: true, createdAt: true, updatedAt: true });
 export type InsertSubscription = z.infer<typeof insertSubscriptionSchema>;
 export type Subscription = typeof subscriptions.$inferSelect;
+
+// Saved Addresses table - Multiple addresses per user
+export const savedAddresses = pgTable("saved_addresses", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  label: text("label").notNull(), // "Home", "Work", "Lab", etc.
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  address: text("address").notNull(),
+  city: text("city").notNull(),
+  state: text("state").notNull(),
+  zipCode: text("zip_code").notNull(),
+  country: text("country").notNull().default("United States"),
+  isDefault: boolean("is_default").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertSavedAddressSchema = createInsertSchema(savedAddresses).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertSavedAddress = z.infer<typeof insertSavedAddressSchema>;
+export type SavedAddress = typeof savedAddresses.$inferSelect;
+
+// Notification Preferences table - User notification settings
+export const notificationPreferences = pgTable("notification_preferences", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull().unique(),
+  // Email notifications
+  emailOrderConfirmation: boolean("email_order_confirmation").default(true),
+  emailShippingUpdates: boolean("email_shipping_updates").default(true),
+  emailPromotions: boolean("email_promotions").default(true),
+  emailNewsletter: boolean("email_newsletter").default(true),
+  emailAcademyUpdates: boolean("email_academy_updates").default(true),
+  emailStockAlerts: boolean("email_stock_alerts").default(true),
+  // SMS notifications (for future use)
+  smsOrderUpdates: boolean("sms_order_updates").default(false),
+  smsPromotions: boolean("sms_promotions").default(false),
+  phone: text("phone"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertNotificationPreferencesSchema = createInsertSchema(notificationPreferences).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertNotificationPreferences = z.infer<typeof insertNotificationPreferencesSchema>;
+export type NotificationPreferences = typeof notificationPreferences.$inferSelect;
+
+// Research Notes table - Personal journal for tracking research
+export const researchNotes = pgTable("research_notes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  productId: varchar("product_id"), // Optional link to product
+  batchNumber: text("batch_number"), // Optional link to batch
+  tags: text("tags").array(),
+  isPinned: boolean("is_pinned").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertResearchNoteSchema = createInsertSchema(researchNotes).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertResearchNote = z.infer<typeof insertResearchNoteSchema>;
+export type ResearchNote = typeof researchNotes.$inferSelect;
+
+// Login History table - Track login activity for security
+export const loginHistory = pgTable("login_history", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  device: text("device"), // parsed device type: desktop, mobile, tablet
+  browser: text("browser"), // parsed browser name
+  location: text("location"), // approximate location from IP
+  success: boolean("success").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertLoginHistorySchema = createInsertSchema(loginHistory).omit({ id: true, createdAt: true });
+export type InsertLoginHistory = z.infer<typeof insertLoginHistorySchema>;
+export type LoginHistory = typeof loginHistory.$inferSelect;
+
+// Batch Verification History - Track user batch lookups
+export const batchVerificationHistory = pgTable("batch_verification_history", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  batchNumber: text("batch_number").notNull(),
+  productName: text("product_name"),
+  verified: boolean("verified").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertBatchVerificationHistorySchema = createInsertSchema(batchVerificationHistory).omit({ id: true, createdAt: true });
+export type InsertBatchVerificationHistory = z.infer<typeof insertBatchVerificationHistorySchema>;
+export type BatchVerificationHistory = typeof batchVerificationHistory.$inferSelect;

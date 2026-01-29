@@ -3,7 +3,9 @@ import express from "express";
 import { createServer, type Server } from "http";
 import path from "path";
 import { storage } from "./storage";
-import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertReviewSchema, insertNewsletterSubscriberSchema } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc } from "drizzle-orm";
+import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertReviewSchema, insertNewsletterSubscriberSchema, subscriptions } from "@shared/schema";
 import { setupAuth, isAuthenticated } from "./auth0Auth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
@@ -3703,6 +3705,202 @@ Return ONLY valid JSON in this exact format:
     } catch (error) {
       console.error("Error tracking verification:", error);
       res.status(500).json({ error: "Failed to track verification" });
+    }
+  });
+
+  // ============== SAVED ADDRESSES ==============
+  app.get("/api/addresses", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const addresses = await storage.getSavedAddresses(userId);
+      res.json(addresses);
+    } catch (error) {
+      console.error("Error fetching addresses:", error);
+      res.status(500).json({ error: "Failed to fetch addresses" });
+    }
+  });
+
+  app.post("/api/addresses", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const address = await storage.createSavedAddress({ ...req.body, userId });
+      res.json(address);
+    } catch (error) {
+      console.error("Error creating address:", error);
+      res.status(500).json({ error: "Failed to create address" });
+    }
+  });
+
+  app.patch("/api/addresses/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const address = await storage.updateSavedAddress(id, req.body);
+      if (!address) {
+        return res.status(404).json({ error: "Address not found" });
+      }
+      res.json(address);
+    } catch (error) {
+      console.error("Error updating address:", error);
+      res.status(500).json({ error: "Failed to update address" });
+    }
+  });
+
+  app.delete("/api/addresses/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteSavedAddress(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting address:", error);
+      res.status(500).json({ error: "Failed to delete address" });
+    }
+  });
+
+  app.post("/api/addresses/:id/default", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id } = req.params;
+      const address = await storage.setDefaultAddress(userId, id);
+      res.json(address);
+    } catch (error) {
+      console.error("Error setting default address:", error);
+      res.status(500).json({ error: "Failed to set default address" });
+    }
+  });
+
+  // ============== NOTIFICATION PREFERENCES ==============
+  app.get("/api/notification-preferences", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      let prefs = await storage.getNotificationPreferences(userId);
+      if (!prefs) {
+        prefs = await storage.createOrUpdateNotificationPreferences(userId, {});
+      }
+      res.json(prefs);
+    } catch (error) {
+      console.error("Error fetching notification preferences:", error);
+      res.status(500).json({ error: "Failed to fetch notification preferences" });
+    }
+  });
+
+  app.patch("/api/notification-preferences", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const prefs = await storage.createOrUpdateNotificationPreferences(userId, req.body);
+      res.json(prefs);
+    } catch (error) {
+      console.error("Error updating notification preferences:", error);
+      res.status(500).json({ error: "Failed to update notification preferences" });
+    }
+  });
+
+  // ============== RESEARCH NOTES ==============
+  app.get("/api/research-notes", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const notes = await storage.getResearchNotes(userId);
+      res.json(notes);
+    } catch (error) {
+      console.error("Error fetching research notes:", error);
+      res.status(500).json({ error: "Failed to fetch research notes" });
+    }
+  });
+
+  app.post("/api/research-notes", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const note = await storage.createResearchNote({ ...req.body, userId });
+      res.json(note);
+    } catch (error) {
+      console.error("Error creating research note:", error);
+      res.status(500).json({ error: "Failed to create research note" });
+    }
+  });
+
+  app.patch("/api/research-notes/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const note = await storage.updateResearchNote(id, req.body);
+      if (!note) {
+        return res.status(404).json({ error: "Note not found" });
+      }
+      res.json(note);
+    } catch (error) {
+      console.error("Error updating research note:", error);
+      res.status(500).json({ error: "Failed to update research note" });
+    }
+  });
+
+  app.delete("/api/research-notes/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteResearchNote(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting research note:", error);
+      res.status(500).json({ error: "Failed to delete research note" });
+    }
+  });
+
+  app.post("/api/research-notes/:id/toggle-pin", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const note = await storage.toggleResearchNotePin(id);
+      res.json(note);
+    } catch (error) {
+      console.error("Error toggling pin:", error);
+      res.status(500).json({ error: "Failed to toggle pin" });
+    }
+  });
+
+  // ============== LOGIN HISTORY ==============
+  app.get("/api/login-history", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const history = await storage.getLoginHistory(userId, limit);
+      res.json(history);
+    } catch (error) {
+      console.error("Error fetching login history:", error);
+      res.status(500).json({ error: "Failed to fetch login history" });
+    }
+  });
+
+  // ============== BATCH VERIFICATION HISTORY ==============
+  app.get("/api/batch-verification-history", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const history = await storage.getBatchVerificationHistory(userId);
+      res.json(history);
+    } catch (error) {
+      console.error("Error fetching batch verification history:", error);
+      res.status(500).json({ error: "Failed to fetch batch verification history" });
+    }
+  });
+
+  app.post("/api/batch-verification-history", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { batchNumber, productName } = req.body;
+      const record = await storage.recordBatchVerification(userId, batchNumber, productName);
+      res.json(record);
+    } catch (error) {
+      console.error("Error recording batch verification:", error);
+      res.status(500).json({ error: "Failed to record batch verification" });
+    }
+  });
+
+  // ============== USER SUBSCRIPTIONS ==============
+  app.get("/api/user/subscriptions", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const userSubscriptions = await db.select().from(subscriptions)
+        .where(eq(subscriptions.userId, userId))
+        .orderBy(desc(subscriptions.createdAt));
+      res.json(userSubscriptions);
+    } catch (error) {
+      console.error("Error fetching user subscriptions:", error);
+      res.status(500).json({ error: "Failed to fetch subscriptions" });
     }
   });
 
