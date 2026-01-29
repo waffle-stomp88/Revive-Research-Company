@@ -389,9 +389,9 @@ export default function Dashboard() {
                     )}
                   </div>
                   <div>
-                    {/* Holographic Name */}
+                    {/* Holographic Welcome Greeting */}
                     <h1 className="text-2xl font-bold holographic-text" data-testid="text-user-name">
-                      {user?.firstName ? `${user.firstName}${user?.lastName ? ` ${user.lastName}` : ''}` : 'My Account'}
+                      Welcome, {user?.firstName ? `${user.firstName}${user?.lastName ? ` ${user.lastName}` : ''}` : 'Guest'}!
                     </h1>
                     
                     {/* Status Badges Row */}
