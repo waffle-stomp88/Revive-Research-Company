@@ -161,7 +161,7 @@ export async function registerRoutes(
     try {
       // Create or get the dev admin user
       const devUserId = 'dev-admin-bypass';
-      const devEmail = 'admin@reviveresearch.dev';
+      const devEmail = 'admin@reviveresearch.co';
       
       await storage.upsertUser({
         id: devUserId,
