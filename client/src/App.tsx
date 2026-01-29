@@ -99,30 +99,10 @@ function Router() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/shop" component={ProductsHub} />
-        <Route path="/peptides">
-          <ProtectedRoute title="Access Research Peptides" description="Create a free account to browse our premium peptide catalog with verified quality and COA documentation.">
-            <Products />
-          </ProtectedRoute>
-        </Route>
-        <Route path="/peptides/:id">
-          {(params) => (
-            <ProtectedRoute title="View Product Details" description="Sign in to view detailed product information, pricing, and add items to your cart.">
-              <ProductDetail />
-            </ProtectedRoute>
-          )}
-        </Route>
-        <Route path="/products">
-          <ProtectedRoute title="Access Research Peptides" description="Create a free account to browse our premium peptide catalog with verified quality and COA documentation.">
-            <Products />
-          </ProtectedRoute>
-        </Route>
-        <Route path="/products/:id">
-          {(params) => (
-            <ProtectedRoute title="View Product Details" description="Sign in to view detailed product information, pricing, and add items to your cart.">
-              <ProductDetail />
-            </ProtectedRoute>
-          )}
-        </Route>
+        <Route path="/peptides" component={Products} />
+        <Route path="/peptides/:id" component={ProductDetail} />
+        <Route path="/products" component={Products} />
+        <Route path="/products/:id" component={ProductDetail} />
         <Route path="/bulk-packs">
           <ProtectedRoute title="Bulk Research Packs" description="Access exclusive bulk pricing for research institutions and qualified researchers.">
             <BulkPacks />
