@@ -160,7 +160,7 @@ export default function Dashboard() {
   }, [authLoading, isAuthenticated, toast]);
 
   const { data: orders, isLoading: ordersLoading } = useQuery<Order[]>({
-    queryKey: ["/api/orders"],
+    queryKey: ["/api/orders/my-orders"],
     enabled: isAuthenticated,
   });
 
@@ -668,7 +668,7 @@ export default function Dashboard() {
                   <div>
                     {/* Holographic Welcome Greeting */}
                     <h1 className="text-2xl font-bold holographic-text" data-testid="text-user-name">
-                      Welcome, {user?.firstName ? `${user.firstName}${user?.lastName ? ` ${user.lastName}` : ''}` : 'Guest'}!
+                      Welcome, {user?.firstName || 'Guest'}!
                     </h1>
                     
                     {/* Status Badges Row */}
