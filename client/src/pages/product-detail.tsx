@@ -287,11 +287,33 @@ export default function ProductDetail() {
 
   const isInWishlist = wishlistStatus?.isInWishlist ?? false;
 
+  // Set default dosage to lowest in-stock option
   useEffect(() => {
-    if (product?.dosageOptions && product.dosageOptions.length > 0) {
+    if (product?.dosageOptions && product.dosageOptions.length > 0 && dosageStocks.length > 0) {
+      // Parse dosage to numeric value for sorting (e.g., "10mg" → 10)
+      const parseDosage = (dosage: string): number => {
+        const match = dosage.match(/(\d+(?:\.\d+)?)/);
+        return match ? parseFloat(match[1]) : 0;
+      };
+      
+      // Sort dosages by numeric value (lowest first)
+      const sortedDosages = [...product.dosageOptions].sort(
+        (a, b) => parseDosage(a) - parseDosage(b)
+      );
+      
+      // Find lowest dosage that's in stock
+      const lowestInStock = sortedDosages.find(dosage => {
+        const stockInfo = dosageStocks.find(ds => ds.dosage === dosage);
+        return stockInfo && stockInfo.stockAmount > 0;
+      });
+      
+      // Use lowest in-stock, or fall back to first dosage if none in stock
+      setSelectedDosage(lowestInStock || sortedDosages[0]);
+    } else if (product?.dosageOptions && product.dosageOptions.length > 0) {
+      // Fallback if dosageStocks hasn't loaded yet - use first option
       setSelectedDosage(product.dosageOptions[0]);
     }
-  }, [product]);
+  }, [product, dosageStocks]);
 
   // Track recently viewed products
   useEffect(() => {
