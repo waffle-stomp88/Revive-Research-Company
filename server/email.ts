@@ -413,43 +413,43 @@ ${brand.name}
               </table>
               
               <!-- Order Progress Timeline -->
-              <div style="background: linear-gradient(135deg, rgba(33, 216, 255, 0.12) 0%, rgba(33, 216, 255, 0.04) 100%); border: 1px solid rgba(33, 216, 255, 0.25); border-radius: 16px; padding: 24px;">
-                <p style="color: ${styles.accentColor}; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 20px 0;">
+              <div style="background: linear-gradient(135deg, #1a3a4a 0%, #1a2a35 100%); border: 1px solid #2a5a6a; border-radius: 16px; padding: 24px;">
+                <p style="color: ${styles.accentColor}; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 24px 0; text-align: center;">
                   Order Progress
                 </p>
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                   <tr>
                     <!-- Step 1 - Active -->
-                    <td style="width: 33%; text-align: center; vertical-align: top;">
-                      <div style="width: 40px; height: 40px; background: ${styles.accentColor}; border-radius: 50%; margin: 0 auto 12px auto; line-height: 40px; box-shadow: 0 0 20px rgba(33, 216, 255, 0.5);">
-                        <span style="color: #000; font-size: 16px; font-weight: 700;">1</span>
+                    <td style="width: 28%; text-align: center; vertical-align: top;">
+                      <div style="width: 44px; height: 44px; background: ${styles.accentColor}; border-radius: 50%; margin: 0 auto 12px auto; line-height: 44px;">
+                        <span style="color: #000; font-size: 18px; font-weight: 700;">1</span>
                       </div>
                       <p style="color: #ffffff; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Confirmed</p>
-                      <p style="color: #eeeeee; font-size: 11px; margin: 0;">Just now</p>
+                      <p style="color: ${styles.accentColor}; font-size: 11px; font-weight: 600; margin: 0;">Just now</p>
                     </td>
-                    <!-- Connector -->
-                    <td style="width: 1%; vertical-align: top; padding-top: 20px;">
-                      <div style="height: 2px; background: linear-gradient(90deg, ${styles.accentColor} 0%, rgba(255,255,255,0.2) 100%); width: 100%;"></div>
+                    <!-- Arrow Connector 1 -->
+                    <td style="width: 8%; text-align: center; vertical-align: top; padding-top: 8px;">
+                      <span style="color: ${styles.accentColor}; font-size: 24px; font-weight: 300;">&rarr;</span>
                     </td>
                     <!-- Step 2 - Pending -->
-                    <td style="width: 33%; text-align: center; vertical-align: top;">
-                      <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); border-radius: 50%; margin: 0 auto 12px auto; line-height: 36px;">
-                        <span style="color: #ffffff; font-size: 16px; font-weight: 700;">2</span>
+                    <td style="width: 28%; text-align: center; vertical-align: top;">
+                      <div style="width: 44px; height: 44px; background: #2a2a30; border: 2px solid #4a4a50; border-radius: 50%; margin: 0 auto 12px auto; line-height: 40px;">
+                        <span style="color: #999999; font-size: 18px; font-weight: 700;">2</span>
                       </div>
-                      <p style="color: #ffffff; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Shipped</p>
-                      <p style="color: #dddddd; font-size: 11px; margin: 0;">Pending</p>
+                      <p style="color: #999999; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Shipped</p>
+                      <p style="color: #666666; font-size: 11px; margin: 0;">Pending</p>
                     </td>
-                    <!-- Connector -->
-                    <td style="width: 1%; vertical-align: top; padding-top: 20px;">
-                      <div style="height: 2px; background: rgba(255,255,255,0.1); width: 100%;"></div>
+                    <!-- Arrow Connector 2 -->
+                    <td style="width: 8%; text-align: center; vertical-align: top; padding-top: 8px;">
+                      <span style="color: #4a4a50; font-size: 24px; font-weight: 300;">&rarr;</span>
                     </td>
                     <!-- Step 3 - Pending -->
-                    <td style="width: 33%; text-align: center; vertical-align: top;">
-                      <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); border-radius: 50%; margin: 0 auto 12px auto; line-height: 36px;">
-                        <span style="color: #ffffff; font-size: 16px; font-weight: 700;">3</span>
+                    <td style="width: 28%; text-align: center; vertical-align: top;">
+                      <div style="width: 44px; height: 44px; background: #2a2a30; border: 2px solid #4a4a50; border-radius: 50%; margin: 0 auto 12px auto; line-height: 40px;">
+                        <span style="color: #999999; font-size: 18px; font-weight: 700;">3</span>
                       </div>
-                      <p style="color: #ffffff; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Delivered</p>
-                      <p style="color: #dddddd; font-size: 11px; margin: 0;">Pending</p>
+                      <p style="color: #999999; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Delivered</p>
+                      <p style="color: #666666; font-size: 11px; margin: 0;">Pending</p>
                     </td>
                   </tr>
                 </table>
