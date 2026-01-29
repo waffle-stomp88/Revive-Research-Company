@@ -799,10 +799,10 @@ function getNewsletterWelcomeTemplate(email: string): { subject: string; text: s
     green: '#22c55e',
     darkBg: '#0a0a0c',
     cardBg: '#141417',
-    cardBorder: 'rgba(255,255,255,0.08)',
+    cardBorder: '#2a2a2f',
     textPrimary: '#ffffff',
-    textSecondary: 'rgba(255,255,255,0.7)',
-    textMuted: 'rgba(255,255,255,0.4)',
+    textSecondary: '#cccccc',
+    textMuted: '#999999',
   };
   
   // Logo URL - served from public assets folder
