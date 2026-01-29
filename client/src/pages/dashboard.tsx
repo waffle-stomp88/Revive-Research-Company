@@ -57,6 +57,16 @@ import {
   Gem,
   Rocket,
   FlaskConical,
+  Edit3,
+  Pin,
+  StickyNote,
+  Download,
+  MapPin,
+  Bell,
+  Lock,
+  Monitor,
+  Smartphone,
+  Mail,
 } from "lucide-react";
 import type { Order, Product, ReviewableOrder, Coa, ResearchPhase, ResearchTitle } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -122,6 +132,22 @@ export default function Dashboard() {
   const [reviewTitle, setReviewTitle] = useState("");
   const [reviewComment, setReviewComment] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [addressEditDialogOpen, setAddressEditDialogOpen] = useState(false);
+  const [editingAddress, setEditingAddress] = useState<{
+    id: string;
+    label: string;
+    firstName: string;
+    lastName: string;
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  } | null>(null);
+  const [noteDialogOpen, setNoteDialogOpen] = useState(false);
+  const [editingNote, setEditingNote] = useState<{id: string; title: string; content: string} | null>(null);
+  const [noteTitle, setNoteTitle] = useState("");
+  const [noteContent, setNoteContent] = useState("");
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -173,6 +199,81 @@ export default function Dashboard() {
     enabled: isAuthenticated,
   });
 
+  const { data: subscriptions, isLoading: subscriptionsLoading } = useQuery<Array<{
+    id: string;
+    paypalSubscriptionId: string;
+    status: string;
+    frequency: string;
+    productId: string;
+    createdAt: string;
+    nextBillingDate: string | null;
+  }>>({
+    queryKey: ["/api/user/subscriptions"],
+    enabled: isAuthenticated,
+  });
+
+  const { data: researchNotes, isLoading: notesLoading } = useQuery<Array<{
+    id: string;
+    title: string;
+    content: string;
+    productId: string | null;
+    tags: string[] | null;
+    isPinned: boolean;
+    createdAt: string;
+    updatedAt: string;
+  }>>({
+    queryKey: ["/api/research-notes"],
+    enabled: isAuthenticated,
+  });
+
+  const { data: batchHistory } = useQuery<Array<{
+    id: string;
+    batchNumber: string;
+    productName: string | null;
+    verifiedAt: string;
+  }>>({
+    queryKey: ["/api/batch-verification-history"],
+    enabled: isAuthenticated,
+  });
+
+  const { data: savedAddresses, isLoading: addressesLoading } = useQuery<Array<{
+    id: string;
+    label: string;
+    firstName: string;
+    lastName: string;
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+    isDefault: boolean;
+  }>>({
+    queryKey: ["/api/addresses"],
+    enabled: isAuthenticated,
+  });
+
+  const { data: notificationPrefs, isLoading: prefsLoading } = useQuery<{
+    id: string;
+    orderUpdates: boolean;
+    promotions: boolean;
+    newsletter: boolean;
+    smsAlerts: boolean;
+    emailDigest: string;
+  }>({
+    queryKey: ["/api/notification-preferences"],
+    enabled: isAuthenticated,
+  });
+
+  const { data: loginHistory, isLoading: loginHistoryLoading } = useQuery<Array<{
+    id: string;
+    ipAddress: string | null;
+    userAgent: string | null;
+    loginAt: string;
+  }>>({
+    queryKey: ["/api/login-history"],
+    enabled: isAuthenticated,
+  });
+
   const submitReviewMutation = useMutation({
     mutationFn: async (data: { orderId: string; productId: string; rating: number; title: string; comment: string }) => {
       return apiRequest("POST", "/api/reviews", data);
@@ -199,6 +300,119 @@ export default function Dashboard() {
       toast({ title: "Removed", description: "Item removed from wishlist." });
     },
   });
+
+  const createNoteMutation = useMutation({
+    mutationFn: async (data: { title: string; content: string }) => {
+      return apiRequest("POST", "/api/research-notes", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/research-notes"] });
+      toast({ title: "Note Created", description: "Your research note has been saved." });
+      setNoteDialogOpen(false);
+      setNoteTitle("");
+      setNoteContent("");
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to create note. Please try again.", variant: "destructive" });
+    },
+  });
+
+  const updateNoteMutation = useMutation({
+    mutationFn: async ({ id, ...data }: { id: string; title: string; content: string }) => {
+      return apiRequest("PATCH", `/api/research-notes/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/research-notes"] });
+      toast({ title: "Note Updated", description: "Your changes have been saved." });
+      setNoteDialogOpen(false);
+      setEditingNote(null);
+      setNoteTitle("");
+      setNoteContent("");
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to update note. Please try again.", variant: "destructive" });
+    },
+  });
+
+  const deleteNoteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return apiRequest("DELETE", `/api/research-notes/${id}`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/research-notes"] });
+      toast({ title: "Note Deleted", description: "Your note has been removed." });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to delete note. Please try again.", variant: "destructive" });
+    },
+  });
+
+  const togglePinMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return apiRequest("POST", `/api/research-notes/${id}/toggle-pin`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/research-notes"] });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to toggle pin. Please try again.", variant: "destructive" });
+    },
+  });
+
+  const updateNotificationPrefsMutation = useMutation({
+    mutationFn: async (data: Partial<{orderUpdates: boolean; promotions: boolean; newsletter: boolean; smsAlerts: boolean; emailDigest: string}>) => {
+      return apiRequest("PATCH", "/api/notification-preferences", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/notification-preferences"] });
+      toast({ title: "Preferences Updated", description: "Your notification settings have been saved." });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to update preferences. Please try again.", variant: "destructive" });
+    },
+  });
+
+  const deleteAddressMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return apiRequest("DELETE", `/api/addresses/${id}`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/addresses"] });
+      toast({ title: "Address Deleted", description: "Your address has been removed." });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to delete address. Please try again.", variant: "destructive" });
+    },
+  });
+
+  const setDefaultAddressMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return apiRequest("POST", `/api/addresses/${id}/default`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/addresses"] });
+      toast({ title: "Default Address Set", description: "Your default address has been updated." });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to set default address. Please try again.", variant: "destructive" });
+    },
+  });
+
+  const updateAddressMutation = useMutation({
+    mutationFn: async (data: { id: string; label: string; firstName: string; lastName: string; street: string; city: string; state: string; zipCode: string; country: string }) => {
+      return apiRequest("PATCH", `/api/addresses/${data.id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/addresses"] });
+      toast({ title: "Address Updated", description: "Your address has been updated." });
+      setAddressEditDialogOpen(false);
+      setEditingAddress(null);
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to update address. Please try again.", variant: "destructive" });
+    },
+  });
+
 
   const handleWriteReview = (order: ReviewableOrder) => {
     setSelectedOrder(order);
@@ -322,6 +536,66 @@ export default function Dashboard() {
     });
     toast({ title: "Added to Cart", description: `${product.name} added to your cart.` });
   };
+
+  const handleReorder = (order: Order) => {
+    const product = products?.find(p => p.id === order.productId);
+    if (!product) {
+      toast({ title: "Cannot Reorder", description: "Product no longer available.", variant: "destructive" });
+      return;
+    }
+    const dosage = product.dosageOptions?.[0];
+    if (!dosage) {
+      toast({ title: "Cannot Reorder", description: "No dosage options available.", variant: "destructive" });
+      return;
+    }
+    addToCart({
+      productId: product.id,
+      name: product.name,
+      price: Number(product.price),
+      quantity: order.quantity,
+      dosage,
+      image: product.imageUrl || undefined,
+    });
+    toast({ title: "Added to Cart", description: `${product.name} added to your cart for reorder.` });
+  };
+
+  const getOrderNumber = (orderId: string) => {
+    return `#${orderId.slice(-8).toUpperCase()}`;
+  };
+
+  const getStatusStep = (status: string | null) => {
+    const steps = ['pending', 'processing', 'shipped', 'delivered'];
+    const idx = steps.indexOf(status || 'pending');
+    return idx >= 0 ? idx : 0;
+  };
+
+  const handleOpenNoteDialog = (note?: { id: string; title: string; content: string }) => {
+    if (note) {
+      setEditingNote(note);
+      setNoteTitle(note.title);
+      setNoteContent(note.content);
+    } else {
+      setEditingNote(null);
+      setNoteTitle("");
+      setNoteContent("");
+    }
+    setNoteDialogOpen(true);
+  };
+
+  const handleSaveNote = () => {
+    if (!noteTitle.trim() || !noteContent.trim()) return;
+    if (editingNote) {
+      updateNoteMutation.mutate({ id: editingNote.id, title: noteTitle, content: noteContent });
+    } else {
+      createNoteMutation.mutate({ title: noteTitle, content: noteContent });
+    }
+  };
+
+  const sortedNotes = researchNotes?.slice().sort((a, b) => {
+    if (a.isPinned && !b.isPinned) return -1;
+    if (!a.isPinned && b.isPinned) return 1;
+    return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+  }) || [];
 
   if (authLoading) {
     return (
@@ -572,7 +846,7 @@ export default function Dashboard() {
                           <ShoppingBag className="h-10 w-10 mx-auto text-muted-foreground/30 mb-3" />
                           <p className="text-sm text-muted-foreground mb-3">No orders yet</p>
                           <Link href="/products">
-                            <Button size="sm" className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90" data-testid="button-browse-products-orders">
+                            <Button size="sm" className="bg-[#E7FB10] text-black" data-testid="button-browse-products-orders">
                               Browse Products
                             </Button>
                           </Link>
@@ -601,10 +875,10 @@ export default function Dashboard() {
                                 <p className="font-medium text-sm truncate">{product.name}</p>
                                 <p className="text-xs text-muted-foreground">${Number(product.price).toFixed(2)}</p>
                               </div>
-                              <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleAddToCart(product)} data-testid={`button-add-to-cart-${product.id}`}>
+                              <Button size="icon" variant="ghost" onClick={() => handleAddToCart(product)} data-testid={`button-add-to-cart-${product.id}`}>
                                 <Plus className="h-4 w-4" />
                               </Button>
-                              <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground" onClick={() => removeMutation.mutate(product.id)} data-testid={`button-remove-wishlist-${product.id}`}>
+                              <Button size="icon" variant="ghost" className="text-muted-foreground" onClick={() => removeMutation.mutate(product.id)} data-testid={`button-remove-wishlist-${product.id}`}>
                                 <X className="h-4 w-4" />
                               </Button>
                             </div>
@@ -777,6 +1051,51 @@ export default function Dashboard() {
 
                 {/* Orders Tab */}
                 <TabsContent value="orders" className="space-y-6">
+                  {/* Subscriptions Section */}
+                  {subscriptions && subscriptions.length > 0 && (
+                    <Card className="border-[#21d8ff]/30 bg-gradient-to-br from-[#21d8ff]/5 to-transparent">
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <CardTitle className="flex items-center gap-2">
+                              <RefreshCw className="h-5 w-5 text-[#21d8ff]" />
+                              Active Subscriptions
+                            </CardTitle>
+                            <CardDescription>Manage your recurring orders</CardDescription>
+                          </div>
+                          <Badge className="bg-[#21d8ff]/10 text-[#21d8ff] border-[#21d8ff]/30">
+                            {subscriptions.filter(s => s.status === 'active').length} active
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        {subscriptions.map((sub) => (
+                          <div key={sub.id} className="flex items-center gap-4 p-4 rounded-lg border border-[#21d8ff]/20 bg-[#21d8ff]/5" data-testid={`subscription-${sub.id}`}>
+                            <div className="h-10 w-10 rounded-full bg-[#21d8ff]/20 flex items-center justify-center">
+                              <RefreshCw className="h-5 w-5 text-[#21d8ff]" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium truncate">{getProductName(sub.productId)}</p>
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <span className="capitalize">{sub.frequency}</span>
+                                {sub.nextBillingDate && (
+                                  <>
+                                    <span>•</span>
+                                    <span>Next: {formatDate(sub.nextBillingDate)}</span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                            <Badge className={sub.status === 'active' ? 'bg-green-500/10 text-green-500 border-green-500/30' : 'bg-muted text-muted-foreground'}>
+                              {sub.status}
+                            </Badge>
+                          </div>
+                        ))}
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Order History */}
                   <Card>
                     <CardHeader>
                       <div className="flex items-center justify-between">
@@ -788,7 +1107,7 @@ export default function Dashboard() {
                           <CardDescription>View and track your orders</CardDescription>
                         </div>
                         <Link href="/products">
-                          <Button size="sm" className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90" data-testid="button-shop-more">
+                          <Button size="sm" className="bg-[#E7FB10] text-black" data-testid="button-shop-more">
                             Shop More
                             <ArrowRight className="h-4 w-4 ml-2" />
                           </Button>
@@ -798,33 +1117,61 @@ export default function Dashboard() {
                     <CardContent>
                       {ordersLoading ? (
                         <div className="space-y-4">
-                          {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-16 w-full" />)}
+                          {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-24 w-full" />)}
                         </div>
                       ) : orders && orders.length > 0 ? (
                         <div className="space-y-4">
                           {orders.map((order, idx) => {
                             const colors = ['#E7FB10', '#21d8ff', '#9d4edd', '#ec4899', '#f97316'];
                             const color = colors[idx % colors.length];
+                            const statusStep = getStatusStep(order.status);
                             return (
-                              <div key={order.id} className="flex items-center gap-4 p-4 rounded-lg border" data-testid={`order-item-${order.id}`}>
-                                <div className="h-12 w-12 rounded flex items-center justify-center" style={{ backgroundColor: `${color}15` }}>
-                                  <Package className="h-6 w-6" style={{ color }} />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <p className="font-medium truncate">{getProductName(order.productId)}</p>
-                                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                    <Calendar className="h-3 w-3" />
-                                    <span>{formatDate(order.createdAt)}</span>
-                                    <span>•</span>
-                                    <span>Qty: {order.quantity}</span>
+                              <div key={order.id} className="p-4 rounded-lg border" data-testid={`order-item-${order.id}`}>
+                                {/* Order Header */}
+                                <div className="flex items-start gap-4 mb-3">
+                                  <div className="h-12 w-12 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${color}15` }}>
+                                    <Package className="h-6 w-6" style={{ color }} />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      <p className="font-medium truncate">{getProductName(order.productId)}</p>
+                                      <span className="text-xs text-muted-foreground font-mono">{getOrderNumber(order.id)}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-sm text-muted-foreground mt-0.5">
+                                      <Calendar className="h-3 w-3" />
+                                      <span>{formatDate(order.createdAt)}</span>
+                                      <span>•</span>
+                                      <span>Qty: {order.quantity}</span>
+                                    </div>
+                                  </div>
+                                  <div className="text-right shrink-0">
+                                    <p className="font-semibold text-lg">${Number(order.totalAmount).toFixed(2)}</p>
+                                    <Button 
+                                      size="sm" 
+                                      variant="ghost" 
+                                      className="text-[#21d8ff]"
+                                      onClick={() => handleReorder(order)}
+                                      data-testid={`button-reorder-${order.id}`}
+                                    >
+                                      <RefreshCw className="h-3 w-3 mr-1" />
+                                      Reorder
+                                    </Button>
                                   </div>
                                 </div>
-                                <div className="text-right">
-                                  <p className="font-semibold">${Number(order.totalAmount).toFixed(2)}</p>
-                                  <Badge variant={getStatusColor(order.status)} className="mt-1">
-                                    {getStatusIcon(order.status)}
-                                    <span className="ml-1 capitalize">{order.status || "pending"}</span>
-                                  </Badge>
+                                
+                                {/* Status Timeline */}
+                                <div className="flex items-center gap-1 mt-3 pt-3 border-t border-white/5">
+                                  {['Confirmed', 'Processing', 'Shipped', 'Delivered'].map((step, i) => {
+                                    const isComplete = i <= statusStep;
+                                    const isCurrent = i === statusStep;
+                                    return (
+                                      <div key={step} className="flex-1 flex items-center gap-1">
+                                        <div className={`h-2 w-2 rounded-full shrink-0 ${isComplete ? 'bg-green-500' : 'bg-muted'} ${isCurrent ? 'ring-2 ring-green-500/30' : ''}`} />
+                                        <div className={`flex-1 h-0.5 ${i < 3 ? (i < statusStep ? 'bg-green-500' : 'bg-muted') : 'hidden'}`} />
+                                        <span className={`text-[10px] hidden sm:block ${isComplete ? 'text-green-500' : 'text-muted-foreground'}`}>{step}</span>
+                                      </div>
+                                    );
+                                  })}
                                 </div>
                               </div>
                             );
@@ -836,7 +1183,7 @@ export default function Dashboard() {
                           <h3 className="font-medium mb-2">No orders yet</h3>
                           <p className="text-sm text-muted-foreground mb-4">Start shopping to see your order history</p>
                           <Link href="/products">
-                            <Button className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90" data-testid="button-browse-products-history">Browse Products</Button>
+                            <Button className="bg-[#E7FB10] text-black" data-testid="button-browse-products-history">Browse Products</Button>
                           </Link>
                         </div>
                       )}
@@ -977,6 +1324,145 @@ export default function Dashboard() {
                     </Card>
                   )}
 
+                  {/* Research Notes */}
+                  <Card className="border-[#9d4edd]/20 bg-gradient-to-br from-[#9d4edd]/5 to-transparent">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle className="flex items-center gap-2">
+                            <StickyNote className="h-5 w-5 text-[#9d4edd]" />
+                            Research Notes
+                          </CardTitle>
+                          <CardDescription>Personal journal for your research observations</CardDescription>
+                        </div>
+                        <Button size="sm" onClick={() => handleOpenNoteDialog()} data-testid="button-add-note">
+                          <Plus className="h-4 w-4 mr-1" />
+                          New Note
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      {notesLoading ? (
+                        <div className="space-y-3">
+                          {[...Array(2)].map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}
+                        </div>
+                      ) : sortedNotes.length > 0 ? (
+                        <div className="space-y-3">
+                          {sortedNotes.slice(0, 5).map((note) => (
+                            <div key={note.id} className="p-4 rounded-lg border border-[#9d4edd]/20 bg-[#9d4edd]/5 group" data-testid={`note-${note.id}`}>
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2">
+                                    {note.isPinned && <Pin className="h-3 w-3 text-[#9d4edd]" />}
+                                    <p className="font-medium truncate">{note.title}</p>
+                                  </div>
+                                  <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{note.content}</p>
+                                  <p className="text-xs text-muted-foreground mt-2">{formatDate(note.updatedAt)}</p>
+                                </div>
+                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <Button 
+                                    size="icon" 
+                                    variant="ghost" 
+                                    disabled={togglePinMutation.isPending}
+                                    onClick={() => togglePinMutation.mutate(note.id)}
+                                    data-testid={`button-pin-${note.id}`}
+                                  >
+                                    <Pin className={`h-4 w-4 ${note.isPinned ? 'text-[#9d4edd]' : ''}`} />
+                                  </Button>
+                                  <Button 
+                                    size="icon" 
+                                    variant="ghost" 
+                                    onClick={() => handleOpenNoteDialog({ id: note.id, title: note.title, content: note.content })}
+                                    data-testid={`button-edit-${note.id}`}
+                                  >
+                                    <Edit3 className="h-4 w-4" />
+                                  </Button>
+                                  <Button 
+                                    size="icon" 
+                                    variant="ghost" 
+                                    className="text-red-500"
+                                    disabled={deleteNoteMutation.isPending}
+                                    onClick={() => deleteNoteMutation.mutate(note.id)}
+                                    data-testid={`button-delete-${note.id}`}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                          {sortedNotes.length > 5 && (
+                            <p className="text-xs text-muted-foreground text-center">+{sortedNotes.length - 5} more notes</p>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="text-center py-8">
+                          <StickyNote className="h-10 w-10 mx-auto text-muted-foreground/30 mb-3" />
+                          <p className="text-sm text-muted-foreground mb-3">No research notes yet</p>
+                          <Button size="sm" variant="outline" onClick={() => handleOpenNoteDialog()} data-testid="button-add-first-note">
+                            <Plus className="h-4 w-4 mr-1" />
+                            Create Your First Note
+                          </Button>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Batch Verification History */}
+                  <Card className="border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 to-transparent">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle className="flex items-center gap-2">
+                            <History className="h-5 w-5 text-[#21d8ff]" />
+                            Batch Verification History
+                          </CardTitle>
+                          <CardDescription>Track your verified COA batches</CardDescription>
+                        </div>
+                        <Link href="/coa">
+                          <Button size="sm" variant="outline" className="border-[#21d8ff]/40" data-testid="button-verify-new">
+                            <FileCheck className="h-4 w-4 mr-1" />
+                            Verify New
+                          </Button>
+                        </Link>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      {batchHistory && batchHistory.length > 0 ? (
+                        <div className="space-y-2">
+                          {batchHistory.slice(0, 5).map((item) => (
+                            <div key={item.id} className="flex items-center gap-3 p-3 rounded-lg border border-[#21d8ff]/20 bg-[#21d8ff]/5" data-testid={`batch-${item.id}`}>
+                              <div className="h-8 w-8 rounded-full bg-[#21d8ff]/20 flex items-center justify-center shrink-0">
+                                <FileCheck className="h-4 w-4 text-[#21d8ff]" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-mono text-sm font-medium">{item.batchNumber}</p>
+                                {item.productName && <p className="text-xs text-muted-foreground truncate">{item.productName}</p>}
+                              </div>
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <CheckCircle className="h-3 w-3 text-green-500" />
+                                <span>{formatDate(item.verifiedAt)}</span>
+                              </div>
+                            </div>
+                          ))}
+                          {batchHistory.length > 5 && (
+                            <p className="text-xs text-muted-foreground text-center pt-2">+{batchHistory.length - 5} more verifications</p>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="text-center py-8">
+                          <FileCheck className="h-10 w-10 mx-auto text-muted-foreground/30 mb-3" />
+                          <p className="text-sm text-muted-foreground mb-3">No batch verifications yet</p>
+                          <Link href="/coa">
+                            <Button size="sm" className="bg-[#21d8ff] text-black" data-testid="button-verify-first">
+                              Verify Your First Batch
+                            </Button>
+                          </Link>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
                   {/* Achievements */}
                   <Card>
                     <CardHeader>
@@ -1095,11 +1581,295 @@ export default function Dashboard() {
                         </div>
                       </div>
                       <Link href="/account-settings">
-                        <Button className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90" data-testid="button-account-settings">
+                        <Button className="w-full bg-[#E7FB10] text-black" data-testid="button-account-settings">
                           Edit Profile
                           <ArrowRight className="h-4 w-4 ml-2" />
                         </Button>
                       </Link>
+                    </CardContent>
+                  </Card>
+
+                  {/* Saved Addresses */}
+                  <Card className="border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 via-transparent to-transparent">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="flex items-center gap-2">
+                          <div className="p-2 rounded-lg bg-[#E7FB10]/20">
+                            <MapPin className="h-5 w-5 text-[#E7FB10]" />
+                          </div>
+                          <span>Saved Addresses</span>
+                        </CardTitle>
+                        <Link href="/account-settings#addresses">
+                          <Button size="sm" variant="outline" className="border-[#E7FB10]/40" data-testid="button-add-address">
+                            <Plus className="h-4 w-4 mr-1" />
+                            Add
+                          </Button>
+                        </Link>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      {addressesLoading ? (
+                        <div className="space-y-2">
+                          {[...Array(2)].map((_, i) => <Skeleton key={i} className="h-16 w-full" />)}
+                        </div>
+                      ) : savedAddresses && savedAddresses.length > 0 ? (
+                        <div className="space-y-3">
+                          {savedAddresses.slice(0, 3).map((addr) => (
+                            <div key={addr.id} className="p-4 rounded-lg border border-[#E7FB10]/20 bg-[#E7FB10]/5 flex items-start justify-between gap-3 group" data-testid={`address-${addr.id}`}>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <p className="font-medium">{addr.label || "Address"}</p>
+                                  {addr.isDefault && (
+                                    <Badge className="bg-[#E7FB10]/10 text-[#E7FB10] border-[#E7FB10]/30 text-xs">Default</Badge>
+                                  )}
+                                </div>
+                                <p className="text-sm text-muted-foreground">
+                                  {addr.firstName} {addr.lastName}
+                                </p>
+                                <p className="text-sm text-muted-foreground truncate">
+                                  {addr.street}, {addr.city}, {addr.state} {addr.zipCode}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                {!addr.isDefault && (
+                                  <Button 
+                                    size="icon" 
+                                    variant="ghost" 
+                                    disabled={setDefaultAddressMutation.isPending}
+                                    onClick={() => setDefaultAddressMutation.mutate(addr.id)}
+                                    data-testid={`button-set-default-${addr.id}`}
+                                  >
+                                    <CheckCircle className="h-4 w-4" />
+                                  </Button>
+                                )}
+                                <Button 
+                                  size="icon" 
+                                  variant="ghost" 
+                                  onClick={() => {
+                                    setEditingAddress({
+                                      id: addr.id,
+                                      label: addr.label,
+                                      firstName: addr.firstName,
+                                      lastName: addr.lastName,
+                                      street: addr.street,
+                                      city: addr.city,
+                                      state: addr.state,
+                                      zipCode: addr.zipCode,
+                                      country: addr.country,
+                                    });
+                                    setAddressEditDialogOpen(true);
+                                  }}
+                                  data-testid={`button-edit-address-${addr.id}`}
+                                >
+                                  <Edit3 className="h-4 w-4" />
+                                </Button>
+                                <Button 
+                                  size="icon" 
+                                  variant="ghost" 
+                                  className="text-red-500"
+                                  disabled={deleteAddressMutation.isPending}
+                                  onClick={() => deleteAddressMutation.mutate(addr.id)}
+                                  data-testid={`button-delete-address-${addr.id}`}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                          {savedAddresses.length > 3 && (
+                            <p className="text-xs text-muted-foreground text-center">+{savedAddresses.length - 3} more addresses</p>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="text-center py-6">
+                          <MapPin className="h-8 w-8 mx-auto text-muted-foreground/30 mb-2" />
+                          <p className="text-sm text-muted-foreground mb-3">No saved addresses</p>
+                          <Link href="/account-settings#addresses">
+                            <Button size="sm" variant="outline" data-testid="button-add-first-address">
+                              <Plus className="h-4 w-4 mr-1" />
+                              Add Address
+                            </Button>
+                          </Link>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Notification Preferences */}
+                  <Card className="border-[#ec4899]/20 bg-gradient-to-br from-[#ec4899]/5 via-transparent to-transparent">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <div className="p-2 rounded-lg bg-[#ec4899]/20">
+                          <Bell className="h-5 w-5 text-[#ec4899]" />
+                        </div>
+                        <span>Notification Preferences</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {prefsLoading ? (
+                        <div className="space-y-3">
+                          {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}
+                        </div>
+                      ) : notificationPrefs ? (
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between p-3 rounded-lg border border-white/10">
+                            <div className="flex items-center gap-3">
+                              <Package className="h-4 w-4 text-muted-foreground" />
+                              <div>
+                                <p className="text-sm font-medium">Order Updates</p>
+                                <p className="text-xs text-muted-foreground">Shipping and delivery notifications</p>
+                              </div>
+                            </div>
+                            <Button 
+                              size="sm" 
+                              variant={notificationPrefs.orderUpdates ? "default" : "outline"}
+                              disabled={updateNotificationPrefsMutation.isPending}
+                              onClick={() => updateNotificationPrefsMutation.mutate({ orderUpdates: !notificationPrefs.orderUpdates })}
+                              data-testid="toggle-order-updates"
+                            >
+                              {updateNotificationPrefsMutation.isPending ? "..." : notificationPrefs.orderUpdates ? "On" : "Off"}
+                            </Button>
+                          </div>
+                          <div className="flex items-center justify-between p-3 rounded-lg border border-white/10">
+                            <div className="flex items-center gap-3">
+                              <Sparkles className="h-4 w-4 text-muted-foreground" />
+                              <div>
+                                <p className="text-sm font-medium">Promotions</p>
+                                <p className="text-xs text-muted-foreground">Deals and special offers</p>
+                              </div>
+                            </div>
+                            <Button 
+                              size="sm" 
+                              variant={notificationPrefs.promotions ? "default" : "outline"}
+                              disabled={updateNotificationPrefsMutation.isPending}
+                              onClick={() => updateNotificationPrefsMutation.mutate({ promotions: !notificationPrefs.promotions })}
+                              data-testid="toggle-promotions"
+                            >
+                              {updateNotificationPrefsMutation.isPending ? "..." : notificationPrefs.promotions ? "On" : "Off"}
+                            </Button>
+                          </div>
+                          <div className="flex items-center justify-between p-3 rounded-lg border border-white/10">
+                            <div className="flex items-center gap-3">
+                              <Mail className="h-4 w-4 text-muted-foreground" />
+                              <div>
+                                <p className="text-sm font-medium">Newsletter</p>
+                                <p className="text-xs text-muted-foreground">Research updates and news</p>
+                              </div>
+                            </div>
+                            <Button 
+                              size="sm" 
+                              variant={notificationPrefs.newsletter ? "default" : "outline"}
+                              disabled={updateNotificationPrefsMutation.isPending}
+                              onClick={() => updateNotificationPrefsMutation.mutate({ newsletter: !notificationPrefs.newsletter })}
+                              data-testid="toggle-newsletter"
+                            >
+                              {updateNotificationPrefsMutation.isPending ? "..." : notificationPrefs.newsletter ? "On" : "Off"}
+                            </Button>
+                          </div>
+                          <div className="flex items-center justify-between p-3 rounded-lg border border-white/10">
+                            <div className="flex items-center gap-3">
+                              <Smartphone className="h-4 w-4 text-muted-foreground" />
+                              <div>
+                                <p className="text-sm font-medium">SMS Alerts</p>
+                                <p className="text-xs text-muted-foreground">Text message notifications</p>
+                              </div>
+                            </div>
+                            <Button 
+                              size="sm" 
+                              variant={notificationPrefs.smsAlerts ? "default" : "outline"}
+                              disabled={updateNotificationPrefsMutation.isPending}
+                              onClick={() => updateNotificationPrefsMutation.mutate({ smsAlerts: !notificationPrefs.smsAlerts })}
+                              data-testid="toggle-sms"
+                            >
+                              {updateNotificationPrefsMutation.isPending ? "..." : notificationPrefs.smsAlerts ? "On" : "Off"}
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="text-center py-6">
+                          <Bell className="h-8 w-8 mx-auto text-muted-foreground/30 mb-2" />
+                          <p className="text-sm text-muted-foreground">Loading preferences...</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Security & Login Activity */}
+                  <Card className="border-[#f97316]/20 bg-gradient-to-br from-[#f97316]/5 via-transparent to-transparent">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <div className="p-2 rounded-lg bg-[#f97316]/20">
+                          <Lock className="h-5 w-5 text-[#f97316]" />
+                        </div>
+                        <span>Security & Login Activity</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="p-3 rounded-lg border border-white/10 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Shield className="h-4 w-4 text-green-500" />
+                            <div>
+                              <p className="text-sm font-medium">Account Security</p>
+                              <p className="text-xs text-muted-foreground">Your account is protected</p>
+                            </div>
+                          </div>
+                          <Badge className="bg-green-500/10 text-green-500 border-green-500/30">Secure</Badge>
+                        </div>
+                        
+                        <div className="p-3 rounded-lg border border-white/10 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Lock className="h-4 w-4 text-muted-foreground" />
+                            <div>
+                              <p className="text-sm font-medium">Password & Account</p>
+                              <p className="text-xs text-muted-foreground">Managed securely by Replit</p>
+                            </div>
+                          </div>
+                          <a 
+                            href="https://replit.com/account" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                          >
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              data-testid="button-manage-account"
+                            >
+                              Manage
+                              <ExternalLink className="h-3 w-3 ml-1" />
+                            </Button>
+                          </a>
+                        </div>
+                        
+                        <div className="pt-2">
+                          <p className="text-sm font-medium mb-3 flex items-center gap-2">
+                            <History className="h-4 w-4" />
+                            Recent Login Activity
+                          </p>
+                          {loginHistoryLoading ? (
+                            <div className="space-y-2">
+                              {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
+                            </div>
+                          ) : loginHistory && loginHistory.length > 0 ? (
+                            <div className="space-y-2">
+                              {loginHistory.slice(0, 5).map((login, idx) => (
+                                <div key={login.id} className="flex items-center gap-3 p-2 rounded-lg bg-muted/20 text-sm" data-testid={`login-${login.id}`}>
+                                  <Monitor className="h-4 w-4 text-muted-foreground shrink-0" />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="truncate text-xs text-muted-foreground">
+                                      {login.userAgent?.split(' ').slice(0, 3).join(' ') || 'Unknown device'}
+                                    </p>
+                                  </div>
+                                  <span className="text-xs text-muted-foreground shrink-0">{formatDate(login.loginAt)}</span>
+                                  {idx === 0 && <Badge className="bg-green-500/10 text-green-500 border-green-500/30 text-xs">Current</Badge>}
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-sm text-muted-foreground text-center py-4">No login history available</p>
+                          )}
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
 
@@ -1126,7 +1896,7 @@ export default function Dashboard() {
                             </div>
                           </div>
                           <Link href="/affiliate/dashboard">
-                            <Button variant="outline" className="w-full border-[#9d4edd]/40 hover:border-[#9d4edd]/60 hover:bg-[#9d4edd]/10" data-testid="button-affiliate-dashboard">
+                            <Button variant="outline" className="w-full border-[#9d4edd]/40" data-testid="button-affiliate-dashboard">
                               View Dashboard
                               <ExternalLink className="h-4 w-4 ml-2" />
                             </Button>
@@ -1239,10 +2009,64 @@ export default function Dashboard() {
             <Button
               onClick={handleSubmitReview}
               disabled={submitReviewMutation.isPending || reviewComment.length < 10}
-              className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
+              className="bg-[#E7FB10] text-black"
               data-testid="button-submit-review"
             >
               {submitReviewMutation.isPending ? "Submitting..." : "Submit Review"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Note Dialog */}
+      <Dialog open={noteDialogOpen} onOpenChange={(open) => {
+        setNoteDialogOpen(open);
+        if (!open) {
+          setEditingNote(null);
+          setNoteTitle("");
+          setNoteContent("");
+        }
+      }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{editingNote ? "Edit Note" : "New Research Note"}</DialogTitle>
+            <DialogDescription>
+              Record your research observations and insights
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="note-title">Title</Label>
+              <Input
+                id="note-title"
+                placeholder="Note title"
+                value={noteTitle}
+                onChange={(e) => setNoteTitle(e.target.value)}
+                data-testid="input-note-title"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="note-content">Content</Label>
+              <Textarea
+                id="note-content"
+                placeholder="Write your observations..."
+                value={noteContent}
+                onChange={(e) => setNoteContent(e.target.value)}
+                rows={6}
+                data-testid="input-note-content"
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={() => setNoteDialogOpen(false)} data-testid="button-cancel-note">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSaveNote}
+              disabled={createNoteMutation.isPending || updateNoteMutation.isPending || !noteTitle.trim() || !noteContent.trim()}
+              data-testid="button-save-note"
+            >
+              {(createNoteMutation.isPending || updateNoteMutation.isPending) ? "Saving..." : editingNote ? "Update" : "Create"}
             </Button>
           </div>
         </DialogContent>
@@ -1266,6 +2090,109 @@ export default function Dashboard() {
                 Continue to Delete
               </Button>
             </Link>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+
+      {/* Address Edit Dialog */}
+      <Dialog open={addressEditDialogOpen} onOpenChange={(open) => {
+        setAddressEditDialogOpen(open);
+        if (!open) setEditingAddress(null);
+      }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Address</DialogTitle>
+            <DialogDescription>
+              Update your address details.
+            </DialogDescription>
+          </DialogHeader>
+          {editingAddress && (
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Label</label>
+                <Input 
+                  value={editingAddress.label} 
+                  onChange={(e) => setEditingAddress({ ...editingAddress, label: e.target.value })}
+                  placeholder="e.g., Home, Work"
+                  data-testid="input-address-label"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">First Name</label>
+                  <Input 
+                    value={editingAddress.firstName} 
+                    onChange={(e) => setEditingAddress({ ...editingAddress, firstName: e.target.value })}
+                    data-testid="input-address-firstname"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Last Name</label>
+                  <Input 
+                    value={editingAddress.lastName} 
+                    onChange={(e) => setEditingAddress({ ...editingAddress, lastName: e.target.value })}
+                    data-testid="input-address-lastname"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Street Address</label>
+                <Input 
+                  value={editingAddress.street} 
+                  onChange={(e) => setEditingAddress({ ...editingAddress, street: e.target.value })}
+                  data-testid="input-address-street"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">City</label>
+                  <Input 
+                    value={editingAddress.city} 
+                    onChange={(e) => setEditingAddress({ ...editingAddress, city: e.target.value })}
+                    data-testid="input-address-city"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">State</label>
+                  <Input 
+                    value={editingAddress.state} 
+                    onChange={(e) => setEditingAddress({ ...editingAddress, state: e.target.value })}
+                    data-testid="input-address-state"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">ZIP Code</label>
+                  <Input 
+                    value={editingAddress.zipCode} 
+                    onChange={(e) => setEditingAddress({ ...editingAddress, zipCode: e.target.value })}
+                    data-testid="input-address-zipcode"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Country</label>
+                  <Input 
+                    value={editingAddress.country} 
+                    onChange={(e) => setEditingAddress({ ...editingAddress, country: e.target.value })}
+                    data-testid="input-address-country"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={() => setAddressEditDialogOpen(false)} data-testid="button-cancel-address-edit">
+              Cancel
+            </Button>
+            <Button
+              onClick={() => editingAddress && updateAddressMutation.mutate(editingAddress)}
+              disabled={updateAddressMutation.isPending || !editingAddress?.firstName || !editingAddress?.lastName || !editingAddress?.street || !editingAddress?.city || !editingAddress?.state || !editingAddress?.zipCode}
+              data-testid="button-save-address"
+            >
+              {updateAddressMutation.isPending ? "Saving..." : "Save Address"}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
