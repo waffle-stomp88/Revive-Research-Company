@@ -238,19 +238,12 @@ ${brand.name}
               
               <!-- Logo Section -->
               <div style="padding: 40px 40px 20px 40px;">
-                <!-- Text-based Logo (Outlook compatible) -->
-                <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto 16px auto;">
-                  <tr>
-                    <td style="width: 48px; height: 48px; border: 2px solid ${styles.primaryColor}; border-radius: 50%; text-align: center; vertical-align: middle;">
-                      <span style="color: ${styles.primaryColor}; font-size: 20px; font-weight: 700;">RR</span>
-                    </td>
-                  </tr>
-                </table>
+                <!-- Clickable Logo Image -->
+                <a href="https://reviveresearch.co" target="_blank" style="display: inline-block; text-decoration: none;">
+                  <img src="https://reviveresearch.co/assets/email-logo.png" alt="Revive Research" width="180" style="display: block; margin: 0 auto 16px auto; max-width: 180px; height: auto;" />
+                </a>
                 
-                <!-- Brand Name -->
-                <p style="color: ${styles.primaryColor}; font-size: 13px; font-weight: 700; letter-spacing: 4px; margin: 0 0 4px 0; text-transform: uppercase;">
-                  REVIVE RESEARCH
-                </p>
+                <!-- Tagline -->
                 <p style="color: rgba(255,255,255,0.4); font-size: 11px; letter-spacing: 2px; margin: 0; text-transform: uppercase;">
                   Premium Research Compounds
                 </p>
