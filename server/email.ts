@@ -1079,8 +1079,8 @@ Unsubscribe: ${unsubscribeUrl}`;
               </table>
               
               <!-- Email info -->
-              <p style="margin: 0 0 8px 0; font-size: 12px; color: rgba(255,255,255,0.4);">
-                You're receiving this email because you subscribed at <a href="https://reviveresearch.co" style="color: rgba(255,255,255,0.5); text-decoration: none;">reviveresearch.co</a>.
+              <p style="margin: 0 0 8px 0; font-size: 12px; color: #999999;">
+                You're receiving this email because you subscribed at <a href="https://reviveresearch.co" style="color: #bbbbbb; text-decoration: none;">reviveresearch.co</a>.
               </p>
               
               <!-- Unsubscribe Link -->
