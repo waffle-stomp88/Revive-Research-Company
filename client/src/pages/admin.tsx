@@ -2459,6 +2459,7 @@ type OrderStats = {
 function OrdersTab() {
   const { toast } = useToast();
   const [activeFilter, setActiveFilter] = useState<string>("all");
+  const [hideTestOrders, setHideTestOrders] = useState<boolean>(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(new Set());
@@ -2634,6 +2635,13 @@ function OrdersTab() {
     return null;
   };
 
+  const getTestBadge = (isTest: boolean | null | undefined) => {
+    if (isTest) {
+      return <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30">TEST</Badge>;
+    }
+    return null;
+  };
+
   const getEmailStatusBadge = (status: string | null | undefined) => {
     const statusMap: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
       pending: { label: "Pending", variant: "outline" },
@@ -2657,6 +2665,9 @@ function OrdersTab() {
   const needsAttentionOrders = allOrders?.filter(computeNeedsAttention) || [];
 
   const filteredOrders = allOrders?.filter((order) => {
+    // Apply test order filter first
+    if (hideTestOrders && order.isTest) return false;
+    
     if (activeFilter === "all") return true;
     if (activeFilter === "needs-attention") return computeNeedsAttention(order);
     if (activeFilter === "paid") return order.status === "paid";
@@ -2666,6 +2677,9 @@ function OrdersTab() {
     if (activeFilter === "email-failed") return order.emailStatus === "failed";
     return true;
   }) || [];
+  
+  // Count test orders for display
+  const testOrderCount = allOrders?.filter(o => o.isTest).length || 0;
 
   const handleViewOrder = (order: Order) => {
     setSelectedOrder(order);
@@ -2796,6 +2810,18 @@ function OrdersTab() {
         >
           Email Failed
         </Button>
+        
+        {/* Test Order Toggle */}
+        {testOrderCount > 0 && (
+          <Button 
+            variant={hideTestOrders ? "default" : "outline"}
+            onClick={() => setHideTestOrders(!hideTestOrders)}
+            className={hideTestOrders ? "bg-orange-500" : "border-orange-500/50 text-orange-400"}
+            data-testid="button-toggle-test-orders"
+          >
+            {hideTestOrders ? "Show" : "Hide"} Test ({testOrderCount})
+          </Button>
+        )}
       </div>
 
       {/* Bulk Action Bar */}
@@ -2886,7 +2912,10 @@ function OrdersTab() {
                         )}
                         <span className="font-mono text-sm">{order.id.slice(-8).toUpperCase()}</span>
                       </div>
-                      {getOrderTypeBadge(order.orderType)}
+                      <div className="flex items-center gap-1">
+                        {getOrderTypeBadge(order.orderType)}
+                        {getTestBadge(order.isTest)}
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
@@ -3059,6 +3088,9 @@ function OrderViewDialog({
             <Badge variant={isPaid ? "default" : "secondary"}>
               {isPaid ? "Paid" : order.status || "Pending"}
             </Badge>
+            {order.isTest && (
+              <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30">TEST</Badge>
+            )}
           </DialogTitle>
         </DialogHeader>
 

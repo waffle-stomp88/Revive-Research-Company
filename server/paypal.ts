@@ -30,6 +30,22 @@ export const SUBSCRIPTION_DISCOUNTS = {
 
 export type SubscriptionFrequency = keyof typeof SUBSCRIPTION_DISCOUNTS;
 
+// Helper to check if we're in PayPal sandbox mode (test mode)
+// Uses explicit PAYPAL_MODE env var if set, otherwise falls back to NODE_ENV
+export function isPayPalSandbox(): boolean {
+  const paypalMode = process.env.PAYPAL_MODE;
+  if (paypalMode) {
+    return paypalMode.toLowerCase() !== "live" && paypalMode.toLowerCase() !== "production";
+  }
+  // Fall back to NODE_ENV if PAYPAL_MODE not explicitly set
+  // In Replit: published apps have NODE_ENV=production, dev/preview environments don't
+  const isSandbox = process.env.NODE_ENV !== "production";
+  if (!paypalMode) {
+    console.log(`[PayPal] PAYPAL_MODE not set, using NODE_ENV fallback: ${isSandbox ? 'sandbox' : 'live'}`);
+  }
+  return isSandbox;
+}
+
 /* PayPal Controllers Setup - Lazy initialization */
 
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
@@ -44,16 +60,15 @@ function initPayPalClient() {
   }
   
   if (!client) {
+    // Use same environment detection as isPayPalSandbox() for consistency
+    const useSandbox = isPayPalSandbox();
     client = new Client({
       clientCredentialsAuthCredentials: {
         oAuthClientId: PAYPAL_CLIENT_ID,
         oAuthClientSecret: PAYPAL_CLIENT_SECRET,
       },
       timeout: 0,
-      environment:
-        process.env.NODE_ENV === "production"
-          ? Environment.Production
-          : Environment.Sandbox,
+      environment: useSandbox ? Environment.Sandbox : Environment.Production,
       logging: {
         logLevel: LogLevel.Info,
         logRequest: {
@@ -183,12 +198,17 @@ export async function loadPaypalDefault(req: Request, res: Response) {
    PayPal Subscriptions API
    ======================================== */
 
+// Get PayPal base URL - uses same environment detection as isPayPalSandbox()
+function getPayPalBaseUrl(): string {
+  return isPayPalSandbox() 
+    ? "https://api-m.sandbox.paypal.com" 
+    : "https://api-m.paypal.com";
+}
+
 // Get PayPal access token for REST API calls
 async function getAccessToken(): Promise<string> {
   const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`).toString("base64");
-  const baseUrl = process.env.NODE_ENV === "production" 
-    ? "https://api-m.paypal.com" 
-    : "https://api-m.sandbox.paypal.com";
+  const baseUrl = getPayPalBaseUrl();
   
   const response = await fetch(`${baseUrl}/v1/oauth2/token`, {
     method: "POST",
@@ -205,12 +225,6 @@ async function getAccessToken(): Promise<string> {
   
   const data = await response.json();
   return data.access_token;
-}
-
-function getPayPalBaseUrl(): string {
-  return process.env.NODE_ENV === "production" 
-    ? "https://api-m.paypal.com" 
-    : "https://api-m.sandbox.paypal.com";
 }
 
 // Create a PayPal product (required before creating plans)

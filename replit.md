@@ -42,6 +42,7 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **Google Analytics Integration**: GA4 tracking with auto page views and custom event tracking.
 - **Account Deletion Feature**: Users and affiliates can permanently delete their accounts from settings with confirmation.
 - **Dosage-Specific Stock Management**: Admin Products tab manages inventory per dosage, with inline editor, quick actions, and derived product-level stock.
+- **Test Order Indicators**: Orders created in PayPal sandbox mode are automatically marked with `isTest: true`. Admin dashboard shows orange "TEST" badge on test orders in order table and detail view. Filter button allows hiding/showing test orders with count display.
 - **Admin Orders Management**: Simplified Orders tab with manual fulfillment workflow:
   - **4 KPI Cards**: Gross Revenue (paid only, yellow accent), Paid Orders (cyan accent), AOV, Email Issues (conditional red)
   - **Needs Attention Flag**: Computed per order when: (paid AND fulfillment ≠ delivered) OR emailStatus = failed OR isRefunded = true

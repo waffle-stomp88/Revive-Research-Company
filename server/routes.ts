@@ -21,6 +21,7 @@ import {
   getSubscriptionDiscounts,
   handlePayPalWebhook,
   SUBSCRIPTION_DISCOUNTS,
+  isPayPalSandbox,
 } from "./paypal";
 import OpenAI from "openai";
 import { z } from "zod";
@@ -462,6 +463,7 @@ export async function registerRoutes(
         status: 'pending_payment',
         fulfillmentStatus: 'pending',
         paymentMethod: paymentMethod,
+        isTest: false, // Manual orders are assumed to be real unless admin marks otherwise
         notes: `Manual ${paymentMethod.toUpperCase()} payment. Items: ${items.map((i: any) => `${i.name} (${i.dosage}) x${i.quantity}`).join(', ')}`,
       };
 
@@ -567,6 +569,7 @@ export async function registerRoutes(
         fulfillmentStatus: 'pending',
         paymentMethod: 'paypal',
         paymentConfirmed: true,
+        isTest: isPayPalSandbox(), // Mark as test order if using PayPal sandbox
         notes: `PayPal Order: ${paypalOrderId}. Payer: ${paypalPayerId || 'N/A'}. Items: ${items.map((i: any) => `${i.name} (${i.dosage}) x${i.quantity}`).join(', ')}`,
       };
 

@@ -172,6 +172,8 @@ export const orders = pgTable("orders", {
   emailStatus: text("email_status").default("pending"),
   emailSentAt: timestamp("email_sent_at"),
   emailError: text("email_error"),
+  // Test/sandbox indicator - true for PayPal sandbox or test orders
+  isTest: boolean("is_test").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
