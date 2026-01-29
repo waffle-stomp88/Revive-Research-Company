@@ -656,29 +656,35 @@ ${brand.name}
                   Premium Research Compounds
                 </p>
                 
-                <!-- Accent Line -->
+                <!-- Holographic Gradient Accent Line (cyan-yellow-cyan) -->
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                   <tr>
-                    <td bgcolor="${styles.accentColor}" style="height: 2px; background-color: ${styles.accentColor};"></td>
+                    <td bgcolor="#21d8ff" style="width: 25%; height: 3px; background-color: #21d8ff;"></td>
+                    <td bgcolor="#4ce6b0" style="width: 12.5%; height: 3px; background-color: #4ce6b0;"></td>
+                    <td bgcolor="#8ff063" style="width: 12.5%; height: 3px; background-color: #8ff063;"></td>
+                    <td bgcolor="#E7FB10" style="width: 25%; height: 3px; background-color: #E7FB10;"></td>
+                    <td bgcolor="#8ff063" style="width: 12.5%; height: 3px; background-color: #8ff063;"></td>
+                    <td bgcolor="#21d8ff" style="width: 12.5%; height: 3px; background-color: #21d8ff;"></td>
                   </tr>
                 </table>
               </div>
               
               <!-- Shipped Title Section -->
               <div style="padding: 30px 40px 40px 40px;">
-                <!-- Shipped Badge -->
+                <!-- Shipped Badge with Icon -->
                 <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto 20px auto;">
                   <tr>
-                    <td bgcolor="${styles.accentColor}" style="background-color: ${styles.accentColor}; padding: 10px 24px; border-radius: 100px;">
-                      <span style="color: #000000; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">ORDER SHIPPED</span>
+                    <td bgcolor="${styles.accentColor}" style="background-color: ${styles.accentColor}; padding: 12px 28px; border-radius: 100px;">
+                      <span style="color: #000000; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">&#9992; ORDER SHIPPED</span>
                     </td>
                   </tr>
                 </table>
                 
-                <!-- Main Headline -->
-                <h1 style="color: #1a1a1f; font-size: 42px; font-weight: 800; margin: 0 0 20px 0; letter-spacing: -1px; line-height: 1.1;">
-                  On Its Way!
+                <!-- Main Headline with Package Icon -->
+                <h1 style="color: #1a1a1f; font-size: 48px; font-weight: 800; margin: 0 0 8px 0; letter-spacing: -1px; line-height: 1.1;">
+                  &#128230; On Its Way!
                 </h1>
+                <p style="color: #666666; font-size: 16px; margin: 0 0 24px 0;">Your research compounds are in transit</p>
                 
                 <!-- Order Number Badge -->
                 <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
@@ -692,25 +698,35 @@ ${brand.name}
             </td>
           </tr>
           
-          <!-- Tracking Info Card -->
+          <!-- Tracking Info Card - Enhanced -->
           <tr>
-            <td bgcolor="#f8f8f8" style="background-color: #f8f8f8; padding: 0 40px 20px 40px;">
+            <td bgcolor="#f8f8f8" style="background-color: #f8f8f8; padding: 0 40px 24px 40px;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td bgcolor="#e0f7fa" style="background-color: #e0f7fa; border: 2px solid ${styles.accentColor}; border-radius: 16px; padding: 28px; text-align: center;">
-                    <p style="color: #0891b2; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 16px 0;">
+                  <td bgcolor="#e0f7fa" style="background-color: #e0f7fa; border: 3px solid ${styles.accentColor}; border-radius: 20px; padding: 32px 24px; text-align: center; box-shadow: 0 4px 12px rgba(33, 216, 255, 0.15);">
+                    <!-- Tracking Icon -->
+                    <p style="font-size: 32px; margin: 0 0 12px 0;">&#128666;</p>
+                    <p style="color: #0891b2; font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; margin: 0 0 20px 0;">
                       TRACKING INFORMATION
                     </p>
-                    <p style="color: #1a1a1f; font-size: 14px; font-weight: 600; margin: 0 0 8px 0;">
+                    <p style="color: #1a1a1f; font-size: 15px; font-weight: 600; margin: 0 0 12px 0;">
                       ${carrier}
                     </p>
-                    <p style="color: #1a1a1f; font-size: 18px; font-weight: 700; font-family: monospace; letter-spacing: 2px; margin: 0 0 20px 0;">
-                      ${trackingNumber}
-                    </p>
+                    <!-- Large Tracking Number -->
+                    <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto 24px auto;">
+                      <tr>
+                        <td bgcolor="#ffffff" style="background-color: #ffffff; border: 2px solid #b8d4dc; border-radius: 12px; padding: 16px 24px;">
+                          <p style="color: #1a1a1f; font-size: 22px; font-weight: 800; font-family: 'Courier New', monospace; letter-spacing: 3px; margin: 0;">
+                            ${trackingNumber}
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                    <!-- Large Touch-Friendly Button -->
                     <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
                       <tr>
-                        <td bgcolor="${styles.accentColor}" style="background-color: ${styles.accentColor}; padding: 14px 32px; border-radius: 100px;">
-                          <a href="${trackingUrl}" target="_blank" style="color: #000000; font-size: 14px; font-weight: 700; text-decoration: none; letter-spacing: 1px;">TRACK PACKAGE &rarr;</a>
+                        <td bgcolor="${styles.accentColor}" style="background-color: ${styles.accentColor}; padding: 18px 48px; border-radius: 100px;">
+                          <a href="${trackingUrl}" target="_blank" style="color: #000000; font-size: 16px; font-weight: 800; text-decoration: none; letter-spacing: 1.5px;">&#128230; TRACK PACKAGE</a>
                         </td>
                       </tr>
                     </table>
@@ -724,21 +740,25 @@ ${brand.name}
           <tr>
             <td bgcolor="#f8f8f8" style="background-color: #f8f8f8; padding: 30px 40px 40px 40px;">
               
-              <!-- Two Column: Shipping & Estimated Delivery -->
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 20px;">
+              <!-- Stacked Cards: Shipping & Estimated Delivery (Mobile-Optimized) -->
+              
+              <!-- Shipping Address Card -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 16px;">
                 <tr>
-                  <td style="width: 48%; vertical-align: top;">
-                    <!-- Shipping Address Card -->
+                  <td bgcolor="#ffffff" style="background-color: #ffffff; border-radius: 16px; padding: 24px; border: 1px solid #e0e0e0; border-left: 4px solid #22c55e;">
                     <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                       <tr>
-                        <td bgcolor="#f5f5f5" style="background-color: #f5f5f5; border-radius: 16px; padding: 24px; border: 1px solid #dddddd;">
-                          <p style="color: #0a6b5c; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 16px 0;">
+                        <td style="width: 40px; vertical-align: top;">
+                          <span style="font-size: 24px;">&#128205;</span>
+                        </td>
+                        <td style="vertical-align: top;">
+                          <p style="color: #22c55e; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 12px 0;">
                             SHIPPING TO
                           </p>
-                          <p style="color: #1a1a1f; font-size: 15px; font-weight: 600; margin: 0 0 8px 0;">
+                          <p style="color: #1a1a1f; font-size: 16px; font-weight: 700; margin: 0 0 8px 0;">
                             ${order.firstName} ${order.lastName}
                           </p>
-                          <p style="color: #333333; font-size: 14px; line-height: 1.6; margin: 0;">
+                          <p style="color: #555555; font-size: 14px; line-height: 1.7; margin: 0;">
                             ${order.address || ''}<br>
                             ${order.city || ''}, ${order.state || ''} ${order.zipCode || ''}<br>
                             ${order.country || 'USA'}
@@ -747,19 +767,33 @@ ${brand.name}
                       </tr>
                     </table>
                   </td>
-                  <td style="width: 4%;"></td>
-                  <td style="width: 48%; vertical-align: top;">
-                    <!-- Estimated Delivery Card -->
+                </tr>
+              </table>
+              
+              <!-- Estimated Delivery Card - Highlighted -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 24px;">
+                <tr>
+                  <td bgcolor="#fffef0" style="background-color: #fffef0; border-radius: 16px; padding: 24px; border: 2px solid ${styles.primaryColor};">
                     <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                       <tr>
-                        <td bgcolor="#f5f5f5" style="background-color: #f5f5f5; border-radius: 16px; padding: 24px; border: 1px solid #dddddd;">
-                          <p style="color: #0891b2; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 16px 0;">
+                        <td style="width: 40px; vertical-align: top;">
+                          <span style="font-size: 24px;">&#128197;</span>
+                        </td>
+                        <td style="vertical-align: top;">
+                          <p style="color: #a89f00; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 12px 0;">
                             ESTIMATED DELIVERY
                           </p>
-                          <p style="color: #1a1a1f; font-size: 15px; font-weight: 600; margin: 0 0 8px 0;">
-                            ${deliveryEstimate}
-                          </p>
-                          <p style="color: #333333; font-size: 14px; line-height: 1.6; margin: 0;">
+                          <!-- Highlighted Date -->
+                          <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 0 12px 0;">
+                            <tr>
+                              <td bgcolor="${styles.primaryColor}" style="background-color: ${styles.primaryColor}; padding: 8px 16px; border-radius: 8px;">
+                                <p style="color: #000000; font-size: 18px; font-weight: 800; margin: 0;">
+                                  ${deliveryEstimate}
+                                </p>
+                              </td>
+                            </tr>
+                          </table>
+                          <p style="color: #555555; font-size: 14px; line-height: 1.7; margin: 0;">
                             Carrier: ${carrier}<br>
                             Updates sent via email
                           </p>
@@ -770,58 +804,72 @@ ${brand.name}
                 </tr>
               </table>
               
-              <!-- Order Progress Timeline - Step 2 Active -->
+              <!-- Order Progress Timeline - Enhanced with Glow -->
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td bgcolor="#e8f4f8" style="background-color: #e8f4f8; border: 1px solid #b8d4dc; border-radius: 16px; padding: 24px;">
-                    <p style="color: #0891b2; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 24px 0; text-align: center;">
-                      Order Progress
+                  <td bgcolor="#ffffff" style="background-color: #ffffff; border: 1px solid #e0e0e0; border-radius: 20px; padding: 28px 20px;">
+                    <p style="color: #0891b2; font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; margin: 0 0 28px 0; text-align: center;">
+                      &#128640; ORDER PROGRESS
                     </p>
                     <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                       <tr>
                         <!-- Step 1 - Completed -->
                         <td style="width: 28%; text-align: center; vertical-align: top;">
-                          <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto 12px auto;">
+                          <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto 14px auto;">
                             <tr>
-                              <td bgcolor="#22c55e" style="width: 44px; height: 44px; background-color: #22c55e; border-radius: 50%; text-align: center; vertical-align: middle;">
-                                <span style="color: #000000; font-size: 18px; font-weight: 700;">&#10003;</span>
+                              <td bgcolor="#22c55e" style="width: 48px; height: 48px; background-color: #22c55e; border-radius: 50%; text-align: center; vertical-align: middle;">
+                                <span style="color: #ffffff; font-size: 20px; font-weight: 700;">&#10003;</span>
                               </td>
                             </tr>
                           </table>
-                          <p style="color: #22c55e; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Confirmed</p>
+                          <p style="color: #22c55e; font-size: 14px; font-weight: 700; margin: 0 0 4px 0;">Confirmed</p>
                           <p style="color: #888888; font-size: 11px; margin: 0;">Complete</p>
                         </td>
                         <!-- Arrow Connector 1 - Active -->
-                        <td style="width: 8%; text-align: center; vertical-align: top; padding-top: 8px;">
-                          <span style="color: #22c55e; font-size: 24px; font-weight: 300;">&rarr;</span>
+                        <td style="width: 8%; text-align: center; vertical-align: top; padding-top: 10px;">
+                          <span style="color: #22c55e; font-size: 28px; font-weight: 400;">&#10140;</span>
                         </td>
-                        <!-- Step 2 - Active (Shipped) -->
+                        <!-- Step 2 - Active (Shipped) with Glow Ring -->
                         <td style="width: 28%; text-align: center; vertical-align: top;">
-                          <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto 12px auto;">
+                          <!-- Outer Glow Ring -->
+                          <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto 14px auto;">
                             <tr>
-                              <td bgcolor="${styles.accentColor}" style="width: 44px; height: 44px; background-color: ${styles.accentColor}; border-radius: 50%; text-align: center; vertical-align: middle;">
-                                <span style="color: #000000; font-size: 18px; font-weight: 700;">2</span>
+                              <td style="width: 60px; height: 60px; border-radius: 50%; background-color: rgba(33, 216, 255, 0.2); border: 3px solid ${styles.accentColor}; text-align: center; vertical-align: middle;">
+                                <!-- Inner Circle -->
+                                <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
+                                  <tr>
+                                    <td bgcolor="${styles.accentColor}" style="width: 44px; height: 44px; background-color: ${styles.accentColor}; border-radius: 50%; text-align: center; vertical-align: middle;">
+                                      <span style="color: #000000; font-size: 18px; font-weight: 800;">2</span>
+                                    </td>
+                                  </tr>
+                                </table>
                               </td>
                             </tr>
                           </table>
-                          <p style="color: #1a1a1f; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Shipped</p>
-                          <p style="color: #0891b2; font-size: 11px; font-weight: 600; margin: 0;">In Transit</p>
+                          <p style="color: ${styles.accentColor}; font-size: 14px; font-weight: 700; margin: 0 0 4px 0;">Shipped</p>
+                          <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
+                            <tr>
+                              <td bgcolor="#e0f7fa" style="background-color: #e0f7fa; padding: 4px 10px; border-radius: 20px;">
+                                <span style="color: #0891b2; font-size: 10px; font-weight: 700; text-transform: uppercase;">In Transit</span>
+                              </td>
+                            </tr>
+                          </table>
                         </td>
                         <!-- Arrow Connector 2 - Pending -->
-                        <td style="width: 8%; text-align: center; vertical-align: top; padding-top: 8px;">
-                          <span style="color: #888888; font-size: 24px; font-weight: 300;">&rarr;</span>
+                        <td style="width: 8%; text-align: center; vertical-align: top; padding-top: 10px;">
+                          <span style="color: #cccccc; font-size: 28px; font-weight: 400;">&#10140;</span>
                         </td>
                         <!-- Step 3 - Pending -->
                         <td style="width: 28%; text-align: center; vertical-align: top;">
-                          <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto 12px auto;">
+                          <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto 14px auto;">
                             <tr>
-                              <td bgcolor="#eeeeee" style="width: 44px; height: 44px; background-color: #eeeeee; border: 2px solid #cccccc; border-radius: 50%; text-align: center; vertical-align: middle;">
-                                <span style="color: #888888; font-size: 18px; font-weight: 700;">3</span>
+                              <td bgcolor="#f5f5f5" style="width: 48px; height: 48px; background-color: #f5f5f5; border: 2px dashed #cccccc; border-radius: 50%; text-align: center; vertical-align: middle;">
+                                <span style="color: #aaaaaa; font-size: 18px; font-weight: 700;">3</span>
                               </td>
                             </tr>
                           </table>
-                          <p style="color: #888888; font-size: 13px; font-weight: 600; margin: 0 0 4px 0;">Delivered</p>
-                          <p style="color: #aaaaaa; font-size: 11px; margin: 0;">Pending</p>
+                          <p style="color: #888888; font-size: 14px; font-weight: 600; margin: 0 0 4px 0;">Delivered</p>
+                          <p style="color: #bbbbbb; font-size: 11px; margin: 0;">Pending</p>
                         </td>
                       </tr>
                     </table>
