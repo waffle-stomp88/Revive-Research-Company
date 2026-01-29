@@ -228,7 +228,7 @@ ${brand.name}
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0d0d0f;">
     <tr>
       <td align="center" style="padding: 40px 20px;">
-        <table role="presentation" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+        <table role="presentation" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; background-color: #1a1a1f; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05);">
           
           <!-- Premium Header with Logo -->
           <tr>
@@ -264,8 +264,8 @@ ${brand.name}
           
           <!-- Thank You Message -->
           <tr>
-            <td style="padding: 0 40px; background-color: #ffffff;">
-              <div style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.12) 0%, rgba(34, 197, 94, 0.04) 100%); border: 1px solid rgba(34, 197, 94, 0.25); border-radius: 16px; padding: 24px; text-align: center;">
+            <td style="padding: 0 40px;">
+              <div style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.05) 100%); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 16px; padding: 24px; text-align: center;">
                 <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto 12px auto;">
                   <tr>
                     <td style="width: 48px; height: 48px; background: rgba(34, 197, 94, 0.2); border-radius: 50%; text-align: center; vertical-align: middle;">
@@ -276,7 +276,7 @@ ${brand.name}
                 <p style="color: #22c55e; font-size: 18px; font-weight: 600; margin: 0 0 8px 0;">
                   Thank you${hasFirstName ? `, ${order.firstName}` : ''}!
                 </p>
-                <p style="color: #555555; font-size: 14px; line-height: 1.6; margin: 0;">
+                <p style="color: rgba(255,255,255,0.9); font-size: 14px; line-height: 1.6; margin: 0;">
                   Your order has been received and is being prepared for shipment.<br>
                   You'll receive tracking information once your order ships.
                 </p>
@@ -286,7 +286,7 @@ ${brand.name}
           
           <!-- Content -->
           <tr>
-            <td style="padding: 30px 40px 40px 40px; background-color: #ffffff;">
+            <td style="padding: 30px 40px 40px 40px;">
               
               <!-- Order Details Card -->
               <div style="background-color: #2a2a30; border-radius: 16px; padding: 28px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.12);">
@@ -432,11 +432,11 @@ ${brand.name}
               </div>
               
               <!-- Research Notice -->
-              <div style="background: linear-gradient(135deg, rgba(251, 191, 36, 0.12) 0%, rgba(251, 191, 36, 0.04) 100%); border: 1px solid rgba(251, 191, 36, 0.25); border-radius: 16px; padding: 20px; margin-top: 20px; text-align: center;">
-                <p style="color: rgba(251, 191, 36, 0.9); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 8px 0;">
+              <div style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 16px; padding: 20px; margin-top: 20px; text-align: center;">
+                <p style="color: #ef4444; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 8px 0;">
                   RESEARCH USE ONLY
                 </p>
-                <p style="color: rgba(255,255,255,0.8); font-size: 13px; line-height: 1.5; margin: 0;">
+                <p style="color: rgba(255,255,255,0.85); font-size: 13px; line-height: 1.5; margin: 0;">
                   All products are intended for laboratory research purposes only.<br>
                   Not for human or animal consumption.
                 </p>
