@@ -632,13 +632,13 @@ ${brand.name}
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0d0d0f;">
     <tr>
       <td align="center" style="padding: 40px 20px;">
-        <table role="presentation" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; background-color: #1a1a1f; border-radius: 20px; overflow: hidden; border: 1px solid #333333;">
+        <table role="presentation" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; background-color: #1a1a1f; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05);">
           
           <!-- Premium Header with Logo -->
           <tr>
-            <td style="background-color: #252529; padding: 0; text-align: center;">
-              <!-- Top Accent Bar -->
-              <div style="height: 4px; background-color: ${styles.accentColor};"></div>
+            <td style="background: linear-gradient(180deg, #252529 0%, #1a1a1f 100%); padding: 0; text-align: center; position: relative;">
+              <!-- Top Gradient Accent Bar -->
+              <div style="height: 4px; background: linear-gradient(90deg, ${styles.primaryColor} 0%, ${styles.accentColor} 50%, ${styles.primaryColor} 100%);"></div>
               
               <!-- Logo Section -->
               <div style="padding: 40px 40px 20px 40px;">
@@ -652,10 +652,10 @@ ${brand.name}
                   Premium Research Compounds
                 </p>
                 
-                <!-- Accent Line -->
+                <!-- Holographic Gradient Line -->
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                   <tr>
-                    <td style="height: 2px; background-color: ${styles.accentColor};"></td>
+                    <td style="height: 2px; background: linear-gradient(90deg, transparent 0%, ${styles.accentColor} 20%, #9d4edd 50%, ${styles.primaryColor} 80%, transparent 100%);"></td>
                   </tr>
                 </table>
               </div>
@@ -665,7 +665,7 @@ ${brand.name}
                 <!-- Shipped Badge -->
                 <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto 20px auto;">
                   <tr>
-                    <td style="background-color: ${styles.accentColor}; padding: 2px; border-radius: 100px;">
+                    <td style="background: linear-gradient(135deg, ${styles.accentColor} 0%, #1a9fd4 100%); padding: 2px; border-radius: 100px;">
                       <table role="presentation" cellspacing="0" cellpadding="0">
                         <tr>
                           <td style="background: #1a1a1f; padding: 10px 24px; border-radius: 100px;">
@@ -683,7 +683,7 @@ ${brand.name}
                 </h1>
                 
                 <!-- Order Number Badge -->
-                <span style="display: inline-block; background-color: ${styles.primaryColor}; color: #000000; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 100px; letter-spacing: 1.5px;">
+                <span style="display: inline-block; background: linear-gradient(135deg, ${styles.primaryColor} 0%, #c4d40d 100%); color: #000000; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 100px; letter-spacing: 1.5px;">
                   ORDER #${shortRef}
                 </span>
               </div>
@@ -693,7 +693,7 @@ ${brand.name}
           <!-- Tracking Info Card -->
           <tr>
             <td style="padding: 0 40px;">
-              <div style="background-color: #1a3540; border: 2px solid ${styles.accentColor}; border-radius: 16px; padding: 28px; text-align: center;">
+              <div style="background: linear-gradient(135deg, #1a3a4a 0%, #1a2a35 100%); border: 2px solid ${styles.accentColor}; border-radius: 16px; padding: 28px; text-align: center;">
                 <p style="color: ${styles.accentColor}; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 16px 0;">
                   TRACKING INFORMATION
                 </p>
@@ -703,7 +703,7 @@ ${brand.name}
                 <p style="color: ${styles.primaryColor}; font-size: 18px; font-weight: 700; font-family: monospace; letter-spacing: 2px; margin: 0 0 20px 0;">
                   ${trackingNumber}
                 </p>
-                <a href="${trackingUrl}" target="_blank" style="display: inline-block; background-color: ${styles.accentColor}; color: #000000; font-size: 14px; font-weight: 700; padding: 14px 32px; border-radius: 100px; text-decoration: none; letter-spacing: 1px;">
+                <a href="${trackingUrl}" target="_blank" style="display: inline-block; background: linear-gradient(135deg, ${styles.accentColor} 0%, #1a9fd4 100%); color: #000000; font-size: 14px; font-weight: 700; padding: 14px 32px; border-radius: 100px; text-decoration: none; letter-spacing: 1px;">
                   TRACK PACKAGE &rarr;
                 </a>
               </div>
@@ -753,7 +753,7 @@ ${brand.name}
               </table>
               
               <!-- Order Progress Timeline - Step 2 Active -->
-              <div style="background-color: #1a3540; border: 1px solid #2a5a6a; border-radius: 16px; padding: 24px;">
+              <div style="background: linear-gradient(135deg, #1a3a4a 0%, #1a2a35 100%); border: 1px solid #2a5a6a; border-radius: 16px; padding: 24px;">
                 <p style="color: ${styles.accentColor}; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 24px 0; text-align: center;">
                   Order Progress
                 </p>
@@ -796,7 +796,7 @@ ${brand.name}
               </div>
               
               <!-- Research Notice -->
-              <div style="background-color: #301818; border: 1px solid #5a2a2a; border-radius: 16px; padding: 20px; margin-top: 20px; text-align: center;">
+              <div style="background: linear-gradient(135deg, #3d1a1a 0%, #2d1515 100%); border: 1px solid #5a2a2a; border-radius: 16px; padding: 20px; margin-top: 20px; text-align: center;">
                 <p style="color: #ef4444; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 8px 0;">
                   RESEARCH USE ONLY
                 </p>
