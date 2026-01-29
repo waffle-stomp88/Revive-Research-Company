@@ -357,43 +357,54 @@ export default function Dashboard() {
       <main className="min-h-screen pt-32 md:pt-40 pb-24">
         <div className="container mx-auto px-4 max-w-5xl">
           <motion.div variants={containerVariants} initial="hidden" animate="visible">
-            {/* Clean Header */}
-            <motion.div variants={itemVariants} className="flex items-center justify-between gap-4 mb-8 pb-6 border-b border-border">
-              <div className="flex items-center gap-4">
-                <Avatar className="h-14 w-14 ring-2 ring-[#21d8ff]/30 ring-offset-2 ring-offset-background">
-                  {user?.profileImageUrl && (
-                    <AvatarImage src={user.profileImageUrl} alt={user?.firstName || "User"} className="object-cover" />
-                  )}
-                  <AvatarFallback className="text-lg font-semibold bg-gradient-to-br from-[#E7FB10]/20 to-[#21d8ff]/20">
-                    {getInitials()}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h1 className="text-2xl font-bold" data-testid="text-user-name">
-                      {user?.firstName ? `${user.firstName}${user?.lastName ? ` ${user.lastName}` : ''}` : 'My Account'}
-                    </h1>
-                    {affiliate?.id && (
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <Badge variant="outline" className="bg-green-500/10 border-green-500/40 text-green-500">
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Affiliate
-                          </Badge>
-                        </TooltipTrigger>
-                        <TooltipContent>Verified Affiliate Partner</TooltipContent>
-                      </Tooltip>
-                    )}
+            {/* Stylish Header with Gradient Accent */}
+            <motion.div variants={itemVariants} className="relative mb-8">
+              {/* Decorative gradient line */}
+              <div className="absolute -top-4 left-0 right-0 h-1 bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#9d4edd] rounded-full opacity-60" />
+              
+              <div className="flex items-center justify-between gap-4 pt-4 pb-6">
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <Avatar className="h-16 w-16 ring-2 ring-[#21d8ff]/50 ring-offset-2 ring-offset-background shadow-lg shadow-[#21d8ff]/20">
+                      {user?.profileImageUrl && (
+                        <AvatarImage src={user.profileImageUrl} alt={user?.firstName || "User"} className="object-cover" />
+                      )}
+                      <AvatarFallback className="text-xl font-bold bg-gradient-to-br from-[#E7FB10]/30 to-[#21d8ff]/30">
+                        {getInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                    {/* Status indicator */}
+                    <div className="absolute -bottom-1 -right-1 h-5 w-5 bg-green-500 rounded-full border-2 border-background flex items-center justify-center">
+                      <Sparkles className="h-3 w-3 text-white" />
+                    </div>
                   </div>
-                  <p className="text-sm text-muted-foreground" data-testid="text-user-email">{user?.email}</p>
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-white/80 bg-clip-text" data-testid="text-user-name">
+                        {user?.firstName ? `${user.firstName}${user?.lastName ? ` ${user.lastName}` : ''}` : 'My Account'}
+                      </h1>
+                      {affiliate?.id && (
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Badge className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-500/50 text-green-400 animate-pulse">
+                              <CheckCircle className="h-3 w-3 mr-1" />
+                              Affiliate
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>Verified Affiliate Partner</TooltipContent>
+                        </Tooltip>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground" data-testid="text-user-email">{user?.email}</p>
+                  </div>
                 </div>
+                <a href="/api/logout">
+                  <Button variant="outline" size="sm" className="border-white/20 hover:border-[#21d8ff]/50 transition-colors" data-testid="button-logout">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </Button>
+                </a>
               </div>
-              <a href="/api/logout">
-                <Button variant="outline" size="sm" data-testid="button-logout">
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
-                </Button>
-              </a>
             </motion.div>
 
             {/* 4-Tab Layout */}
@@ -420,48 +431,52 @@ export default function Dashboard() {
 
                 {/* General Tab */}
                 <TabsContent value="general" className="space-y-6">
-                  {/* Quick Stats */}
+                  {/* Quick Stats - Glassmorphism Cards */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <Card className="p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-[#E7FB10]/10">
+                    <Card className="relative overflow-hidden p-4 bg-gradient-to-br from-[#E7FB10]/5 to-transparent border-[#E7FB10]/20 hover:border-[#E7FB10]/40 transition-all duration-300 group">
+                      <div className="absolute top-0 right-0 w-20 h-20 bg-[#E7FB10]/10 rounded-full blur-2xl group-hover:bg-[#E7FB10]/20 transition-colors" />
+                      <div className="relative flex items-center gap-3">
+                        <div className="p-2.5 rounded-xl bg-[#E7FB10]/15 shadow-lg shadow-[#E7FB10]/10">
                           <ShoppingBag className="h-5 w-5 text-[#E7FB10]" />
                         </div>
                         <div>
-                          <p className="text-2xl font-bold" data-testid="text-order-count">{orderCount}</p>
+                          <p className="text-2xl font-bold text-[#E7FB10]" data-testid="text-order-count">{orderCount}</p>
                           <p className="text-xs text-muted-foreground">Orders</p>
                         </div>
                       </div>
                     </Card>
-                    <Card className="p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-[#21d8ff]/10">
+                    <Card className="relative overflow-hidden p-4 bg-gradient-to-br from-[#21d8ff]/5 to-transparent border-[#21d8ff]/20 hover:border-[#21d8ff]/40 transition-all duration-300 group">
+                      <div className="absolute top-0 right-0 w-20 h-20 bg-[#21d8ff]/10 rounded-full blur-2xl group-hover:bg-[#21d8ff]/20 transition-colors" />
+                      <div className="relative flex items-center gap-3">
+                        <div className="p-2.5 rounded-xl bg-[#21d8ff]/15 shadow-lg shadow-[#21d8ff]/10">
                           <Package className="h-5 w-5 text-[#21d8ff]" />
                         </div>
                         <div>
-                          <p className="text-2xl font-bold" data-testid="text-products-count">{uniqueProducts}</p>
+                          <p className="text-2xl font-bold text-[#21d8ff]" data-testid="text-products-count">{uniqueProducts}</p>
                           <p className="text-xs text-muted-foreground">Products</p>
                         </div>
                       </div>
                     </Card>
-                    <Card className="p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-[#9d4edd]/10">
+                    <Card className="relative overflow-hidden p-4 bg-gradient-to-br from-[#9d4edd]/5 to-transparent border-[#9d4edd]/20 hover:border-[#9d4edd]/40 transition-all duration-300 group">
+                      <div className="absolute top-0 right-0 w-20 h-20 bg-[#9d4edd]/10 rounded-full blur-2xl group-hover:bg-[#9d4edd]/20 transition-colors" />
+                      <div className="relative flex items-center gap-3">
+                        <div className="p-2.5 rounded-xl bg-[#9d4edd]/15 shadow-lg shadow-[#9d4edd]/10">
                           <Award className="h-5 w-5 text-[#9d4edd]" />
                         </div>
                         <div>
-                          <p className="text-2xl font-bold" data-testid="text-badges-count">{badges.filter(b => b.earned).length}</p>
+                          <p className="text-2xl font-bold text-[#9d4edd]" data-testid="text-badges-count">{badges.filter(b => b.earned).length}</p>
                           <p className="text-xs text-muted-foreground">Badges</p>
                         </div>
                       </div>
                     </Card>
-                    <Card className="p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-green-500/10">
+                    <Card className="relative overflow-hidden p-4 bg-gradient-to-br from-green-500/5 to-transparent border-green-500/20 hover:border-green-500/40 transition-all duration-300 group">
+                      <div className="absolute top-0 right-0 w-20 h-20 bg-green-500/10 rounded-full blur-2xl group-hover:bg-green-500/20 transition-colors" />
+                      <div className="relative flex items-center gap-3">
+                        <div className="p-2.5 rounded-xl bg-green-500/15 shadow-lg shadow-green-500/10">
                           <Calendar className="h-5 w-5 text-green-500" />
                         </div>
                         <div>
-                          <p className="text-sm font-bold" data-testid="text-member-since">
+                          <p className="text-sm font-bold text-green-400" data-testid="text-member-since">
                             {user?.createdAt ? formatDate(user.createdAt) : 'Recently'}
                           </p>
                           <p className="text-xs text-muted-foreground">Member Since</p>
@@ -571,37 +586,53 @@ export default function Dashboard() {
                     </CardContent>
                   </Card>
 
-                  {/* Quick Links */}
+                  {/* Quick Links - Animated Cards */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <Link href="/academy" data-testid="link-academy">
-                      <Card className="p-4 hover-elevate cursor-pointer h-full">
-                        <div className="flex items-center gap-3">
-                          <GraduationCap className="h-5 w-5 text-[#E7FB10]" />
-                          <span className="font-medium text-sm">Academy</span>
+                      <Card className="relative overflow-hidden p-4 cursor-pointer h-full border-[#E7FB10]/20 hover:border-[#E7FB10]/50 bg-gradient-to-br from-[#E7FB10]/5 to-transparent transition-all duration-300 group">
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#E7FB10]/0 via-[#E7FB10]/5 to-[#E7FB10]/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                        <div className="relative flex items-center gap-3">
+                          <div className="p-2 rounded-lg bg-[#E7FB10]/15 group-hover:shadow-lg group-hover:shadow-[#E7FB10]/20 transition-shadow">
+                            <GraduationCap className="h-5 w-5 text-[#E7FB10]" />
+                          </div>
+                          <span className="font-medium text-sm group-hover:text-[#E7FB10] transition-colors">Academy</span>
+                          <ChevronRight className="h-4 w-4 ml-auto opacity-0 group-hover:opacity-100 text-[#E7FB10] transition-opacity" />
                         </div>
                       </Card>
                     </Link>
                     <Link href="/coa" data-testid="link-coa">
-                      <Card className="p-4 hover-elevate cursor-pointer h-full">
-                        <div className="flex items-center gap-3">
-                          <FileCheck className="h-5 w-5 text-[#21d8ff]" />
-                          <span className="font-medium text-sm">Verify COA</span>
+                      <Card className="relative overflow-hidden p-4 cursor-pointer h-full border-[#21d8ff]/20 hover:border-[#21d8ff]/50 bg-gradient-to-br from-[#21d8ff]/5 to-transparent transition-all duration-300 group">
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#21d8ff]/0 via-[#21d8ff]/5 to-[#21d8ff]/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                        <div className="relative flex items-center gap-3">
+                          <div className="p-2 rounded-lg bg-[#21d8ff]/15 group-hover:shadow-lg group-hover:shadow-[#21d8ff]/20 transition-shadow">
+                            <FileCheck className="h-5 w-5 text-[#21d8ff]" />
+                          </div>
+                          <span className="font-medium text-sm group-hover:text-[#21d8ff] transition-colors">Verify COA</span>
+                          <ChevronRight className="h-4 w-4 ml-auto opacity-0 group-hover:opacity-100 text-[#21d8ff] transition-opacity" />
                         </div>
                       </Card>
                     </Link>
                     <Link href="/affiliate" data-testid="link-affiliate">
-                      <Card className="p-4 hover-elevate cursor-pointer h-full">
-                        <div className="flex items-center gap-3">
-                          <Award className="h-5 w-5 text-[#9d4edd]" />
-                          <span className="font-medium text-sm">Affiliate</span>
+                      <Card className="relative overflow-hidden p-4 cursor-pointer h-full border-[#9d4edd]/20 hover:border-[#9d4edd]/50 bg-gradient-to-br from-[#9d4edd]/5 to-transparent transition-all duration-300 group">
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#9d4edd]/0 via-[#9d4edd]/5 to-[#9d4edd]/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                        <div className="relative flex items-center gap-3">
+                          <div className="p-2 rounded-lg bg-[#9d4edd]/15 group-hover:shadow-lg group-hover:shadow-[#9d4edd]/20 transition-shadow">
+                            <Award className="h-5 w-5 text-[#9d4edd]" />
+                          </div>
+                          <span className="font-medium text-sm group-hover:text-[#9d4edd] transition-colors">Affiliate</span>
+                          <ChevronRight className="h-4 w-4 ml-auto opacity-0 group-hover:opacity-100 text-[#9d4edd] transition-opacity" />
                         </div>
                       </Card>
                     </Link>
                     <Link href="/contact" data-testid="link-support">
-                      <Card className="p-4 hover-elevate cursor-pointer h-full">
-                        <div className="flex items-center gap-3">
-                          <MessageSquare className="h-5 w-5 text-[#ec4899]" />
-                          <span className="font-medium text-sm">Support</span>
+                      <Card className="relative overflow-hidden p-4 cursor-pointer h-full border-[#ec4899]/20 hover:border-[#ec4899]/50 bg-gradient-to-br from-[#ec4899]/5 to-transparent transition-all duration-300 group">
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#ec4899]/0 via-[#ec4899]/5 to-[#ec4899]/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                        <div className="relative flex items-center gap-3">
+                          <div className="p-2 rounded-lg bg-[#ec4899]/15 group-hover:shadow-lg group-hover:shadow-[#ec4899]/20 transition-shadow">
+                            <MessageSquare className="h-5 w-5 text-[#ec4899]" />
+                          </div>
+                          <span className="font-medium text-sm group-hover:text-[#ec4899] transition-colors">Support</span>
+                          <ChevronRight className="h-4 w-4 ml-auto opacity-0 group-hover:opacity-100 text-[#ec4899] transition-opacity" />
                         </div>
                       </Card>
                     </Link>
@@ -846,34 +877,42 @@ export default function Dashboard() {
                   {/* Quick Links */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Link href="/academy" data-testid="link-academy-education">
-                      <Card className="p-5 hover-elevate cursor-pointer">
-                        <div className="flex items-center justify-between">
+                      <Card className="relative overflow-hidden p-5 cursor-pointer border-[#E7FB10]/30 hover:border-[#E7FB10]/60 bg-gradient-to-r from-[#E7FB10]/10 via-[#E7FB10]/5 to-transparent transition-all duration-300 group">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-[#E7FB10]/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="relative flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="p-2 rounded-lg bg-[#E7FB10]/10">
-                              <GraduationCap className="h-5 w-5 text-[#E7FB10]" />
+                            <div className="p-3 rounded-xl bg-[#E7FB10]/20 shadow-lg shadow-[#E7FB10]/10 group-hover:shadow-[#E7FB10]/30 transition-shadow">
+                              <GraduationCap className="h-6 w-6 text-[#E7FB10]" />
                             </div>
                             <div>
-                              <p className="font-medium">Research Academy</p>
-                              <p className="text-sm text-muted-foreground">Learn and earn XP</p>
+                              <p className="font-semibold group-hover:text-[#E7FB10] transition-colors">Research Academy</p>
+                              <p className="text-sm text-muted-foreground flex items-center gap-1">
+                                <Zap className="h-3 w-3 text-[#E7FB10]" />
+                                Learn and earn XP
+                              </p>
                             </div>
                           </div>
-                          <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                          <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-[#E7FB10] group-hover:translate-x-1 transition-all" />
                         </div>
                       </Card>
                     </Link>
                     <Link href="/coa" data-testid="link-coa-education">
-                      <Card className="p-5 hover-elevate cursor-pointer">
-                        <div className="flex items-center justify-between">
+                      <Card className="relative overflow-hidden p-5 cursor-pointer border-[#21d8ff]/30 hover:border-[#21d8ff]/60 bg-gradient-to-r from-[#21d8ff]/10 via-[#21d8ff]/5 to-transparent transition-all duration-300 group">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-[#21d8ff]/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="relative flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="p-2 rounded-lg bg-[#21d8ff]/10">
-                              <FileCheck className="h-5 w-5 text-[#21d8ff]" />
+                            <div className="p-3 rounded-xl bg-[#21d8ff]/20 shadow-lg shadow-[#21d8ff]/10 group-hover:shadow-[#21d8ff]/30 transition-shadow">
+                              <FileCheck className="h-6 w-6 text-[#21d8ff]" />
                             </div>
                             <div>
-                              <p className="font-medium">Verify COA</p>
-                              <p className="text-sm text-muted-foreground">Check batch authenticity</p>
+                              <p className="font-semibold group-hover:text-[#21d8ff] transition-colors">Verify COA</p>
+                              <p className="text-sm text-muted-foreground flex items-center gap-1">
+                                <Shield className="h-3 w-3 text-[#21d8ff]" />
+                                Check batch authenticity
+                              </p>
                             </div>
                           </div>
-                          <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                          <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-[#21d8ff] group-hover:translate-x-1 transition-all" />
                         </div>
                       </Card>
                     </Link>
@@ -882,29 +921,40 @@ export default function Dashboard() {
 
                 {/* Settings Tab */}
                 <TabsContent value="settings" className="space-y-6">
-                  <Card>
+                  <Card className="border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 via-transparent to-transparent">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
-                        <User className="h-5 w-5 text-[#21d8ff]" />
-                        Profile Information
+                        <div className="p-2 rounded-lg bg-[#21d8ff]/20">
+                          <User className="h-5 w-5 text-[#21d8ff]" />
+                        </div>
+                        <span>Profile Information</span>
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="grid gap-4">
-                        <div className="p-4 rounded-lg border">
-                          <div className="text-sm text-muted-foreground mb-1">Name</div>
+                        <div className="p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors">
+                          <div className="text-sm text-muted-foreground mb-1 flex items-center gap-2">
+                            <User className="h-3 w-3" />
+                            Name
+                          </div>
                           <div className="font-medium">
                             {user?.firstName || user?.lastName 
                               ? `${user.firstName || ''} ${user.lastName || ''}`.trim() 
                               : 'Not set'}
                           </div>
                         </div>
-                        <div className="p-4 rounded-lg border">
-                          <div className="text-sm text-muted-foreground mb-1">Email</div>
+                        <div className="p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors">
+                          <div className="text-sm text-muted-foreground mb-1 flex items-center gap-2">
+                            <MessageSquare className="h-3 w-3" />
+                            Email
+                          </div>
                           <div className="font-medium">{user?.email || 'Not set'}</div>
                         </div>
-                        <div className="p-4 rounded-lg border">
-                          <div className="text-sm text-muted-foreground mb-1">Member Since</div>
+                        <div className="p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors">
+                          <div className="text-sm text-muted-foreground mb-1 flex items-center gap-2">
+                            <Calendar className="h-3 w-3" />
+                            Member Since
+                          </div>
                           <div className="font-medium">{formatDate(user?.createdAt || new Date())}</div>
                         </div>
                       </div>
@@ -918,22 +968,29 @@ export default function Dashboard() {
                   </Card>
 
                   {/* Affiliate Status */}
-                  <Card>
+                  <Card className="border-[#9d4edd]/20 bg-gradient-to-br from-[#9d4edd]/5 via-transparent to-transparent">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
-                        <Award className="h-5 w-5 text-[#9d4edd]" />
-                        Affiliate Program
+                        <div className="p-2 rounded-lg bg-[#9d4edd]/20">
+                          <Award className="h-5 w-5 text-[#9d4edd]" />
+                        </div>
+                        <span>Affiliate Program</span>
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       {affiliate?.id ? (
                         <div className="space-y-4">
-                          <div className="flex items-center gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/30">
-                            <CheckCircle className="h-5 w-5 text-green-500" />
-                            <span className="text-green-500 font-medium">Active Affiliate</span>
+                          <div className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-green-500/20 to-emerald-500/10 border border-green-500/40">
+                            <div className="p-2 rounded-full bg-green-500/20">
+                              <CheckCircle className="h-5 w-5 text-green-500" />
+                            </div>
+                            <div>
+                              <span className="text-green-400 font-semibold">Active Affiliate</span>
+                              <p className="text-xs text-muted-foreground">Earning commissions on referrals</p>
+                            </div>
                           </div>
                           <Link href="/affiliate/dashboard">
-                            <Button variant="outline" className="w-full" data-testid="button-affiliate-dashboard">
+                            <Button variant="outline" className="w-full border-[#9d4edd]/40 hover:border-[#9d4edd]/60 hover:bg-[#9d4edd]/10" data-testid="button-affiliate-dashboard">
                               View Dashboard
                               <ExternalLink className="h-4 w-4 ml-2" />
                             </Button>
@@ -941,12 +998,15 @@ export default function Dashboard() {
                         </div>
                       ) : (
                         <div className="space-y-4">
-                          <p className="text-sm text-muted-foreground">
-                            Join our affiliate program and earn commissions on referrals.
-                          </p>
+                          <div className="p-4 rounded-xl border border-[#9d4edd]/20 bg-[#9d4edd]/5">
+                            <p className="text-sm text-muted-foreground flex items-start gap-2">
+                              <Sparkles className="h-4 w-4 text-[#9d4edd] shrink-0 mt-0.5" />
+                              Join our affiliate program and earn commissions on referrals. Get 10% on every sale!
+                            </p>
+                          </div>
                           <Link href="/affiliate">
-                            <Button variant="outline" className="w-full" data-testid="button-join-affiliate">
-                              Learn More
+                            <Button className="w-full bg-gradient-to-r from-[#9d4edd] to-[#9d4edd]/80 hover:from-[#9d4edd]/90 hover:to-[#9d4edd]/70 text-white" data-testid="button-join-affiliate">
+                              Join Now
                               <ArrowRight className="h-4 w-4 ml-2" />
                             </Button>
                           </Link>
