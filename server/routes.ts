@@ -3786,7 +3786,9 @@ Return ONLY valid JSON in this exact format:
   app.patch("/api/notification-preferences", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      console.log("Updating notification preferences for user:", userId, "with data:", req.body);
       const prefs = await storage.createOrUpdateNotificationPreferences(userId, req.body);
+      console.log("Updated notification preferences result:", prefs);
       res.json(prefs);
     } catch (error) {
       console.error("Error updating notification preferences:", error);
