@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "wouter";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
@@ -10,14 +10,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -32,39 +29,33 @@ import {
   BookOpen,
   GraduationCap,
   Clock,
-  Activity,
   Truck,
   Star,
   MessageSquare,
-  TrendingUp,
   Trophy,
   Award,
   Zap,
   Crown,
-  Flame,
-  Gift,
-  Heart,
   RefreshCw,
   Sparkles,
   Target,
   Shield,
-  PiggyBank,
   Bookmark,
-  BookmarkCheck,
   X,
   Plus,
-  ExternalLink,
   ChevronRight,
-  ChevronDown,
   History,
-  Timer,
   Boxes,
   HelpCircle,
-  Info,
+  Settings,
+  Home,
+  Heart,
+  ExternalLink,
+  Trash2,
+  AlertTriangle,
 } from "lucide-react";
 import type { Order, Product, ReviewableOrder, Coa, ResearchPhase, ResearchTitle } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { BUNDLES, type Bundle } from "@/lib/bundles";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -116,25 +107,138 @@ interface CustomerBadge {
   target?: number;
 }
 
-const getBadgeStyles = (color: string, earned: boolean) => {
-  if (!earned) return undefined;
-  const r = parseInt(color.slice(1, 3), 16);
-  const g = parseInt(color.slice(3, 5), 16);
-  const b = parseInt(color.slice(5, 7), 16);
-  return {
-    background: `linear-gradient(135deg, rgba(${r},${g},${b},0.15) 0%, transparent 100%)`,
-    borderColor: color,
-    borderWidth: '1px',
-    borderStyle: 'solid' as const,
-    boxShadow: `0 0 20px rgba(${r},${g},${b},0.5), 0 0 40px rgba(${r},${g},${b},0.2)`,
-  };
-};
+export default function Dashboard() {
+  const { user, isLoading: authLoading, isAuthenticated, logout } = useAuth();
+  const { toast } = useToast();
+  const { addToCart } = useCart();
+  const [activeTab, setActiveTab] = useState("general");
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<ReviewableOrder | null>(null);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewTitle, setReviewTitle] = useState("");
+  const [reviewComment, setReviewComment] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-function CustomerAchievements({ orders, totalSpent }: { orders?: Order[]; totalSpent: number }) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to view your dashboard.",
+        variant: "destructive",
+      });
+    }
+  }, [authLoading, isAuthenticated, toast]);
+
+  const { data: orders, isLoading: ordersLoading } = useQuery<Order[]>({
+    queryKey: ["/api/orders"],
+    enabled: isAuthenticated,
+  });
+
+  const { data: products } = useQuery<Product[]>({
+    queryKey: ["/api/products"],
+    enabled: isAuthenticated,
+  });
+
+  const { data: reviewableOrders, isLoading: reviewableLoading } = useQuery<ReviewableOrder[]>({
+    queryKey: ["/api/orders/reviewable"],
+    enabled: isAuthenticated,
+  });
+
+  const { data: wishlist } = useQuery<{ productId: string }[]>({
+    queryKey: ["/api/wishlist"],
+    enabled: isAuthenticated,
+  });
+
+  const { data: researchProfile } = useQuery<{
+    phase: ResearchPhase;
+    title: ResearchTitle;
+    educationCount: number;
+    batchVerificationCount: number;
+    compoundsTrackedCount: number;
+    verifiedReviewsCount: number;
+    safetyCompleted: boolean;
+    coaEducationViewed: boolean;
+    earlyAccessMember: boolean;
+  }>({
+    queryKey: ["/api/user/research-profile"],
+    enabled: isAuthenticated,
+  });
+
+  const { data: affiliate } = useQuery<{ id: string } | null>({
+    queryKey: ["/api/affiliate/me"],
+    enabled: isAuthenticated,
+  });
+
+  const submitReviewMutation = useMutation({
+    mutationFn: async (data: { orderId: string; productId: string; rating: number; title: string; comment: string }) => {
+      return apiRequest("POST", "/api/reviews", data);
+    },
+    onSuccess: () => {
+      toast({ title: "Review Submitted", description: "Thank you for your feedback!" });
+      setReviewDialogOpen(false);
+      setReviewRating(5);
+      setReviewTitle("");
+      setReviewComment("");
+      queryClient.invalidateQueries({ queryKey: ["/api/orders/reviewable"] });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to submit review.", variant: "destructive" });
+    },
+  });
+
+  const removeMutation = useMutation({
+    mutationFn: async (productId: string) => {
+      return apiRequest("DELETE", "/api/wishlist", { productId });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/wishlist"] });
+      toast({ title: "Removed", description: "Item removed from wishlist." });
+    },
+  });
+
+  const handleWriteReview = (order: ReviewableOrder) => {
+    setSelectedOrder(order);
+    setReviewDialogOpen(true);
+  };
+
+  const handleSubmitReview = () => {
+    if (!selectedOrder || reviewComment.length < 10) return;
+    submitReviewMutation.mutate({
+      orderId: selectedOrder.orderId,
+      productId: selectedOrder.productId,
+      rating: reviewRating,
+      title: reviewTitle,
+      comment: reviewComment,
+    });
+  };
+
+  const wishlistProducts = useMemo(() => {
+    if (!wishlist || !products) return [];
+    return products.filter(p => wishlist.some(w => w.productId === p.id));
+  }, [wishlist, products]);
+
+  const eligibleForReview = reviewableOrders?.filter(
+    (o) => !o.hasReviewed && new Date() >= new Date(o.eligibleDate)
+  ) || [];
+
+  const getProductName = (productId: string) => {
+    const product = products?.find((p) => p.id === productId);
+    return product?.name || "Unknown Product";
+  };
+
+  const formatDate = (date: Date | string | null) => {
+    if (!date) return "N/A";
+    return new Date(date).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const totalSpent = orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0;
   const orderCount = orders?.length || 0;
   const uniqueProducts = new Set(orders?.map(o => o.productId) || []).size;
-  
+
   const badges: CustomerBadge[] = useMemo(() => [
     {
       id: "first-order",
@@ -198,516 +302,10 @@ function CustomerAchievements({ orders, totalSpent }: { orders?: Order[]; totalS
     },
   ], [orderCount, uniqueProducts]);
 
-  const earnedCount = badges.filter(b => b.earned).length;
-
-  return (
-    <Card className="border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 via-transparent to-[#9d4edd]/5">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center justify-between">
-          <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="flex items-center gap-2 hover-elevate active-elevate-2 rounded-md px-2 py-1"
-            data-testid="button-achievements-toggle"
-          >
-            <Trophy className="h-5 w-5 text-[#E7FB10]" />
-            Achievements
-            <ChevronDown 
-              className="h-4 w-4 transition-transform"
-              style={{ transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }}
-            />
-          </button>
-          <Badge variant="secondary" className="bg-[#E7FB10]/10 text-[#E7FB10] border border-[#E7FB10]/30">
-            {earnedCount}/{badges.length}
-          </Badge>
-        </CardTitle>
-      </CardHeader>
-      <AnimatePresence>
-        {!isCollapsed && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {badges.map((badge) => {
-                  const Icon = badge.icon;
-                  const badgeStyles = getBadgeStyles(badge.color, badge.earned);
-                  const r = parseInt(badge.color.slice(1, 3), 16);
-                  const g = parseInt(badge.color.slice(3, 5), 16);
-                  const b = parseInt(badge.color.slice(5, 7), 16);
-                  
-                  return (
-                    <motion.div
-                      key={badge.id}
-                      initial={{ scale: 0.9, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      whileHover={{ scale: 1.02 }}
-                      className="relative p-3 rounded-lg transition-all"
-                      style={badge.earned ? badgeStyles : {
-                        background: `linear-gradient(135deg, rgba(${r},${g},${b},0.05) 0%, transparent 100%)`,
-                        borderColor: `rgba(${r},${g},${b},0.2)`,
-                        borderWidth: '1px',
-                        borderStyle: 'solid',
-                      }}
-                      data-testid={`customer-badge-${badge.id}`}
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <motion.div
-                          animate={badge.earned ? { rotate: 360 } : { y: [0, -4, 0] }}
-                          transition={badge.earned ? { duration: 4, repeat: Infinity, ease: "linear" } : { duration: 2, repeat: Infinity }}
-                          className="p-1.5 rounded-lg"
-                          style={{ 
-                            backgroundColor: badge.earned ? `rgba(${r},${g},${b},0.2)` : `rgba(${r},${g},${b},0.1)`,
-                            color: badge.earned ? badge.color : `rgba(${r},${g},${b},0.5)`
-                          }}
-                        >
-                          <Icon className="h-4 w-4" />
-                        </motion.div>
-                        {badge.earned && (
-                          <Sparkles className="h-3 w-3 animate-pulse" style={{ color: badge.color }} />
-                        )}
-                      </div>
-                      <span 
-                        className="text-sm font-bold block"
-                        style={{ 
-                          color: badge.color,
-                          textShadow: badge.earned ? `0 0 8px rgba(${r},${g},${b},0.5)` : 'none'
-                        }}
-                      >
-                        {badge.title}
-                      </span>
-                      <span className="text-xs mt-1 block" style={{ color: badge.earned ? `rgba(${r},${g},${b},0.8)` : `rgba(${r},${g},${b},0.5)` }}>{badge.description}</span>
-                      {!badge.earned && badge.progress !== undefined && badge.target && (
-                        <div className="mt-2">
-                          <Progress 
-                            value={(badge.progress / badge.target) * 100} 
-                            className="h-1"
-                            style={{ ['--progress-background' as string]: `rgba(${r},${g},${b},0.3)` }}
-                          />
-                          <span className="text-[9px] mt-1 block" style={{ color: `rgba(${r},${g},${b},0.6)` }}>
-                            {badge.id === "big-spender" ? `$${badge.progress.toFixed(0)}` : badge.progress}/{badge.id === "big-spender" ? `$${badge.target}` : badge.target}
-                          </span>
-                        </div>
-                      )}
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </Card>
-  );
-}
-
-function LoyaltyProgress({ totalSpent }: { totalSpent: number }) {
-  const tiers = [
-    { name: "Newcomer", min: 0, max: 100, color: "#64748b" },
-    { name: "Explorer", min: 100, max: 300, color: "#21d8ff" },
-    { name: "Researcher", min: 300, max: 750, color: "#9d4edd" },
-    { name: "Scientist", min: 750, max: 1500, color: "#ec4899" },
-    { name: "Elite", min: 1500, max: Infinity, color: "#E7FB10" },
-  ];
-
-  const currentTier = tiers.find(t => totalSpent >= t.min && totalSpent < t.max) || tiers[tiers.length - 1];
-  const nextTier = tiers[tiers.indexOf(currentTier) + 1];
-  const progress = nextTier 
-    ? ((totalSpent - currentTier.min) / (nextTier.min - currentTier.min)) * 100
-    : 100;
-  const toNextTier = nextTier ? nextTier.min - totalSpent : 0;
-  
-  const r = parseInt(currentTier.color.slice(1, 3), 16);
-  const g = parseInt(currentTier.color.slice(3, 5), 16);
-  const b = parseInt(currentTier.color.slice(5, 7), 16);
-
-  return (
-    <Card 
-      className="border-opacity-30"
-      style={{ 
-        borderColor: `rgba(${r},${g},${b},0.3)`,
-        background: `linear-gradient(135deg, rgba(${r},${g},${b},0.05) 0%, transparent 100%)`
-      }}
-    >
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-sm">
-          <div 
-            className="h-6 w-6 rounded-full flex items-center justify-center"
-            style={{ backgroundColor: `rgba(${r},${g},${b},0.15)` }}
-          >
-            <Award className="h-4 w-4" style={{ color: currentTier.color }} />
-          </div>
-          Access Level
-          <Tooltip>
-            <TooltipTrigger>
-              <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p className="max-w-xs">Your account privileges based on purchase history. Unlock exclusive discounts and early access as you progress.</p>
-            </TooltipContent>
-          </Tooltip>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center justify-between mb-3">
-          <span className="font-bold text-lg" style={{ color: currentTier.color }}>
-            {currentTier.name}
-          </span>
-          {nextTier && (
-            <span className="text-xs font-medium" style={{ color: nextTier.color }}>
-              ${toNextTier.toFixed(0)} to {nextTier.name}
-            </span>
-          )}
-        </div>
-        <div className="mb-4">
-          <div 
-            className="h-3 rounded-full overflow-hidden bg-muted/30"
-            style={{
-              background: `linear-gradient(90deg, rgba(${r},${g},${b},0.15) 0%, transparent 100%)`
-            }}
-          >
-            <div
-              className="h-full rounded-full transition-all"
-              style={{
-                width: `${progress}%`,
-                background: `linear-gradient(90deg, ${currentTier.color}, rgba(${r},${g},${b},0.4))`,
-                boxShadow: `0 0 12px ${currentTier.color}`
-              }}
-            />
-          </div>
-          {nextTier && (
-            <p className="text-[11px] text-muted-foreground mt-1.5">
-              {Math.round(progress)}% to {nextTier.name}
-            </p>
-          )}
-        </div>
-        <div className="flex justify-between gap-1.5 p-3 rounded-lg" style={{ background: `rgba(${r},${g},${b},0.05)` }}>
-          {tiers.slice(0, 5).map((tier, i) => {
-            const tierR = parseInt(tier.color.slice(1, 3), 16);
-            const tierG = parseInt(tier.color.slice(3, 5), 16);
-            const tierB = parseInt(tier.color.slice(5, 7), 16);
-            const isAchieved = totalSpent >= tier.min;
-            const isNext = nextTier && tier.name === nextTier.name;
-            
-            return (
-              <Tooltip key={tier.name}>
-                <TooltipTrigger>
-                  <div 
-                    className={`w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold transition-all ${
-                      isAchieved ? 'scale-110' : isNext ? '' : 'opacity-30'
-                    }`}
-                    style={{ 
-                      backgroundColor: isAchieved ? tier.color : isNext ? `rgba(${tierR},${tierG},${tierB},0.1)` : 'var(--muted)',
-                      color: isAchieved ? '#000' : isNext ? tier.color : 'var(--muted-foreground)',
-                      outline: isNext ? `2px solid ${tier.color}` : 'none',
-                      boxShadow: isNext ? `0 0 16px ${tier.color}, inset 0 0 16px ${tier.color}50` : isAchieved ? `0 0 8px ${tier.color}` : 'none'
-                    }}
-                  >
-                    {i + 1}
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{tier.name} (${tier.min}+)</p>
-                </TooltipContent>
-              </Tooltip>
-            );
-          })}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function SavingsSummary({ orders, products }: { orders?: Order[]; products?: Product[] }) {
-  const savings = useMemo(() => {
-    if (!orders || !products) return { total: 0, deals: 0, bundles: 0 };
-    
-    let dealSavings = 0;
-    orders.forEach(order => {
-      const product = products.find(p => p.id === order.productId);
-      if (product?.originalPrice && Number(product.originalPrice) > Number(product.price)) {
-        dealSavings += (Number(product.originalPrice) - Number(product.price)) * order.quantity;
-      }
-    });
-
-    return {
-      total: dealSavings,
-      deals: dealSavings,
-      bundles: 0,
-    };
-  }, [orders, products]);
-
-  if (savings.total === 0) return null;
-
-  return (
-    <Card className="border-green-500/30 bg-green-500/5">
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-sm text-green-500">
-          <PiggyBank className="h-4 w-4" />
-          You've Saved
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold text-green-500" data-testid="text-total-savings">
-          ${savings.total.toFixed(2)}
-        </div>
-        <p className="text-xs text-muted-foreground">From deals and promotions</p>
-      </CardContent>
-    </Card>
-  );
-}
-
-function QuickReorder({ orders, products }: { orders?: Order[]; products?: Product[] }) {
-  const { addToCart } = useCart();
-  const { toast } = useToast();
-  
-  const recentProducts = useMemo(() => {
-    if (!orders || !products) return [];
-    const productCounts = new Map<string, number>();
-    orders.forEach(o => {
-      productCounts.set(o.productId, (productCounts.get(o.productId) || 0) + 1);
-    });
-    
-    return Array.from(productCounts.entries())
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 3)
-      .map(([productId]) => products.find(p => p.id === productId))
-      .filter(Boolean) as Product[];
-  }, [orders, products]);
-
-  const handleReorder = (product: Product) => {
-    const dosage = product.dosageOptions?.[0];
-    if (!dosage) {
-      toast({
-        title: "Cannot Add",
-        description: "This product has no available dosage options.",
-        variant: "destructive",
-      });
-      return;
-    }
-    addToCart({
-      productId: product.id,
-      name: product.name,
-      price: Number(product.price),
-      quantity: 1,
-      dosage,
-      image: product.imageUrl || undefined,
-    });
-    toast({
-      title: "Added to Cart",
-      description: `${product.name} has been added to your cart.`,
-    });
-  };
-
-  if (recentProducts.length === 0) return null;
-
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-sm">
-          <RefreshCw className="h-4 w-4 text-[#21d8ff]" />
-          Quick Reorder
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-2">
-        {recentProducts.map(product => {
-          const hasDosage = product.dosageOptions && product.dosageOptions.length > 0;
-          return (
-            <div 
-              key={product.id}
-              className="flex items-center justify-between p-2 rounded-lg border hover-elevate"
-            >
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{product.name}</p>
-                <p className="text-xs text-muted-foreground">${Number(product.price).toFixed(2)}</p>
-              </div>
-              <Button 
-                size="sm" 
-                variant="outline"
-                onClick={() => handleReorder(product)}
-                disabled={!hasDosage}
-                data-testid={`button-reorder-${product.id}`}
-              >
-                <Plus className="h-3 w-3 mr-1" />
-                Add
-              </Button>
-            </div>
-          );
-        })}
-      </CardContent>
-    </Card>
-  );
-}
-
-function RecommendedNextReading() {
-  const guides = [
-    {
-      title: "Getting Started with Peptide Research",
-      path: "/education/research-fundamentals",
-      tag: "Start Here",
-      color: "#E7FB10",
-    },
-    {
-      title: "Safety & Compliance Guidelines",
-      path: "/education/safety-guidelines",
-      tag: "Essential",
-      color: "#21d8ff",
-    },
-    {
-      title: "Understanding COA Documentation",
-      path: "/coa",
-      tag: "Verification",
-      color: "#9d4edd",
-    },
-  ];
-
-  return (
-    <Card className="border-[#9d4edd]/20 bg-gradient-to-br from-[#9d4edd]/5 to-transparent">
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-sm">
-          <div className="h-6 w-6 rounded-full bg-[#9d4edd]/15 flex items-center justify-center">
-            <GraduationCap className="h-3.5 w-3.5 text-[#9d4edd]" />
-          </div>
-          Recommended Next Reading
-        </CardTitle>
-        <CardDescription>Continue your research journey</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-2">
-        {guides.map((guide) => (
-          <Link key={guide.path} href={guide.path}>
-            <div 
-              className="flex items-center justify-between p-2.5 rounded-lg border hover-elevate cursor-pointer"
-              style={{ borderColor: `${guide.color}20` }}
-              data-testid={`link-guide-${guide.title.toLowerCase().replace(/\s+/g, '-')}`}
-            >
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                <Badge 
-                  variant="secondary" 
-                  className="text-[10px] shrink-0"
-                  style={{ 
-                    backgroundColor: `${guide.color}15`,
-                    color: guide.color,
-                    borderColor: `${guide.color}30`,
-                  }}
-                >
-                  {guide.tag}
-                </Badge>
-                <span className="text-sm truncate">{guide.title}</span>
-              </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
-            </div>
-          </Link>
-        ))}
-        <Link href="/education">
-          <Button variant="ghost" size="sm" className="w-full mt-2 text-[#9d4edd]" data-testid="link-all-education">
-            View All Educational Content
-            <ArrowRight className="h-3 w-3 ml-1" />
-          </Button>
-        </Link>
-      </CardContent>
-    </Card>
-  );
-}
-
-function RecommendedStacks({ orders, products }: { orders?: Order[]; products?: Product[] }) {
-  const purchasedProductNames = useMemo(() => {
-    if (!orders || !products) return new Set<string>();
-    return new Set(
-      orders.map(o => products.find(p => p.id === o.productId)?.name).filter(Boolean)
-    );
-  }, [orders, products]);
-
-  const recommendations = useMemo(() => {
-    return BUNDLES.filter(bundle => {
-      const hasAny = bundle.products.some(p => purchasedProductNames.has(p));
-      const hasAll = bundle.products.every(p => purchasedProductNames.has(p));
-      return hasAny && !hasAll;
-    }).slice(0, 2);
-  }, [purchasedProductNames]);
-
-  if (recommendations.length === 0) return null;
-
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-sm">
-          <Boxes className="h-4 w-4 text-[#9d4edd]" />
-          Recommended Stacks
-        </CardTitle>
-        <CardDescription>Based on your research history</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {recommendations.map(bundle => (
-          <Link key={bundle.id} href={`/bundles/${bundle.id}`}>
-            <div className="p-3 rounded-lg border hover-elevate cursor-pointer">
-              <div className="flex items-center justify-between mb-1">
-                <span className="font-medium text-sm">{bundle.name}</span>
-                <Badge variant="secondary" className="text-[10px] bg-green-500/10 text-green-500">
-                  Save {bundle.savings}%
-                </Badge>
-              </div>
-              <p className="text-xs text-muted-foreground mb-2">{bundle.products.join(" + ")}</p>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-bold">${bundle.bundlePrice}</span>
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              </div>
-            </div>
-          </Link>
-        ))}
-      </CardContent>
-    </Card>
-  );
-}
-
-interface WishlistItem {
-  id: string;
-  userId: string;
-  productId: string;
-  createdAt: string;
-}
-
-function WishlistWidget({ products, isAuthenticated }: { products?: Product[]; isAuthenticated: boolean }) {
-  const { addToCart } = useCart();
-  const { toast } = useToast();
-
-  const { data: wishlistItems, isLoading } = useQuery<WishlistItem[]>({
-    queryKey: ["/api/wishlist"],
-    enabled: isAuthenticated,
-  });
-
-  const removeMutation = useMutation({
-    mutationFn: async (productId: string) => {
-      await apiRequest("DELETE", `/api/wishlist/${productId}`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/wishlist"] });
-    },
-    onError: () => {
-      toast({ title: "Error", description: "Failed to remove from wishlist", variant: "destructive" });
-    },
-  });
-
-  const wishlistProducts = useMemo(() => {
-    if (!products || !wishlistItems) return [];
-    return wishlistItems
-      .map(item => products.find(p => p.id === item.productId))
-      .filter(Boolean) as Product[];
-  }, [wishlistItems, products]);
-
-  const removeFromWishlist = (productId: string) => {
-    removeMutation.mutate(productId);
-  };
-
   const handleAddToCart = (product: Product) => {
     const dosage = product.dosageOptions?.[0];
     if (!dosage) {
-      toast({
-        title: "Cannot Add",
-        description: "This product has no available dosage options.",
-        variant: "destructive",
-      });
+      toast({ title: "Cannot Add", description: "No dosage options available.", variant: "destructive" });
       return;
     }
     addToCart({
@@ -718,408 +316,13 @@ function WishlistWidget({ products, isAuthenticated }: { products?: Product[]; i
       dosage,
       image: product.imageUrl || undefined,
     });
-    toast({
-      title: "Added to Cart",
-      description: `${product.name} has been added to your cart.`,
-    });
+    toast({ title: "Added to Cart", description: `${product.name} added to your cart.` });
   };
-
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-sm">
-            <Heart className="h-4 w-4 text-[#ec4899]" />
-            Wishlist
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (wishlistProducts.length === 0) {
-    return (
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-sm">
-            <Heart className="h-4 w-4 text-[#ec4899]" />
-            Wishlist
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-4">
-            <Bookmark className="h-8 w-8 mx-auto text-muted-foreground/50 mb-2" />
-            <p className="text-xs text-muted-foreground">No items saved yet</p>
-            <Link href="/peptides">
-              <Button variant="outline" size="sm" className="mt-2">
-                Browse Products
-              </Button>
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center justify-between">
-          <span className="flex items-center gap-2 text-sm">
-            <Heart className="h-4 w-4 text-[#ec4899]" />
-            Wishlist
-          </span>
-          <Badge variant="secondary">{wishlistProducts.length}</Badge>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-2">
-        {wishlistProducts.slice(0, 3).map(product => {
-          const hasDosage = product.dosageOptions && product.dosageOptions.length > 0;
-          return (
-            <div 
-              key={product.id}
-              className="flex items-center gap-2 p-2 rounded-lg border"
-            >
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{product.name}</p>
-                <p className="text-xs text-muted-foreground">${Number(product.price).toFixed(2)}</p>
-              </div>
-              <Button 
-                size="icon" 
-                variant="ghost"
-                className="h-7 w-7"
-                onClick={() => handleAddToCart(product)}
-                disabled={!hasDosage}
-              >
-                <Plus className="h-3 w-3" />
-              </Button>
-              <Button 
-                size="icon" 
-                variant="ghost"
-                className="h-7 w-7 text-muted-foreground"
-                onClick={() => removeFromWishlist(product.id)}
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            </div>
-          );
-        })}
-      </CardContent>
-    </Card>
-  );
-}
-
-function MyCOAs({ orders, products }: { orders?: Order[]; products?: Product[] }) {
-  const { data: coas } = useQuery<Coa[]>({
-    queryKey: ["/api/coas"],
-  });
-
-  const myCoas = useMemo(() => {
-    if (!orders || !coas) return [];
-    const productIds = new Set(orders.map(o => o.productId));
-    return coas.filter(coa => productIds.has(coa.productId)).slice(0, 3);
-  }, [orders, coas]);
-
-  if (myCoas.length === 0) return null;
-
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-sm">
-          <FileCheck className="h-4 w-4 text-[#21d8ff]" />
-          My COAs
-        </CardTitle>
-        <CardDescription>Certificates for your products</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-2">
-        {myCoas.map(coa => (
-          <Link key={coa.id} href={`/coa?batch=${coa.batchNumber}`}>
-            <div className="flex items-center justify-between p-2 rounded-lg border hover-elevate cursor-pointer">
-              <div>
-                <p className="text-sm font-medium">{coa.productName}</p>
-                <p className="text-xs text-muted-foreground">Batch: {coa.batchNumber}</p>
-              </div>
-              <div className="flex items-center gap-1 text-green-500">
-                <Shield className="h-3 w-3" />
-                <span className="text-xs">{coa.purity}</span>
-              </div>
-            </div>
-          </Link>
-        ))}
-        <Link href="/coa">
-          <Button variant="outline" size="sm" className="w-full mt-2">
-            View All COAs
-            <ArrowRight className="h-3 w-3 ml-1" />
-          </Button>
-        </Link>
-      </CardContent>
-    </Card>
-  );
-}
-
-function ResearchTimeline({ orders, products }: { orders?: Order[]; products?: Product[] }) {
-  const timeline = useMemo(() => {
-    if (!orders || !products) return [];
-    return orders
-      .filter(order => order.createdAt && order.status)
-      .slice(0, 5)
-      .map(order => {
-        const parsedDate = new Date(order.createdAt!);
-        const isValidDate = !isNaN(parsedDate.getTime());
-        return {
-          id: order.id,
-          date: isValidDate ? parsedDate : new Date(),
-          dateString: isValidDate ? parsedDate.toLocaleDateString() : "Recent",
-          productName: products.find(p => p.id === order.productId)?.name || "Product",
-          amount: Number(order.totalAmount) || 0,
-          status: order.status || "pending",
-        };
-      })
-      .sort((a, b) => b.date.getTime() - a.date.getTime());
-  }, [orders, products]);
-
-  if (timeline.length === 0) return null;
-
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-sm">
-          <History className="h-4 w-4 text-[#9d4edd]" />
-          Research Timeline
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="relative">
-          <div className="absolute left-3 top-0 bottom-0 w-px bg-border" />
-          <div className="space-y-4">
-            {timeline.map((event, i) => (
-              <div key={event.id} className="relative pl-8">
-                <div 
-                  className="absolute left-0 w-6 h-6 rounded-full flex items-center justify-center"
-                  style={{
-                    backgroundColor: event.status === 'delivered' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(33, 216, 255, 0.2)',
-                    borderColor: event.status === 'delivered' ? '#22c55e' : '#21d8ff',
-                    borderWidth: '2px',
-                  }}
-                >
-                  {event.status === 'delivered' ? (
-                    <CheckCircle className="h-3 w-3 text-green-500" />
-                  ) : (
-                    <Package className="h-3 w-3 text-[#21d8ff]" />
-                  )}
-                </div>
-                <div>
-                  <p className="text-sm font-medium">{event.productName}</p>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>{event.dateString}</span>
-                    <span>•</span>
-                    <span>${event.amount.toFixed(2)}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function ActivityFeed({ orders, products }: { orders?: Order[]; products?: Product[] }) {
-  const activities = useMemo(() => {
-    if (!orders) return [];
-    
-    const items = orders.slice(0, 8).map(order => ({
-      id: order.id,
-      type: 'order' as const,
-      title: `Ordered ${products?.find(p => p.id === order.productId)?.name || 'Product'}`,
-      date: new Date(order.createdAt || new Date()),
-      icon: Package,
-      color: '#21d8ff',
-    }));
-
-    return items.sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 5);
-  }, [orders, products]);
-
-  if (activities.length === 0) return null;
-
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-sm">
-          <Clock className="h-4 w-4" />
-          Recent Activity
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
-          {activities.map(activity => {
-            const Icon = activity.icon;
-            return (
-              <div key={activity.id} className="flex items-center gap-3">
-                <div 
-                  className="p-1.5 rounded-lg"
-                  style={{ backgroundColor: `${activity.color}20` }}
-                >
-                  <Icon className="h-3 w-3" style={{ color: activity.color }} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm truncate">{activity.title}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {activity.date.toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-export default function Dashboard() {
-  const { user, isLoading: authLoading, isAuthenticated, login, logout } = useAuth();
-  const { toast } = useToast();
-  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<ReviewableOrder | null>(null);
-  const [reviewRating, setReviewRating] = useState(5);
-  const [reviewTitle, setReviewTitle] = useState("");
-  const [reviewComment, setReviewComment] = useState("");
-
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      toast({
-        title: "Authentication Required",
-        description: "Please log in to view your dashboard.",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        login();
-      }, 500);
-    }
-  }, [authLoading, isAuthenticated, toast]);
-
-  const { data: orders, isLoading: ordersLoading } = useQuery<Order[]>({
-    queryKey: ["/api/orders/my-orders"],
-    enabled: isAuthenticated,
-  });
-
-  const { data: products } = useQuery<Product[]>({
-    queryKey: ["/api/products"],
-    enabled: isAuthenticated,
-  });
-
-  const { data: reviewableOrders, isLoading: reviewableLoading } = useQuery<ReviewableOrder[]>({
-    queryKey: ["/api/reviews/my-reviewable-orders"],
-    enabled: isAuthenticated,
-  });
-
-  const { data: affiliate } = useQuery<{ id: string } | null>({
-    queryKey: ["/api/affiliate/me"],
-    enabled: isAuthenticated,
-    retry: false,
-  });
-
-  interface ResearchProfileData {
-    phase: ResearchPhase;
-    title: ResearchTitle;
-    educationCount: number;
-    safetyCompleted: boolean;
-    coaEducationViewed: boolean;
-    batchVerificationCount: number;
-    compoundsTrackedCount: number;
-    verifiedReviewsCount: number;
-    earlyAccessMember: boolean;
-  }
-
-  const { data: researchProfile, isLoading: researchProfileLoading } = useQuery<ResearchProfileData>({
-    queryKey: ["/api/research-profile"],
-    enabled: isAuthenticated,
-  });
-
-  const submitReviewMutation = useMutation({
-    mutationFn: async (data: { orderId: string; rating: number; title: string; comment: string }) => {
-      return apiRequest("POST", "/api/reviews", data);
-    },
-    onSuccess: () => {
-      toast({
-        title: "Review Submitted",
-        description: "Thank you for your feedback!",
-      });
-      setReviewDialogOpen(false);
-      setSelectedOrder(null);
-      setReviewRating(5);
-      setReviewTitle("");
-      setReviewComment("");
-      queryClient.invalidateQueries({ queryKey: ["/api/reviews/my-reviewable-orders"] });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to submit review",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleWriteReview = (order: ReviewableOrder) => {
-    setSelectedOrder(order);
-    setReviewDialogOpen(true);
-  };
-
-  const handleSubmitReview = () => {
-    if (!selectedOrder) return;
-    if (reviewComment.length < 10) {
-      toast({
-        title: "Review too short",
-        description: "Please write at least 10 characters in your review.",
-        variant: "destructive",
-      });
-      return;
-    }
-    submitReviewMutation.mutate({
-      orderId: selectedOrder.orderId,
-      rating: reviewRating,
-      title: reviewTitle,
-      comment: reviewComment,
-    });
-  };
-
-  const eligibleForReview = reviewableOrders?.filter(
-    (o) => !o.hasReviewed && new Date() >= new Date(o.eligibleDate)
-  ) || [];
-
-  const pendingReviews = reviewableOrders?.filter(
-    (o) => !o.hasReviewed && new Date() < new Date(o.eligibleDate)
-  ) || [];
-
-  const getProductName = (productId: string) => {
-    const product = products?.find((p) => p.id === productId);
-    return product?.name || "Unknown Product";
-  };
-
-  const formatDate = (date: Date | string | null) => {
-    if (!date) return "N/A";
-    return new Date(date).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
-  const totalSpent = orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0;
 
   if (authLoading) {
     return (
       <main className="min-h-screen pt-32 md:pt-40 pb-24">
-        <div className="container mx-auto px-4 max-w-7xl">
+        <div className="container mx-auto px-4 max-w-5xl">
           <div className="flex items-center gap-4 mb-8">
             <Skeleton className="h-16 w-16 rounded-full" />
             <div>
@@ -1127,11 +330,8 @@ export default function Dashboard() {
               <Skeleton className="h-4 w-32" />
             </div>
           </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {[...Array(4)].map((_, i) => (
-              <Skeleton key={i} className="h-32" />
-            ))}
-          </div>
+          <Skeleton className="h-12 w-full mb-6" />
+          <Skeleton className="h-64 w-full" />
         </div>
       </main>
     );
@@ -1153,717 +353,640 @@ export default function Dashboard() {
 
   return (
     <>
+      <SEOHead title="My Account" description="Manage your orders and account settings." canonicalPath="/dashboard" />
       <main className="min-h-screen pt-32 md:pt-40 pb-24">
-        <SEOHead title="My Account" description="Manage your orders and account settings. View order history and track shipments." canonicalPath="/dashboard" />
-        <div className="container mx-auto px-4 max-w-7xl">
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-          <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-[#21d8ff]/10">
-            <div className="flex items-center gap-4">
-              <motion.div
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Avatar className="h-16 w-16 ring-2 ring-[#21d8ff]/30 ring-offset-2 ring-offset-background">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <motion.div variants={containerVariants} initial="hidden" animate="visible">
+            {/* Clean Header */}
+            <motion.div variants={itemVariants} className="flex items-center justify-between gap-4 mb-8 pb-6 border-b border-border">
+              <div className="flex items-center gap-4">
+                <Avatar className="h-14 w-14 ring-2 ring-[#21d8ff]/30 ring-offset-2 ring-offset-background">
                   {user?.profileImageUrl && (
                     <AvatarImage src={user.profileImageUrl} alt={user?.firstName || "User"} className="object-cover" />
                   )}
-                  <AvatarFallback className="text-xl font-semibold bg-gradient-to-br from-[#E7FB10]/20 to-[#21d8ff]/20">
+                  <AvatarFallback className="text-lg font-semibold bg-gradient-to-br from-[#E7FB10]/20 to-[#21d8ff]/20">
                     {getInitials()}
                   </AvatarFallback>
                 </Avatar>
-              </motion.div>
-              <div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <div className="flex items-center gap-1">
-                    <h1 className="font-display text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#E7FB10] bg-clip-text text-transparent" data-testid="text-user-name">
-                      Welcome{user?.firstName ? `, ${user.firstName}` : ""}
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h1 className="text-2xl font-bold" data-testid="text-user-name">
+                      {user?.firstName ? `${user.firstName}${user?.lastName ? ` ${user.lastName}` : ''}` : 'My Account'}
                     </h1>
                     {affiliate?.id && (
-                      <div data-testid="badge-verified-affiliate" title="Verified Affiliate">
-                        <svg
-                          className="h-6 w-6"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                        >
-                          <circle cx="12" cy="12" r="10" fill="#22c55e" />
-                          <path d="M9 12.5l2.5 2.5 4-4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      </div>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Badge variant="outline" className="bg-green-500/10 border-green-500/40 text-green-500">
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Affiliate
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>Verified Affiliate Partner</TooltipContent>
+                      </Tooltip>
                     )}
                   </div>
-                  <Link href="/account-settings">
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0" data-testid="button-edit-profile">
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                    </Button>
-                  </Link>
+                  <p className="text-sm text-muted-foreground" data-testid="text-user-email">{user?.email}</p>
                 </div>
-                <p className="text-muted-foreground" data-testid="text-user-email">{user?.email}</p>
-                {researchProfile && (
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge 
-                      variant="outline" 
-                      className="bg-[#E7FB10]/10 border-[#E7FB10]/40 text-[#E7FB10]"
-                      data-testid="badge-research-phase"
-                    >
-                      {researchProfile.phase}
-                    </Badge>
-                    <Badge 
-                      variant="outline" 
-                      className="bg-[#21d8ff]/10 border-[#21d8ff]/40 text-[#21d8ff]"
-                      data-testid="badge-research-title"
-                    >
-                      {researchProfile.title}
-                    </Badge>
-                  </div>
-                )}
               </div>
-            </div>
-            <a href="/api/logout">
-              <Button variant="outline" data-testid="button-logout">
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
-              </Button>
-            </a>
-          </motion.div>
+              <a href="/api/logout">
+                <Button variant="outline" size="sm" data-testid="button-logout">
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              </a>
+            </motion.div>
 
-          {/* Main Dashboard Grid - Achievements, Orders, Research Overview */}
-          <motion.div variants={itemVariants} className="grid gap-6 lg:grid-cols-3 mb-8">
-            {/* Left Column - Achievements */}
-            <div>
-              <CustomerAchievements orders={orders} totalSpent={totalSpent} />
-            </div>
+            {/* 4-Tab Layout */}
+            <motion.div variants={itemVariants}>
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-4 mb-6">
+                  <TabsTrigger value="general" className="gap-2" data-testid="tab-general">
+                    <Home className="h-4 w-4" />
+                    <span className="hidden sm:inline">General</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="orders" className="gap-2" data-testid="tab-orders">
+                    <ShoppingBag className="h-4 w-4" />
+                    <span className="hidden sm:inline">Orders</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="education" className="gap-2" data-testid="tab-education">
+                    <GraduationCap className="h-4 w-4" />
+                    <span className="hidden sm:inline">Education</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="settings" className="gap-2" data-testid="tab-settings">
+                    <Settings className="h-4 w-4" />
+                    <span className="hidden sm:inline">Settings</span>
+                  </TabsTrigger>
+                </TabsList>
 
-            {/* Middle Column - Orders & Wishlist */}
-            <div className="space-y-6">
-              <Card className="border-[#9d4edd]/20">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-sm">
-                    <ShoppingBag className="h-4 w-4 text-[#9d4edd]" />
-                    Recent Orders
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {ordersLoading ? (
-                    <div className="space-y-3">
-                      {[...Array(3)].map((_, i) => (
-                        <Skeleton key={i} className="h-12 w-full rounded" />
-                      ))}
-                    </div>
-                  ) : orders && orders.length > 0 ? (
-                    <div className="space-y-3">
-                      {orders.slice(0, 5).map((order) => (
-                        <div
-                          key={order.id}
-                          className="flex items-center justify-between p-3 rounded-lg border hover-elevate transition-colors"
-                          data-testid={`order-item-${order.id}`}
-                        >
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate" data-testid={`text-order-product-${order.id}`}>
-                              {getProductName(order.productId)}
-                            </p>
-                            <p className="text-xs text-muted-foreground">{formatDate(order.createdAt)}</p>
-                          </div>
-                          <Badge variant={getStatusColor(order.status)} className="ml-2">
-                            {order.status || "pending"}
-                          </Badge>
+                {/* General Tab */}
+                <TabsContent value="general" className="space-y-6">
+                  {/* Quick Stats */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <Card className="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-lg bg-[#E7FB10]/10">
+                          <ShoppingBag className="h-5 w-5 text-[#E7FB10]" />
                         </div>
-                      ))}
-                      {orders.length > 5 && (
-                        <p className="text-center text-xs text-muted-foreground">
-                          {orders.length - 5} more orders
-                        </p>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="text-center py-6">
-                      <ShoppingBag className="h-8 w-8 mx-auto text-muted-foreground/30 mb-2" />
-                      <p className="text-sm text-muted-foreground">No orders yet</p>
-                      <Link href="/products">
-                        <Button size="sm" variant="ghost" className="mt-2 text-[#E7FB10]">
-                          Browse Products
-                          <ArrowRight className="h-3 w-3 ml-1" />
-                        </Button>
-                      </Link>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Right Column - Research Overview */}
-            <div>
-              {researchProfile && (
-                <Card className="border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 to-transparent">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-sm">
-                      <div className="h-6 w-6 rounded-full bg-[#E7FB10]/15 flex items-center justify-center">
-                        <GraduationCap className="h-3.5 w-3.5 text-[#E7FB10]" />
-                      </div>
-                      Research Overview
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="bg-[#E7FB10]/10 border-[#E7FB10]/40 text-[#E7FB10]">
-                        {researchProfile.phase}
-                      </Badge>
-                      <Badge variant="outline" className="bg-[#21d8ff]/10 border-[#21d8ff]/40 text-[#21d8ff]">
-                        {researchProfile.title}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      {(["Observer", "Initiate", "Researcher", "Analyst", "Specialist"] as ResearchPhase[]).map((phase, idx) => {
-                        const phaseOrder = ["Observer", "Initiate", "Researcher", "Analyst", "Specialist"];
-                        const currentIdx = phaseOrder.indexOf(researchProfile.phase);
-                        const isActive = idx <= currentIdx;
-                        return (
-                          <div key={phase} className="flex-1">
-                            <div 
-                              className={`h-1.5 rounded-full transition-all ${
-                                isActive ? "bg-[#E7FB10]" : "bg-muted"
-                              }`}
-                            />
-                          </div>
-                        );
-                      })}
-                    </div>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div className="p-2 rounded-lg bg-muted/30">
-                        <div className="font-bold text-[#E7FB10]">{researchProfile.educationCount}</div>
-                        <div className="text-muted-foreground">Education</div>
-                      </div>
-                      <div className="p-2 rounded-lg bg-muted/30">
-                        <div className="font-bold text-[#21d8ff]">{researchProfile.batchVerificationCount}</div>
-                        <div className="text-muted-foreground">Verified</div>
-                      </div>
-                    </div>
-                    <Link href="#" onClick={(e) => { e.preventDefault(); document.querySelector('[data-testid="tab-education"]')?.dispatchEvent(new MouseEvent('click', { bubbles: true })); }}>
-                      <Button variant="ghost" size="sm" className="w-full text-[#E7FB10]">
-                        View Details
-                        <ChevronRight className="h-3 w-3 ml-1" />
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-          </motion.div>
-
-          {/* Detailed Tabs - Education, Profile, All Orders */}
-          <motion.div variants={itemVariants}>
-            <Tabs defaultValue="education" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 mb-6">
-                <TabsTrigger value="education" data-testid="tab-education" className="gap-2">
-                  <BookOpen className="h-4 w-4" />
-                  <span className="hidden sm:inline">Education & Research</span>
-                </TabsTrigger>
-                <TabsTrigger value="profile" data-testid="tab-profile" className="gap-2">
-                  <User className="h-4 w-4" />
-                  <span className="hidden sm:inline">Profile Settings</span>
-                </TabsTrigger>
-                <TabsTrigger value="all-orders" data-testid="tab-all-orders" className="gap-2">
-                  <ShoppingBag className="h-4 w-4" />
-                  <span className="hidden sm:inline">All Orders</span>
-                </TabsTrigger>
-              </TabsList>
-
-              {/* Education & Research Tab */}
-              <TabsContent value="education" className="space-y-6">
-                {/* Research Profile Panel - Now with tooltips and next-step guidance */}
-                {researchProfile && (
-                  <Card className="border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 via-transparent to-[#21d8ff]/5">
-                    <CardHeader>
-                      <div className="flex items-center justify-between flex-wrap gap-3">
                         <div>
-                          <CardTitle className="flex items-center gap-2">
-                            <div className="h-7 w-7 rounded-full bg-[#E7FB10]/15 flex items-center justify-center">
-                              <GraduationCap className="h-4 w-4 text-[#E7FB10]" />
-                            </div>
-                            Research Progress
-                            <Tooltip>
-                              <TooltipTrigger>
-                                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p className="max-w-xs">Your knowledge and activity level. Progress through phases by reading articles, verifying batches, and tracking compounds.</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </CardTitle>
-                          <CardDescription>Your research journey progress and achievements</CardDescription>
+                          <p className="text-2xl font-bold" data-testid="text-order-count">{orderCount}</p>
+                          <p className="text-xs text-muted-foreground">Orders</p>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="bg-[#E7FB10]/10 border-[#E7FB10]/40 text-[#E7FB10]">
-                            Phase: {researchProfile.phase}
-                          </Badge>
-                          <Badge variant="outline" className="bg-[#21d8ff]/10 border-[#21d8ff]/40 text-[#21d8ff]">
-                            {researchProfile.title}
-                          </Badge>
+                      </div>
+                    </Card>
+                    <Card className="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-lg bg-[#21d8ff]/10">
+                          <Package className="h-5 w-5 text-[#21d8ff]" />
                         </div>
+                        <div>
+                          <p className="text-2xl font-bold" data-testid="text-products-count">{uniqueProducts}</p>
+                          <p className="text-xs text-muted-foreground">Products</p>
+                        </div>
+                      </div>
+                    </Card>
+                    <Card className="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-lg bg-[#9d4edd]/10">
+                          <Award className="h-5 w-5 text-[#9d4edd]" />
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold" data-testid="text-badges-count">{badges.filter(b => b.earned).length}</p>
+                          <p className="text-xs text-muted-foreground">Badges</p>
+                        </div>
+                      </div>
+                    </Card>
+                    <Card className="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-lg bg-green-500/10">
+                          <Calendar className="h-5 w-5 text-green-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold" data-testid="text-member-since">
+                            {user?.createdAt ? formatDate(user.createdAt) : 'Recently'}
+                          </p>
+                          <p className="text-xs text-muted-foreground">Member Since</p>
+                        </div>
+                      </div>
+                    </Card>
+                  </div>
+
+                  {/* Recent Orders Preview */}
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="flex items-center gap-2 text-base">
+                          <History className="h-4 w-4 text-[#21d8ff]" />
+                          Recent Orders
+                        </CardTitle>
+                        <Button variant="ghost" size="sm" onClick={() => setActiveTab("orders")} data-testid="button-view-all-orders">
+                          View All
+                          <ChevronRight className="h-4 w-4 ml-1" />
+                        </Button>
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
-                        <Tooltip>
-                          <TooltipTrigger className="w-full">
-                            <div className="text-center p-3 rounded-lg bg-muted/30 hover-elevate cursor-help">
-                              <div className="text-2xl font-bold text-[#E7FB10]" data-testid="text-education-count">
-                                {researchProfile.educationCount}
-                              </div>
-                              <div className="text-xs text-muted-foreground">Education Completed</div>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="max-w-xs">Verified learning modules completed. Read articles in the Education section to increase this count.</p>
-                          </TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                          <TooltipTrigger className="w-full">
-                            <div className="text-center p-3 rounded-lg bg-muted/30 hover-elevate cursor-help">
-                              <div className="text-2xl font-bold text-[#21d8ff]" data-testid="text-verification-count">
-                                {researchProfile.batchVerificationCount}
-                              </div>
-                              <div className="text-xs text-muted-foreground">Batches Verified</div>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="max-w-xs">Authenticity checks performed. Verify batch numbers on the COA page to confirm product quality.</p>
-                          </TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                          <TooltipTrigger className="w-full">
-                            <div className="text-center p-3 rounded-lg bg-muted/30 hover-elevate cursor-help">
-                              <div className="text-2xl font-bold text-[#22c55e]" data-testid="text-compounds-tracked">
-                                {researchProfile.compoundsTrackedCount}
-                              </div>
-                              <div className="text-xs text-muted-foreground">Compounds Tracked</div>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="max-w-xs">Active research subjects. Each unique compound you purchase adds to your research portfolio.</p>
-                          </TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                          <TooltipTrigger className="w-full">
-                            <div className="text-center p-3 rounded-lg bg-muted/30 hover-elevate cursor-help">
-                              <div className="text-2xl font-bold text-[#f97316]" data-testid="text-reviews-count">
-                                {researchProfile.verifiedReviewsCount}
-                              </div>
-                              <div className="text-xs text-muted-foreground">Verified Reviews</div>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="max-w-xs">Reviews written on products you've purchased. Share your research experience to help others.</p>
-                          </TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                          <TooltipTrigger className="w-full">
-                            <div className="text-center p-3 rounded-lg bg-muted/30 hover-elevate cursor-help">
-                              <div className="flex items-center justify-center">
-                                {researchProfile.safetyCompleted ? (
-                                  <CheckCircle className="h-6 w-6 text-[#22c55e]" />
-                                ) : (
-                                  <div className="h-6 w-6 rounded-full border-2 border-muted-foreground/30" />
-                                )}
-                              </div>
-                              <div className="text-xs text-muted-foreground mt-1">Safety Trained</div>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="max-w-xs">Completed safety and compliance training. Essential for responsible research practices.</p>
-                          </TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                          <TooltipTrigger className="w-full">
-                            <div className="text-center p-3 rounded-lg bg-muted/30 hover-elevate cursor-help">
-                              <div className="flex items-center justify-center">
-                                {researchProfile.coaEducationViewed ? (
-                                  <CheckCircle className="h-6 w-6 text-[#22c55e]" />
-                                ) : (
-                                  <div className="h-6 w-6 rounded-full border-2 border-muted-foreground/30" />
-                                )}
-                              </div>
-                              <div className="text-xs text-muted-foreground mt-1">COA Trained</div>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="max-w-xs">Learned how to read and verify Certificates of Analysis. Critical for quality assessment.</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
-                      
-                      {/* Phase Progression with Next Step Guidance */}
-                      <div className="mt-6">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="text-sm font-medium">Research Phase Progression</div>
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="max-w-xs">Progress through phases by engaging with educational content, verifying batches, and tracking compounds.</p>
-                            </TooltipContent>
-                          </Tooltip>
+                      {ordersLoading ? (
+                        <div className="space-y-3">
+                          {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}
                         </div>
-                        
-                        {/* Next Step Directive */}
-                        {(() => {
-                          const phase = researchProfile.phase;
-                          const edu = researchProfile.educationCount;
-                          const batch = researchProfile.batchVerificationCount;
-                          const compounds = researchProfile.compoundsTrackedCount;
-                          
-                          let nextStep = "";
-                          let nextPhase = "";
-                          
-                          if (phase === "Observer") {
-                            if (batch === 0) {
-                          nextStep = "Verify your first batch number to reach Initiate";
-                          nextPhase = "Initiate";
-                        } else if (edu < 1) {
-                          nextStep = "Read your first article to reach Initiate";
-                          nextPhase = "Initiate";
-                        }
-                      } else if (phase === "Initiate") {
-                        const needed = Math.max(0, 3 - edu);
-                        if (needed > 0) {
-                          nextStep = `Read ${needed} more article${needed > 1 ? 's' : ''} to reach Researcher`;
-                          nextPhase = "Researcher";
-                        }
-                      } else if (phase === "Researcher") {
-                        const neededEdu = Math.max(0, 5 - edu);
-                        const neededBatch = Math.max(0, 3 - batch);
-                        if (neededBatch > 0) {
-                          nextStep = `Verify ${neededBatch} more batch${neededBatch > 1 ? 'es' : ''} to reach Analyst`;
-                          nextPhase = "Analyst";
-                        } else if (neededEdu > 0) {
-                          nextStep = `Read ${neededEdu} more article${neededEdu > 1 ? 's' : ''} to reach Analyst`;
-                          nextPhase = "Analyst";
-                        }
-                      } else if (phase === "Analyst") {
-                        const neededEdu = Math.max(0, 10 - edu);
-                        const neededBatch = Math.max(0, 5 - batch);
-                        const neededCompounds = Math.max(0, 5 - compounds);
-                        if (neededCompounds > 0) {
-                          nextStep = `Track ${neededCompounds} more compound${neededCompounds > 1 ? 's' : ''} to reach Specialist`;
-                          nextPhase = "Specialist";
-                        } else if (neededBatch > 0) {
-                          nextStep = `Verify ${neededBatch} more batch${neededBatch > 1 ? 'es' : ''} to reach Specialist`;
-                          nextPhase = "Specialist";
-                        } else if (neededEdu > 0) {
-                          nextStep = `Read ${neededEdu} more article${neededEdu > 1 ? 's' : ''} to reach Specialist`;
-                          nextPhase = "Specialist";
-                        }
-                      }
-                      
-                      if (phase === "Specialist") {
-                        return (
-                          <div className="mb-3 p-2.5 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30">
-                            <div className="flex items-center gap-2">
-                              <Sparkles className="h-4 w-4 text-[#E7FB10]" />
-                              <span className="text-sm text-[#E7FB10] font-medium">
-                                Congratulations! You've reached the highest research phase.
-                              </span>
+                      ) : orders && orders.length > 0 ? (
+                        <div className="space-y-3">
+                          {orders.slice(0, 3).map((order) => (
+                            <div key={order.id} className="flex items-center justify-between p-3 rounded-lg border" data-testid={`order-preview-${order.id}`}>
+                              <div className="flex items-center gap-3">
+                                <div className="p-2 rounded-lg bg-muted">
+                                  <Package className="h-4 w-4 text-muted-foreground" />
+                                </div>
+                                <div>
+                                  <p className="font-medium text-sm">{getProductName(order.productId)}</p>
+                                  <p className="text-xs text-muted-foreground">{formatDate(order.createdAt)}</p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-medium text-sm">${Number(order.totalAmount).toFixed(2)}</p>
+                                <Badge variant={getStatusColor(order.status)} className="text-xs">
+                                  {order.status || "pending"}
+                                </Badge>
+                              </div>
                             </div>
-                          </div>
-                        );
-                      }
-                      
-                      if (nextStep) {
-                        return (
-                          <div className="mb-3 p-2.5 rounded-lg bg-[#21d8ff]/10 border border-[#21d8ff]/30">
-                            <div className="flex items-center gap-2">
-                              <Target className="h-4 w-4 text-[#21d8ff]" />
-                              <span className="text-sm text-[#21d8ff]">
-                                <span className="font-medium">Next milestone:</span> {nextStep}
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      }
-                      return null;
-                    })()}
-                    
-                    <div className="flex items-center gap-1">
-                      {(["Observer", "Initiate", "Researcher", "Analyst", "Specialist"] as ResearchPhase[]).map((phase, idx) => {
-                        const phaseOrder = ["Observer", "Initiate", "Researcher", "Analyst", "Specialist"];
-                        const currentIdx = phaseOrder.indexOf(researchProfile.phase);
-                        const isActive = idx <= currentIdx;
-                        const isCurrent = phase === researchProfile.phase;
-                        return (
-                          <div key={phase} className="flex-1">
-                            <div 
-                              className={`h-2 rounded-full transition-all ${
-                                isActive 
-                                  ? isCurrent 
-                                    ? "bg-[#E7FB10]" 
-                                    : "bg-[#E7FB10]/50"
-                                  : "bg-muted"
-                              }`}
-                            />
-                            <div className={`text-xs mt-1 text-center ${isCurrent ? "text-[#E7FB10] font-medium" : "text-muted-foreground"}`}>
-                              {phase}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                  
-                  {researchProfile.earlyAccessMember && (
-                    <div className="mt-4 flex items-center gap-2 p-3 rounded-lg bg-[#9d4edd]/10 border border-[#9d4edd]/30">
-                      <Sparkles className="h-4 w-4 text-[#9d4edd]" />
-                      <span className="text-sm text-[#9d4edd]">Early Access Member - Thank you for being an early supporter!</span>
-                    </div>
-                  )}
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-8">
+                          <ShoppingBag className="h-10 w-10 mx-auto text-muted-foreground/30 mb-3" />
+                          <p className="text-sm text-muted-foreground mb-3">No orders yet</p>
+                          <Link href="/products">
+                            <Button size="sm" className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90" data-testid="button-browse-products-orders">
+                              Browse Products
+                            </Button>
+                          </Link>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
-                )}
 
-                {/* Recommended Reading */}
-                <RecommendedNextReading />
-              </TabsContent>
-
-              {/* Profile Settings Tab */}
-              <TabsContent value="profile" className="space-y-6">
-                <Card className="border-[#21d8ff]/20">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <User className="h-5 w-5 text-[#21d8ff]" />
-                      Profile & Settings
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="p-4 rounded-lg bg-muted/30">
-                      <p className="text-sm mb-3">Manage your account and preferences</p>
-                      <Link href="/account-settings">
-                        <Button className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 w-full">
-                          Go to Account Settings
-                          <ArrowRight className="h-4 w-4 ml-2" />
-                        </Button>
-                      </Link>
-                    </div>
-                    <div className="grid gap-4 text-sm">
-                      <div className="p-3 rounded-lg border">
-                        <div className="font-medium mb-1">Email</div>
-                        <div className="text-muted-foreground">{user?.email}</div>
-                      </div>
-                      <div className="p-3 rounded-lg border">
-                        <div className="font-medium mb-1">Member Since</div>
-                        <div className="text-muted-foreground">{formatDate(user?.createdAt || new Date())}</div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              {/* All Orders Tab */}
-              <TabsContent value="all-orders" className="space-y-6">
-                <Card className="border-[#9d4edd]/20">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="flex items-center gap-2">
-                        <div className="h-7 w-7 rounded-full bg-[#9d4edd]/15 flex items-center justify-center">
-                          <ShoppingBag className="h-4 w-4 text-[#9d4edd]" />
-                        </div>
-                        Order History
+                  {/* Wishlist */}
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <Heart className="h-4 w-4 text-[#ec4899]" />
+                        Wishlist
+                        {wishlistProducts.length > 0 && (
+                          <Badge variant="secondary" className="ml-2">{wishlistProducts.length}</Badge>
+                        )}
                       </CardTitle>
-                      <CardDescription>View your past orders and track shipments</CardDescription>
-                    </div>
-                    <Link href="/products">
-                      <Button size="sm" className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90" data-testid="link-shop-more">
-                        Shop More
-                        <ArrowRight className="h-4 w-4 ml-2" />
-                      </Button>
+                    </CardHeader>
+                    <CardContent>
+                      {wishlistProducts.length > 0 ? (
+                        <div className="space-y-2">
+                          {wishlistProducts.slice(0, 3).map(product => (
+                            <div key={product.id} className="flex items-center gap-3 p-3 rounded-lg border" data-testid={`wishlist-item-${product.id}`}>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-sm truncate">{product.name}</p>
+                                <p className="text-xs text-muted-foreground">${Number(product.price).toFixed(2)}</p>
+                              </div>
+                              <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleAddToCart(product)} data-testid={`button-add-to-cart-${product.id}`}>
+                                <Plus className="h-4 w-4" />
+                              </Button>
+                              <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground" onClick={() => removeMutation.mutate(product.id)} data-testid={`button-remove-wishlist-${product.id}`}>
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
+                          {wishlistProducts.length > 3 && (
+                            <p className="text-xs text-muted-foreground text-center pt-2">
+                              +{wishlistProducts.length - 3} more items
+                            </p>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="text-center py-6">
+                          <Bookmark className="h-8 w-8 mx-auto text-muted-foreground/30 mb-2" />
+                          <p className="text-sm text-muted-foreground mb-3">No items saved</p>
+                          <Link href="/products">
+                            <Button variant="outline" size="sm" data-testid="button-browse-products-wishlist">Browse Products</Button>
+                          </Link>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Quick Links */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <Link href="/academy" data-testid="link-academy">
+                      <Card className="p-4 hover-elevate cursor-pointer h-full">
+                        <div className="flex items-center gap-3">
+                          <GraduationCap className="h-5 w-5 text-[#E7FB10]" />
+                          <span className="font-medium text-sm">Academy</span>
+                        </div>
+                      </Card>
+                    </Link>
+                    <Link href="/coa" data-testid="link-coa">
+                      <Card className="p-4 hover-elevate cursor-pointer h-full">
+                        <div className="flex items-center gap-3">
+                          <FileCheck className="h-5 w-5 text-[#21d8ff]" />
+                          <span className="font-medium text-sm">Verify COA</span>
+                        </div>
+                      </Card>
+                    </Link>
+                    <Link href="/affiliate" data-testid="link-affiliate">
+                      <Card className="p-4 hover-elevate cursor-pointer h-full">
+                        <div className="flex items-center gap-3">
+                          <Award className="h-5 w-5 text-[#9d4edd]" />
+                          <span className="font-medium text-sm">Affiliate</span>
+                        </div>
+                      </Card>
+                    </Link>
+                    <Link href="/contact" data-testid="link-support">
+                      <Card className="p-4 hover-elevate cursor-pointer h-full">
+                        <div className="flex items-center gap-3">
+                          <MessageSquare className="h-5 w-5 text-[#ec4899]" />
+                          <span className="font-medium text-sm">Support</span>
+                        </div>
+                      </Card>
                     </Link>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  {ordersLoading ? (
-                    <div className="space-y-4">
-                      {[...Array(3)].map((_, i) => (
-                        <div key={i} className="flex items-center gap-4">
-                          <Skeleton className="h-12 w-12 rounded" />
-                          <div className="flex-1">
-                            <Skeleton className="h-4 w-32 mb-2" />
-                            <Skeleton className="h-3 w-24" />
-                          </div>
-                          <Skeleton className="h-6 w-16" />
+                </TabsContent>
+
+                {/* Orders Tab */}
+                <TabsContent value="orders" className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle className="flex items-center gap-2">
+                            <ShoppingBag className="h-5 w-5 text-[#9d4edd]" />
+                            Order History
+                          </CardTitle>
+                          <CardDescription>View and track your orders</CardDescription>
                         </div>
-                      ))}
-                    </div>
-                  ) : orders && orders.length > 0 ? (
-                    <div className="space-y-4">
-                      {orders.slice(0, 5).map((order, idx) => {
-                        const colors = ['#E7FB10', '#21d8ff', '#9d4edd', '#ec4899', '#f97316'];
-                        const color = colors[idx % colors.length];
-                        return (
-                        <div
-                          key={order.id}
-                          className="flex items-center gap-4 p-4 rounded-lg border hover-elevate transition-colors"
-                          style={{ borderColor: `rgba(${parseInt(color.slice(1,3),16)},${parseInt(color.slice(3,5),16)},${parseInt(color.slice(5,7),16)},0.2)` }}
-                          data-testid={`order-item-${order.id}`}
-                        >
-                          <div 
-                            className="h-12 w-12 rounded flex items-center justify-center"
-                            style={{ backgroundColor: `rgba(${parseInt(color.slice(1,3),16)},${parseInt(color.slice(3,5),16)},${parseInt(color.slice(5,7),16)},0.1)` }}
-                          >
-                            <Package className="h-6 w-6" style={{ color }} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium truncate" data-testid={`text-order-product-${order.id}`}>
-                              {getProductName(order.productId)}
-                            </p>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <Calendar className="h-3 w-3" />
-                              <span>{formatDate(order.createdAt)}</span>
-                              <span>Qty: {order.quantity}</span>
+                        <Link href="/products">
+                          <Button size="sm" className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90" data-testid="button-shop-more">
+                            Shop More
+                            <ArrowRight className="h-4 w-4 ml-2" />
+                          </Button>
+                        </Link>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      {ordersLoading ? (
+                        <div className="space-y-4">
+                          {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-16 w-full" />)}
+                        </div>
+                      ) : orders && orders.length > 0 ? (
+                        <div className="space-y-4">
+                          {orders.map((order, idx) => {
+                            const colors = ['#E7FB10', '#21d8ff', '#9d4edd', '#ec4899', '#f97316'];
+                            const color = colors[idx % colors.length];
+                            return (
+                              <div key={order.id} className="flex items-center gap-4 p-4 rounded-lg border" data-testid={`order-item-${order.id}`}>
+                                <div className="h-12 w-12 rounded flex items-center justify-center" style={{ backgroundColor: `${color}15` }}>
+                                  <Package className="h-6 w-6" style={{ color }} />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-medium truncate">{getProductName(order.productId)}</p>
+                                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                    <Calendar className="h-3 w-3" />
+                                    <span>{formatDate(order.createdAt)}</span>
+                                    <span>•</span>
+                                    <span>Qty: {order.quantity}</span>
+                                  </div>
+                                </div>
+                                <div className="text-right">
+                                  <p className="font-semibold">${Number(order.totalAmount).toFixed(2)}</p>
+                                  <Badge variant={getStatusColor(order.status)} className="mt-1">
+                                    {getStatusIcon(order.status)}
+                                    <span className="ml-1 capitalize">{order.status || "pending"}</span>
+                                  </Badge>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="text-center py-12">
+                          <ShoppingBag className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
+                          <h3 className="font-medium mb-2">No orders yet</h3>
+                          <p className="text-sm text-muted-foreground mb-4">Start shopping to see your order history</p>
+                          <Link href="/products">
+                            <Button className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90" data-testid="button-browse-products-history">Browse Products</Button>
+                          </Link>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Reviews Section */}
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle className="flex items-center gap-2">
+                            <Star className="h-5 w-5 text-[#ec4899]" />
+                            Product Reviews
+                          </CardTitle>
+                          <CardDescription>Share your experience</CardDescription>
+                        </div>
+                        {eligibleForReview.length > 0 && (
+                          <Badge className="bg-[#ec4899]/10 text-[#ec4899] border-[#ec4899]/30">
+                            {eligibleForReview.length} to review
+                          </Badge>
+                        )}
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      {reviewableLoading ? (
+                        <div className="space-y-3">
+                          {[...Array(2)].map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}
+                        </div>
+                      ) : eligibleForReview.length > 0 ? (
+                        <div className="space-y-3">
+                          {eligibleForReview.map((order) => (
+                            <div key={order.orderId} className="flex items-center gap-4 p-4 rounded-lg border" data-testid={`reviewable-${order.orderId}`}>
+                              <div className="h-12 w-12 rounded bg-muted flex items-center justify-center overflow-hidden">
+                                {order.productImageUrl ? (
+                                  <img src={order.productImageUrl} alt={order.productName} className="h-full w-full object-cover" />
+                                ) : (
+                                  <Package className="h-6 w-6 text-muted-foreground" />
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium truncate">{order.productName}</p>
+                                <p className="text-sm text-muted-foreground">Ordered {formatDate(order.orderDate)}</p>
+                              </div>
+                              <Button size="sm" onClick={() => handleWriteReview(order)} data-testid={`button-review-${order.orderId}`}>
+                                <Star className="h-4 w-4 mr-2" />
+                                Review
+                              </Button>
                             </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-8">
+                          <Star className="h-10 w-10 mx-auto text-muted-foreground/30 mb-3" />
+                          <p className="text-sm text-muted-foreground">No reviews available yet</p>
+                          <p className="text-xs text-muted-foreground mt-1">You can review products 30 days after your order</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                {/* Education Tab */}
+                <TabsContent value="education" className="space-y-6">
+                  {/* Research Progress */}
+                  {researchProfile && (
+                    <Card className="border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 to-transparent">
+                      <CardHeader>
+                        <div className="flex items-center justify-between flex-wrap gap-3">
+                          <div>
+                            <CardTitle className="flex items-center gap-2">
+                              <GraduationCap className="h-5 w-5 text-[#E7FB10]" />
+                              Research Progress
+                            </CardTitle>
+                            <CardDescription>Your learning journey</CardDescription>
                           </div>
-                          <div className="text-right">
-                            <p className="font-semibold" data-testid={`text-order-amount-${order.id}`}>
-                              ${Number(order.totalAmount).toFixed(2)}
-                            </p>
-                            <Badge variant={getStatusColor(order.status)} className="mt-1">
-                              {getStatusIcon(order.status)}
-                              <span className="ml-1 capitalize">{order.status || "pending"}</span>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className="bg-[#E7FB10]/10 border-[#E7FB10]/40 text-[#E7FB10]">
+                              {researchProfile.phase}
+                            </Badge>
+                            <Badge variant="outline" className="bg-[#21d8ff]/10 border-[#21d8ff]/40 text-[#21d8ff]">
+                              {researchProfile.title}
                             </Badge>
                           </div>
                         </div>
-                        );
-                      })}
-                      {orders.length > 5 && (
-                        <p className="text-center text-sm text-muted-foreground">
-                          Showing 5 of {orders.length} orders
-                        </p>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12">
-                      <div className="h-16 w-16 mx-auto rounded-full bg-[#9d4edd]/10 flex items-center justify-center mb-4">
-                        <ShoppingBag className="h-8 w-8 text-[#9d4edd]" />
+                      </CardHeader>
+                      <CardContent className="space-y-6">
+                        {/* Stats Grid */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          <div className="text-center p-3 rounded-lg bg-muted/30">
+                            <div className="text-2xl font-bold text-[#E7FB10]">{researchProfile.educationCount}</div>
+                            <div className="text-xs text-muted-foreground">Articles Read</div>
+                          </div>
+                          <div className="text-center p-3 rounded-lg bg-muted/30">
+                            <div className="text-2xl font-bold text-[#21d8ff]">{researchProfile.batchVerificationCount}</div>
+                            <div className="text-xs text-muted-foreground">Batches Verified</div>
+                          </div>
+                          <div className="text-center p-3 rounded-lg bg-muted/30">
+                            <div className="text-2xl font-bold text-[#22c55e]">{researchProfile.compoundsTrackedCount}</div>
+                            <div className="text-xs text-muted-foreground">Compounds Tracked</div>
+                          </div>
+                          <div className="text-center p-3 rounded-lg bg-muted/30">
+                            <div className="text-2xl font-bold text-[#f97316]">{researchProfile.verifiedReviewsCount}</div>
+                            <div className="text-xs text-muted-foreground">Reviews</div>
+                          </div>
+                        </div>
+
+                        {/* Phase Progress */}
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium">Phase Progression</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            {(["Observer", "Initiate", "Researcher", "Analyst", "Specialist"] as ResearchPhase[]).map((phase, idx) => {
+                              const phaseOrder = ["Observer", "Initiate", "Researcher", "Analyst", "Specialist"];
+                              const currentIdx = phaseOrder.indexOf(researchProfile.phase);
+                              const isActive = idx <= currentIdx;
+                              const isCurrent = phase === researchProfile.phase;
+                              return (
+                                <div key={phase} className="flex-1">
+                                  <div className={`h-2 rounded-full transition-all ${isActive ? isCurrent ? "bg-[#E7FB10]" : "bg-[#E7FB10]/50" : "bg-muted"}`} />
+                                  <div className={`text-xs mt-1 text-center ${isCurrent ? "text-[#E7FB10] font-medium" : "text-muted-foreground"}`}>
+                                    {phase}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {researchProfile.earlyAccessMember && (
+                          <div className="flex items-center gap-2 p-3 rounded-lg bg-[#9d4edd]/10 border border-[#9d4edd]/30">
+                            <Sparkles className="h-4 w-4 text-[#9d4edd]" />
+                            <span className="text-sm text-[#9d4edd]">Early Access Member</span>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Achievements */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Trophy className="h-5 w-5 text-[#f97316]" />
+                        Achievements
+                      </CardTitle>
+                      <CardDescription>Badges earned through your research journey</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {badges.map((badge) => {
+                          const Icon = badge.icon;
+                          return (
+                            <div
+                              key={badge.id}
+                              className={`p-4 rounded-lg border text-center transition-all ${badge.earned ? 'border-' + badge.color : 'opacity-50'}`}
+                              style={badge.earned ? { borderColor: badge.color, backgroundColor: `${badge.color}10` } : undefined}
+                              data-testid={`badge-${badge.id}`}
+                            >
+                              <Icon className="h-8 w-8 mx-auto mb-2" style={{ color: badge.earned ? badge.color : undefined }} />
+                              <p className="font-medium text-sm">{badge.title}</p>
+                              <p className="text-xs text-muted-foreground">{badge.description}</p>
+                              {!badge.earned && badge.progress !== undefined && badge.target && (
+                                <p className="text-xs text-muted-foreground mt-1">{badge.progress}/{badge.target}</p>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
-                      <h3 className="font-medium mb-2">No orders yet</h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Start shopping to see your order history here.
-                      </p>
-                      <Link href="/products">
-                        <Button className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90" data-testid="button-start-shopping">
-                          Browse Products
+                    </CardContent>
+                  </Card>
+
+                  {/* Quick Links */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Link href="/academy" data-testid="link-academy-education">
+                      <Card className="p-5 hover-elevate cursor-pointer">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 rounded-lg bg-[#E7FB10]/10">
+                              <GraduationCap className="h-5 w-5 text-[#E7FB10]" />
+                            </div>
+                            <div>
+                              <p className="font-medium">Research Academy</p>
+                              <p className="text-sm text-muted-foreground">Learn and earn XP</p>
+                            </div>
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                      </Card>
+                    </Link>
+                    <Link href="/coa" data-testid="link-coa-education">
+                      <Card className="p-5 hover-elevate cursor-pointer">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 rounded-lg bg-[#21d8ff]/10">
+                              <FileCheck className="h-5 w-5 text-[#21d8ff]" />
+                            </div>
+                            <div>
+                              <p className="font-medium">Verify COA</p>
+                              <p className="text-sm text-muted-foreground">Check batch authenticity</p>
+                            </div>
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                      </Card>
+                    </Link>
+                  </div>
+                </TabsContent>
+
+                {/* Settings Tab */}
+                <TabsContent value="settings" className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <User className="h-5 w-5 text-[#21d8ff]" />
+                        Profile Information
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid gap-4">
+                        <div className="p-4 rounded-lg border">
+                          <div className="text-sm text-muted-foreground mb-1">Name</div>
+                          <div className="font-medium">
+                            {user?.firstName || user?.lastName 
+                              ? `${user.firstName || ''} ${user.lastName || ''}`.trim() 
+                              : 'Not set'}
+                          </div>
+                        </div>
+                        <div className="p-4 rounded-lg border">
+                          <div className="text-sm text-muted-foreground mb-1">Email</div>
+                          <div className="font-medium">{user?.email || 'Not set'}</div>
+                        </div>
+                        <div className="p-4 rounded-lg border">
+                          <div className="text-sm text-muted-foreground mb-1">Member Since</div>
+                          <div className="font-medium">{formatDate(user?.createdAt || new Date())}</div>
+                        </div>
+                      </div>
+                      <Link href="/account-settings">
+                        <Button className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90" data-testid="button-account-settings">
+                          Edit Profile
+                          <ArrowRight className="h-4 w-4 ml-2" />
                         </Button>
                       </Link>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+                    </CardContent>
+                  </Card>
 
-              <Card className="border-[#ec4899]/20">
-                <CardHeader>
-                  <div className="flex items-center justify-between gap-2">
-                    <div>
+                  {/* Affiliate Status */}
+                  <Card>
+                    <CardHeader>
                       <CardTitle className="flex items-center gap-2">
-                        <div className="h-7 w-7 rounded-full bg-[#ec4899]/15 flex items-center justify-center">
-                          <MessageSquare className="h-4 w-4 text-[#ec4899]" />
-                        </div>
-                        Product Reviews
+                        <Award className="h-5 w-5 text-[#9d4edd]" />
+                        Affiliate Program
                       </CardTitle>
-                      <CardDescription>Share your experience with our products</CardDescription>
-                    </div>
-                    {eligibleForReview.length > 0 && (
-                      <Badge variant="secondary" className="bg-[#ec4899]/10 text-[#ec4899] border border-[#ec4899]/30">
-                        {eligibleForReview.length} to review
-                      </Badge>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  {reviewableLoading ? (
-                    <div className="space-y-4">
-                      {[...Array(2)].map((_, i) => (
-                        <div key={i} className="flex items-center gap-4">
-                          <Skeleton className="h-12 w-12 rounded" />
-                          <div className="flex-1">
-                            <Skeleton className="h-4 w-32 mb-2" />
-                            <Skeleton className="h-3 w-24" />
+                    </CardHeader>
+                    <CardContent>
+                      {affiliate?.id ? (
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/30">
+                            <CheckCircle className="h-5 w-5 text-green-500" />
+                            <span className="text-green-500 font-medium">Active Affiliate</span>
                           </div>
+                          <Link href="/affiliate/dashboard">
+                            <Button variant="outline" className="w-full" data-testid="button-affiliate-dashboard">
+                              View Dashboard
+                              <ExternalLink className="h-4 w-4 ml-2" />
+                            </Button>
+                          </Link>
                         </div>
-                      ))}
-                    </div>
-                  ) : eligibleForReview.length > 0 ? (
-                    <div className="space-y-4">
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Only verified purchasers can leave reviews. You can review products 30 days after your order.
-                      </p>
-                      {eligibleForReview.map((order) => (
-                        <div
-                          key={order.orderId}
-                          className="flex items-center gap-4 p-4 rounded-lg border hover-elevate transition-colors"
-                          data-testid={`reviewable-order-${order.orderId}`}
-                        >
-                          <div className="h-12 w-12 rounded bg-muted flex items-center justify-center overflow-hidden">
-                            {order.productImageUrl ? (
-                              <img 
-                                src={order.productImageUrl} 
-                                alt={order.productName}
-                                className="h-full w-full object-cover"
-                              />
-                            ) : (
-                              <Package className="h-6 w-6 text-muted-foreground" />
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium truncate">{order.productName}</p>
-                            <p className="text-sm text-muted-foreground">
-                              Ordered {formatDate(order.orderDate)}
-                            </p>
-                          </div>
-                          <Button
-                            size="sm"
-                            onClick={() => handleWriteReview(order)}
-                            data-testid={`button-write-review-${order.orderId}`}
-                          >
-                            <Star className="h-4 w-4 mr-2" />
-                            Write Review
-                          </Button>
+                      ) : (
+                        <div className="space-y-4">
+                          <p className="text-sm text-muted-foreground">
+                            Join our affiliate program and earn commissions on referrals.
+                          </p>
+                          <Link href="/affiliate">
+                            <Button variant="outline" className="w-full" data-testid="button-join-affiliate">
+                              Learn More
+                              <ArrowRight className="h-4 w-4 ml-2" />
+                            </Button>
+                          </Link>
                         </div>
-                      ))}
-                    </div>
-                  ) : pendingReviews.length > 0 ? (
-                    <div className="text-center py-8">
-                      <Clock className="h-10 w-10 mx-auto text-muted-foreground/50 mb-4" />
-                      <h3 className="font-medium mb-2">Reviews Coming Soon</h3>
-                      <p className="text-sm text-muted-foreground">
-                        You can leave reviews 30 days after your order. Check back on{" "}
-                        {formatDate(pendingReviews[0]?.eligibleDate)}.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <Star className="h-10 w-10 mx-auto text-muted-foreground/50 mb-4" />
-                      <h3 className="font-medium mb-2">No Reviews Available</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Complete an order to leave a verified review 30 days later.
-                      </p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-              </TabsContent>
-            </Tabs>
-          </motion.div>
-          </motion.div>
-          </div>
-        </main>
+                      )}
+                    </CardContent>
+                  </Card>
 
-        {/* Review Dialog */}
-        <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
+                  {/* Danger Zone */}
+                  <Card className="border-red-500/20">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-red-500">
+                        <AlertTriangle className="h-5 w-5" />
+                        Danger Zone
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Permanently delete your account and all associated data.
+                      </p>
+                      <Button 
+                        variant="outline" 
+                        className="border-red-500/50 text-red-500 hover:bg-red-500/10"
+                        onClick={() => setDeleteDialogOpen(true)}
+                        data-testid="button-delete-account"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete Account
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+            </motion.div>
+          </motion.div>
+        </div>
+      </main>
+
+      {/* Review Dialog */}
+      <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Write a Review</DialogTitle>
@@ -1883,13 +1006,7 @@ export default function Dashboard() {
                     className="p-1 md:hover:scale-110 transition-transform"
                     data-testid={`button-star-${star}`}
                   >
-                    <Star
-                      className={`h-8 w-8 ${
-                        star <= reviewRating
-                          ? "fill-primary text-primary"
-                          : "text-muted-foreground"
-                      }`}
-                    />
+                    <Star className={`h-8 w-8 ${star <= reviewRating ? "fill-[#E7FB10] text-[#E7FB10]" : "text-muted-foreground"}`} />
                   </button>
                 ))}
               </div>
@@ -1908,7 +1025,7 @@ export default function Dashboard() {
               <Label htmlFor="review-comment">Your Review</Label>
               <Textarea
                 id="review-comment"
-                placeholder="Tell us about your experience with this product..."
+                placeholder="Tell us about your experience..."
                 value={reviewComment}
                 onChange={(e) => setReviewComment(e.target.value)}
                 rows={4}
@@ -1920,20 +1037,39 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="flex justify-end gap-3">
-            <Button
-              variant="outline"
-              onClick={() => setReviewDialogOpen(false)}
-              data-testid="button-cancel-review"
-            >
+            <Button variant="outline" onClick={() => setReviewDialogOpen(false)} data-testid="button-cancel-review">
               Cancel
             </Button>
             <Button
               onClick={handleSubmitReview}
               disabled={submitReviewMutation.isPending || reviewComment.length < 10}
+              className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
               data-testid="button-submit-review"
             >
               {submitReviewMutation.isPending ? "Submitting..." : "Submit Review"}
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Account Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-red-500">Delete Account</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. All your data including orders, reviews, and preferences will be permanently deleted.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-3 pt-4">
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} data-testid="button-cancel-delete">
+              Cancel
+            </Button>
+            <Link href="/account-settings">
+              <Button variant="destructive" data-testid="button-confirm-delete">
+                Continue to Delete
+              </Button>
+            </Link>
           </div>
         </DialogContent>
       </Dialog>
