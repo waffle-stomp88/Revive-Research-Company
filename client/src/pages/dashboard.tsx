@@ -67,6 +67,7 @@ import {
   Monitor,
   Smartphone,
   Mail,
+  Brain,
 } from "lucide-react";
 import type { Order, Product, ReviewableOrder, Coa, ResearchPhase, ResearchTitle } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -128,6 +129,7 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("general");
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<ReviewableOrder | null>(null);
+  const [viewOrderDetails, setViewOrderDetails] = useState<Order | null>(null);
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewTitle, setReviewTitle] = useState("");
   const [reviewComment, setReviewComment] = useState("");
@@ -666,10 +668,21 @@ export default function Dashboard() {
                     )}
                   </div>
                   <div>
-                    {/* Holographic Welcome Greeting */}
-                    <h1 className="text-2xl font-bold holographic-text" data-testid="text-user-name">
-                      Welcome, {user?.firstName || 'Guest'}!
-                    </h1>
+                    {/* Holographic Welcome Greeting - matching affiliate dashboard sizing */}
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <h1 className="font-display text-2xl md:text-3xl font-bold holographic-text" data-testid="text-user-name">
+                        Welcome, {user?.firstName || 'Guest'}!
+                      </h1>
+                      {/* Verified checkmark like affiliate dashboard */}
+                      {user?.id && (
+                        <div data-testid="badge-verified-member" title="Verified Member">
+                          <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" fill="#21d8ff" />
+                            <path d="M9 12.5l2.5 2.5 4-4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
                     
                     {/* Status Badges Row */}
                     <div className="flex items-center gap-2 flex-wrap mt-1.5">
@@ -699,8 +712,8 @@ export default function Dashboard() {
                         </Tooltip>
                       )}
                       
-                      {/* Verified Researcher Badge - based on education progress */}
-                      {researchProfile && researchProfile.phase !== 'Observer' && (
+                      {/* Research Phase Badge */}
+                      {researchProfile && (
                         <Tooltip>
                           <TooltipTrigger>
                             <Badge className="bg-[#21d8ff]/15 border-[#21d8ff]/50 text-[#21d8ff] badge-glow-cyan text-xs px-2 py-0.5">
@@ -711,9 +724,22 @@ export default function Dashboard() {
                           <TooltipContent>Research phase: {researchProfile.phase}</TooltipContent>
                         </Tooltip>
                       )}
+                      
+                      {/* Research Title Badge */}
+                      {researchProfile?.title && researchProfile.title !== 'Getting Started' && (
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Badge className="bg-green-500/15 border-green-500/50 text-green-400 text-xs px-2 py-0.5">
+                              <Award className="h-3 w-3 mr-1" />
+                              {researchProfile.title}
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>Earned title: {researchProfile.title}</TooltipContent>
+                        </Tooltip>
+                      )}
                     </div>
                     
-                    <p className="text-sm text-muted-foreground mt-1" data-testid="text-user-email">{user?.email}</p>
+                    <p className="text-sm text-muted-foreground mt-1.5" data-testid="text-user-email">{user?.email}</p>
                   </div>
                 </div>
                 <a href="/api/logout">
@@ -803,60 +829,209 @@ export default function Dashboard() {
                     </Card>
                   </div>
 
-                  {/* Recent Orders Preview */}
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="flex items-center gap-2 text-base">
-                          <History className="h-4 w-4 text-[#21d8ff]" />
-                          Recent Orders
-                        </CardTitle>
-                        <Button variant="ghost" size="sm" onClick={() => setActiveTab("orders")} data-testid="button-view-all-orders">
-                          View All
-                          <ChevronRight className="h-4 w-4 ml-1" />
-                        </Button>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      {ordersLoading ? (
-                        <div className="space-y-3">
-                          {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}
+                  {/* Two Column: Recent Orders + Achievements */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    {/* Recent Orders Preview - Left Column */}
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="flex items-center gap-2 text-base">
+                            <History className="h-4 w-4 text-[#21d8ff]" />
+                            Recent Orders
+                          </CardTitle>
+                          <Button variant="ghost" size="sm" onClick={() => setActiveTab("orders")} data-testid="button-view-all-orders">
+                            View All
+                            <ChevronRight className="h-4 w-4 ml-1" />
+                          </Button>
                         </div>
-                      ) : orders && orders.length > 0 ? (
-                        <div className="space-y-3">
-                          {orders.slice(0, 3).map((order) => (
-                            <div key={order.id} className="flex items-center justify-between p-3 rounded-lg border" data-testid={`order-preview-${order.id}`}>
-                              <div className="flex items-center gap-3">
-                                <div className="p-2 rounded-lg bg-muted">
-                                  <Package className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        {ordersLoading ? (
+                          <div className="space-y-3">
+                            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}
+                          </div>
+                        ) : orders && orders.length > 0 ? (
+                          <div className="space-y-3">
+                            {orders.slice(0, 3).map((order) => (
+                              <div 
+                                key={order.id} 
+                                className="flex items-center justify-between p-3 rounded-lg border cursor-pointer hover-elevate transition-all" 
+                                data-testid={`order-preview-${order.id}`}
+                                onClick={() => setViewOrderDetails(order)}
+                              >
+                                <div className="flex items-center gap-3">
+                                  <div className="p-2 rounded-lg bg-muted">
+                                    <Package className="h-4 w-4 text-muted-foreground" />
+                                  </div>
+                                  <div>
+                                    <p className="font-medium text-sm">{getProductName(order.productId)}</p>
+                                    <p className="text-xs text-muted-foreground">{formatDate(order.createdAt)}</p>
+                                  </div>
                                 </div>
-                                <div>
-                                  <p className="font-medium text-sm">{getProductName(order.productId)}</p>
-                                  <p className="text-xs text-muted-foreground">{formatDate(order.createdAt)}</p>
+                                <div className="text-right flex items-center gap-2">
+                                  <div>
+                                    <p className="font-medium text-sm">${Number(order.totalAmount).toFixed(2)}</p>
+                                    <Badge variant={getStatusColor(order.status)} className="text-xs">
+                                      {order.status || "pending"}
+                                    </Badge>
+                                  </div>
+                                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
                                 </div>
                               </div>
-                              <div className="text-right">
-                                <p className="font-medium text-sm">${Number(order.totalAmount).toFixed(2)}</p>
-                                <Badge variant={getStatusColor(order.status)} className="text-xs">
-                                  {order.status || "pending"}
-                                </Badge>
-                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-center py-8">
+                            <ShoppingBag className="h-10 w-10 mx-auto text-muted-foreground/30 mb-3" />
+                            <p className="text-sm text-muted-foreground mb-3">No orders yet</p>
+                            <Link href="/products">
+                              <Button size="sm" className="bg-[#E7FB10] text-black" data-testid="button-browse-products-orders">
+                                Browse Products
+                              </Button>
+                            </Link>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+
+                    {/* Achievements - Right Column (Vertical Stack) */}
+                    <Card className="border-[#f97316]/20 bg-gradient-to-br from-[#f97316]/5 via-transparent to-transparent">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between gap-2">
+                          <CardTitle className="flex items-center gap-2 text-base">
+                            <div className="p-1.5 rounded-lg bg-[#f97316]/20">
+                              <Trophy className="h-4 w-4 text-[#f97316]" />
                             </div>
-                          ))}
+                            Achievements
+                          </CardTitle>
+                          <Badge variant="outline" className="bg-[#f97316]/10 border-[#f97316]/30 text-[#f97316] text-xs">
+                            {(() => {
+                              let count = 0;
+                              if (orders && orders.length > 0) count++;
+                              if (orders && orders.length >= 5) count++;
+                              if (researchProfile && researchProfile.educationCount >= 3) count++;
+                              if (researchProfile && researchProfile.batchVerificationCount > 0) count++;
+                              if (affiliate?.id) count++;
+                              return count;
+                            })()}/5 Unlocked
+                          </Badge>
                         </div>
-                      ) : (
-                        <div className="text-center py-8">
-                          <ShoppingBag className="h-10 w-10 mx-auto text-muted-foreground/30 mb-3" />
-                          <p className="text-sm text-muted-foreground mb-3">No orders yet</p>
-                          <Link href="/products">
-                            <Button size="sm" className="bg-[#E7FB10] text-black" data-testid="button-browse-products-orders">
-                              Browse Products
-                            </Button>
-                          </Link>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2">
+                          {/* First Order Achievement */}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <motion.div 
+                                className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${orders && orders.length > 0 ? 'bg-[#E7FB10]/10 border-[#E7FB10]/40' : 'bg-muted/30 border-muted/20 opacity-50'}`}
+                                data-testid="achievement-first-order"
+                                animate={orders && orders.length > 0 ? { scale: [1, 1.02, 1] } : {}}
+                                transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
+                              >
+                                <div className={`p-2 rounded-full ${orders && orders.length > 0 ? 'bg-[#E7FB10]/20' : 'bg-muted/30'}`}>
+                                  <ShoppingBag className={`h-5 w-5 ${orders && orders.length > 0 ? 'text-[#E7FB10]' : 'text-muted-foreground'}`} />
+                                </div>
+                                <div className="flex-1">
+                                  <p className="font-medium text-sm">First Order</p>
+                                  <p className="text-xs text-muted-foreground">{orders && orders.length > 0 ? 'Unlocked!' : 'Make your first purchase'}</p>
+                                </div>
+                                {orders && orders.length > 0 && <CheckCircle className="h-4 w-4 text-[#E7FB10]" />}
+                              </motion.div>
+                            </TooltipTrigger>
+                            <TooltipContent>{orders && orders.length > 0 ? 'You made your first purchase!' : 'Make your first purchase to unlock'}</TooltipContent>
+                          </Tooltip>
+
+                          {/* Loyal Customer Achievement */}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <motion.div 
+                                className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${orders && orders.length >= 5 ? 'bg-[#21d8ff]/10 border-[#21d8ff]/40' : 'bg-muted/30 border-muted/20 opacity-50'}`}
+                                data-testid="achievement-loyal"
+                                animate={orders && orders.length >= 5 ? { scale: [1, 1.02, 1] } : {}}
+                                transition={{ duration: 2, repeat: Infinity, repeatType: "reverse", delay: 0.3 }}
+                              >
+                                <div className={`p-2 rounded-full ${orders && orders.length >= 5 ? 'bg-[#21d8ff]/20' : 'bg-muted/30'}`}>
+                                  <Crown className={`h-5 w-5 ${orders && orders.length >= 5 ? 'text-[#21d8ff]' : 'text-muted-foreground'}`} />
+                                </div>
+                                <div className="flex-1">
+                                  <p className="font-medium text-sm">Loyal Customer</p>
+                                  <p className="text-xs text-muted-foreground">{orders && orders.length >= 5 ? 'Unlocked!' : `${orders?.length || 0}/5 orders`}</p>
+                                </div>
+                                {orders && orders.length >= 5 && <CheckCircle className="h-4 w-4 text-[#21d8ff]" />}
+                              </motion.div>
+                            </TooltipTrigger>
+                            <TooltipContent>{orders && orders.length >= 5 ? 'Loyal customer with 5+ orders!' : `Complete 5 orders to unlock (${orders?.length || 0}/5)`}</TooltipContent>
+                          </Tooltip>
+
+                          {/* Academy Scholar Achievement */}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <motion.div 
+                                className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${researchProfile && researchProfile.educationCount >= 3 ? 'bg-[#9d4edd]/10 border-[#9d4edd]/40' : 'bg-muted/30 border-muted/20 opacity-50'}`}
+                                data-testid="achievement-scholar"
+                                animate={researchProfile && researchProfile.educationCount >= 3 ? { scale: [1, 1.02, 1] } : {}}
+                                transition={{ duration: 2, repeat: Infinity, repeatType: "reverse", delay: 0.6 }}
+                              >
+                                <div className={`p-2 rounded-full ${researchProfile && researchProfile.educationCount >= 3 ? 'bg-[#9d4edd]/20' : 'bg-muted/30'}`}>
+                                  <GraduationCap className={`h-5 w-5 ${researchProfile && researchProfile.educationCount >= 3 ? 'text-[#9d4edd]' : 'text-muted-foreground'}`} />
+                                </div>
+                                <div className="flex-1">
+                                  <p className="font-medium text-sm">Academy Scholar</p>
+                                  <p className="text-xs text-muted-foreground">{researchProfile && researchProfile.educationCount >= 3 ? 'Unlocked!' : `${researchProfile?.educationCount || 0}/3 articles`}</p>
+                                </div>
+                                {researchProfile && researchProfile.educationCount >= 3 && <CheckCircle className="h-4 w-4 text-[#9d4edd]" />}
+                              </motion.div>
+                            </TooltipTrigger>
+                            <TooltipContent>{researchProfile && researchProfile.educationCount >= 3 ? 'Read 3+ education articles!' : `Read 3 education articles to unlock (${researchProfile?.educationCount || 0}/3)`}</TooltipContent>
+                          </Tooltip>
+
+                          {/* COA Verified Achievement */}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <motion.div 
+                                className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${researchProfile && researchProfile.batchVerificationCount > 0 ? 'bg-green-500/10 border-green-500/40' : 'bg-muted/30 border-muted/20 opacity-50'}`}
+                                data-testid="achievement-coa"
+                                animate={researchProfile && researchProfile.batchVerificationCount > 0 ? { scale: [1, 1.02, 1] } : {}}
+                                transition={{ duration: 2, repeat: Infinity, repeatType: "reverse", delay: 0.9 }}
+                              >
+                                <div className={`p-2 rounded-full ${researchProfile && researchProfile.batchVerificationCount > 0 ? 'bg-green-500/20' : 'bg-muted/30'}`}>
+                                  <FileCheck className={`h-5 w-5 ${researchProfile && researchProfile.batchVerificationCount > 0 ? 'text-green-500' : 'text-muted-foreground'}`} />
+                                </div>
+                                <div className="flex-1">
+                                  <p className="font-medium text-sm">COA Verified</p>
+                                  <p className="text-xs text-muted-foreground">{researchProfile && researchProfile.batchVerificationCount > 0 ? 'Unlocked!' : 'Verify a batch COA'}</p>
+                                </div>
+                                {researchProfile && researchProfile.batchVerificationCount > 0 && <CheckCircle className="h-4 w-4 text-green-500" />}
+                              </motion.div>
+                            </TooltipTrigger>
+                            <TooltipContent>{researchProfile && researchProfile.batchVerificationCount > 0 ? 'You verified a batch COA!' : 'Verify a batch certificate of analysis to unlock'}</TooltipContent>
+                          </Tooltip>
+
+                          {/* Affiliate Achievement */}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <motion.div 
+                                className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${affiliate?.id ? 'bg-[#ec4899]/10 border-[#ec4899]/40' : 'bg-muted/30 border-muted/20 opacity-50'}`}
+                                data-testid="achievement-affiliate"
+                                animate={affiliate?.id ? { scale: [1, 1.02, 1] } : {}}
+                                transition={{ duration: 2, repeat: Infinity, repeatType: "reverse", delay: 1.2 }}
+                              >
+                                <div className={`p-2 rounded-full ${affiliate?.id ? 'bg-[#ec4899]/20' : 'bg-muted/30'}`}>
+                                  <Diamond className={`h-5 w-5 ${affiliate?.id ? 'text-[#ec4899]' : 'text-muted-foreground'}`} />
+                                </div>
+                                <div className="flex-1">
+                                  <p className="font-medium text-sm">Affiliate Partner</p>
+                                  <p className="text-xs text-muted-foreground">{affiliate?.id ? 'Unlocked!' : 'Join the affiliate program'}</p>
+                                </div>
+                                {affiliate?.id && <CheckCircle className="h-4 w-4 text-[#ec4899]" />}
+                              </motion.div>
+                            </TooltipTrigger>
+                            <TooltipContent>{affiliate?.id ? 'You are a verified affiliate partner!' : 'Apply to become an affiliate to unlock'}</TooltipContent>
+                          </Tooltip>
                         </div>
-                      )}
-                    </CardContent>
-                  </Card>
+                      </CardContent>
+                    </Card>
+                  </div>
 
                   {/* Wishlist */}
                   <Card>
@@ -901,101 +1076,6 @@ export default function Dashboard() {
                           </Link>
                         </div>
                       )}
-                    </CardContent>
-                  </Card>
-
-                  {/* Achievements Trophy Case */}
-                  <Card className="border-[#f97316]/20 bg-gradient-to-br from-[#f97316]/5 via-transparent to-transparent">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="flex items-center gap-2 text-base">
-                          <div className="p-1.5 rounded-lg bg-[#f97316]/20">
-                            <Trophy className="h-4 w-4 text-[#f97316]" />
-                          </div>
-                          Achievements
-                        </CardTitle>
-                        <Badge variant="outline" className="bg-[#f97316]/10 border-[#f97316]/30 text-[#f97316] text-xs">
-                          {(() => {
-                            let count = 0;
-                            if (orders && orders.length > 0) count++; // First Order
-                            if (orders && orders.length >= 5) count++; // Loyal Customer
-                            if (researchProfile && researchProfile.educationCount >= 3) count++; // Academy Scholar
-                            if (researchProfile && researchProfile.batchVerificationCount > 0) count++; // COA Verified
-                            if (affiliate?.id) count++; // Affiliate Achievement
-                            return count;
-                          })()}/5 Unlocked
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-                        {/* First Order Achievement */}
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className={`flex flex-col items-center p-3 rounded-xl border transition-all ${orders && orders.length > 0 ? 'bg-[#E7FB10]/10 border-[#E7FB10]/40 badge-glow-yellow' : 'bg-muted/30 border-muted/20 opacity-40'}`} data-testid="achievement-first-order">
-                              <div className={`p-2 rounded-full mb-1 ${orders && orders.length > 0 ? 'bg-[#E7FB10]/20' : 'bg-muted/30'}`}>
-                                <ShoppingBag className={`h-5 w-5 ${orders && orders.length > 0 ? 'text-[#E7FB10]' : 'text-muted-foreground'}`} />
-                              </div>
-                              <span className="text-[10px] text-center font-medium">First Order</span>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>{orders && orders.length > 0 ? 'You made your first purchase!' : 'Make your first purchase to unlock'}</TooltipContent>
-                        </Tooltip>
-
-                        {/* Loyal Customer Achievement */}
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className={`flex flex-col items-center p-3 rounded-xl border transition-all ${orders && orders.length >= 5 ? 'bg-[#21d8ff]/10 border-[#21d8ff]/40 badge-glow-cyan' : 'bg-muted/30 border-muted/20 opacity-40'}`} data-testid="achievement-loyal">
-                              <div className={`p-2 rounded-full mb-1 ${orders && orders.length >= 5 ? 'bg-[#21d8ff]/20' : 'bg-muted/30'}`}>
-                                <Crown className={`h-5 w-5 ${orders && orders.length >= 5 ? 'text-[#21d8ff]' : 'text-muted-foreground'}`} />
-                              </div>
-                              <span className="text-[10px] text-center font-medium">Loyal</span>
-                              {orders && orders.length < 5 && <span className="text-[8px] text-muted-foreground">{orders?.length || 0}/5</span>}
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>{orders && orders.length >= 5 ? 'Loyal customer with 5+ orders!' : `Complete 5 orders to unlock (${orders?.length || 0}/5)`}</TooltipContent>
-                        </Tooltip>
-
-                        {/* Academy Scholar Achievement */}
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className={`flex flex-col items-center p-3 rounded-xl border transition-all ${researchProfile && researchProfile.educationCount >= 3 ? 'bg-[#9d4edd]/10 border-[#9d4edd]/40 badge-glow-purple' : 'bg-muted/30 border-muted/20 opacity-40'}`} data-testid="achievement-scholar">
-                              <div className={`p-2 rounded-full mb-1 ${researchProfile && researchProfile.educationCount >= 3 ? 'bg-[#9d4edd]/20' : 'bg-muted/30'}`}>
-                                <GraduationCap className={`h-5 w-5 ${researchProfile && researchProfile.educationCount >= 3 ? 'text-[#9d4edd]' : 'text-muted-foreground'}`} />
-                              </div>
-                              <span className="text-[10px] text-center font-medium">Scholar</span>
-                              {researchProfile && researchProfile.educationCount < 3 && <span className="text-[8px] text-muted-foreground">{researchProfile?.educationCount || 0}/3</span>}
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>{researchProfile && researchProfile.educationCount >= 3 ? 'Academy scholar - completed 3+ lessons!' : `Complete 3 lessons in Academy (${researchProfile?.educationCount || 0}/3)`}</TooltipContent>
-                        </Tooltip>
-
-                        {/* COA Verified Achievement */}
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className={`flex flex-col items-center p-3 rounded-xl border transition-all ${researchProfile && researchProfile.batchVerificationCount > 0 ? 'bg-[#ec4899]/10 border-[#ec4899]/40 badge-glow-pink' : 'bg-muted/30 border-muted/20 opacity-40'}`} data-testid="achievement-coa">
-                              <div className={`p-2 rounded-full mb-1 ${researchProfile && researchProfile.batchVerificationCount > 0 ? 'bg-[#ec4899]/20' : 'bg-muted/30'}`}>
-                                <FileCheck className={`h-5 w-5 ${researchProfile && researchProfile.batchVerificationCount > 0 ? 'text-[#ec4899]' : 'text-muted-foreground'}`} />
-                              </div>
-                              <span className="text-[10px] text-center font-medium">Verified</span>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>{researchProfile && researchProfile.batchVerificationCount > 0 ? 'Verified a batch COA!' : 'Verify your first batch COA to unlock'}</TooltipContent>
-                        </Tooltip>
-
-                        {/* Affiliate Achievement */}
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className={`flex flex-col items-center p-3 rounded-xl border transition-all ${affiliate?.id ? 'bg-green-500/10 border-green-500/40 badge-glow-green' : 'bg-muted/30 border-muted/20 opacity-40'}`} data-testid="achievement-affiliate">
-                              <div className={`p-2 rounded-full mb-1 ${affiliate?.id ? 'bg-green-500/20' : 'bg-muted/30'}`}>
-                                <Diamond className={`h-5 w-5 ${affiliate?.id ? 'text-green-500' : 'text-muted-foreground'}`} />
-                              </div>
-                              <span className="text-[10px] text-center font-medium">Partner</span>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>{affiliate?.id ? 'Affiliate Partner!' : 'Join the affiliate program to unlock'}</TooltipContent>
-                        </Tooltip>
-                      </div>
                     </CardContent>
                   </Card>
 
@@ -1050,6 +1130,30 @@ export default function Dashboard() {
                       </Card>
                     </Link>
                   </div>
+
+                  {/* Join Affiliate Program CTA - Only show if not already an affiliate */}
+                  {!affiliate?.id && (
+                    <Card className="relative overflow-hidden border-[#9d4edd]/30 bg-gradient-to-r from-[#9d4edd]/10 via-[#ec4899]/5 to-transparent">
+                      <div className="absolute top-0 right-0 w-40 h-40 bg-[#9d4edd]/20 rounded-full blur-3xl" />
+                      <CardContent className="p-5">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                          <div className="p-3 rounded-xl bg-gradient-to-br from-[#9d4edd]/30 to-[#ec4899]/20 shadow-lg">
+                            <Diamond className="h-7 w-7 text-[#9d4edd]" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-lg mb-1">Become an Affiliate Partner</h3>
+                            <p className="text-sm text-muted-foreground">Earn 10% commission on every referral. Share your unique code and build passive income.</p>
+                          </div>
+                          <Link href="/affiliate/apply">
+                            <Button className="bg-[#9d4edd] text-white shrink-0" data-testid="button-join-affiliate">
+                              <Sparkles className="h-4 w-4 mr-2" />
+                              Apply Now
+                            </Button>
+                          </Link>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
                 </TabsContent>
 
                 {/* Orders Tab */}
@@ -1327,177 +1431,111 @@ export default function Dashboard() {
                     </Card>
                   )}
 
-                  {/* Research Notes */}
-                  <Card className="border-[#9d4edd]/20 bg-gradient-to-br from-[#9d4edd]/5 to-transparent">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <CardTitle className="flex items-center gap-2">
-                            <StickyNote className="h-5 w-5 text-[#9d4edd]" />
-                            Research Notes
-                          </CardTitle>
-                          <CardDescription>Personal journal for your research observations</CardDescription>
-                        </div>
-                        <Button size="sm" onClick={() => handleOpenNoteDialog()} data-testid="button-add-note">
-                          <Plus className="h-4 w-4 mr-1" />
-                          New Note
-                        </Button>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      {notesLoading ? (
-                        <div className="space-y-3">
-                          {[...Array(2)].map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}
-                        </div>
-                      ) : sortedNotes.length > 0 ? (
-                        <div className="space-y-3">
-                          {sortedNotes.slice(0, 5).map((note) => (
-                            <div key={note.id} className="p-4 rounded-lg border border-[#9d4edd]/20 bg-[#9d4edd]/5 group" data-testid={`note-${note.id}`}>
-                              <div className="flex items-start justify-between gap-2">
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2">
-                                    {note.isPinned && <Pin className="h-3 w-3 text-[#9d4edd]" />}
-                                    <p className="font-medium truncate">{note.title}</p>
-                                  </div>
-                                  <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{note.content}</p>
-                                  <p className="text-xs text-muted-foreground mt-2">{formatDate(note.updatedAt)}</p>
-                                </div>
-                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <Button 
-                                    size="icon" 
-                                    variant="ghost" 
-                                    disabled={togglePinMutation.isPending}
-                                    onClick={() => togglePinMutation.mutate(note.id)}
-                                    data-testid={`button-pin-${note.id}`}
-                                  >
-                                    <Pin className={`h-4 w-4 ${note.isPinned ? 'text-[#9d4edd]' : ''}`} />
-                                  </Button>
-                                  <Button 
-                                    size="icon" 
-                                    variant="ghost" 
-                                    onClick={() => handleOpenNoteDialog({ id: note.id, title: note.title, content: note.content })}
-                                    data-testid={`button-edit-${note.id}`}
-                                  >
-                                    <Edit3 className="h-4 w-4" />
-                                  </Button>
-                                  <Button 
-                                    size="icon" 
-                                    variant="ghost" 
-                                    className="text-red-500"
-                                    disabled={deleteNoteMutation.isPending}
-                                    onClick={() => deleteNoteMutation.mutate(note.id)}
-                                    data-testid={`button-delete-${note.id}`}
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                          {sortedNotes.length > 5 && (
-                            <p className="text-xs text-muted-foreground text-center">+{sortedNotes.length - 5} more notes</p>
-                          )}
-                        </div>
-                      ) : (
-                        <div className="text-center py-8">
-                          <StickyNote className="h-10 w-10 mx-auto text-muted-foreground/30 mb-3" />
-                          <p className="text-sm text-muted-foreground mb-3">No research notes yet</p>
-                          <Button size="sm" variant="outline" onClick={() => handleOpenNoteDialog()} data-testid="button-add-first-note">
-                            <Plus className="h-4 w-4 mr-1" />
-                            Create Your First Note
-                          </Button>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-
-                  {/* Batch Verification History */}
-                  <Card className="border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 to-transparent">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <CardTitle className="flex items-center gap-2">
-                            <History className="h-5 w-5 text-[#21d8ff]" />
-                            Batch Verification History
-                          </CardTitle>
-                          <CardDescription>Track your verified COA batches</CardDescription>
-                        </div>
-                        <Link href="/coa">
-                          <Button size="sm" variant="outline" className="border-[#21d8ff]/40" data-testid="button-verify-new">
-                            <FileCheck className="h-4 w-4 mr-1" />
-                            Verify New
-                          </Button>
-                        </Link>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      {batchHistory && batchHistory.length > 0 ? (
-                        <div className="space-y-2">
-                          {batchHistory.slice(0, 5).map((item) => (
-                            <div key={item.id} className="flex items-center gap-3 p-3 rounded-lg border border-[#21d8ff]/20 bg-[#21d8ff]/5" data-testid={`batch-${item.id}`}>
-                              <div className="h-8 w-8 rounded-full bg-[#21d8ff]/20 flex items-center justify-center shrink-0">
-                                <FileCheck className="h-4 w-4 text-[#21d8ff]" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="font-mono text-sm font-medium">{item.batchNumber}</p>
-                                {item.productName && <p className="text-xs text-muted-foreground truncate">{item.productName}</p>}
-                              </div>
-                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <CheckCircle className="h-3 w-3 text-green-500" />
-                                <span>{formatDate(item.verifiedAt)}</span>
-                              </div>
-                            </div>
-                          ))}
-                          {batchHistory.length > 5 && (
-                            <p className="text-xs text-muted-foreground text-center pt-2">+{batchHistory.length - 5} more verifications</p>
-                          )}
-                        </div>
-                      ) : (
-                        <div className="text-center py-8">
-                          <FileCheck className="h-10 w-10 mx-auto text-muted-foreground/30 mb-3" />
-                          <p className="text-sm text-muted-foreground mb-3">No batch verifications yet</p>
+                  {/* Two Column: Batch Verification + Achievements */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    {/* Batch Verification History - Left Column */}
+                    <Card className="border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 to-transparent">
+                      <CardHeader>
+                        <div className="flex items-center justify-between gap-2">
+                          <div>
+                            <CardTitle className="flex items-center gap-2 text-base">
+                              <History className="h-5 w-5 text-[#21d8ff]" />
+                              Batch Verification
+                            </CardTitle>
+                            <CardDescription>Your verified COA batches</CardDescription>
+                          </div>
                           <Link href="/coa">
-                            <Button size="sm" className="bg-[#21d8ff] text-black" data-testid="button-verify-first">
-                              Verify Your First Batch
+                            <Button size="sm" variant="outline" className="border-[#21d8ff]/40" data-testid="button-verify-new">
+                              <FileCheck className="h-4 w-4 mr-1" />
+                              Verify
                             </Button>
                           </Link>
                         </div>
-                      )}
-                    </CardContent>
-                  </Card>
+                      </CardHeader>
+                      <CardContent>
+                        {batchHistory && batchHistory.length > 0 ? (
+                          <div className="space-y-2">
+                            {batchHistory.slice(0, 4).map((item) => (
+                              <div key={item.id} className="flex items-center gap-3 p-3 rounded-lg border border-[#21d8ff]/20 bg-[#21d8ff]/5" data-testid={`batch-${item.id}`}>
+                                <div className="h-8 w-8 rounded-full bg-[#21d8ff]/20 flex items-center justify-center shrink-0">
+                                  <FileCheck className="h-4 w-4 text-[#21d8ff]" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-mono text-sm font-medium">{item.batchNumber}</p>
+                                  {item.productName && <p className="text-xs text-muted-foreground truncate">{item.productName}</p>}
+                                </div>
+                                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                  <CheckCircle className="h-3 w-3 text-green-500" />
+                                </div>
+                              </div>
+                            ))}
+                            {batchHistory.length > 4 && (
+                              <p className="text-xs text-muted-foreground text-center pt-2">+{batchHistory.length - 4} more</p>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="text-center py-6">
+                            <FileCheck className="h-10 w-10 mx-auto text-muted-foreground/30 mb-3" />
+                            <p className="text-sm text-muted-foreground mb-3">No verifications yet</p>
+                            <Link href="/coa">
+                              <Button size="sm" className="bg-[#21d8ff] text-black" data-testid="button-verify-first">
+                                Verify First Batch
+                              </Button>
+                            </Link>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
 
-                  {/* Achievements */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Trophy className="h-5 w-5 text-[#f97316]" />
-                        Achievements
-                      </CardTitle>
-                      <CardDescription>Badges earned through your research journey</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {badges.map((badge) => {
-                          const Icon = badge.icon;
-                          return (
-                            <div
-                              key={badge.id}
-                              className={`p-4 rounded-lg border text-center transition-all ${badge.earned ? 'border-' + badge.color : 'opacity-50'}`}
-                              style={badge.earned ? { borderColor: badge.color, backgroundColor: `${badge.color}10` } : undefined}
-                              data-testid={`badge-${badge.id}`}
-                            >
-                              <Icon className="h-8 w-8 mx-auto mb-2" style={{ color: badge.earned ? badge.color : undefined }} />
-                              <p className="font-medium text-sm">{badge.title}</p>
-                              <p className="text-xs text-muted-foreground">{badge.description}</p>
-                              {!badge.earned && badge.progress !== undefined && badge.target && (
-                                <p className="text-xs text-muted-foreground mt-1">{badge.progress}/{badge.target}</p>
-                              )}
+                    {/* Achievements - Right Column (Vertical Stack with Animations) */}
+                    <Card className="border-[#f97316]/20 bg-gradient-to-br from-[#f97316]/5 via-transparent to-transparent">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between gap-2">
+                          <CardTitle className="flex items-center gap-2 text-base">
+                            <div className="p-1.5 rounded-lg bg-[#f97316]/20">
+                              <Trophy className="h-4 w-4 text-[#f97316]" />
                             </div>
-                          );
-                        })}
-                      </div>
-                    </CardContent>
-                  </Card>
+                            Research Badges
+                          </CardTitle>
+                          <Badge variant="outline" className="bg-[#f97316]/10 border-[#f97316]/30 text-[#f97316] text-xs">
+                            {badges.filter(b => b.earned).length}/{badges.length}
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2">
+                          {badges.slice(0, 5).map((badge, index) => {
+                            const Icon = badge.icon;
+                            return (
+                              <Tooltip key={badge.id}>
+                                <TooltipTrigger asChild>
+                                  <motion.div 
+                                    className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${badge.earned ? '' : 'opacity-50'}`}
+                                    style={badge.earned ? { borderColor: `${badge.color}66`, backgroundColor: `${badge.color}15` } : undefined}
+                                    data-testid={`badge-education-${badge.id}`}
+                                    animate={badge.earned ? { scale: [1, 1.02, 1] } : {}}
+                                    transition={{ duration: 2, repeat: Infinity, repeatType: "reverse", delay: index * 0.2 }}
+                                  >
+                                    <div className="p-2 rounded-full" style={badge.earned ? { backgroundColor: `${badge.color}25` } : { backgroundColor: 'hsl(var(--muted)/0.3)' }}>
+                                      <Icon className="h-5 w-5" style={{ color: badge.earned ? badge.color : 'hsl(var(--muted-foreground))' }} />
+                                    </div>
+                                    <div className="flex-1">
+                                      <p className="font-medium text-sm">{badge.title}</p>
+                                      <p className="text-xs text-muted-foreground">
+                                        {badge.earned ? 'Unlocked!' : badge.progress !== undefined && badge.target ? `${badge.progress}/${badge.target}` : badge.description}
+                                      </p>
+                                    </div>
+                                    {badge.earned && <CheckCircle className="h-4 w-4" style={{ color: badge.color }} />}
+                                  </motion.div>
+                                </TooltipTrigger>
+                                <TooltipContent>{badge.description}</TooltipContent>
+                              </Tooltip>
+                            );
+                          })}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
 
                   {/* Quick Links */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1542,6 +1580,33 @@ export default function Dashboard() {
                       </Card>
                     </Link>
                   </div>
+
+                  {/* Research Quiz Recommendation Card */}
+                  <Card className="relative overflow-hidden border-[#f97316]/30 bg-gradient-to-r from-[#f97316]/10 via-[#f97316]/5 to-transparent">
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-[#f97316]/20 rounded-full blur-3xl" />
+                    <CardContent className="p-5">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                        <motion.div 
+                          className="p-3 rounded-xl bg-gradient-to-br from-[#f97316]/30 to-[#E7FB10]/20 shadow-lg"
+                          animate={{ rotate: [0, 5, -5, 0] }}
+                          transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
+                        >
+                          <Brain className="h-7 w-7 text-[#f97316]" />
+                        </motion.div>
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-lg mb-1 flex items-center gap-2">
+                            Research Knowledge Quiz
+                            <Badge variant="outline" className="bg-[#E7FB10]/10 text-[#E7FB10] border-[#E7FB10]/40 text-xs">Coming Soon</Badge>
+                          </h3>
+                          <p className="text-sm text-muted-foreground">Test your peptide research knowledge and earn bonus XP for your progress.</p>
+                        </div>
+                        <Button variant="outline" className="border-[#f97316]/40 text-[#f97316] shrink-0" disabled data-testid="button-research-quiz">
+                          <Zap className="h-4 w-4 mr-2" />
+                          Take Quiz
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </TabsContent>
 
                 {/* Settings Tab */}
@@ -1950,6 +2015,86 @@ export default function Dashboard() {
           </motion.div>
         </div>
       </main>
+
+      {/* Order Details Dialog */}
+      <Dialog open={!!viewOrderDetails} onOpenChange={(open) => !open && setViewOrderDetails(null)}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Package className="h-5 w-5 text-[#21d8ff]" />
+              Order Details
+            </DialogTitle>
+            <DialogDescription>
+              Order #{viewOrderDetails?.id?.slice(-8).toUpperCase()}
+            </DialogDescription>
+          </DialogHeader>
+          {viewOrderDetails && (
+            <div className="space-y-4 py-2">
+              {/* Order Status */}
+              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                <span className="text-sm text-muted-foreground">Status</span>
+                <Badge variant={getStatusColor(viewOrderDetails.status)} className="capitalize">
+                  {viewOrderDetails.status || "pending"}
+                </Badge>
+              </div>
+              
+              {/* Product Info */}
+              <div className="p-3 rounded-lg border">
+                <p className="text-xs text-muted-foreground mb-1">Product</p>
+                <p className="font-medium">{getProductName(viewOrderDetails.productId)}</p>
+                <div className="flex justify-between mt-2 text-sm">
+                  <span className="text-muted-foreground">Quantity: {viewOrderDetails.quantity || 1}</span>
+                  <span className="font-semibold text-[#21d8ff]">${Number(viewOrderDetails.totalAmount).toFixed(2)}</span>
+                </div>
+              </div>
+              
+              {/* Shipping Info */}
+              <div className="p-3 rounded-lg border">
+                <p className="text-xs text-muted-foreground mb-1">Shipping To</p>
+                <p className="font-medium">{viewOrderDetails.firstName} {viewOrderDetails.lastName}</p>
+                <p className="text-sm text-muted-foreground">
+                  {viewOrderDetails.address && (
+                    <>
+                      {viewOrderDetails.address}<br />
+                      {viewOrderDetails.city}, {viewOrderDetails.state} {viewOrderDetails.zipCode}<br />
+                      {viewOrderDetails.country || 'USA'}
+                    </>
+                  )}
+                </p>
+              </div>
+              
+              {/* Fulfillment Status */}
+              <div className="p-3 rounded-lg border">
+                <p className="text-xs text-muted-foreground mb-2">Fulfillment</p>
+                <div className="flex items-center gap-2">
+                  {viewOrderDetails.fulfillmentStatus === 'delivered' ? (
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                  ) : viewOrderDetails.fulfillmentStatus === 'ready' ? (
+                    <Package className="h-4 w-4 text-[#21d8ff]" />
+                  ) : (
+                    <Clock className="h-4 w-4 text-[#E7FB10]" />
+                  )}
+                  <span className="capitalize font-medium">
+                    {viewOrderDetails.fulfillmentStatus || 'Processing'}
+                  </span>
+                </div>
+              </div>
+              
+              {/* Order Date */}
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <span>Order Date</span>
+                <span>{formatDate(viewOrderDetails.createdAt)}</span>
+              </div>
+              
+              {/* Payment Method */}
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <span>Payment</span>
+                <span className="capitalize">{viewOrderDetails.paymentMethod || 'PayPal'}</span>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Review Dialog */}
       <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
