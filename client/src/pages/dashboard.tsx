@@ -1822,23 +1822,10 @@ export default function Dashboard() {
                             <Lock className="h-4 w-4 text-muted-foreground" />
                             <div>
                               <p className="text-sm font-medium">Password & Account</p>
-                              <p className="text-xs text-muted-foreground">Managed securely by Replit</p>
+                              <p className="text-xs text-muted-foreground">Managed securely by Auth0</p>
                             </div>
                           </div>
-                          <a 
-                            href="https://replit.com/account" 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                          >
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              data-testid="button-manage-account"
-                            >
-                              Manage
-                              <ExternalLink className="h-3 w-3 ml-1" />
-                            </Button>
-                          </a>
+                          <Badge className="bg-orange-500/10 text-orange-400 border-orange-500/30">Auth0</Badge>
                         </div>
                         
                         <div className="pt-2">
