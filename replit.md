@@ -74,11 +74,12 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **Visual Infographic Components**: `client/src/components/infographics/` contains `AnimatedTrustStats`, `VerificationJourney`, `ProcessPipeline`, and `LearningRoadmap` for visual storytelling.
 - **Education Article Visuals**: `client/src/components/education/` contains interactive diagrams like `COAAnatomyDiagram`, `HPLCExplainer`, `StorageTemperatureGuide`, `TelomereVisual`, `GLP1ReceptorComparison`, and `GHAxisDiagram` to enhance educational content.
 - **Research Phase & Title System**: Tracks user progression through research phases (Observer → Initiate → Researcher → Analyst → Specialist) based on activity thresholds (education views, batch verifications, compounds tracked). Titles awarded for specific behaviors (Getting Started, Safety-First, COA Confident, Compound Tracker, Stack Builder, Verification Regular, Early Access Member). Database stores `researchPhase`, `researchTitles`, and activity counts in user table.
-- **Tabbed Dashboard Interface**: Dashboard at `/dashboard` uses a 4-tab structure (Overview, Research, Orders, Rewards) to reduce cognitive load:
-  - **Overview Tab**: Quick summary with stats cards, recent activity, and order counts
-  - **Research Tab**: Full Research Profile with tooltips on all metrics, Research Phase progression bar with actionable next-step guidance (e.g., "Next milestone: Verify your first batch number to reach Initiate"), recommended reading
-  - **Orders Tab**: Order history and product reviews section
-  - **Rewards Tab**: Customer achievements, Access Level (renamed from Loyalty Status) with tooltip explaining account privileges, affiliate program CTA
+- **Tabbed Dashboard Interface**: Dashboard at `/dashboard` uses a 3-tab structure (General, Orders, Settings) with a navigation hub design:
+  - **Immersive Atmosphere**: Ambient background gradients (5 colored glow orbs with blur-[100px-150px]) for a welcoming feel
+  - **Time-Based Greeting**: Dynamic "Good morning/afternoon/evening" based on current hour
+  - **General Tab (Navigation Hub)**: Quick Stats cards, Quick Navigation vertical stack (My Orders, Research Academy, Verify COA, Browse Products, Support), Achievements with animated icons (pulse/glow effects), Member Perks card (4 dynamic perks: Free Shipping $175+, Early Access for founder members, Priority Support 3+ orders, Affiliate Earnings), Research Quiz CTA (coming soon), Affiliate Program CTA
+  - **Orders Tab**: Subscriptions, Order History with detailed order cards, Wishlist section (moved from General), Product Reviews, quick links to Academy and COA verification
+  - **Settings Tab**: Profile information, Security settings, Account deletion
 
 ## External Dependencies
 

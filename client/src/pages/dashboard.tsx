@@ -637,8 +637,22 @@ export default function Dashboard() {
   return (
     <>
       <SEOHead title="My Account" description="Manage your orders and account settings." canonicalPath="/dashboard" />
-      <main className="min-h-screen pt-32 md:pt-40 pb-24">
-        <div className="container mx-auto px-4 max-w-5xl">
+      <main className="min-h-screen pt-32 md:pt-40 pb-24 relative overflow-hidden">
+        {/* Ambient Background Gradients for Welcoming Feel */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {/* Top left cyan glow */}
+          <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#21d8ff]/8 rounded-full blur-[120px]" />
+          {/* Top right yellow glow */}
+          <div className="absolute -top-20 -right-40 w-80 h-80 bg-[#E7FB10]/6 rounded-full blur-[100px]" />
+          {/* Middle left purple glow */}
+          <div className="absolute top-1/3 -left-20 w-72 h-72 bg-[#9d4edd]/8 rounded-full blur-[100px]" />
+          {/* Bottom right cyan/teal glow */}
+          <div className="absolute bottom-20 -right-32 w-96 h-96 bg-[#21d8ff]/6 rounded-full blur-[120px]" />
+          {/* Center subtle warm glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#E7FB10]/3 rounded-full blur-[150px]" />
+        </div>
+        
+        <div className="container mx-auto px-4 max-w-5xl relative z-10">
           <motion.div variants={containerVariants} initial="hidden" animate="visible">
             {/* Stylish Header with Gradient Accent */}
             <motion.div variants={itemVariants} className="relative mb-8">
@@ -668,10 +682,14 @@ export default function Dashboard() {
                     )}
                   </div>
                   <div>
-                    {/* Holographic Welcome Greeting - matching affiliate dashboard sizing */}
+                    {/* Holographic Welcome Greeting with Time-Based Message */}
                     <div className="flex items-center gap-2 flex-wrap mb-1">
                       <h1 className="font-display text-2xl md:text-3xl font-bold holographic-text" data-testid="text-user-name">
-                        Welcome, {user?.firstName || 'Guest'}!
+                        {(() => {
+                          const hour = new Date().getHours();
+                          const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+                          return `${greeting}, ${user?.firstName || 'Guest'}!`;
+                        })()}
                       </h1>
                       {/* Verified checkmark like affiliate dashboard */}
                       {user?.id && (
@@ -829,68 +847,92 @@ export default function Dashboard() {
                     </Card>
                   </div>
 
-                  {/* Two Column: Recent Orders + Achievements */}
+                  {/* Two Column: Quick Navigation + Achievements */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    {/* Recent Orders Preview - Left Column */}
-                    <Card>
+                    {/* Quick Navigation - Left Column (Vertical Stack) */}
+                    <Card className="border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 via-transparent to-transparent">
                       <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="flex items-center gap-2 text-base">
-                            <History className="h-4 w-4 text-[#21d8ff]" />
-                            Recent Orders
-                          </CardTitle>
-                          <Button variant="ghost" size="sm" onClick={() => setActiveTab("orders")} data-testid="button-view-all-orders">
-                            View All
-                            <ChevronRight className="h-4 w-4 ml-1" />
-                          </Button>
-                        </div>
+                        <CardTitle className="flex items-center gap-2 text-base">
+                          <div className="p-1.5 rounded-lg bg-[#21d8ff]/20">
+                            <Rocket className="h-4 w-4 text-[#21d8ff]" />
+                          </div>
+                          Quick Navigation
+                        </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        {ordersLoading ? (
-                          <div className="space-y-3">
-                            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}
+                        <div className="space-y-2">
+                          {/* Orders Link */}
+                          <div 
+                            className="flex items-center gap-3 p-3 rounded-xl border border-[#E7FB10]/30 bg-[#E7FB10]/5 cursor-pointer hover-elevate transition-all"
+                            onClick={() => setActiveTab("orders")}
+                            data-testid="nav-orders"
+                          >
+                            <div className="p-2 rounded-full bg-[#E7FB10]/20">
+                              <ShoppingBag className="h-5 w-5 text-[#E7FB10]" />
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-medium text-sm">My Orders</p>
+                              <p className="text-xs text-muted-foreground">{orders?.length || 0} order{orders?.length !== 1 ? 's' : ''} • View history & track</p>
+                            </div>
+                            <ChevronRight className="h-4 w-4 text-[#E7FB10]" />
                           </div>
-                        ) : orders && orders.length > 0 ? (
-                          <div className="space-y-3">
-                            {orders.slice(0, 3).map((order) => (
-                              <div 
-                                key={order.id} 
-                                className="flex items-center justify-between p-3 rounded-lg border cursor-pointer hover-elevate transition-all" 
-                                data-testid={`order-preview-${order.id}`}
-                                onClick={() => setViewOrderDetails(order)}
-                              >
-                                <div className="flex items-center gap-3">
-                                  <div className="p-2 rounded-lg bg-muted">
-                                    <Package className="h-4 w-4 text-muted-foreground" />
-                                  </div>
-                                  <div>
-                                    <p className="font-medium text-sm">{getProductName(order.productId)}</p>
-                                    <p className="text-xs text-muted-foreground">{formatDate(order.createdAt)}</p>
-                                  </div>
-                                </div>
-                                <div className="text-right flex items-center gap-2">
-                                  <div>
-                                    <p className="font-medium text-sm">${Number(order.totalAmount).toFixed(2)}</p>
-                                    <Badge variant={getStatusColor(order.status)} className="text-xs">
-                                      {order.status || "pending"}
-                                    </Badge>
-                                  </div>
-                                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                                </div>
+                          
+                          {/* Academy Link */}
+                          <Link href="/academy" data-testid="nav-academy">
+                            <div className="flex items-center gap-3 p-3 rounded-xl border border-[#9d4edd]/30 bg-[#9d4edd]/5 cursor-pointer hover-elevate transition-all">
+                              <div className="p-2 rounded-full bg-[#9d4edd]/20">
+                                <GraduationCap className="h-5 w-5 text-[#9d4edd]" />
                               </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="text-center py-8">
-                            <ShoppingBag className="h-10 w-10 mx-auto text-muted-foreground/30 mb-3" />
-                            <p className="text-sm text-muted-foreground mb-3">No orders yet</p>
-                            <Link href="/products">
-                              <Button size="sm" className="bg-[#E7FB10] text-black" data-testid="button-browse-products-orders">
-                                Browse Products
-                              </Button>
-                            </Link>
-                          </div>
-                        )}
+                              <div className="flex-1">
+                                <p className="font-medium text-sm">Research Academy</p>
+                                <p className="text-xs text-muted-foreground">Learn & earn XP badges</p>
+                              </div>
+                              <ChevronRight className="h-4 w-4 text-[#9d4edd]" />
+                            </div>
+                          </Link>
+                          
+                          {/* Verify COA Link */}
+                          <Link href="/coa" data-testid="nav-coa">
+                            <div className="flex items-center gap-3 p-3 rounded-xl border border-[#21d8ff]/30 bg-[#21d8ff]/5 cursor-pointer hover-elevate transition-all">
+                              <div className="p-2 rounded-full bg-[#21d8ff]/20">
+                                <FileCheck className="h-5 w-5 text-[#21d8ff]" />
+                              </div>
+                              <div className="flex-1">
+                                <p className="font-medium text-sm">Verify COA</p>
+                                <p className="text-xs text-muted-foreground">Check batch authenticity</p>
+                              </div>
+                              <ChevronRight className="h-4 w-4 text-[#21d8ff]" />
+                            </div>
+                          </Link>
+                          
+                          {/* Products Link */}
+                          <Link href="/products" data-testid="nav-products">
+                            <div className="flex items-center gap-3 p-3 rounded-xl border border-green-500/30 bg-green-500/5 cursor-pointer hover-elevate transition-all">
+                              <div className="p-2 rounded-full bg-green-500/20">
+                                <FlaskConical className="h-5 w-5 text-green-500" />
+                              </div>
+                              <div className="flex-1">
+                                <p className="font-medium text-sm">Browse Products</p>
+                                <p className="text-xs text-muted-foreground">Explore our catalog</p>
+                              </div>
+                              <ChevronRight className="h-4 w-4 text-green-500" />
+                            </div>
+                          </Link>
+                          
+                          {/* Support Link */}
+                          <Link href="/contact" data-testid="nav-support">
+                            <div className="flex items-center gap-3 p-3 rounded-xl border border-[#ec4899]/30 bg-[#ec4899]/5 cursor-pointer hover-elevate transition-all">
+                              <div className="p-2 rounded-full bg-[#ec4899]/20">
+                                <MessageSquare className="h-5 w-5 text-[#ec4899]" />
+                              </div>
+                              <div className="flex-1">
+                                <p className="font-medium text-sm">Support</p>
+                                <p className="text-xs text-muted-foreground">Get help & contact us</p>
+                              </div>
+                              <ChevronRight className="h-4 w-4 text-[#ec4899]" />
+                            </div>
+                          </Link>
+                        </div>
                       </CardContent>
                     </Card>
 
@@ -920,216 +962,270 @@ export default function Dashboard() {
                       <CardContent>
                         <div className="space-y-2">
                           {/* First Order Achievement */}
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <motion.div 
-                                className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${orders && orders.length > 0 ? 'bg-[#E7FB10]/10 border-[#E7FB10]/40' : 'bg-muted/30 border-muted/20 opacity-50'}`}
-                                data-testid="achievement-first-order"
-                                animate={orders && orders.length > 0 ? { scale: [1, 1.02, 1] } : {}}
-                                transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
-                              >
-                                <div className={`p-2 rounded-full ${orders && orders.length > 0 ? 'bg-[#E7FB10]/20' : 'bg-muted/30'}`}>
-                                  <ShoppingBag className={`h-5 w-5 ${orders && orders.length > 0 ? 'text-[#E7FB10]' : 'text-muted-foreground'}`} />
-                                </div>
-                                <div className="flex-1">
-                                  <p className="font-medium text-sm">First Order</p>
-                                  <p className="text-xs text-muted-foreground">{orders && orders.length > 0 ? 'Unlocked!' : 'Make your first purchase'}</p>
-                                </div>
-                                {orders && orders.length > 0 && <CheckCircle className="h-4 w-4 text-[#E7FB10]" />}
-                              </motion.div>
-                            </TooltipTrigger>
-                            <TooltipContent>{orders && orders.length > 0 ? 'You made your first purchase!' : 'Make your first purchase to unlock'}</TooltipContent>
-                          </Tooltip>
+                          <div 
+                            className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${orders && orders.length > 0 ? 'bg-[#E7FB10]/10 border-[#E7FB10]/40' : 'bg-muted/30 border-muted/20 opacity-50'}`}
+                            data-testid="achievement-first-order"
+                          >
+                            <motion.div 
+                              className={`p-2 rounded-full ${orders && orders.length > 0 ? 'bg-[#E7FB10]/20' : 'bg-muted/30'}`}
+                              animate={orders && orders.length > 0 ? { 
+                                scale: [1, 1.15, 1],
+                                boxShadow: ['0 0 0px rgba(231, 251, 16, 0)', '0 0 15px rgba(231, 251, 16, 0.6)', '0 0 0px rgba(231, 251, 16, 0)']
+                              } : {}}
+                              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                            >
+                              <ShoppingBag className={`h-5 w-5 ${orders && orders.length > 0 ? 'text-[#E7FB10]' : 'text-muted-foreground'}`} />
+                            </motion.div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-1.5">
+                                <p className="font-medium text-sm">First Order</p>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                                  </TooltipTrigger>
+                                  <TooltipContent side="top" className="max-w-[200px]">
+                                    <p className="text-xs">Complete your first purchase to unlock this achievement</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </div>
+                              <p className="text-xs text-muted-foreground">{orders && orders.length > 0 ? 'Unlocked!' : 'Make your first purchase'}</p>
+                            </div>
+                            {orders && orders.length > 0 && <CheckCircle className="h-4 w-4 text-[#E7FB10]" />}
+                          </div>
 
                           {/* Loyal Customer Achievement */}
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <motion.div 
-                                className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${orders && orders.length >= 5 ? 'bg-[#21d8ff]/10 border-[#21d8ff]/40' : 'bg-muted/30 border-muted/20 opacity-50'}`}
-                                data-testid="achievement-loyal"
-                                animate={orders && orders.length >= 5 ? { scale: [1, 1.02, 1] } : {}}
-                                transition={{ duration: 2, repeat: Infinity, repeatType: "reverse", delay: 0.3 }}
-                              >
-                                <div className={`p-2 rounded-full ${orders && orders.length >= 5 ? 'bg-[#21d8ff]/20' : 'bg-muted/30'}`}>
-                                  <Crown className={`h-5 w-5 ${orders && orders.length >= 5 ? 'text-[#21d8ff]' : 'text-muted-foreground'}`} />
-                                </div>
-                                <div className="flex-1">
-                                  <p className="font-medium text-sm">Loyal Customer</p>
-                                  <p className="text-xs text-muted-foreground">{orders && orders.length >= 5 ? 'Unlocked!' : `${orders?.length || 0}/5 orders`}</p>
-                                </div>
-                                {orders && orders.length >= 5 && <CheckCircle className="h-4 w-4 text-[#21d8ff]" />}
-                              </motion.div>
-                            </TooltipTrigger>
-                            <TooltipContent>{orders && orders.length >= 5 ? 'Loyal customer with 5+ orders!' : `Complete 5 orders to unlock (${orders?.length || 0}/5)`}</TooltipContent>
-                          </Tooltip>
+                          <div 
+                            className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${orders && orders.length >= 5 ? 'bg-[#21d8ff]/10 border-[#21d8ff]/40' : 'bg-muted/30 border-muted/20 opacity-50'}`}
+                            data-testid="achievement-loyal"
+                          >
+                            <motion.div 
+                              className={`p-2 rounded-full ${orders && orders.length >= 5 ? 'bg-[#21d8ff]/20' : 'bg-muted/30'}`}
+                              animate={orders && orders.length >= 5 ? { 
+                                scale: [1, 1.15, 1],
+                                boxShadow: ['0 0 0px rgba(33, 216, 255, 0)', '0 0 15px rgba(33, 216, 255, 0.6)', '0 0 0px rgba(33, 216, 255, 0)']
+                              } : {}}
+                              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+                            >
+                              <Crown className={`h-5 w-5 ${orders && orders.length >= 5 ? 'text-[#21d8ff]' : 'text-muted-foreground'}`} />
+                            </motion.div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-1.5">
+                                <p className="font-medium text-sm">Loyal Customer</p>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                                  </TooltipTrigger>
+                                  <TooltipContent side="top" className="max-w-[200px]">
+                                    <p className="text-xs">Complete 5 orders to become a loyal customer</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </div>
+                              <p className="text-xs text-muted-foreground">{orders && orders.length >= 5 ? 'Unlocked!' : `${orders?.length || 0}/5 orders`}</p>
+                            </div>
+                            {orders && orders.length >= 5 && <CheckCircle className="h-4 w-4 text-[#21d8ff]" />}
+                          </div>
 
                           {/* Academy Scholar Achievement */}
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <motion.div 
-                                className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${researchProfile && researchProfile.educationCount >= 3 ? 'bg-[#9d4edd]/10 border-[#9d4edd]/40' : 'bg-muted/30 border-muted/20 opacity-50'}`}
-                                data-testid="achievement-scholar"
-                                animate={researchProfile && researchProfile.educationCount >= 3 ? { scale: [1, 1.02, 1] } : {}}
-                                transition={{ duration: 2, repeat: Infinity, repeatType: "reverse", delay: 0.6 }}
-                              >
-                                <div className={`p-2 rounded-full ${researchProfile && researchProfile.educationCount >= 3 ? 'bg-[#9d4edd]/20' : 'bg-muted/30'}`}>
-                                  <GraduationCap className={`h-5 w-5 ${researchProfile && researchProfile.educationCount >= 3 ? 'text-[#9d4edd]' : 'text-muted-foreground'}`} />
-                                </div>
-                                <div className="flex-1">
-                                  <p className="font-medium text-sm">Academy Scholar</p>
-                                  <p className="text-xs text-muted-foreground">{researchProfile && researchProfile.educationCount >= 3 ? 'Unlocked!' : `${researchProfile?.educationCount || 0}/3 articles`}</p>
-                                </div>
-                                {researchProfile && researchProfile.educationCount >= 3 && <CheckCircle className="h-4 w-4 text-[#9d4edd]" />}
-                              </motion.div>
-                            </TooltipTrigger>
-                            <TooltipContent>{researchProfile && researchProfile.educationCount >= 3 ? 'Read 3+ education articles!' : `Read 3 education articles to unlock (${researchProfile?.educationCount || 0}/3)`}</TooltipContent>
-                          </Tooltip>
+                          <div 
+                            className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${researchProfile && researchProfile.educationCount >= 3 ? 'bg-[#9d4edd]/10 border-[#9d4edd]/40' : 'bg-muted/30 border-muted/20 opacity-50'}`}
+                            data-testid="achievement-scholar"
+                          >
+                            <motion.div 
+                              className={`p-2 rounded-full ${researchProfile && researchProfile.educationCount >= 3 ? 'bg-[#9d4edd]/20' : 'bg-muted/30'}`}
+                              animate={researchProfile && researchProfile.educationCount >= 3 ? { 
+                                scale: [1, 1.15, 1],
+                                boxShadow: ['0 0 0px rgba(157, 78, 221, 0)', '0 0 15px rgba(157, 78, 221, 0.6)', '0 0 0px rgba(157, 78, 221, 0)']
+                              } : {}}
+                              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
+                            >
+                              <GraduationCap className={`h-5 w-5 ${researchProfile && researchProfile.educationCount >= 3 ? 'text-[#9d4edd]' : 'text-muted-foreground'}`} />
+                            </motion.div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-1.5">
+                                <p className="font-medium text-sm">Academy Scholar</p>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                                  </TooltipTrigger>
+                                  <TooltipContent side="top" className="max-w-[200px]">
+                                    <p className="text-xs">Read 3 education articles in the Academy to unlock</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </div>
+                              <p className="text-xs text-muted-foreground">{researchProfile && researchProfile.educationCount >= 3 ? 'Unlocked!' : `${researchProfile?.educationCount || 0}/3 articles`}</p>
+                            </div>
+                            {researchProfile && researchProfile.educationCount >= 3 && <CheckCircle className="h-4 w-4 text-[#9d4edd]" />}
+                          </div>
 
                           {/* COA Verified Achievement */}
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <motion.div 
-                                className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${researchProfile && researchProfile.batchVerificationCount > 0 ? 'bg-green-500/10 border-green-500/40' : 'bg-muted/30 border-muted/20 opacity-50'}`}
-                                data-testid="achievement-coa"
-                                animate={researchProfile && researchProfile.batchVerificationCount > 0 ? { scale: [1, 1.02, 1] } : {}}
-                                transition={{ duration: 2, repeat: Infinity, repeatType: "reverse", delay: 0.9 }}
-                              >
-                                <div className={`p-2 rounded-full ${researchProfile && researchProfile.batchVerificationCount > 0 ? 'bg-green-500/20' : 'bg-muted/30'}`}>
-                                  <FileCheck className={`h-5 w-5 ${researchProfile && researchProfile.batchVerificationCount > 0 ? 'text-green-500' : 'text-muted-foreground'}`} />
-                                </div>
-                                <div className="flex-1">
-                                  <p className="font-medium text-sm">COA Verified</p>
-                                  <p className="text-xs text-muted-foreground">{researchProfile && researchProfile.batchVerificationCount > 0 ? 'Unlocked!' : 'Verify a batch COA'}</p>
-                                </div>
-                                {researchProfile && researchProfile.batchVerificationCount > 0 && <CheckCircle className="h-4 w-4 text-green-500" />}
-                              </motion.div>
-                            </TooltipTrigger>
-                            <TooltipContent>{researchProfile && researchProfile.batchVerificationCount > 0 ? 'You verified a batch COA!' : 'Verify a batch certificate of analysis to unlock'}</TooltipContent>
-                          </Tooltip>
+                          <div 
+                            className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${researchProfile && researchProfile.batchVerificationCount > 0 ? 'bg-green-500/10 border-green-500/40' : 'bg-muted/30 border-muted/20 opacity-50'}`}
+                            data-testid="achievement-coa"
+                          >
+                            <motion.div 
+                              className={`p-2 rounded-full ${researchProfile && researchProfile.batchVerificationCount > 0 ? 'bg-green-500/20' : 'bg-muted/30'}`}
+                              animate={researchProfile && researchProfile.batchVerificationCount > 0 ? { 
+                                scale: [1, 1.15, 1],
+                                boxShadow: ['0 0 0px rgba(34, 197, 94, 0)', '0 0 15px rgba(34, 197, 94, 0.6)', '0 0 0px rgba(34, 197, 94, 0)']
+                              } : {}}
+                              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.9 }}
+                            >
+                              <FileCheck className={`h-5 w-5 ${researchProfile && researchProfile.batchVerificationCount > 0 ? 'text-green-500' : 'text-muted-foreground'}`} />
+                            </motion.div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-1.5">
+                                <p className="font-medium text-sm">COA Verified</p>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                                  </TooltipTrigger>
+                                  <TooltipContent side="top" className="max-w-[200px]">
+                                    <p className="text-xs">Verify a batch Certificate of Analysis to unlock</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </div>
+                              <p className="text-xs text-muted-foreground">{researchProfile && researchProfile.batchVerificationCount > 0 ? 'Unlocked!' : 'Verify a batch COA'}</p>
+                            </div>
+                            {researchProfile && researchProfile.batchVerificationCount > 0 && <CheckCircle className="h-4 w-4 text-green-500" />}
+                          </div>
 
                           {/* Affiliate Achievement */}
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <motion.div 
-                                className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${affiliate?.id ? 'bg-[#ec4899]/10 border-[#ec4899]/40' : 'bg-muted/30 border-muted/20 opacity-50'}`}
-                                data-testid="achievement-affiliate"
-                                animate={affiliate?.id ? { scale: [1, 1.02, 1] } : {}}
-                                transition={{ duration: 2, repeat: Infinity, repeatType: "reverse", delay: 1.2 }}
-                              >
-                                <div className={`p-2 rounded-full ${affiliate?.id ? 'bg-[#ec4899]/20' : 'bg-muted/30'}`}>
-                                  <Diamond className={`h-5 w-5 ${affiliate?.id ? 'text-[#ec4899]' : 'text-muted-foreground'}`} />
-                                </div>
-                                <div className="flex-1">
-                                  <p className="font-medium text-sm">Affiliate Partner</p>
-                                  <p className="text-xs text-muted-foreground">{affiliate?.id ? 'Unlocked!' : 'Join the affiliate program'}</p>
-                                </div>
-                                {affiliate?.id && <CheckCircle className="h-4 w-4 text-[#ec4899]" />}
-                              </motion.div>
-                            </TooltipTrigger>
-                            <TooltipContent>{affiliate?.id ? 'You are a verified affiliate partner!' : 'Apply to become an affiliate to unlock'}</TooltipContent>
-                          </Tooltip>
+                          <div 
+                            className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${affiliate?.id ? 'bg-[#ec4899]/10 border-[#ec4899]/40' : 'bg-muted/30 border-muted/20 opacity-50'}`}
+                            data-testid="achievement-affiliate"
+                          >
+                            <motion.div 
+                              className={`p-2 rounded-full ${affiliate?.id ? 'bg-[#ec4899]/20' : 'bg-muted/30'}`}
+                              animate={affiliate?.id ? { 
+                                scale: [1, 1.15, 1],
+                                boxShadow: ['0 0 0px rgba(236, 72, 153, 0)', '0 0 15px rgba(236, 72, 153, 0.6)', '0 0 0px rgba(236, 72, 153, 0)']
+                              } : {}}
+                              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
+                            >
+                              <Diamond className={`h-5 w-5 ${affiliate?.id ? 'text-[#ec4899]' : 'text-muted-foreground'}`} />
+                            </motion.div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-1.5">
+                                <p className="font-medium text-sm">Affiliate Partner</p>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                                  </TooltipTrigger>
+                                  <TooltipContent side="top" className="max-w-[200px]">
+                                    <p className="text-xs">Apply and get approved for the affiliate program to unlock</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </div>
+                              <p className="text-xs text-muted-foreground">{affiliate?.id ? 'Unlocked!' : 'Join the affiliate program'}</p>
+                            </div>
+                            {affiliate?.id && <CheckCircle className="h-4 w-4 text-[#ec4899]" />}
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
                   </div>
 
-                  {/* Wishlist */}
-                  <Card>
+                  {/* Member Perks Card */}
+                  <Card className="border-green-500/20 bg-gradient-to-br from-green-500/5 to-transparent">
                     <CardHeader className="pb-3">
                       <CardTitle className="flex items-center gap-2 text-base">
-                        <Heart className="h-4 w-4 text-[#ec4899]" />
-                        Wishlist
-                        {wishlistProducts.length > 0 && (
-                          <Badge variant="secondary" className="ml-2">{wishlistProducts.length}</Badge>
-                        )}
+                        <div className="p-1.5 rounded-lg bg-green-500/20">
+                          <Gem className="h-4 w-4 text-green-500" />
+                        </div>
+                        Member Perks
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      {wishlistProducts.length > 0 ? (
-                        <div className="space-y-2">
-                          {wishlistProducts.slice(0, 3).map(product => (
-                            <div key={product.id} className="flex items-center gap-3 p-3 rounded-lg border" data-testid={`wishlist-item-${product.id}`}>
-                              <div className="flex-1 min-w-0">
-                                <p className="font-medium text-sm truncate">{product.name}</p>
-                                <p className="text-xs text-muted-foreground">${Number(product.price).toFixed(2)}</p>
-                              </div>
-                              <Button size="icon" variant="ghost" onClick={() => handleAddToCart(product)} data-testid={`button-add-to-cart-${product.id}`}>
-                                <Plus className="h-4 w-4" />
-                              </Button>
-                              <Button size="icon" variant="ghost" className="text-muted-foreground" onClick={() => removeMutation.mutate(product.id)} data-testid={`button-remove-wishlist-${product.id}`}>
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          ))}
-                          {wishlistProducts.length > 3 && (
-                            <p className="text-xs text-muted-foreground text-center pt-2">
-                              +{wishlistProducts.length - 3} more items
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {/* Free Shipping Perk */}
+                        <div className={`flex items-center gap-3 p-3 rounded-xl border ${(orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0) >= 175 ? 'border-green-500/40 bg-green-500/10' : 'border-muted/20 bg-muted/10'}`}>
+                          <div className={`p-2 rounded-full ${(orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0) >= 175 ? 'bg-green-500/20' : 'bg-muted/20'}`}>
+                            <Truck className={`h-4 w-4 ${(orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0) >= 175 ? 'text-green-500' : 'text-muted-foreground'}`} />
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">Free Shipping</p>
+                            <p className="text-xs text-muted-foreground">
+                              {(orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0) >= 175 
+                                ? 'Unlocked! Orders $175+' 
+                                : `$${Math.max(0, 175 - (orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0)).toFixed(0)} to unlock`}
                             </p>
-                          )}
+                          </div>
+                          {(orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0) >= 175 && <CheckCircle className="h-4 w-4 text-green-500" />}
                         </div>
-                      ) : (
-                        <div className="text-center py-6">
-                          <Bookmark className="h-8 w-8 mx-auto text-muted-foreground/30 mb-2" />
-                          <p className="text-sm text-muted-foreground mb-3">No items saved</p>
-                          <Link href="/products">
-                            <Button variant="outline" size="sm" data-testid="button-browse-products-wishlist">Browse Products</Button>
-                          </Link>
+                        
+                        {/* Early Access Perk */}
+                        <div className={`flex items-center gap-3 p-3 rounded-xl border ${user?.createdAt && new Date(user.createdAt) < new Date('2026-02-01') ? 'border-[#E7FB10]/40 bg-[#E7FB10]/10' : 'border-muted/20 bg-muted/10'}`}>
+                          <div className={`p-2 rounded-full ${user?.createdAt && new Date(user.createdAt) < new Date('2026-02-01') ? 'bg-[#E7FB10]/20' : 'bg-muted/20'}`}>
+                            <Rocket className={`h-4 w-4 ${user?.createdAt && new Date(user.createdAt) < new Date('2026-02-01') ? 'text-[#E7FB10]' : 'text-muted-foreground'}`} />
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">Early Access</p>
+                            <p className="text-xs text-muted-foreground">
+                              {user?.createdAt && new Date(user.createdAt) < new Date('2026-02-01') 
+                                ? 'Founder member benefits' 
+                                : 'Become a founder member'}
+                            </p>
+                          </div>
+                          {user?.createdAt && new Date(user.createdAt) < new Date('2026-02-01') && <CheckCircle className="h-4 w-4 text-[#E7FB10]" />}
                         </div>
-                      )}
+                        
+                        {/* Priority Support Perk */}
+                        <div className={`flex items-center gap-3 p-3 rounded-xl border ${(orders?.length || 0) >= 3 ? 'border-[#21d8ff]/40 bg-[#21d8ff]/10' : 'border-muted/20 bg-muted/10'}`}>
+                          <div className={`p-2 rounded-full ${(orders?.length || 0) >= 3 ? 'bg-[#21d8ff]/20' : 'bg-muted/20'}`}>
+                            <MessageSquare className={`h-4 w-4 ${(orders?.length || 0) >= 3 ? 'text-[#21d8ff]' : 'text-muted-foreground'}`} />
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">Priority Support</p>
+                            <p className="text-xs text-muted-foreground">
+                              {(orders?.length || 0) >= 3 
+                                ? 'Unlocked! 3+ orders' 
+                                : `${Math.max(0, 3 - (orders?.length || 0))} more orders to unlock`}
+                            </p>
+                          </div>
+                          {(orders?.length || 0) >= 3 && <CheckCircle className="h-4 w-4 text-[#21d8ff]" />}
+                        </div>
+                        
+                        {/* Affiliate Earnings Perk */}
+                        <div className={`flex items-center gap-3 p-3 rounded-xl border ${affiliate?.id ? 'border-[#9d4edd]/40 bg-[#9d4edd]/10' : 'border-muted/20 bg-muted/10'}`}>
+                          <div className={`p-2 rounded-full ${affiliate?.id ? 'bg-[#9d4edd]/20' : 'bg-muted/20'}`}>
+                            <Diamond className={`h-4 w-4 ${affiliate?.id ? 'text-[#9d4edd]' : 'text-muted-foreground'}`} />
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">Affiliate Earnings</p>
+                            <p className="text-xs text-muted-foreground">
+                              {affiliate?.id 
+                                ? 'Earn 10% on referrals' 
+                                : 'Join affiliate program'}
+                            </p>
+                          </div>
+                          {affiliate?.id && <CheckCircle className="h-4 w-4 text-[#9d4edd]" />}
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
 
-                  {/* Quick Links - Animated Cards */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <Link href="/academy" data-testid="link-academy">
-                      <Card className="relative overflow-hidden p-4 cursor-pointer h-full border-[#E7FB10]/20 hover:border-[#E7FB10]/50 bg-gradient-to-br from-[#E7FB10]/5 to-transparent transition-all duration-300 group">
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#E7FB10]/0 via-[#E7FB10]/5 to-[#E7FB10]/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                        <div className="relative flex items-center gap-3">
-                          <div className="p-2 rounded-lg bg-[#E7FB10]/15 group-hover:shadow-lg group-hover:shadow-[#E7FB10]/20 transition-shadow">
-                            <GraduationCap className="h-5 w-5 text-[#E7FB10]" />
-                          </div>
-                          <span className="font-medium text-sm group-hover:text-[#E7FB10] transition-colors">Academy</span>
-                          <ChevronRight className="h-4 w-4 ml-auto opacity-0 group-hover:opacity-100 text-[#E7FB10] transition-opacity" />
+                  {/* Research Quiz CTA */}
+                  <Card className="relative overflow-hidden border-[#21d8ff]/30 bg-gradient-to-r from-[#21d8ff]/10 via-[#E7FB10]/5 to-transparent">
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-[#21d8ff]/15 rounded-full blur-3xl" />
+                    <CardContent className="p-5">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                        <div className="p-3 rounded-xl bg-gradient-to-br from-[#21d8ff]/30 to-[#E7FB10]/20 shadow-lg">
+                          <Brain className="h-7 w-7 text-[#21d8ff]" />
                         </div>
-                      </Card>
-                    </Link>
-                    <Link href="/coa" data-testid="link-coa">
-                      <Card className="relative overflow-hidden p-4 cursor-pointer h-full border-[#21d8ff]/20 hover:border-[#21d8ff]/50 bg-gradient-to-br from-[#21d8ff]/5 to-transparent transition-all duration-300 group">
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#21d8ff]/0 via-[#21d8ff]/5 to-[#21d8ff]/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                        <div className="relative flex items-center gap-3">
-                          <div className="p-2 rounded-lg bg-[#21d8ff]/15 group-hover:shadow-lg group-hover:shadow-[#21d8ff]/20 transition-shadow">
-                            <FileCheck className="h-5 w-5 text-[#21d8ff]" />
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-semibold text-lg">Research Knowledge Quiz</h3>
+                            <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30 text-xs">Coming Soon</Badge>
                           </div>
-                          <span className="font-medium text-sm group-hover:text-[#21d8ff] transition-colors">Verify COA</span>
-                          <ChevronRight className="h-4 w-4 ml-auto opacity-0 group-hover:opacity-100 text-[#21d8ff] transition-opacity" />
+                          <p className="text-sm text-muted-foreground">Test your peptide knowledge and earn exclusive badges and rewards.</p>
                         </div>
-                      </Card>
-                    </Link>
-                    <Link href="/affiliate" data-testid="link-affiliate">
-                      <Card className="relative overflow-hidden p-4 cursor-pointer h-full border-[#9d4edd]/20 hover:border-[#9d4edd]/50 bg-gradient-to-br from-[#9d4edd]/5 to-transparent transition-all duration-300 group">
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#9d4edd]/0 via-[#9d4edd]/5 to-[#9d4edd]/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                        <div className="relative flex items-center gap-3">
-                          <div className="p-2 rounded-lg bg-[#9d4edd]/15 group-hover:shadow-lg group-hover:shadow-[#9d4edd]/20 transition-shadow">
-                            <Award className="h-5 w-5 text-[#9d4edd]" />
-                          </div>
-                          <span className="font-medium text-sm group-hover:text-[#9d4edd] transition-colors">Affiliate</span>
-                          <ChevronRight className="h-4 w-4 ml-auto opacity-0 group-hover:opacity-100 text-[#9d4edd] transition-opacity" />
-                        </div>
-                      </Card>
-                    </Link>
-                    <Link href="/contact" data-testid="link-support">
-                      <Card className="relative overflow-hidden p-4 cursor-pointer h-full border-[#ec4899]/20 hover:border-[#ec4899]/50 bg-gradient-to-br from-[#ec4899]/5 to-transparent transition-all duration-300 group">
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#ec4899]/0 via-[#ec4899]/5 to-[#ec4899]/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                        <div className="relative flex items-center gap-3">
-                          <div className="p-2 rounded-lg bg-[#ec4899]/15 group-hover:shadow-lg group-hover:shadow-[#ec4899]/20 transition-shadow">
-                            <MessageSquare className="h-5 w-5 text-[#ec4899]" />
-                          </div>
-                          <span className="font-medium text-sm group-hover:text-[#ec4899] transition-colors">Support</span>
-                          <ChevronRight className="h-4 w-4 ml-auto opacity-0 group-hover:opacity-100 text-[#ec4899] transition-opacity" />
-                        </div>
-                      </Card>
-                    </Link>
-                  </div>
+                        <Button variant="outline" className="border-[#21d8ff]/40 text-[#21d8ff] shrink-0" disabled data-testid="button-take-quiz">
+                          <Target className="h-4 w-4 mr-2" />
+                          Take Quiz
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
 
                   {/* Join Affiliate Program CTA - Only show if not already an affiliate */}
                   {!affiliate?.id && (
@@ -1506,30 +1602,46 @@ export default function Dashboard() {
                         <div className="space-y-2">
                           {badges.slice(0, 5).map((badge, index) => {
                             const Icon = badge.icon;
+                            const hexToRgb = (hex: string) => {
+                              const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                              return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '255, 255, 255';
+                            };
                             return (
-                              <Tooltip key={badge.id}>
-                                <TooltipTrigger asChild>
-                                  <motion.div 
-                                    className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${badge.earned ? '' : 'opacity-50'}`}
-                                    style={badge.earned ? { borderColor: `${badge.color}66`, backgroundColor: `${badge.color}15` } : undefined}
-                                    data-testid={`badge-education-${badge.id}`}
-                                    animate={badge.earned ? { scale: [1, 1.02, 1] } : {}}
-                                    transition={{ duration: 2, repeat: Infinity, repeatType: "reverse", delay: index * 0.2 }}
-                                  >
-                                    <div className="p-2 rounded-full" style={badge.earned ? { backgroundColor: `${badge.color}25` } : { backgroundColor: 'hsl(var(--muted)/0.3)' }}>
-                                      <Icon className="h-5 w-5" style={{ color: badge.earned ? badge.color : 'hsl(var(--muted-foreground))' }} />
-                                    </div>
-                                    <div className="flex-1">
-                                      <p className="font-medium text-sm">{badge.title}</p>
-                                      <p className="text-xs text-muted-foreground">
-                                        {badge.earned ? 'Unlocked!' : badge.progress !== undefined && badge.target ? `${badge.progress}/${badge.target}` : badge.description}
-                                      </p>
-                                    </div>
-                                    {badge.earned && <CheckCircle className="h-4 w-4" style={{ color: badge.color }} />}
-                                  </motion.div>
-                                </TooltipTrigger>
-                                <TooltipContent>{badge.description}</TooltipContent>
-                              </Tooltip>
+                              <div 
+                                key={badge.id}
+                                className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${badge.earned ? '' : 'opacity-50'}`}
+                                style={badge.earned ? { borderColor: `${badge.color}66`, backgroundColor: `${badge.color}15` } : undefined}
+                                data-testid={`badge-education-${badge.id}`}
+                              >
+                                <motion.div 
+                                  className="p-2 rounded-full" 
+                                  style={badge.earned ? { backgroundColor: `${badge.color}25` } : { backgroundColor: 'hsl(var(--muted)/0.3)' }}
+                                  animate={badge.earned ? { 
+                                    scale: [1, 1.15, 1],
+                                    boxShadow: [`0 0 0px rgba(${hexToRgb(badge.color)}, 0)`, `0 0 15px rgba(${hexToRgb(badge.color)}, 0.6)`, `0 0 0px rgba(${hexToRgb(badge.color)}, 0)`]
+                                  } : {}}
+                                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: index * 0.2 }}
+                                >
+                                  <Icon className="h-5 w-5" style={{ color: badge.earned ? badge.color : 'hsl(var(--muted-foreground))' }} />
+                                </motion.div>
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-1.5">
+                                    <p className="font-medium text-sm">{badge.title}</p>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                                      </TooltipTrigger>
+                                      <TooltipContent side="top" className="max-w-[200px]">
+                                        <p className="text-xs">{badge.description}</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground">
+                                    {badge.earned ? 'Unlocked!' : badge.progress !== undefined && badge.target ? `${badge.progress}/${badge.target}` : badge.description}
+                                  </p>
+                                </div>
+                                {badge.earned && <CheckCircle className="h-4 w-4" style={{ color: badge.color }} />}
+                              </div>
                             );
                           })}
                         </div>
@@ -1580,6 +1692,58 @@ export default function Dashboard() {
                       </Card>
                     </Link>
                   </div>
+
+                  {/* Wishlist Section */}
+                  <Card className="border-[#ec4899]/20 bg-gradient-to-br from-[#ec4899]/5 to-transparent">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <div className="p-1.5 rounded-lg bg-[#ec4899]/20">
+                          <Heart className="h-4 w-4 text-[#ec4899]" />
+                        </div>
+                        Wishlist
+                        {wishlistProducts.length > 0 && (
+                          <Badge variant="secondary" className="ml-2 bg-[#ec4899]/10 text-[#ec4899] border-[#ec4899]/30">{wishlistProducts.length}</Badge>
+                        )}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {wishlistProducts.length > 0 ? (
+                        <div className="space-y-2">
+                          {wishlistProducts.slice(0, 5).map(product => (
+                            <div key={product.id} className="flex items-center gap-3 p-3 rounded-xl border border-[#ec4899]/20 bg-[#ec4899]/5 hover-elevate transition-all" data-testid={`wishlist-item-${product.id}`}>
+                              <div className="flex-1 min-w-0">
+                                <Link href={`/product/${product.id}`}>
+                                  <p className="font-medium text-sm truncate hover:text-[#ec4899] transition-colors cursor-pointer">{product.name}</p>
+                                </Link>
+                                <p className="text-xs text-muted-foreground">${Number(product.price).toFixed(2)}</p>
+                              </div>
+                              <Button size="icon" variant="ghost" onClick={() => handleAddToCart(product)} className="shrink-0" data-testid={`button-add-to-cart-${product.id}`}>
+                                <Plus className="h-4 w-4" />
+                              </Button>
+                              <Button size="icon" variant="ghost" className="text-muted-foreground shrink-0" onClick={() => removeMutation.mutate(product.id)} data-testid={`button-remove-wishlist-${product.id}`}>
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
+                          {wishlistProducts.length > 5 && (
+                            <p className="text-xs text-muted-foreground text-center pt-2">
+                              +{wishlistProducts.length - 5} more items
+                            </p>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="text-center py-6">
+                          <Bookmark className="h-8 w-8 mx-auto text-muted-foreground/30 mb-2" />
+                          <p className="text-sm text-muted-foreground mb-3">No items saved yet</p>
+                          <Link href="/products">
+                            <Button variant="outline" size="sm" className="border-[#ec4899]/40 text-[#ec4899]" data-testid="button-browse-products-wishlist">
+                              Browse Products
+                            </Button>
+                          </Link>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
 
                   {/* Research Quiz Recommendation Card */}
                   <Card className="relative overflow-hidden border-[#f97316]/30 bg-gradient-to-r from-[#f97316]/10 via-[#f97316]/5 to-transparent">
@@ -2018,39 +2182,68 @@ export default function Dashboard() {
 
       {/* Order Details Dialog */}
       <Dialog open={!!viewOrderDetails} onOpenChange={(open) => !open && setViewOrderDetails(null)}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-lg bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#1a1a2e] border-[#21d8ff]/30">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Package className="h-5 w-5 text-[#21d8ff]" />
-              Order Details
+              <motion.div 
+                className="p-2 rounded-lg bg-gradient-to-br from-[#21d8ff]/20 to-[#E7FB10]/10"
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <Package className="h-5 w-5 text-[#21d8ff]" />
+              </motion.div>
+              <span className="bg-gradient-to-r from-white to-white/80 bg-clip-text">Order Details</span>
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-[#21d8ff]/70">
               Order #{viewOrderDetails?.id?.slice(-8).toUpperCase()}
             </DialogDescription>
           </DialogHeader>
           {viewOrderDetails && (
             <div className="space-y-4 py-2">
-              {/* Order Status */}
-              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+              {/* Order Status Banner */}
+              <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-gradient-to-r from-[#21d8ff]/10 via-[#E7FB10]/5 to-transparent border border-[#21d8ff]/20">
                 <span className="text-sm text-muted-foreground">Status</span>
                 <Badge variant={getStatusColor(viewOrderDetails.status)} className="capitalize">
                   {viewOrderDetails.status || "pending"}
                 </Badge>
               </div>
               
-              {/* Product Info */}
-              <div className="p-3 rounded-lg border">
-                <p className="text-xs text-muted-foreground mb-1">Product</p>
-                <p className="font-medium">{getProductName(viewOrderDetails.productId)}</p>
-                <div className="flex justify-between mt-2 text-sm">
-                  <span className="text-muted-foreground">Quantity: {viewOrderDetails.quantity || 1}</span>
-                  <span className="font-semibold text-[#21d8ff]">${Number(viewOrderDetails.totalAmount).toFixed(2)}</span>
+              {/* Product Info with Image */}
+              <Link href={`/products/${viewOrderDetails.productId}`}>
+                <div className="p-4 rounded-lg border border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 to-transparent cursor-pointer hover-elevate transition-all">
+                  <div className="flex items-start gap-4">
+                    {/* Product Image */}
+                    <div className="w-20 h-20 rounded-lg bg-gradient-to-br from-[#21d8ff]/20 to-[#E7FB10]/20 flex items-center justify-center shrink-0 overflow-hidden border border-white/10">
+                      {(() => {
+                        const product = products?.find(p => p.id === viewOrderDetails.productId);
+                        return product?.imageUrl ? (
+                          <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <FlaskConical className="h-8 w-8 text-[#21d8ff]/50" />
+                        );
+                      })()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-muted-foreground mb-1">Product</p>
+                      <p className="font-medium text-white truncate">{getProductName(viewOrderDetails.productId)}</p>
+                      <div className="flex items-center justify-between gap-3 mt-2 text-sm">
+                        <span className="text-muted-foreground">Qty: {viewOrderDetails.quantity || 1}</span>
+                        <span className="font-bold text-[#E7FB10]">${Number(viewOrderDetails.totalAmount).toFixed(2)}</span>
+                      </div>
+                      <p className="text-xs text-[#21d8ff] mt-2 flex items-center gap-1">
+                        View product <ExternalLink className="h-3 w-3" />
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </Link>
               
               {/* Shipping Info */}
-              <div className="p-3 rounded-lg border">
-                <p className="text-xs text-muted-foreground mb-1">Shipping To</p>
+              <div className="p-4 rounded-lg border border-[#9d4edd]/20 bg-gradient-to-br from-[#9d4edd]/5 to-transparent">
+                <div className="flex items-center gap-2 mb-2">
+                  <MapPin className="h-4 w-4 text-[#9d4edd]" />
+                  <p className="text-xs text-muted-foreground">Shipping To</p>
+                </div>
                 <p className="font-medium">{viewOrderDetails.firstName} {viewOrderDetails.lastName}</p>
                 <p className="text-sm text-muted-foreground">
                   {viewOrderDetails.address && (
@@ -2063,33 +2256,88 @@ export default function Dashboard() {
                 </p>
               </div>
               
-              {/* Fulfillment Status */}
-              <div className="p-3 rounded-lg border">
-                <p className="text-xs text-muted-foreground mb-2">Fulfillment</p>
-                <div className="flex items-center gap-2">
-                  {viewOrderDetails.fulfillmentStatus === 'delivered' ? (
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                  ) : viewOrderDetails.fulfillmentStatus === 'ready' ? (
-                    <Package className="h-4 w-4 text-[#21d8ff]" />
-                  ) : (
-                    <Clock className="h-4 w-4 text-[#E7FB10]" />
-                  )}
-                  <span className="capitalize font-medium">
-                    {viewOrderDetails.fulfillmentStatus || 'Processing'}
-                  </span>
+              {/* Animated Shipping Timeline */}
+              <div className="p-4 rounded-lg border border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 to-transparent">
+                <p className="text-xs text-muted-foreground mb-4">Fulfillment Progress</p>
+                <div className="relative">
+                  {/* Timeline Track */}
+                  <div className="flex items-center justify-between relative">
+                    {/* Connecting Line Background */}
+                    <div className="absolute top-4 left-8 right-8 h-0.5 bg-muted/30" />
+                    
+                    {/* Animated Progress Line */}
+                    <motion.div 
+                      className="absolute top-4 left-8 h-0.5 bg-gradient-to-r from-[#21d8ff] to-[#E7FB10]"
+                      initial={{ width: "0%" }}
+                      animate={{ 
+                        width: viewOrderDetails.fulfillmentStatus === 'delivered' ? "calc(100% - 64px)" : 
+                               viewOrderDetails.fulfillmentStatus === 'ready' ? "calc(66% - 42px)" : 
+                               viewOrderDetails.fulfillmentStatus === 'preparing' ? "calc(33% - 21px)" : "0%" 
+                      }}
+                      transition={{ duration: 1, ease: "easeOut" }}
+                    />
+                    
+                    {/* Timeline Steps */}
+                    {[
+                      { id: 'pending', label: 'Confirmed', icon: CheckCircle, color: '#E7FB10' },
+                      { id: 'preparing', label: 'Preparing', icon: Package, color: '#21d8ff' },
+                      { id: 'ready', label: 'Shipped', icon: Truck, color: '#9d4edd' },
+                      { id: 'delivered', label: 'Delivered', icon: CheckCircle, color: '#22c55e' }
+                    ].map((step, idx) => {
+                      const stepOrder = ['pending', 'preparing', 'ready', 'delivered'];
+                      const currentIdx = stepOrder.indexOf(viewOrderDetails.fulfillmentStatus || 'pending');
+                      const isCompleted = idx <= currentIdx;
+                      const isCurrent = stepOrder[currentIdx] === step.id;
+                      const StepIcon = step.icon;
+                      
+                      return (
+                        <div key={step.id} className="flex flex-col items-center z-10">
+                          <motion.div 
+                            className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${
+                              isCompleted 
+                                ? 'border-transparent' 
+                                : 'border-muted/30 bg-background'
+                            }`}
+                            style={isCompleted ? { 
+                              background: `linear-gradient(135deg, ${step.color}40, ${step.color}20)`,
+                              borderColor: step.color
+                            } : {}}
+                            animate={isCurrent ? { 
+                              scale: [1, 1.15, 1],
+                              boxShadow: [`0 0 0px ${step.color}00`, `0 0 12px ${step.color}80`, `0 0 0px ${step.color}00`]
+                            } : {}}
+                            transition={{ duration: 1.5, repeat: Infinity }}
+                          >
+                            <StepIcon className="h-4 w-4" style={{ color: isCompleted ? step.color : 'hsl(var(--muted-foreground))' }} />
+                          </motion.div>
+                          <span className={`text-xs mt-2 ${isCompleted ? 'text-white' : 'text-muted-foreground'}`}>
+                            {step.label}
+                          </span>
+                          {isCurrent && (
+                            <motion.div
+                              className="w-1.5 h-1.5 rounded-full mt-1"
+                              style={{ backgroundColor: step.color }}
+                              animate={{ opacity: [1, 0.3, 1] }}
+                              transition={{ duration: 1, repeat: Infinity }}
+                            />
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
               
-              {/* Order Date */}
-              <div className="flex items-center justify-between text-sm text-muted-foreground">
-                <span>Order Date</span>
-                <span>{formatDate(viewOrderDetails.createdAt)}</span>
-              </div>
-              
-              {/* Payment Method */}
-              <div className="flex items-center justify-between text-sm text-muted-foreground">
-                <span>Payment</span>
-                <span className="capitalize">{viewOrderDetails.paymentMethod || 'PayPal'}</span>
+              {/* Order Meta Info */}
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="p-3 rounded-lg bg-muted/20 border border-white/5">
+                  <span className="text-muted-foreground block text-xs">Order Date</span>
+                  <span className="font-medium">{formatDate(viewOrderDetails.createdAt)}</span>
+                </div>
+                <div className="p-3 rounded-lg bg-muted/20 border border-white/5">
+                  <span className="text-muted-foreground block text-xs">Payment</span>
+                  <span className="font-medium capitalize">{viewOrderDetails.paymentMethod || 'PayPal'}</span>
+                </div>
               </div>
             </div>
           )}
