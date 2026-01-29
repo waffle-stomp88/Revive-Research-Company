@@ -244,16 +244,40 @@ ${brand.name}
                 </a>
                 
                 <!-- Tagline -->
-                <p style="color: #cccccc; font-size: 11px; letter-spacing: 2px; margin: 0; text-transform: uppercase;">
+                <p style="color: #cccccc; font-size: 11px; letter-spacing: 2px; margin: 0 0 20px 0; text-transform: uppercase;">
                   Premium Research Compounds
                 </p>
+                
+                <!-- Holographic Gradient Line -->
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td style="height: 2px; background: linear-gradient(90deg, transparent 0%, ${styles.accentColor} 20%, #9d4edd 50%, ${styles.primaryColor} 80%, transparent 100%);"></td>
+                  </tr>
+                </table>
               </div>
               
-              <!-- Order Confirmed Title -->
-              <div style="padding: 20px 40px 40px 40px;">
-                <h1 style="color: #ffffff; font-size: 36px; font-weight: 700; margin: 0 0 16px 0; letter-spacing: -1px;">
-                  Order Confirmed
+              <!-- Order Confirmed Title Section -->
+              <div style="padding: 30px 40px 40px 40px;">
+                <!-- Order Confirmed Badge -->
+                <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto 20px auto;">
+                  <tr>
+                    <td style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); padding: 2px; border-radius: 100px;">
+                      <table role="presentation" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td style="background: #1a1a1f; padding: 10px 24px; border-radius: 100px;">
+                            <span style="color: #22c55e; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">ORDER CONFIRMED</span>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+                
+                <!-- Main Headline -->
+                <h1 style="color: #ffffff; font-size: 42px; font-weight: 800; margin: 0 0 20px 0; letter-spacing: -1px; line-height: 1.1;">
+                  You're All Set.
                 </h1>
+                
                 <!-- Order Number Badge -->
                 <span style="display: inline-block; background: linear-gradient(135deg, ${styles.primaryColor} 0%, #c4d40d 100%); color: #000000; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 100px; letter-spacing: 1.5px; box-shadow: 0 0 30px rgba(231, 251, 16, 0.4);">
                   ORDER #${shortRef}
