@@ -822,7 +822,7 @@ export default function Checkout() {
                   ) : (
                     <div className="space-y-4">
                       {/* Guest checkout confirmation */}
-                      <div className="bg-[#21d8ff]/10 border border-[#21d8ff]/30 rounded-lg p-3">
+                      <div className="bg-[#1a1a1f]/80 border border-[#21d8ff]/40 rounded-lg p-3">
                         <div className="flex items-center gap-2 mb-2">
                           <CheckCircle className="h-4 w-4 text-[#21d8ff]" />
                           <span className="font-medium text-sm">No account needed</span>
@@ -833,7 +833,7 @@ export default function Checkout() {
                       </div>
                       
                       {/* Create account benefits */}
-                      <div className="border border-border rounded-lg p-3 bg-muted/30">
+                      <div className="border border-border/50 rounded-lg p-3 bg-[#1a1a1f]/80">
                         <p className="text-sm font-medium mb-2 flex items-center gap-2">
                           <UserPlus className="h-4 w-4 text-[#E7FB10]" />
                           Want to save your order?
