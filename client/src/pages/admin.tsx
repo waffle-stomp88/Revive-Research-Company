@@ -203,15 +203,19 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
   const [topProductSort, setTopProductSort] = useState<'revenue' | 'units'>('revenue');
   const [selectedOrder, setSelectedOrder] = useState<RecentOrderInfo | null>(null);
   
-  const { data: metrics, isLoading } = useQuery<DashboardMetrics>({
+  const { data: metrics, isLoading, error, refetch } = useQuery<DashboardMetrics>({
     queryKey: ["/api/admin/dashboard", timeRange],
     queryFn: async () => {
       const response = await fetch(`/api/admin/dashboard?days=${timeRange}`, {
         credentials: "include"
       });
-      if (!response.ok) throw new Error("Failed to fetch dashboard metrics");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to fetch dashboard metrics");
+      }
       return response.json();
-    }
+    },
+    retry: 2,
   });
 
   // Fetch newsletter stats for subscriber KPI
@@ -256,10 +260,16 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
     );
   }
 
-  if (!metrics) {
+  if (error || !metrics) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-muted-foreground">Failed to load dashboard data</p>
+      <div className="flex flex-col items-center justify-center h-64 gap-4">
+        <p className="text-muted-foreground">
+          {error ? `Error: ${error.message}` : "Failed to load dashboard data"}
+        </p>
+        <Button variant="outline" onClick={() => refetch()} data-testid="button-retry-dashboard">
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Try Again
+        </Button>
       </div>
     );
   }
