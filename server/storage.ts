@@ -121,6 +121,7 @@ export interface IStorage {
   getContactsByStatus(status: "new" | "responded" | "archived"): Promise<Contact[]>;
   updateContactStatus(id: string, status: "new" | "responded" | "archived", respondedBy?: string): Promise<Contact | undefined>;
   updateContactNotes(id: string, notes: string): Promise<Contact | undefined>;
+  updateContactTestStatus(id: string, isTest: boolean): Promise<Contact | undefined>;
   getNewContactsCount(): Promise<number>;
   
   // Affiliate Applications
@@ -609,6 +610,11 @@ export class DatabaseStorage implements IStorage {
 
   async updateContactNotes(id: string, notes: string): Promise<Contact | undefined> {
     const [contact] = await db.update(contacts).set({ notes }).where(eq(contacts.id, id)).returning();
+    return contact || undefined;
+  }
+
+  async updateContactTestStatus(id: string, isTest: boolean): Promise<Contact | undefined> {
+    const [contact] = await db.update(contacts).set({ isTest }).where(eq(contacts.id, id)).returning();
     return contact || undefined;
   }
 

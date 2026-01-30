@@ -3618,6 +3618,21 @@ function ContactsTab() {
     },
   });
 
+  const toggleTestMutation = useMutation({
+    mutationFn: async ({ id, isTest }: { id: string; isTest: boolean }) => {
+      const response = await apiRequest("PATCH", `/api/admin/contacts/${id}/test`, { isTest });
+      return response.json();
+    },
+    onSuccess: (updatedContact: Contact) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/contacts"] });
+      setSelectedContact(updatedContact);
+      toast({ title: updatedContact.isTest ? "Marked as test" : "Unmarked as test" });
+    },
+    onError: () => {
+      toast({ title: "Failed to update test status", variant: "destructive" });
+    },
+  });
+
   const handleSelectContact = (contact: Contact) => {
     setSelectedContact(contact);
     setNotes(contact.notes || "");
@@ -3827,6 +3842,9 @@ function ContactsTab() {
                           {contact.status === "new" && (
                             <Badge className="bg-[#E7FB10] text-black text-[10px] px-1.5 py-0">New</Badge>
                           )}
+                          {contact.isTest && (
+                            <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-[10px] px-1.5 py-0">TEST</Badge>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -3887,6 +3905,9 @@ function ContactsTab() {
                             {selectedContact.name}
                           </h3>
                           {getTypeBadge(selectedContact.type)}
+                          {selectedContact.isTest && (
+                            <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30">TEST</Badge>
+                          )}
                         </div>
                         <p className="text-sm text-muted-foreground truncate">{selectedContact.email}</p>
                         {selectedContact.companyName && (
@@ -3956,7 +3977,7 @@ function ContactsTab() {
                 {/* Actions footer */}
                 <div className="p-3 sm:p-4 border-t bg-muted/20">
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-sm text-muted-foreground">Status:</span>
                       <Select
                         value={selectedContact.status}
@@ -3971,6 +3992,18 @@ function ContactsTab() {
                           <SelectItem value="archived">Archived</SelectItem>
                         </SelectContent>
                       </Select>
+                      <Button
+                        variant={selectedContact.isTest ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => toggleTestMutation.mutate({ 
+                          id: selectedContact.id, 
+                          isTest: !selectedContact.isTest 
+                        })}
+                        className={selectedContact.isTest ? "bg-orange-500 hover:bg-orange-600 text-white" : "text-orange-500 border-orange-500/50"}
+                        data-testid="btn-toggle-test"
+                      >
+                        {selectedContact.isTest ? "Remove TEST" : "Mark as TEST"}
+                      </Button>
                     </div>
                     <div className="flex items-center gap-2">
                       <a

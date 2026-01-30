@@ -201,6 +201,7 @@ export const contacts = pgTable("contacts", {
   respondedAt: timestamp("responded_at"),
   respondedBy: text("responded_by"),
   createdAt: timestamp("created_at").defaultNow(),
+  isTest: boolean("is_test").default(false), // Mark test/sample contacts
 });
 
 export const insertContactSchema = createInsertSchema(contacts).omit({ 

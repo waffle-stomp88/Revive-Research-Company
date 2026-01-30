@@ -2361,6 +2361,25 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Toggle contact test status
+  app.patch("/api/admin/contacts/:id/test", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const testSchema = z.object({
+        isTest: z.boolean(),
+      });
+      const { isTest } = testSchema.parse(req.body);
+      
+      const contact = await storage.updateContactTestStatus(req.params.id, isTest);
+      if (!contact) {
+        return res.status(404).json({ error: "Contact not found" });
+      }
+      res.json(contact);
+    } catch (error) {
+      console.error("Error updating contact test status:", error);
+      res.status(500).json({ error: "Failed to update contact test status" });
+    }
+  });
+
   // Admin: Get new contacts count
   app.get("/api/admin/contacts/new-count", isAuthenticated, isAdmin, async (req, res) => {
     try {
