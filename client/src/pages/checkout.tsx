@@ -786,9 +786,9 @@ export default function Checkout() {
                 className="order-2 md:order-1"
               >
                 {/* Account Section - Guest Checkout Friendly */}
-                <Card className="p-3 md:p-6 mb-4 md:mb-6">
+                <Card className="p-3 md:p-6 mb-4 md:mb-6 relative overflow-visible bg-gradient-to-br from-[#21d8ff]/5 via-transparent to-[#E7FB10]/5 border-[#21d8ff]/20 shadow-[0_0_30px_rgba(33,216,255,0.1)]">
                   <h2 className="font-display text-base md:text-xl font-semibold mb-2 md:mb-4 flex items-center gap-2">
-                    <User className="h-4 w-4 md:h-5 md:w-5" />
+                    <User className="h-4 w-4 md:h-5 md:w-5 text-[#21d8ff]" />
                     {isAuthenticated ? "Your Account" : "Checkout as Guest"}
                   </h2>
                   
