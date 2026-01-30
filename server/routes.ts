@@ -2361,6 +2361,17 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Delete contact
+  app.delete("/api/admin/contacts/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      await storage.deleteContact(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting contact:", error);
+      res.status(500).json({ error: "Failed to delete contact" });
+    }
+  });
+
   // Admin: Toggle contact test status
   app.patch("/api/admin/contacts/:id/test", isAuthenticated, isAdmin, async (req, res) => {
     try {

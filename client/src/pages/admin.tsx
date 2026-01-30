@@ -3853,6 +3853,22 @@ function ContactsTab() {
     },
   });
 
+  const deleteContactMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest("DELETE", `/api/admin/contacts/${id}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/contacts"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
+      setSelectedContact(null);
+      toast({ title: "Contact deleted" });
+    },
+    onError: () => {
+      toast({ title: "Failed to delete contact", variant: "destructive" });
+    },
+  });
+
   const handleSelectContact = (contact: Contact) => {
     selectedContactRef.current = contact.id;
     setSelectedContact(contact);
@@ -4274,6 +4290,35 @@ function ContactsTab() {
                           Reply
                         </Button>
                       </a>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="text-red-500 border-red-500/30"
+                            data-testid="btn-delete-contact"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Contact?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This will permanently delete this message from {selectedContact.name}. This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => deleteContactMutation.mutate(selectedContact.id)}
+                              className="bg-red-600"
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                       <Button
                         variant="outline"
                         onClick={() => setSelectedContact(null)}

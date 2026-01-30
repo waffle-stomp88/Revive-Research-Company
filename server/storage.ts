@@ -122,6 +122,7 @@ export interface IStorage {
   updateContactStatus(id: string, status: "new" | "read" | "responded" | "archived", respondedBy?: string): Promise<Contact | undefined>;
   updateContactNotes(id: string, notes: string): Promise<Contact | undefined>;
   updateContactTestStatus(id: string, isTest: boolean): Promise<Contact | undefined>;
+  deleteContact(id: string): Promise<boolean>;
   getNewContactsCount(): Promise<number>;
   
   // Affiliate Applications
@@ -616,6 +617,11 @@ export class DatabaseStorage implements IStorage {
   async updateContactTestStatus(id: string, isTest: boolean): Promise<Contact | undefined> {
     const [contact] = await db.update(contacts).set({ isTest }).where(eq(contacts.id, id)).returning();
     return contact || undefined;
+  }
+
+  async deleteContact(id: string): Promise<boolean> {
+    const result = await db.delete(contacts).where(eq(contacts.id, id));
+    return true;
   }
 
   async getNewContactsCount(): Promise<number> {
