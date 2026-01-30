@@ -2319,11 +2319,11 @@ export async function registerRoutes(
     }
   });
 
-  // Admin: Update contact status (New → Responded → Archived)
+  // Admin: Update contact status (New → Read → Responded → Archived)
   app.patch("/api/admin/contacts/:id/status", isAuthenticated, isAdmin, async (req, res) => {
     try {
       const statusSchema = z.object({
-        status: z.enum(["new", "responded", "archived"]),
+        status: z.enum(["new", "read", "responded", "archived"]),
       });
       const { status } = statusSchema.parse(req.body);
       const respondedBy = (req as any).user?.email || "admin";

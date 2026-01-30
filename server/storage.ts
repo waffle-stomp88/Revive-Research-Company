@@ -118,8 +118,8 @@ export interface IStorage {
   createContact(contact: InsertContact): Promise<Contact>;
   getAllContacts(): Promise<Contact[]>;
   getContactsByType(type: "contact" | "wholesale"): Promise<Contact[]>;
-  getContactsByStatus(status: "new" | "responded" | "archived"): Promise<Contact[]>;
-  updateContactStatus(id: string, status: "new" | "responded" | "archived", respondedBy?: string): Promise<Contact | undefined>;
+  getContactsByStatus(status: "new" | "read" | "responded" | "archived"): Promise<Contact[]>;
+  updateContactStatus(id: string, status: "new" | "read" | "responded" | "archived", respondedBy?: string): Promise<Contact | undefined>;
   updateContactNotes(id: string, notes: string): Promise<Contact | undefined>;
   updateContactTestStatus(id: string, isTest: boolean): Promise<Contact | undefined>;
   getNewContactsCount(): Promise<number>;
@@ -594,11 +594,11 @@ export class DatabaseStorage implements IStorage {
     return db.select().from(contacts).where(eq(contacts.type, type)).orderBy(desc(contacts.createdAt));
   }
 
-  async getContactsByStatus(status: "new" | "responded" | "archived"): Promise<Contact[]> {
+  async getContactsByStatus(status: "new" | "read" | "responded" | "archived"): Promise<Contact[]> {
     return db.select().from(contacts).where(eq(contacts.status, status)).orderBy(desc(contacts.createdAt));
   }
 
-  async updateContactStatus(id: string, status: "new" | "responded" | "archived", respondedBy?: string): Promise<Contact | undefined> {
+  async updateContactStatus(id: string, status: "new" | "read" | "responded" | "archived", respondedBy?: string): Promise<Contact | undefined> {
     const updateData: Partial<Contact> = { status };
     if (status === "responded" && respondedBy) {
       updateData.respondedAt = new Date();
