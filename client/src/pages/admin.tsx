@@ -3816,7 +3816,7 @@ function ContactsTab() {
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: "new" | "responded" | "archived" }) => {
+    mutationFn: async ({ id, status }: { id: string; status: "new" | "read" | "responded" | "archived" }) => {
       const response = await apiRequest("PATCH", `/api/admin/contacts/${id}/status`, { status });
       return response.json();
     },
@@ -3867,14 +3867,14 @@ function ContactsTab() {
     const timer = setTimeout(() => {
       // Only update if same contact is still selected and mutation isn't pending
       if (selectedContactRef.current === contactId && !updateStatusMutation.isPending) {
-        updateStatusMutation.mutate({ id: contactId, status: "responded" });
+        updateStatusMutation.mutate({ id: contactId, status: "read" });
       }
-    }, 5000);
+    }, 2500);
     
     return () => clearTimeout(timer);
   }, [selectedContact?.id, selectedContact?.status]);
 
-  const handleStatusChange = (status: "new" | "responded" | "archived") => {
+  const handleStatusChange = (status: "new" | "read" | "responded" | "archived") => {
     if (selectedContact) {
       updateStatusMutation.mutate({ id: selectedContact.id, status });
     }
@@ -4217,13 +4217,14 @@ function ContactsTab() {
                       <span className="text-sm text-muted-foreground">Status:</span>
                       <Select
                         value={selectedContact.status}
-                        onValueChange={(value) => handleStatusChange(value as "new" | "responded" | "archived")}
+                        onValueChange={(value) => handleStatusChange(value as "new" | "read" | "responded" | "archived")}
                       >
                         <SelectTrigger className="w-[120px] sm:w-[140px]" data-testid="select-status">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="new">New</SelectItem>
+                          <SelectItem value="read">Read</SelectItem>
                           <SelectItem value="responded">Responded</SelectItem>
                           <SelectItem value="archived">Archived</SelectItem>
                         </SelectContent>
