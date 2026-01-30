@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { motion } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -3809,6 +3809,7 @@ function ContactsTab() {
   const [activeFilter, setActiveFilter] = useState<"all" | "contact" | "wholesale" | "new">("all");
   const [notes, setNotes] = useState("");
   const { toast } = useToast();
+  const selectedContactRef = useRef<string | null>(null);
   
   const { data: contacts, isLoading } = useQuery<Contact[]>({
     queryKey: ["/api/admin/contacts"],
@@ -3852,9 +3853,26 @@ function ContactsTab() {
   });
 
   const handleSelectContact = (contact: Contact) => {
+    selectedContactRef.current = contact.id;
     setSelectedContact(contact);
     setNotes(contact.notes || "");
   };
+
+  // Auto-mark "new" contacts as "responded" after 5 seconds of viewing
+  useEffect(() => {
+    if (!selectedContact || selectedContact.status !== "new") return;
+    
+    const contactId = selectedContact.id;
+    
+    const timer = setTimeout(() => {
+      // Only update if same contact is still selected and mutation isn't pending
+      if (selectedContactRef.current === contactId && !updateStatusMutation.isPending) {
+        updateStatusMutation.mutate({ id: contactId, status: "responded" });
+      }
+    }, 5000);
+    
+    return () => clearTimeout(timer);
+  }, [selectedContact?.id, selectedContact?.status]);
 
   const handleStatusChange = (status: "new" | "responded" | "archived") => {
     if (selectedContact) {
