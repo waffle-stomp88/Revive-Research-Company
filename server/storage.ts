@@ -754,7 +754,27 @@ export class DatabaseStorage implements IStorage {
     startDate.setDate(startDate.getDate() - daysBack);
     startDate.setHours(0, 0, 0, 0);
 
-    const allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt));
+    // Run all database queries in parallel for better performance
+    const [
+      allOrders,
+      allProducts,
+      allDosageStocks,
+      allContacts,
+      pendingApplications,
+      allAffiliates,
+      allPayouts,
+      allAffiliateSales
+    ] = await Promise.all([
+      db.select().from(orders).orderBy(desc(orders.createdAt)),
+      db.select().from(products),
+      db.select().from(productDosageStock),
+      db.select().from(contacts).orderBy(desc(contacts.createdAt)),
+      db.select().from(affiliateApplications).where(eq(affiliateApplications.status, 'pending')),
+      db.select().from(affiliates),
+      db.select().from(affiliatePayouts),
+      db.select().from(affiliateSales)
+    ]);
+
     const filteredOrders = allOrders.filter(order => 
       order.createdAt && new Date(order.createdAt) >= startDate
     );
@@ -768,7 +788,6 @@ export class DatabaseStorage implements IStorage {
     const processingOrders = allOrders.filter(o => o.status === 'processing').length;
     const completedOrders = allOrders.filter(o => o.status === 'completed' || o.status === 'shipped').length;
 
-    const allProducts = await db.select().from(products);
     // Low-stock threshold for admin alerts (configurable, default 3)
     const LOW_STOCK_THRESHOLD = 3;
     const lowStockProducts = allProducts
@@ -779,27 +798,19 @@ export class DatabaseStorage implements IStorage {
       .map(p => ({ id: p.id, name: p.name }));
 
     // Calculate dosage-level stock counts
-    const allDosageStocks = await db.select().from(productDosageStock);
     const outOfStockDosagesCount = allDosageStocks.filter(ds => !ds.inStock || ds.stockAmount === 0).length;
     const lowStockDosagesCount = allDosageStocks.filter(ds => 
       ds.inStock && ds.stockAmount > 0 && ds.stockAmount <= LOW_STOCK_THRESHOLD
     ).length;
 
-    const allContacts = await db.select().from(contacts).orderBy(desc(contacts.createdAt));
     // Count new contacts (status === "new")
     const recentContacts = allContacts.filter(c => c.status === "new").length;
 
-    const pendingApplications = await db.select().from(affiliateApplications)
-      .where(eq(affiliateApplications.status, 'pending'));
     const pendingAffiliateApplications = pendingApplications.length;
 
-    const allAffiliates = await db.select().from(affiliates);
     const activeAffiliates = allAffiliates.filter(a => a.isActive).length;
 
-    const allPayouts = await db.select().from(affiliatePayouts);
     const pendingPayouts = allPayouts.filter(p => p.status === 'pending').length;
-
-    const allAffiliateSales = await db.select().from(affiliateSales);
     const totalAffiliateCommissions = allAffiliateSales.reduce((sum, sale) => 
       sum + parseFloat(sale.commissionTier1 || '0') + parseFloat(sale.commissionTier2 || '0'), 0
     );
