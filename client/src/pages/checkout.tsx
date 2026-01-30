@@ -864,7 +864,7 @@ export default function Checkout() {
                           variant="outline"
                           className="w-full gap-2 border-[#E7FB10]/50 text-[#E7FB10] hover:bg-[#E7FB10]/10"
                           size="sm"
-                          onClick={() => window.location.href = "/api/login"}
+                          onClick={() => login()}
                           data-testid="button-checkout-login"
                         >
                           <LogIn className="h-3 w-3" />
