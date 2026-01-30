@@ -105,6 +105,7 @@ import {
   Copy,
   ShoppingCart,
   ChevronDown,
+  ChevronLeft,
   UserCircle,
   Calendar,
 } from "lucide-react";
@@ -3571,7 +3572,7 @@ function ContactsTab() {
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: "new" | "seen" | "responded" | "archived" }) => {
+    mutationFn: async ({ id, status }: { id: string; status: "new" | "responded" | "archived" }) => {
       const response = await apiRequest("PATCH", `/api/admin/contacts/${id}/status`, { status });
       return response.json();
     },
@@ -3612,18 +3613,7 @@ function ContactsTab() {
     setNotes(contact.notes || "");
   };
 
-  // Auto-mark as "seen" after viewing for 5 seconds
-  useEffect(() => {
-    if (!selectedContact || selectedContact.status !== "new") return;
-    
-    const timer = setTimeout(() => {
-      updateStatusMutation.mutate({ id: selectedContact.id, status: "seen" });
-    }, 5000);
-    
-    return () => clearTimeout(timer);
-  }, [selectedContact?.id, selectedContact?.status]);
-
-  const handleStatusChange = (status: "new" | "seen" | "responded" | "archived") => {
+  const handleStatusChange = (status: "new" | "responded" | "archived") => {
     if (selectedContact) {
       updateStatusMutation.mutate({ id: selectedContact.id, status });
     }
@@ -3730,12 +3720,12 @@ function ContactsTab() {
   return (
     <div className="space-y-4">
       {/* Header with search */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <h2 className="text-xl font-semibold flex items-center gap-2">
           <Inbox className="h-5 w-5 text-[#21d8ff]" />
           Contacts Inbox
         </h2>
-        <div className="relative w-64">
+        <div className="relative w-full sm:w-64">
           <Input
             placeholder="Search contacts..."
             value={searchQuery}
@@ -3788,9 +3778,11 @@ function ContactsTab() {
       </div>
 
       {contacts && contacts.length > 0 ? (
-        <div className="flex h-[600px] border rounded-lg overflow-hidden">
-          {/* Contact List */}
-          <div className="w-1/3 border-r bg-background/50 overflow-y-auto">
+        <div className="flex flex-col md:flex-row h-auto md:h-[600px] border rounded-lg overflow-hidden">
+          {/* Contact List - hidden on mobile when contact selected */}
+          <div className={`w-full md:w-1/3 border-b md:border-b-0 md:border-r bg-background/50 overflow-y-auto ${
+            selectedContact ? "hidden md:block" : "block"
+          }`}>
             {filteredContacts.length > 0 ? (
               filteredContacts.map((contact) => (
                 <button
@@ -3847,37 +3839,53 @@ function ContactsTab() {
             )}
           </div>
 
-          {/* Contact Detail */}
-          <div className="flex-1 flex flex-col bg-background">
+          {/* Contact Detail - full width on mobile when contact selected */}
+          <div className={`flex-1 flex flex-col bg-background ${
+            selectedContact ? "block" : "hidden md:flex"
+          }`}>
             {selectedContact ? (
               <>
-                <div className="p-6 border-b">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                      <div className={`h-12 w-12 rounded-full flex items-center justify-center ${
+                {/* Mobile back button */}
+                <div className="md:hidden p-3 border-b">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedContact(null)}
+                    className="text-[#21d8ff]"
+                    data-testid="button-back-to-list"
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    Back to Inbox
+                  </Button>
+                </div>
+                
+                <div className="p-4 sm:p-6 border-b">
+                  <div className="flex flex-col sm:flex-row items-start sm:justify-between gap-4">
+                    <div className="flex items-center gap-3 sm:gap-4">
+                      <div className={`h-10 w-10 sm:h-12 sm:w-12 rounded-full flex items-center justify-center shrink-0 ${
                         selectedContact.type === "wholesale" ? "bg-[#9d4edd]/20" : "bg-[#21d8ff]/20"
                       }`}>
-                        <span className={`text-lg font-bold ${
+                        <span className={`text-base sm:text-lg font-bold ${
                           selectedContact.type === "wholesale" ? "text-[#9d4edd]" : "text-[#21d8ff]"
                         }`}>
                           {selectedContact.name.charAt(0).toUpperCase()}
                         </span>
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-lg" data-testid="text-selected-contact-name">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-semibold text-base sm:text-lg" data-testid="text-selected-contact-name">
                             {selectedContact.name}
                           </h3>
                           {getTypeBadge(selectedContact.type)}
                         </div>
-                        <p className="text-sm text-muted-foreground">{selectedContact.email}</p>
+                        <p className="text-sm text-muted-foreground truncate">{selectedContact.email}</p>
                         {selectedContact.companyName && (
-                          <p className="text-sm text-muted-foreground">{selectedContact.companyName}</p>
+                          <p className="text-sm text-muted-foreground truncate">{selectedContact.companyName}</p>
                         )}
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm text-muted-foreground">
+                    <div className="text-left sm:text-right w-full sm:w-auto">
+                      <p className="text-xs sm:text-sm text-muted-foreground">
                         {formatFullDate(selectedContact.createdAt)}
                       </p>
                       {getStatusBadge(selectedContact.status)}
@@ -3936,20 +3944,19 @@ function ContactsTab() {
                 </div>
 
                 {/* Actions footer */}
-                <div className="p-4 border-t bg-muted/20">
-                  <div className="flex items-center justify-between gap-3">
+                <div className="p-3 sm:p-4 border-t bg-muted/20">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-muted-foreground">Status:</span>
                       <Select
                         value={selectedContact.status}
-                        onValueChange={(value) => handleStatusChange(value as "new" | "seen" | "responded" | "archived")}
+                        onValueChange={(value) => handleStatusChange(value as "new" | "responded" | "archived")}
                       >
-                        <SelectTrigger className="w-[140px]" data-testid="select-status">
+                        <SelectTrigger className="w-[120px] sm:w-[140px]" data-testid="select-status">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="new">New</SelectItem>
-                          <SelectItem value="seen">Seen</SelectItem>
                           <SelectItem value="responded">Responded</SelectItem>
                           <SelectItem value="archived">Archived</SelectItem>
                         </SelectContent>
@@ -3958,8 +3965,9 @@ function ContactsTab() {
                     <div className="flex items-center gap-2">
                       <a
                         href={`mailto:${selectedContact.email}?subject=Re: Your inquiry to Revive Research`}
+                        className="flex-1 sm:flex-none"
                       >
-                        <Button className="bg-[#21d8ff] text-black" data-testid="btn-reply-contact">
+                        <Button className="bg-[#21d8ff] text-black w-full sm:w-auto" data-testid="btn-reply-contact">
                           <Mail className="h-4 w-4 mr-2" />
                           Reply
                         </Button>
@@ -3967,6 +3975,7 @@ function ContactsTab() {
                       <Button
                         variant="outline"
                         onClick={() => setSelectedContact(null)}
+                        className="hidden sm:flex"
                         data-testid="btn-close-contact"
                       >
                         Close
