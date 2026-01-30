@@ -196,6 +196,9 @@ export const contacts = pgTable("contacts", {
   companyName: text("company_name"),
   phone: text("phone"),
   orderVolume: text("order_volume"), // e.g., "10-50 units", "100+ units"
+  intendedUseCategory: text("intended_use_category"),
+  website: text("website"),
+  targetTimeline: text("target_timeline"),
   // Admin fields
   notes: text("notes"),
   respondedAt: timestamp("responded_at"),

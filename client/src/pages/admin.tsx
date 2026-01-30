@@ -69,6 +69,7 @@ import {
   Shield,
   AlertCircle,
   Users,
+  Building2,
   Check,
   X,
   DollarSign,
@@ -4161,18 +4162,51 @@ function ContactsTab() {
                   
                   {/* Wholesale-specific info */}
                   {selectedContact.type === "wholesale" && (
-                    <div className="mt-4 p-3 bg-[#9d4edd]/10 rounded-lg border border-[#9d4edd]/20">
-                      <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="mt-4 p-4 bg-[#9d4edd]/10 rounded-lg border border-[#9d4edd]/20">
+                      <h4 className="text-sm font-semibold text-[#9d4edd] mb-3 flex items-center gap-2">
+                        <Building2 className="h-4 w-4" />
+                        Wholesale Application Details
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                        {selectedContact.companyName && (
+                          <div className="flex flex-col">
+                            <span className="text-muted-foreground text-xs uppercase tracking-wide">Company</span>
+                            <span className="font-medium">{selectedContact.companyName}</span>
+                          </div>
+                        )}
                         {selectedContact.phone && (
-                          <div>
-                            <span className="text-muted-foreground">Phone:</span>{" "}
+                          <div className="flex flex-col">
+                            <span className="text-muted-foreground text-xs uppercase tracking-wide">Phone</span>
                             <span className="font-medium">{selectedContact.phone}</span>
                           </div>
                         )}
                         {selectedContact.orderVolume && (
-                          <div>
-                            <span className="text-muted-foreground">Order Volume:</span>{" "}
+                          <div className="flex flex-col">
+                            <span className="text-muted-foreground text-xs uppercase tracking-wide">Est. Volume</span>
                             <span className="font-medium">{selectedContact.orderVolume}</span>
+                          </div>
+                        )}
+                        {selectedContact.intendedUseCategory && (
+                          <div className="flex flex-col">
+                            <span className="text-muted-foreground text-xs uppercase tracking-wide">Intended Use</span>
+                            <span className="font-medium">{selectedContact.intendedUseCategory}</span>
+                          </div>
+                        )}
+                        {selectedContact.website && (
+                          <div className="flex flex-col">
+                            <span className="text-muted-foreground text-xs uppercase tracking-wide">Website</span>
+                            <a href={selectedContact.website.startsWith("http") ? selectedContact.website : `https://${selectedContact.website}`} 
+                               target="_blank" 
+                               rel="noopener noreferrer"
+                               className="font-medium text-[#21d8ff] hover:underline">
+                              {selectedContact.website}
+                            </a>
+                          </div>
+                        )}
+                        {selectedContact.targetTimeline && (
+                          <div className="flex flex-col">
+                            <span className="text-muted-foreground text-xs uppercase tracking-wide">Timeline</span>
+                            <span className="font-medium">{selectedContact.targetTimeline}</span>
                           </div>
                         )}
                       </div>

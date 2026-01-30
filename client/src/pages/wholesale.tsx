@@ -236,19 +236,16 @@ export default function Wholesale() {
   const submitMutation = useMutation({
     mutationFn: async (data: WholesaleFormData) => {
       return apiRequest("POST", "/api/contact", {
-        name: `${data.contactName} (${data.businessName})`,
+        type: "wholesale",
+        name: data.contactName,
         email: data.email,
-        message: `[WHOLESALE INQUIRY]
-
-Business Name: ${data.businessName}
-Contact: ${data.contactName}
-Phone: ${data.phone}
-Website: ${data.website || "N/A"}
-Intended Use Category: ${data.intendedUseCategory}
-Estimated Monthly Volume: ${data.estimatedMonthlyVolume}
-
-Additional Information:
-${data.additionalInfo || "None provided"}`.trim(),
+        message: data.additionalInfo || "No additional information provided",
+        companyName: data.businessName,
+        phone: data.phone,
+        orderVolume: data.estimatedMonthlyVolume,
+        intendedUseCategory: data.intendedUseCategory,
+        website: data.website || null,
+        targetTimeline: data.targetTimeline || null,
       });
     },
     onSuccess: () => {
