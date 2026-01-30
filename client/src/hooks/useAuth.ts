@@ -37,8 +37,12 @@ export function useAuth() {
     }
   }, [auth0IsAuthenticated, auth0User, refetchSession]);
 
-  const login = () => {
-    loginWithRedirect();
+  const login = (returnTo?: string) => {
+    loginWithRedirect({
+      appState: {
+        returnTo: returnTo || window.location.pathname,
+      },
+    });
   };
 
   const logout = async () => {

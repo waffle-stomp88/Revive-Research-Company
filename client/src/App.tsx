@@ -238,6 +238,9 @@ function App() {
         redirect_uri: window.location.origin,
       }}
       cacheLocation="localstorage"
+      onRedirectCallback={(appState) => {
+        window.location.replace(appState?.returnTo || window.location.pathname);
+      }}
     >
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
