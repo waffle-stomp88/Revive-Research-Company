@@ -2284,13 +2284,23 @@ export async function registerRoutes(
     try {
       const { imageData, filename } = req.body;
       
-      if (!imageData) {
-        return res.status(400).json({ error: "imageData is required (base64 encoded)" });
+      if (!imageData || typeof imageData !== "string") {
+        return res.status(400).json({ error: "imageData is required (base64 encoded string)" });
+      }
+
+      // Validate data URL format (must be an image)
+      if (!imageData.startsWith("data:image/")) {
+        return res.status(400).json({ error: "Invalid image format. Must be a valid image data URL." });
       }
 
       // Extract base64 data (remove data URL prefix if present)
       const base64Data = imageData.replace(/^data:image\/\w+;base64,/, "");
       const imageBuffer = Buffer.from(base64Data, "base64");
+      
+      // Validate buffer size (max 10MB after decoding)
+      if (imageBuffer.length > 10 * 1024 * 1024) {
+        return res.status(400).json({ error: "Image too large. Max size is 10MB." });
+      }
 
       // Process the image (resize to 800x800)
       const processed = await processProductImage(imageBuffer);
