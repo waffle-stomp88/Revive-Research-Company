@@ -1063,9 +1063,14 @@ function ProductsTab() {
           setProductImageUrl(objectPath);
           form.setValue("imageUrl", objectPath);
           toast({ title: "Image uploaded and standardized to 800x800" });
-        } catch (error) {
+        } catch (error: any) {
           console.error("Failed to process and upload image:", error);
-          toast({ title: "Failed to upload image", variant: "destructive" });
+          const errorDetails = error?.message || "Unknown error";
+          toast({ 
+            title: "Failed to upload image", 
+            description: errorDetails,
+            variant: "destructive" 
+          });
         } finally {
           setIsUploadingImage(false);
         }

@@ -2293,9 +2293,14 @@ export async function registerRoutes(
         return res.status(400).json({ error: "Invalid image format. Must be a valid image data URL." });
       }
 
-      // Extract base64 data (remove data URL prefix if present)
-      const base64Data = imageData.replace(/^data:image\/\w+;base64,/, "");
+      // Extract base64 data (remove data URL prefix - handle all MIME types including svg+xml)
+      const base64Data = imageData.replace(/^data:image\/[^;]+;base64,/, "");
       const imageBuffer = Buffer.from(base64Data, "base64");
+      
+      // Validate that we actually got some data
+      if (imageBuffer.length === 0) {
+        return res.status(400).json({ error: "Could not decode image data" });
+      }
       
       // Validate buffer size (max 10MB after decoding)
       if (imageBuffer.length > 10 * 1024 * 1024) {
@@ -2321,9 +2326,17 @@ export async function registerRoutes(
       });
 
       res.json({ objectPath });
-    } catch (error) {
-      console.error("Error processing and uploading image:", error);
-      res.status(500).json({ error: "Failed to process and upload image" });
+    } catch (error: any) {
+      console.error("Error processing and uploading image:", {
+        message: error?.message,
+        stack: error?.stack,
+        filename: req.body?.filename,
+        imageDataLength: req.body?.imageData?.length,
+      });
+      res.status(500).json({ 
+        error: "Failed to process and upload image",
+        details: error?.message || "Unknown error"
+      });
     }
   });
 
