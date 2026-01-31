@@ -526,11 +526,11 @@ export default function ProductDetail() {
                 />
               </div>
             ) : (
-              <div className={`relative h-48 md:h-auto md:aspect-square md:sticky md:top-24 overflow-hidden rounded-lg ${isOutOfStock ? 'border-2 border-red-500' : ''}`}>
+              <div className={`relative aspect-square md:sticky md:top-24 overflow-hidden rounded-lg ${isOutOfStock ? 'border-2 border-red-500' : ''}`}>
                 <ImageLoader 
                   src={product.imageUrl || productImage} 
                   alt={`${product.name} ${selectedDosage} research peptide - COA verified`}
-                  className={`w-full h-full object-contain p-4 md:p-6 ${isOutOfStock ? 'opacity-60' : ''}`}
+                  className={`w-full h-full object-contain p-6 md:p-8 ${isOutOfStock ? 'opacity-60' : ''}`}
                   containerClassName="relative w-full h-full bg-gradient-to-br from-muted to-muted/50 overflow-hidden rounded-lg"
                 />
               {/* Out of Stock Overlay */}
@@ -557,7 +557,7 @@ export default function ProductDetail() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.12 }}
-                className="mt-6 hidden md:block"
+                className="mt-8 hidden md:block"
                 data-testid="section-education-desktop"
               >
                 <div className="flex items-center justify-between mb-4">
