@@ -905,7 +905,7 @@ export default function ProductDetail() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className={`w-full mt-2 gap-2 transition-all duration-300 border-[#ec4899]/50 text-[#ec4899] md:hover:border-[#21d8ff] md:hover:text-[#21d8ff] md:hover:shadow-[0_0_15px_rgba(33,216,255,0.3)] ${
+                  className={`w-full mt-2 gap-2 transition-all duration-300 border-[#ec4899]/50 text-[#ec4899] md:hover:border-[#ec4899] md:hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] ${
                     isInWishlist ? "bg-[#ec4899]/10" : ""
                   }`}
                   onClick={handleToggleWishlist}
