@@ -870,7 +870,7 @@ export default function ProductDetail() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="flex-1 font-display gap-2 border-2"
+                    className="flex-1 font-display gap-2 border-2 md:hover:border-[#21d8ff] md:hover:text-[#21d8ff] md:hover:shadow-[0_0_15px_rgba(33,216,255,0.3)] transition-all duration-300"
                     onClick={handleAddToCart}
                     data-testid="button-add-to-cart"
                   >
