@@ -1043,8 +1043,8 @@ function ProductsTab() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 10 * 1024 * 1024) {
-      toast({ title: "File too large", description: "Max file size is 10MB", variant: "destructive" });
+    if (file.size > 18 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Max file size is 18MB", variant: "destructive" });
       return;
     }
 

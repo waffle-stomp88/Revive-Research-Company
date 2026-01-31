@@ -2280,7 +2280,7 @@ export async function registerRoutes(
 
   // Object Storage: Process and upload product image (admin only)
   // Accepts base64 image data, resizes to 800x800, and uploads to object storage
-  app.post("/api/objects/upload-product-image", isAuthenticated, isAdmin, express.json({ limit: "10mb" }), async (req: any, res) => {
+  app.post("/api/objects/upload-product-image", isAuthenticated, isAdmin, express.json({ limit: "25mb" }), async (req: any, res) => {
     try {
       const { imageData, filename } = req.body;
       
@@ -2302,9 +2302,9 @@ export async function registerRoutes(
         return res.status(400).json({ error: "Could not decode image data" });
       }
       
-      // Validate buffer size (max 10MB after decoding)
-      if (imageBuffer.length > 10 * 1024 * 1024) {
-        return res.status(400).json({ error: "Image too large. Max size is 10MB." });
+      // Validate buffer size (max 18MB after decoding)
+      if (imageBuffer.length > 18 * 1024 * 1024) {
+        return res.status(400).json({ error: "Image too large. Max size is 18MB." });
       }
 
       // Process the image (resize to 800x800)
