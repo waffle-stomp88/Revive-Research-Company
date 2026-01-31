@@ -40,7 +40,7 @@ export function useAuth() {
   const login = (returnTo?: string) => {
     loginWithRedirect({
       appState: {
-        returnTo: returnTo || window.location.pathname,
+        returnTo: returnTo || window.location.pathname + window.location.search,
       },
     });
   };
