@@ -511,7 +511,7 @@ export default function ProductDetail() {
           </Link>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -530,7 +530,7 @@ export default function ProductDetail() {
                 <ImageLoader 
                   src={product.imageUrl || productImage} 
                   alt={`${product.name} ${selectedDosage} research peptide - COA verified`}
-                  className={`w-full h-full object-contain p-6 md:p-8 ${isOutOfStock ? 'opacity-60' : ''}`}
+                  className={`w-full h-full object-contain p-2 md:p-4 ${isOutOfStock ? 'opacity-60' : ''}`}
                   containerClassName="relative w-full h-full bg-gradient-to-br from-muted to-muted/50 overflow-hidden rounded-lg"
                 />
               {/* Out of Stock Overlay */}
