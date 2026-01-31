@@ -1039,37 +1039,49 @@ function ProductsTab() {
     setDosageStocks(prev => prev.map(ds => ({ ...ds, inStock: false, stockAmount: 0 })));
   };
 
-  const handleProductImageUpload = useCallback(async () => {
-    try {
-      const response = await apiRequest("POST", "/api/objects/upload");
-      const { uploadURL } = await response.json();
-      return { method: "PUT" as const, url: uploadURL };
-    } catch (error) {
-      console.error("Failed to get upload URL:", error);
-      throw error;
-    }
-  }, []);
+  const handleProductImageFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-  const handleProductImageComplete = async (result: any) => {
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Max file size is 10MB", variant: "destructive" });
+      return;
+    }
+
+    setIsUploadingImage(true);
     try {
-      setIsUploadingImage(true);
-      if (result.successful && result.successful.length > 0) {
-        const uploadedFile = result.successful[0];
-        const uploadURL = uploadedFile.uploadURL;
-        
-        const response = await apiRequest("PUT", "/api/objects/finalize", { uploadURL });
-        const { objectPath } = await response.json();
-        
-        setProductImageUrl(objectPath);
-        form.setValue("imageUrl", objectPath);
-        toast({ title: "Image uploaded successfully" });
-      }
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const imageData = reader.result as string;
+          const response = await apiRequest("POST", "/api/objects/upload-product-image", {
+            imageData,
+            filename: file.name,
+          });
+          const { objectPath } = await response.json();
+          
+          setProductImageUrl(objectPath);
+          form.setValue("imageUrl", objectPath);
+          toast({ title: "Image uploaded and standardized to 800x800" });
+        } catch (error) {
+          console.error("Failed to process and upload image:", error);
+          toast({ title: "Failed to upload image", variant: "destructive" });
+        } finally {
+          setIsUploadingImage(false);
+        }
+      };
+      reader.onerror = () => {
+        toast({ title: "Failed to read file", variant: "destructive" });
+        setIsUploadingImage(false);
+      };
+      reader.readAsDataURL(file);
     } catch (error) {
-      console.error("Failed to finalize upload:", error);
+      console.error("Failed to upload image:", error);
       toast({ title: "Failed to upload image", variant: "destructive" });
-    } finally {
       setIsUploadingImage(false);
     }
+    
+    event.target.value = "";
   };
 
   const handleRemoveProductImage = async () => {
@@ -1625,25 +1637,37 @@ function ProductsTab() {
                         <ImageIcon className="h-8 w-8 text-muted-foreground" />
                       </div>
                     )}
-                    <ObjectUploader
-                      onGetUploadParameters={handleProductImageUpload}
-                      onComplete={handleProductImageComplete}
-                      buttonVariant="outline"
-                      buttonSize="sm"
-                      disabled={isUploadingImage}
-                    >
-                      {isUploadingImage ? (
-                        <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Uploading...
-                        </>
-                      ) : (
-                        <>
-                          <Upload className="h-4 w-4 mr-2" />
-                          {productImageUrl ? "Change Image" : "Upload Image"}
-                        </>
-                      )}
-                    </ObjectUploader>
+                    <div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleProductImageFileChange}
+                        className="hidden"
+                        id="product-image-input"
+                        data-testid="input-product-image"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={isUploadingImage}
+                        onClick={() => document.getElementById('product-image-input')?.click()}
+                        data-testid="button-upload-product-image"
+                      >
+                        {isUploadingImage ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="h-4 w-4 mr-2" />
+                            {productImageUrl ? "Change Image" : "Upload Image"}
+                          </>
+                        )}
+                      </Button>
+                      <p className="text-xs text-muted-foreground mt-1">Auto-resized to 800x800</p>
+                    </div>
                   </div>
                 </div>
                 

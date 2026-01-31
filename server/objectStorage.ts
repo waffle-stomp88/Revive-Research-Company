@@ -214,6 +214,37 @@ export class ObjectStorageService {
     }
   }
 
+  async uploadProcessedImage(
+    buffer: Buffer,
+    mimeType: string,
+    filename: string
+  ): Promise<string> {
+    const privateObjectDir = this.getPrivateObjectDir();
+    if (!privateObjectDir) {
+      throw new Error(
+        "PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' " +
+          "tool and set PRIVATE_OBJECT_DIR env var."
+      );
+    }
+
+    const objectId = randomUUID();
+    const extension = mimeType === "image/png" ? "png" : "jpg";
+    const fullPath = `${privateObjectDir}/uploads/${objectId}.${extension}`;
+    const { bucketName, objectName } = parseObjectPath(fullPath);
+
+    const bucket = objectStorageClient.bucket(bucketName);
+    const file = bucket.file(objectName);
+
+    await file.save(buffer, {
+      contentType: mimeType,
+      metadata: {
+        originalFilename: filename,
+      },
+    });
+
+    return `/objects/uploads/${objectId}.${extension}`;
+  }
+
   async canAccessObjectEntity({
     userId,
     objectFile,

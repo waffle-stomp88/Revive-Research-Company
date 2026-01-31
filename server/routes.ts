@@ -9,6 +9,7 @@ import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaS
 import { setupAuth, isAuthenticated } from "./auth0Auth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
+import { processProductImage } from "./imageProcessor";
 import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendNewsletterWelcomeEmail, isEmailConfigured } from "./email";
 import { sendOrderNotifications, getNotificationStatus } from "./notifications";
 import { 
@@ -2274,6 +2275,45 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error deleting object:", error);
       res.status(500).json({ error: "Failed to delete object" });
+    }
+  });
+
+  // Object Storage: Process and upload product image (admin only)
+  // Accepts base64 image data, resizes to 800x800, and uploads to object storage
+  app.post("/api/objects/upload-product-image", isAuthenticated, isAdmin, express.json({ limit: "10mb" }), async (req: any, res) => {
+    try {
+      const { imageData, filename } = req.body;
+      
+      if (!imageData) {
+        return res.status(400).json({ error: "imageData is required (base64 encoded)" });
+      }
+
+      // Extract base64 data (remove data URL prefix if present)
+      const base64Data = imageData.replace(/^data:image\/\w+;base64,/, "");
+      const imageBuffer = Buffer.from(base64Data, "base64");
+
+      // Process the image (resize to 800x800)
+      const processed = await processProductImage(imageBuffer);
+
+      // Upload to object storage
+      const objectStorageService = new ObjectStorageService();
+      const objectPath = await objectStorageService.uploadProcessedImage(
+        processed.buffer,
+        processed.mimeType,
+        filename || "product-image.png"
+      );
+
+      // Set the ACL to public
+      const userId = req.user?.claims?.sub || "admin";
+      await objectStorageService.trySetObjectEntityAclPolicy(objectPath, {
+        owner: userId,
+        visibility: "public",
+      });
+
+      res.json({ objectPath });
+    } catch (error) {
+      console.error("Error processing and uploading image:", error);
+      res.status(500).json({ error: "Failed to process and upload image" });
     }
   });
 
