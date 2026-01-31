@@ -526,7 +526,7 @@ export default function ProductDetail() {
                 />
               </div>
             ) : (
-              <div className={`relative md:sticky md:top-24 overflow-hidden rounded-lg ${isOutOfStock ? 'border-2 border-red-500' : ''}`}>
+              <div className={`relative w-full md:sticky md:top-24 overflow-hidden rounded-lg ${isOutOfStock ? 'border-2 border-red-500' : ''}`}>
                 <ImageLoader 
                   src={product.imageUrl || productImage} 
                   alt={`${product.name} ${selectedDosage} research peptide - COA verified`}
@@ -557,7 +557,7 @@ export default function ProductDetail() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.12 }}
-                className="mt-8 hidden md:block relative z-10 bg-background"
+                className="mt-12 hidden md:block relative z-10 bg-background"
                 data-testid="section-education-desktop"
               >
                 <div className="flex items-center justify-between mb-4">
