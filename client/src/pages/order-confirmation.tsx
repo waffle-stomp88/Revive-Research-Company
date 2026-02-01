@@ -245,7 +245,7 @@ export default function OrderConfirmation() {
                       <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: color }}>
                         3
                       </div>
-                      <p className="text-muted-foreground">We'll verify payment and ship within <span className="font-semibold text-foreground">1-2 business hours</span></p>
+                      <p className="text-muted-foreground">We'll verify payment and ship within <span className="font-semibold text-foreground">2-4 hours</span> during business hours</p>
                     </div>
                   </div>
 

@@ -912,27 +912,17 @@ export default function Checkout() {
                       <Card className="p-4" style={{ borderColor: "#00D63250" }}>
                         <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
                           <Smartphone className="h-4 w-4" style={{ color: "#00D632" }} />
-                          CashApp Payment Instructions
+                          How CashApp Payment Works
                         </h4>
                         
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                           <div className="flex items-start gap-3">
                             <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: "#00D632" }}>
                               1
                             </div>
                             <div className="flex-1">
-                              <p className="text-sm font-medium mb-2">Send ${cartTotal.toFixed(2)} to:</p>
-                              <div 
-                                className="flex items-center gap-2 p-2 rounded-md bg-muted cursor-pointer md:hover:bg-muted/80 transition-colors"
-                                onClick={() => copyToClipboard(CASHAPP_TAG)}
-                              >
-                                <span className="font-mono font-bold text-sm flex-1" style={{ color: "#00D632" }}>
-                                  {CASHAPP_TAG}
-                                </span>
-                                <Button size="icon" variant="ghost" className="h-6 w-6">
-                                  {copied ? <CheckCircle className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
-                                </Button>
-                              </div>
+                              <p className="text-sm font-medium">Place your order</p>
+                              <p className="text-xs text-muted-foreground">You'll receive your unique order number</p>
                             </div>
                           </div>
 
@@ -941,8 +931,8 @@ export default function Checkout() {
                               2
                             </div>
                             <div className="flex-1">
-                              <p className="text-sm font-medium">Include in the note:</p>
-                              <p className="text-xs text-muted-foreground">Your email address for order confirmation</p>
+                              <p className="text-sm font-medium">Send payment via CashApp</p>
+                              <p className="text-xs text-muted-foreground">Include only your order number in the note</p>
                             </div>
                           </div>
 
@@ -951,10 +941,17 @@ export default function Checkout() {
                               3
                             </div>
                             <div className="flex-1">
-                              <p className="text-sm font-medium">Fill in your shipping details below</p>
-                              <p className="text-xs text-muted-foreground">We'll verify payment and ship your order</p>
+                              <p className="text-sm font-medium">We verify and ship</p>
+                              <p className="text-xs text-muted-foreground">Orders verified within 2-4 hours during business hours</p>
                             </div>
                           </div>
+                        </div>
+
+                        <div className="mt-4 p-3 rounded-lg bg-[#00D632]/10 border border-[#00D632]/30">
+                          <p className="text-xs text-muted-foreground text-center">
+                            <Clock className="h-3 w-3 inline mr-1" style={{ color: "#00D632" }} />
+                            Payment instructions will appear after you place your order
+                          </p>
                         </div>
 
                         <div className="mt-4 pt-4 border-t border-border space-y-3">
