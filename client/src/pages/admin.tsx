@@ -651,7 +651,7 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
           <Card>
             <CardContent className="p-4">
               <button 
-                onClick={() => onNavigateToTab("email")}
+                onClick={() => onNavigateToTab("communications")}
                 className="w-full flex items-center justify-between hover:opacity-80 transition-opacity"
               >
                 <div className="flex items-center gap-2">
@@ -6892,6 +6892,110 @@ function PricingOptimizerTab() {
   );
 }
 
+function ProductsCombinedTab() {
+  const [productSubTab, setProductSubTab] = useState("inventory");
+  
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2 mb-4">
+        <Button 
+          variant={productSubTab === "inventory" ? "default" : "outline"}
+          onClick={() => setProductSubTab("inventory")}
+          className="gap-2"
+          data-testid="subtab-inventory"
+        >
+          <Package className="h-4 w-4" />
+          Inventory
+        </Button>
+        <Button 
+          variant={productSubTab === "pricing" ? "default" : "outline"}
+          onClick={() => setProductSubTab("pricing")}
+          className="gap-2"
+          data-testid="subtab-pricing"
+        >
+          <Zap className="h-4 w-4" />
+          AI Pricing
+        </Button>
+      </div>
+      
+      {productSubTab === "inventory" ? (
+        <Card className="p-6">
+          <ProductsTab />
+        </Card>
+      ) : (
+        <Card className="p-6">
+          <PricingOptimizerTab />
+        </Card>
+      )}
+    </div>
+  );
+}
+
+function CommunicationsTab() {
+  const [commsSubTab, setCommsSubTab] = useState("notifications");
+  
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2 mb-4">
+        <Button 
+          variant={commsSubTab === "notifications" ? "default" : "outline"}
+          onClick={() => setCommsSubTab("notifications")}
+          className="gap-2"
+          data-testid="subtab-notifications"
+        >
+          <Bell className="h-4 w-4" />
+          Stock Notifications
+        </Button>
+        <Button 
+          variant={commsSubTab === "emails" ? "default" : "outline"}
+          onClick={() => setCommsSubTab("emails")}
+          className="gap-2"
+          data-testid="subtab-emails"
+        >
+          <Mail className="h-4 w-4" />
+          Email Logs
+        </Button>
+      </div>
+      
+      {commsSubTab === "notifications" ? (
+        <Card className="p-6">
+          <StockNotificationsTab />
+        </Card>
+      ) : (
+        <Card className="p-6">
+          <EmailLogsTab />
+        </Card>
+      )}
+    </div>
+  );
+}
+
+function SettingsTab() {
+  const [settingsSubTab, setSettingsSubTab] = useState("discounts");
+  
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2 mb-4">
+        <Button 
+          variant={settingsSubTab === "discounts" ? "default" : "outline"}
+          onClick={() => setSettingsSubTab("discounts")}
+          className="gap-2"
+          data-testid="subtab-discounts"
+        >
+          <Tag className="h-4 w-4" />
+          Discount Codes
+        </Button>
+      </div>
+      
+      {settingsSubTab === "discounts" && (
+        <Card className="p-6">
+          <DiscountCodesTab />
+        </Card>
+      )}
+    </div>
+  );
+}
+
 export default function Admin() {
   const { user, isLoading: authLoading, isAuthenticated, login, logout } = useAuth();
   const { toast } = useToast();
@@ -6979,22 +7083,14 @@ export default function Admin() {
 
           <motion.div variants={itemVariants}>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full max-w-7xl grid-cols-12">
+              <TabsList className="grid w-full max-w-6xl grid-cols-9">
                 <TabsTrigger value="overview" className="flex items-center gap-2" data-testid="tab-overview">
                   <LayoutDashboard className="h-4 w-4" />
                   <span className="hidden sm:inline">Overview</span>
                 </TabsTrigger>
                 <TabsTrigger value="products" className="flex items-center gap-2" data-testid="tab-products">
                   <Package className="h-4 w-4" />
-                  <span className="hidden sm:inline">Inventory</span>
-                </TabsTrigger>
-                <TabsTrigger value="pricing" className="flex items-center gap-2" data-testid="tab-pricing">
-                  <Zap className="h-4 w-4" />
-                  <span className="hidden sm:inline">Pricing</span>
-                </TabsTrigger>
-                <TabsTrigger value="coas" className="flex items-center gap-2" data-testid="tab-coas">
-                  <FileCheck className="h-4 w-4" />
-                  <span className="hidden sm:inline">COAs</span>
+                  <span className="hidden sm:inline">Products</span>
                 </TabsTrigger>
                 <TabsTrigger value="orders" className="flex items-center gap-2" data-testid="tab-orders">
                   <ShoppingBag className="h-4 w-4" />
@@ -7012,17 +7108,17 @@ export default function Admin() {
                   <Users className="h-4 w-4" />
                   <span className="hidden sm:inline">Affiliates</span>
                 </TabsTrigger>
-                <TabsTrigger value="discounts" className="flex items-center gap-2" data-testid="tab-discounts">
-                  <Tag className="h-4 w-4" />
-                  <span className="hidden sm:inline">Discounts</span>
+                <TabsTrigger value="coas" className="flex items-center gap-2" data-testid="tab-coas">
+                  <FileCheck className="h-4 w-4" />
+                  <span className="hidden sm:inline">COAs</span>
                 </TabsTrigger>
-                <TabsTrigger value="notifications" className="flex items-center gap-2" data-testid="tab-notifications">
+                <TabsTrigger value="communications" className="flex items-center gap-2" data-testid="tab-communications">
                   <Bell className="h-4 w-4" />
-                  <span className="hidden sm:inline">Notify</span>
+                  <span className="hidden sm:inline">Comms</span>
                 </TabsTrigger>
-                <TabsTrigger value="email-logs" className="flex items-center gap-2" data-testid="tab-email-logs">
-                  <Mail className="h-4 w-4" />
-                  <span className="hidden sm:inline">Emails</span>
+                <TabsTrigger value="settings" className="flex items-center gap-2" data-testid="tab-settings">
+                  <Settings className="h-4 w-4" />
+                  <span className="hidden sm:inline">Settings</span>
                 </TabsTrigger>
               </TabsList>
 
@@ -7031,21 +7127,7 @@ export default function Admin() {
               </TabsContent>
 
               <TabsContent value="products">
-                <Card className="p-6">
-                  <ProductsTab />
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="pricing">
-                <Card className="p-6">
-                  <PricingOptimizerTab />
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="coas">
-                <Card className="p-6">
-                  <CoasTab />
-                </Card>
+                <ProductsCombinedTab />
               </TabsContent>
 
               <TabsContent value="orders">
@@ -7072,22 +7154,18 @@ export default function Admin() {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="discounts">
+              <TabsContent value="coas">
                 <Card className="p-6">
-                  <DiscountCodesTab />
+                  <CoasTab />
                 </Card>
               </TabsContent>
 
-              <TabsContent value="notifications">
-                <Card className="p-6">
-                  <StockNotificationsTab />
-                </Card>
+              <TabsContent value="communications">
+                <CommunicationsTab />
               </TabsContent>
 
-              <TabsContent value="email-logs">
-                <Card className="p-6">
-                  <EmailLogsTab />
-                </Card>
+              <TabsContent value="settings">
+                <SettingsTab />
               </TabsContent>
             </Tabs>
           </motion.div>
