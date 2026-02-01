@@ -401,7 +401,7 @@ ${brand.name}
                         ESTIMATED DELIVERY
                       </p>
                       <p style="color: #ffffff; font-size: 15px; font-weight: 600; margin: 0 0 8px 0;">
-                        2-5 Business Days
+                        2 Business Days
                       </p>
                       <p style="color: #eeeeee; font-size: 14px; line-height: 1.6; margin: 0;">
                         Ships within 24 hours<br>
@@ -583,7 +583,7 @@ function getShippedNotificationTemplate(order: {
   const styles = getEmailBaseStyles();
   const hasFirstName = order.firstName && order.firstName.trim().length > 0;
   const trackingUrl = getCarrierTrackingUrl(carrier, trackingNumber);
-  const deliveryEstimate = estimatedDelivery || '2-5 Business Days';
+  const deliveryEstimate = estimatedDelivery || '2 Business Days';
   
   const subject = `Your Order Has Shipped! #${shortRef}`;
   

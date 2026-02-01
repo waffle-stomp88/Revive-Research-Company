@@ -401,8 +401,7 @@ Orders placed **before 12:00 PM Central Time** on business days ship the same da
 All other orders ship within 24 business hours of placement.
 
 ### Delivery Timeframes
-- **Standard Delivery:** 2-5 business days
-- **Expedited Delivery:** 1-2 business days (additional fees apply)
+- **Standard Delivery:** 2 business days
 
 ## Packaging & Handling
 

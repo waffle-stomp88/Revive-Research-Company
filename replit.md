@@ -25,7 +25,7 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **Age Verification**: A 21+ age gate on first visit, storing status in localStorage.
 - **Authentication-Protected Pages**: Research Stacks, Bulk Packs, and Research Academy require user authentication. Unauthenticated visitors see an AuthGate component prompting account creation with benefits list and RUO disclaimer. Protected routes: `/research-stacks`, `/bulk-packs`, `/academy`, and related detail pages. Note: Product pages (`/peptides`, `/products`) are publicly accessible without login.
 - **Checkout RUO Reminder**: A compact, non-dismissible popup on the checkout page requiring acknowledgment of "Research Use Only" terms and 21+ age confirmation via two checkboxes.
-- **Shipping**: Free shipping on orders over $200, otherwise a flat $20. Shipping typically takes 2-5 business days. Offers 24-hour standard and same-day shipping.
+- **Shipping**: Free shipping on orders over $200, otherwise a flat $20. Shipping typically takes 2 business days. Offers 24-hour standard and same-day shipping.
 - **No Refunds Policy**: Clearly stated.
 - **Affiliate Program**: Two-tier commission structure (10% direct + 10% customer discount, 10% team override) with a 20% total cap, 30-day cookie window, $100 minimum payout, and monthly payouts. Includes application, tracking, dashboard, and non-MLM disclaimer.
 - **Product Bundles**: Curated "Research Stacks" offering discounted peptide combinations.
