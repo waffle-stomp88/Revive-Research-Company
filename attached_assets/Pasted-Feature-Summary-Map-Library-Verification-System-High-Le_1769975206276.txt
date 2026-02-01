@@ -1,0 +1,107 @@
+Feature Summary: Map Library (Verification System)
+High-Level Purpose
+The Map Library is a public, structured verification system that organizes peptide quality data over time.
+It provides context, continuity, and interpretation on top of existing Certificates of Analysis (COAs).
+It is not a replacement for the COA Library — it is a higher-level system that uses the COA Library as raw evidence.
+The goal is to show:
+Which batch is active
+What has been tested
+How results behave over time
+What the data means (and does not mean)
+A preserved historical record (nothing deleted)
+🧠 Core Concept (Important for Architecture)
+COA Library = raw documents (PDFs, batch data)
+Map Library = system of record that organizes those documents by compound, batch, and time
+Map Library is the primary user experience for verification.
+COA Library remains accessible as a supporting utility.
+🧱 System Structure (Required)
+1. Map Library Landing Page
+Purpose: orientation and explanation.
+Includes:
+Explanation of batch-based testing
+Explanation that purity is tested by batch, not guaranteed per vial
+How to read Map Pages
+Why historical data is preserved
+Link to “View Raw COA Library”
+This page is educational, not commercial.
+2. Compound Map Pages (Core Unit)
+Each compound has a dedicated Map Page.
+Each Map Page must include:
+A. Compound Overview
+Neutral description of the compound
+What Revive tracks for this compound
+No dosing, no claims, no optimization language
+B. Active Batch Section
+Clearly identifies:
+Current active batch ID
+Test date
+Testing lab
+Status: ACTIVE
+Links to:
+COA (PDF / COA Library)
+COA Interpretation (text)
+This answers: “What batch am I getting right now?”
+C. Archived Batch History
+List of prior batches
+Each with:
+Batch ID
+Date range active
+Testing lab
+Link to original COA
+Nothing is deleted. Ever.
+Archived ≠ hidden.
+3. COA Interpretation Layer
+Each batch should have a short interpretation block that explains:
+What tests were performed
+What “pass” means in plain language
+What the COA does not prove
+Known limitations of batch testing
+This is explanatory only — no claims.
+4. Historical Performance (Phase 2 / Extensible)
+The system should support adding charts later, such as:
+Purity over time
+Peptide content over time
+Heavy metals vs threshold
+Charts:
+Are informational, not promotional
+Show variance
+Do not compare against competitors
+Important: design data models now so this is possible later, even if charts are not implemented immediately.
+🧭 Navigation & Hierarchy Rules
+“Map Library” replaces “COA Verification” as the primary nav item
+“COA Library” remains accessible:
+From Map Library landing page
+From batch entries
+As a direct utility for searching by batch number
+Hierarchy:
+Copy code
+
+Map Library
+ ├─ Compound Map Pages
+ │   ├─ Active Batch
+ │   ├─ Archived Batches
+ │   └─ Historical Data
+ └─ COA Library (raw documents)
+⚠️ Non-Negotiable Rules
+No COAs are hidden or removed
+No batch data is overwritten
+Old batches are archived, not deleted
+Active vs archived must be explicit
+Language must avoid guarantees or medical claims
+System must prioritize transparency over conversion
+🎯 Business Outcome (Why This Exists)
+For customers:
+Reduces uncertainty
+Shows consistency over time
+Builds confidence without hype
+For Revive:
+Forces operational discipline
+Creates a time-based trust moat
+Differentiates from basic e-commerce peptide sites
+Future-proofs against scrutiny
+🛠 Implementation Guidance (Important for Replit)
+Treat Compound as the primary entity
+Treat Batch as a time-bound child entity
+COAs are documents linked to batches
+Interpretation is metadata, not the COA itself
+Design database to support longitudinal data (charts later)
