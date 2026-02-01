@@ -243,7 +243,7 @@ export async function createPayPalProduct(): Promise<string> {
       name: PAYPAL_PRODUCT_NAME,
       description: getRandomDescription(true),
       type: "SERVICE",
-      category: "SOFTWARE",
+      category: "SPECIALTY_RETAIL",
     }),
   });
   
