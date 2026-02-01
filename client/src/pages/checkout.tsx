@@ -45,6 +45,7 @@ import {
   Building2,
   ChevronDown,
   ChevronUp,
+  MapPin,
 } from "lucide-react";
 import type { Product, User as UserType } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
@@ -890,7 +891,23 @@ export default function Checkout() {
                   <PaymentMethodSelector />
                   
                   {/* Manual Payment Instructions - CashApp */}
-                  {selectedPaymentMethod === "cashapp" && manualPaymentStep === "instructions" && (
+                  {selectedPaymentMethod === "cashapp" && manualPaymentStep === "instructions" && !hasValidZip && (
+                    <div className="mt-4">
+                      <Card className="p-4 border-yellow-500/50 bg-yellow-500/5">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-yellow-500/20">
+                            <MapPin className="h-4 w-4 text-yellow-500" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium">Enter your ZIP code first</p>
+                            <p className="text-xs text-muted-foreground">We need your ZIP code to calculate taxes before showing payment details</p>
+                          </div>
+                        </div>
+                      </Card>
+                    </div>
+                  )}
+                  
+                  {selectedPaymentMethod === "cashapp" && manualPaymentStep === "instructions" && hasValidZip && (
                     <div className="mt-4">
                       <Card className="p-4" style={{ borderColor: "#00D63250" }}>
                         <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
