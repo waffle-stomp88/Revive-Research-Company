@@ -25,7 +25,7 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **Age Verification**: A 21+ age gate on first visit, storing status in localStorage.
 - **Authentication-Protected Pages**: Research Stacks, Bulk Packs, and Research Academy require user authentication. Unauthenticated visitors see an AuthGate component prompting account creation with benefits list and RUO disclaimer. Protected routes: `/research-stacks`, `/bulk-packs`, `/academy`, and related detail pages. Note: Product pages (`/peptides`, `/products`) are publicly accessible without login.
 - **Checkout RUO Reminder**: A compact, non-dismissible popup on the checkout page requiring acknowledgment of "Research Use Only" terms and 21+ age confirmation via two checkboxes.
-- **Shipping**: Free shipping on orders over $175, otherwise a flat $20. Shipping typically takes 2-5 business days. Offers 24-hour standard and same-day shipping.
+- **Shipping**: Free shipping on orders over $200, otherwise a flat $20. Shipping typically takes 2-5 business days. Offers 24-hour standard and same-day shipping.
 - **No Refunds Policy**: Clearly stated.
 - **Affiliate Program**: Two-tier commission structure (10% direct + 10% customer discount, 10% team override) with a 20% total cap, 30-day cookie window, $100 minimum payout, and monthly payouts. Includes application, tracking, dashboard, and non-MLM disclaimer.
 - **Product Bundles**: Curated "Research Stacks" offering discounted peptide combinations.
@@ -79,7 +79,7 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **Tabbed Dashboard Interface**: Dashboard at `/dashboard` uses a 3-tab structure (General, Orders, Settings) with a navigation hub design:
   - **Immersive Atmosphere**: Ambient background gradients (5 colored glow orbs with blur-[100px-150px]) for a welcoming feel
   - **Time-Based Greeting**: Dynamic "Good morning/afternoon/evening" based on current hour
-  - **General Tab (Navigation Hub)**: Quick Stats cards, Quick Navigation vertical stack (My Orders, Research Academy, Verify COA, Browse Products, Support), Achievements with animated icons (pulse/glow effects), Member Perks card (4 dynamic perks: Free Shipping $175+, Early Access for founder members, Priority Support 3+ orders, Affiliate Earnings), Research Quiz CTA (coming soon), Affiliate Program CTA
+  - **General Tab (Navigation Hub)**: Quick Stats cards, Quick Navigation vertical stack (My Orders, Research Academy, Verify COA, Browse Products, Support), Achievements with animated icons (pulse/glow effects), Member Perks card (4 dynamic perks: Free Shipping $200+, Early Access for founder members, Priority Support 3+ orders, Affiliate Earnings), Research Quiz CTA (coming soon), Affiliate Program CTA
   - **Orders Tab**: Subscriptions, Order History with detailed order cards, Wishlist section (moved from General), Product Reviews, quick links to Academy and COA verification
   - **Settings Tab**: Profile information, Security settings, Account deletion
 

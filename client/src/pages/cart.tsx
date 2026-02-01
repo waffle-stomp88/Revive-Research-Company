@@ -107,7 +107,7 @@ export default function CartPage() {
   };
 
   const subtotal = getSubtotal();
-  const FREE_SHIPPING_THRESHOLD = 175;
+  const FREE_SHIPPING_THRESHOLD = 200;
   const FLAT_RATE_SHIPPING = 20;
   const hasFreeShippingFromDiscount = appliedDiscount?.freeShipping || false;
   const shipping = (subtotal >= FREE_SHIPPING_THRESHOLD || hasFreeShippingFromDiscount) ? 0 : FLAT_RATE_SHIPPING;
@@ -145,7 +145,7 @@ export default function CartPage() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-12">
-      <SEOHead title="Shopping Cart" description="Review your research compound order. Free shipping on orders over $175. Secure checkout with fast processing." canonicalPath="/cart" />
+      <SEOHead title="Shopping Cart" description="Review your research compound order. Free shipping on orders over $200. Secure checkout with fast processing." canonicalPath="/cart" />
       <div className="max-w-6xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, x: -20 }}

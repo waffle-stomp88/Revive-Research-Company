@@ -810,7 +810,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
           illustration={<OrderingJourneyMini />}
           stats={[
             { label: "Processing", value: "24hr" },
-            { label: "Free Ship", value: "$175+" },
+            { label: "Free Ship", value: "$200+" },
           ]}
         />
 
@@ -825,7 +825,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               icon: ShoppingCart,
               color: "#E7FB10",
               details: ["Choose research compounds", "Select appropriate quantities", "Apply any discount codes"],
-              tip: "Orders over $175 ship free!",
+              tip: "Orders over $200 ship free!",
             },
             {
               id: 2,

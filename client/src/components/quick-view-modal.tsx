@@ -117,7 +117,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                 </div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Truck className="h-3.5 w-3.5 text-[#21d8ff]" />
-                  <span>Free shipping on orders over $175</span>
+                  <span>Free shipping on orders over $200</span>
                 </div>
               </div>
 

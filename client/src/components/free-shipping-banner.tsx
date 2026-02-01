@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { X, Truck } from "lucide-react";
 import { Link } from "wouter";
 
-const FREE_SHIPPING_THRESHOLD = 175;
+const FREE_SHIPPING_THRESHOLD = 200;
 
 export function FreeShippingBanner() {
   const [dismissed, setDismissed] = useState(false);

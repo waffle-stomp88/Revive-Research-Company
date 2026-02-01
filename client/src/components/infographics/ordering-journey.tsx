@@ -240,7 +240,7 @@ export function OrderingJourney() {
       >
         <h3 className="font-display font-semibold text-[#21d8ff] mb-2">Total Delivery Time</h3>
         <p className="text-sm text-muted-foreground mb-3">
-          <span className="text-[#E7FB10] font-bold">2-5 business days</span> from checkout to your door with free shipping on orders over <span className="text-[#21d8ff] font-bold">$175</span>
+          <span className="text-[#E7FB10] font-bold">2-5 business days</span> from checkout to your door with free shipping on orders over <span className="text-[#21d8ff] font-bold">$200</span>
         </p>
         <p className="text-xs text-muted-foreground">
           Every order includes QR-verified analysis and full tracking. Cold packs available as an optional add-on. Your package integrity is guaranteed.

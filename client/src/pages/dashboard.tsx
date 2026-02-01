@@ -1138,19 +1138,19 @@ export default function Dashboard() {
                     <CardContent>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {/* Free Shipping Perk */}
-                        <div className={`flex items-center gap-3 p-3 rounded-xl border ${(orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0) >= 175 ? 'border-green-500/40 bg-green-500/10' : 'border-muted/20 bg-muted/10'}`}>
-                          <div className={`p-2 rounded-full ${(orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0) >= 175 ? 'bg-green-500/20' : 'bg-muted/20'}`}>
-                            <Truck className={`h-4 w-4 ${(orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0) >= 175 ? 'text-green-500' : 'text-muted-foreground'}`} />
+                        <div className={`flex items-center gap-3 p-3 rounded-xl border ${(orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0) >= 200 ? 'border-green-500/40 bg-green-500/10' : 'border-muted/20 bg-muted/10'}`}>
+                          <div className={`p-2 rounded-full ${(orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0) >= 200 ? 'bg-green-500/20' : 'bg-muted/20'}`}>
+                            <Truck className={`h-4 w-4 ${(orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0) >= 200 ? 'text-green-500' : 'text-muted-foreground'}`} />
                           </div>
                           <div className="flex-1">
                             <p className="font-medium text-sm">Free Shipping</p>
                             <p className="text-xs text-muted-foreground">
-                              {(orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0) >= 175 
-                                ? 'Unlocked! Orders $175+' 
-                                : `$${Math.max(0, 175 - (orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0)).toFixed(0)} to unlock`}
+                              {(orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0) >= 200 
+                                ? 'Unlocked! Orders $200+' 
+                                : `$${Math.max(0, 200 - (orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0)).toFixed(0)} to unlock`}
                             </p>
                           </div>
-                          {(orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0) >= 175 && <CheckCircle className="h-4 w-4 text-green-500" />}
+                          {(orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0) >= 200 && <CheckCircle className="h-4 w-4 text-green-500" />}
                         </div>
                         
                         {/* Early Access Perk */}
