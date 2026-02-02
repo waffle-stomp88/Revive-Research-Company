@@ -198,32 +198,34 @@ export default function CartPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <Card className="p-3" data-testid={`cart-item-${item.productId}`}>
-                  <div className="flex gap-3 md:gap-4 items-center">
+                <Link 
+                  href={item.bundleId ? `/bundles/${item.bundleId}` : `/products/${item.productId}`}
+                  className="block"
+                  data-testid={`link-cart-item-card-${item.productId}`}
+                >
+                  <Card 
+                    className="p-3 cursor-pointer transition-all duration-300 border-2 border-[#21d8ff]/40 md:hover:border-[#21d8ff] md:hover:shadow-[0_0_30px_rgba(33,216,255,0.5),0_0_60px_rgba(33,216,255,0.2)] md:hover:scale-[1.01]" 
+                    data-testid={`cart-item-${item.productId}`}
+                  >
+                    <div className="flex gap-3 md:gap-4 items-center">
                     {/* Product Image - larger */}
-                    <Link 
-                      href={item.bundleId ? `/bundles/${item.bundleId}` : `/products/${item.productId}`}
-                      className="w-20 h-20 md:w-24 md:h-24 bg-muted rounded-lg flex-shrink-0 overflow-hidden cursor-pointer md:hover:ring-2 md:hover:ring-[#E7FB10]/50 transition-all"
-                      data-testid={`link-cart-item-image-${item.productId}`}
+                    <div 
+                      className="w-20 h-20 md:w-24 md:h-24 bg-muted rounded-lg flex-shrink-0 overflow-hidden"
+                      data-testid={`cart-item-image-${item.productId}`}
                     >
                       <img
                         src={productImage}
                         alt={`${item.name} ${item.dosage} research peptide`}
                         className="w-full h-full object-contain p-1"
                       />
-                    </Link>
+                    </div>
                     
                     {/* Product Info - center column */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <Link 
-                          href={item.bundleId ? `/bundles/${item.bundleId}` : `/products/${item.productId}`}
-                          data-testid={`link-cart-item-name-${item.productId}`}
-                        >
-                          <h3 className="font-display font-bold text-xl md:text-2xl md:hover:text-[#E7FB10] transition-colors cursor-pointer" data-testid={`cart-item-name-${item.productId}`}>
-                            {item.name}
-                          </h3>
-                        </Link>
+                        <h3 className="font-display font-bold text-xl md:text-2xl" data-testid={`cart-item-name-${item.productId}`}>
+                          {item.name}
+                        </h3>
                         {item.isSubscription && (
                           <Badge 
                             className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30 gap-1 text-[10px] px-1.5 py-0"
@@ -271,7 +273,11 @@ export default function CartPage() {
                           variant="ghost"
                           size="icon"
                           className="text-red-400 h-8 w-8"
-                          onClick={() => removeFromCart(item.productId, item.dosage)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            removeFromCart(item.productId, item.dosage);
+                          }}
                           data-testid={`button-remove-${item.productId}`}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -279,12 +285,18 @@ export default function CartPage() {
                       </div>
                       
                       {/* Quantity controls */}
-                      <div className="flex items-center border border-border rounded-md">
+                      <div 
+                        className="flex items-center border border-border rounded-md"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <Button
                           variant="ghost"
                           size="sm"
                           className="h-7 w-7 p-0"
-                          onClick={() => updateQuantity(item.productId, item.dosage, item.quantity - 1)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            updateQuantity(item.productId, item.dosage, item.quantity - 1);
+                          }}
                           data-testid={`button-decrease-${item.productId}`}
                         >
                           <Minus className="h-3 w-3" />
@@ -296,7 +308,10 @@ export default function CartPage() {
                           variant="ghost"
                           size="sm"
                           className="h-7 w-7 p-0"
-                          onClick={() => updateQuantity(item.productId, item.dosage, item.quantity + 1)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            updateQuantity(item.productId, item.dosage, item.quantity + 1);
+                          }}
                           disabled={item.quantity >= 10}
                           data-testid={`button-increase-${item.productId}`}
                         >
@@ -305,7 +320,8 @@ export default function CartPage() {
                       </div>
                     </div>
                   </div>
-                </Card>
+                  </Card>
+                </Link>
               </motion.div>
             ))}
 
