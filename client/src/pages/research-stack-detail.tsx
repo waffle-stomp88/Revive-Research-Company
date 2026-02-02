@@ -41,7 +41,6 @@ interface ResearchStack {
   badgeColor?: string;
   retailValue: number;
   stackPrice: number;
-  launchPrice: number;
   synergy: SynergyCopy;
 }
 
@@ -87,8 +86,7 @@ const researchStacksData: Record<string, ResearchStack> = {
     badge: "Most Popular",
     badgeColor: "#E7FB10",
     retailValue: 129,
-    stackPrice: 116,
-    launchPrice: 109,
+    stackPrice: 109,
     synergy: {
       beginner: "BPC-157 helps cells repair faster while TB-500 helps the body build new blood vessels to deliver nutrients. Together, they create a 'repair + rebuild' combination that researchers find works better than either compound alone.",
       expert: "BPC-157 upregulates growth hormone receptors and VEGF expression while TB-500 (Thymosin Beta-4) promotes actin polymerization and angiogenesis. The dual-pathway activation creates synergistic tissue regeneration signaling through complementary GH/IGF-1 axis and cytoskeletal remodeling mechanisms."
@@ -126,8 +124,7 @@ const researchStacksData: Record<string, ResearchStack> = {
     badge: "Hot Research",
     badgeColor: "#ef4444",
     retailValue: 135,
-    stackPrice: 122,
-    launchPrice: 115,
+    stackPrice: 115,
     synergy: {
       beginner: "MOTS-C helps cells produce energy more efficiently at the mitochondrial level, while Retatrutide signals the body to use stored fat for fuel. Together, they target metabolism from two different angles—one at the cellular power plant, one at the hormonal control center.",
       expert: "MOTS-C activates AMPK pathways and enhances mitochondrial biogenesis, while Retatrutide acts as a triple agonist (GLP-1/GIP/Glucagon receptors) modulating incretin signaling. This creates multi-target metabolic pathway activation: mitochondrial efficiency + peripheral insulin sensitivity + hepatic gluconeogenesis modulation."
@@ -163,8 +160,7 @@ const researchStacksData: Record<string, ResearchStack> = {
     icon: "Sparkles",
     color: "#a855f7",
     retailValue: 90,
-    stackPrice: 81,
-    launchPrice: 76,
+    stackPrice: 76,
     synergy: {
       beginner: "GHK-Cu is a copper peptide that helps cells 'clean house' and produce healthy proteins, while MOTS-C improves how cells generate energy. Think of it as upgrading both the maintenance crew and the power supply at the cellular level.",
       expert: "GHK-Cu modulates gene expression for tissue remodeling (collagen, decorin, metalloproteinases) while MOTS-C enhances mitochondrial function via AMPK activation. The combination creates parallel signaling for extracellular matrix optimization and intracellular energy metabolism—addressing both structural and functional cellular pathways."
@@ -202,8 +198,7 @@ const researchStacksData: Record<string, ResearchStack> = {
     badge: "Best for Beginners",
     badgeColor: "#21d8ff",
     retailValue: 105,
-    stackPrice: 95,
-    launchPrice: 89,
+    stackPrice: 89,
     synergy: {
       beginner: "BPC-157 is one of the most studied repair peptides, helping tissues heal and regenerate. MOTS-C supports energy production at the cellular level. Together, they give researchers a solid foundation covering two fundamental areas: tissue repair and cellular energy.",
       expert: "BPC-157's cytoprotective and pro-angiogenic properties complement MOTS-C's mitochondrial biogenesis activation. This pairing covers two primary research domains—tissue regeneration signaling (BPC-157 via NO/GH pathways) and metabolic optimization (MOTS-C via AMPK/PGC-1α)—making it ideal for establishing baseline assays before advancing to more complex protocols."
@@ -239,8 +234,7 @@ const researchStacksData: Record<string, ResearchStack> = {
     icon: "Leaf",
     color: "#ec4899",
     retailValue: 115,
-    stackPrice: 104,
-    launchPrice: 98,
+    stackPrice: 98,
     synergy: {
       beginner: "GHK-Cu directly stimulates collagen production and skin cell turnover, while BPC-157 supports the blood vessel growth needed to deliver nutrients to healing tissue. Together, they work on both the 'building blocks' and the 'supply chain' for skin and tissue research.",
       expert: "GHK-Cu upregulates collagen I, III, and elastin synthesis while modulating TGF-β signaling for controlled tissue remodeling. BPC-157 enhances angiogenesis via VEGF upregulation and provides cytoprotection. The combination creates synergistic dermal pathway activation: structural protein synthesis (GHK-Cu) + vascularization and tissue protection (BPC-157)."
@@ -280,8 +274,7 @@ const researchStacksData: Record<string, ResearchStack> = {
     badge: "Premium",
     badgeColor: "#f59e0b",
     retailValue: 200,
-    stackPrice: 180,
-    launchPrice: 169,
+    stackPrice: 169,
     synergy: {
       beginner: "This triple stack covers three major research areas: Retatrutide for metabolic hormone signaling, MOTS-C for cellular energy production, and BPC-157 for tissue repair. It's designed for advanced researchers who want to study how these different systems interact and influence each other.",
       expert: "This triple-compound stack enables multi-pathway investigation: Retatrutide (GLP-1/GIP/GCGR triple agonist) for incretin and hepatic signaling, MOTS-C for mitochondrial biogenesis and AMPK activation, and BPC-157 for tissue regeneration via NO/GH pathways. The combination allows researchers to study cross-talk between metabolic, energetic, and regenerative signaling cascades in a single protocol."
@@ -329,7 +322,7 @@ export default function ResearchStackDetail() {
     );
   }
 
-  const getBasePrice = () => stack.launchPrice;
+  const getBasePrice = () => stack.stackPrice;
 
   const getSelectedDiscount = () => {
     if (purchaseType === "one-time") return 0;

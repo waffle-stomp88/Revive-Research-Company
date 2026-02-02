@@ -20,9 +20,9 @@ const fadeInUp = {
 };
 
 const bulkPackOptions = [
-  { quantity: 3, discount: 5, label: "3-Pack", popular: false },
-  { quantity: 5, discount: 10, label: "5-Pack", popular: true },
-  { quantity: 10, discount: 15, label: "10-Pack", popular: false },
+  { quantity: 3, discount: 10, label: "3-Pack", popular: false },
+  { quantity: 5, discount: 15, label: "5-Pack", popular: true },
+  { quantity: 10, discount: 20, label: "10-Pack", popular: false },
 ];
 
 export default function BulkPacks() {
