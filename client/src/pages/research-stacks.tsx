@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
 import { CategoryTabs } from "@/components/category-tabs";
-import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, Plus, X, Check, ShoppingCart, Loader2, Beaker, Brain, Target, Microscope } from "lucide-react";
+import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, X, Check, ShoppingCart, Beaker, Brain, Target } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { EarlyAccessModal } from "@/components/early-access-modal";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 
@@ -139,7 +138,258 @@ const researchStacks: ResearchStack[] = [
 
 type StackTab = "pre-built" | "custom";
 
-// Structured synergy analysis interface
+// ============================================
+// SYNERGY SYSTEM - Known Combos & Pathways
+// ============================================
+
+interface KnownStack {
+  name: string;
+  peptides: string[];
+  icon: string;
+  color: string;
+  description: string;
+  synergyBonus: number;
+}
+
+interface PeptidePathway {
+  name: string;
+  pathways: string[];
+  mechanisms: string[];
+  systems: string[];
+}
+
+// Famous known stacks from research (Peptibase data)
+const KNOWN_STACKS: KnownStack[] = [
+  {
+    name: "Wolverine Stack",
+    peptides: ["bpc-157", "tb-500"],
+    icon: "⚡",
+    color: "#22c55e",
+    description: "Legendary healing combo - BPC-157's local repair + TB-500's systemic regeneration",
+    synergyBonus: 95,
+  },
+  {
+    name: "Glow Protocol",
+    peptides: ["bpc-157", "tb-500", "ghk-cu"],
+    icon: "✨",
+    color: "#ec4899",
+    description: "Ultimate skin rejuvenation - collagen + blood vessels + tissue repair",
+    synergyBonus: 90,
+  },
+  {
+    name: "GH Amplifier",
+    peptides: ["ipamorelin", "cjc-1295"],
+    icon: "🚀",
+    color: "#f59e0b",
+    description: "Growth hormone synergy - GHRP + GHRH work better together",
+    synergyBonus: 88,
+  },
+  {
+    name: "Recovery+",
+    peptides: ["bpc-157", "ghk-cu"],
+    icon: "💚",
+    color: "#22c55e",
+    description: "Collagen synthesis meets tissue protection",
+    synergyBonus: 82,
+  },
+  {
+    name: "Energy Stack",
+    peptides: ["mots-c", "retatrutide"],
+    icon: "⚡",
+    color: "#E7FB10",
+    description: "Mitochondrial power + metabolic signaling",
+    synergyBonus: 80,
+  },
+];
+
+// Peptide pathway data for connections
+const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
+  "bpc-157": {
+    name: "BPC-157",
+    pathways: ["Nitric Oxide", "Angiogenesis", "Collagen Synthesis"],
+    mechanisms: ["VEGF upregulation", "GH receptor activation", "Cytoprotection"],
+    systems: ["Healing", "Gut", "Joints"],
+  },
+  "tb-500": {
+    name: "TB-500",
+    pathways: ["Actin Regulation", "Angiogenesis", "Cell Migration"],
+    mechanisms: ["Thymosin Beta-4 fragment", "Blood vessel formation", "Tissue repair"],
+    systems: ["Healing", "Muscle", "Heart"],
+  },
+  "ghk-cu": {
+    name: "GHK-Cu",
+    pathways: ["Collagen Synthesis", "Copper Signaling", "Matrix Remodeling"],
+    mechanisms: ["TGF-β modulation", "Elastin production", "Wound healing"],
+    systems: ["Skin", "Hair", "Longevity"],
+  },
+  "mots-c": {
+    name: "MOTS-C",
+    pathways: ["AMPK Activation", "Mitochondrial Biogenesis"],
+    mechanisms: ["PGC-1α pathway", "Metabolic regulation", "Energy production"],
+    systems: ["Metabolic", "Energy", "Longevity"],
+  },
+  "retatrutide": {
+    name: "Retatrutide",
+    pathways: ["GLP-1", "GIP", "Glucagon"],
+    mechanisms: ["Triple receptor agonist", "Insulin sensitivity", "Fat oxidation"],
+    systems: ["Metabolic", "Weight"],
+  },
+  "ipamorelin": {
+    name: "Ipamorelin",
+    pathways: ["Ghrelin Receptor", "GH Secretion"],
+    mechanisms: ["Pituitary activation", "Selective GH release", "No cortisol spike"],
+    systems: ["Growth", "Recovery", "Sleep"],
+  },
+  "cjc-1295": {
+    name: "CJC-1295",
+    pathways: ["GHRH Signaling", "GH Secretion"],
+    mechanisms: ["Extended GH release", "Pituitary stimulation", "DAC variant for sustained"],
+    systems: ["Growth", "Recovery", "Muscle"],
+  },
+  "epithalon": {
+    name: "Epithalon",
+    pathways: ["Telomerase Activation", "Pineal Function"],
+    mechanisms: ["Telomere extension", "Melatonin regulation", "Circadian rhythm"],
+    systems: ["Longevity", "Sleep"],
+  },
+  "semax": {
+    name: "Semax",
+    pathways: ["BDNF", "NGF", "Dopamine"],
+    mechanisms: ["Neuroprotection", "Cognitive enhancement", "ACTH fragment"],
+    systems: ["Cognitive", "Focus"],
+  },
+  "selank": {
+    name: "Selank",
+    pathways: ["GABA", "Serotonin", "Dopamine"],
+    mechanisms: ["Anxiolytic", "Immunomodulation", "Tuftsin analog"],
+    systems: ["Cognitive", "Mood", "Immune"],
+  },
+};
+
+// Body systems with icons
+const BODY_SYSTEMS = [
+  { id: "healing", name: "Healing", icon: Heart, color: "#22c55e" },
+  { id: "metabolic", name: "Metabolic", icon: Zap, color: "#E7FB10" },
+  { id: "growth", name: "Growth", icon: Target, color: "#f59e0b" },
+  { id: "cognitive", name: "Cognitive", icon: Brain, color: "#21d8ff" },
+  { id: "skin", name: "Skin", icon: Sparkles, color: "#ec4899" },
+  { id: "longevity", name: "Longevity", icon: Crown, color: "#a855f7" },
+];
+
+// Helper to normalize peptide names for matching
+const normalizePeptideName = (name: string): string => {
+  return name.toLowerCase()
+    .replace(/\s*\([^)]*\)/g, '')
+    .replace(/[^a-z0-9-]/g, '')
+    .trim();
+};
+
+// Get peptide pathway data
+const getPeptidePathway = (productName: string): PeptidePathway | null => {
+  const normalized = normalizePeptideName(productName);
+  for (const [key, data] of Object.entries(PEPTIDE_PATHWAYS)) {
+    if (normalized.includes(key.replace(/-/g, ''))) {
+      return data;
+    }
+  }
+  return null;
+};
+
+// Check if selected peptides form a known stack
+const checkKnownStack = (selectedNames: string[]): KnownStack | null => {
+  const normalizedSelected = selectedNames.map(normalizePeptideName);
+  
+  for (const stack of KNOWN_STACKS) {
+    const stackPeptides = stack.peptides;
+    const hasAll = stackPeptides.every(p => 
+      normalizedSelected.some(s => s.includes(p.replace(/-/g, '')))
+    );
+    const isExactMatch = stackPeptides.length === normalizedSelected.length;
+    
+    if (hasAll && isExactMatch) {
+      return stack;
+    }
+  }
+  return null;
+};
+
+// Get recommendation to complete a known stack
+const getStackRecommendation = (selectedNames: string[]): { stack: KnownStack; missing: string[] } | null => {
+  const normalizedSelected = selectedNames.map(normalizePeptideName);
+  
+  for (const stack of KNOWN_STACKS) {
+    const matchCount = stack.peptides.filter(p => 
+      normalizedSelected.some(s => s.includes(p.replace(/-/g, '')))
+    ).length;
+    
+    // If they have at least 1 but not all
+    if (matchCount >= 1 && matchCount < stack.peptides.length) {
+      const missing = stack.peptides.filter(p => 
+        !normalizedSelected.some(s => s.includes(p.replace(/-/g, '')))
+      );
+      return { stack, missing };
+    }
+  }
+  return null;
+};
+
+// Find shared pathways between peptides
+const findSharedPathways = (peptideNames: string[]): string[] => {
+  const allPathways: string[][] = [];
+  
+  for (const name of peptideNames) {
+    const pathway = getPeptidePathway(name);
+    if (pathway) {
+      allPathways.push(pathway.pathways);
+    }
+  }
+  
+  if (allPathways.length < 2) return [];
+  
+  // Find pathways that appear in multiple peptides
+  const pathwayCounts = new Map<string, number>();
+  for (const paths of allPathways) {
+    for (const p of paths) {
+      pathwayCounts.set(p, (pathwayCounts.get(p) || 0) + 1);
+    }
+  }
+  
+  return Array.from(pathwayCounts.entries())
+    .filter(([, count]) => count >= 2)
+    .map(([pathway]) => pathway);
+};
+
+// Calculate synergy score
+const calculateSynergyScore = (peptideNames: string[]): number => {
+  if (peptideNames.length < 2) return 0;
+  
+  // Check for known stacks first
+  const knownStack = checkKnownStack(peptideNames);
+  if (knownStack) return knownStack.synergyBonus;
+  
+  // Calculate based on shared pathways and systems
+  const sharedPathways = findSharedPathways(peptideNames);
+  const baseScore = 50;
+  const pathwayBonus = sharedPathways.length * 10;
+  
+  return Math.min(baseScore + pathwayBonus, 85);
+};
+
+// Get active body systems based on selection
+const getActiveSystems = (peptideNames: string[]): string[] => {
+  const systems = new Set<string>();
+  
+  for (const name of peptideNames) {
+    const pathway = getPeptidePathway(name);
+    if (pathway) {
+      pathway.systems.forEach(s => systems.add(s.toLowerCase()));
+    }
+  }
+  
+  return Array.from(systems);
+};
+
+// Structured synergy analysis interface (for AI response)
 interface SynergyAnalysis {
   peptidePathways: Array<{
     name: string;
@@ -189,9 +439,6 @@ interface CustomStackBuilderProps {
 
 function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTemplateApplied }: CustomStackBuilderProps) {
   const [selectedPeptides, setSelectedPeptides] = useState<Product[]>([]);
-  const [synergyAnalysis, setSynergyAnalysis] = useState<SynergyAnalysis | string | null>(null);
-  const [isStructured, setIsStructured] = useState(false);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const { addToCart } = useCart();
   const { toast } = useToast();
   const [, navigate] = useLocation();
@@ -201,12 +448,6 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
   });
 
   const inStockPeptides = products?.filter(p => p.inStock && p.category?.toLowerCase() === "peptides") || [];
-
-  // Reset analysis state when peptides change
-  useEffect(() => {
-    setSynergyAnalysis(null);
-    setIsAnalyzing(false);
-  }, [selectedPeptides.length]);
 
   // Apply template peptides when provided
   useEffect(() => {
@@ -221,7 +462,6 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
       
       if (matchedPeptides.length > 0) {
         setSelectedPeptides(matchedPeptides);
-        setSynergyAnalysis(null);
         onTemplateApplied?.();
         toast({
           title: "Template Applied",
@@ -234,10 +474,8 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
   const togglePeptide = (product: Product) => {
     if (selectedPeptides.find(p => p.id === product.id)) {
       setSelectedPeptides(prev => prev.filter(p => p.id !== product.id));
-      setSynergyAnalysis(null);
     } else if (selectedPeptides.length < 4) {
       setSelectedPeptides(prev => [...prev, product]);
-      setSynergyAnalysis(null);
     }
   };
 
@@ -258,33 +496,6 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
 
   const getSavings = () => {
     return getRetailTotal() - getBundlePrice();
-  };
-
-  const analyzeSymptoms = useMutation({
-    mutationFn: async () => {
-      const peptideNames = selectedPeptides.map(p => p.name).join(", ");
-      const response = await apiRequest("POST", "/api/ai/synergy-analysis", {
-        peptides: peptideNames,
-      });
-      return response.json();
-    },
-    onSuccess: (data) => {
-      setSynergyAnalysis(data.analysis);
-      setIsStructured(data.structured === true);
-      setIsAnalyzing(false);
-    },
-    onError: () => {
-      setSynergyAnalysis("Unable to generate pathway analysis at this time. Please try again.");
-      setIsStructured(false);
-      setIsAnalyzing(false);
-    },
-  });
-
-  const handleAnalyze = () => {
-    if (selectedPeptides.length >= 2) {
-      setIsAnalyzing(true);
-      analyzeSymptoms.mutate();
-    }
   };
 
   const handleAddToCart = () => {
@@ -324,7 +535,6 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
 
     // Reset
     setSelectedPeptides([]);
-    setSynergyAnalysis(null);
   };
 
   return (
@@ -418,237 +628,308 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
           )}
         </div>
 
-        {/* Right Column: Build Panel (Sticky) */}
+        {/* Right Column: Synergy Visualization Panel */}
         <div className="lg:w-[35%]">
           <div className="lg:sticky lg:top-28 space-y-4">
-            {/* Build Panel Card */}
-            <Card className="border-2 border-[#21d8ff]/40 bg-gradient-to-br from-[#1a1a1f] to-[#0f0f12] shadow-[0_0_30px_rgba(33,216,255,0.1)]">
-              <div className="p-4 border-b border-[#2a2a32]">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#21d8ff] to-[#9d4edd] flex items-center justify-center">
-                    <Layers className="h-5 w-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-display font-bold text-lg">Your Custom Stack</h3>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">{selectedPeptides.length}/4 peptides</span>
-                      {selectedPeptides.length >= 2 && (
-                        <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-[10px]">
-                          10% OFF
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-4 space-y-4">
-                {/* Selected Peptides List */}
-                {selectedPeptides.length === 0 ? (
-                  <div className="text-center py-6 text-muted-foreground">
-                    <FlaskConical className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">Select peptides to build your stack</p>
-                    <p className="text-xs mt-1 opacity-70">Minimum 2 required</p>
-                  </div>
-                ) : (
-                  <div className="flex flex-wrap gap-2">
-                    {selectedPeptides.map(peptide => (
-                      <motion.div
-                        key={peptide.id}
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.8, opacity: 0 }}
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#21d8ff]/10 border border-[#21d8ff]/30"
-                      >
-                        <span className="font-bold text-sm text-[#21d8ff]">
-                          {peptide.name.replace(/\s*\([^)]*\)/g, '')}
-                        </span>
-                        <span className="text-xs text-muted-foreground">${peptide.price}</span>
-                        <button
-                          onClick={() => togglePeptide(peptide)}
-                          className="ml-1 p-0.5 rounded-full hover:bg-red-500/30 text-muted-foreground hover:text-red-400 transition-colors"
-                          data-testid={`button-remove-peptide-${peptide.id}`}
-                        >
-                          <X className="h-3.5 w-3.5" />
-                        </button>
-                      </motion.div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Pricing Summary */}
-                {selectedPeptides.length >= 2 && (
-                  <div className="pt-3 border-t border-[#2a2a32] space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Subtotal</span>
-                      <span className="line-through text-muted-foreground">${getRetailTotal().toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-green-400">Bundle Discount (10%)</span>
-                      <span className="text-green-400">-${getSavings().toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between pt-2 border-t border-[#2a2a32]">
-                      <span className="font-bold">Total</span>
-                      <span className="font-display text-2xl font-bold text-[#E7FB10]">${getBundlePrice().toFixed(2)}</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Actions */}
-                <div className="space-y-2 pt-2">
-                  {selectedPeptides.length >= 2 && (
-                    <Button
-                      variant="outline"
-                      onClick={handleAnalyze}
-                      disabled={isAnalyzing}
-                      className="w-full border-[#9d4edd] text-[#9d4edd] hover:bg-[#9d4edd]/10"
-                      data-testid="button-analyze-synergy"
-                    >
-                      {isAnalyzing ? (
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      ) : (
-                        <Brain className="h-4 w-4 mr-2" />
-                      )}
-                      AI Pathway Analysis
-                    </Button>
-                  )}
-                  <Button
-                    onClick={handleAddToCart}
-                    disabled={selectedPeptides.length < 2}
-                    className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 font-bold shadow-[0_0_20px_rgba(231,251,16,0.3)]"
-                    data-testid="button-add-custom-stack"
-                  >
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    Add to Cart
-                  </Button>
-                </div>
-              </div>
-            </Card>
-
-            {/* AI Synergy Analysis - Visual Pathway Infographic */}
-            <AnimatePresence>
-              {synergyAnalysis && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                >
-                  {isStructured && typeof synergyAnalysis === 'object' ? (() => {
-                    const pathways = synergyAnalysis.peptidePathways ?? [];
-                    const bestFor = synergyAnalysis.bestFor ?? [];
-                    
-                    // Generate colors for each peptide node
-                    const nodeColors = ["#21d8ff", "#E7FB10", "#22c55e", "#a855f7"];
-                    
-                    return (
-                      <Card className="border-[#a855f7]/30 bg-gradient-to-br from-[#1a1a1f] to-[#0f0f12] overflow-hidden" data-testid="card-synergy-analysis">
-                        <div className="p-3 border-b border-[#a855f7]/20 bg-gradient-to-r from-[#a855f7]/10 to-[#21d8ff]/10">
-                          <div className="flex items-center gap-2">
-                            <Brain className="h-4 w-4 text-[#a855f7]" />
-                            <span className="font-display font-bold text-sm">Pathway Synergy</span>
+            
+            {/* ====== SYNERGY RING & SCORE ====== */}
+            {(() => {
+              const peptideNames = selectedPeptides.map(p => p.name);
+              const synergyScore = calculateSynergyScore(peptideNames);
+              const knownStack = checkKnownStack(peptideNames);
+              const recommendation = getStackRecommendation(peptideNames);
+              const sharedPathways = findSharedPathways(peptideNames);
+              const activeSystems = getActiveSystems(peptideNames);
+              
+              return (
+                <>
+                  {/* Synergy Ring Visualization */}
+                  <Card className="border-2 border-[#9d4edd]/40 bg-gradient-to-br from-[#1a1a1f] to-[#0f0f12] overflow-hidden" data-testid="card-synergy-ring">
+                    <div className="p-4">
+                      <div className="flex items-center gap-4">
+                        {/* Animated Synergy Ring */}
+                        <div className="relative w-24 h-24 flex-shrink-0">
+                          <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                            {/* Background ring */}
+                            <circle
+                              cx="50"
+                              cy="50"
+                              r="42"
+                              fill="none"
+                              stroke="#2a2a32"
+                              strokeWidth="8"
+                            />
+                            {/* Progress ring */}
+                            <motion.circle
+                              cx="50"
+                              cy="50"
+                              r="42"
+                              fill="none"
+                              stroke={knownStack ? knownStack.color : synergyScore > 70 ? "#22c55e" : synergyScore > 50 ? "#E7FB10" : "#21d8ff"}
+                              strokeWidth="8"
+                              strokeLinecap="round"
+                              initial={{ strokeDasharray: "0 264" }}
+                              animate={{ 
+                                strokeDasharray: `${(synergyScore / 100) * 264} 264`,
+                              }}
+                              transition={{ duration: 0.8, ease: "easeOut" }}
+                              style={{
+                                filter: knownStack ? `drop-shadow(0 0 8px ${knownStack.color})` : undefined
+                              }}
+                            />
+                          </svg>
+                          {/* Center content */}
+                          <div className="absolute inset-0 flex flex-col items-center justify-center">
+                            <motion.span 
+                              key={synergyScore}
+                              initial={{ scale: 0.5, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              className="font-display text-2xl font-bold"
+                              style={{ color: knownStack ? knownStack.color : "#fff" }}
+                            >
+                              {synergyScore}%
+                            </motion.span>
+                            <span className="text-[10px] text-muted-foreground">SYNERGY</span>
                           </div>
                         </div>
-
-                        <div className="p-4" data-testid="text-synergy-score">
-                          {/* Visual Pathway Diagram */}
-                          <div className="relative py-4">
-                            {/* Connection Lines SVG */}
-                            <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }}>
-                              <defs>
-                                <linearGradient id="synergyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                  <stop offset="0%" stopColor="#21d8ff" />
-                                  <stop offset="50%" stopColor="#a855f7" />
-                                  <stop offset="100%" stopColor="#E7FB10" />
-                                </linearGradient>
-                              </defs>
-                              {/* Central synergy line */}
-                              <line x1="50%" y1="20%" x2="50%" y2="80%" stroke="url(#synergyGradient)" strokeWidth="2" strokeDasharray="4 4" opacity="0.5" />
-                            </svg>
-                            
-                            {/* Peptide Nodes */}
-                            <div className="flex flex-col gap-3 relative" style={{ zIndex: 1 }}>
-                              {pathways.map((peptide, i) => {
-                                const color = nodeColors[i % nodeColors.length];
-                                return (
-                                  <motion.div 
-                                    key={i}
-                                    initial={{ x: i % 2 === 0 ? -20 : 20, opacity: 0 }}
-                                    animate={{ x: 0, opacity: 1 }}
-                                    transition={{ delay: i * 0.1 }}
-                                    className={`flex items-center gap-3 p-3 rounded-xl border-2`}
-                                    style={{ 
-                                      borderColor: `${color}40`,
-                                      backgroundColor: `${color}10`
-                                    }}
-                                    data-testid={`card-pathway-${i}`}
-                                  >
-                                    <div 
-                                      className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-                                      style={{ backgroundColor: `${color}30`, border: `2px solid ${color}` }}
-                                    >
-                                      <Microscope className="h-5 w-5" style={{ color }} />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      <p className="font-bold text-sm" style={{ color }}>
-                                        {peptide.name ?? "Unknown"}
-                                      </p>
-                                      <p className="text-xs text-gray-400 truncate">
-                                        {peptide.pathway ?? ""}
-                                      </p>
-                                    </div>
-                                  </motion.div>
-                                );
-                              })}
-                              
-                              {/* Synergy Result Node */}
-                              <motion.div 
-                                initial={{ scale: 0.8, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                transition={{ delay: pathways.length * 0.1 }}
-                                className="flex items-center gap-3 p-3 rounded-xl border-2 border-[#22c55e]/50 bg-gradient-to-r from-[#22c55e]/20 to-[#22c55e]/5"
-                              >
-                                <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-[#22c55e]/30 border-2 border-[#22c55e]">
-                                  <Zap className="h-5 w-5 text-[#22c55e]" />
-                                </div>
-                                <div className="flex-1">
-                                  <p className="font-bold text-sm text-[#22c55e]">Combined Effect</p>
-                                  <p className="text-xs text-gray-400">Enhanced research potential</p>
-                                </div>
-                              </motion.div>
+                        
+                        {/* Stack Status */}
+                        <div className="flex-1 min-w-0">
+                          {selectedPeptides.length === 0 ? (
+                            <div className="text-center">
+                              <p className="text-sm text-muted-foreground">Select peptides to see synergy</p>
+                              <p className="text-xs text-muted-foreground/70 mt-1">Known combos unlock bonuses</p>
                             </div>
-                          </div>
-                          
-                          {/* Best For Tags */}
-                          {bestFor.length > 0 && (
-                            <div className="mt-4 pt-3 border-t border-[#2a2a32]" data-testid="section-best-for">
-                              <p className="text-xs font-semibold text-[#E7FB10] mb-2">Best For</p>
-                              <div className="flex flex-wrap gap-2">
-                                {bestFor.slice(0, 4).map((area, i) => (
-                                  <Badge 
-                                    key={i}
-                                    className="text-xs px-3 py-1 bg-[#E7FB10]/10 text-[#E7FB10] border border-[#E7FB10]/30"
-                                    data-testid={`badge-best-for-${i}`}
-                                  >
-                                    {area}
-                                  </Badge>
-                                ))}
-                              </div>
+                          ) : knownStack ? (
+                            <motion.div
+                              initial={{ scale: 0.9, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              className="text-center"
+                            >
+                              <div className="text-2xl mb-1">{knownStack.icon}</div>
+                              <p className="font-display font-bold text-lg" style={{ color: knownStack.color }}>
+                                {knownStack.name}
+                              </p>
+                              <Badge className="mt-1 text-[10px]" style={{ backgroundColor: `${knownStack.color}20`, color: knownStack.color, border: `1px solid ${knownStack.color}40` }}>
+                                Legendary Combo
+                              </Badge>
+                            </motion.div>
+                          ) : selectedPeptides.length >= 2 ? (
+                            <div>
+                              <p className="font-display font-bold text-sm">Custom Stack</p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {sharedPathways.length > 0 
+                                  ? `${sharedPathways.length} shared pathway${sharedPathways.length > 1 ? 's' : ''} detected`
+                                  : "Building synergy..."}
+                              </p>
+                            </div>
+                          ) : (
+                            <div>
+                              <p className="text-sm text-muted-foreground">Add 1 more peptide</p>
+                              <p className="text-xs text-muted-foreground/70">to unlock synergy analysis</p>
                             </div>
                           )}
                         </div>
+                      </div>
+                      
+                      {/* Known Stack Description */}
+                      {knownStack && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          className="mt-4 pt-3 border-t border-[#2a2a32]"
+                        >
+                          <p className="text-sm text-gray-300">{knownStack.description}</p>
+                        </motion.div>
+                      )}
+                    </div>
+                  </Card>
+
+                  {/* ====== RECOMMENDATION CARD ====== */}
+                  {recommendation && selectedPeptides.length < 4 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                    >
+                      <Card 
+                        className="border-2 border-dashed overflow-hidden cursor-pointer hover-elevate"
+                        style={{ borderColor: `${recommendation.stack.color}60` }}
+                        data-testid="card-recommendation"
+                      >
+                        <div className="p-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Sparkles className="h-4 w-4" style={{ color: recommendation.stack.color }} />
+                            <span className="font-bold text-sm" style={{ color: recommendation.stack.color }}>
+                              Complete {recommendation.stack.name}!
+                            </span>
+                          </div>
+                          <p className="text-xs text-muted-foreground mb-3">
+                            Add {recommendation.missing.map(m => m.toUpperCase()).join(" + ")} to unlock this legendary combo
+                          </p>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="text-lg">{recommendation.stack.icon}</span>
+                              <span className="font-display font-bold" style={{ color: recommendation.stack.color }}>
+                                {recommendation.stack.synergyBonus}% synergy
+                              </span>
+                            </div>
+                            <Badge className="text-[10px]" style={{ backgroundColor: `${recommendation.stack.color}20`, color: recommendation.stack.color }}>
+                              +{recommendation.stack.synergyBonus - synergyScore}% boost
+                            </Badge>
+                          </div>
+                        </div>
                       </Card>
-                    );
-                  })() : (
-                    <Card className="p-4 border-[#a855f7]/30 bg-gradient-to-br from-[#a855f7]/5 to-transparent">
-                      <div className="flex items-start gap-2">
-                        <Brain className="h-4 w-4 text-[#a855f7] mt-0.5" />
-                        <p className="text-xs text-gray-300">{String(synergyAnalysis)}</p>
+                    </motion.div>
+                  )}
+
+                  {/* ====== BODY SYSTEMS HEATMAP ====== */}
+                  {selectedPeptides.length > 0 && (
+                    <Card className="border-[#2a2a32] bg-[#1a1a1f]/50" data-testid="card-body-systems">
+                      <div className="p-3">
+                        <p className="text-xs font-semibold text-muted-foreground mb-3">TARGETING</p>
+                        <div className="flex flex-wrap gap-2">
+                          {BODY_SYSTEMS.map(system => {
+                            const isActive = activeSystems.includes(system.id);
+                            const SystemIcon = system.icon;
+                            return (
+                              <motion.div
+                                key={system.id}
+                                initial={{ scale: 0.8 }}
+                                animate={{ 
+                                  scale: isActive ? 1 : 0.9,
+                                  opacity: isActive ? 1 : 0.3
+                                }}
+                                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-all ${
+                                  isActive 
+                                    ? "border-opacity-50" 
+                                    : "border-[#2a2a32] bg-[#1a1a1f]"
+                                }`}
+                                style={isActive ? { 
+                                  borderColor: system.color,
+                                  backgroundColor: `${system.color}15`,
+                                  boxShadow: `0 0 12px ${system.color}30`
+                                } : undefined}
+                                data-testid={`system-${system.id}`}
+                              >
+                                <SystemIcon 
+                                  className="h-3.5 w-3.5" 
+                                  style={{ color: isActive ? system.color : "#6b7280" }} 
+                                />
+                                <span 
+                                  className="text-xs font-medium"
+                                  style={{ color: isActive ? system.color : "#6b7280" }}
+                                >
+                                  {system.name}
+                                </span>
+                              </motion.div>
+                            );
+                          })}
+                        </div>
                       </div>
                     </Card>
                   )}
-                </motion.div>
-              )}
-            </AnimatePresence>
+
+                  {/* ====== SHARED PATHWAYS ====== */}
+                  {sharedPathways.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                    >
+                      <Card className="border-[#22c55e]/30 bg-[#22c55e]/5" data-testid="card-shared-pathways">
+                        <div className="p-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Zap className="h-4 w-4 text-[#22c55e]" />
+                            <span className="font-bold text-sm text-[#22c55e]">Synergy Detected</span>
+                          </div>
+                          <p className="text-xs text-gray-400 mb-2">These peptides share pathways:</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {sharedPathways.map((pathway, i) => (
+                              <Badge 
+                                key={i}
+                                className="text-[10px] bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30"
+                              >
+                                {pathway}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </Card>
+                    </motion.div>
+                  )}
+
+                  {/* ====== SELECTED PEPTIDES & PRICING ====== */}
+                  <Card className="border-[#21d8ff]/40 bg-gradient-to-br from-[#1a1a1f] to-[#0f0f12]">
+                    <div className="p-4 border-b border-[#2a2a32]">
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-display font-bold">Your Stack</h3>
+                        <span className="text-xs text-muted-foreground">{selectedPeptides.length}/4</span>
+                      </div>
+                    </div>
+                    
+                    <div className="p-4 space-y-3">
+                      {selectedPeptides.length === 0 ? (
+                        <div className="text-center py-4 text-muted-foreground">
+                          <FlaskConical className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                          <p className="text-sm">Select peptides to begin</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          {selectedPeptides.map(peptide => (
+                            <div 
+                              key={peptide.id}
+                              className="flex items-center justify-between p-2 rounded-lg bg-[#21d8ff]/5 border border-[#21d8ff]/20"
+                            >
+                              <span className="font-medium text-sm">
+                                {peptide.name.replace(/\s*\([^)]*\)/g, '')}
+                              </span>
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-muted-foreground">${peptide.price}</span>
+                                <button
+                                  onClick={() => togglePeptide(peptide)}
+                                  className="p-1 rounded-full hover:bg-red-500/20 text-muted-foreground hover:text-red-400"
+                                  data-testid={`button-remove-peptide-${peptide.id}`}
+                                >
+                                  <X className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Pricing */}
+                      {selectedPeptides.length >= 2 && (
+                        <div className="pt-3 border-t border-[#2a2a32] space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Subtotal</span>
+                            <span className="line-through text-muted-foreground">${getRetailTotal().toFixed(2)}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-green-400">Bundle Discount (10%)</span>
+                            <span className="text-green-400">-${getSavings().toFixed(2)}</span>
+                          </div>
+                          <div className="flex justify-between pt-2 border-t border-[#2a2a32]">
+                            <span className="font-bold">Total</span>
+                            <span className="font-display text-2xl font-bold text-[#E7FB10]">${getBundlePrice().toFixed(2)}</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Add to Cart */}
+                      <Button
+                        onClick={handleAddToCart}
+                        disabled={selectedPeptides.length < 2}
+                        className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 font-bold shadow-[0_0_20px_rgba(231,251,16,0.3)]"
+                        data-testid="button-add-custom-stack"
+                      >
+                        <ShoppingCart className="h-4 w-4 mr-2" />
+                        {selectedPeptides.length < 2 ? "Select 2+ Peptides" : "Add to Cart"}
+                      </Button>
+                    </div>
+                  </Card>
+                </>
+              );
+            })()}
           </div>
         </div>
       </div>
