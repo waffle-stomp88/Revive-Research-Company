@@ -28,7 +28,10 @@ import {
   Clock,
   FileCheck,
   ExternalLink,
+  RefreshCw,
+  Layers,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 
 interface AppliedDiscount {
@@ -36,6 +39,24 @@ interface AppliedDiscount {
   percentage: number;
   type: "basic" | "personal";
   freeShipping?: boolean;
+}
+
+function getSubscriptionLabel(interval: "weekly" | "biweekly" | "monthly" | undefined): string {
+  switch (interval) {
+    case "weekly": return "Every week";
+    case "biweekly": return "Every 2 weeks";
+    case "monthly": return "Every 4 weeks";
+    default: return "Subscription";
+  }
+}
+
+function getSubscriptionDiscount(interval: "weekly" | "biweekly" | "monthly" | undefined): number {
+  switch (interval) {
+    case "weekly": return 20;
+    case "biweekly": return 18;
+    case "monthly": return 15;
+    default: return 15;
+  }
 }
 
 export default function CartPage() {
@@ -196,17 +217,42 @@ export default function CartPage() {
                       {/* Header row: Name + Delete button */}
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
-                          <Link 
-                            href={item.bundleId ? `/bundles/${item.bundleId}` : `/products/${item.productId}`}
-                            data-testid={`link-cart-item-name-${item.productId}`}
-                          >
-                            <h3 className="font-display font-semibold text-base md:text-lg md:hover:text-[#E7FB10] transition-colors cursor-pointer truncate" data-testid={`cart-item-name-${item.productId}`}>
-                              {item.name}
-                            </h3>
-                          </Link>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Link 
+                              href={item.bundleId ? `/bundles/${item.bundleId}` : `/products/${item.productId}`}
+                              data-testid={`link-cart-item-name-${item.productId}`}
+                            >
+                              <h3 className="font-display font-semibold text-base md:text-lg md:hover:text-[#E7FB10] transition-colors cursor-pointer truncate" data-testid={`cart-item-name-${item.productId}`}>
+                                {item.name}
+                              </h3>
+                            </Link>
+                            {item.isSubscription && (
+                              <Badge 
+                                className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30 gap-1 text-[10px] px-1.5 py-0"
+                                data-testid={`badge-subscription-${item.productId}`}
+                              >
+                                <RefreshCw className="h-2.5 w-2.5" />
+                                Subscribe
+                              </Badge>
+                            )}
+                            {(item.isBundle || item.bundleId) && (
+                              <Badge 
+                                className="bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30 gap-1 text-[10px] px-1.5 py-0"
+                                data-testid={`badge-stack-${item.productId || item.bundleId}`}
+                              >
+                                <Layers className="h-2.5 w-2.5" />
+                                Stack
+                              </Badge>
+                            )}
+                          </div>
                           <p className="text-xs md:text-sm text-muted-foreground">
                             {item.dosage}
                           </p>
+                          {item.isSubscription && (
+                            <p className="text-[10px] md:text-xs text-[#21d8ff] mt-0.5" data-testid={`subscription-details-${item.productId}`}>
+                              {getSubscriptionLabel(item.subscriptionInterval)} · {getSubscriptionDiscount(item.subscriptionInterval)}% off
+                            </p>
+                          )}
                         </div>
                         <Button
                           variant="ghost"
