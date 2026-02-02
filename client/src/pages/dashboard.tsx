@@ -1240,7 +1240,7 @@ export default function Dashboard() {
                             <h3 className="font-semibold text-lg mb-1">Become an Affiliate Partner</h3>
                             <p className="text-sm text-muted-foreground">Earn 10% commission on every referral. Share your unique code and build passive income.</p>
                           </div>
-                          <Link href="/affiliate/apply">
+                          <Link href="/affiliate">
                             <Button className="bg-[#9d4edd] text-white shrink-0" data-testid="button-join-affiliate">
                               <Sparkles className="h-4 w-4 mr-2" />
                               Apply Now
