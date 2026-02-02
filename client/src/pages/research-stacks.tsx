@@ -1,19 +1,23 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
 import { CategoryTabs } from "@/components/category-tabs";
-import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, X, Check, ShoppingCart, Beaker, Brain, Target, Rocket, Activity, Moon, Dumbbell, Timer, LucideIcon } from "lucide-react";
+import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, X, Check, ShoppingCart, Beaker, Brain, Target, Rocket, Activity, Moon, Dumbbell, Timer, Save, Share2, Trash2, Copy, Users, LucideIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { EarlyAccessModal } from "@/components/early-access-modal";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
-import type { Product } from "@shared/schema";
+import { useAuth } from "@/hooks/useAuth";
+import { apiRequest } from "@/lib/queryClient";
+import type { Product, SavedStack } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 
 interface SynergyCopy {
@@ -552,15 +556,106 @@ interface CustomStackBuilderProps {
 
 function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTemplateApplied }: CustomStackBuilderProps) {
   const [selectedPeptides, setSelectedPeptides] = useState<Product[]>([]);
+  const [stackName, setStackName] = useState("");
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [showSavedStacks, setShowSavedStacks] = useState(false);
   const { addToCart } = useCart();
   const { toast } = useToast();
   const [, navigate] = useLocation();
+  const { isAuthenticated, login } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data: products, isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
 
+  // Fetch user's saved stacks
+  const { data: savedStacks } = useQuery<SavedStack[]>({
+    queryKey: ["/api/saved-stacks"],
+    enabled: isAuthenticated,
+  });
+
+  // Fetch popular stacks
+  const { data: popularStacks } = useQuery<{ peptideNames: string[], count: number }[]>({
+    queryKey: ["/api/popular-stacks"],
+  });
+
+  // Save stack mutation
+  const saveStackMutation = useMutation({
+    mutationFn: async (data: { name: string; peptideIds: string[]; peptideNames: string[]; isPublic: boolean }): Promise<SavedStack> => {
+      const res = await fetch("/api/saved-stacks", { 
+        method: "POST", 
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include"
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      return res.json();
+    },
+    onSuccess: (saved: SavedStack) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/saved-stacks"] });
+      setShowSaveDialog(false);
+      setStackName("");
+      const shareUrl = `${window.location.origin}/research-stacks?share=${saved.shareCode}`;
+      navigator.clipboard.writeText(shareUrl);
+      toast({
+        title: "Stack Saved!",
+        description: "Share link copied to clipboard!",
+      });
+    },
+    onError: () => {
+      toast({ title: "Failed to save stack", variant: "destructive" });
+    }
+  });
+
+  // Delete stack mutation
+  const deleteStackMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/saved-stacks/${id}`, { 
+        method: "DELETE",
+        credentials: "include"
+      });
+      if (!res.ok) throw new Error("Failed to delete");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/saved-stacks"] });
+      toast({ title: "Stack deleted" });
+    }
+  });
+
   const inStockPeptides = products?.filter(p => p.inStock && p.category?.toLowerCase() === "peptides") || [];
+
+  // Check URL for shared stack code
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const shareCode = params.get('share');
+    
+    if (shareCode && products && products.length > 0) {
+      fetch(`/api/saved-stacks/share/${shareCode}`)
+        .then(res => res.ok ? res.json() : null)
+        .then((sharedStack: { name: string; peptideIds: string[]; peptideNames: string[] } | null) => {
+          if (sharedStack && sharedStack.peptideIds) {
+            const matchedPeptides = sharedStack.peptideIds
+              .map(id => products.find(p => p.id === id))
+              .filter((p): p is Product => p !== undefined && p.inStock === true);
+            
+            if (matchedPeptides.length > 0) {
+              setSelectedPeptides(matchedPeptides);
+              toast({
+                title: `Loaded "${sharedStack.name}"`,
+                description: `Shared stack with ${matchedPeptides.length} peptides has been loaded.`,
+              });
+              // Clear the URL parameter
+              window.history.replaceState({}, '', window.location.pathname);
+            }
+          }
+        })
+        .catch(() => {
+          // Silently fail if share code is invalid
+        });
+    }
+  }, [products, toast]);
 
   // Apply template peptides when provided
   useEffect(() => {
@@ -1092,8 +1187,209 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                         <ShoppingCart className="h-4 w-4 mr-2" />
                         {selectedPeptides.length < 2 ? "Select 2+ Peptides" : "Add to Cart"}
                       </Button>
+
+                      {/* Save & Share Buttons */}
+                      {selectedPeptides.length >= 2 && (
+                        <div className="flex gap-2">
+                          <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className="flex-1 border-[#21d8ff]/40 text-[#21d8ff] hover:bg-[#21d8ff]/10"
+                                onClick={() => {
+                                  if (!isAuthenticated) {
+                                    login();
+                                    return;
+                                  }
+                                  setShowSaveDialog(true);
+                                }}
+                                data-testid="button-save-stack"
+                              >
+                                <Save className="h-4 w-4 mr-2" />
+                                Save Stack
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="bg-[#1a1a1f] border-[#2a2a32]">
+                              <DialogHeader>
+                                <DialogTitle>Save Your Stack</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4">
+                                <div>
+                                  <label className="text-sm text-muted-foreground">Stack Name</label>
+                                  <Input 
+                                    value={stackName}
+                                    onChange={(e) => setStackName(e.target.value)}
+                                    placeholder="My Custom Stack"
+                                    className="mt-1 bg-[#0f0f12] border-[#2a2a32]"
+                                    maxLength={50}
+                                    data-testid="input-stack-name"
+                                  />
+                                </div>
+                                <div className="text-sm text-muted-foreground">
+                                  <p className="font-medium mb-2">Peptides in this stack:</p>
+                                  <div className="flex flex-wrap gap-1">
+                                    {selectedPeptides.map(p => (
+                                      <Badge key={p.id} variant="outline" className="text-xs">
+                                        {p.name}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                </div>
+                                <Button
+                                  onClick={() => {
+                                    if (!stackName.trim()) {
+                                      toast({ title: "Please enter a name", variant: "destructive" });
+                                      return;
+                                    }
+                                    saveStackMutation.mutate({
+                                      name: stackName,
+                                      peptideIds: selectedPeptides.map(p => p.id),
+                                      peptideNames: selectedPeptides.map(p => p.name),
+                                      isPublic: true
+                                    });
+                                  }}
+                                  disabled={saveStackMutation.isPending}
+                                  className="w-full bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90"
+                                  data-testid="button-confirm-save"
+                                >
+                                  {saveStackMutation.isPending ? "Saving..." : "Save & Get Share Link"}
+                                </Button>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                          
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="border-[#2a2a32]"
+                            onClick={() => {
+                              const peptideNames = selectedPeptides.map(p => p.name).join(', ');
+                              const shareText = `Check out my peptide research stack: ${peptideNames}`;
+                              if (navigator.share) {
+                                navigator.share({ title: 'My Research Stack', text: shareText });
+                              } else {
+                                navigator.clipboard.writeText(shareText);
+                                toast({ title: "Stack copied to clipboard!" });
+                              }
+                            }}
+                            data-testid="button-quick-share"
+                          >
+                            <Share2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </Card>
+
+                  {/* Saved Stacks Section */}
+                  {isAuthenticated && savedStacks && savedStacks.length > 0 && (
+                    <Card className="border-[#2a2a32] bg-[#1a1a1f]/50">
+                      <div className="p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="font-display font-bold text-sm flex items-center gap-2">
+                            <Save className="h-4 w-4 text-[#21d8ff]" />
+                            Your Saved Stacks
+                          </h3>
+                          <Badge variant="outline" className="text-xs">{savedStacks.length}</Badge>
+                        </div>
+                        <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                          {savedStacks.slice(0, 5).map((stack) => (
+                            <div 
+                              key={stack.id}
+                              className="flex items-center justify-between p-2 rounded-lg bg-[#0f0f12] border border-[#2a2a32] hover:border-[#21d8ff]/40 transition-colors"
+                            >
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-sm truncate">{stack.name}</p>
+                                <p className="text-xs text-muted-foreground truncate">
+                                  {stack.peptideNames?.join(' + ')}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-1 ml-2">
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="h-7 w-7"
+                                  onClick={() => {
+                                    // Load this stack into the builder
+                                    if (products) {
+                                      const matchedPeptides = (stack.peptideIds || [])
+                                        .map(id => products.find(p => p.id === id))
+                                        .filter((p): p is Product => p !== undefined);
+                                      setSelectedPeptides(matchedPeptides);
+                                      toast({ title: `Loaded "${stack.name}"` });
+                                    }
+                                  }}
+                                  data-testid={`button-load-stack-${stack.id}`}
+                                >
+                                  <FlaskConical className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="h-7 w-7"
+                                  onClick={() => {
+                                    const url = `${window.location.origin}/research-stacks?share=${stack.shareCode}`;
+                                    navigator.clipboard.writeText(url);
+                                    toast({ title: "Share link copied!" });
+                                  }}
+                                  data-testid={`button-share-stack-${stack.id}`}
+                                >
+                                  <Copy className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="h-7 w-7 text-red-400 hover:text-red-300"
+                                  onClick={() => deleteStackMutation.mutate(stack.id)}
+                                  data-testid={`button-delete-stack-${stack.id}`}
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </Card>
+                  )}
+
+                  {/* Popular Stacks Section */}
+                  {popularStacks && popularStacks.length > 0 && (
+                    <Card className="border-[#2a2a32] bg-[#1a1a1f]/50">
+                      <div className="p-4">
+                        <h3 className="font-display font-bold text-sm flex items-center gap-2 mb-3">
+                          <Users className="h-4 w-4 text-[#E7FB10]" />
+                          Popular Combos
+                        </h3>
+                        <div className="space-y-2">
+                          {popularStacks.slice(0, 3).map((combo, i) => (
+                            <div 
+                              key={i}
+                              className="flex items-center justify-between p-2 rounded-lg bg-[#0f0f12] border border-[#2a2a32] cursor-pointer hover:border-[#E7FB10]/40 transition-colors"
+                              onClick={() => {
+                                if (products) {
+                                  const matchedPeptides = combo.peptideNames
+                                    .map(name => products.find(p => p.name === name))
+                                    .filter((p): p is Product => p !== undefined && p.inStock === true);
+                                  if (matchedPeptides.length > 0) {
+                                    setSelectedPeptides(matchedPeptides);
+                                    toast({ title: "Stack loaded!" });
+                                  }
+                                }
+                              }}
+                            >
+                              <p className="text-xs text-muted-foreground truncate flex-1">
+                                {combo.peptideNames.join(' + ')}
+                              </p>
+                              <Badge variant="outline" className="text-[10px] ml-2">
+                                {combo.count}x built
+                              </Badge>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </Card>
+                  )}
                 </>
               );
             })()}

@@ -784,3 +784,21 @@ export const batchVerificationHistory = pgTable("batch_verification_history", {
 export const insertBatchVerificationHistorySchema = createInsertSchema(batchVerificationHistory).omit({ id: true, createdAt: true });
 export type InsertBatchVerificationHistory = z.infer<typeof insertBatchVerificationHistorySchema>;
 export type BatchVerificationHistory = typeof batchVerificationHistory.$inferSelect;
+
+// Saved Stacks - User-created custom peptide stacks
+export const savedStacks = pgTable("saved_stacks", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  peptideIds: text("peptide_ids").array().notNull(),
+  peptideNames: text("peptide_names").array().notNull(),
+  shareCode: varchar("share_code").unique(),
+  isPublic: boolean("is_public").default(false),
+  saveCount: integer("save_count").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertSavedStackSchema = createInsertSchema(savedStacks).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertSavedStack = z.infer<typeof insertSavedStackSchema>;
+export type SavedStack = typeof savedStacks.$inferSelect;

@@ -5,7 +5,7 @@ import path from "path";
 import { storage } from "./storage";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
-import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertReviewSchema, insertNewsletterSubscriberSchema, subscriptions } from "@shared/schema";
+import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertReviewSchema, insertNewsletterSubscriberSchema, subscriptions, savedStacks, insertSavedStackSchema } from "@shared/schema";
 import { setupAuth, isAuthenticated } from "./auth0Auth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
@@ -4105,6 +4105,145 @@ Return ONLY valid JSON in this exact format:
     } catch (error) {
       console.error("Error fetching user subscriptions:", error);
       res.status(500).json({ error: "Failed to fetch subscriptions" });
+    }
+  });
+
+  // =====================================
+  // SAVED STACKS API
+  // =====================================
+
+  // Generate a unique share code
+  function generateShareCode(): string {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+    let code = '';
+    for (let i = 0; i < 8; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+  }
+
+  // Save a custom stack (authenticated users)
+  app.post("/api/saved-stacks", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { name, peptideIds, peptideNames, isPublic } = req.body;
+      
+      if (!name || !peptideIds?.length || !peptideNames?.length) {
+        return res.status(400).json({ error: "Name and peptides are required" });
+      }
+      
+      if (peptideIds.length < 2 || peptideIds.length > 4) {
+        return res.status(400).json({ error: "Stack must contain 2-4 peptides" });
+      }
+      
+      const shareCode = generateShareCode();
+      
+      const [saved] = await db.insert(savedStacks).values({
+        userId,
+        name: name.slice(0, 50),
+        peptideIds,
+        peptideNames,
+        shareCode,
+        isPublic: isPublic || false,
+      }).returning();
+      
+      res.json(saved);
+    } catch (error) {
+      console.error("Error saving stack:", error);
+      res.status(500).json({ error: "Failed to save stack" });
+    }
+  });
+
+  // Get user's saved stacks
+  app.get("/api/saved-stacks", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const stacks = await db.select().from(savedStacks)
+        .where(eq(savedStacks.userId, userId))
+        .orderBy(desc(savedStacks.createdAt));
+      res.json(stacks);
+    } catch (error) {
+      console.error("Error fetching saved stacks:", error);
+      res.status(500).json({ error: "Failed to fetch saved stacks" });
+    }
+  });
+
+  // Get a stack by share code (public endpoint)
+  app.get("/api/saved-stacks/share/:code", async (req, res) => {
+    try {
+      const { code } = req.params;
+      const [stack] = await db.select().from(savedStacks)
+        .where(eq(savedStacks.shareCode, code));
+      
+      if (!stack) {
+        return res.status(404).json({ error: "Stack not found" });
+      }
+      
+      res.json({
+        name: stack.name,
+        peptideIds: stack.peptideIds,
+        peptideNames: stack.peptideNames,
+        saveCount: stack.saveCount,
+      });
+    } catch (error) {
+      console.error("Error fetching shared stack:", error);
+      res.status(500).json({ error: "Failed to fetch stack" });
+    }
+  });
+
+  // Delete a saved stack
+  app.delete("/api/saved-stacks/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id } = req.params;
+      
+      const [stack] = await db.select().from(savedStacks)
+        .where(eq(savedStacks.id, id));
+      
+      if (!stack || stack.userId !== userId) {
+        return res.status(404).json({ error: "Stack not found" });
+      }
+      
+      await db.delete(savedStacks).where(eq(savedStacks.id, id));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting stack:", error);
+      res.status(500).json({ error: "Failed to delete stack" });
+    }
+  });
+
+  // Get popular/trending stacks (public endpoint - aggregated anonymous data)
+  app.get("/api/popular-stacks", async (req, res) => {
+    try {
+      const stacks = await db.select({
+        peptideNames: savedStacks.peptideNames,
+        saveCount: savedStacks.saveCount,
+      }).from(savedStacks)
+        .where(eq(savedStacks.isPublic, true))
+        .orderBy(desc(savedStacks.saveCount))
+        .limit(10);
+      
+      // Group similar stacks and count occurrences
+      const stackMap = new Map<string, { peptideNames: string[], count: number }>();
+      
+      for (const stack of stacks) {
+        const key = [...(stack.peptideNames || [])].sort().join('|');
+        const existing = stackMap.get(key);
+        if (existing) {
+          existing.count += 1;
+        } else {
+          stackMap.set(key, { peptideNames: stack.peptideNames || [], count: 1 });
+        }
+      }
+      
+      const popularStacks = Array.from(stackMap.values())
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+      
+      res.json(popularStacks);
+    } catch (error) {
+      console.error("Error fetching popular stacks:", error);
+      res.status(500).json({ error: "Failed to fetch popular stacks" });
     }
   });
 
