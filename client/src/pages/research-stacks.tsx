@@ -709,7 +709,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
   const handleAddToCart = () => {
     if (selectedPeptides.length < 2) return;
 
-    const customStackName = `Custom Stack: ${selectedPeptides.map(p => p.name).join(" + ")}`;
+    const customStackName = selectedPeptides.map(p => p.name).join(" + ");
     const bundleId = `custom-${Date.now()}`;
     
     // Add as a bundle to cart (matching CartItem interface)
