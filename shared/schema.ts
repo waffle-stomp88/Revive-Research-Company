@@ -301,33 +301,6 @@ export const insertAffiliatePayoutSchema = createInsertSchema(affiliatePayouts).
 export type InsertAffiliatePayout = z.infer<typeof insertAffiliatePayoutSchema>;
 export type AffiliatePayout = typeof affiliatePayouts.$inferSelect;
 
-// Product reviews table - only verified purchasers can leave reviews
-export const reviews = pgTable("reviews", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  productId: varchar("product_id").notNull(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
-  orderId: varchar("order_id").references(() => orders.id).notNull(),
-  rating: integer("rating").notNull(),
-  title: text("title"),
-  comment: text("comment").notNull(),
-  isApproved: boolean("is_approved").default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-export const insertReviewSchema = createInsertSchema(reviews).omit({ id: true, isApproved: true, createdAt: true });
-export type InsertReview = z.infer<typeof insertReviewSchema>;
-export type Review = typeof reviews.$inferSelect;
-
-// Type for reviewable orders (orders eligible for review after 30 days)
-export type ReviewableOrder = {
-  orderId: string;
-  productId: string;
-  productName: string;
-  productImageUrl: string | null;
-  orderDate: Date;
-  eligibleDate: Date;
-  hasReviewed: boolean;
-};
 
 // Batches table - Links products to batch numbers with manufacturing info
 export const batches = pgTable("batches", {
@@ -548,7 +521,6 @@ export const userResearchProfiles = pgTable("user_research_profiles", {
   coaEducationViewed: boolean("coa_education_viewed").default(false),
   batchVerificationCount: integer("batch_verification_count").default(0),
   compoundsTrackedCount: integer("compounds_tracked_count").default(0), // Watchlist/portfolio count
-  verifiedReviewsCount: integer("verified_reviews_count").default(0),
   earlyAccessMember: boolean("early_access_member").default(false), // Set true if account created before launch
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

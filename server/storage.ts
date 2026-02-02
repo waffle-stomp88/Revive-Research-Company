@@ -1,5 +1,5 @@
 import { 
-  users, products, coas, orders, contacts, affiliateApplications, affiliates, affiliateSales, affiliatePayouts, reviews,
+  users, products, coas, orders, contacts, affiliateApplications, affiliates, affiliateSales, affiliatePayouts,
   batches, productStorageProfiles, legalDocuments, faqEntries, educationArticles, coaGlossaryTerms, stockNotifications, discountCodes, newsletterSubscribers,
   productDosageStock, priceHistory, academyProgress, emailEvents, wishlists, userResearchProfiles, productBehavioralMetrics,
   savedAddresses, notificationPreferences, researchNotes, loginHistory, batchVerificationHistory,
@@ -13,8 +13,6 @@ import {
   type Affiliate, type InsertAffiliate,
   type AffiliateSale, type InsertAffiliateSale,
   type AffiliatePayout, type InsertAffiliatePayout,
-  type Review, type InsertReview,
-  type ReviewableOrder,
   type Batch, type InsertBatch,
   type ProductStorageProfile, type InsertProductStorageProfile,
   type LegalDocument, type InsertLegalDocument,
@@ -163,19 +161,6 @@ export interface IStorage {
   // Product Sales Velocity
   getSellingFastProducts(daysBack: number, minOrders: number): Promise<string[]>;
   
-  // Reviews
-  getProductReviews(productId: string): Promise<Review[]>;
-  createReview(review: InsertReview): Promise<Review>;
-  getProductAverageRating(productId: string): Promise<{ average: number; count: number }>;
-  getAllReviews(): Promise<Review[]>;
-  deleteReview(id: string): Promise<boolean>;
-  updateReviewApproval(id: string, isApproved: boolean): Promise<Review | undefined>;
-  
-  // Reviewable orders (for verified purchase reviews)
-  getReviewableOrdersForUser(userId: string): Promise<ReviewableOrder[]>;
-  hasUserReviewedOrder(userId: string, orderId: string): Promise<boolean>;
-  canUserReviewOrder(userId: string, orderId: string): Promise<{ canReview: boolean; reason?: string }>;
-  getReviewByOrderId(orderId: string): Promise<Review | undefined>;
   
   // Affiliate earnings and leaderboard
   getAffiliateEarningsOverTime(affiliateId: string, weeks: number): Promise<Array<{ weekStart: string; weekEnd: string; tier1: number; tier2: number; total: number }>>;
@@ -370,7 +355,6 @@ export class DatabaseStorage implements IStorage {
         // Update any foreign key references to point to the new ID
         await db.update(affiliates).set({ userId: newUser.id }).where(eq(affiliates.userId, oldUserId));
         await db.update(orders).set({ userId: newUser.id }).where(eq(orders.userId, oldUserId));
-        await db.update(reviews).set({ userId: newUser.id }).where(eq(reviews.userId, oldUserId));
         await db.update(academyProgress).set({ userId: newUser.id }).where(eq(academyProgress.userId, oldUserId));
         
         // Now delete the old user record
@@ -909,145 +893,6 @@ export class DatabaseStorage implements IStorage {
       .map(([productId]) => productId);
 
     return sellingFastIds;
-  }
-
-  // Reviews
-  async getProductReviews(productId: string): Promise<Review[]> {
-    return db.select().from(reviews)
-      .where(and(eq(reviews.productId, productId), eq(reviews.isApproved, true)))
-      .orderBy(desc(reviews.createdAt));
-  }
-
-  async createReview(insertReview: InsertReview): Promise<Review> {
-    const [review] = await db.insert(reviews).values(insertReview).returning();
-    return review;
-  }
-
-  async getProductAverageRating(productId: string): Promise<{ average: number; count: number }> {
-    const productReviews = await db.select().from(reviews)
-      .where(and(eq(reviews.productId, productId), eq(reviews.isApproved, true)));
-    
-    if (productReviews.length === 0) {
-      return { average: 0, count: 0 };
-    }
-    
-    const totalRating = productReviews.reduce((sum, r) => sum + r.rating, 0);
-    return { 
-      average: totalRating / productReviews.length, 
-      count: productReviews.length 
-    };
-  }
-
-  async getAllReviews(): Promise<Review[]> {
-    return db.select().from(reviews).orderBy(desc(reviews.createdAt));
-  }
-
-  async deleteReview(id: string): Promise<boolean> {
-    const result = await db.delete(reviews).where(eq(reviews.id, id)).returning();
-    return result.length > 0;
-  }
-
-  async updateReviewApproval(id: string, isApproved: boolean): Promise<Review | undefined> {
-    const [review] = await db.update(reviews).set({ isApproved }).where(eq(reviews.id, id)).returning();
-    return review || undefined;
-  }
-
-  // Get orders that are eligible for review (30+ days old, not yet reviewed)
-  async getReviewableOrdersForUser(userId: string): Promise<ReviewableOrder[]> {
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-    // Get all completed orders for this user that are at least 30 days old
-    const userOrders = await db.select().from(orders)
-      .where(and(
-        eq(orders.userId, userId),
-        or(eq(orders.status, 'completed'), eq(orders.status, 'shipped'))
-      ));
-
-    // Get all reviews by this user
-    const userReviews = await db.select().from(reviews)
-      .where(eq(reviews.userId, userId));
-    
-    const reviewedOrderIds = new Set(userReviews.map(r => r.orderId));
-
-    // Build reviewable orders list
-    const reviewableOrders: ReviewableOrder[] = [];
-    
-    for (const order of userOrders) {
-      if (!order.createdAt) continue;
-      
-      const orderDate = new Date(order.createdAt);
-      const eligibleDate = new Date(orderDate);
-      eligibleDate.setDate(eligibleDate.getDate() + 30);
-      
-      const hasReviewed = reviewedOrderIds.has(order.id);
-      
-      // Get product info
-      const [product] = await db.select().from(products).where(eq(products.id, order.productId));
-      
-      if (product) {
-        reviewableOrders.push({
-          orderId: order.id,
-          productId: order.productId,
-          productName: product.name,
-          productImageUrl: product.imageUrl,
-          orderDate,
-          eligibleDate,
-          hasReviewed
-        });
-      }
-    }
-
-    return reviewableOrders.sort((a, b) => b.orderDate.getTime() - a.orderDate.getTime());
-  }
-
-  async hasUserReviewedOrder(userId: string, orderId: string): Promise<boolean> {
-    const [review] = await db.select().from(reviews)
-      .where(and(eq(reviews.userId, userId), eq(reviews.orderId, orderId)));
-    return !!review;
-  }
-
-  async canUserReviewOrder(userId: string, orderId: string): Promise<{ canReview: boolean; reason?: string }> {
-    // Check if order exists and belongs to user
-    const [order] = await db.select().from(orders)
-      .where(and(eq(orders.id, orderId), eq(orders.userId, userId)));
-    
-    if (!order) {
-      return { canReview: false, reason: "Order not found or doesn't belong to you" };
-    }
-
-    // Check if order is completed/shipped
-    if (order.status !== 'completed' && order.status !== 'shipped') {
-      return { canReview: false, reason: "Order must be completed before leaving a review" };
-    }
-
-    // Check 30-day waiting period
-    if (!order.createdAt) {
-      return { canReview: false, reason: "Order date not available" };
-    }
-
-    const orderDate = new Date(order.createdAt);
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-    if (orderDate > thirtyDaysAgo) {
-      const daysRemaining = Math.ceil((orderDate.getTime() + 30 * 24 * 60 * 60 * 1000 - Date.now()) / (24 * 60 * 60 * 1000));
-      return { canReview: false, reason: `You can leave a review in ${daysRemaining} days` };
-    }
-
-    // Check if already reviewed
-    const hasReviewed = await this.hasUserReviewedOrder(userId, orderId);
-    if (hasReviewed) {
-      return { canReview: false, reason: "You have already reviewed this order" };
-    }
-
-    return { canReview: true };
-  }
-
-  async getReviewByOrderId(orderId: string): Promise<Review | undefined> {
-    const [review] = await db.select().from(reviews)
-      .where(eq(reviews.orderId, orderId));
-    return review || undefined;
   }
 
   async getAffiliateEarningsOverTime(affiliateId: string, weeks: number = 12): Promise<Array<{ weekStart: string; weekEnd: string; tier1: number; tier2: number; total: number }>> {
@@ -1885,21 +1730,19 @@ export class DatabaseStorage implements IStorage {
   }
 
   computeResearchPhase(profile: UserResearchProfile): ResearchPhase {
-    const { safetyCompleted, coaEducationViewed, compoundsTrackedCount, batchVerificationCount, educationCount, verifiedReviewsCount } = profile;
+    const { safetyCompleted, coaEducationViewed, compoundsTrackedCount, batchVerificationCount, educationCount } = profile;
     
-    // Specialist: meet any 2 of: batch_verification_count >= 10, education_count >= 15, verified_reviews_count >= 3
+    // Specialist: meet any 2 of: batch_verification_count >= 10, education_count >= 15
     const specialistCriteria = [
       (batchVerificationCount || 0) >= 10,
-      (educationCount || 0) >= 15,
-      (verifiedReviewsCount || 0) >= 3
+      (educationCount || 0) >= 15
     ].filter(Boolean).length;
     if (specialistCriteria >= 2) return "Specialist";
     
-    // Analyst: meet any 2 of: batch_verification_count >= 3, education_count >= 8, verified_reviews_count >= 1, compounds_tracked_count >= 5
+    // Analyst: meet any 2 of: batch_verification_count >= 3, education_count >= 8, compounds_tracked_count >= 5
     const analystCriteria = [
       (batchVerificationCount || 0) >= 3,
       (educationCount || 0) >= 8,
-      (verifiedReviewsCount || 0) >= 1,
       (compoundsTrackedCount || 0) >= 5
     ].filter(Boolean).length;
     if (analystCriteria >= 2) return "Analyst";
