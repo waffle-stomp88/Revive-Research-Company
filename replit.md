@@ -27,10 +27,21 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **AI Integration**: AI Chatbot (OpenAI gpt-4o-mini) for customer support with product context. AI Dynamic Pricing for admin product management, suggesting optimal prices with confidence ratings. AI Synergy Analysis for custom stack builder providing research-focused pathway mechanism descriptions.
 - **Custom Stack Builder**: Located at `/research-stacks` under "Build Custom" tab with two-column layout (65% peptide selection grid left, 35% sticky build panel right). Users select 2-4 peptides for custom research bundles with flat 10% discount (pre-built stacks offer better 15-20% value). Features real-time synergy visualization with:
   - **Synergy Ring**: Animated circular progress meter (0-100%) showing synergy score based on peptide combinations
-  - **Known Stack Detection**: Recognizes famous combinations (Wolverine Stack: BPC-157+TB-500 at 95%, Glow Protocol: BPC-157+TB-500+GHK-Cu at 90%, GH Amplifier: Ipamorelin+CJC-1295 at 88%) with celebration UI badges
+  - **Known Stack Detection**: Recognizes famous combinations with celebration UI badges:
+    - Wolverine Stack: BPC-157+TB-500 (95% synergy)
+    - Glow Protocol: BPC-157+TB-500+GHK-Cu (90%)
+    - GH Amplifier: Ipamorelin+CJC-1295 (88%)
+    - Cognitive Edge: Semax+Selank (86%)
+    - Lean Mass Protocol: CJC-1295+Ipamorelin+MOTS-C (87%)
+    - Deep Sleep Formula: Epithalon+Ipamorelin (83%)
+    - Longevity Protocol: Epithalon+GHK-Cu (84%)
+    - Total Regen: BPC-157+TB-500+Ipamorelin (92%)
+    - Recovery+ Protocol: BPC-157+GHK-Cu+TB-500 (82%)
   - **Smart Recommendations**: Suggests peptides to complete known stacks ("Add TB-500 to unlock Wolverine Stack")
-  - **Body System Heatmap**: Visual icons (Healing, Metabolic, Cognitive, Skin, Growth, Longevity) that glow when activated by selected peptides
-  - **Shared Pathway Detection**: Shows common mechanisms between selected peptides (Angiogenesis, Collagen Synthesis, etc.)
+  - **Body System Heatmap**: Visual icons (Healing, Metabolic, Cognitive, Skin, Growth, Longevity) with hover tooltips explaining the biological mechanisms
+  - **Shared Pathway Detection**: Shows common mechanisms between selected peptides with tooltips (Angiogenesis, Collagen Synthesis, mTOR Pathway, etc.)
+  - **Save & Share System**: Authenticated users can save custom stacks with names, automatically generates shareable URLs, quick share button for copying links
+  - **Popular Stacks**: Displays trending community combinations sorted by save count
 - **Subscription System**: PayPal-based recurring subscriptions with weekly, bi-weekly, and monthly options, offering tiered discounts.
 - **User Experience**: Guest checkout, shop page pagination with in-stock priority, discount code system, and a price transparency system showing price trends.
 - **Analytics**: Google Analytics GA4 integration for tracking page views and custom events.
