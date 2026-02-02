@@ -1516,25 +1516,6 @@ function ResearchStacks() {
           </div>
         </motion.div>
 
-        {/* Research Use Notice */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mb-8 p-4 rounded-xl bg-[#1a1a1f] border border-[#2a2a32]"
-        >
-          <div className="flex items-start gap-3">
-            <Shield className="h-5 w-5 text-[#21d8ff] mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="text-sm text-gray-300">
-                <span className="text-[#21d8ff] font-medium">Research Use Only:</span>{" "}
-                All research stacks are intended for laboratory and scientific research purposes only. 
-                Compounds are selected based on complementary mechanism pathways documented in peer-reviewed literature.
-              </p>
-            </div>
-          </div>
-        </motion.div>
-
         {/* Tab Content */}
         <AnimatePresence mode="wait">
           {activeTab === "custom" ? (
