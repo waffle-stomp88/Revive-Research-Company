@@ -47,14 +47,14 @@ const Toast = React.forwardRef<
     <ToastPrimitives.Root
       ref={ref}
       className={cn(
-        "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 rounded-md p-[2px] transition-all toast-holographic-border data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
+        "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 rounded-lg overflow-visible transition-all toast-holographic-border data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
         variant === "destructive" && "destructive",
         className
       )}
       {...props}
     >
       <div className={cn(
-        "relative flex w-full items-center justify-between space-x-4 rounded-[5px] p-6 pr-8",
+        "relative z-10 flex w-full items-center justify-between space-x-4 rounded-lg p-6 pr-8",
         variant === "destructive" 
           ? "bg-destructive text-destructive-foreground" 
           : "bg-background text-foreground"
