@@ -54,7 +54,7 @@ const Toast = React.forwardRef<
       {...props}
     >
       <div className={cn(
-        "relative z-10 flex w-full items-center justify-between space-x-3 rounded-lg p-4 pr-6",
+        "relative z-10 flex w-full items-center justify-between space-x-2 rounded-lg p-3 pr-5",
         variant === "destructive" 
           ? "bg-destructive text-destructive-foreground" 
           : "bg-background text-foreground"
