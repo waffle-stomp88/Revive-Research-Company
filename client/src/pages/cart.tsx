@@ -199,65 +199,78 @@ export default function CartPage() {
                 transition={{ delay: index * 0.05 }}
               >
                 <Card className="p-3" data-testid={`cart-item-${item.productId}`}>
-                  <div className="flex gap-3">
-                    {/* Product Image */}
+                  <div className="flex gap-3 md:gap-4 items-center">
+                    {/* Product Image - larger */}
                     <Link 
                       href={item.bundleId ? `/bundles/${item.bundleId}` : `/products/${item.productId}`}
-                      className="w-16 h-16 md:w-20 md:h-20 bg-muted rounded-lg flex-shrink-0 overflow-hidden cursor-pointer md:hover:ring-2 md:hover:ring-[#E7FB10]/50 transition-all"
+                      className="w-20 h-20 md:w-24 md:h-24 bg-muted rounded-lg flex-shrink-0 overflow-hidden cursor-pointer md:hover:ring-2 md:hover:ring-[#E7FB10]/50 transition-all"
                       data-testid={`link-cart-item-image-${item.productId}`}
                     >
                       <img
                         src={productImage}
                         alt={`${item.name} ${item.dosage} research peptide`}
-                        className="w-full h-full object-contain p-1 md:p-2"
+                        className="w-full h-full object-contain p-1"
                       />
                     </Link>
                     
+                    {/* Product Info - center column */}
                     <div className="flex-1 min-w-0">
-                      {/* Header row: Name + Delete button */}
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <Link 
-                              href={item.bundleId ? `/bundles/${item.bundleId}` : `/products/${item.productId}`}
-                              data-testid={`link-cart-item-name-${item.productId}`}
-                            >
-                              <h3 className="font-display font-semibold text-base md:text-lg md:hover:text-[#E7FB10] transition-colors cursor-pointer truncate" data-testid={`cart-item-name-${item.productId}`}>
-                                {item.name}
-                              </h3>
-                            </Link>
-                            {item.isSubscription && (
-                              <Badge 
-                                className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30 gap-1 text-[10px] px-1.5 py-0"
-                                data-testid={`badge-subscription-${item.productId}`}
-                              >
-                                <RefreshCw className="h-2.5 w-2.5" />
-                                Subscribe
-                              </Badge>
-                            )}
-                            {(item.isBundle || item.bundleId) && (
-                              <Badge 
-                                className="bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30 gap-1 text-[10px] px-1.5 py-0"
-                                data-testid={`badge-stack-${item.productId || item.bundleId}`}
-                              >
-                                <Layers className="h-2.5 w-2.5" />
-                                Stack
-                              </Badge>
-                            )}
-                          </div>
-                          <p className="text-xs md:text-sm text-muted-foreground">
-                            {item.dosage}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Link 
+                          href={item.bundleId ? `/bundles/${item.bundleId}` : `/products/${item.productId}`}
+                          data-testid={`link-cart-item-name-${item.productId}`}
+                        >
+                          <h3 className="font-display font-bold text-lg md:text-xl md:hover:text-[#E7FB10] transition-colors cursor-pointer" data-testid={`cart-item-name-${item.productId}`}>
+                            {item.name}
+                          </h3>
+                        </Link>
+                        {item.isSubscription && (
+                          <Badge 
+                            className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30 gap-1 text-[10px] px-1.5 py-0"
+                            data-testid={`badge-subscription-${item.productId}`}
+                          >
+                            <RefreshCw className="h-2.5 w-2.5" />
+                            Subscribe
+                          </Badge>
+                        )}
+                        {(item.isBundle || item.bundleId) && (
+                          <Badge 
+                            className="bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30 gap-1 text-[10px] px-1.5 py-0"
+                            data-testid={`badge-stack-${item.productId || item.bundleId}`}
+                          >
+                            <Layers className="h-2.5 w-2.5" />
+                            Stack
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {item.dosage}
+                      </p>
+                      {item.isSubscription && (
+                        <p className="text-xs text-[#21d8ff]" data-testid={`subscription-details-${item.productId}`}>
+                          {getSubscriptionLabel(item.subscriptionInterval)} · {getSubscriptionDiscount(item.subscriptionInterval)}% off
+                        </p>
+                      )}
+                    </div>
+                    
+                    {/* Right column: Quantity centered, Price+Trash at top */}
+                    <div className="flex flex-col items-end justify-between h-20 md:h-24 flex-shrink-0">
+                      {/* Top: Price + Trash */}
+                      <div className="flex items-center gap-2">
+                        <div className="text-right">
+                          <p className="font-display font-bold text-lg md:text-xl text-[#E7FB10]" data-testid={`cart-item-total-${item.productId}`}>
+                            ${(item.price * item.quantity).toFixed(2)}
                           </p>
-                          {item.isSubscription && (
-                            <p className="text-[10px] md:text-xs text-[#21d8ff] mt-0.5" data-testid={`subscription-details-${item.productId}`}>
-                              {getSubscriptionLabel(item.subscriptionInterval)} · {getSubscriptionDiscount(item.subscriptionInterval)}% off
+                          {item.quantity > 1 && (
+                            <p className="text-[10px] text-muted-foreground">
+                              ${item.price.toFixed(2)} ea
                             </p>
                           )}
                         </div>
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="text-red-400 flex-shrink-0"
+                          className="text-red-400 h-8 w-8"
                           onClick={() => removeFromCart(item.productId, item.dosage)}
                           data-testid={`button-remove-${item.productId}`}
                         >
@@ -265,50 +278,30 @@ export default function CartPage() {
                         </Button>
                       </div>
                       
-                      {/* Bottom row: Quantity + Price inline */}
-                      <div className="flex items-center justify-between mt-2">
-                        <div className="flex items-center border border-border rounded-md">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0"
-                            onClick={() => updateQuantity(item.productId, item.dosage, item.quantity - 1)}
-                            data-testid={`button-decrease-${item.productId}`}
-                          >
-                            <Minus className="h-3 w-3" />
-                          </Button>
-                          <span className="w-8 text-center font-medium text-sm">
-                            {item.quantity}
-                          </span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0"
-                            onClick={() => updateQuantity(item.productId, item.dosage, item.quantity + 1)}
-                            disabled={item.quantity >= 10}
-                            data-testid={`button-increase-${item.productId}`}
-                          >
-                            <Plus className="h-3 w-3" />
-                          </Button>
-                        </div>
-                        
-                        {/* Price - condensed on mobile */}
-                        <div className="text-right">
-                          <p className="font-display font-bold text-base md:text-lg text-[#E7FB10]" data-testid={`cart-item-total-${item.productId}`}>
-                            ${(item.price * item.quantity).toFixed(2)}
-                          </p>
-                          {/* Show "each" price only on desktop OR when quantity > 1 */}
-                          {item.quantity > 1 ? (
-                            <p className="text-[10px] md:text-xs text-muted-foreground">
-                              ${item.price.toFixed(2)} ea
-                            </p>
-                          ) : (
-                            <p className="hidden md:block text-xs text-muted-foreground">
-                              ${item.price.toFixed(2)} each
-                            </p>
-                          )}
-                          <span className="hidden md:inline text-xs font-semibold text-[#E7FB10]">Early access pricing preview</span>
-                        </div>
+                      {/* Center: Quantity controls */}
+                      <div className="flex items-center border border-border rounded-md">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 w-7 p-0"
+                          onClick={() => updateQuantity(item.productId, item.dosage, item.quantity - 1)}
+                          data-testid={`button-decrease-${item.productId}`}
+                        >
+                          <Minus className="h-3 w-3" />
+                        </Button>
+                        <span className="w-7 text-center font-medium text-sm">
+                          {item.quantity}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 w-7 p-0"
+                          onClick={() => updateQuantity(item.productId, item.dosage, item.quantity + 1)}
+                          disabled={item.quantity >= 10}
+                          data-testid={`button-increase-${item.productId}`}
+                        >
+                          <Plus className="h-3 w-3" />
+                        </Button>
                       </div>
                     </div>
                   </div>
