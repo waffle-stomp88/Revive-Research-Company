@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
@@ -146,6 +146,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt }: { onSwitchToPreBuilt: () => 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const { addToCart } = useCart();
   const { toast } = useToast();
+  const [, navigate] = useLocation();
 
   const { data: products, isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
@@ -231,6 +232,17 @@ function CustomStackBuilder({ onSwitchToPreBuilt }: { onSwitchToPreBuilt: () => 
     toast({
       title: "Added to Cart",
       description: `${customStackName} added with ${getDiscount()}% bundle discount`,
+      action: (
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={() => navigate("/cart")}
+          className="border-[#E7FB10] text-[#E7FB10] hover:bg-[#E7FB10]/10"
+          data-testid="button-toast-view-cart"
+        >
+          View Cart
+        </Button>
+      ),
     });
 
     // Reset
@@ -240,108 +252,175 @@ function CustomStackBuilder({ onSwitchToPreBuilt }: { onSwitchToPreBuilt: () => 
 
   return (
     <div className="space-y-8">
-      {/* Selection Header */}
-      <div className="text-center">
-        <Badge className="mb-4 bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30">
-          <Beaker className="h-3 w-3 mr-1" />
-          Select 2-4 Compounds
-        </Badge>
-        <p className="text-muted-foreground">
-          Choose peptides to create your custom research bundle. Bundle discounts apply automatically.
-        </p>
-      </div>
-
-      {/* Discount Tiers */}
-      <div className="flex justify-center gap-4 flex-wrap">
-        {[
-          { count: 2, discount: 10 },
-          { count: 3, discount: 12 },
-          { count: 4, discount: 15 },
-        ].map(tier => (
-          <div
-            key={tier.count}
-            className={`px-4 py-2 rounded-lg border transition-all ${
-              selectedPeptides.length === tier.count
-                ? "border-[#E7FB10] bg-[#E7FB10]/10 text-[#E7FB10]"
-                : "border-[#2a2a32] text-muted-foreground"
-            }`}
-          >
-            <span className="font-medium">{tier.count} Peptides</span>
-            <span className="ml-2 text-green-500">{tier.discount}% off</span>
+      {/* Hero Section */}
+      <div className="relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#9d4edd]/20 via-[#21d8ff]/10 to-[#E7FB10]/10 rounded-2xl blur-3xl opacity-50" />
+        <Card className="relative p-8 border-[#9d4edd]/30 bg-gradient-to-br from-[#1a1a1f] to-[#0f0f12] overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#9d4edd]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+          <div className="relative text-center space-y-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#9d4edd]/20 border border-[#9d4edd]/30">
+              <Sparkles className="h-4 w-4 text-[#9d4edd]" />
+              <span className="text-sm font-medium text-[#9d4edd]">Custom Stack Builder</span>
+            </div>
+            <h2 className="font-display text-3xl md:text-4xl font-bold">
+              Create Your <span className="text-[#E7FB10]">Perfect</span> Research Bundle
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Select 2-4 peptides to build a custom research stack. Our AI will analyze pathway mechanisms, 
+              and you'll unlock exclusive bundle discounts.
+            </p>
           </div>
-        ))}
+
+          {/* Discount Tiers */}
+          <div className="flex justify-center gap-3 md:gap-6 mt-8 flex-wrap">
+            {[
+              { count: 2, discount: 10, label: "Starter" },
+              { count: 3, discount: 12, label: "Advanced" },
+              { count: 4, discount: 15, label: "Pro" },
+            ].map(tier => {
+              const isActive = selectedPeptides.length === tier.count;
+              const isPast = selectedPeptides.length > tier.count;
+              return (
+                <div
+                  key={tier.count}
+                  className={`relative px-6 py-4 rounded-xl border-2 transition-all duration-300 ${
+                    isActive
+                      ? "border-[#E7FB10] bg-[#E7FB10]/10 shadow-[0_0_30px_rgba(231,251,16,0.2)]"
+                      : isPast
+                      ? "border-green-500/50 bg-green-500/10"
+                      : "border-[#2a2a32] bg-[#1a1a1f]/50"
+                  }`}
+                >
+                  {isActive && (
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2">
+                      <Badge className="bg-[#E7FB10] text-black text-[10px] px-2">Active</Badge>
+                    </div>
+                  )}
+                  <div className="text-center">
+                    <div className={`text-xs uppercase tracking-wider mb-1 ${isActive ? "text-[#E7FB10]" : "text-muted-foreground"}`}>
+                      {tier.label}
+                    </div>
+                    <div className={`font-display text-2xl font-bold ${isActive ? "text-white" : isPast ? "text-green-400" : "text-gray-400"}`}>
+                      {tier.count}
+                    </div>
+                    <div className="text-xs text-muted-foreground">peptides</div>
+                    <div className={`mt-2 font-bold ${isActive ? "text-green-400" : "text-green-500/70"}`}>
+                      {tier.discount}% off
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
       </div>
 
-      {/* Selected Peptides Summary */}
+      {/* Selected Peptides Summary - Sticky Panel */}
       {selectedPeptides.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-4 rounded-xl bg-[#1a1a1f] border border-[#21d8ff]/30"
+          className="sticky top-24 z-[999]"
         >
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-[#21d8ff]">Your Custom Stack</span>
-            <Badge variant="outline" className="border-green-500/50 text-green-500">
-              {getDiscount()}% Bundle Discount
-            </Badge>
-          </div>
-          <div className="flex flex-wrap gap-2 mb-4">
-            {selectedPeptides.map(peptide => (
-              <Badge
-                key={peptide.id}
-                className="bg-[#21d8ff]/20 text-[#21d8ff] pr-1 flex items-center gap-1"
-              >
-                {peptide.name}
-                <button
-                  onClick={() => togglePeptide(peptide)}
-                  className="ml-1 p-0.5 rounded-full hover:bg-[#21d8ff]/30"
-                  data-testid={`button-remove-peptide-${peptide.id}`}
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
-            ))}
-          </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-xs text-muted-foreground">
-                Retail: <span className="line-through">${getRetailTotal().toFixed(2)}</span>
-              </div>
-              <div className="text-xl font-bold text-[#E7FB10]">
-                ${getBundlePrice().toFixed(2)}
-                <span className="text-xs text-green-500 ml-2">Save ${getSavings().toFixed(2)}</span>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              {selectedPeptides.length >= 2 && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleAnalyze}
-                  disabled={isAnalyzing}
-                  className="border-[#a855f7] text-[#a855f7]"
-                  data-testid="button-analyze-synergy"
-                >
-                  {isAnalyzing ? (
-                    <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                  ) : (
-                    <Brain className="h-4 w-4 mr-1" />
+          <Card className="p-5 border-2 border-[#21d8ff]/40 bg-gradient-to-r from-[#1a1a1f] to-[#1f1f25] shadow-[0_0_40px_rgba(33,216,255,0.15)]">
+            <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+              {/* Left: Stack Info */}
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#21d8ff] to-[#9d4edd] flex items-center justify-center">
+                    <Layers className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-display font-bold text-lg">Your Custom Stack</h3>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">{selectedPeptides.length} of 4 selected</span>
+                      <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-[10px]">
+                        {getDiscount()}% OFF
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Selected Peptides Pills */}
+                <div className="flex flex-wrap gap-2">
+                  {selectedPeptides.map(peptide => (
+                    <motion.div
+                      key={peptide.id}
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.8, opacity: 0 }}
+                      className="group flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#21d8ff]/10 border border-[#21d8ff]/30"
+                    >
+                      <div className="w-6 h-6 rounded bg-muted overflow-hidden">
+                        <img 
+                          src={peptide.imageUrl || productImage} 
+                          alt={peptide.name}
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                      <span className="text-sm font-medium text-[#21d8ff]">{peptide.name}</span>
+                      <span className="text-xs text-muted-foreground">${peptide.price}</span>
+                      <button
+                        onClick={() => togglePeptide(peptide)}
+                        className="p-0.5 rounded-full hover:bg-red-500/20 text-muted-foreground hover:text-red-400 transition-colors"
+                        data-testid={`button-remove-peptide-${peptide.id}`}
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </motion.div>
+                  ))}
+                  {selectedPeptides.length < 4 && (
+                    <div className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-dashed border-[#2a2a32] text-muted-foreground">
+                      <Plus className="h-3.5 w-3.5" />
+                      <span className="text-xs">Add more</span>
+                    </div>
                   )}
-                  Analyze Pathways
-                </Button>
-              )}
-              <Button
-                size="sm"
-                onClick={handleAddToCart}
-                disabled={selectedPeptides.length < 2}
-                className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
-                data-testid="button-add-custom-stack"
-              >
-                <ShoppingCart className="h-4 w-4 mr-1" />
-                Add to Cart
-              </Button>
+                </div>
+              </div>
+
+              {/* Right: Pricing & Actions */}
+              <div className="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-end gap-4 pt-4 lg:pt-0 border-t lg:border-t-0 lg:border-l border-[#2a2a32] lg:pl-6">
+                <div className="text-right">
+                  <div className="text-xs text-muted-foreground">
+                    Retail: <span className="line-through">${getRetailTotal().toFixed(2)}</span>
+                  </div>
+                  <div className="font-display text-3xl font-bold text-[#E7FB10]">
+                    ${getBundlePrice().toFixed(2)}
+                  </div>
+                  <div className="text-sm text-green-400 font-medium">
+                    You save ${getSavings().toFixed(2)}
+                  </div>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                  {selectedPeptides.length >= 2 && (
+                    <Button
+                      variant="outline"
+                      onClick={handleAnalyze}
+                      disabled={isAnalyzing}
+                      className="border-[#9d4edd] text-[#9d4edd] hover:bg-[#9d4edd]/10"
+                      data-testid="button-analyze-synergy"
+                    >
+                      {isAnalyzing ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Brain className="h-4 w-4 mr-2" />
+                      )}
+                      AI Analysis
+                    </Button>
+                  )}
+                  <Button
+                    onClick={handleAddToCart}
+                    disabled={selectedPeptides.length < 2}
+                    className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 font-bold shadow-[0_0_20px_rgba(231,251,16,0.3)]"
+                    data-testid="button-add-custom-stack"
+                  >
+                    <ShoppingCart className="h-4 w-4 mr-2" />
+                    Add to Cart
+                  </Button>
+                </div>
+              </div>
             </div>
-          </div>
+          </Card>
         </motion.div>
       )}
 
@@ -373,58 +452,78 @@ function CustomStackBuilder({ onSwitchToPreBuilt }: { onSwitchToPreBuilt: () => 
       </AnimatePresence>
 
       {/* Peptide Selection Grid */}
-      {isLoading ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {[...Array(8)].map((_, i) => (
-            <Card key={i} className="p-4">
-              <Skeleton className="aspect-square rounded-lg mb-3" />
-              <Skeleton className="h-5 w-3/4 mb-2" />
-              <Skeleton className="h-4 w-1/2" />
-            </Card>
-          ))}
+      <div>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h3 className="font-display text-2xl font-bold">Select Your Peptides</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Click to select • {inStockPeptides.length} available compounds
+            </p>
+          </div>
+          {selectedPeptides.length > 0 && (
+            <Badge className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30">
+              {selectedPeptides.length}/4 Selected
+            </Badge>
+          )}
         </div>
-      ) : inStockPeptides.length === 0 ? (
-        <Card className="p-8 text-center border-dashed border-[#2a2a32]">
-          <FlaskConical className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-          <h3 className="font-display text-xl font-bold mb-2">No Peptides Available</h3>
-          <p className="text-muted-foreground max-w-md mx-auto">
-            All peptides are currently out of stock. Please check back soon or browse our pre-built stacks for available options.
-          </p>
-          <Button 
-            variant="outline" 
-            className="mt-4"
-            onClick={onSwitchToPreBuilt}
-          >
-            View Pre-Built Stacks
-          </Button>
-        </Card>
-      ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {inStockPeptides.map(product => {
-            const isSelected = selectedPeptides.find(p => p.id === product.id);
-            const isDisabled = !isSelected && selectedPeptides.length >= 4;
+        
+        {isLoading ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {[...Array(8)].map((_, i) => (
+              <Card key={i} className="p-4">
+                <Skeleton className="aspect-square rounded-lg mb-3" />
+                <Skeleton className="h-5 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-1/2" />
+              </Card>
+            ))}
+          </div>
+        ) : inStockPeptides.length === 0 ? (
+          <Card className="p-8 text-center border-dashed border-[#2a2a32]">
+            <FlaskConical className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <h3 className="font-display text-xl font-bold mb-2">No Peptides Available</h3>
+            <p className="text-muted-foreground max-w-md mx-auto">
+              All peptides are currently out of stock. Please check back soon or browse our pre-built stacks for available options.
+            </p>
+            <Button 
+              variant="outline" 
+              className="mt-4"
+              onClick={onSwitchToPreBuilt}
+            >
+              View Pre-Built Stacks
+            </Button>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {inStockPeptides.map(product => {
+              const isSelected = selectedPeptides.find(p => p.id === product.id);
+              const isDisabled = !isSelected && selectedPeptides.length >= 4;
 
-            return (
-              <motion.div
-                key={product.id}
-                whileHover={{ scale: isDisabled ? 1 : 1.02 }}
-                whileTap={{ scale: isDisabled ? 1 : 0.98 }}
-              >
-                <Card
-                  onClick={() => !isDisabled && togglePeptide(product)}
-                  className={`p-4 cursor-pointer transition-all duration-200 relative ${
-                    isSelected
-                      ? "border-2 border-[#21d8ff] shadow-[0_0_20px_rgba(33,216,255,0.3)]"
-                      : isDisabled
-                      ? "opacity-50 cursor-not-allowed border-[#2a2a32]"
-                      : "border-[#2a2a32] hover:border-[#21d8ff]/50"
-                  }`}
-                  data-testid={`card-select-peptide-${product.id}`}
+              return (
+                <motion.div
+                  key={product.id}
+                  whileHover={{ scale: isDisabled ? 1 : 1.03 }}
+                  whileTap={{ scale: isDisabled ? 1 : 0.97 }}
                 >
-                  {isSelected && (
-                    <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-[#21d8ff] flex items-center justify-center">
-                      <Check className="h-4 w-4 text-black" />
-                    </div>
+                  <Card
+                    onClick={() => !isDisabled && togglePeptide(product)}
+                    className={`p-4 cursor-pointer transition-all duration-300 relative overflow-hidden ${
+                      isSelected
+                        ? "border-2 border-[#21d8ff] bg-[#21d8ff]/5 shadow-[0_0_30px_rgba(33,216,255,0.4)]"
+                        : isDisabled
+                        ? "opacity-40 cursor-not-allowed border-[#2a2a32] grayscale"
+                        : "border-[#2a2a32] hover:border-[#21d8ff]/60 hover:shadow-[0_0_20px_rgba(33,216,255,0.2)]"
+                    }`}
+                    data-testid={`card-select-peptide-${product.id}`}
+                  >
+                    {/* Selection indicator */}
+                    {isSelected && (
+                      <motion.div 
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute top-3 right-3 w-7 h-7 rounded-full bg-gradient-to-br from-[#21d8ff] to-[#9d4edd] flex items-center justify-center shadow-lg"
+                      >
+                        <Check className="h-4 w-4 text-white" />
+                      </motion.div>
                   )}
                   <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-lg mb-3 overflow-hidden">
                     <img
@@ -449,7 +548,8 @@ function CustomStackBuilder({ onSwitchToPreBuilt }: { onSwitchToPreBuilt: () => 
             );
           })}
         </div>
-      )}
+        )}
+      </div>
 
       {/* Research Disclaimer */}
       <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/20">

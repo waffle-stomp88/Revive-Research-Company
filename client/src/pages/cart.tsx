@@ -198,130 +198,147 @@ export default function CartPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <Link 
-                  href={item.bundleId ? `/bundles/${item.bundleId}` : `/products/${item.productId}`}
-                  className="block"
-                  data-testid={`link-cart-item-card-${item.productId}`}
-                >
-                  <Card 
-                    className="p-3 cursor-pointer transition-all duration-300 border-2 border-[#21d8ff]/40 md:hover:border-[#21d8ff] md:hover:shadow-[0_0_30px_rgba(33,216,255,0.5),0_0_60px_rgba(33,216,255,0.2)] md:hover:scale-[1.01]" 
-                    data-testid={`cart-item-${item.productId}`}
-                  >
-                    <div className="flex gap-3 md:gap-4 items-center">
-                    {/* Product Image - larger */}
-                    <div 
-                      className="w-20 h-20 md:w-24 md:h-24 bg-muted rounded-lg flex-shrink-0 overflow-hidden"
-                      data-testid={`cart-item-image-${item.productId}`}
+  {(() => {
+                  const isCustomStack = item.bundleId?.startsWith("custom-");
+                  const cardContent = (
+                    <Card 
+                      className={`p-3 transition-all duration-300 border-2 ${
+                        isCustomStack 
+                          ? "border-[#9d4edd]/40" 
+                          : "border-[#21d8ff]/40 cursor-pointer md:hover:border-[#21d8ff] md:hover:shadow-[0_0_30px_rgba(33,216,255,0.5),0_0_60px_rgba(33,216,255,0.2)] md:hover:scale-[1.01]"
+                      }`}
+                      data-testid={`cart-item-${item.productId}`}
                     >
-                      <img
-                        src={productImage}
-                        alt={`${item.name} ${item.dosage} research peptide`}
-                        className="w-full h-full object-contain p-1"
-                      />
-                    </div>
-                    
-                    {/* Product Info - center column */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-display font-bold text-xl md:text-2xl" data-testid={`cart-item-name-${item.productId}`}>
-                          {item.name}
-                        </h3>
-                        {item.isSubscription && (
-                          <Badge 
-                            className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30 gap-1 text-[10px] px-1.5 py-0"
-                            data-testid={`badge-subscription-${item.productId}`}
-                          >
-                            <RefreshCw className="h-2.5 w-2.5" />
-                            Subscribe
-                          </Badge>
-                        )}
-                        {(item.isBundle || item.bundleId) && (
-                          <Badge 
-                            className="bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30 gap-1 text-[10px] px-1.5 py-0"
-                            data-testid={`badge-stack-${item.productId || item.bundleId}`}
-                          >
-                            <Layers className="h-2.5 w-2.5" />
-                            Stack
-                          </Badge>
-                        )}
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {item.dosage}
-                      </p>
-                      {item.isSubscription && (
-                        <p className="text-xs text-[#21d8ff]" data-testid={`subscription-details-${item.productId}`}>
-                          {getSubscriptionLabel(item.subscriptionInterval)} · {getSubscriptionDiscount(item.subscriptionInterval)}% off
-                        </p>
-                      )}
-                    </div>
-                    
-                    {/* Right column: Price+Trash centered top, Quantity at bottom */}
-                    <div className="flex flex-col items-end justify-center gap-3 h-20 md:h-24 flex-shrink-0">
-                      {/* Price + Trash */}
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-baseline gap-2">
-                          {item.originalPrice && item.originalPrice > item.price && (
-                            <span className="text-sm text-muted-foreground line-through">
-                              ${(item.originalPrice * item.quantity).toFixed(2)}
-                            </span>
-                          )}
-                          <span className="font-display font-bold text-xl md:text-2xl text-[#E7FB10]" data-testid={`cart-item-total-${item.productId}`}>
-                            ${(item.price * item.quantity).toFixed(2)}
-                          </span>
+                      <div className="flex gap-3 md:gap-4 items-center">
+                        {/* Product Image - larger */}
+                        <div 
+                          className="w-20 h-20 md:w-24 md:h-24 bg-muted rounded-lg flex-shrink-0 overflow-hidden"
+                          data-testid={`cart-item-image-${item.productId}`}
+                        >
+                          <img
+                            src={productImage}
+                            alt={`${item.name} ${item.dosage} research peptide`}
+                            className="w-full h-full object-contain p-1"
+                          />
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-red-400 h-8 w-8"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            removeFromCart(item.productId, item.dosage);
-                          }}
-                          data-testid={`button-remove-${item.productId}`}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        
+                        {/* Product Info - center column */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className="font-display font-bold text-xl md:text-2xl" data-testid={`cart-item-name-${item.productId}`}>
+                              {item.name}
+                            </h3>
+                            {item.isSubscription && (
+                              <Badge 
+                                className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30 gap-1 text-[10px] px-1.5 py-0"
+                                data-testid={`badge-subscription-${item.productId}`}
+                              >
+                                <RefreshCw className="h-2.5 w-2.5" />
+                                Subscribe
+                              </Badge>
+                            )}
+                            {(item.isBundle || item.bundleId) && (
+                              <Badge 
+                                className={`gap-1 text-[10px] px-1.5 py-0 ${
+                                  isCustomStack 
+                                    ? "bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30" 
+                                    : "bg-[#9d4edd]/20 text-[#9d4edd] border-[#9d4edd]/30"
+                                }`}
+                                data-testid={`badge-stack-${item.productId || item.bundleId}`}
+                              >
+                                <Layers className="h-2.5 w-2.5" />
+                                {isCustomStack ? "Custom Stack" : "Stack"}
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {item.dosage}
+                          </p>
+                          {item.isSubscription && (
+                            <p className="text-xs text-[#21d8ff]" data-testid={`subscription-details-${item.productId}`}>
+                              {getSubscriptionLabel(item.subscriptionInterval)} · {getSubscriptionDiscount(item.subscriptionInterval)}% off
+                            </p>
+                          )}
+                        </div>
+                        
+                        {/* Right column: Price+Trash centered top, Quantity at bottom */}
+                        <div className="flex flex-col items-end justify-center gap-3 h-20 md:h-24 flex-shrink-0">
+                          {/* Price + Trash */}
+                          <div className="flex items-center gap-2">
+                            <div className="flex items-baseline gap-2">
+                              {item.originalPrice && item.originalPrice > item.price && (
+                                <span className="text-sm text-muted-foreground line-through">
+                                  ${(item.originalPrice * item.quantity).toFixed(2)}
+                                </span>
+                              )}
+                              <span className="font-display font-bold text-xl md:text-2xl text-[#E7FB10]" data-testid={`cart-item-total-${item.productId}`}>
+                                ${(item.price * item.quantity).toFixed(2)}
+                              </span>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-red-400 h-8 w-8"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                removeFromCart(item.productId, item.dosage);
+                              }}
+                              data-testid={`button-remove-${item.productId}`}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          
+                          {/* Quantity controls */}
+                          <div 
+                            className="flex items-center border border-border rounded-md"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                updateQuantity(item.productId, item.dosage, item.quantity - 1);
+                              }}
+                              data-testid={`button-decrease-${item.productId}`}
+                            >
+                              <Minus className="h-3 w-3" />
+                            </Button>
+                            <span className="w-7 text-center font-medium text-sm">
+                              {item.quantity}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                updateQuantity(item.productId, item.dosage, item.quantity + 1);
+                              }}
+                              disabled={item.quantity >= 10}
+                              data-testid={`button-increase-${item.productId}`}
+                            >
+                              <Plus className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
                       </div>
-                      
-                      {/* Quantity controls */}
-                      <div 
-                        className="flex items-center border border-border rounded-md"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-7 w-7 p-0"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            updateQuantity(item.productId, item.dosage, item.quantity - 1);
-                          }}
-                          data-testid={`button-decrease-${item.productId}`}
-                        >
-                          <Minus className="h-3 w-3" />
-                        </Button>
-                        <span className="w-7 text-center font-medium text-sm">
-                          {item.quantity}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-7 w-7 p-0"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            updateQuantity(item.productId, item.dosage, item.quantity + 1);
-                          }}
-                          disabled={item.quantity >= 10}
-                          data-testid={`button-increase-${item.productId}`}
-                        >
-                          <Plus className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                  </Card>
-                </Link>
+                    </Card>
+                  );
+
+                  return isCustomStack ? cardContent : (
+                    <Link 
+                      href={item.bundleId ? `/bundles/${item.bundleId}` : `/products/${item.productId}`}
+                      className="block"
+                      data-testid={`link-cart-item-card-${item.productId}`}
+                    >
+                      {cardContent}
+                    </Link>
+                  );
+                })()}
               </motion.div>
             ))}
 
