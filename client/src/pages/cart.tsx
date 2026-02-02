@@ -220,7 +220,7 @@ export default function CartPage() {
                           href={item.bundleId ? `/bundles/${item.bundleId}` : `/products/${item.productId}`}
                           data-testid={`link-cart-item-name-${item.productId}`}
                         >
-                          <h3 className="font-display font-bold text-lg md:text-xl md:hover:text-[#E7FB10] transition-colors cursor-pointer" data-testid={`cart-item-name-${item.productId}`}>
+                          <h3 className="font-display font-bold text-xl md:text-2xl md:hover:text-[#E7FB10] transition-colors cursor-pointer" data-testid={`cart-item-name-${item.productId}`}>
                             {item.name}
                           </h3>
                         </Link>
@@ -253,19 +253,19 @@ export default function CartPage() {
                       )}
                     </div>
                     
-                    {/* Right column: Quantity centered, Price+Trash at top */}
-                    <div className="flex flex-col items-end justify-between h-20 md:h-24 flex-shrink-0">
-                      {/* Top: Price + Trash */}
+                    {/* Right column: Price+Trash centered top, Quantity at bottom */}
+                    <div className="flex flex-col items-end justify-center gap-3 h-20 md:h-24 flex-shrink-0">
+                      {/* Price + Trash */}
                       <div className="flex items-center gap-2">
-                        <div className="text-right">
-                          <p className="font-display font-bold text-lg md:text-xl text-[#E7FB10]" data-testid={`cart-item-total-${item.productId}`}>
-                            ${(item.price * item.quantity).toFixed(2)}
-                          </p>
-                          {item.quantity > 1 && (
-                            <p className="text-[10px] text-muted-foreground">
-                              ${item.price.toFixed(2)} ea
-                            </p>
+                        <div className="flex items-baseline gap-2">
+                          {item.originalPrice && item.originalPrice > item.price && (
+                            <span className="text-sm text-muted-foreground line-through">
+                              ${(item.originalPrice * item.quantity).toFixed(2)}
+                            </span>
                           )}
+                          <span className="font-display font-bold text-xl md:text-2xl text-[#E7FB10]" data-testid={`cart-item-total-${item.productId}`}>
+                            ${(item.price * item.quantity).toFixed(2)}
+                          </span>
                         </div>
                         <Button
                           variant="ghost"
@@ -278,7 +278,7 @@ export default function CartPage() {
                         </Button>
                       </div>
                       
-                      {/* Center: Quantity controls */}
+                      {/* Quantity controls */}
                       <div className="flex items-center border border-border rounded-md">
                         <Button
                           variant="ghost"
