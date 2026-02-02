@@ -395,11 +395,25 @@ const findSharedPathways = (peptideNames: string[]): string[] => {
 const calculateSynergyScore = (peptideNames: string[]): number => {
   if (peptideNames.length < 2) return 0;
   
-  // Check for known stacks first
+  // Check for exact known stacks first (highest priority)
   const knownStack = checkKnownStack(peptideNames);
   if (knownStack) return knownStack.synergyBonus;
   
-  // Calculate based on shared pathways and systems
+  // Check for contained stacks (give partial credit)
+  const containedStacks = checkContainedStacks(peptideNames);
+  if (containedStacks.length > 0) {
+    // Give credit based on the best contained stack, but reduce slightly since it's not pure
+    const bestContained = containedStacks[0];
+    const containedBonus = Math.round(bestContained.synergyBonus * 0.75); // 75% of contained stack's value
+    
+    // Add small bonus for shared pathways with extra peptides
+    const sharedPathways = findSharedPathways(peptideNames);
+    const pathwayBonus = Math.min(sharedPathways.length * 3, 10);
+    
+    return Math.min(containedBonus + pathwayBonus, 90);
+  }
+  
+  // Calculate based on shared pathways and systems (no known stacks)
   const sharedPathways = findSharedPathways(peptideNames);
   const baseScore = 50;
   const pathwayBonus = sharedPathways.length * 10;
@@ -754,14 +768,40 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                               </Badge>
                             </motion.div>
                           ) : selectedPeptides.length >= 2 ? (
-                            <div>
-                              <p className="font-display font-bold text-sm">Custom Stack</p>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {sharedPathways.length > 0 
-                                  ? `${sharedPathways.length} shared pathway${sharedPathways.length > 1 ? 's' : ''} detected`
-                                  : "Building synergy..."}
-                              </p>
-                            </div>
+                            (() => {
+                              const containedStacks = checkContainedStacks(selectedPeptides.map(p => p.name));
+                              if (containedStacks.length > 0) {
+                                const bestContained = containedStacks[0];
+                                const ContainedIcon = bestContained.icon;
+                                return (
+                                  <motion.div
+                                    initial={{ scale: 0.9, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    className="text-center"
+                                  >
+                                    <div className="mb-1 flex justify-center">
+                                      <ContainedIcon className="w-5 h-5" style={{ color: bestContained.color }} />
+                                    </div>
+                                    <p className="font-display font-bold text-sm" style={{ color: bestContained.color }}>
+                                      Contains {bestContained.name}
+                                    </p>
+                                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                                      + {selectedPeptides.length - bestContained.peptides.length} extra peptide{selectedPeptides.length - bestContained.peptides.length > 1 ? 's' : ''}
+                                    </p>
+                                  </motion.div>
+                                );
+                              }
+                              return (
+                                <div>
+                                  <p className="font-display font-bold text-sm">Custom Stack</p>
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {sharedPathways.length > 0 
+                                      ? `${sharedPathways.length} shared pathway${sharedPathways.length > 1 ? 's' : ''} detected`
+                                      : "Building synergy..."}
+                                  </p>
+                                </div>
+                              );
+                            })()
                           ) : (
                             <div>
                               <p className="text-sm text-muted-foreground">Add 1 more peptide</p>
