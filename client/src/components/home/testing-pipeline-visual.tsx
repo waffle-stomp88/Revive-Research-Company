@@ -165,46 +165,44 @@ function PipelineStep({ step, index, isActive, isExpanded, onToggle, totalSteps 
           <motion.div
             className="absolute inset-0 w-16 h-16 md:w-20 md:h-20 rounded-2xl z-0"
             style={{ 
-              border: `3px solid ${step.color}`,
-              boxShadow: `0 0 20px ${step.color}, inset 0 0 20px ${step.color}40`
+              border: `2px solid ${step.color}`,
+              boxShadow: `0 0 15px ${step.color}60`
             }}
-            initial={{ scale: 0.8, opacity: 0 }}
+            initial={{ scale: 1, opacity: 0 }}
             animate={{ 
-              scale: [1, 1.3, 1.5],
-              opacity: [1, 0.5, 0]
+              scale: [1, 1.15, 1.3],
+              opacity: [0.8, 0.4, 0]
             }}
-            transition={{ duration: 1.5, repeat: Infinity }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
           />
         )}
         <motion.div
           className="w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center relative z-10"
           style={{ 
-            backgroundColor: isActive || isExpanded ? `${step.color}40` : `${step.color}15`,
-            border: isActive || isExpanded ? `3px solid ${step.color}` : '3px solid transparent',
-            boxShadow: isActive || isExpanded
-              ? `0 0 50px ${step.glowColor}, 0 0 100px ${step.glowColor}, 0 0 150px ${step.glowColor}` 
-              : `0 0 20px ${step.glowColor}`
+            backgroundColor: `${step.color}15`,
+            border: `3px solid ${isActive || isExpanded ? step.color : 'transparent'}`,
+            boxShadow: `0 0 20px ${step.glowColor}`
           }}
-          animate={(isActive || isExpanded) ? {
-            scale: [1, 1.15, 1],
-            boxShadow: [
-              `0 0 50px ${step.glowColor}, 0 0 100px ${step.glowColor}`,
-              `0 0 80px ${step.glowColor}, 0 0 150px ${step.glowColor}`,
-              `0 0 50px ${step.glowColor}, 0 0 100px ${step.glowColor}`
-            ]
-          } : { scale: 1 }}
-          transition={{ duration: 1.5, repeat: Infinity }}
+          initial={false}
+          animate={{
+            backgroundColor: isActive || isExpanded ? `${step.color}35` : `${step.color}15`,
+            boxShadow: isActive || isExpanded 
+              ? `0 0 40px ${step.glowColor}, 0 0 60px ${step.glowColor}` 
+              : `0 0 20px ${step.glowColor}`,
+            scale: isActive || isExpanded ? 1.05 : 1
+          }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
           whileHover={{ 
-            scale: 1.15,
-            boxShadow: `0 0 60px ${step.glowColor}`
+            scale: 1.1,
+            boxShadow: `0 0 50px ${step.glowColor}`
           }}
         >
           <motion.div
             animate={(isActive || isExpanded) ? { 
-              rotate: [0, 5, -5, 0],
-            } : {}}
+              rotate: [0, 2, -2, 0],
+            } : { rotate: 0 }}
             transition={{ 
-              duration: 3, 
+              duration: 4, 
               repeat: Infinity,
               ease: "easeInOut"
             }}
@@ -221,14 +219,15 @@ function PipelineStep({ step, index, isActive, isExpanded, onToggle, totalSteps 
           <motion.div
             className="absolute inset-0 rounded-2xl"
             style={{ 
-              background: `linear-gradient(135deg, ${step.color}30 0%, transparent 50%, ${step.color}15 100%)`,
+              background: `linear-gradient(135deg, ${step.color}25 0%, transparent 50%, ${step.color}10 100%)`,
             }}
-            animate={(isActive || isExpanded) ? {
-              opacity: [0.3, 0.7, 0.3],
-            } : { opacity: 0.3 }}
+            initial={false}
+            animate={{
+              opacity: isActive || isExpanded ? 0.6 : 0.3
+            }}
             transition={{
-              duration: 2,
-              repeat: Infinity,
+              duration: 0.5,
+              ease: "easeInOut"
             }}
           />
         </motion.div>
