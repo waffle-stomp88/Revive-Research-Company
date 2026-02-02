@@ -734,7 +734,7 @@ function ProductsComponent() {
                 </p>
               )}
               {/* Display Controls Bar - Mobile optimized */}
-              <div className="flex items-center justify-between gap-4 mb-4 pl-14 lg:pl-0" data-testid="display-controls-bar">
+              <div className={`flex items-center justify-between gap-4 mb-4 pl-14 ${!sidebarOpen ? 'lg:pl-32' : 'lg:pl-0'}`} data-testid="display-controls-bar">
                 {/* Left: Pagination Controls + Grid toggles */}
                 <div className="flex items-center gap-3">
                   {/* Pagination Controls - Fixed compact format */}
