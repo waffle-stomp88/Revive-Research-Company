@@ -599,6 +599,23 @@ body.modal-open {
   }
 }
 
+/* Holographic snake border animation for toasts */
+@keyframes holographic-snake {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 400% 50%;
+  }
+}
+
+.toast-holographic-border {
+  background: linear-gradient(90deg, #21d8ff, #E7FB10, #ec4899, #9d4edd, #21d8ff);
+  background-size: 400% 100%;
+  animation: holographic-snake 3s linear infinite;
+  box-shadow: 0 0 20px rgba(33, 216, 255, 0.3), 0 0 40px rgba(231, 251, 16, 0.2);
+}
+
 .holographic-text {
   background: linear-gradient(
     90deg,
