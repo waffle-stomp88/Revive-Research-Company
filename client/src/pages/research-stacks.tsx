@@ -295,7 +295,7 @@ const getPeptidePathway = (productName: string): PeptidePathway | null => {
   return null;
 };
 
-// Check if selected peptides form a known stack
+// Check if selected peptides form an EXACT known stack (same peptides, same count)
 const checkKnownStack = (selectedNames: string[]): KnownStack | null => {
   const normalizedSelected = selectedNames.map(normalizePeptideName);
   
@@ -313,20 +313,52 @@ const checkKnownStack = (selectedNames: string[]): KnownStack | null => {
   return null;
 };
 
-// Get recommendation to complete a known stack
-const getStackRecommendation = (selectedNames: string[]): { stack: KnownStack; missing: string[] } | null => {
+// Check for known stacks that are CONTAINED within current selection (with extra peptides)
+const checkContainedStacks = (selectedNames: string[]): KnownStack[] => {
   const normalizedSelected = selectedNames.map(normalizePeptideName);
+  const containedStacks: KnownStack[] = [];
   
   for (const stack of KNOWN_STACKS) {
+    const hasAll = stack.peptides.every(p => 
+      normalizedSelected.some(s => s.includes(p.replace(/-/g, '')))
+    );
+    // Only count as "contained" if we have MORE peptides than the stack (not exact match)
+    const hasExtra = normalizedSelected.length > stack.peptides.length;
+    
+    if (hasAll && hasExtra) {
+      containedStacks.push(stack);
+    }
+  }
+  
+  // Sort by synergy bonus (highest first)
+  return containedStacks.sort((a, b) => b.synergyBonus - a.synergyBonus);
+};
+
+// Get recommendation to complete a known stack (only if achievable)
+const getStackRecommendation = (selectedNames: string[]): { stack: KnownStack; missing: string[] } | null => {
+  const normalizedSelected = selectedNames.map(normalizePeptideName);
+  const maxPeptides = 4;
+  
+  // Sort stacks by synergy bonus (recommend best stacks first)
+  const sortedStacks = [...KNOWN_STACKS].sort((a, b) => b.synergyBonus - a.synergyBonus);
+  
+  for (const stack of sortedStacks) {
     const matchCount = stack.peptides.filter(p => 
       normalizedSelected.some(s => s.includes(p.replace(/-/g, '')))
     ).length;
     
-    // If they have at least 1 but not all
-    if (matchCount >= 1 && matchCount < stack.peptides.length) {
-      const missing = stack.peptides.filter(p => 
-        !normalizedSelected.some(s => s.includes(p.replace(/-/g, '')))
-      );
+    const missing = stack.peptides.filter(p => 
+      !normalizedSelected.some(s => s.includes(p.replace(/-/g, '')))
+    );
+    
+    // Only recommend if:
+    // 1. They have at least 1 peptide from this stack
+    // 2. They don't have all peptides yet
+    // 3. Adding the missing peptides would result in an EXACT match (achievable)
+    const wouldBeExactMatch = (normalizedSelected.length + missing.length) === stack.peptides.length;
+    const wouldFitLimit = (normalizedSelected.length + missing.length) <= maxPeptides;
+    
+    if (matchCount >= 1 && matchCount < stack.peptides.length && wouldBeExactMatch && wouldFitLimit) {
       return { stack, missing };
     }
   }
