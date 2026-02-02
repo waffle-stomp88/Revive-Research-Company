@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
 import { CategoryTabs } from "@/components/category-tabs";
-import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, X, Check, ShoppingCart, Beaker, Brain, Target } from "lucide-react";
+import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, X, Check, ShoppingCart, Beaker, Brain, Target, Rocket, Activity, LucideIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -145,7 +145,7 @@ type StackTab = "pre-built" | "custom";
 interface KnownStack {
   name: string;
   peptides: string[];
-  icon: string;
+  icon: LucideIcon;
   color: string;
   description: string;
   synergyBonus: number;
@@ -163,7 +163,7 @@ const KNOWN_STACKS: KnownStack[] = [
   {
     name: "Wolverine Stack",
     peptides: ["bpc-157", "tb-500"],
-    icon: "⚡",
+    icon: Zap,
     color: "#22c55e",
     description: "Legendary healing combo - BPC-157's local repair + TB-500's systemic regeneration",
     synergyBonus: 95,
@@ -171,7 +171,7 @@ const KNOWN_STACKS: KnownStack[] = [
   {
     name: "Glow Protocol",
     peptides: ["bpc-157", "tb-500", "ghk-cu"],
-    icon: "✨",
+    icon: Sparkles,
     color: "#ec4899",
     description: "Ultimate skin rejuvenation - collagen + blood vessels + tissue repair",
     synergyBonus: 90,
@@ -179,7 +179,7 @@ const KNOWN_STACKS: KnownStack[] = [
   {
     name: "GH Amplifier",
     peptides: ["ipamorelin", "cjc-1295"],
-    icon: "🚀",
+    icon: Rocket,
     color: "#f59e0b",
     description: "Growth hormone synergy - GHRP + GHRH work better together",
     synergyBonus: 88,
@@ -187,7 +187,7 @@ const KNOWN_STACKS: KnownStack[] = [
   {
     name: "Recovery+",
     peptides: ["bpc-157", "ghk-cu"],
-    icon: "💚",
+    icon: Heart,
     color: "#22c55e",
     description: "Collagen synthesis meets tissue protection",
     synergyBonus: 82,
@@ -195,7 +195,7 @@ const KNOWN_STACKS: KnownStack[] = [
   {
     name: "Energy Stack",
     peptides: ["mots-c", "retatrutide"],
-    icon: "⚡",
+    icon: Activity,
     color: "#E7FB10",
     description: "Mitochondrial power + metabolic signaling",
     synergyBonus: 80,
@@ -279,8 +279,8 @@ const BODY_SYSTEMS = [
 // Helper to normalize peptide names for matching
 const normalizePeptideName = (name: string): string => {
   return name.toLowerCase()
-    .replace(/\s*\([^)]*\)/g, '')
-    .replace(/[^a-z0-9-]/g, '')
+    .replace(/\s*\([^)]*\)/g, '')  // Remove parentheses content
+    .replace(/[^a-z0-9]/g, '')      // Remove everything except letters and numbers (including hyphens)
     .trim();
 };
 
@@ -706,7 +706,9 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                               animate={{ scale: 1, opacity: 1 }}
                               className="text-center"
                             >
-                              <div className="text-2xl mb-1">{knownStack.icon}</div>
+                              <div className="mb-1 flex justify-center">
+                                <knownStack.icon className="w-6 h-6" style={{ color: knownStack.color }} />
+                              </div>
                               <p className="font-display font-bold text-lg" style={{ color: knownStack.color }}>
                                 {knownStack.name}
                               </p>
