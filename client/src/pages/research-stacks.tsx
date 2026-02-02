@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -139,8 +139,41 @@ const researchStacks: ResearchStack[] = [
 
 type StackTab = "pre-built" | "custom";
 
+// Goal-based category mapping for peptides
+const peptideCategories: Record<string, { label: string; color: string; icon: typeof Heart }[]> = {
+  "bpc-157": [{ label: "Healing", color: "#22c55e", icon: Heart }, { label: "Gut", color: "#3b82f6", icon: Shield }],
+  "tb-500": [{ label: "Healing", color: "#22c55e", icon: Heart }, { label: "Mobility", color: "#f59e0b", icon: Zap }],
+  "ghk-cu": [{ label: "Skin", color: "#ec4899", icon: Sparkles }, { label: "Longevity", color: "#a855f7", icon: Crown }],
+  "mots-c": [{ label: "Metabolic", color: "#E7FB10", icon: Zap }, { label: "Energy", color: "#f59e0b", icon: Zap }],
+  "retatrutide": [{ label: "Metabolic", color: "#E7FB10", icon: Zap }],
+  "semaglutide": [{ label: "Metabolic", color: "#E7FB10", icon: Zap }],
+  "tirzepatide": [{ label: "Metabolic", color: "#E7FB10", icon: Zap }],
+  "epithalon": [{ label: "Longevity", color: "#a855f7", icon: Crown }],
+  "semax": [{ label: "Cognitive", color: "#21d8ff", icon: Brain }],
+  "selank": [{ label: "Cognitive", color: "#21d8ff", icon: Brain }, { label: "Mood", color: "#3b82f6", icon: Heart }],
+  "ipamorelin": [{ label: "Growth", color: "#f59e0b", icon: Zap }],
+  "cjc-1295": [{ label: "Growth", color: "#f59e0b", icon: Zap }],
+  "default": [{ label: "Research", color: "#6b7280", icon: Beaker }],
+};
+
+const getPeptideCategories = (productName: string) => {
+  const normalizedName = productName.toLowerCase().replace(/\s*\([^)]*\)/g, '').trim();
+  for (const key of Object.keys(peptideCategories)) {
+    if (key !== 'default' && normalizedName.includes(key)) {
+      return peptideCategories[key];
+    }
+  }
+  return peptideCategories.default;
+};
+
 // Custom Stack Builder Component
-function CustomStackBuilder({ onSwitchToPreBuilt }: { onSwitchToPreBuilt: () => void }) {
+interface CustomStackBuilderProps {
+  onSwitchToPreBuilt: () => void;
+  templatePeptideNames?: string[];
+  onTemplateApplied?: () => void;
+}
+
+function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTemplateApplied }: CustomStackBuilderProps) {
   const [selectedPeptides, setSelectedPeptides] = useState<Product[]>([]);
   const [synergyAnalysis, setSynergyAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -153,6 +186,29 @@ function CustomStackBuilder({ onSwitchToPreBuilt }: { onSwitchToPreBuilt: () => 
   });
 
   const inStockPeptides = products?.filter(p => p.inStock && p.category?.toLowerCase() === "peptides") || [];
+
+  // Apply template peptides when provided
+  useEffect(() => {
+    if (templatePeptideNames && templatePeptideNames.length > 0 && products) {
+      const matchedPeptides = templatePeptideNames
+        .map(name => products.find(p => 
+          p.name.toLowerCase().includes(name.toLowerCase().replace(/\s*\([^)]*\)/g, '')) ||
+          name.toLowerCase().includes(p.name.toLowerCase())
+        ))
+        .filter((p): p is Product => p !== undefined && p.inStock === true)
+        .slice(0, 4);
+      
+      if (matchedPeptides.length > 0) {
+        setSelectedPeptides(matchedPeptides);
+        setSynergyAnalysis(null);
+        onTemplateApplied?.();
+        toast({
+          title: "Template Applied",
+          description: `${matchedPeptides.length} peptide${matchedPeptides.length > 1 ? 's' : ''} from the template have been pre-selected. Customize as needed!`,
+        });
+      }
+    }
+  }, [templatePeptideNames, products, onTemplateApplied, toast]);
 
   const togglePeptide = (product: Product) => {
     if (selectedPeptides.find(p => p.id === product.id)) {
@@ -468,12 +524,12 @@ function CustomStackBuilder({ onSwitchToPreBuilt }: { onSwitchToPreBuilt: () => 
         </div>
         
         {isLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[...Array(8)].map((_, i) => (
-              <Card key={i} className="p-4">
-                <Skeleton className="aspect-square rounded-lg mb-3" />
-                <Skeleton className="h-5 w-3/4 mb-2" />
-                <Skeleton className="h-4 w-1/2" />
+          <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+            {[...Array(12)].map((_, i) => (
+              <Card key={i} className="p-2">
+                <Skeleton className="aspect-[4/3] rounded-md mb-2" />
+                <Skeleton className="h-4 w-3/4 mb-1" />
+                <Skeleton className="h-3 w-1/2" />
               </Card>
             ))}
           </div>
@@ -493,7 +549,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt }: { onSwitchToPreBuilt: () => 
             </Button>
           </Card>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
             {inStockPeptides.map(product => {
               const isSelected = selectedPeptides.find(p => p.id === product.id);
               const isDisabled = !isSelected && selectedPeptides.length >= 4;
@@ -501,17 +557,17 @@ function CustomStackBuilder({ onSwitchToPreBuilt }: { onSwitchToPreBuilt: () => 
               return (
                 <motion.div
                   key={product.id}
-                  whileHover={{ scale: isDisabled ? 1 : 1.03 }}
-                  whileTap={{ scale: isDisabled ? 1 : 0.97 }}
+                  whileHover={{ scale: isDisabled ? 1 : 1.02 }}
+                  whileTap={{ scale: isDisabled ? 1 : 0.98 }}
                 >
                   <Card
                     onClick={() => !isDisabled && togglePeptide(product)}
-                    className={`p-4 cursor-pointer transition-all duration-300 relative overflow-hidden ${
+                    className={`p-2 cursor-pointer transition-all duration-300 relative overflow-hidden ${
                       isSelected
-                        ? "border-2 border-[#21d8ff] bg-[#21d8ff]/5 shadow-[0_0_30px_rgba(33,216,255,0.4)]"
+                        ? "border-2 border-[#21d8ff] bg-[#21d8ff]/5 shadow-[0_0_20px_rgba(33,216,255,0.3)]"
                         : isDisabled
                         ? "opacity-40 cursor-not-allowed border-[#2a2a32] grayscale"
-                        : "border-[#2a2a32] hover:border-[#21d8ff]/60 hover:shadow-[0_0_20px_rgba(33,216,255,0.2)]"
+                        : "border-[#2a2a32] hover:border-[#21d8ff]/60 hover:shadow-[0_0_15px_rgba(33,216,255,0.15)]"
                     }`}
                     data-testid={`card-select-peptide-${product.id}`}
                   >
@@ -520,25 +576,39 @@ function CustomStackBuilder({ onSwitchToPreBuilt }: { onSwitchToPreBuilt: () => 
                       <motion.div 
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        className="absolute top-3 right-3 w-7 h-7 rounded-full bg-gradient-to-br from-[#21d8ff] to-[#9d4edd] flex items-center justify-center shadow-lg"
+                        className="absolute top-2 right-2 w-5 h-5 rounded-full bg-gradient-to-br from-[#21d8ff] to-[#9d4edd] flex items-center justify-center shadow-md"
                       >
-                        <Check className="h-4 w-4 text-white" />
+                        <Check className="h-3 w-3 text-white" />
                       </motion.div>
                   )}
-                  <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 rounded-lg mb-3 overflow-hidden">
+                  <div className="aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 rounded-md mb-2 overflow-hidden relative">
                     <img
                       src={product.imageUrl || productImage}
                       alt={product.name}
-                      className="w-full h-full object-contain p-2"
+                      className="w-full h-full object-contain p-1"
                     />
                   </div>
-                  <h3 className="font-display font-semibold text-sm mb-1">{product.name}</h3>
-                  <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{product.shortDescription}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-[#E7FB10]">${product.price}</span>
+                  <h3 className="font-display font-semibold text-xs mb-1 truncate">{product.name}</h3>
+                  <div className="flex flex-wrap gap-0.5 mb-1.5">
+                    {getPeptideCategories(product.name).slice(0, 2).map((cat, i) => {
+                      const CatIcon = cat.icon;
+                      return (
+                        <span 
+                          key={i}
+                          className="inline-flex items-center px-1 py-0.5 rounded text-[8px] font-medium"
+                          style={{ backgroundColor: `${cat.color}20`, color: cat.color }}
+                        >
+                          <CatIcon className="h-2 w-2 mr-0.5" />
+                          {cat.label}
+                        </span>
+                      );
+                    })}
+                  </div>
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="font-bold text-xs text-[#E7FB10]">${product.price}</span>
                     {!isSelected && !isDisabled && (
-                      <Badge variant="outline" className="text-xs border-[#21d8ff]/50 text-[#21d8ff]">
-                        <Plus className="h-3 w-3 mr-1" />
+                      <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5 border-[#21d8ff]/50 text-[#21d8ff]">
+                        <Plus className="h-2.5 w-2.5 mr-0.5" />
                         Add
                       </Badge>
                     )}
@@ -570,6 +640,12 @@ function CustomStackBuilder({ onSwitchToPreBuilt }: { onSwitchToPreBuilt: () => 
 
 function ResearchStacks() {
   const [activeTab, setActiveTab] = useState<StackTab>("pre-built");
+  const [templatePeptideNames, setTemplatePeptideNames] = useState<string[]>([]);
+
+  const handleUseAsTemplate = (peptideNames: string[]) => {
+    setTemplatePeptideNames([...peptideNames]); // Create new array to trigger useEffect
+    setActiveTab("custom");
+  };
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-12">
@@ -662,7 +738,11 @@ function ResearchStacks() {
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.2 }}
             >
-              <CustomStackBuilder onSwitchToPreBuilt={() => setActiveTab("pre-built")} />
+              <CustomStackBuilder 
+                onSwitchToPreBuilt={() => setActiveTab("pre-built")}
+                templatePeptideNames={templatePeptideNames}
+                onTemplateApplied={() => setTemplatePeptideNames([])}
+              />
             </motion.div>
           ) : (
             <motion.div
@@ -819,6 +899,18 @@ function ResearchStacks() {
                   </motion.div>
                   </motion.div>
                 </Link>
+                <div className="mt-2 flex justify-center">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="border-[#a855f7]/50 text-[#a855f7] w-full"
+                    onClick={() => handleUseAsTemplate(stack.peptides)}
+                    data-testid={`button-use-template-${stack.id}`}
+                  >
+                    <Layers className="h-3 w-3 mr-1" />
+                    Use as Template
+                  </Button>
+                </div>
               </motion.div>
             );
           })}
