@@ -268,9 +268,9 @@ function PipelineStep({ step, index, isActive, isExpanded, onToggle, totalSteps 
       
       {/* Click hint */}
       <motion.p 
-        className="text-[10px] text-muted-foreground/50 mt-2 hidden md:block"
-        animate={{ opacity: [0.3, 0.7, 0.3] }}
-        transition={{ duration: 2, repeat: Infinity }}
+        className="text-[11px] text-muted-foreground mt-2 hidden md:block"
+        animate={{ opacity: [0.5, 0.9, 0.5] }}
+        transition={{ duration: 2.5, repeat: Infinity }}
       >
         Click to learn more
       </motion.p>
