@@ -706,9 +706,14 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                               animate={{ scale: 1, opacity: 1 }}
                               className="text-center"
                             >
-                              <div className="mb-1 flex justify-center">
-                                <knownStack.icon className="w-6 h-6" style={{ color: knownStack.color }} />
-                              </div>
+                              {(() => {
+                                const IconComponent = knownStack.icon;
+                                return (
+                                  <div className="mb-1 flex justify-center">
+                                    <IconComponent className="w-6 h-6" style={{ color: knownStack.color }} />
+                                  </div>
+                                );
+                              })()}
                               <p className="font-display font-bold text-lg" style={{ color: knownStack.color }}>
                                 {knownStack.name}
                               </p>
@@ -770,7 +775,10 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                           </p>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <span className="text-lg">{recommendation.stack.icon}</span>
+                              {(() => {
+                                const RecommendIcon = recommendation.stack.icon;
+                                return <RecommendIcon className="w-5 h-5" style={{ color: recommendation.stack.color }} />;
+                              })()}
                               <span className="font-display font-bold" style={{ color: recommendation.stack.color }}>
                                 {recommendation.stack.synergyBonus}% synergy
                               </span>
