@@ -5,7 +5,7 @@ import path from "path";
 import { storage } from "./storage";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
-import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertReviewSchema, insertNewsletterSubscriberSchema, subscriptions, savedStacks, insertSavedStackSchema } from "@shared/schema";
+import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertNewsletterSubscriberSchema, subscriptions, savedStacks, insertSavedStackSchema } from "@shared/schema";
 import { setupAuth, isAuthenticated } from "./auth0Auth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
@@ -817,31 +817,6 @@ export async function registerRoutes(
     }
   });
 
-  // === REVIEWS ROUTES ===
-
-  // Get reviews for a product (public - includes user info for display)
-  app.get("/api/products/:id/reviews", async (req, res) => {
-    try {
-      const reviews = await storage.getProductReviews(req.params.id);
-      const ratingData = await storage.getProductAverageRating(req.params.id);
-      
-      // Enrich reviews with user info (name from users table)
-      const enrichedReviews = await Promise.all(reviews.map(async (review) => {
-        const user = await storage.getUser(review.userId);
-        return {
-          ...review,
-          reviewerName: user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Verified Customer' : 'Verified Customer',
-          isVerifiedPurchase: true // All reviews are now verified purchases
-        };
-      }));
-      
-      res.json({ reviews: enrichedReviews, ...ratingData });
-    } catch (error) {
-      console.error("Error fetching reviews:", error);
-      res.status(500).json({ error: "Failed to fetch reviews" });
-    }
-  });
-
   // Get storage profile for a product
   app.get("/api/products/:id/storage", async (req, res) => {
     try {
@@ -882,84 +857,6 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error fetching dosage stocks:", error);
       res.status(500).json({ error: "Failed to fetch dosage stocks" });
-    }
-  });
-
-  // Get reviewable orders for authenticated user (orders eligible for reviews)
-  app.get("/api/reviews/my-reviewable-orders", isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user?.claims?.sub;
-      if (!userId) {
-        return res.status(401).json({ error: "Not authenticated" });
-      }
-      
-      const reviewableOrders = await storage.getReviewableOrdersForUser(userId);
-      res.json(reviewableOrders);
-    } catch (error) {
-      console.error("Error fetching reviewable orders:", error);
-      res.status(500).json({ error: "Failed to fetch reviewable orders" });
-    }
-  });
-
-  // Check if user can review a specific order
-  app.get("/api/reviews/can-review/:orderId", isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user?.claims?.sub;
-      if (!userId) {
-        return res.status(401).json({ error: "Not authenticated" });
-      }
-      
-      const result = await storage.canUserReviewOrder(userId, req.params.orderId);
-      res.json(result);
-    } catch (error) {
-      console.error("Error checking review eligibility:", error);
-      res.status(500).json({ error: "Failed to check review eligibility" });
-    }
-  });
-
-  // Submit a review (requires authentication and verified purchase)
-  app.post("/api/reviews", isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user?.claims?.sub;
-      if (!userId) {
-        return res.status(401).json({ error: "Not authenticated" });
-      }
-
-      const { orderId, rating, title, comment } = req.body;
-      
-      if (!orderId) {
-        return res.status(400).json({ error: "Order ID is required" });
-      }
-
-      // Verify the user can review this order
-      const eligibility = await storage.canUserReviewOrder(userId, orderId);
-      if (!eligibility.canReview) {
-        return res.status(403).json({ error: eligibility.reason });
-      }
-
-      // Get the order to find the product ID
-      const order = await storage.getOrder(orderId);
-      if (!order) {
-        return res.status(404).json({ error: "Order not found" });
-      }
-
-      const validatedData = insertReviewSchema.parse({
-        productId: order.productId,
-        userId,
-        orderId,
-        rating,
-        title,
-        comment
-      });
-      
-      const review = await storage.createReview(validatedData);
-      res.status(201).json(review);
-    } catch (error) {
-      console.error("Error creating review:", error);
-      if (error instanceof Error && error.name === "ZodError") {
-        return res.status(400).json({ error: "Invalid review data" });
-      }
-      res.status(500).json({ error: "Failed to submit review" });
     }
   });
 
@@ -2465,70 +2362,6 @@ export async function registerRoutes(
     }
   });
 
-  // === ADMIN REVIEW ROUTES ===
-
-  // Admin: Get all reviews
-  app.get("/api/admin/reviews", isAuthenticated, isAdmin, async (req, res) => {
-    try {
-      const allReviews = await storage.getAllReviews();
-      const products = await storage.getAllProducts();
-      const productMap = new Map(products.map(p => [p.id, p]));
-      
-      const reviewsWithProducts = allReviews.map(review => ({
-        ...review,
-        productName: productMap.get(review.productId)?.name || "Unknown Product",
-        productImageUrl: productMap.get(review.productId)?.imageUrl
-      }));
-      
-      res.json(reviewsWithProducts);
-    } catch (error) {
-      console.error("Error fetching reviews:", error);
-      res.status(500).json({ error: "Failed to fetch reviews" });
-    }
-  });
-
-  // Admin: Approve review
-  app.patch("/api/admin/reviews/:id/approve", isAuthenticated, isAdmin, async (req, res) => {
-    try {
-      const review = await storage.updateReviewApproval(req.params.id, true);
-      if (!review) {
-        return res.status(404).json({ error: "Review not found" });
-      }
-      res.json(review);
-    } catch (error) {
-      console.error("Error approving review:", error);
-      res.status(500).json({ error: "Failed to approve review" });
-    }
-  });
-
-  // Admin: Reject review (set isApproved to false)
-  app.patch("/api/admin/reviews/:id/reject", isAuthenticated, isAdmin, async (req, res) => {
-    try {
-      const review = await storage.updateReviewApproval(req.params.id, false);
-      if (!review) {
-        return res.status(404).json({ error: "Review not found" });
-      }
-      res.json(review);
-    } catch (error) {
-      console.error("Error rejecting review:", error);
-      res.status(500).json({ error: "Failed to reject review" });
-    }
-  });
-
-  // Admin: Delete review
-  app.delete("/api/admin/reviews/:id", isAuthenticated, isAdmin, async (req, res) => {
-    try {
-      const deleted = await storage.deleteReview(req.params.id);
-      if (!deleted) {
-        return res.status(404).json({ error: "Review not found" });
-      }
-      res.json({ success: true });
-    } catch (error) {
-      console.error("Error deleting review:", error);
-      res.status(500).json({ error: "Failed to delete review" });
-    }
-  });
-
   // === ADMIN AFFILIATE ROUTES ===
 
   // Admin: Get all affiliate applications
@@ -3814,15 +3647,6 @@ Return ONLY valid JSON in this exact format:
         });
       }
       
-      // Count verified reviews
-      const allReviews = await storage.getAllReviews();
-      const userReviews = allReviews.filter(r => r.userId === userId);
-      if (userReviews.length !== profile.verifiedReviewsCount) {
-        profile = await storage.createOrUpdateUserResearchProfile(userId, {
-          verifiedReviewsCount: userReviews.length
-        });
-      }
-      
       const phase = storage.computeResearchPhase(profile);
       const title = storage.computeResearchTitle(profile);
       
@@ -3834,7 +3658,6 @@ Return ONLY valid JSON in this exact format:
         coaEducationViewed: profile.coaEducationViewed || false,
         batchVerificationCount: profile.batchVerificationCount || 0,
         compoundsTrackedCount: profile.compoundsTrackedCount || 0,
-        verifiedReviewsCount: profile.verifiedReviewsCount || 0,
         earlyAccessMember: profile.earlyAccessMember || false,
       });
     } catch (error) {
