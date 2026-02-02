@@ -1857,7 +1857,12 @@ function ProductsTab() {
               const anyInStock = stockSummary ? stockSummary.inStock > 0 : product.inStock;
               
               return (
-                <TableRow key={product.id} data-testid={`row-product-${product.id}`}>
+                <TableRow 
+                  key={product.id} 
+                  data-testid={`row-product-${product.id}`}
+                  className="cursor-pointer hover:bg-muted/50 transition-colors"
+                  onClick={() => handleOpenDialog(productWithStock)}
+                >
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>{product.category}</TableCell>
                   <TableCell>${Number(product.price).toFixed(2)}</TableCell>
@@ -1882,7 +1887,7 @@ function ProductsTab() {
                       {product.showOnLandingPage && anyInStock && <Badge className="bg-[#E7FB10] text-black">Landing</Badge>}
                     </div>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                     <div className="flex justify-end gap-2">
                       <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(productWithStock)} data-testid={`button-edit-product-${product.id}`}>
                         <Pencil className="h-4 w-4" />
