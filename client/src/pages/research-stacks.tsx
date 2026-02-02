@@ -728,7 +728,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
     toast({
       title: "Added to Cart",
       description: `${customStackName} added with ${getDiscount()}% bundle discount`,
-      duration: 4000,
+      duration: 2500,
       action: (
         <Button 
           variant="outline" 
