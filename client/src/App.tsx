@@ -103,31 +103,11 @@ function Router() {
         <Route path="/peptides/:id" component={ProductDetail} />
         <Route path="/products" component={Products} />
         <Route path="/products/:id" component={ProductDetail} />
-        <Route path="/bulk-packs">
-          <ProtectedRoute title="Bulk Research Packs" description="Access exclusive bulk pricing for research institutions and qualified researchers.">
-            <BulkPacks />
-          </ProtectedRoute>
-        </Route>
+        <Route path="/bulk-packs" component={BulkPacks} />
         <Route path="/wholesale" component={Wholesale} />
-        <Route path="/research-stacks">
-          <ProtectedRoute title="Research Stacks" description="Access curated peptide combinations designed for specific research applications.">
-            <ResearchStacks />
-          </ProtectedRoute>
-        </Route>
-        <Route path="/research-stacks/:id">
-          {(params) => (
-            <ProtectedRoute title="Research Stack Details" description="Sign in to view stack details and add to your cart.">
-              <ResearchStackDetail />
-            </ProtectedRoute>
-          )}
-        </Route>
-        <Route path="/bundles/:id">
-          {(params) => (
-            <ProtectedRoute title="Bundle Details" description="Sign in to view bundle details and pricing.">
-              <BundleDetail />
-            </ProtectedRoute>
-          )}
-        </Route>
+        <Route path="/research-stacks" component={ResearchStacks} />
+        <Route path="/research-stacks/:id" component={ResearchStackDetail} />
+        <Route path="/bundles/:id" component={BundleDetail} />
         <Route path="/cart" component={Cart} />
         <Route path="/checkout" component={Checkout} />
         <Route path="/checkout/success" component={CheckoutSuccess} />
