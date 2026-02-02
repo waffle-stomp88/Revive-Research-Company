@@ -1115,7 +1115,7 @@ export default function ProductDetail() {
                 <p className="text-muted-foreground leading-relaxed mb-4">
                   {product.usage}
                 </p>
-                <div className="pl-1">
+                <div className="py-2 px-1 -mx-1">
                   <Link href="/education/storage-101">
                     <motion.div
                       whileHover={{ scale: 1.02 }}
@@ -1123,7 +1123,7 @@ export default function ProductDetail() {
                       className="inline-block"
                     >
                       <Button 
-                        className="gap-2 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold md:hover:shadow-[0_0_20px_rgba(33,216,255,0.6)] transition-shadow" 
+                        className="gap-2 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold md:hover:shadow-[0_0_20px_rgba(33,216,255,0.6)] transition-shadow ml-4" 
                         data-testid="link-learn-storage"
                       >
                         <BookOpen className="h-4 w-4" />
