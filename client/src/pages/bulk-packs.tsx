@@ -20,12 +20,13 @@ const fadeInUp = {
 };
 
 const bulkPackOptions = [
-  { quantity: 5, discount: 10, label: "5-Pack", popular: false },
-  { quantity: 10, discount: 15, label: "10-Pack", popular: true },
+  { quantity: 3, discount: 5, label: "3-Pack", popular: false },
+  { quantity: 5, discount: 10, label: "5-Pack", popular: true },
+  { quantity: 10, discount: 15, label: "10-Pack", popular: false },
 ];
 
 export default function BulkPacks() {
-  const [selectedPack, setSelectedPack] = useState<number>(10);
+  const [selectedPack, setSelectedPack] = useState<number>(5);
 
   const { data: products, isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
@@ -78,7 +79,7 @@ export default function BulkPacks() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="grid md:grid-cols-2 gap-4 max-w-2xl mx-auto mb-12"
+          className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-3xl mx-auto mb-12"
         >
           {bulkPackOptions.map((pack) => (
             <Card
