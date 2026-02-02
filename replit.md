@@ -25,7 +25,12 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **Shipping & Returns**: Free shipping on orders over $200, flat rate otherwise. No refunds policy.
 - **Affiliate Program**: Two-tier commission structure (10% direct + 10% customer discount, 10% team override), 30-day cookie window, $100 minimum payout, monthly payouts, with application and dashboard features.
 - **AI Integration**: AI Chatbot (OpenAI gpt-4o-mini) for customer support with product context. AI Dynamic Pricing for admin product management, suggesting optimal prices with confidence ratings. AI Synergy Analysis for custom stack builder providing research-focused pathway mechanism descriptions.
-- **Custom Stack Builder**: Located at `/research-stacks` under "Build Custom" tab with two-column layout (65% peptide selection grid left, 35% sticky build panel right). Users select 2-4 peptides for custom research bundles with flat 10% discount (pre-built stacks offer better 15-20% value). Features AI-powered pathway analysis with Simple/Expert toggle via `POST /api/ai/synergy-analysis` endpoint. Simple mode uses everyday language and analogies; Expert mode describes receptors, signaling cascades (JAK/STAT, MAPK/ERK), and molecular mechanisms.
+- **Custom Stack Builder**: Located at `/research-stacks` under "Build Custom" tab with two-column layout (65% peptide selection grid left, 35% sticky build panel right). Users select 2-4 peptides for custom research bundles with flat 10% discount (pre-built stacks offer better 15-20% value). Features real-time synergy visualization with:
+  - **Synergy Ring**: Animated circular progress meter (0-100%) showing synergy score based on peptide combinations
+  - **Known Stack Detection**: Recognizes famous combinations (Wolverine Stack: BPC-157+TB-500 at 95%, Glow Protocol: BPC-157+TB-500+GHK-Cu at 90%, GH Amplifier: Ipamorelin+CJC-1295 at 88%) with celebration UI badges
+  - **Smart Recommendations**: Suggests peptides to complete known stacks ("Add TB-500 to unlock Wolverine Stack")
+  - **Body System Heatmap**: Visual icons (Healing, Metabolic, Cognitive, Skin, Growth, Longevity) that glow when activated by selected peptides
+  - **Shared Pathway Detection**: Shows common mechanisms between selected peptides (Angiogenesis, Collagen Synthesis, etc.)
 - **Subscription System**: PayPal-based recurring subscriptions with weekly, bi-weekly, and monthly options, offering tiered discounts.
 - **User Experience**: Guest checkout, shop page pagination with in-stock priority, discount code system, and a price transparency system showing price trends.
 - **Analytics**: Google Analytics GA4 integration for tracking page views and custom events.
