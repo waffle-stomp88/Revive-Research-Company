@@ -85,7 +85,7 @@ export default function BulkPacks() {
             <Card
               key={pack.quantity}
               onClick={() => setSelectedPack(pack.quantity)}
-              className={`p-6 cursor-pointer transition-all duration-300 relative ${
+              className={`p-4 sm:p-5 cursor-pointer transition-all duration-300 relative min-h-[120px] flex flex-col justify-center ${
                 selectedPack === pack.quantity
                   ? "border-2 border-[#E7FB10] shadow-[0_0_30px_rgba(231,251,16,0.3)]"
                   : "border-2 border-border hover:border-[#E7FB10]/50"
@@ -93,23 +93,23 @@ export default function BulkPacks() {
               data-testid={`card-pack-${pack.quantity}`}
             >
               {pack.popular && (
-                <Badge className="absolute -top-2 -right-2 bg-[#E7FB10] text-black">
+                <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-[#E7FB10] text-black whitespace-nowrap">
                   <Sparkles className="h-3 w-3 mr-1" />
                   Most Popular
                 </Badge>
               )}
-              <div className="flex items-center gap-4">
-                <div className={`w-14 h-14 rounded-lg flex items-center justify-center ${
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${
                   selectedPack === pack.quantity ? "bg-[#E7FB10]/20" : "bg-muted"
                 }`}>
-                  <Package className={`h-7 w-7 ${selectedPack === pack.quantity ? "text-[#E7FB10]" : "text-muted-foreground"}`} />
+                  <Package className={`h-5 w-5 sm:h-6 sm:w-6 ${selectedPack === pack.quantity ? "text-[#E7FB10]" : "text-muted-foreground"}`} />
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-display text-xl font-bold">{pack.label}</h3>
-                  <p className="text-muted-foreground text-sm">{pack.quantity} vials per product</p>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-display text-lg sm:text-xl font-bold whitespace-nowrap">{pack.label}</h3>
+                  <p className="text-muted-foreground text-xs sm:text-sm">{pack.quantity} vials per product</p>
                 </div>
-                <div className="text-right">
-                  <Badge variant="outline" className="border-green-500/50 text-green-500">
+                <div className="flex-shrink-0">
+                  <Badge variant="outline" className="border-green-500/50 text-green-500 whitespace-nowrap text-xs">
                     <Percent className="h-3 w-3 mr-1" />
                     {pack.discount}% OFF
                   </Badge>
