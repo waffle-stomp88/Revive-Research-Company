@@ -1095,20 +1095,6 @@ export default function ProductDetail() {
               </Collapsible>
             )}
 
-            {benefits.length > 0 && (
-              <div className="mb-8">
-                <h3 className="font-display font-semibold text-lg mb-4">Key Benefits</h3>
-                <ul className="space-y-3">
-                  {benefits.map((benefit, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-[#E7FB10] mt-0.5 flex-shrink-0" />
-                      <span className="text-muted-foreground">{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
             {product.usage && (
               <div className="mb-8 overflow-visible">
                 <h3 className="font-display font-semibold text-lg mb-4">Usage Information</h3>
@@ -1133,6 +1119,20 @@ export default function ProductDetail() {
                     </motion.div>
                   </Link>
                 </div>
+              </div>
+            )}
+
+            {benefits.length > 0 && (
+              <div className="mb-8">
+                <h3 className="font-display font-semibold text-lg mb-4">Key Benefits</h3>
+                <ul className="space-y-3">
+                  {benefits.map((benefit, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <CheckCircle className="h-5 w-5 text-[#E7FB10] mt-0.5 flex-shrink-0" />
+                      <span className="text-muted-foreground">{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
           </motion.div>
