@@ -208,7 +208,7 @@ function PipelineStep({ step, index, isActive, isExpanded, onToggle, totalSteps 
             }}
           >
             <Icon 
-              className="h-8 w-8 md:h-10 md:w-10" 
+              className="h-10 w-10 md:h-12 md:w-12" 
               style={{ 
                 color: step.color,
                 filter: `drop-shadow(0 0 8px ${step.color})`
