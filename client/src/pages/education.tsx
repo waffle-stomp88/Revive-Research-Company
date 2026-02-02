@@ -348,6 +348,26 @@ export default function Education() {
   const [peptideGroupFilter, setPeptideGroupFilter] = useState<string>("all");
   const [generalEdCategoryFilter, setGeneralEdCategoryFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [categoriesCollapsed, setCategoriesCollapsed] = useState(() => {
+    // Start collapsed on mobile (< 768px)
+    return typeof window !== 'undefined' && window.innerWidth < 768;
+  });
+
+  // Handle resize to keep categories expanded on desktop
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth < 1024; // lg breakpoint
+      if (!isMobile) {
+        // Always expanded on desktop
+        setCategoriesCollapsed(false);
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Check on mount
+    
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const { data: articles = [], isLoading } = useQuery<EducationArticle[]>({
     queryKey: ["/api/education"],
@@ -859,9 +879,29 @@ export default function Education() {
                     {/* Left Panel - Category Navigation */}
                     <div className="lg:w-64 flex-shrink-0">
                       <div className="lg:sticky lg:top-28 space-y-2">
-                        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-2">
-                          Research Categories
-                        </h3>
+                        <button
+                          onClick={() => setCategoriesCollapsed(!categoriesCollapsed)}
+                          className="lg:pointer-events-none w-full flex items-center justify-between px-2 mb-3 cursor-pointer lg:cursor-default"
+                          data-testid="button-toggle-categories"
+                        >
+                          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                            Research Categories
+                          </h3>
+                          <ChevronDown 
+                            className={`h-4 w-4 text-muted-foreground lg:hidden transition-transform duration-200 ${
+                              categoriesCollapsed ? '-rotate-90' : ''
+                            }`} 
+                          />
+                        </button>
+                        <AnimatePresence initial={false}>
+                          {!categoriesCollapsed && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.2 }}
+                              className="overflow-hidden"
+                            >
                         {peptideGroups.map((group) => {
                           const isActive = peptideGroupFilter === group.id;
                           const count = peptideGroupCounts[group.id] || 0;
@@ -904,6 +944,9 @@ export default function Education() {
                         })}
 
                         {/* Academy CTA Removed from here */}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
                     </div>
 
