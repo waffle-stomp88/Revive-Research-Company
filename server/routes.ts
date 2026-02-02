@@ -3308,32 +3308,79 @@ Be friendly, professional, and helpful. If you don't know something specific abo
         return res.status(400).json({ error: "Peptides list is required" });
       }
 
-      const systemPrompt = `You are a research scientist specializing in peptide biochemistry. You provide pathway mechanism analysis for research compound combinations.
+      const peptideList = peptides.split(",").map((p: string) => p.trim());
+
+      const systemPrompt = `You are a research scientist specializing in peptide biochemistry. Provide structured pathway analysis for research compound combinations.
 
 CRITICAL RULES:
 - ONLY describe molecular pathways, receptor interactions, and laboratory research applications
 - NEVER mention human use, dosing, timing, or therapeutic applications
-- Focus on: "pathway mechanisms," "molecular interactions," "receptor binding," "cellular signaling cascades"
-- Use phrases like "in laboratory studies," "research indicates," "mechanistically," "at the molecular level"
-- Keep responses to 2-3 sentences, scientifically accurate but accessible
-- End with a note about complementary research applications
+- Use scientific but accessible language
 
-Example response format:
-"These compounds interact through complementary signaling pathways. [Peptide A] acts on [receptor/pathway], while [Peptide B] modulates [different pathway], creating potential synergistic effects in cellular repair mechanism studies. This combination is suited for researchers investigating [research area]."`;
+Respond with ONLY valid JSON in this exact format (no markdown, no code blocks):
+{
+  "peptidePathways": [
+    {
+      "name": "Peptide Name",
+      "pathway": "Primary pathway/receptor it targets",
+      "mechanism": "One sentence mechanism description"
+    }
+  ],
+  "synergyBenefits": [
+    "Benefit 1: Brief description of synergistic effect",
+    "Benefit 2: Another synergistic benefit"
+  ],
+  "bestFor": ["Research Area 1", "Research Area 2", "Research Area 3"],
+  "simpleExplanation": "2-3 sentences explaining how these work together in simple terms that a non-scientist could understand",
+  "expertExplanation": "2-3 sentences with detailed molecular pathways, receptor names, and signaling cascades for advanced researchers",
+  "synergyScore": 85
+}
+
+The synergyScore should be 60-100 based on how complementary the compounds are (higher = more synergistic).`;
 
       const completion = await openaiClient.chat.completions.create({
         model: "gpt-4o-mini",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: `Provide a brief pathway mechanism analysis for this research peptide combination: ${peptides}. Focus on molecular interactions and research applications only.` }
+          { role: "user", content: `Provide structured pathway analysis for: ${peptides}` }
         ],
-        max_tokens: 300,
+        max_tokens: 600,
         temperature: 0.5,
       });
 
-      const analysis = completion.choices[0]?.message?.content || "Unable to generate pathway analysis at this time.";
+      const rawContent = completion.choices[0]?.message?.content || "";
       
-      res.json({ analysis });
+      try {
+        // Try to parse as JSON
+        const cleanedContent = rawContent.replace(/```json\n?|\n?```/g, '').trim();
+        const parsed = JSON.parse(cleanedContent);
+        
+        // Validate required fields exist with correct types
+        const isValid = 
+          Array.isArray(parsed.peptidePathways) &&
+          parsed.peptidePathways.every((p: any) => p.name && p.pathway) &&
+          Array.isArray(parsed.synergyBenefits) &&
+          Array.isArray(parsed.bestFor) &&
+          typeof parsed.simpleExplanation === 'string' &&
+          typeof parsed.expertExplanation === 'string' &&
+          typeof parsed.synergyScore === 'number';
+
+        if (isValid) {
+          res.json({ analysis: parsed, structured: true });
+        } else {
+          // Invalid structure, return as plain text
+          res.json({ 
+            analysis: parsed.simpleExplanation || parsed.expertExplanation || rawContent,
+            structured: false 
+          });
+        }
+      } catch {
+        // Fallback to plain text if JSON parsing fails
+        res.json({ 
+          analysis: rawContent,
+          structured: false 
+        });
+      }
     } catch (error) {
       console.error("Error in synergy analysis endpoint:", error);
       res.status(500).json({ error: "Failed to generate synergy analysis" });

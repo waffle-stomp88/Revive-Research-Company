@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
 import { CategoryTabs } from "@/components/category-tabs";
-import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, Plus, X, Check, ShoppingCart, Loader2, Beaker, Brain } from "lucide-react";
+import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, Plus, X, Check, ShoppingCart, Loader2, Beaker, Brain, Target, TrendingUp, Microscope, ToggleLeft, ToggleRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -138,6 +138,21 @@ const researchStacks: ResearchStack[] = [
 ];
 
 type StackTab = "pre-built" | "custom";
+type ExplanationMode = "simple" | "expert";
+
+// Structured synergy analysis interface
+interface SynergyAnalysis {
+  peptidePathways: Array<{
+    name: string;
+    pathway: string;
+    mechanism: string;
+  }>;
+  synergyBenefits: string[];
+  bestFor: string[];
+  simpleExplanation: string;
+  expertExplanation: string;
+  synergyScore: number;
+}
 
 // Goal-based category mapping for peptides
 const peptideCategories: Record<string, { label: string; color: string; icon: typeof Heart }[]> = {
@@ -175,7 +190,9 @@ interface CustomStackBuilderProps {
 
 function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTemplateApplied }: CustomStackBuilderProps) {
   const [selectedPeptides, setSelectedPeptides] = useState<Product[]>([]);
-  const [synergyAnalysis, setSynergyAnalysis] = useState<string | null>(null);
+  const [synergyAnalysis, setSynergyAnalysis] = useState<SynergyAnalysis | string | null>(null);
+  const [isStructured, setIsStructured] = useState(false);
+  const [explanationMode, setExplanationMode] = useState<ExplanationMode>("simple");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const { addToCart } = useCart();
   const { toast } = useToast();
@@ -251,10 +268,12 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
     },
     onSuccess: (data) => {
       setSynergyAnalysis(data.analysis);
+      setIsStructured(data.structured === true);
       setIsAnalyzing(false);
     },
     onError: () => {
       setSynergyAnalysis("Unable to generate pathway analysis at this time. Please try again.");
+      setIsStructured(false);
       setIsAnalyzing(false);
     },
   });
@@ -480,7 +499,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
         </motion.div>
       )}
 
-      {/* AI Synergy Analysis */}
+      {/* AI Synergy Analysis - Structured Display */}
       <AnimatePresence>
         {synergyAnalysis && (
           <motion.div
@@ -489,20 +508,149 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden"
           >
-            <Card className="p-6 border-[#a855f7]/30 bg-gradient-to-br from-[#a855f7]/5 to-transparent">
-              <div className="flex items-start gap-3">
-                <div className="p-2 rounded-lg bg-[#a855f7]/20">
-                  <Brain className="h-5 w-5 text-[#a855f7]" />
+            {isStructured && typeof synergyAnalysis === 'object' ? (() => {
+              // Defensive defaults for all fields
+              const pathways = synergyAnalysis.peptidePathways ?? [];
+              const benefits = synergyAnalysis.synergyBenefits ?? [];
+              const bestFor = synergyAnalysis.bestFor ?? [];
+              const score = synergyAnalysis.synergyScore ?? 75;
+              const simpleText = synergyAnalysis.simpleExplanation ?? "";
+              const expertText = synergyAnalysis.expertExplanation ?? "";
+              
+              return (
+              <Card className="border-[#a855f7]/30 bg-gradient-to-br from-[#a855f7]/5 to-transparent overflow-hidden" data-testid="card-synergy-analysis">
+                {/* Header with Synergy Score */}
+                <div className="p-4 border-b border-[#a855f7]/20 bg-[#a855f7]/10">
+                  <div className="flex items-center justify-between flex-wrap gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-[#a855f7]/30">
+                        <Brain className="h-5 w-5 text-[#a855f7]" />
+                      </div>
+                      <div>
+                        <h4 className="font-display font-bold text-white">Pathway Analysis</h4>
+                        <p className="text-xs text-muted-foreground">AI-powered research insights</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      {/* Synergy Score */}
+                      <div className="text-center" data-testid="synergy-score-display">
+                        <div className="flex items-center gap-1">
+                          <TrendingUp className="h-4 w-4 text-[#22c55e]" />
+                          <span className="text-2xl font-bold text-[#22c55e]" data-testid="text-synergy-score">{score}%</span>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground">Synergy Score</p>
+                      </div>
+                      {/* Simple/Expert Toggle */}
+                      <button
+                        onClick={() => setExplanationMode(prev => prev === "simple" ? "expert" : "simple")}
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1a1a1f] border border-[#2a2a32] text-xs transition-all"
+                        data-testid="button-toggle-explanation-mode"
+                      >
+                        {explanationMode === "simple" ? (
+                          <>
+                            <ToggleLeft className="h-4 w-4 text-[#21d8ff]" />
+                            <span className="text-[#21d8ff]">Simple</span>
+                          </>
+                        ) : (
+                          <>
+                            <ToggleRight className="h-4 w-4 text-[#a855f7]" />
+                            <span className="text-[#a855f7]">Expert</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <h4 className="font-display font-bold text-[#a855f7] mb-2">Pathway Mechanism Analysis</h4>
-                  <p className="text-sm text-gray-300 leading-relaxed">{synergyAnalysis}</p>
-                  <p className="text-xs text-muted-foreground mt-3 italic">
-                    This analysis is for research reference only and describes known molecular pathway interactions from peer-reviewed literature.
+
+                <div className="p-4 space-y-4">
+                  {/* Explanation Text */}
+                  <div className="p-3 rounded-lg bg-[#1a1a1f]/50 border border-[#2a2a32]" data-testid="text-explanation">
+                    <p className="text-sm text-gray-300 leading-relaxed">
+                      {explanationMode === "simple" ? simpleText : expertText}
+                    </p>
+                  </div>
+
+                  {/* Three Column Layout */}
+                  <div className="grid md:grid-cols-3 gap-3">
+                    {/* Peptide Pathways */}
+                    <div className="space-y-2" data-testid="section-pathways">
+                      <div className="flex items-center gap-2 text-xs font-semibold text-[#21d8ff] uppercase tracking-wider">
+                        <Target className="h-3.5 w-3.5" />
+                        Key Pathways
+                      </div>
+                      <div className="space-y-2">
+                        {pathways.map((peptide, i) => (
+                          <div key={i} className="p-2 rounded-lg bg-[#21d8ff]/5 border border-[#21d8ff]/20" data-testid={`card-pathway-${i}`}>
+                            <p className="font-semibold text-xs text-[#21d8ff]">{peptide.name ?? "Unknown"}</p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">{peptide.pathway ?? ""}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Synergy Benefits */}
+                    <div className="space-y-2" data-testid="section-benefits">
+                      <div className="flex items-center gap-2 text-xs font-semibold text-[#22c55e] uppercase tracking-wider">
+                        <Sparkles className="h-3.5 w-3.5" />
+                        Synergy Benefits
+                      </div>
+                      <div className="space-y-1.5">
+                        {benefits.slice(0, 3).map((benefit, i) => (
+                          <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-[#22c55e]/5 border border-[#22c55e]/20" data-testid={`card-benefit-${i}`}>
+                            <Check className="h-3 w-3 text-[#22c55e] mt-0.5 shrink-0" />
+                            <p className="text-[10px] text-gray-300 leading-tight">{benefit}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Best For */}
+                    <div className="space-y-2" data-testid="section-best-for">
+                      <div className="flex items-center gap-2 text-xs font-semibold text-[#E7FB10] uppercase tracking-wider">
+                        <Microscope className="h-3.5 w-3.5" />
+                        Best For Research
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {bestFor.map((area, i) => (
+                          <Badge 
+                            key={i}
+                            variant="outline"
+                            className="text-[10px] border-[#E7FB10]/30 text-[#E7FB10] bg-[#E7FB10]/5"
+                            data-testid={`badge-best-for-${i}`}
+                          >
+                            {area}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer Disclaimer */}
+                <div className="px-4 py-2 bg-[#0d0d10]/50 border-t border-[#2a2a32]">
+                  <p className="text-[10px] text-muted-foreground text-center italic">
+                    Research reference only. Describes known molecular pathway interactions from peer-reviewed literature.
                   </p>
                 </div>
-              </div>
-            </Card>
+              </Card>
+              );
+            })() : (
+              /* Fallback for non-structured response */
+              <Card className="p-6 border-[#a855f7]/30 bg-gradient-to-br from-[#a855f7]/5 to-transparent">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-[#a855f7]/20">
+                    <Brain className="h-5 w-5 text-[#a855f7]" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-display font-bold text-[#a855f7] mb-2">Pathway Mechanism Analysis</h4>
+                    <p className="text-sm text-gray-300 leading-relaxed">{String(synergyAnalysis)}</p>
+                    <p className="text-xs text-muted-foreground mt-3 italic">
+                      This analysis is for research reference only and describes known molecular pathway interactions from peer-reviewed literature.
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
