@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { EarlyAccessModal } from "@/components/early-access-modal";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
@@ -200,6 +201,46 @@ const KNOWN_STACKS: KnownStack[] = [
     description: "Mitochondrial power + metabolic signaling",
     synergyBonus: 80,
   },
+  {
+    name: "Cognitive Edge",
+    peptides: ["semax", "selank"],
+    icon: Brain,
+    color: "#21d8ff",
+    description: "Nootropic synergy - focus enhancement + anxiety reduction",
+    synergyBonus: 86,
+  },
+  {
+    name: "Longevity Protocol",
+    peptides: ["epithalon", "ghk-cu"],
+    icon: Crown,
+    color: "#a855f7",
+    description: "Telomere extension meets collagen regeneration",
+    synergyBonus: 84,
+  },
+  {
+    name: "Deep Sleep",
+    peptides: ["epithalon", "ipamorelin"],
+    icon: Moon,
+    color: "#6366f1",
+    description: "Circadian rhythm + natural GH pulse optimization",
+    synergyBonus: 83,
+  },
+  {
+    name: "Total Regen",
+    peptides: ["bpc-157", "tb-500", "ipamorelin"],
+    icon: Shield,
+    color: "#10b981",
+    description: "Complete recovery - local healing + systemic repair + growth support",
+    synergyBonus: 92,
+  },
+  {
+    name: "Lean Mass",
+    peptides: ["cjc-1295", "ipamorelin", "mots-c"],
+    icon: Dumbbell,
+    color: "#f97316",
+    description: "GH amplification + metabolic enhancement for body composition",
+    synergyBonus: 87,
+  },
 ];
 
 // Peptide pathway data for connections
@@ -266,15 +307,41 @@ const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
   },
 };
 
-// Body systems with icons
+// Body systems with icons and descriptions
 const BODY_SYSTEMS = [
-  { id: "healing", name: "Healing", icon: Heart, color: "#22c55e" },
-  { id: "metabolic", name: "Metabolic", icon: Zap, color: "#E7FB10" },
-  { id: "growth", name: "Growth", icon: Target, color: "#f59e0b" },
-  { id: "cognitive", name: "Cognitive", icon: Brain, color: "#21d8ff" },
-  { id: "skin", name: "Skin", icon: Sparkles, color: "#ec4899" },
-  { id: "longevity", name: "Longevity", icon: Crown, color: "#a855f7" },
+  { id: "healing", name: "Healing", icon: Heart, color: "#22c55e", description: "Tissue repair, wound healing, and injury recovery through growth factor activation" },
+  { id: "metabolic", name: "Metabolic", icon: Zap, color: "#E7FB10", description: "Energy production, fat metabolism, and mitochondrial function optimization" },
+  { id: "growth", name: "Growth", icon: Target, color: "#f59e0b", description: "Growth hormone pathways supporting muscle, bone, and cellular development" },
+  { id: "cognitive", name: "Cognitive", icon: Brain, color: "#21d8ff", description: "Neuroprotection, focus enhancement, and brain-derived growth factors" },
+  { id: "skin", name: "Skin", icon: Sparkles, color: "#ec4899", description: "Collagen synthesis, elastin production, and dermal regeneration" },
+  { id: "longevity", name: "Longevity", icon: Crown, color: "#a855f7", description: "Anti-aging mechanisms including telomere support and cellular renewal" },
 ];
+
+// Pathway descriptions for tooltips
+const PATHWAY_DESCRIPTIONS: Record<string, string> = {
+  "Nitric Oxide": "Vasodilation and blood flow enhancement for tissue delivery",
+  "Angiogenesis": "New blood vessel formation to supply healing tissues",
+  "Collagen Synthesis": "Structural protein production for skin, tendons, and connective tissue",
+  "Actin Regulation": "Cytoskeletal protein control for cell migration and repair",
+  "Cell Migration": "Enables cells to move to injury sites for repair",
+  "Copper Signaling": "Essential cofactor for enzyme activation and tissue remodeling",
+  "Matrix Remodeling": "Restructuring of extracellular matrix for tissue regeneration",
+  "AMPK Activation": "Master metabolic switch for energy production and fat burning",
+  "Mitochondrial Biogenesis": "Creation of new mitochondria for cellular energy",
+  "GLP-1": "Incretin hormone pathway for appetite and glucose control",
+  "GIP": "Gastric inhibitory peptide for enhanced insulin sensitivity",
+  "Glucagon": "Counter-regulatory hormone for fat mobilization",
+  "Ghrelin Receptor": "Growth hormone secretagogue receptor activation",
+  "GH Secretion": "Natural growth hormone release from the pituitary",
+  "GHRH Signaling": "Growth hormone-releasing hormone pathway",
+  "Telomerase Activation": "Enzyme activation for chromosome end protection",
+  "Pineal Function": "Regulation of melatonin and circadian rhythms",
+  "BDNF": "Brain-derived neurotrophic factor for neuroplasticity",
+  "NGF": "Nerve growth factor for neuron survival and growth",
+  "Dopamine": "Neurotransmitter pathway for motivation and reward",
+  "GABA": "Inhibitory neurotransmitter for calm and anxiety reduction",
+  "Serotonin": "Mood-regulating neurotransmitter pathway",
+};
 
 // Helper to normalize peptide names for matching
 const normalizePeptideName = (name: string): string => {
@@ -874,36 +941,45 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                             const isActive = activeSystems.includes(system.id);
                             const SystemIcon = system.icon;
                             return (
-                              <motion.div
-                                key={system.id}
-                                initial={{ scale: 0.8 }}
-                                animate={{ 
-                                  scale: isActive ? 1 : 0.9,
-                                  opacity: isActive ? 1 : 0.3
-                                }}
-                                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-all ${
-                                  isActive 
-                                    ? "border-opacity-50" 
-                                    : "border-[#2a2a32] bg-[#1a1a1f]"
-                                }`}
-                                style={isActive ? { 
-                                  borderColor: system.color,
-                                  backgroundColor: `${system.color}15`,
-                                  boxShadow: `0 0 12px ${system.color}30`
-                                } : undefined}
-                                data-testid={`system-${system.id}`}
-                              >
-                                <SystemIcon 
-                                  className="h-3.5 w-3.5" 
-                                  style={{ color: isActive ? system.color : "#6b7280" }} 
-                                />
-                                <span 
-                                  className="text-xs font-medium"
-                                  style={{ color: isActive ? system.color : "#6b7280" }}
+                              <Tooltip key={system.id}>
+                                <TooltipTrigger asChild>
+                                  <motion.div
+                                    initial={{ scale: 0.8 }}
+                                    animate={{ 
+                                      scale: isActive ? 1 : 0.9,
+                                      opacity: isActive ? 1 : 0.3
+                                    }}
+                                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-all cursor-help ${
+                                      isActive 
+                                        ? "border-opacity-50" 
+                                        : "border-[#2a2a32] bg-[#1a1a1f]"
+                                    }`}
+                                    style={isActive ? { 
+                                      borderColor: system.color,
+                                      backgroundColor: `${system.color}15`,
+                                      boxShadow: `0 0 12px ${system.color}30`
+                                    } : undefined}
+                                    data-testid={`system-${system.id}`}
+                                  >
+                                    <SystemIcon 
+                                      className="h-3.5 w-3.5" 
+                                      style={{ color: isActive ? system.color : "#6b7280" }} 
+                                    />
+                                    <span 
+                                      className="text-xs font-medium"
+                                      style={{ color: isActive ? system.color : "#6b7280" }}
+                                    >
+                                      {system.name}
+                                    </span>
+                                  </motion.div>
+                                </TooltipTrigger>
+                                <TooltipContent 
+                                  side="top" 
+                                  className="max-w-[200px] text-center bg-[#1a1a1f] border-[#2a2a32]"
                                 >
-                                  {system.name}
-                                </span>
-                              </motion.div>
+                                  <p className="text-xs">{system.description}</p>
+                                </TooltipContent>
+                              </Tooltip>
                             );
                           })}
                         </div>
@@ -926,12 +1002,21 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                           <p className="text-xs text-gray-400 mb-2">These peptides share pathways:</p>
                           <div className="flex flex-wrap gap-1.5">
                             {sharedPathways.map((pathway, i) => (
-                              <Badge 
-                                key={i}
-                                className="text-[10px] bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30"
-                              >
-                                {pathway}
-                              </Badge>
+                              <Tooltip key={i}>
+                                <TooltipTrigger asChild>
+                                  <Badge 
+                                    className="text-[10px] bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30 cursor-help"
+                                  >
+                                    {pathway}
+                                  </Badge>
+                                </TooltipTrigger>
+                                <TooltipContent 
+                                  side="top"
+                                  className="max-w-[200px] text-center bg-[#1a1a1f] border-[#2a2a32]"
+                                >
+                                  <p className="text-xs">{PATHWAY_DESCRIPTIONS[pathway] || "Shared biological pathway"}</p>
+                                </TooltipContent>
+                              </Tooltip>
                             ))}
                           </div>
                         </div>
