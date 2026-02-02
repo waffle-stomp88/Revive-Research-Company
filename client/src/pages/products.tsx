@@ -555,7 +555,7 @@ function ProductsComponent() {
         <div className="flex gap-6 relative">
           {/* Sidebar Toggle (Visible only when sidebar is closed) */}
           {!sidebarOpen && (
-            <div className="hidden lg:block absolute left-0 top-1 z-20">
+            <div className="hidden lg:block absolute left-0 top-0 z-20">
               <Button
                 variant="outline"
                 size="default"
