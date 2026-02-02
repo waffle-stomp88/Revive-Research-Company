@@ -606,6 +606,40 @@ export default function ProductDetail() {
               </motion.section>
             )}
 
+            {/* Usage Information - DESKTOP ONLY (below Learn About This Peptide) */}
+            {product.usage && (
+              <motion.section
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.14 }}
+                className="mt-8 hidden md:block"
+                data-testid="section-usage-desktop"
+              >
+                <h3 className="font-display font-semibold text-lg mb-4">Usage Information</h3>
+                <p className="text-muted-foreground leading-relaxed mb-4">
+                  {product.usage}
+                </p>
+                <div className="py-2">
+                  <Link href="/education/storage-101">
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="inline-block"
+                    >
+                      <Button 
+                        className="gap-2 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold md:hover:shadow-[0_0_20px_rgba(33,216,255,0.6)] transition-shadow" 
+                        data-testid="link-learn-storage-desktop"
+                      >
+                        <BookOpen className="h-4 w-4" />
+                        Learn More: Storage Best Practices
+                        <ChevronRight className="h-3 w-3" />
+                      </Button>
+                    </motion.div>
+                  </Link>
+                </div>
+              </motion.section>
+            )}
+
             {/* RUO Disclaimer - DESKTOP ONLY (compact version shown on mobile in product info section) */}
             <Card className="p-6 bg-red-950/30 border-2 border-red-500/50 animate-pulse-subtle mt-6 hidden md:block" data-testid="card-ruo-disclaimer-desktop">
               <div className="flex items-start gap-4">
@@ -1095,8 +1129,23 @@ export default function ProductDetail() {
               </Collapsible>
             )}
 
+            {benefits.length > 0 && (
+              <div className="mb-8">
+                <h3 className="font-display font-semibold text-lg mb-4">Key Benefits</h3>
+                <ul className="space-y-3">
+                  {benefits.map((benefit, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <CheckCircle className="h-5 w-5 text-[#E7FB10] mt-0.5 flex-shrink-0" />
+                      <span className="text-muted-foreground">{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Usage Information - MOBILE ONLY (desktop version shown in left column) */}
             {product.usage && (
-              <div className="mb-8 overflow-visible">
+              <div className="mb-8 overflow-visible md:hidden">
                 <h3 className="font-display font-semibold text-lg mb-4">Usage Information</h3>
                 <p className="text-muted-foreground leading-relaxed mb-4">
                   {product.usage}
@@ -1109,7 +1158,7 @@ export default function ProductDetail() {
                       className="inline-block"
                     >
                       <Button 
-                        className="gap-2 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold md:hover:shadow-[0_0_20px_rgba(33,216,255,0.6)] transition-shadow ml-4" 
+                        className="gap-2 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold transition-shadow ml-4" 
                         data-testid="link-learn-storage"
                       >
                         <BookOpen className="h-4 w-4" />
@@ -1119,20 +1168,6 @@ export default function ProductDetail() {
                     </motion.div>
                   </Link>
                 </div>
-              </div>
-            )}
-
-            {benefits.length > 0 && (
-              <div className="mb-8">
-                <h3 className="font-display font-semibold text-lg mb-4">Key Benefits</h3>
-                <ul className="space-y-3">
-                  {benefits.map((benefit, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-[#E7FB10] mt-0.5 flex-shrink-0" />
-                      <span className="text-muted-foreground">{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
               </div>
             )}
           </motion.div>
