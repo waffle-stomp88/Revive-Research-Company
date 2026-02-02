@@ -204,6 +204,12 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
 
   const inStockPeptides = products?.filter(p => p.inStock && p.category?.toLowerCase() === "peptides") || [];
 
+  // Reset analysis state when peptides change
+  useEffect(() => {
+    setSynergyAnalysis(null);
+    setIsAnalyzing(false);
+  }, [selectedPeptides.length]);
+
   // Apply template peptides when provided
   useEffect(() => {
     if (templatePeptideNames && templatePeptideNames.length > 0 && products) {
