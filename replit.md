@@ -24,7 +24,8 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **Compliance & Security**: 21+ age verification gate, authentication-protected pages (Research Stacks, Bulk Packs, Research Academy), and a non-dismissible RUO reminder on the checkout page. Prominent legal disclaimers and compliance pages.
 - **Shipping & Returns**: Free shipping on orders over $200, flat rate otherwise. No refunds policy.
 - **Affiliate Program**: Two-tier commission structure (10% direct + 10% customer discount, 10% team override), 30-day cookie window, $100 minimum payout, monthly payouts, with application and dashboard features.
-- **AI Integration**: AI Chatbot (OpenAI gpt-4o-mini) for customer support with product context. AI Dynamic Pricing for admin product management, suggesting optimal prices with confidence ratings.
+- **AI Integration**: AI Chatbot (OpenAI gpt-4o-mini) for customer support with product context. AI Dynamic Pricing for admin product management, suggesting optimal prices with confidence ratings. AI Synergy Analysis for custom stack builder providing research-focused pathway mechanism descriptions.
+- **Custom Stack Builder**: Located at `/research-stacks` under "Build Custom" tab. Users can select 2-4 peptides to create custom research bundles with tiered discounts (2 peptides: 10%, 3 peptides: 12%, 4 peptides: 15%). Features AI-powered pathway analysis via `POST /api/ai/synergy-analysis` endpoint and direct add-to-cart functionality.
 - **Subscription System**: PayPal-based recurring subscriptions with weekly, bi-weekly, and monthly options, offering tiered discounts.
 - **User Experience**: Guest checkout, shop page pagination with in-stock priority, discount code system, and a price transparency system showing price trends.
 - **Analytics**: Google Analytics GA4 integration for tracking page views and custom events.

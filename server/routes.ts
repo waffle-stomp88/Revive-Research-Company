@@ -3299,6 +3299,47 @@ Be friendly, professional, and helpful. If you don't know something specific abo
     }
   });
 
+  // AI Synergy Analysis for Custom Stack Builder
+  app.post("/api/ai/synergy-analysis", async (req, res) => {
+    try {
+      const { peptides } = req.body;
+      
+      if (!peptides || typeof peptides !== 'string') {
+        return res.status(400).json({ error: "Peptides list is required" });
+      }
+
+      const systemPrompt = `You are a research scientist specializing in peptide biochemistry. You provide pathway mechanism analysis for research compound combinations.
+
+CRITICAL RULES:
+- ONLY describe molecular pathways, receptor interactions, and laboratory research applications
+- NEVER mention human use, dosing, timing, or therapeutic applications
+- Focus on: "pathway mechanisms," "molecular interactions," "receptor binding," "cellular signaling cascades"
+- Use phrases like "in laboratory studies," "research indicates," "mechanistically," "at the molecular level"
+- Keep responses to 2-3 sentences, scientifically accurate but accessible
+- End with a note about complementary research applications
+
+Example response format:
+"These compounds interact through complementary signaling pathways. [Peptide A] acts on [receptor/pathway], while [Peptide B] modulates [different pathway], creating potential synergistic effects in cellular repair mechanism studies. This combination is suited for researchers investigating [research area]."`;
+
+      const completion = await openaiClient.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: `Provide a brief pathway mechanism analysis for this research peptide combination: ${peptides}. Focus on molecular interactions and research applications only.` }
+        ],
+        max_tokens: 300,
+        temperature: 0.5,
+      });
+
+      const analysis = completion.choices[0]?.message?.content || "Unable to generate pathway analysis at this time.";
+      
+      res.json({ analysis });
+    } catch (error) {
+      console.error("Error in synergy analysis endpoint:", error);
+      res.status(500).json({ error: "Failed to generate synergy analysis" });
+    }
+  });
+
   // Dynamic pricing suggestions using AI
   app.post("/api/admin/pricing-suggestions", isAuthenticated, async (req: any, res) => {
     try {
