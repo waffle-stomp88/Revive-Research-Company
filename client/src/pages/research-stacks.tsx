@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
 import { CategoryTabs } from "@/components/category-tabs";
-import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, Plus, X, Check, ShoppingCart, Loader2, Beaker, Brain, Target, TrendingUp, Microscope, ToggleLeft, ToggleRight } from "lucide-react";
+import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, Plus, X, Check, ShoppingCart, Loader2, Beaker, Brain, Target, Microscope } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -138,7 +138,6 @@ const researchStacks: ResearchStack[] = [
 ];
 
 type StackTab = "pre-built" | "custom";
-type ExplanationMode = "simple" | "expert";
 
 // Structured synergy analysis interface
 interface SynergyAnalysis {
@@ -192,7 +191,6 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
   const [selectedPeptides, setSelectedPeptides] = useState<Product[]>([]);
   const [synergyAnalysis, setSynergyAnalysis] = useState<SynergyAnalysis | string | null>(null);
   const [isStructured, setIsStructured] = useState(false);
-  const [explanationMode, setExplanationMode] = useState<ExplanationMode>("simple");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const { addToCart } = useCart();
   const { toast } = useToast();
@@ -330,48 +328,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
   };
 
   return (
-    <div className="space-y-8">
-      {/* Hero Section */}
-      <div className="relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#9d4edd]/20 via-[#21d8ff]/10 to-[#E7FB10]/10 rounded-2xl blur-3xl opacity-50" />
-        <Card className="relative p-8 border-[#9d4edd]/30 bg-gradient-to-br from-[#1a1a1f] to-[#0f0f12] overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#9d4edd]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-          <div className="relative text-center space-y-4">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#9d4edd]/20 border border-[#9d4edd]/30">
-              <Sparkles className="h-4 w-4 text-[#9d4edd]" />
-              <span className="text-sm font-medium text-[#9d4edd]">Custom Stack Builder</span>
-            </div>
-            <h2 className="font-display text-3xl md:text-4xl font-bold">
-              Create Your <span className="text-[#E7FB10]">Perfect</span> Research Bundle
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Select 2-4 peptides to build a custom research stack. Our AI will analyze pathway mechanisms, 
-              and you'll unlock exclusive bundle discounts.
-            </p>
-          </div>
-
-          {/* Discount Info */}
-          <div className="flex justify-center gap-4 mt-8">
-            <div className="flex items-center gap-3 px-5 py-3 rounded-xl border-2 border-[#21d8ff]/40 bg-[#21d8ff]/10">
-              <div className="text-center">
-                <div className="font-display text-2xl font-bold text-[#21d8ff]">10%</div>
-                <div className="text-xs text-muted-foreground">Custom Stack</div>
-              </div>
-            </div>
-            <div className="flex items-center text-muted-foreground">vs</div>
-            <div className="flex items-center gap-3 px-5 py-3 rounded-xl border-2 border-[#E7FB10]/40 bg-[#E7FB10]/10">
-              <div className="text-center">
-                <div className="font-display text-2xl font-bold text-[#E7FB10]">15-20%</div>
-                <div className="text-xs text-muted-foreground">Pre-Built Stacks</div>
-              </div>
-            </div>
-          </div>
-          <p className="text-center text-xs text-muted-foreground mt-4">
-            Select 2-4 peptides below to save 10% on your custom bundle
-          </p>
-        </Card>
-      </div>
-
+    <div className="space-y-6">
       {/* Two Column Layout: Peptides Left, Build Panel Right */}
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Left Column: Peptide Selection */}
@@ -412,71 +369,49 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
               </Button>
             </Card>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {inStockPeptides.map(product => {
                 const isSelected = selectedPeptides.find(p => p.id === product.id);
                 const isDisabled = !isSelected && selectedPeptides.length >= 4;
+                const categories = getPeptideCategories(product.name);
+                const primaryCategory = categories[0];
 
                 return (
-                  <motion.div
+                  <motion.button
                     key={product.id}
-                    whileHover={{ scale: isDisabled ? 1 : 1.02 }}
-                    whileTap={{ scale: isDisabled ? 1 : 0.98 }}
+                    whileHover={{ scale: isDisabled ? 1 : 1.01 }}
+                    whileTap={{ scale: isDisabled ? 1 : 0.99 }}
+                    onClick={() => !isDisabled && togglePeptide(product)}
+                    disabled={isDisabled}
+                    className={`text-left p-3 rounded-lg border transition-all duration-200 ${
+                      isSelected
+                        ? "border-2 border-[#21d8ff] bg-[#21d8ff]/10"
+                        : isDisabled
+                        ? "opacity-40 cursor-not-allowed border-[#2a2a32] bg-[#1a1a1f]"
+                        : "border-[#2a2a32] bg-[#1a1a1f] hover:border-[#21d8ff]/50 hover:bg-[#21d8ff]/5"
+                    }`}
+                    data-testid={`card-select-peptide-${product.id}`}
                   >
-                    <Card
-                      onClick={() => !isDisabled && togglePeptide(product)}
-                      className={`p-2 cursor-pointer transition-all duration-300 relative overflow-hidden ${
-                        isSelected
-                          ? "border-2 border-[#21d8ff] bg-[#21d8ff]/5 shadow-[0_0_20px_rgba(33,216,255,0.3)]"
-                          : isDisabled
-                          ? "opacity-40 cursor-not-allowed border-[#2a2a32] grayscale"
-                          : "border-[#2a2a32] hover:border-[#21d8ff]/60 hover:shadow-[0_0_15px_rgba(33,216,255,0.15)]"
-                      }`}
-                      data-testid={`card-select-peptide-${product.id}`}
-                    >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className={`font-display font-bold text-base truncate ${isSelected ? "text-[#21d8ff]" : "text-white"}`}>
+                          {product.name.replace(/\s*\([^)]*\)/g, '')}
+                        </p>
+                        <p className="text-xs mt-0.5" style={{ color: primaryCategory.color }}>
+                          {primaryCategory.label}
+                        </p>
+                      </div>
                       {isSelected && (
                         <motion.div 
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
-                          className="absolute top-2 right-2 w-5 h-5 rounded-full bg-gradient-to-br from-[#21d8ff] to-[#9d4edd] flex items-center justify-center shadow-md"
+                          className="w-5 h-5 rounded-full bg-[#21d8ff] flex items-center justify-center shrink-0"
                         >
-                          <Check className="h-3 w-3 text-white" />
+                          <Check className="h-3 w-3 text-black" />
                         </motion.div>
                       )}
-                      <div className="aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 rounded-md mb-2 overflow-hidden">
-                        <img
-                          src={product.imageUrl || productImage}
-                          alt={product.name}
-                          className="w-full h-full object-contain p-1"
-                        />
-                      </div>
-                      <h3 className="font-display font-semibold text-xs mb-1 truncate">{product.name}</h3>
-                      <div className="flex flex-wrap gap-0.5 mb-1.5">
-                        {getPeptideCategories(product.name).slice(0, 2).map((cat, i) => {
-                          const CatIcon = cat.icon;
-                          return (
-                            <span 
-                              key={i}
-                              className="inline-flex items-center px-1 py-0.5 rounded text-[8px] font-medium"
-                              style={{ backgroundColor: `${cat.color}20`, color: cat.color }}
-                            >
-                              <CatIcon className="h-2 w-2 mr-0.5" />
-                              {cat.label}
-                            </span>
-                          );
-                        })}
-                      </div>
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="font-bold text-xs text-[#E7FB10]">${product.price}</span>
-                        {!isSelected && !isDisabled && (
-                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5 border-[#21d8ff]/50 text-[#21d8ff]">
-                            <Plus className="h-2.5 w-2.5 mr-0.5" />
-                            Add
-                          </Badge>
-                        )}
-                      </div>
-                    </Card>
-                  </motion.div>
+                    </div>
+                  </motion.button>
                 );
               })}
             </div>
@@ -511,37 +446,30 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                 {/* Selected Peptides List */}
                 {selectedPeptides.length === 0 ? (
                   <div className="text-center py-6 text-muted-foreground">
-                    <FlaskConical className="h-10 w-10 mx-auto mb-3 opacity-50" />
-                    <p className="text-sm">Select peptides from the left to build your custom stack</p>
-                    <p className="text-xs mt-1">Minimum 2 peptides required</p>
+                    <FlaskConical className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">Select peptides to build your stack</p>
+                    <p className="text-xs mt-1 opacity-70">Minimum 2 required</p>
                   </div>
                 ) : (
-                  <div className="space-y-2">
+                  <div className="flex flex-wrap gap-2">
                     {selectedPeptides.map(peptide => (
                       <motion.div
                         key={peptide.id}
-                        initial={{ x: -10, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        exit={{ x: -10, opacity: 0 }}
-                        className="flex items-center gap-3 p-2 rounded-lg bg-[#21d8ff]/5 border border-[#21d8ff]/20"
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.8, opacity: 0 }}
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#21d8ff]/10 border border-[#21d8ff]/30"
                       >
-                        <div className="w-10 h-10 rounded-md bg-muted overflow-hidden shrink-0">
-                          <img 
-                            src={peptide.imageUrl || productImage} 
-                            alt={peptide.name}
-                            className="w-full h-full object-contain"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm text-[#21d8ff] truncate">{peptide.name}</p>
-                          <p className="text-xs text-muted-foreground">${peptide.price}</p>
-                        </div>
+                        <span className="font-bold text-sm text-[#21d8ff]">
+                          {peptide.name.replace(/\s*\([^)]*\)/g, '')}
+                        </span>
+                        <span className="text-xs text-muted-foreground">${peptide.price}</span>
                         <button
                           onClick={() => togglePeptide(peptide)}
-                          className="p-1.5 rounded-full hover:bg-red-500/20 text-muted-foreground hover:text-red-400 transition-colors"
+                          className="ml-1 p-0.5 rounded-full hover:bg-red-500/30 text-muted-foreground hover:text-red-400 transition-colors"
                           data-testid={`button-remove-peptide-${peptide.id}`}
                         >
-                          <X className="h-4 w-4" />
+                          <X className="h-3.5 w-3.5" />
                         </button>
                       </motion.div>
                     ))}
@@ -597,7 +525,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
               </div>
             </Card>
 
-            {/* AI Synergy Analysis */}
+            {/* AI Synergy Analysis - Visual Pathway Infographic */}
             <AnimatePresence>
               {synergyAnalysis && (
                 <motion.div
@@ -607,91 +535,106 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                 >
                   {isStructured && typeof synergyAnalysis === 'object' ? (() => {
                     const pathways = synergyAnalysis.peptidePathways ?? [];
-                    const benefits = synergyAnalysis.synergyBenefits ?? [];
                     const bestFor = synergyAnalysis.bestFor ?? [];
-                    const score = synergyAnalysis.synergyScore ?? 75;
-                    const simpleText = synergyAnalysis.simpleExplanation ?? "";
-                    const expertText = synergyAnalysis.expertExplanation ?? "";
+                    
+                    // Generate colors for each peptide node
+                    const nodeColors = ["#21d8ff", "#E7FB10", "#22c55e", "#a855f7"];
                     
                     return (
-                      <Card className="border-[#a855f7]/30 bg-gradient-to-br from-[#a855f7]/5 to-transparent overflow-hidden" data-testid="card-synergy-analysis">
-                        <div className="p-3 border-b border-[#a855f7]/20 bg-[#a855f7]/10">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <Brain className="h-4 w-4 text-[#a855f7]" />
-                              <span className="font-display font-bold text-sm">Analysis</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <div className="flex items-center gap-1" data-testid="synergy-score-display">
-                                <TrendingUp className="h-3 w-3 text-[#22c55e]" />
-                                <span className="text-sm font-bold text-[#22c55e]" data-testid="text-synergy-score">{score}%</span>
-                              </div>
-                              <button
-                                onClick={() => setExplanationMode(prev => prev === "simple" ? "expert" : "simple")}
-                                className="flex items-center gap-1 px-2 py-1 rounded-full bg-[#1a1a1f] border border-[#2a2a32] text-[10px]"
-                                data-testid="button-toggle-explanation-mode"
+                      <Card className="border-[#a855f7]/30 bg-gradient-to-br from-[#1a1a1f] to-[#0f0f12] overflow-hidden" data-testid="card-synergy-analysis">
+                        <div className="p-3 border-b border-[#a855f7]/20 bg-gradient-to-r from-[#a855f7]/10 to-[#21d8ff]/10">
+                          <div className="flex items-center gap-2">
+                            <Brain className="h-4 w-4 text-[#a855f7]" />
+                            <span className="font-display font-bold text-sm">Pathway Synergy</span>
+                          </div>
+                        </div>
+
+                        <div className="p-4" data-testid="text-synergy-score">
+                          {/* Visual Pathway Diagram */}
+                          <div className="relative py-4">
+                            {/* Connection Lines SVG */}
+                            <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }}>
+                              <defs>
+                                <linearGradient id="synergyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                  <stop offset="0%" stopColor="#21d8ff" />
+                                  <stop offset="50%" stopColor="#a855f7" />
+                                  <stop offset="100%" stopColor="#E7FB10" />
+                                </linearGradient>
+                              </defs>
+                              {/* Central synergy line */}
+                              <line x1="50%" y1="20%" x2="50%" y2="80%" stroke="url(#synergyGradient)" strokeWidth="2" strokeDasharray="4 4" opacity="0.5" />
+                            </svg>
+                            
+                            {/* Peptide Nodes */}
+                            <div className="flex flex-col gap-3 relative" style={{ zIndex: 1 }}>
+                              {pathways.map((peptide, i) => {
+                                const color = nodeColors[i % nodeColors.length];
+                                return (
+                                  <motion.div 
+                                    key={i}
+                                    initial={{ x: i % 2 === 0 ? -20 : 20, opacity: 0 }}
+                                    animate={{ x: 0, opacity: 1 }}
+                                    transition={{ delay: i * 0.1 }}
+                                    className={`flex items-center gap-3 p-3 rounded-xl border-2`}
+                                    style={{ 
+                                      borderColor: `${color}40`,
+                                      backgroundColor: `${color}10`
+                                    }}
+                                    data-testid={`card-pathway-${i}`}
+                                  >
+                                    <div 
+                                      className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+                                      style={{ backgroundColor: `${color}30`, border: `2px solid ${color}` }}
+                                    >
+                                      <Microscope className="h-5 w-5" style={{ color }} />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="font-bold text-sm" style={{ color }}>
+                                        {peptide.name ?? "Unknown"}
+                                      </p>
+                                      <p className="text-xs text-gray-400 truncate">
+                                        {peptide.pathway ?? ""}
+                                      </p>
+                                    </div>
+                                  </motion.div>
+                                );
+                              })}
+                              
+                              {/* Synergy Result Node */}
+                              <motion.div 
+                                initial={{ scale: 0.8, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ delay: pathways.length * 0.1 }}
+                                className="flex items-center gap-3 p-3 rounded-xl border-2 border-[#22c55e]/50 bg-gradient-to-r from-[#22c55e]/20 to-[#22c55e]/5"
                               >
-                                {explanationMode === "simple" ? (
-                                  <><ToggleLeft className="h-3 w-3 text-[#21d8ff]" /><span className="text-[#21d8ff]">Simple</span></>
-                                ) : (
-                                  <><ToggleRight className="h-3 w-3 text-[#a855f7]" /><span className="text-[#a855f7]">Expert</span></>
-                                )}
-                              </button>
+                                <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-[#22c55e]/30 border-2 border-[#22c55e]">
+                                  <Zap className="h-5 w-5 text-[#22c55e]" />
+                                </div>
+                                <div className="flex-1">
+                                  <p className="font-bold text-sm text-[#22c55e]">Combined Effect</p>
+                                  <p className="text-xs text-gray-400">Enhanced research potential</p>
+                                </div>
+                              </motion.div>
                             </div>
                           </div>
-                        </div>
-
-                        <div className="p-3 space-y-3">
-                          <div className="p-2 rounded-lg bg-[#1a1a1f]/50 border border-[#2a2a32]" data-testid="text-explanation">
-                            <p className="text-xs text-gray-300 leading-relaxed">
-                              {explanationMode === "simple" ? simpleText : expertText}
-                            </p>
-                          </div>
-
-                          {/* Pathways */}
-                          <div className="space-y-1.5" data-testid="section-pathways">
-                            <p className="text-[10px] font-semibold text-[#21d8ff] uppercase">Key Pathways</p>
-                            {pathways.map((peptide, i) => (
-                              <div key={i} className="p-1.5 rounded bg-[#21d8ff]/5 border border-[#21d8ff]/20" data-testid={`card-pathway-${i}`}>
-                                <p className="font-semibold text-[10px] text-[#21d8ff]">{peptide.name ?? "Unknown"}</p>
-                                <p className="text-[9px] text-muted-foreground">{peptide.pathway ?? ""}</p>
+                          
+                          {/* Best For Tags */}
+                          {bestFor.length > 0 && (
+                            <div className="mt-4 pt-3 border-t border-[#2a2a32]" data-testid="section-best-for">
+                              <p className="text-xs font-semibold text-[#E7FB10] mb-2">Best For</p>
+                              <div className="flex flex-wrap gap-2">
+                                {bestFor.slice(0, 4).map((area, i) => (
+                                  <Badge 
+                                    key={i}
+                                    className="text-xs px-3 py-1 bg-[#E7FB10]/10 text-[#E7FB10] border border-[#E7FB10]/30"
+                                    data-testid={`badge-best-for-${i}`}
+                                  >
+                                    {area}
+                                  </Badge>
+                                ))}
                               </div>
-                            ))}
-                          </div>
-
-                          {/* Benefits */}
-                          <div className="space-y-1.5" data-testid="section-benefits">
-                            <p className="text-[10px] font-semibold text-[#22c55e] uppercase">Synergy Benefits</p>
-                            {benefits.slice(0, 3).map((benefit, i) => (
-                              <div key={i} className="flex items-start gap-1.5 p-1.5 rounded bg-[#22c55e]/5 border border-[#22c55e]/20" data-testid={`card-benefit-${i}`}>
-                                <Check className="h-2.5 w-2.5 text-[#22c55e] mt-0.5 shrink-0" />
-                                <p className="text-[9px] text-gray-300">{benefit}</p>
-                              </div>
-                            ))}
-                          </div>
-
-                          {/* Best For */}
-                          <div className="space-y-1.5" data-testid="section-best-for">
-                            <p className="text-[10px] font-semibold text-[#E7FB10] uppercase">Best For</p>
-                            <div className="flex flex-wrap gap-1">
-                              {bestFor.map((area, i) => (
-                                <Badge 
-                                  key={i}
-                                  variant="outline"
-                                  className="text-[9px] px-1.5 py-0 border-[#E7FB10]/30 text-[#E7FB10] bg-[#E7FB10]/5"
-                                  data-testid={`badge-best-for-${i}`}
-                                >
-                                  {area}
-                                </Badge>
-                              ))}
                             </div>
-                          </div>
-                        </div>
-
-                        <div className="px-3 py-1.5 bg-[#0d0d10]/50 border-t border-[#2a2a32]">
-                          <p className="text-[8px] text-muted-foreground text-center italic">
-                            Research reference only
-                          </p>
+                          )}
                         </div>
                       </Card>
                     );
@@ -699,10 +642,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                     <Card className="p-4 border-[#a855f7]/30 bg-gradient-to-br from-[#a855f7]/5 to-transparent">
                       <div className="flex items-start gap-2">
                         <Brain className="h-4 w-4 text-[#a855f7] mt-0.5" />
-                        <div>
-                          <p className="text-xs text-gray-300">{String(synergyAnalysis)}</p>
-                          <p className="text-[9px] text-muted-foreground mt-2 italic">Research reference only</p>
-                        </div>
+                        <p className="text-xs text-gray-300">{String(synergyAnalysis)}</p>
                       </div>
                     </Card>
                   )}
@@ -753,17 +693,48 @@ function ResearchStacks() {
             <CategoryTabs />
           </div>
 
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#a855f7]/10 border border-[#a855f7]/30 mb-4">
-            <Layers className="h-4 w-4 text-[#a855f7]" />
-            <span className="text-sm font-medium text-[#a855f7]">Multi-Compound Research</span>
-          </div>
-          <h1 className="font-display text-4xl md:text-5xl font-bold mb-4" data-testid="heading-research-stacks">
-            Research Stacks
-          </h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            Curated multi-compound combinations designed for synergistic pathway research. 
-            Each stack features complementary peptides for comprehensive mechanism studies.
-          </p>
+          {/* Animated Title Switch */}
+          <AnimatePresence mode="wait">
+            {activeTab === "pre-built" ? (
+              <motion.div
+                key="prebuilt-title"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#a855f7]/10 border border-[#a855f7]/30 mb-4">
+                  <Layers className="h-4 w-4 text-[#a855f7]" />
+                  <span className="text-sm font-medium text-[#a855f7]">Multi-Compound Research</span>
+                </div>
+                <h1 className="font-display text-4xl md:text-5xl font-bold mb-4" data-testid="heading-research-stacks">
+                  Research Stacks
+                </h1>
+                <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+                  Curated multi-compound combinations designed for synergistic pathway research.
+                </p>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="custom-title"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#9d4edd]/20 border border-[#9d4edd]/40 mb-4">
+                  <Sparkles className="h-4 w-4 text-[#9d4edd]" />
+                  <span className="text-sm font-medium text-[#9d4edd]">Custom Stack Builder</span>
+                </div>
+                <h1 className="font-display text-4xl md:text-5xl font-bold mb-4" data-testid="heading-research-stacks">
+                  Create Your <span className="text-[#E7FB10]">Perfect</span> Stack
+                </h1>
+                <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+                  Select 2-4 peptides and save 10% on your custom research bundle.
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
 
         {/* Toggle Tabs */}
