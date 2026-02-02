@@ -61,7 +61,7 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { ModelViewer3D } from "@/components/model-viewer-3d";
 import { PriceTrendBadge } from "@/components/price-trend-badge";
-import type { Product, Review, ProductStorageProfile, Batch, Coa, EducationArticle, ProductDosageStock } from "@shared/schema";
+import type { Product, ProductStorageProfile, Batch, Coa, EducationArticle, ProductDosageStock } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { SEOHead } from "@/components/seo-head";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -172,12 +172,6 @@ export default function ProductDetail() {
   // Query for selling fast products
   const { data: sellingFastIds = [] } = useQuery<string[]>({
     queryKey: ["/api/products/selling-fast"],
-  });
-
-  // Query for product reviews
-  const { data: reviewsData } = useQuery<{ reviews: (Review & { reviewerName: string; isVerifiedPurchase: boolean })[]; average: number; count: number }>({
-    queryKey: ["/api/products", params.id, "reviews"],
-    enabled: !!params.id,
   });
 
   // Query for storage profile
@@ -1351,118 +1345,6 @@ export default function ProductDetail() {
           </motion.section>
         )}
 
-        {/* Reviews Section */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-          className="mt-12"
-          data-testid="section-reviews"
-        >
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <h2 className="font-display text-2xl font-bold">Customer Reviews</h2>
-              {reviewsData && reviewsData.count > 0 && (
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-0.5">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        className={`h-5 w-5 ${
-                          star <= Math.round(reviewsData.average)
-                            ? "text-[#E7FB10] fill-[#E7FB10]"
-                            : "text-muted-foreground"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <span className="text-lg font-semibold">{reviewsData.average.toFixed(1)}</span>
-                  <span className="text-muted-foreground">({reviewsData.count} reviews)</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Verified Purchase Notice */}
-          <Card className="p-4 mb-6 border border-muted bg-muted/30">
-            <div className="flex items-start gap-3">
-              <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-              <div>
-                <p className="font-medium text-sm">Verified Purchase Reviews Only</p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Only customers who have purchased this product can leave a review. 
-                  {isAuthenticated ? (
-                    <> Reviews can be submitted 30 days after your order from your <Link href="/dashboard" className="text-primary hover:underline">dashboard</Link>.</>
-                  ) : (
-                    <> <span onClick={() => login()} style={{cursor: "pointer"}} className="text-primary hover:underline">Sign in</span> and make a purchase to leave a verified review.</>
-                  )}
-                </p>
-              </div>
-            </div>
-          </Card>
-
-          {reviewsData && reviewsData.reviews.length > 0 ? (
-            <div className="space-y-4">
-              {reviewsData.reviews.map((review) => (
-                <Card key={review.id} className="p-5" data-testid={`card-review-${review.id}`}>
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
-                        <User className="h-5 w-5 text-muted-foreground" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold" data-testid={`text-reviewer-${review.id}`}>
-                            {review.reviewerName}
-                          </span>
-                          {review.isVerifiedPurchase && (
-                            <Badge variant="secondary" className="text-[10px] gap-1">
-                              <CheckCircle2 className="h-3 w-3" />
-                              Verified Purchase
-                            </Badge>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <div className="flex items-center gap-0.5">
-                            {[1, 2, 3, 4, 5].map((star) => (
-                              <Star
-                                key={star}
-                                className={`h-3.5 w-3.5 ${
-                                  star <= review.rating
-                                    ? "text-[#E7FB10] fill-[#E7FB10]"
-                                    : "text-muted-foreground"
-                                }`}
-                              />
-                            ))}
-                          </div>
-                          <span className="text-xs text-muted-foreground">
-                            {review.createdAt && new Date(review.createdAt).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {review.title && (
-                    <h4 className="font-semibold mb-2" data-testid={`text-review-title-${review.id}`}>
-                      {review.title}
-                    </h4>
-                  )}
-                  <p className="text-muted-foreground leading-relaxed" data-testid={`text-review-comment-${review.id}`}>
-                    {review.comment}
-                  </p>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <Card className="p-8 text-center">
-              <Star className="h-10 w-10 text-muted-foreground/50 mx-auto mb-3" />
-              <h3 className="font-semibold mb-1">No reviews yet</h3>
-              <p className="text-sm text-muted-foreground">
-                Reviews from verified purchasers will appear here.
-              </p>
-            </Card>
-          )}
-        </motion.section>
       </div>
       
       {/* Recently Viewed Sidebar */}

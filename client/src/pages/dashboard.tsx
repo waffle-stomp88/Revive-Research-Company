@@ -69,7 +69,7 @@ import {
   Mail,
   Brain,
 } from "lucide-react";
-import type { Order, Product, ReviewableOrder, Coa, ResearchPhase, ResearchTitle } from "@shared/schema";
+import type { Order, Product, Coa, ResearchPhase, ResearchTitle } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 
 const containerVariants = {
@@ -127,12 +127,7 @@ export default function Dashboard() {
   const { toast } = useToast();
   const { addToCart } = useCart();
   const [activeTab, setActiveTab] = useState("general");
-  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<ReviewableOrder | null>(null);
   const [viewOrderDetails, setViewOrderDetails] = useState<Order | null>(null);
-  const [reviewRating, setReviewRating] = useState(5);
-  const [reviewTitle, setReviewTitle] = useState("");
-  const [reviewComment, setReviewComment] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [addressEditDialogOpen, setAddressEditDialogOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<{
@@ -171,11 +166,6 @@ export default function Dashboard() {
     enabled: isAuthenticated,
   });
 
-  const { data: reviewableOrders, isLoading: reviewableLoading } = useQuery<ReviewableOrder[]>({
-    queryKey: ["/api/orders/reviewable"],
-    enabled: isAuthenticated,
-  });
-
   const { data: wishlist } = useQuery<{ productId: string }[]>({
     queryKey: ["/api/wishlist"],
     enabled: isAuthenticated,
@@ -187,7 +177,6 @@ export default function Dashboard() {
     educationCount: number;
     batchVerificationCount: number;
     compoundsTrackedCount: number;
-    verifiedReviewsCount: number;
     safetyCompleted: boolean;
     coaEducationViewed: boolean;
     earlyAccessMember: boolean;
@@ -277,23 +266,6 @@ export default function Dashboard() {
   }>>({
     queryKey: ["/api/login-history"],
     enabled: isAuthenticated,
-  });
-
-  const submitReviewMutation = useMutation({
-    mutationFn: async (data: { orderId: string; productId: string; rating: number; title: string; comment: string }) => {
-      return apiRequest("POST", "/api/reviews", data);
-    },
-    onSuccess: () => {
-      toast({ title: "Review Submitted", description: "Thank you for your feedback!" });
-      setReviewDialogOpen(false);
-      setReviewRating(5);
-      setReviewTitle("");
-      setReviewComment("");
-      queryClient.invalidateQueries({ queryKey: ["/api/orders/reviewable"] });
-    },
-    onError: () => {
-      toast({ title: "Error", description: "Failed to submit review.", variant: "destructive" });
-    },
   });
 
   const removeMutation = useMutation({
@@ -419,30 +391,10 @@ export default function Dashboard() {
   });
 
 
-  const handleWriteReview = (order: ReviewableOrder) => {
-    setSelectedOrder(order);
-    setReviewDialogOpen(true);
-  };
-
-  const handleSubmitReview = () => {
-    if (!selectedOrder || reviewComment.length < 10) return;
-    submitReviewMutation.mutate({
-      orderId: selectedOrder.orderId,
-      productId: selectedOrder.productId,
-      rating: reviewRating,
-      title: reviewTitle,
-      comment: reviewComment,
-    });
-  };
-
   const wishlistProducts = useMemo(() => {
     if (!wishlist || !products) return [];
     return products.filter(p => wishlist.some(w => w.productId === p.id));
   }, [wishlist, products]);
-
-  const eligibleForReview = reviewableOrders?.filter(
-    (o) => !o.hasReviewed && new Date() >= new Date(o.eligibleDate)
-  ) || [];
 
   const getProductName = (productId: string) => {
     const product = products?.find((p) => p.id === productId);
@@ -1393,60 +1345,6 @@ export default function Dashboard() {
                     </CardContent>
                   </Card>
 
-                  {/* Reviews Section */}
-                  <Card>
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <CardTitle className="flex items-center gap-2">
-                            <Star className="h-5 w-5 text-[#ec4899]" />
-                            Product Reviews
-                          </CardTitle>
-                          <CardDescription>Share your experience</CardDescription>
-                        </div>
-                        {eligibleForReview.length > 0 && (
-                          <Badge className="bg-[#ec4899]/10 text-[#ec4899] border-[#ec4899]/30">
-                            {eligibleForReview.length} to review
-                          </Badge>
-                        )}
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      {reviewableLoading ? (
-                        <div className="space-y-3">
-                          {[...Array(2)].map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}
-                        </div>
-                      ) : eligibleForReview.length > 0 ? (
-                        <div className="space-y-3">
-                          {eligibleForReview.map((order) => (
-                            <div key={order.orderId} className="flex items-center gap-4 p-4 rounded-lg border" data-testid={`reviewable-${order.orderId}`}>
-                              <div className="h-12 w-12 rounded bg-muted flex items-center justify-center overflow-hidden">
-                                {order.productImageUrl ? (
-                                  <img src={order.productImageUrl} alt={order.productName} className="h-full w-full object-cover" />
-                                ) : (
-                                  <Package className="h-6 w-6 text-muted-foreground" />
-                                )}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="font-medium truncate">{order.productName}</p>
-                                <p className="text-sm text-muted-foreground">Ordered {formatDate(order.orderDate)}</p>
-                              </div>
-                              <Button size="sm" onClick={() => handleWriteReview(order)} data-testid={`button-review-${order.orderId}`}>
-                                <Star className="h-4 w-4 mr-2" />
-                                Review
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-center py-8">
-                          <Star className="h-10 w-10 mx-auto text-muted-foreground/30 mb-3" />
-                          <p className="text-sm text-muted-foreground">No reviews available yet</p>
-                          <p className="text-xs text-muted-foreground mt-1">You can review products 30 days after your order</p>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
                 </TabsContent>
 
                 {/* Education Tab */}
@@ -1475,7 +1373,7 @@ export default function Dashboard() {
                       </CardHeader>
                       <CardContent className="space-y-6">
                         {/* Stats Grid */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-3 gap-4">
                           <div className="text-center p-3 rounded-lg bg-muted/30">
                             <div className="text-2xl font-bold text-[#E7FB10]">{researchProfile.educationCount}</div>
                             <div className="text-xs text-muted-foreground">Articles Read</div>
@@ -1487,10 +1385,6 @@ export default function Dashboard() {
                           <div className="text-center p-3 rounded-lg bg-muted/30">
                             <div className="text-2xl font-bold text-[#22c55e]">{researchProfile.compoundsTrackedCount}</div>
                             <div className="text-xs text-muted-foreground">Compounds Tracked</div>
-                          </div>
-                          <div className="text-center p-3 rounded-lg bg-muted/30">
-                            <div className="text-2xl font-bold text-[#f97316]">{researchProfile.verifiedReviewsCount}</div>
-                            <div className="text-xs text-muted-foreground">Reviews</div>
                           </div>
                         </div>
 
@@ -2344,73 +2238,6 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      {/* Review Dialog */}
-      <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Write a Review</DialogTitle>
-            <DialogDescription>
-              Share your experience with {selectedOrder?.productName}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label>Rating</Label>
-              <div className="flex gap-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    type="button"
-                    onClick={() => setReviewRating(star)}
-                    className="p-1 md:hover:scale-110 transition-transform"
-                    data-testid={`button-star-${star}`}
-                  >
-                    <Star className={`h-8 w-8 ${star <= reviewRating ? "fill-[#E7FB10] text-[#E7FB10]" : "text-muted-foreground"}`} />
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="review-title">Title (optional)</Label>
-              <Input
-                id="review-title"
-                placeholder="Summarize your experience"
-                value={reviewTitle}
-                onChange={(e) => setReviewTitle(e.target.value)}
-                data-testid="input-review-title"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="review-comment">Your Review</Label>
-              <Textarea
-                id="review-comment"
-                placeholder="Tell us about your experience..."
-                value={reviewComment}
-                onChange={(e) => setReviewComment(e.target.value)}
-                rows={4}
-                data-testid="input-review-comment"
-              />
-              <p className="text-xs text-muted-foreground">
-                Minimum 10 characters ({reviewComment.length}/10)
-              </p>
-            </div>
-          </div>
-          <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => setReviewDialogOpen(false)} data-testid="button-cancel-review">
-              Cancel
-            </Button>
-            <Button
-              onClick={handleSubmitReview}
-              disabled={submitReviewMutation.isPending || reviewComment.length < 10}
-              className="bg-[#E7FB10] text-black"
-              data-testid="button-submit-review"
-            >
-              {submitReviewMutation.isPending ? "Submitting..." : "Submit Review"}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
       {/* Note Dialog */}
       <Dialog open={noteDialogOpen} onOpenChange={(open) => {
         setNoteDialogOpen(open);
@@ -2471,7 +2298,7 @@ export default function Dashboard() {
           <DialogHeader>
             <DialogTitle className="text-red-500">Delete Account</DialogTitle>
             <DialogDescription>
-              This action cannot be undone. All your data including orders, reviews, and preferences will be permanently deleted.
+              This action cannot be undone. All your data including orders and preferences will be permanently deleted.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end gap-3 pt-4">
