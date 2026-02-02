@@ -3315,7 +3315,6 @@ Be friendly, professional, and helpful. If you don't know something specific abo
 CRITICAL RULES:
 - ONLY describe molecular pathways, receptor interactions, and laboratory research applications
 - NEVER mention human use, dosing, timing, or therapeutic applications
-- Use scientific but accessible language
 
 Respond with ONLY valid JSON in this exact format (no markdown, no code blocks):
 {
@@ -3331,8 +3330,8 @@ Respond with ONLY valid JSON in this exact format (no markdown, no code blocks):
     "Benefit 2: Another synergistic benefit"
   ],
   "bestFor": ["Research Area 1", "Research Area 2", "Research Area 3"],
-  "simpleExplanation": "2-3 sentences explaining how these work together in simple terms that a non-scientist could understand",
-  "expertExplanation": "2-3 sentences with detailed molecular pathways, receptor names, and signaling cascades for advanced researchers",
+  "simpleExplanation": "Write 2-3 sentences in SIMPLE everyday language a non-scientist would understand. Use analogies like 'works like a repair crew' or 'acts as a messenger'. NO scientific terms, NO receptor names, NO pathway names. Think explaining to a friend.",
+  "expertExplanation": "Write 2-3 sentences with DETAILED scientific terminology: specific receptor names (e.g., GHR, GHRH-R, BMP receptors), signaling cascades (e.g., JAK/STAT, MAPK/ERK, PI3K/Akt), molecular mechanisms, and pathway crosstalk. Include specific proteins and transcription factors involved.",
   "synergyScore": 85
 }
 
