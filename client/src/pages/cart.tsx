@@ -198,12 +198,12 @@ export default function CartPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <Card className="p-3 md:p-4" data-testid={`cart-item-${item.productId}`}>
-                  <div className="flex gap-3 md:gap-4">
-                    {/* Product Image - smaller on mobile */}
+                <Card className="p-3" data-testid={`cart-item-${item.productId}`}>
+                  <div className="flex gap-3">
+                    {/* Product Image */}
                     <Link 
                       href={item.bundleId ? `/bundles/${item.bundleId}` : `/products/${item.productId}`}
-                      className="w-16 h-16 md:w-24 md:h-24 bg-muted rounded-lg flex-shrink-0 overflow-hidden cursor-pointer md:hover:ring-2 md:hover:ring-[#E7FB10]/50 transition-all"
+                      className="w-16 h-16 md:w-20 md:h-20 bg-muted rounded-lg flex-shrink-0 overflow-hidden cursor-pointer md:hover:ring-2 md:hover:ring-[#E7FB10]/50 transition-all"
                       data-testid={`link-cart-item-image-${item.productId}`}
                     >
                       <img
@@ -266,7 +266,7 @@ export default function CartPage() {
                       </div>
                       
                       {/* Bottom row: Quantity + Price inline */}
-                      <div className="flex items-center justify-between mt-2 md:mt-4">
+                      <div className="flex items-center justify-between mt-2">
                         <div className="flex items-center border border-border rounded-md">
                           <Button
                             variant="ghost"
