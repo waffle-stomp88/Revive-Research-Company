@@ -612,49 +612,11 @@ body.modal-open {
 .toast-holographic-border {
   position: relative;
   border-radius: 8px;
-}
-
-.toast-holographic-border::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 8px;
-  padding: 2px;
-  background: linear-gradient(90deg, #21d8ff, #a855f7, #ec4899, #E7FB10, #21d8ff);
-  background-size: 300% 100%;
-  animation: holographic-snake-border 2s linear infinite;
-  -webkit-mask: 
-    linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0);
-  mask: 
-    linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-}
-
-.toast-holographic-border::after {
-  content: '';
-  position: absolute;
-  inset: -4px;
-  border-radius: 12px;
-  background: linear-gradient(90deg, #21d8ff, #a855f7, #ec4899, #E7FB10, #21d8ff);
-  background-size: 300% 100%;
-  animation: holographic-snake-border 2s linear infinite;
-  filter: blur(12px);
-  opacity: 0.5;
-  z-index: -1;
-  pointer-events: none;
-}
-
-@keyframes holographic-snake-border {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 300% 50%;
-  }
+  border: 2px solid #21d8ff;
+  box-shadow: 
+    0 0 10px rgba(33, 216, 255, 0.5),
+    0 0 20px rgba(33, 216, 255, 0.3),
+    0 0 30px rgba(33, 216, 255, 0.15);
 }
 
 .holographic-text {
