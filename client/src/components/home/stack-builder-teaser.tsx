@@ -12,104 +12,133 @@ import {
   Percent,
   Brain,
   Activity,
-  ChevronRight
+  ChevronRight,
+  TrendingUp
 } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { KNOWN_STACKS } from "@/lib/synergy-data";
 
-const featuredStacks = KNOWN_STACKS.slice(0, 5);
+const featuredStacks = [
+  KNOWN_STACKS.find(s => s.name === "Wolverine Stack")!,
+  KNOWN_STACKS.find(s => s.name === "Cognitive Edge")!,
+  KNOWN_STACKS.find(s => s.name === "GH Amplifier")!,
+];
 
-function FloatingParticle({ delay, duration, x, y, size }: { delay: number; duration: number; x: string; y: string; size: number }) {
-  return (
-    <motion.div
-      className="absolute rounded-full bg-[#22c55e]"
-      style={{ left: x, top: y, width: size, height: size }}
-      animate={{
-        opacity: [0, 0.6, 0],
-        scale: [0.5, 1, 0.5],
-        y: [0, -30, 0],
-      }}
-      transition={{
-        duration,
-        delay,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }}
-    />
-  );
-}
+const synergyTiers = [
+  { 
+    level: 50, 
+    label: "Basic", 
+    description: "Individual benefits",
+    color: "#6b7280",
+    bgColor: "rgba(107, 114, 128, 0.15)"
+  },
+  { 
+    level: 75, 
+    label: "Good", 
+    description: "Some shared pathways",
+    color: "#eab308",
+    bgColor: "rgba(234, 179, 8, 0.15)"
+  },
+  { 
+    level: 85, 
+    label: "Great", 
+    description: "Complementary mechanisms",
+    color: "#22c55e",
+    bgColor: "rgba(34, 197, 94, 0.15)"
+  },
+  { 
+    level: 95, 
+    label: "Legendary", 
+    description: "Research-proven synergy",
+    color: "#4ade80",
+    bgColor: "rgba(74, 222, 128, 0.2)",
+    highlight: true
+  },
+];
 
-function SynergyRingPreview() {
+function SynergyBarGraph({ isInView }: { isInView: boolean }) {
   return (
-    <div className="relative w-40 h-40 mx-auto" data-testid="synergy-ring-preview">
-      <motion.div
-        className="absolute inset-0 rounded-full bg-[#22c55e]/20 blur-xl"
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3],
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
-      
-      <motion.svg 
-        className="w-full h-full -rotate-90 relative z-10" 
-        viewBox="0 0 100 100"
-        animate={{ rotate: [-90, -90 + 360] }}
-        transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-      >
-        <circle
-          cx="50"
-          cy="50"
-          r="42"
-          fill="none"
-          stroke="rgba(34, 197, 94, 0.15)"
-          strokeWidth="6"
-        />
-        <motion.circle
-          cx="50"
-          cy="50"
-          r="42"
-          fill="none"
-          stroke="url(#synergyGradient)"
-          strokeWidth="6"
-          strokeLinecap="round"
-          initial={{ strokeDasharray: "0 264" }}
-          animate={{ strokeDasharray: "250 264" }}
-          transition={{ duration: 2, delay: 0.5, ease: "easeOut" }}
-          style={{ filter: "drop-shadow(0 0 12px #22c55e)" }}
-        />
-        <defs>
-          <linearGradient id="synergyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#22c55e" />
-            <stop offset="50%" stopColor="#4ade80" />
-            <stop offset="100%" stopColor="#22c55e" />
-          </linearGradient>
-        </defs>
-      </motion.svg>
-      
-      <motion.div 
-        className="absolute inset-0 flex items-center justify-center z-20"
-        initial={{ opacity: 0, scale: 0.5 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 1.5 }}
-      >
-        <span 
-          className="text-4xl font-bold text-[#22c55e] border-0 outline-none" 
-          style={{ textShadow: "0 0 30px rgba(34, 197, 94, 0.8)" }}
-          data-testid="text-synergy-percent"
+    <div className="space-y-4 w-full max-w-sm mx-auto" data-testid="synergy-bar-graph">
+      {synergyTiers.map((tier, index) => (
+        <motion.div
+          key={tier.label}
+          initial={{ opacity: 0, x: -20 }}
+          animate={isInView ? { opacity: 1, x: 0 } : {}}
+          transition={{ delay: 0.3 + index * 0.15, duration: 0.5 }}
+          className="relative"
+          data-testid={`bar-tier-${tier.label.toLowerCase()}`}
         >
-          95%
-        </span>
+          <div className="flex items-center gap-3 mb-1">
+            <span 
+              className="text-sm font-semibold w-20"
+              style={{ color: tier.color }}
+              data-testid={`text-tier-label-${tier.label.toLowerCase()}`}
+            >
+              {tier.label}
+            </span>
+            <span className="text-xs text-muted-foreground" data-testid={`text-tier-percent-${tier.label.toLowerCase()}`}>
+              {tier.level}%
+            </span>
+          </div>
+          
+          <div className="relative h-8 rounded-md overflow-hidden" style={{ backgroundColor: tier.bgColor }}>
+            <motion.div
+              className="absolute inset-y-0 left-0 rounded-md"
+              style={{ 
+                backgroundColor: tier.color,
+                boxShadow: tier.highlight ? `0 0 20px ${tier.color}60` : undefined
+              }}
+              initial={{ width: 0 }}
+              animate={isInView ? { width: `${tier.level}%` } : { width: 0 }}
+              transition={{ 
+                delay: 0.5 + index * 0.2, 
+                duration: 1,
+                ease: "easeOut"
+              }}
+            />
+            
+            {tier.highlight && (
+              <motion.div
+                className="absolute inset-y-0 left-0 rounded-md bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                initial={{ x: "-100%" }}
+                animate={isInView ? { x: "200%" } : { x: "-100%" }}
+                transition={{
+                  delay: 2,
+                  duration: 1.5,
+                  repeat: Infinity,
+                  repeatDelay: 3,
+                  ease: "easeInOut"
+                }}
+                style={{ width: "50%" }}
+              />
+            )}
+          </div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 5 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 1 + index * 0.15, duration: 0.4 }}
+            className="flex items-center gap-2 mt-1"
+          >
+            <TrendingUp className="h-3 w-3 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground" data-testid={`text-tier-desc-${tier.label.toLowerCase()}`}>
+              {tier.description}
+            </span>
+          </motion.div>
+        </motion.div>
+      ))}
+      
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={isInView ? { opacity: 1, scale: 1 } : {}}
+        transition={{ delay: 2, duration: 0.5 }}
+        className="pt-4 text-center"
+      >
+        <Badge className="bg-[#4ade80]/20 text-[#4ade80] border-[#4ade80]/40" data-testid="badge-wolverine-stack">
+          <Zap className="h-3 w-3 mr-1" />
+          Wolverine Stack = 95% Synergy
+        </Badge>
       </motion.div>
-
-      <FloatingParticle delay={0} duration={4} x="10%" y="20%" size={4} />
-      <FloatingParticle delay={1} duration={5} x="80%" y="30%" size={3} />
-      <FloatingParticle delay={2} duration={4.5} x="20%" y="70%" size={5} />
-      <FloatingParticle delay={1.5} duration={3.5} x="75%" y="60%" size={4} />
     </div>
   );
 }
@@ -160,7 +189,7 @@ export function StackBuilderTeaser() {
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left - Visual Preview (no boxy card) */}
+          {/* Left - Synergy Bar Graph */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
@@ -168,44 +197,28 @@ export function StackBuilderTeaser() {
             className="relative"
             data-testid="card-synergy-preview"
           >
-            <div className="text-center py-8">
-              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-6" data-testid="text-live-preview-label">Live Synergy Preview</p>
-              <SynergyRingPreview />
-              
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 2, duration: 0.5 }}
-                className="mt-6"
-              >
-                <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/40" data-testid="badge-wolverine-stack">
-                  <Zap className="h-3 w-3 mr-1" />
-                  Wolverine Stack Detected
-                </Badge>
-              </motion.div>
+            <div className="py-6">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-6 text-center" data-testid="text-synergy-levels-label">
+                Synergy Level Scale
+              </p>
+              <SynergyBarGraph isInView={isInView} />
 
-              <div className="flex flex-wrap justify-center gap-3 mt-6">
-                <Badge variant="outline" data-testid="badge-peptide-bpc">BPC-157</Badge>
-                <span className="text-muted-foreground text-lg" data-testid="text-peptide-separator">+</span>
-                <Badge variant="outline" data-testid="badge-peptide-tb">TB-500</Badge>
-              </div>
-
-              <div className="flex flex-wrap justify-center gap-6 mt-8">
+              <div className="flex flex-wrap justify-center gap-4 mt-8">
                 <div className="text-center" data-testid="card-feature-ai">
-                  <div className="w-12 h-12 mx-auto rounded-xl bg-[#ec4899]/10 border border-[#ec4899]/20 flex items-center justify-center mb-2">
-                    <Sparkles className="h-5 w-5 text-[#ec4899]" />
+                  <div className="w-10 h-10 mx-auto rounded-lg bg-[#ec4899]/10 border border-[#ec4899]/20 flex items-center justify-center mb-2">
+                    <Sparkles className="h-4 w-4 text-[#ec4899]" />
                   </div>
                   <p className="text-xs text-muted-foreground" data-testid="text-feature-ai">AI Analysis</p>
                 </div>
                 <div className="text-center" data-testid="card-feature-pathway">
-                  <div className="w-12 h-12 mx-auto rounded-xl bg-[#21d8ff]/10 border border-[#21d8ff]/20 flex items-center justify-center mb-2">
-                    <Activity className="h-5 w-5 text-[#21d8ff]" />
+                  <div className="w-10 h-10 mx-auto rounded-lg bg-[#21d8ff]/10 border border-[#21d8ff]/20 flex items-center justify-center mb-2">
+                    <Activity className="h-4 w-4 text-[#21d8ff]" />
                   </div>
                   <p className="text-xs text-muted-foreground" data-testid="text-feature-pathway">Pathway Map</p>
                 </div>
                 <div className="text-center" data-testid="card-feature-savings">
-                  <div className="w-12 h-12 mx-auto rounded-xl bg-[#22c55e]/10 border border-[#22c55e]/20 flex items-center justify-center mb-2">
-                    <Percent className="h-5 w-5 text-[#22c55e]" />
+                  <div className="w-10 h-10 mx-auto rounded-lg bg-[#22c55e]/10 border border-[#22c55e]/20 flex items-center justify-center mb-2">
+                    <Percent className="h-4 w-4 text-[#22c55e]" />
                   </div>
                   <p className="text-xs text-muted-foreground" data-testid="text-feature-savings">10% Savings</p>
                 </div>
@@ -282,7 +295,7 @@ export function StackBuilderTeaser() {
                 className="text-sm text-muted-foreground text-center pt-2"
                 data-testid="text-more-stacks"
               >
-                ...and {KNOWN_STACKS.length - 5} more to discover
+                ...and {KNOWN_STACKS.length - 3} more to discover
               </motion.p>
             </div>
           </motion.div>
