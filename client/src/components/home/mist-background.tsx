@@ -11,7 +11,7 @@ const MistBackground: React.FC<MistBackgroundProps> = ({ className = '' }) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const gl = canvas.getContext('webgl');
+    const gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false });
     if (!gl) return;
 
     const vsSource = `
@@ -73,31 +73,32 @@ const MistBackground: React.FC<MistBackgroundProps> = ({ className = '' }) => {
 
           float f = fbm(uv + r);
 
-          // Revive Research color palette - dark charcoal base with cyan/gold hints
-          vec3 baseColor = vec3(0.102, 0.102, 0.122); // #1a1a1f - dark charcoal
-          vec3 mistColor = vec3(0.15, 0.18, 0.22); // slightly lighter mist
+          // Mist colors with transparency - overlay effect
+          vec3 mistColor = vec3(0.12, 0.14, 0.18); // dark blue-gray mist
           vec3 accentColor1 = vec3(0.13, 0.85, 1.0); // #21d8ff - cyan accent
           vec3 accentColor2 = vec3(0.906, 0.984, 0.063); // #E7FB10 - gold/yellow accent
 
-          vec3 color = mix(baseColor, mistColor, f * 0.8);
+          // Base fog with varying density
+          float fogDensity = f * 0.6;
+          vec3 color = mistColor;
           
           // Add subtle cyan glow in upper regions
-          float cyanInfluence = smoothstep(0.4, 0.8, uv.y) * 0.08;
+          float cyanInfluence = smoothstep(0.3, 0.8, uv.y) * 0.15;
           color = mix(color, accentColor1, cyanInfluence * f);
           
-          // Add very subtle gold in lower regions
-          float goldInfluence = smoothstep(0.6, 0.2, uv.y) * 0.04;
-          color = mix(color, accentColor2, goldInfluence * dot(q, r) * 0.3);
+          // Add very subtle gold in lower regions  
+          float goldInfluence = smoothstep(0.7, 0.2, uv.y) * 0.08;
+          color = mix(color, accentColor2, goldInfluence * dot(q, r) * 0.4);
 
           // Subtle mouse glow with cyan tint
-          float mouseGlow = smoothstep(0.4, 0.0, dist);
-          color += mouseGlow * 0.06 * accentColor1;
+          float mouseGlow = smoothstep(0.5, 0.0, dist);
+          color += mouseGlow * 0.1 * accentColor1;
 
-          // Post-processing - slightly brighter
-          color = pow(color, vec3(1.05)) * 1.2;
+          // Calculate alpha based on fog density - more visible where fog is dense
+          float alpha = fogDensity * 0.5 + (dot(q, r) * 0.15);
+          alpha = clamp(alpha, 0.0, 0.55);
           
-          // Output with slight transparency for layering
-          gl_FragColor = vec4(color, 0.85);
+          gl_FragColor = vec4(color, alpha);
       }
     `;
 
@@ -127,6 +128,9 @@ const MistBackground: React.FC<MistBackgroundProps> = ({ className = '' }) => {
     const resLoc = gl.getUniformLocation(program, 'u_resolution');
     const mouseLoc = gl.getUniformLocation(program, 'u_mouse');
 
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
     let mouse = { x: 0, y: 0 };
     const handleMouseMove = (e: MouseEvent) => {
       mouse.x = e.clientX;
@@ -146,6 +150,9 @@ const MistBackground: React.FC<MistBackgroundProps> = ({ className = '' }) => {
         canvas.height = height;
         gl.viewport(0, 0, canvas.width, canvas.height);
       }
+
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
 
       gl.uniform1f(timeLoc, time * 0.001);
       gl.uniform2f(resLoc, canvas.width, canvas.height);
@@ -167,7 +174,6 @@ const MistBackground: React.FC<MistBackgroundProps> = ({ className = '' }) => {
     <canvas
       ref={canvasRef}
       className={`absolute inset-0 w-full h-full pointer-events-none ${className}`}
-      style={{ background: '#1a1a1f' }}
       data-testid="canvas-mist-background"
     />
   );
