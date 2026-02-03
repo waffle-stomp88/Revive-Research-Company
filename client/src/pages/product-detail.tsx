@@ -1395,7 +1395,7 @@ export default function ProductDetail() {
                   );
                   
                   return (
-                    <Link key={partnerProduct.id} href={`/product/${partnerProduct.id}`} data-testid={`link-synergy-${partnerProduct.id}`}>
+                    <Link key={partnerProduct.id} href={`/peptides/${partnerProduct.id}`} data-testid={`link-synergy-${partnerProduct.id}`}>
                       <Card 
                         className="p-4 border-[#22c55e]/20 cursor-pointer hover-elevate"
                         data-testid={`card-synergy-${partnerProduct.id}`}
@@ -1440,16 +1440,36 @@ export default function ProductDetail() {
               </div>
               
               <div className="mt-6 flex justify-center">
-                <Link href="/research-stacks" data-testid="link-build-custom-stack">
-                  <Button 
-                    variant="outline" 
-                    className="border-[#22c55e]/30 gap-2"
-                    data-testid="button-build-custom-stack"
+                <Link href="/research-stacks?tab=custom" data-testid="link-build-custom-stack">
+                  <motion.div 
+                    className="inline-block relative"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
                   >
-                    <Layers className="h-4 w-4" />
-                    Build a Custom Stack
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
+                    {/* Pulsing glow behind button */}
+                    <motion.div
+                      className="absolute inset-0 rounded-md bg-[#21d8ff]/40 blur-xl pointer-events-none"
+                      animate={{
+                        opacity: [0.3, 0.6, 0.3],
+                        scale: [1, 1.15, 1],
+                      }}
+                      transition={{
+                        duration: 2.5,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    />
+                    <Button 
+                      size="lg"
+                      className="relative font-display gap-3 bg-gradient-to-r from-[#21d8ff] to-[#0ea5e9] border border-[#21d8ff] text-black shadow-lg shadow-[#21d8ff]/30"
+                      data-testid="button-build-custom-stack"
+                    >
+                      <Layers className="h-5 w-5" />
+                      Build a Custom Stack
+                      <ChevronRight className="h-5 w-5" />
+                    </Button>
+                  </motion.div>
                 </Link>
               </div>
             </motion.section>
