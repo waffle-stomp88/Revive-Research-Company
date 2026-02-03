@@ -36,8 +36,8 @@ const synergyTiers = [
     level: 75, 
     label: "Good", 
     description: "Some shared pathways",
-    color: "#eab308",
-    bgColor: "rgba(234, 179, 8, 0.15)"
+    color: "#21d8ff",
+    bgColor: "rgba(33, 216, 255, 0.15)"
   },
   { 
     level: 85, 
@@ -50,8 +50,8 @@ const synergyTiers = [
     level: 95, 
     label: "Legendary", 
     description: "Research-proven synergy",
-    color: "#4ade80",
-    bgColor: "rgba(74, 222, 128, 0.2)",
+    color: "#E7FB10",
+    bgColor: "rgba(231, 251, 16, 0.15)",
     highlight: true
   },
 ];
@@ -99,17 +99,17 @@ function SynergyBarGraph({ isInView }: { isInView: boolean }) {
             
             {tier.highlight && (
               <motion.div
-                className="absolute inset-y-0 left-0 rounded-md bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                className="absolute inset-y-0 left-0 rounded-md bg-gradient-to-r from-transparent via-white/60 to-transparent"
                 initial={{ x: "-100%" }}
-                animate={isInView ? { x: "200%" } : { x: "-100%" }}
+                animate={isInView ? { x: "300%" } : { x: "-100%" }}
                 transition={{
-                  delay: 2,
-                  duration: 1.5,
+                  delay: 1.5,
+                  duration: 1,
                   repeat: Infinity,
-                  repeatDelay: 3,
+                  repeatDelay: 2,
                   ease: "easeInOut"
                 }}
-                style={{ width: "50%" }}
+                style={{ width: "40%" }}
               />
             )}
           </div>
@@ -134,7 +134,7 @@ function SynergyBarGraph({ isInView }: { isInView: boolean }) {
         transition={{ delay: 2, duration: 0.5 }}
         className="pt-4 text-center"
       >
-        <Badge className="bg-[#4ade80]/20 text-[#4ade80] border-[#4ade80]/40" data-testid="badge-wolverine-stack">
+        <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/40" data-testid="badge-wolverine-stack">
           <Zap className="h-3 w-3 mr-1" />
           Wolverine Stack = 95% Synergy
         </Badge>
@@ -312,9 +312,9 @@ export function StackBuilderTeaser() {
             <div className="inline-block relative">
               {/* Pulsing glow behind button */}
               <motion.div
-                className="absolute inset-0 rounded-md bg-[#22c55e]/40 blur-xl pointer-events-none"
+                className="absolute inset-0 rounded-md bg-[#21d8ff]/50 blur-xl pointer-events-none"
                 animate={{
-                  opacity: [0.4, 0.8, 0.4],
+                  opacity: [0.5, 0.9, 0.5],
                   scale: [1, 1.2, 1],
                 }}
                 transition={{
@@ -325,7 +325,7 @@ export function StackBuilderTeaser() {
               />
               <Button 
                 size="lg"
-                className="relative font-display gap-3 bg-gradient-to-r from-[#22c55e] to-[#16a34a] border border-[#22c55e] text-white shadow-lg shadow-[#22c55e]/30"
+                className="relative font-display gap-3 bg-gradient-to-r from-[#21d8ff] to-[#0ea5e9] border border-[#21d8ff] text-black shadow-lg shadow-[#21d8ff]/40"
                 data-testid="button-build-stack"
               >
                 <Sparkles className="h-5 w-5" />
