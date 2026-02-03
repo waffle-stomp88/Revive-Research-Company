@@ -21,6 +21,7 @@ import { SEOHead } from "@/components/seo-head";
 import { MolecularDNAVisual } from "@/components/home/molecular-dna-visual";
 import { TestingPipelineVisual } from "@/components/home/testing-pipeline-visual";
 import { WhyResearchersChooseUs } from "@/components/home/why-researchers-choose-us";
+import { StackBuilderTeaser } from "@/components/home/stack-builder-teaser";
 
 function HeroSection() {
   const { scrollY } = useScroll();
@@ -470,6 +471,7 @@ export default function Home() {
         <TestingPipelineVisual />
       </div>
       <EducationTeaser />
+      <StackBuilderTeaser />
       <div id="why-researchers">
         <WhyResearchersChooseUs />
       </div>

@@ -65,6 +65,8 @@ import type { Product, ProductStorageProfile, Batch, Coa, EducationArticle, Prod
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { SEOHead } from "@/components/seo-head";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { getSynergyPartners, normalizePeptideName } from "@/lib/synergy-data";
+import { Layers, Zap } from "lucide-react";
 
 // Badge priority system - max 2 badges per product
 // Priority: Out of Stock > Low Stock > Sale > Selling Fast > Featured
@@ -196,6 +198,11 @@ export default function ProductDetail() {
   const { data: dosageStocks = [] } = useQuery<ProductDosageStock[]>({
     queryKey: ["/api/products", params.id, "dosage-stocks"],
     enabled: !!params.id,
+  });
+
+  // Query for all products (for synergy recommendations)
+  const { data: allProducts = [] } = useQuery<Product[]>({
+    queryKey: ["/api/products"],
   });
 
   // Mutation for stock notification signup
@@ -1344,6 +1351,110 @@ export default function ProductDetail() {
             </div>
           </motion.section>
         )}
+
+        {/* Synergy Recommendations Section */}
+        {product && (() => {
+          const synergyPartners = getSynergyPartners(product.name);
+          if (synergyPartners.length === 0) return null;
+          
+          // Find matching products from the products list
+          const matchingProducts = allProducts.filter((p: Product) => {
+            const normalizedProductName = normalizePeptideName(p.name);
+            return synergyPartners.some(sp => 
+              normalizePeptideName(sp.partner) === normalizedProductName ||
+              normalizedProductName.includes(normalizePeptideName(sp.partner)) ||
+              normalizePeptideName(sp.partner).includes(normalizedProductName)
+            );
+          });
+          
+          if (matchingProducts.length === 0) return null;
+          
+          return (
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+              className="mt-12"
+              data-testid="section-synergy"
+            >
+              <div className="flex flex-wrap items-center gap-3 mb-6">
+                <Layers className="h-6 w-6 text-[#22c55e]" />
+                <h2 className="font-display text-2xl font-bold" data-testid="text-synergy-heading">Works Well With</h2>
+              </div>
+              
+              <p className="text-muted-foreground mb-6" data-testid="text-synergy-description">
+                These peptides share complementary research pathways with {product.name}. Combine them for enhanced synergy.
+              </p>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {matchingProducts.slice(0, 3).map((partnerProduct: Product) => {
+                  const partnerSynergy = synergyPartners.find(sp => 
+                    normalizePeptideName(sp.partner) === normalizePeptideName(partnerProduct.name) ||
+                    normalizePeptideName(partnerProduct.name).includes(normalizePeptideName(sp.partner)) ||
+                    normalizePeptideName(sp.partner).includes(normalizePeptideName(partnerProduct.name))
+                  );
+                  
+                  return (
+                    <Link key={partnerProduct.id} href={`/product/${partnerProduct.id}`} data-testid={`link-synergy-${partnerProduct.id}`}>
+                      <Card 
+                        className="p-4 border-[#22c55e]/20 cursor-pointer hover-elevate"
+                        data-testid={`card-synergy-${partnerProduct.id}`}
+                      >
+                        <div className="flex flex-wrap items-start gap-4">
+                          <div className="w-16 h-16 rounded-lg overflow-hidden bg-card flex-shrink-0">
+                            <img 
+                              src={partnerProduct.imageUrl || productImage} 
+                              alt={partnerProduct.name}
+                              className="w-full h-full object-cover"
+                              data-testid={`img-synergy-${partnerProduct.id}`}
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p 
+                              className="font-medium text-sm truncate"
+                              data-testid={`text-synergy-name-${partnerProduct.id}`}
+                            >
+                              {partnerProduct.name}
+                            </p>
+                            {partnerSynergy && (
+                              <Badge 
+                                className="mt-2 text-xs bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30"
+                                data-testid={`badge-synergy-stack-${partnerProduct.id}`}
+                              >
+                                <Zap className="h-3 w-3 mr-1" />
+                                {partnerSynergy.stack.name} • {partnerSynergy.synergyBonus}%
+                              </Badge>
+                            )}
+                            <p 
+                              className="text-sm font-bold text-[#E7FB10] mt-2"
+                              data-testid={`text-synergy-price-${partnerProduct.id}`}
+                            >
+                              ${Number(partnerProduct.price).toFixed(2)}
+                            </p>
+                          </div>
+                        </div>
+                      </Card>
+                    </Link>
+                  );
+                })}
+              </div>
+              
+              <div className="mt-6 flex justify-center">
+                <Link href="/research-stacks" data-testid="link-build-custom-stack">
+                  <Button 
+                    variant="outline" 
+                    className="border-[#22c55e]/30 gap-2"
+                    data-testid="button-build-custom-stack"
+                  >
+                    <Layers className="h-4 w-4" />
+                    Build a Custom Stack
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </motion.section>
+          );
+        })()}
 
       </div>
       
