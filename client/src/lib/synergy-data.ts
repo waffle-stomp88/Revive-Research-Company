@@ -1,4 +1,4 @@
-import { Zap, Sparkles, Rocket, Heart, Activity, Brain, Crown, Moon, Shield, Dumbbell, LucideIcon } from "lucide-react";
+import { Zap, Sparkles, Rocket, Heart, Activity, Brain, Crown, Moon, Shield, Dumbbell, Flame, Target, RefreshCw, Leaf, Pill, LucideIcon } from "lucide-react";
 
 export interface KnownStack {
   name: string;
@@ -16,7 +16,7 @@ export interface PeptidePathway {
   systems: string[];
 }
 
-// Famous known stacks from research
+// Famous known stacks from research - expanded library based on scientific documentation
 export const KNOWN_STACKS: KnownStack[] = [
   {
     name: "Wolverine Stack",
@@ -25,6 +25,22 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: "#22c55e",
     description: "Legendary healing combo - BPC-157's local repair + TB-500's systemic regeneration",
     synergyBonus: 95,
+  },
+  {
+    name: "Total Regen",
+    peptides: ["bpc-157", "tb-500", "ipamorelin"],
+    icon: Shield,
+    color: "#10b981",
+    description: "Complete recovery - local healing + systemic repair + growth support",
+    synergyBonus: 92,
+  },
+  {
+    name: "Gut Restore",
+    peptides: ["bpc-157", "kpv"],
+    icon: Pill,
+    color: "#14b8a6",
+    description: "Digestive healing - gut lining repair + potent anti-inflammatory action",
+    synergyBonus: 91,
   },
   {
     name: "Glow Protocol",
@@ -43,20 +59,12 @@ export const KNOWN_STACKS: KnownStack[] = [
     synergyBonus: 88,
   },
   {
-    name: "Recovery+",
-    peptides: ["bpc-157", "ghk-cu"],
-    icon: Heart,
-    color: "#22c55e",
-    description: "Collagen synthesis meets tissue protection",
-    synergyBonus: 82,
-  },
-  {
-    name: "Energy Stack",
-    peptides: ["mots-c", "retatrutide"],
-    icon: Activity,
-    color: "#E7FB10",
-    description: "Mitochondrial power + metabolic signaling",
-    synergyBonus: 80,
+    name: "Lean Mass",
+    peptides: ["cjc-1295", "ipamorelin", "mots-c"],
+    icon: Dumbbell,
+    color: "#f97316",
+    description: "GH amplification + metabolic enhancement for body composition",
+    synergyBonus: 87,
   },
   {
     name: "Cognitive Edge",
@@ -67,6 +75,14 @@ export const KNOWN_STACKS: KnownStack[] = [
     synergyBonus: 86,
   },
   {
+    name: "Anti-Aging Protocol",
+    peptides: ["epithalon", "ghk-cu", "ipamorelin"],
+    icon: Leaf,
+    color: "#84cc16",
+    description: "Telomere support + collagen regeneration + natural GH optimization",
+    synergyBonus: 85,
+  },
+  {
     name: "Longevity Protocol",
     peptides: ["epithalon", "ghk-cu"],
     icon: Crown,
@@ -75,28 +91,52 @@ export const KNOWN_STACKS: KnownStack[] = [
     synergyBonus: 84,
   },
   {
-    name: "Deep Sleep",
-    peptides: ["epithalon", "ipamorelin"],
+    name: "Deep Sleep Formula",
+    peptides: ["dsip", "ipamorelin", "epithalon"],
     icon: Moon,
     color: "#6366f1",
-    description: "Circadian rhythm + natural GH pulse optimization",
+    description: "Sleep peptide + GH pulse + circadian rhythm optimization",
+    synergyBonus: 84,
+  },
+  {
+    name: "Fat Burner Stack",
+    peptides: ["tesamorelin", "cjc-1295", "mots-c"],
+    icon: Flame,
+    color: "#ef4444",
+    description: "Targeted fat reduction + GH elevation + metabolic acceleration",
     synergyBonus: 83,
   },
   {
-    name: "Total Regen",
-    peptides: ["bpc-157", "tb-500", "ipamorelin"],
-    icon: Shield,
-    color: "#10b981",
-    description: "Complete recovery - local healing + systemic repair + growth support",
-    synergyBonus: 92,
+    name: "Recovery+",
+    peptides: ["bpc-157", "ghk-cu"],
+    icon: Heart,
+    color: "#22c55e",
+    description: "Collagen synthesis meets tissue protection",
+    synergyBonus: 82,
   },
   {
-    name: "Lean Mass",
-    peptides: ["cjc-1295", "ipamorelin", "mots-c"],
-    icon: Dumbbell,
-    color: "#f97316",
-    description: "GH amplification + metabolic enhancement for body composition",
-    synergyBonus: 87,
+    name: "Performance Stack",
+    peptides: ["cjc-1295", "ipamorelin", "bpc-157"],
+    icon: Target,
+    color: "#8b5cf6",
+    description: "GH optimization + tissue protection for athletic performance",
+    synergyBonus: 81,
+  },
+  {
+    name: "Energy Stack",
+    peptides: ["mots-c", "retatrutide"],
+    icon: Activity,
+    color: "#E7FB10",
+    description: "Mitochondrial power + metabolic signaling",
+    synergyBonus: 80,
+  },
+  {
+    name: "Immune Boost",
+    peptides: ["thymalin", "selank", "kpv"],
+    icon: RefreshCw,
+    color: "#06b6d4",
+    description: "Thymus support + immune modulation + anti-inflammatory",
+    synergyBonus: 79,
   },
 ];
 
@@ -161,6 +201,30 @@ export const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
     pathways: ["GABA", "Tuftsin Analog"],
     mechanisms: ["Anxiolytic", "Immune modulation", "Mood regulation"],
     systems: ["Cognitive", "Mood", "Immunity"],
+  },
+  "kpv": {
+    name: "KPV",
+    pathways: ["Alpha-MSH Fragment", "NF-κB Inhibition"],
+    mechanisms: ["Potent anti-inflammatory", "Gut barrier repair", "Immune modulation"],
+    systems: ["Gut", "Immunity", "Healing"],
+  },
+  "dsip": {
+    name: "DSIP",
+    pathways: ["Delta Sleep", "Hypothalamus"],
+    mechanisms: ["Sleep induction", "Stress modulation", "Circadian regulation"],
+    systems: ["Sleep", "Recovery", "Mood"],
+  },
+  "tesamorelin": {
+    name: "Tesamorelin",
+    pathways: ["GHRH Analog", "GH Axis"],
+    mechanisms: ["Targeted visceral fat reduction", "GH release", "Lipodystrophy treatment"],
+    systems: ["Metabolic", "Fat Loss", "Growth"],
+  },
+  "thymalin": {
+    name: "Thymalin",
+    pathways: ["Thymus", "Immune Restoration"],
+    mechanisms: ["T-cell maturation", "Immune reconstitution", "Thymic regeneration"],
+    systems: ["Immunity", "Longevity", "Recovery"],
   },
 };
 

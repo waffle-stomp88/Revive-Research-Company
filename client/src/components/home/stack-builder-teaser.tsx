@@ -11,12 +11,13 @@ import {
   Crown,
   Percent,
   Brain,
-  Activity
+  Activity,
+  ChevronRight
 } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { KNOWN_STACKS } from "@/lib/synergy-data";
 
-const featuredStacks = KNOWN_STACKS.slice(0, 4);
+const featuredStacks = KNOWN_STACKS.slice(0, 5);
 
 function FloatingParticle({ delay, duration, x, y, size }: { delay: number; duration: number; x: string; y: string; size: number }) {
   return (
@@ -97,8 +98,8 @@ function SynergyRingPreview() {
         transition={{ duration: 0.5, delay: 1.5 }}
       >
         <span 
-          className="text-3xl font-bold text-[#22c55e]" 
-          style={{ textShadow: "0 0 20px rgba(34, 197, 94, 0.6)" }}
+          className="text-4xl font-bold text-[#22c55e] border-0 outline-none" 
+          style={{ textShadow: "0 0 30px rgba(34, 197, 94, 0.8)" }}
           data-testid="text-synergy-percent"
         >
           95%
@@ -239,14 +240,17 @@ export function StackBuilderTeaser() {
             </p>
 
             <div className="space-y-3">
-              {featuredStacks.slice(0, 3).map((stack, index) => {
+              <p className="text-xs text-muted-foreground uppercase tracking-wider" data-testid="text-examples-header">
+                Examples of Popular Stacks
+              </p>
+              {featuredStacks.map((stack, index) => {
                 const Icon = stack.icon;
                 return (
                   <motion.div
                     key={stack.name}
                     initial={{ opacity: 0, x: 10 }}
                     animate={isInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ delay: 0.5 + index * 0.1, duration: 0.4 }}
+                    transition={{ delay: 0.5 + index * 0.08, duration: 0.4 }}
                     className="flex flex-wrap items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 hover-elevate cursor-default"
                     data-testid={`card-stack-${stack.name.toLowerCase().replace(/\s+/g, '-')}`}
                   >
@@ -271,11 +275,20 @@ export function StackBuilderTeaser() {
                   </motion.div>
                 );
               })}
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+                transition={{ delay: 1, duration: 0.5 }}
+                className="text-sm text-muted-foreground text-center pt-2"
+                data-testid="text-more-stacks"
+              >
+                ...and {KNOWN_STACKS.length - 5} more to discover
+              </motion.p>
             </div>
           </motion.div>
         </div>
 
-        {/* Centered CTA Button */}
+        {/* Centered CTA Button - Animated and Engaging */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -283,19 +296,39 @@ export function StackBuilderTeaser() {
           className="mt-12 text-center"
         >
           <Link href="/research-stacks" onClick={() => trackEvent('stack_builder_cta_click', 'engagement', 'homepage')} data-testid="link-build-stack">
-            <Button 
-              size="lg"
-              className="font-display gap-2 bg-[#22c55e] border border-[#22c55e] text-white"
-              data-testid="button-build-stack"
-            >
-              <Layers className="h-5 w-5" />
-              Build Your Stack
-              <ArrowRight className="h-5 w-5" />
-            </Button>
+            <div className="inline-block relative">
+              {/* Pulsing glow behind button */}
+              <motion.div
+                className="absolute inset-0 rounded-md bg-[#22c55e]/40 blur-xl pointer-events-none"
+                animate={{
+                  opacity: [0.4, 0.8, 0.4],
+                  scale: [1, 1.2, 1],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              <Button 
+                size="lg"
+                className="relative font-display gap-3 bg-gradient-to-r from-[#22c55e] to-[#16a34a] border border-[#22c55e] text-white shadow-lg shadow-[#22c55e]/30"
+                data-testid="button-build-stack"
+              >
+                <Sparkles className="h-5 w-5" />
+                Build Your Research Stack
+                <ChevronRight className="h-5 w-5" />
+              </Button>
+            </div>
           </Link>
-          <p className="text-sm text-muted-foreground mt-3">
+          <motion.p 
+            className="text-sm text-muted-foreground mt-4"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ delay: 1.2 }}
+          >
             Select 2-4 peptides and unlock synergy bonuses
-          </p>
+          </motion.p>
         </motion.div>
       </div>
     </section>
