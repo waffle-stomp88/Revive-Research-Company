@@ -22,6 +22,7 @@ import { MolecularDNAVisual } from "@/components/home/molecular-dna-visual";
 import { TestingPipelineVisual } from "@/components/home/testing-pipeline-visual";
 import { WhyResearchersChooseUs } from "@/components/home/why-researchers-choose-us";
 import { StackBuilderTeaser } from "@/components/home/stack-builder-teaser";
+import MistBackground from "@/components/home/mist-background";
 
 function HeroSection() {
   const { scrollY } = useScroll();
@@ -29,7 +30,6 @@ function HeroSection() {
   const opacity = useTransform(scrollY, [0, 500], [1, 0]);
   const scale = useTransform(scrollY, [0, 800], [1, 1.15]);
   const imageOpacity = useTransform(scrollY, [0, 400], [1, 0.3]);
-  const overlayY = useTransform(scrollY, [0, 600], [0, -80]);
 
   const handleScrollClick = () => {
     const nextSection = document.getElementById('why-researchers');
@@ -51,43 +51,9 @@ function HeroSection() {
           data-testid="img-hero-background"
         />
       </motion.div>
-      {/* Animated overlays - hidden on mobile for performance */}
+      {/* WebGL Mist Background - hidden on mobile for performance */}
       <div className="absolute inset-0 z-[1] overflow-hidden pointer-events-none hidden md:block">
-        <motion.div
-          className="absolute -left-1/4 bottom-0 w-[150%] h-[60%] opacity-40"
-          style={{
-            background: "radial-gradient(ellipse at center, rgba(100,100,120,0.4) 0%, transparent 70%)",
-            filter: "blur(40px)",
-            y: overlayY,
-          }}
-          animate={{
-            x: ["-10%", "10%", "-10%"],
-            y: ["0%", "-5%", "0%"],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute -right-1/4 bottom-0 w-[150%] h-[50%] opacity-30"
-          style={{
-            background: "radial-gradient(ellipse at center, rgba(80,90,110,0.5) 0%, transparent 65%)",
-            filter: "blur(50px)",
-            y: overlayY,
-          }}
-          animate={{
-            x: ["10%", "-15%", "10%"],
-            y: ["0%", "-8%", "0%"],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2,
-          }}
-        />
+        <MistBackground />
       </div>
       <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-[2]" />
       <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-background z-[2]" />
