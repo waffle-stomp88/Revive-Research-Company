@@ -308,8 +308,13 @@ export function StackBuilderTeaser() {
           transition={{ delay: 0.8, duration: 0.6 }}
           className="mt-12 text-center"
         >
-          <Link href="/research-stacks" onClick={() => trackEvent('stack_builder_cta_click', 'engagement', 'homepage')} data-testid="link-build-stack">
-            <div className="inline-block relative">
+          <Link href="/research-stacks?tab=custom" onClick={() => trackEvent('stack_builder_cta_click', 'engagement', 'homepage')} data-testid="link-build-stack">
+            <motion.div 
+              className="inline-block relative"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            >
               {/* Pulsing glow behind button */}
               <motion.div
                 className="absolute inset-0 rounded-md bg-[#21d8ff]/50 blur-xl pointer-events-none"
@@ -332,7 +337,7 @@ export function StackBuilderTeaser() {
                 Build Your Research Stack
                 <ChevronRight className="h-5 w-5" />
               </Button>
-            </div>
+            </motion.div>
           </Link>
           <motion.p 
             className="text-sm text-muted-foreground mt-4"

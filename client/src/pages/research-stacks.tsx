@@ -1419,6 +1419,15 @@ function ResearchStacks() {
   const [activeTab, setActiveTab] = useState<StackTab>("pre-built");
   const [templatePeptideNames, setTemplatePeptideNames] = useState<string[]>([]);
 
+  // Handle URL tab parameter on mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if (tabParam === 'custom') {
+      setActiveTab('custom');
+    }
+  }, []);
+
   const handleUseAsTemplate = (peptideNames: string[]) => {
     setTemplatePeptideNames([...peptideNames]); // Create new array to trigger useEffect
     setActiveTab("custom");
