@@ -138,8 +138,8 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <main className="min-h-screen pt-32 md:pt-40 pb-12">
-        <div className="max-w-4xl mx-auto px-4 md:px-8">
+      <main className="min-h-screen pt-32 md:pt-40 pb-12 px-3 sm:px-4 md:px-8">
+        <div className="max-w-4xl mx-auto w-full">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -165,16 +165,16 @@ export default function CartPage() {
   }
 
   return (
-    <main className="min-h-screen pt-32 md:pt-40 pb-12">
+    <main className="min-h-screen pt-32 md:pt-40 pb-12 px-3 sm:px-4 md:px-8">
       <SEOHead title="Shopping Cart" description="Review your research compound order. Free shipping on orders over $200. Secure checkout with fast processing." canonicalPath="/cart" />
-      <div className="max-w-6xl mx-auto px-4 md:px-8">
+      <div className="max-w-6xl mx-auto w-full">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           className="mb-6"
         >
           <Link href="/products">
-            <Button variant="ghost" className="gap-2 -ml-4" data-testid="button-continue-shopping">
+            <Button variant="ghost" className="gap-2 md:-ml-4" data-testid="button-continue-shopping">
               <ArrowLeft className="h-4 w-4" />
               Continue Shopping
             </Button>
@@ -361,7 +361,7 @@ export default function CartPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <Card className="p-4 md:p-6 md:sticky md:top-24">
+              <Card className="p-3 sm:p-4 md:p-6 md:sticky md:top-24">
                 <h2 className="font-display font-semibold text-lg mb-4">Order Summary</h2>
                 
                 <div className="space-y-3 text-sm">
