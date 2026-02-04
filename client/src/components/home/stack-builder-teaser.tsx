@@ -14,13 +14,6 @@ import {
   TrendingUp
 } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
-import { KNOWN_STACKS } from "@/lib/synergy-data";
-
-const featuredStacks = [
-  KNOWN_STACKS.find(s => s.name === "Wolverine Stack")!,
-  KNOWN_STACKS.find(s => s.name === "Cognitive Edge")!,
-  KNOWN_STACKS.find(s => s.name === "GH Amplifier")!,
-];
 
 const synergyTiers = [
   { 
@@ -56,7 +49,7 @@ const synergyTiers = [
 
 function SynergyBarGraph({ isInView }: { isInView: boolean }) {
   return (
-    <div className="space-y-4 w-full max-w-sm mx-auto" data-testid="synergy-bar-graph">
+    <div className="space-y-3 md:space-y-4 w-full max-w-md mx-auto" data-testid="synergy-bar-graph">
       {synergyTiers.map((tier, index) => (
         <motion.div
           key={tier.label}
@@ -66,20 +59,20 @@ function SynergyBarGraph({ isInView }: { isInView: boolean }) {
           className="relative"
           data-testid={`bar-tier-${tier.label.toLowerCase()}`}
         >
-          <div className="flex items-center gap-3 mb-1">
+          <div className="flex items-center gap-2 md:gap-3 mb-1">
             <span 
-              className="text-sm font-semibold w-20"
+              className="text-xs md:text-sm font-semibold w-16 md:w-20"
               style={{ color: tier.color }}
               data-testid={`text-tier-label-${tier.label.toLowerCase()}`}
             >
               {tier.label}
             </span>
-            <span className="text-xs text-muted-foreground" data-testid={`text-tier-percent-${tier.label.toLowerCase()}`}>
+            <span className="text-[10px] md:text-xs text-muted-foreground" data-testid={`text-tier-percent-${tier.label.toLowerCase()}`}>
               {tier.level}%
             </span>
           </div>
           
-          <div className="relative h-8 rounded-md overflow-hidden" style={{ backgroundColor: tier.bgColor }}>
+          <div className="relative h-6 md:h-8 rounded-md overflow-hidden" style={{ backgroundColor: tier.bgColor }}>
             <motion.div
               className="absolute inset-y-0 left-0 rounded-md"
               style={{ 
@@ -116,10 +109,10 @@ function SynergyBarGraph({ isInView }: { isInView: boolean }) {
             initial={{ opacity: 0, y: 5 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 1 + index * 0.15, duration: 0.4 }}
-            className="flex items-center gap-2 mt-1"
+            className="flex items-center gap-1 md:gap-2 mt-1"
           >
-            <TrendingUp className="h-3 w-3 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground" data-testid={`text-tier-desc-${tier.label.toLowerCase()}`}>
+            <TrendingUp className="h-2.5 w-2.5 md:h-3 md:w-3 text-muted-foreground" />
+            <span className="text-[10px] md:text-xs text-muted-foreground" data-testid={`text-tier-desc-${tier.label.toLowerCase()}`}>
               {tier.description}
             </span>
           </motion.div>
@@ -130,9 +123,9 @@ function SynergyBarGraph({ isInView }: { isInView: boolean }) {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={isInView ? { opacity: 1, scale: 1 } : {}}
         transition={{ delay: 2, duration: 0.5 }}
-        className="pt-4 text-center"
+        className="pt-3 md:pt-4 text-center"
       >
-        <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/40" data-testid="badge-wolverine-stack">
+        <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/40 text-xs" data-testid="badge-wolverine-stack">
           <Zap className="h-3 w-3 mr-1" />
           Wolverine Stack = 95% Synergy
         </Badge>
@@ -172,7 +165,7 @@ export function StackBuilderTeaser() {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
-          className="text-center mb-6 md:mb-12"
+          className="text-center mb-6 md:mb-10"
         >
           <Badge className="bg-[#22c55e]/10 text-[#22c55e] border-[#22c55e]/30 mb-3 md:mb-4" data-testid="pill-stack-builder">
             <Layers className="h-3 w-3 mr-1" />
@@ -186,152 +179,40 @@ export function StackBuilderTeaser() {
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-6 md:gap-12 items-center">
-          {/* Left - Synergy Bar Graph (hidden on mobile) */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="relative hidden md:block"
-            data-testid="card-synergy-preview"
-          >
-            <div className="py-6">
-              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-6 text-center" data-testid="text-synergy-levels-label">
-                Synergy Level Scale
-              </p>
-              <SynergyBarGraph isInView={isInView} />
+        {/* Feature Badges */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className="flex flex-wrap justify-center gap-2 mb-6 md:mb-10"
+        >
+          <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30 text-xs" data-testid="badge-legendary-stacks">
+            <Crown className="h-3 w-3 mr-1" /> 9 Legendary Stacks
+          </Badge>
+          <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30 text-xs" data-testid="badge-synergy-scores">
+            <Activity className="h-3 w-3 mr-1" /> Synergy Scores
+          </Badge>
+          <Badge className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30 text-xs" data-testid="badge-ai-synergy">
+            <Brain className="h-3 w-3 mr-1" /> AI Analysis
+          </Badge>
+          <Badge className="bg-[#ec4899]/20 text-[#ec4899] border-[#ec4899]/30 text-xs" data-testid="badge-pathway-map">
+            <Sparkles className="h-3 w-3 mr-1" /> Pathway Map
+          </Badge>
+        </motion.div>
 
-              <div className="flex flex-wrap justify-center gap-4 mt-8">
-                <div className="text-center" data-testid="card-feature-ai">
-                  <div className="w-10 h-10 mx-auto rounded-lg bg-[#ec4899]/10 border border-[#ec4899]/20 flex items-center justify-center mb-2">
-                    <Sparkles className="h-4 w-4 text-[#ec4899]" />
-                  </div>
-                  <p className="text-xs text-muted-foreground" data-testid="text-feature-ai">AI Analysis</p>
-                </div>
-                <div className="text-center" data-testid="card-feature-pathway">
-                  <div className="w-10 h-10 mx-auto rounded-lg bg-[#21d8ff]/10 border border-[#21d8ff]/20 flex items-center justify-center mb-2">
-                    <Activity className="h-4 w-4 text-[#21d8ff]" />
-                  </div>
-                  <p className="text-xs text-muted-foreground" data-testid="text-feature-pathway">Pathway Map</p>
-                </div>
-                <div className="text-center" data-testid="card-feature-stacks">
-                  <div className="w-10 h-10 mx-auto rounded-lg bg-[#22c55e]/10 border border-[#22c55e]/20 flex items-center justify-center mb-2">
-                    <Layers className="h-4 w-4 text-[#22c55e]" />
-                  </div>
-                  <p className="text-xs text-muted-foreground" data-testid="text-feature-stacks">9 Legendary</p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Right - Features (full width on mobile) */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="space-y-4 md:space-y-6"
-          >
-            {/* Mobile: Compact badges in single row */}
-            <div className="flex flex-wrap gap-2 mb-2 md:mb-4">
-              <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30 text-xs" data-testid="badge-legendary-stacks">
-                <Crown className="h-3 w-3 mr-1" /> <span className="hidden sm:inline">9 </span>Legendary Stacks
-              </Badge>
-              <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30 text-xs" data-testid="badge-synergy-scores">
-                <Activity className="h-3 w-3 mr-1" /> Synergy Scores
-              </Badge>
-              <Badge className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30 text-xs hidden sm:flex" data-testid="badge-ai-synergy">
-                <Brain className="h-3 w-3 mr-1" /> AI Analysis
-              </Badge>
-            </div>
-
-            <h3 className="font-display text-lg md:text-2xl font-bold" data-testid="text-discover-heading">
-              Discover What Works Together
-            </h3>
-            <p className="text-muted-foreground text-sm md:text-base" data-testid="text-discover-description">
-              Our stack builder shows you <span className="text-foreground">why</span> certain peptides complement each other — shared pathways and documented research combinations.
-            </p>
-
-            <div className="space-y-2 md:space-y-3">
-              <p className="text-xs text-muted-foreground uppercase tracking-wider" data-testid="text-examples-header">
-                Popular Stacks
-              </p>
-              {/* Show only 2 on mobile, 3 on desktop */}
-              {featuredStacks.slice(0, 2).map((stack, index) => {
-                const Icon = stack.icon;
-                return (
-                  <motion.div
-                    key={stack.name}
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={isInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ delay: 0.5 + index * 0.08, duration: 0.4 }}
-                    className="flex items-center gap-3 p-2 md:p-3 rounded-lg bg-white/5 border border-white/10"
-                    data-testid={`card-stack-${stack.name.toLowerCase().replace(/\s+/g, '-')}`}
-                  >
-                    <div 
-                      className="w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center shrink-0"
-                      style={{ backgroundColor: `${stack.color}15`, border: `1px solid ${stack.color}30` }}
-                    >
-                      <Icon className="h-4 w-4 md:h-5 md:w-5" style={{ color: stack.color }} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <span className="font-medium text-sm md:text-base" data-testid={`text-stack-name-${index}`}>{stack.name}</span>
-                    </div>
-                    <Badge 
-                      variant="outline" 
-                      className="shrink-0 text-xs"
-                      style={{ borderColor: `${stack.color}50`, color: stack.color }}
-                      data-testid={`badge-stack-count-${index}`}
-                    >
-                      {stack.peptides.length} peptides
-                    </Badge>
-                  </motion.div>
-                );
-              })}
-              {/* Third stack only on desktop */}
-              {featuredStacks[2] && (() => {
-                const thirdStack = featuredStacks[2];
-                const ThirdIcon = thirdStack.icon;
-                return (
-                  <motion.div
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={isInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ delay: 0.66, duration: 0.4 }}
-                    className="hidden md:flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10"
-                    data-testid={`card-stack-${thirdStack.name.toLowerCase().replace(/\s+/g, '-')}`}
-                  >
-                    <div 
-                      className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
-                      style={{ backgroundColor: `${thirdStack.color}15`, border: `1px solid ${thirdStack.color}30` }}
-                    >
-                      <ThirdIcon className="h-5 w-5" style={{ color: thirdStack.color }} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <span className="font-medium" data-testid="text-stack-name-2">{thirdStack.name}</span>
-                      <span className="text-sm text-muted-foreground ml-2" data-testid="text-stack-synergy-2">— {thirdStack.synergyBonus}% synergy</span>
-                    </div>
-                    <Badge 
-                      variant="outline" 
-                      className="shrink-0"
-                      style={{ borderColor: `${thirdStack.color}50`, color: thirdStack.color }}
-                      data-testid="badge-stack-count-2"
-                    >
-                      {thirdStack.peptides.length} peptides
-                    </Badge>
-                  </motion.div>
-                );
-              })()}
-              <motion.p 
-                initial={{ opacity: 0 }}
-                animate={isInView ? { opacity: 1 } : {}}
-                transition={{ delay: 1, duration: 0.5 }}
-                className="text-xs md:text-sm text-muted-foreground text-center pt-1 md:pt-2"
-                data-testid="text-more-stacks"
-              >
-                +{KNOWN_STACKS.length - 2} more stacks to discover
-              </motion.p>
-            </div>
-          </motion.div>
-        </div>
+        {/* Centered Synergy Bar Graph */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.3, duration: 0.6 }}
+          className="max-w-lg mx-auto"
+          data-testid="card-synergy-preview"
+        >
+          <p className="text-xs text-muted-foreground uppercase tracking-wider mb-4 md:mb-6 text-center" data-testid="text-synergy-levels-label">
+            Synergy Level Scale
+          </p>
+          <SynergyBarGraph isInView={isInView} />
+        </motion.div>
 
         {/* Centered CTA Button */}
         <motion.div
