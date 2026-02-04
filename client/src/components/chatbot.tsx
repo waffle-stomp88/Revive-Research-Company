@@ -45,7 +45,11 @@ export function ChatBot() {
   }, [messages]);
 
   useEffect(() => {
-    if (isOpen && inputRef.current) {
+    // Only auto-focus on desktop - on mobile, triggering the keyboard immediately
+    // pushes content up and hides the greeting message
+    const isMobile = window.matchMedia("(max-width: 768px)").matches || 
+                     ('ontouchstart' in window);
+    if (isOpen && inputRef.current && !isMobile) {
       inputRef.current.focus();
     }
   }, [isOpen]);
