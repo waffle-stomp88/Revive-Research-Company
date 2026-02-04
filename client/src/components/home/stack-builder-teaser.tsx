@@ -8,7 +8,6 @@ import {
   Sparkles, 
   Zap, 
   Crown,
-  Percent,
   Brain,
   Activity,
   ChevronRight,
@@ -215,11 +214,11 @@ export function StackBuilderTeaser() {
                   </div>
                   <p className="text-xs text-muted-foreground" data-testid="text-feature-pathway">Pathway Map</p>
                 </div>
-                <div className="text-center" data-testid="card-feature-savings">
+                <div className="text-center" data-testid="card-feature-stacks">
                   <div className="w-10 h-10 mx-auto rounded-lg bg-[#22c55e]/10 border border-[#22c55e]/20 flex items-center justify-center mb-2">
-                    <Percent className="h-4 w-4 text-[#22c55e]" />
+                    <Layers className="h-4 w-4 text-[#22c55e]" />
                   </div>
-                  <p className="text-xs text-muted-foreground" data-testid="text-feature-savings">10% Savings</p>
+                  <p className="text-xs text-muted-foreground" data-testid="text-feature-stacks">9 Legendary</p>
                 </div>
               </div>
             </div>
@@ -237,8 +236,8 @@ export function StackBuilderTeaser() {
               <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30 text-xs" data-testid="badge-legendary-stacks">
                 <Crown className="h-3 w-3 mr-1" /> <span className="hidden sm:inline">9 </span>Legendary Stacks
               </Badge>
-              <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30 text-xs" data-testid="badge-bundle-discount">
-                <Percent className="h-3 w-3 mr-1" /> 10% Discount
+              <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30 text-xs" data-testid="badge-synergy-scores">
+                <Activity className="h-3 w-3 mr-1" /> Synergy Scores
               </Badge>
               <Badge className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30 text-xs hidden sm:flex" data-testid="badge-ai-synergy">
                 <Brain className="h-3 w-3 mr-1" /> AI Analysis

@@ -687,23 +687,8 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
     }
   };
 
-  const getDiscount = () => {
-    // Flat 10% for custom stacks (pre-built stacks offer 15-20%)
-    return selectedPeptides.length >= 2 ? 10 : 0;
-  };
-
   const getRetailTotal = () => {
     return selectedPeptides.reduce((sum, p) => sum + parseFloat(String(p.price)), 0);
-  };
-
-  const getBundlePrice = () => {
-    const retail = getRetailTotal();
-    const discount = getDiscount();
-    return retail * (1 - discount / 100);
-  };
-
-  const getSavings = () => {
-    return getRetailTotal() - getBundlePrice();
   };
 
   const handleAddToCart = () => {
@@ -711,14 +696,15 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
 
     const customStackName = selectedPeptides.map(p => p.name).join(" + ");
     const bundleId = `custom-${Date.now()}`;
+    const totalPrice = getRetailTotal();
     
-    // Add as a bundle to cart (matching CartItem interface)
+    // Add as a bundle to cart (no discount - value is the synergy analysis)
     addToCart({
       productId: bundleId,
       bundleId: bundleId,
       name: customStackName,
-      price: getBundlePrice(),
-      originalPrice: getRetailTotal(),
+      price: totalPrice,
+      originalPrice: totalPrice,
       quantity: 1,
       dosage: "Custom Bundle",
       image: selectedPeptides[0]?.imageUrl || productImage,
@@ -727,7 +713,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
 
     toast({
       title: "Added to Cart",
-      description: `${customStackName} added with ${getDiscount()}% bundle discount`,
+      description: `${customStackName} added to your cart`,
       duration: 2500,
       action: (
         <Button 
@@ -1162,18 +1148,10 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
 
                       {/* Pricing */}
                       {selectedPeptides.length >= 2 && (
-                        <div className="pt-3 border-t border-[#2a2a32] space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Subtotal</span>
-                            <span className="line-through text-muted-foreground">${getRetailTotal().toFixed(2)}</span>
-                          </div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-green-400">Bundle Discount (10%)</span>
-                            <span className="text-green-400">-${getSavings().toFixed(2)}</span>
-                          </div>
-                          <div className="flex justify-between pt-2 border-t border-[#2a2a32]">
+                        <div className="pt-3 border-t border-[#2a2a32]">
+                          <div className="flex justify-between">
                             <span className="font-bold">Total</span>
-                            <span className="font-display text-2xl font-bold text-[#E7FB10]">${getBundlePrice().toFixed(2)}</span>
+                            <span className="font-display text-2xl font-bold text-[#E7FB10]">${getRetailTotal().toFixed(2)}</span>
                           </div>
                         </div>
                       )}
@@ -1484,7 +1462,7 @@ function ResearchStacks() {
                   Create Your <span className="text-[#E7FB10]">Perfect</span> Stack
                 </h1>
                 <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-                  Select 2-4 peptides and save 10% on your custom research bundle.
+                  Select 2-4 peptides and discover synergies with our AI-powered analysis.
                 </p>
               </motion.div>
             )}
