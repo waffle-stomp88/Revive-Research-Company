@@ -129,6 +129,9 @@ function SynergyBarGraph({ isInView }: { isInView: boolean }) {
           <Zap className="h-3 w-3 mr-1" />
           Wolverine Stack = 95% Synergy
         </Badge>
+        <p className="text-xs text-muted-foreground mt-3" data-testid="text-more-stacks">
+          +8 additional peptide stacks to discover
+        </p>
       </motion.div>
     </div>
   );
