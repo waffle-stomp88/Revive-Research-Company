@@ -68,7 +68,12 @@ export function MobileBottomNav() {
 
   return (
     <nav 
-      className="fixed bottom-0 left-0 right-0 z-50 block md:hidden bg-[#1a1a1f] border-t border-white/10 safe-area-bottom"
+      className="fixed bottom-0 left-0 right-0 z-50 block md:hidden bg-[#1a1a1f] border-t border-white/10"
+      style={{
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        WebkitTransform: 'translateZ(0)',
+        transform: 'translateZ(0)',
+      }}
       data-testid="mobile-bottom-nav"
     >
       <div className="flex items-center justify-around h-16 px-2">

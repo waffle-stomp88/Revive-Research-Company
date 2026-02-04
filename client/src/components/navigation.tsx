@@ -171,7 +171,11 @@ export function Navigation() {
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
         className={`fixed left-0 right-0 z-50 transition-all duration-300`}
-        style={{ top: 'var(--banner-height, 36px)' }}
+        style={{ 
+          top: 'var(--banner-height, 36px)',
+          WebkitTransform: 'translateZ(0)',
+          transform: 'translateZ(0)',
+        }}
       >
         <div className={`transition-all duration-300 ${
           isScrolled

@@ -72,9 +72,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/* iOS Safari fixed positioning fix */
+@supports (-webkit-touch-callout: none) {
+  .fixed {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+}
+
 /* Safe area for notched mobile devices */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Proper iOS safe area handling for fixed elements */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .ios-safe-fixed-header {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  
+  .ios-safe-fixed-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
 }
 
 /* Range input slider styling - uses dynamic gradient background set by JS */

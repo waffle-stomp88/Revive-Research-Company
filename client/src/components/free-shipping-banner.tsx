@@ -9,9 +9,10 @@ export function FreeShippingBanner() {
 
   useEffect(() => {
     if (!dismissed) {
-      document.documentElement.style.setProperty('--banner-height', '36px');
+      // Account for safe area inset on iOS devices with notch/dynamic island
+      document.documentElement.style.setProperty('--banner-height', 'calc(36px + env(safe-area-inset-top, 0px))');
     } else {
-      document.documentElement.style.setProperty('--banner-height', '0px');
+      document.documentElement.style.setProperty('--banner-height', 'env(safe-area-inset-top, 0px)');
     }
   }, [dismissed]);
 
@@ -20,6 +21,11 @@ export function FreeShippingBanner() {
   return (
     <div 
       className="fixed top-0 left-0 right-0 z-[60] bg-[#E7FB10] text-black py-2 px-2 sm:px-4 overflow-hidden" 
+      style={{
+        paddingTop: 'max(env(safe-area-inset-top, 0px), 0.5rem)',
+        WebkitTransform: 'translateZ(0)',
+        transform: 'translateZ(0)',
+      }}
       data-testid="banner-free-shipping"
     >
       <div className="max-w-7xl mx-auto flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium pr-6">
