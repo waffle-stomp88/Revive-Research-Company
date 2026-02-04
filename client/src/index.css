@@ -52,6 +52,13 @@
   #root {
     max-width: 100%;
     overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Samsung Internet browser fix - contain all fixed position elements */
+  /* This prevents fixed elements from extending beyond viewport */
+  .fixed {
+    max-width: 100vw;
   }
 
   /* Override any element using the Radix scroll bar size variable */

@@ -19,26 +19,26 @@ export function FreeShippingBanner() {
 
   return (
     <div 
-      className="fixed top-0 left-0 right-0 z-[60] bg-[#E7FB10] text-black py-2 px-4" 
+      className="fixed top-0 left-0 right-0 z-[60] bg-[#E7FB10] text-black py-2 px-2 sm:px-4 overflow-hidden" 
       data-testid="banner-free-shipping"
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 text-sm font-medium">
-        <Truck className="h-4 w-4" />
-        <span>
+      <div className="max-w-7xl mx-auto flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium pr-6">
+        <Truck className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+        <span className="truncate">
           <span className="font-bold text-red-500" style={{ animation: 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}>FREE SHIPPING</span> on orders over ${FREE_SHIPPING_THRESHOLD}
           <span className="hidden sm:inline"> • Same day shipping on orders placed before 12:00 PM CT</span>
         </span>
-        <Link href="/peptides" className="ml-2 underline hover:no-underline font-semibold">
+        <Link href="/peptides" className="ml-1 sm:ml-2 underline hover:no-underline font-semibold whitespace-nowrap flex-shrink-0">
           Shop Now
         </Link>
       </div>
       <button
         onClick={() => setDismissed(true)}
-        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-black/10 rounded transition-colors"
+        className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-black/10 rounded transition-colors"
         aria-label="Dismiss banner"
         data-testid="button-dismiss-banner"
       >
-        <X className="h-4 w-4" />
+        <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
       </button>
     </div>
   );
