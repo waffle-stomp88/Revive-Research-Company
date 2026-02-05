@@ -193,55 +193,55 @@ const EDUCATION_TABS = [
 // Trust & Verification guides - static pages for SEO entry
 const TRUST_GUIDES = [
   {
-    slug: "coa-trust",
+    slug: "are-peptide-coas-trustworthy",
     title: "Are Peptide COAs Trustworthy?",
     description: "What COAs prove, their limitations, and how to evaluate quality claims.",
-    href: "/guides/coa-trust",
+    href: "/guides/are-peptide-coas-trustworthy",
     icon: FileCheck,
     color: "#9d4edd",
     readTime: 8
   },
   {
-    slug: "batch-testing",
+    slug: "how-batch-testing-works",
     title: "How Batch Testing Works",
     description: "Why no one tests every vial and what this means for quality.",
-    href: "/guides/batch-testing",
+    href: "/guides/how-batch-testing-works",
     icon: Beaker,
     color: "#21d8ff",
     readTime: 7
   },
   {
-    slug: "research-use-only",
+    slug: "what-research-use-only-means",
     title: "What 'Research Use Only' Means",
     description: "Clear explanation of RUO labeling and compliance.",
-    href: "/guides/research-use-only",
+    href: "/guides/what-research-use-only-means",
     icon: AlertTriangle,
     color: "#22c55e",
     readTime: 6
   },
   {
-    slug: "verify-quality",
+    slug: "how-to-verify-peptide-quality",
     title: "How to Verify Peptide Quality",
     description: "Independent verification without trusting the seller.",
-    href: "/guides/verify-quality",
+    href: "/guides/how-to-verify-peptide-quality",
     icon: Search,
     color: "#ec4899",
     readTime: 9
   },
   {
-    slug: "purity-explained",
+    slug: "peptide-purity-explained",
     title: "What Purity Percentages Mean",
     description: "Understanding HPLC results and why higher isn't always better.",
-    href: "/guides/purity-explained",
+    href: "/guides/peptide-purity-explained",
     icon: FlaskConical,
     color: "#f97316",
     readTime: 7
   },
   {
-    slug: "cheap-peptides",
+    slug: "why-cheap-peptides-are-cheap",
     title: "Why Cheap Peptides Are Cheap",
     description: "Where low-price vendors cut corners and when price matters.",
-    href: "/guides/cheap-peptides",
+    href: "/guides/why-cheap-peptides-are-cheap",
     icon: Shield,
     color: "#E7FB10",
     readTime: 8

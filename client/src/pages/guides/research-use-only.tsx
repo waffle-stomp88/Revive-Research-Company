@@ -63,7 +63,7 @@ export default function ResearchUseOnly() {
       title="What 'Research Use Only' Actually Means"
       metaTitle="What Research Use Only Means - RUO Peptides Explained"
       metaDescription="Clear explanation of Research Use Only (RUO) labeling: what it means legally, why it exists, and what it says (and doesn't say) about product quality."
-      canonicalPath="/guides/research-use-only"
+      canonicalPath="/guides/what-research-use-only-means"
       badgeText="Compliance & Ethics"
       badgeColor="#22c55e"
       introText={

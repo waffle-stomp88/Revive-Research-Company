@@ -51,7 +51,7 @@ export default function BatchTesting() {
     },
     {
       label: "Understanding COAs",
-      href: "/guides/coa-trust",
+      href: "/guides/are-peptide-coas-trustworthy",
       icon: BookOpen,
       description: "What COAs prove and don't prove"
     }
@@ -62,7 +62,7 @@ export default function BatchTesting() {
       title="How Batch Testing Works (and Why No One Tests Every Vial)"
       metaTitle="How Peptide Batch Testing Works - Why No One Tests Every Vial"
       metaDescription="Honest explanation of peptide batch testing: why every vial isn't tested, how sampling works, and what this means for quality assurance in research compounds."
-      canonicalPath="/guides/batch-testing"
+      canonicalPath="/guides/how-batch-testing-works"
       badgeText="Quality Assurance"
       badgeColor="#9d4edd"
       introText={

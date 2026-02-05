@@ -74,6 +74,22 @@ export async function registerRoutes(
   // Setup authentication
   await setupAuth(app);
 
+  // 301 Redirects for SEO guide URL migration
+  const guideRedirects: Record<string, string> = {
+    '/guides/coa-trust': '/guides/are-peptide-coas-trustworthy',
+    '/guides/batch-testing': '/guides/how-batch-testing-works',
+    '/guides/research-use-only': '/guides/what-research-use-only-means',
+    '/guides/verify-quality': '/guides/how-to-verify-peptide-quality',
+    '/guides/purity-explained': '/guides/peptide-purity-explained',
+    '/guides/cheap-peptides': '/guides/why-cheap-peptides-are-cheap',
+  };
+
+  Object.entries(guideRedirects).forEach(([oldPath, newPath]) => {
+    app.get(oldPath, (req, res) => {
+      res.redirect(301, newPath);
+    });
+  });
+
   // PayPal payment routes
   app.get("/paypal/setup", async (req, res) => {
     await loadPaypalDefault(req, res);

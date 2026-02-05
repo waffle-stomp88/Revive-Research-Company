@@ -159,12 +159,12 @@ function Router() {
         <Route path="/unsubscribe" component={Unsubscribe} />
         <Route path="/dev-login" component={DevLogin} />
         
-        <Route path="/guides/coa-trust" component={CoaTrust} />
-        <Route path="/guides/batch-testing" component={BatchTesting} />
-        <Route path="/guides/research-use-only" component={ResearchUseOnly} />
-        <Route path="/guides/verify-quality" component={VerifyQuality} />
-        <Route path="/guides/purity-explained" component={PurityExplained} />
-        <Route path="/guides/cheap-peptides" component={CheapPeptides} />
+        <Route path="/guides/are-peptide-coas-trustworthy" component={CoaTrust} />
+        <Route path="/guides/how-batch-testing-works" component={BatchTesting} />
+        <Route path="/guides/what-research-use-only-means" component={ResearchUseOnly} />
+        <Route path="/guides/how-to-verify-peptide-quality" component={VerifyQuality} />
+        <Route path="/guides/peptide-purity-explained" component={PurityExplained} />
+        <Route path="/guides/why-cheap-peptides-are-cheap" component={CheapPeptides} />
         
         <Route component={NotFound} />
       </Switch>

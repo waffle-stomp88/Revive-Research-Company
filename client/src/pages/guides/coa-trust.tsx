@@ -62,7 +62,7 @@ export default function CoaTrust() {
       title="Are Peptide COAs Trustworthy? What They Prove (and What They Don't)"
       metaTitle="Are Peptide COAs Trustworthy? What They Prove and What They Don't"
       metaDescription="Not all COAs are equal. Learn what a Certificate of Analysis actually proves, its limitations, and how to evaluate peptide quality beyond the document."
-      canonicalPath="/guides/coa-trust"
+      canonicalPath="/guides/are-peptide-coas-trustworthy"
       badgeText="Trust & Verification"
       badgeColor="#21d8ff"
       introText={

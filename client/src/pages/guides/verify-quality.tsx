@@ -56,7 +56,7 @@ export default function VerifyQuality() {
     },
     {
       label: "Understanding COAs",
-      href: "/guides/coa-trust",
+      href: "/guides/are-peptide-coas-trustworthy",
       icon: BookOpen,
       description: "What COAs prove and don't prove"
     }
@@ -67,7 +67,7 @@ export default function VerifyQuality() {
       title="How to Verify Peptide Quality Without Trusting the Seller"
       metaTitle="How to Verify Peptide Quality - Independent Verification Guide"
       metaDescription="Don't take anyone's word for it. Learn how to independently verify peptide quality through COAs, third-party testing, and smart evaluation practices."
-      canonicalPath="/guides/verify-quality"
+      canonicalPath="/guides/how-to-verify-peptide-quality"
       badgeText="Independent Verification"
       badgeColor="#E7FB10"
       introText={

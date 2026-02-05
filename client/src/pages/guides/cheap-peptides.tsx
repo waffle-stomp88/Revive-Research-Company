@@ -56,7 +56,7 @@ export default function CheapPeptides() {
     },
     {
       label: "How to Verify Quality",
-      href: "/guides/verify-quality",
+      href: "/guides/how-to-verify-peptide-quality",
       icon: BookOpen,
       description: "Evaluate any supplier yourself"
     }
@@ -67,7 +67,7 @@ export default function CheapPeptides() {
       title="Why Cheap Peptides Are Cheap (and When Price Actually Matters)"
       metaTitle="Why Cheap Peptides Are Cheap - Understanding Peptide Pricing"
       metaDescription="Honest analysis of peptide pricing: what drives costs, where cheap vendors cut corners, and how to evaluate whether price reflects quality."
-      canonicalPath="/guides/cheap-peptides"
+      canonicalPath="/guides/why-cheap-peptides-are-cheap"
       badgeText="Pricing & Value"
       badgeColor="#ec4899"
       introText={

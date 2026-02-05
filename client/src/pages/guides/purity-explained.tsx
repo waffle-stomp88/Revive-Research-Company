@@ -56,7 +56,7 @@ export default function PurityExplained() {
     },
     {
       label: "Understanding COA Trust",
-      href: "/guides/coa-trust",
+      href: "/guides/are-peptide-coas-trustworthy",
       icon: HelpCircle,
       description: "What COAs prove and don't prove"
     }
@@ -67,7 +67,7 @@ export default function PurityExplained() {
       title="What Peptide Purity Percentages Actually Mean"
       metaTitle="What Peptide Purity Percentages Mean - Understanding HPLC Results"
       metaDescription="Learn what purity percentages actually measure, why higher isn't always better, and how to interpret peptide quality beyond a single number."
-      canonicalPath="/guides/purity-explained"
+      canonicalPath="/guides/peptide-purity-explained"
       badgeText="Quality Understanding"
       badgeColor="#a855f7"
       introText={
