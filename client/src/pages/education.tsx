@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Link, useParams } from "wouter";
+import { Link, useParams, useLocation } from "wouter";
 import {
   GraduationCap,
   BookOpen,
@@ -405,7 +405,26 @@ type ArticleMode = "deep-dive" | "quick-breakdown";
 
 export default function Education() {
   const params = useParams<{ slug?: string }>();
-  const [activeTab, setActiveTab] = useState("peptides");
+  const [location] = useLocation();
+  
+  // Parse tab from URL query parameter (with SSR guard)
+  const getTabFromUrl = () => {
+    if (typeof window === "undefined") return "peptides";
+    const searchParams = new URLSearchParams(window.location.search);
+    const tab = searchParams.get("tab");
+    if (tab && ["peptides", "general", "lab-guides", "trust"].includes(tab)) {
+      return tab;
+    }
+    return "peptides";
+  };
+  
+  const [activeTab, setActiveTab] = useState(getTabFromUrl);
+  
+  // Sync tab with URL query param when location changes (for SPA navigation)
+  useEffect(() => {
+    const tab = getTabFromUrl();
+    setActiveTab(tab);
+  }, [location]);
   const [activeCategory, setActiveCategory] = useState("all");
   const [expandedArticle, setExpandedArticle] = useState<string | null>(null);
   const [articleMode, setArticleMode] = useState<ArticleMode>("quick-breakdown");
