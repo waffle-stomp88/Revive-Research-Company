@@ -50,6 +50,14 @@ The platform features an Apple-inspired design with a dark charcoal background (
     - **Orders Management**: Manual fulfillment workflow with KPI cards, "Needs Attention" flags, visual indicators, filtering, and detailed order view with fulfillment checklist, notes, and email retry. Supports one-time and subscription orders.
     - **Contacts Management**: Unified inbox for contact and wholesale submissions with type system, status workflow (New, Responded, Archived), filtering, and detail panel with internal notes.
 - **Trust & Transparency**: Education Center, Quality Process Page, Package Warm Guide, Batch Archive, Ethical Pricing Page, Transparency Page, Lab Notes Blog, Buyer Checklist, Troubleshooting Guides, and Support Status Widget.
+- **SEO Entry Articles**: Trust-funnel strategy with 6 educational articles under `/guides/` prefix designed to capture skeptical search traffic:
+  - `/guides/coa-trust` - Are Peptide COAs Trustworthy?
+  - `/guides/batch-testing` - How Batch Testing Works
+  - `/guides/research-use-only` - What "Research Use Only" Actually Means
+  - `/guides/verify-quality` - How to Verify Peptide Quality
+  - `/guides/purity-explained` - What Peptide Purity Percentages Mean
+  - `/guides/cheap-peptides` - Why Cheap Peptides Are Cheap
+  - Uses shared `EntryArticleLayout` component with JSON-LD schemas (Article + FAQ), SEO metadata, and confidence CTAs routing to proof pages.
 - **Peptide Academy**: Gamified learning experience at `/academy` with a 4-module curriculum (17 lessons), persona-based personalization (Beginner, Intermediate, Advanced), personalized dashboard, XP-based reward milestones, achievement badges, and progress tracking.
 - **Research Phase & Title System**: Tracks user progression through research phases (Observer → Initiate → Researcher → Analyst → Specialist) and awards titles based on activity thresholds.
 - **Dashboard Interface**: Tabbed interface (`/dashboard`) with "General" (navigation hub, quick stats, achievements, member perks), "Orders" (subscriptions, order history, wishlist, product reviews), and "Settings" tabs.
