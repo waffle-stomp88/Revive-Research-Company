@@ -61,6 +61,13 @@ import SubscriptionSuccess from "@/pages/subscription-success";
 import OrderConfirmation from "@/pages/order-confirmation";
 import NotFound from "@/pages/not-found";
 
+import CoaTrust from "@/pages/guides/coa-trust";
+import BatchTesting from "@/pages/guides/batch-testing";
+import ResearchUseOnly from "@/pages/guides/research-use-only";
+import VerifyQuality from "@/pages/guides/verify-quality";
+import PurityExplained from "@/pages/guides/purity-explained";
+import CheapPeptides from "@/pages/guides/cheap-peptides";
+
 const ChatBot = lazy(() => import("@/components/chatbot").then(m => ({ default: m.ChatBot })));
 const BackToTopButton = lazy(() => import("@/components/back-to-top-button").then(m => ({ default: m.BackToTopButton })));
 
@@ -151,6 +158,14 @@ function Router() {
         <Route path="/resources" component={ResourcesHub} />
         <Route path="/unsubscribe" component={Unsubscribe} />
         <Route path="/dev-login" component={DevLogin} />
+        
+        <Route path="/guides/coa-trust" component={CoaTrust} />
+        <Route path="/guides/batch-testing" component={BatchTesting} />
+        <Route path="/guides/research-use-only" component={ResearchUseOnly} />
+        <Route path="/guides/verify-quality" component={VerifyQuality} />
+        <Route path="/guides/purity-explained" component={PurityExplained} />
+        <Route path="/guides/cheap-peptides" component={CheapPeptides} />
+        
         <Route component={NotFound} />
       </Switch>
     </>
