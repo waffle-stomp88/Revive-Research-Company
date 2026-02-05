@@ -4086,19 +4086,60 @@ Return ONLY valid JSON in this exact format:
     }
   });
 
-  // XML Sitemap - Only public-facing, non-product pages for regulatory compliance
+  // XML Sitemap - All public pages organized by priority
   app.get("/sitemap.xml", async (req, res) => {
     try {
       const baseUrl = "https://reviveresearch.co";
       
-      // Only include public, non-product, non-gated pages
       const staticPages = [
+        // Homepage
         { url: "/", priority: "1.0", changefreq: "weekly" },
+        
+        // Core Commerce Pages
+        { url: "/shop", priority: "0.9", changefreq: "weekly" },
+        { url: "/peptides", priority: "0.9", changefreq: "weekly" },
+        { url: "/products", priority: "0.9", changefreq: "weekly" },
+        { url: "/research-stacks", priority: "0.9", changefreq: "weekly" },
+        { url: "/bulk-packs", priority: "0.9", changefreq: "weekly" },
+        
+        // Key Content Pages
         { url: "/education", priority: "0.8", changefreq: "weekly" },
+        { url: "/resources", priority: "0.8", changefreq: "monthly" },
+        
+        // Trust & Transparency Pages
         { url: "/quality-process", priority: "0.7", changefreq: "monthly" },
         { url: "/transparency", priority: "0.7", changefreq: "monthly" },
+        { url: "/what-we-dont-do", priority: "0.7", changefreq: "monthly" },
+        { url: "/ethical-pricing", priority: "0.7", changefreq: "monthly" },
+        { url: "/batch-archive", priority: "0.7", changefreq: "weekly" },
+        { url: "/lab-notes", priority: "0.7", changefreq: "weekly" },
+        { url: "/coa", priority: "0.7", changefreq: "monthly" },
+        { url: "/buyer-checklist", priority: "0.7", changefreq: "monthly" },
+        
+        // SEO Entry Articles (Trust Funnel)
+        { url: "/guides/are-peptide-coas-trustworthy", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/how-batch-testing-works", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-research-use-only-means", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/how-to-verify-peptide-quality", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/peptide-purity-explained", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/why-cheap-peptides-are-cheap", priority: "0.7", changefreq: "monthly" },
+        
+        // Support & Information Pages
         { url: "/faq", priority: "0.6", changefreq: "monthly" },
         { url: "/contact", priority: "0.6", changefreq: "monthly" },
+        { url: "/troubleshooting", priority: "0.6", changefreq: "monthly" },
+        { url: "/package-warm", priority: "0.6", changefreq: "monthly" },
+        { url: "/shipping", priority: "0.6", changefreq: "monthly" },
+        { url: "/affiliate", priority: "0.6", changefreq: "monthly" },
+        
+        // Legal Pages
+        { url: "/legal", priority: "0.5", changefreq: "yearly" },
+        { url: "/terms", priority: "0.5", changefreq: "yearly" },
+        { url: "/privacy", priority: "0.5", changefreq: "yearly" },
+        { url: "/disclaimer", priority: "0.5", changefreq: "yearly" },
+        
+        // Utility Pages (Lower Priority - Not Entry Points)
+        { url: "/dosage-calculator", priority: "0.4", changefreq: "monthly" },
       ];
 
       let xml = `<?xml version="1.0" encoding="UTF-8"?>
