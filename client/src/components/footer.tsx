@@ -21,6 +21,7 @@ const footerLinks = {
     { label: "Affiliate Program", href: "/affiliate" },
   ],
   resources: [
+    { label: "Resource Hub", href: "/resources" },
     { label: "Quality Process", href: "/quality-process" },
     { label: "Research Archive", href: "/lab-notes" },
     { label: "COA Library", href: "/coa-library" },
