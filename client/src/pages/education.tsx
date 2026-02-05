@@ -158,7 +158,7 @@ const categories = [
   { id: "glossary", label: "Terminology", icon: Info, color: "#22c55e" },
 ];
 
-// Tab definitions for the 3-tab structure
+// Tab definitions for the 4-tab structure
 const EDUCATION_TABS = [
   { 
     id: "peptides", 
@@ -180,6 +180,71 @@ const EDUCATION_TABS = [
     icon: Beaker, 
     color: "#22c55e",
     categories: ["safety"]
+  },
+  { 
+    id: "trust", 
+    label: "Trust & Verification", 
+    icon: Shield, 
+    color: "#f97316",
+    categories: [] // Static pages, not database articles
+  },
+];
+
+// Trust & Verification guides - static pages for SEO entry
+const TRUST_GUIDES = [
+  {
+    slug: "coa-trust",
+    title: "Are Peptide COAs Trustworthy?",
+    description: "What COAs prove, their limitations, and how to evaluate quality claims.",
+    href: "/guides/coa-trust",
+    icon: FileCheck,
+    color: "#9d4edd",
+    readTime: 8
+  },
+  {
+    slug: "batch-testing",
+    title: "How Batch Testing Works",
+    description: "Why no one tests every vial and what this means for quality.",
+    href: "/guides/batch-testing",
+    icon: Beaker,
+    color: "#21d8ff",
+    readTime: 7
+  },
+  {
+    slug: "research-use-only",
+    title: "What 'Research Use Only' Means",
+    description: "Clear explanation of RUO labeling and compliance.",
+    href: "/guides/research-use-only",
+    icon: AlertTriangle,
+    color: "#22c55e",
+    readTime: 6
+  },
+  {
+    slug: "verify-quality",
+    title: "How to Verify Peptide Quality",
+    description: "Independent verification without trusting the seller.",
+    href: "/guides/verify-quality",
+    icon: Search,
+    color: "#ec4899",
+    readTime: 9
+  },
+  {
+    slug: "purity-explained",
+    title: "What Purity Percentages Mean",
+    description: "Understanding HPLC results and why higher isn't always better.",
+    href: "/guides/purity-explained",
+    icon: FlaskConical,
+    color: "#f97316",
+    readTime: 7
+  },
+  {
+    slug: "cheap-peptides",
+    title: "Why Cheap Peptides Are Cheap",
+    description: "Where low-price vendors cut corners and when price matters.",
+    href: "/guides/cheap-peptides",
+    icon: Shield,
+    color: "#E7FB10",
+    readTime: 8
   },
 ];
 
@@ -488,7 +553,11 @@ export default function Education() {
   const tabCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     EDUCATION_TABS.forEach(tab => {
-      counts[tab.id] = articles.filter(a => tab.categories.includes(a.category)).length;
+      if (tab.id === "trust") {
+        counts[tab.id] = TRUST_GUIDES.length;
+      } else {
+        counts[tab.id] = articles.filter(a => tab.categories.includes(a.category)).length;
+      }
     });
     return counts;
   }, [articles]);
@@ -1200,6 +1269,57 @@ export default function Education() {
                           </div>
                         )}
                       </div>
+                    </div>
+                  </div>
+                ) : activeTab === "trust" ? (
+                  /* Trust & Verification Tab */
+                  <div>
+                    <div className="text-center mb-8">
+                      <h2 className="text-2xl font-bold">
+                        Trust & <span className="text-[#f97316]">Verification Guides</span>
+                      </h2>
+                      <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
+                        Honest, no-hype guides to help you evaluate any peptide supplier — including us. Skepticism is healthy.
+                      </p>
+                    </div>
+
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                      {TRUST_GUIDES.map((guide) => {
+                        const Icon = guide.icon;
+                        return (
+                          <Link key={guide.slug} href={guide.href}>
+                            <Card 
+                              className="p-5 cursor-pointer hover:bg-muted/30 transition-all group h-full"
+                              style={{ borderColor: `${guide.color}20` }}
+                              data-testid={`card-guide-${guide.slug}`}
+                            >
+                              <div className="flex items-start gap-4">
+                                <div 
+                                  className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                                  style={{ backgroundColor: `${guide.color}20` }}
+                                >
+                                  <Icon className="h-5 w-5" style={{ color: guide.color }} />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h3 className="font-semibold group-hover:text-foreground transition-colors flex items-center gap-2">
+                                    {guide.title}
+                                    <ChevronRight 
+                                      className="h-4 w-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all flex-shrink-0" 
+                                      style={{ color: guide.color }}
+                                    />
+                                  </h3>
+                                  <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                                    {guide.description}
+                                  </p>
+                                  <span className="text-xs text-muted-foreground mt-2 block">
+                                    {guide.readTime} min read
+                                  </span>
+                                </div>
+                              </div>
+                            </Card>
+                          </Link>
+                        );
+                      })}
                     </div>
                   </div>
                 ) : (
