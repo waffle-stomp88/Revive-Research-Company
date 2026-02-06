@@ -1371,7 +1371,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                         data-testid={`button-pair-${pairing.partner}`}
                                       >
                                         <div className="flex items-center justify-between gap-2 mb-1">
-                                          <span className="font-display font-bold text-white text-[16px]">
+                                          <span className="font-display text-white text-[16px] font-normal">
                                             {pairing.productName}
                                           </span>
                                           <Badge className="text-[9px] shrink-0" style={{ 
