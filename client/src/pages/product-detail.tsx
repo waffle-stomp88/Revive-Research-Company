@@ -69,8 +69,8 @@ import { getSynergyPartners, normalizePeptideName } from "@/lib/synergy-data";
 import { Layers, Zap } from "lucide-react";
 
 // Badge priority system - max 2 badges per product
-// Priority: Out of Stock > Low Stock > Sale > Selling Fast > Featured
-type BadgeType = "out-of-stock" | "low-stock" | "sale" | "selling-fast" | "featured";
+// Priority: Out of Stock > Low Stock > Selling Fast > Featured
+type BadgeType = "out-of-stock" | "low-stock" | "selling-fast" | "featured";
 
 interface ProductBadge {
   type: BadgeType;
@@ -106,16 +106,7 @@ function getProductBadges(
     });
   }
   
-  // Priority 3: Sale
-  if (product.originalPrice) {
-    badges.push({
-      type: "sale",
-      label: "SALE",
-      className: "bg-red-600 text-white font-bold animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.6)]"
-    });
-  }
-  
-  // Priority 4: Selling Fast
+  // Priority 3: Selling Fast
   if (sellingFastIds.includes(product.id) && product.inStock) {
     badges.push({
       type: "selling-fast",
@@ -671,11 +662,6 @@ export default function ProductDetail() {
                 <span className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10]" data-testid="text-product-price">
                   ${getBasePrice().toFixed(2)}
                 </span>
-                {getOriginalPrice() && (
-                  <span className="text-lg text-muted-foreground line-through">
-                    ${getOriginalPrice()!.toFixed(2)}
-                  </span>
-                )}
                 {selectedDosage !== "10mg" && (
                   <Badge variant="outline" className="text-xs">
                     +{((getDosageMultiplier() - 1) * 100).toFixed(0)}% for {selectedDosage}
@@ -683,7 +669,6 @@ export default function ProductDetail() {
                 )}
                 <PriceTrendBadge productId={product.id} />
               </div>
-              <span className="text-xs font-semibold text-[#E7FB10] mt-1 block">Early access pricing preview — subject to change at launch</span>
             </div>
 
             {/* Description - Desktop only (mobile shows below buttons) */}

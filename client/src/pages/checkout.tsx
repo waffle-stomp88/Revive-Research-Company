@@ -1458,7 +1458,6 @@ export default function Checkout() {
                       ${cartTotal.toFixed(2)}
                     </span>
                   </div>
-                  <p className="text-xs font-semibold text-[#E7FB10] text-right mb-4">Early access pricing preview</p>
 
                   {/* Early Access Notice */}
                   {EARLY_ACCESS_MODE && (

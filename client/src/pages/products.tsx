@@ -57,8 +57,8 @@ import { SEOHead } from "@/components/seo-head";
 import { CategoryTabs } from "@/components/category-tabs";
 
 // Badge priority system - max 2 badges per product
-// Priority: Out of Stock > Low Stock > Sale > Selling Fast > Featured
-type BadgeType = "out-of-stock" | "low-stock" | "sale" | "selling-fast" | "featured";
+// Priority: Out of Stock > Low Stock > Selling Fast > Featured
+type BadgeType = "out-of-stock" | "low-stock" | "selling-fast" | "featured";
 
 interface ProductBadge {
   type: BadgeType;
@@ -96,16 +96,7 @@ function getProductBadges(
     });
   }
   
-  // Priority 3: Sale
-  if (product.originalPrice) {
-    badges.push({
-      type: "sale",
-      label: "SALE",
-      className: "bg-red-600 text-white font-bold animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.6)]"
-    });
-  }
-  
-  // Priority 4: Selling Fast
+  // Priority 3: Selling Fast
   if (sellingFastIds.includes(product.id) && product.inStock) {
     badges.push({
       type: "selling-fast",
@@ -144,15 +135,6 @@ const staggerContainer = {
 
 type SortOption = "name-asc" | "name-desc" | "price-asc" | "price-desc" | "featured";
 
-const SALE_OF_THE_WEEK = {
-  title: "Sale of the Week",
-  subtitle: "Limited time offer - Don't miss out!",
-  productName: "Retatrutide",
-  discount: "17% OFF",
-  badge: "HOT DEAL",
-  description: "Triple receptor agonist for advanced metabolic research. Our most sought-after compound at an unbeatable price.",
-  endDate: "Ends Sunday",
-};
 
 const CATEGORIES = [
   { id: "all", name: "All Peptides", icon: Grid3X3 },
@@ -221,7 +203,6 @@ function ProductsComponent() {
   const [stateRestored, setStateRestored] = useState(false);
   
   // Collapsible section states
-  const [dealsOpen, setDealsOpen] = useState(true);
   const [productsOpen, setProductsOpen] = useState(true);
   const [bundlesOpen, setBundlesOpen] = useState(true);
   const [bulkOpen, setBulkOpen] = useState(true);
@@ -236,26 +217,6 @@ function ProductsComponent() {
   const itemsPerPage = 12; // Fixed at 12 items per page
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [gridColumns, setGridColumns] = useState<2 | 3 | 4>(4);
-
-  // Weekly Deal dismiss state with localStorage
-  const [weeklyDealDismissed, setWeeklyDealDismissed] = useState(() => {
-    try {
-      const stored = localStorage.getItem("weekly-deal-dismissed");
-      return stored === "true";
-    } catch {
-      return false;
-    }
-  });
-
-  const dismissWeeklyDeal = () => {
-    setWeeklyDealDismissed(true);
-    localStorage.setItem("weekly-deal-dismissed", "true");
-  };
-
-  const undismissWeeklyDeal = () => {
-    setWeeklyDealDismissed(false);
-    localStorage.removeItem("weekly-deal-dismissed");
-  };
 
   const dealsRef = useRef<HTMLDivElement>(null);
   const bundlesRef = useRef<HTMLDivElement>(null);
@@ -347,11 +308,6 @@ function ProductsComponent() {
       observer.disconnect();
     };
   }, []);
-
-  const saleProduct = useMemo(() => {
-    if (!products) return null;
-    return products.find(p => p.isWeeklyDeal && p.inStock);
-  }, [products]);
 
   // Calculate price stats only from displayed products (excluding Research Stacks)
   const priceStats = useMemo(() => {
@@ -947,11 +903,6 @@ function ProductsComponent() {
                                   <span className="font-display text-base font-bold text-[#E7FB10]">
                                     ${Number(product.price).toFixed(2)}
                                   </span>
-                                  {product.originalPrice && (
-                                    <span className="text-[10px] text-muted-foreground line-through">
-                                      ${Number(product.originalPrice).toFixed(2)}
-                                    </span>
-                                  )}
                                 </div>
                               </div>
                             </Card>

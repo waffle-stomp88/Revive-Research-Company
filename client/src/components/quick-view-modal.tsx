@@ -99,11 +99,6 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                 <span className="font-display text-3xl font-bold text-[#E7FB10]" data-testid="text-quickview-price">
                   ${Number(product.price).toFixed(2)}
                 </span>
-                {product.originalPrice && (
-                  <span className="text-lg text-muted-foreground line-through">
-                    ${Number(product.originalPrice).toFixed(2)}
-                  </span>
-                )}
               </div>
 
               <div className="space-y-2 mb-4">

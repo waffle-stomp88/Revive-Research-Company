@@ -241,7 +241,6 @@ function CompareModal({ products, isOpen, onClose }: CompareModalProps) {
   const comparisonFields: { key: string; label: string; format?: (v: any) => string }[] = [
     { key: "category", label: "Category" },
     { key: "price", label: "Price", format: (v: string) => `$${Number(v).toFixed(2)}` },
-    { key: "originalPrice", label: "Original Price", format: (v: string | null) => v ? `$${Number(v).toFixed(2)}` : "—" },
     { key: "inStock", label: "In Stock", format: (v: boolean | null) => v ? "Yes" : "No" },
   ];
 

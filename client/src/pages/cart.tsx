@@ -266,11 +266,6 @@ export default function CartPage() {
                           {/* Price + Trash */}
                           <div className="flex items-center gap-2">
                             <div className="flex items-baseline gap-2">
-                              {item.originalPrice && item.originalPrice > item.price && (
-                                <span className="text-sm text-muted-foreground line-through">
-                                  ${(item.originalPrice * item.quantity).toFixed(2)}
-                                </span>
-                              )}
                               <span className="font-display font-bold text-xl md:text-2xl text-[#E7FB10]" data-testid={`cart-item-total-${item.productId}`}>
                                 ${(item.price * item.quantity).toFixed(2)}
                               </span>
