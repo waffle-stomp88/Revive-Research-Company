@@ -48,7 +48,8 @@ import {
   Eye,
   Scale,
   MessageCircle,
-  Heart
+  ArrowUp,
+  Check
 } from "lucide-react";
 import { isInCompare, addToCompare, removeFromCompare } from "@/components/comparison-tool";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -917,15 +918,24 @@ function ProductsComponent() {
                                 {isOutOfStock && (
                                   <button
                                     onClick={(e) => handleVote(e, product.id)}
-                                    className={`absolute top-2 right-2 z-20 p-1.5 rounded-full transition-all duration-200 ${
+                                    className={`absolute top-2 right-2 z-20 flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold tracking-wide transition-all duration-200 ${
                                       votedProducts.has(product.id)
-                                        ? "bg-[#E7FB10]/20 text-[#E7FB10]"
-                                        : "bg-black/50 text-white/70 hover:text-[#E7FB10] hover:bg-black/70"
+                                        ? "bg-[#21d8ff]/25 text-[#21d8ff] border border-[#21d8ff]/50"
+                                        : "bg-black/60 text-white/80 border border-white/20 hover:border-[#21d8ff]/50 hover:text-[#21d8ff]"
                                     }`}
                                     data-testid={`button-vote-${product.id}`}
-                                    title={votedProducts.has(product.id) ? "You want this" : "I want this"}
                                   >
-                                    <Heart className={`h-4 w-4 ${votedProducts.has(product.id) ? "fill-[#E7FB10]" : ""}`} />
+                                    {votedProducts.has(product.id) ? (
+                                      <>
+                                        <Check className="h-3 w-3" />
+                                        <span>Voted</span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <ArrowUp className="h-3 w-3" />
+                                        <span>Bring Back</span>
+                                      </>
+                                    )}
                                   </button>
                                 )}
                               </div>

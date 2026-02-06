@@ -54,7 +54,9 @@ import {
   Bell,
   Mail,
   Loader2,
-  Heart
+  Heart,
+  ArrowUp,
+  Check
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useMutation } from "@tanstack/react-query";
@@ -985,13 +987,13 @@ export default function ProductDetail() {
                   disabled={voteMutation.isPending}
                   className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-md text-sm font-medium transition-all duration-200 mb-4 ${
                     hasVoted
-                      ? "bg-[#E7FB10]/15 text-[#E7FB10] border border-[#E7FB10]/40"
-                      : "bg-muted/30 text-muted-foreground border border-muted-foreground/20 hover:border-[#E7FB10]/40 hover:text-[#E7FB10]"
+                      ? "bg-[#21d8ff]/15 text-[#21d8ff] border border-[#21d8ff]/40"
+                      : "bg-muted/30 text-muted-foreground border border-muted-foreground/20 hover:border-[#21d8ff]/40 hover:text-[#21d8ff]"
                   }`}
                   data-testid="button-vote-detail"
                 >
-                  <Heart className={`h-4 w-4 ${hasVoted ? "fill-[#E7FB10]" : ""}`} />
-                  <span>{hasVoted ? "You Want This" : "I Want This"}</span>
+                  {hasVoted ? <Check className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />}
+                  <span>{hasVoted ? "Voted — We Hear You" : "Vote to Bring Back"}</span>
                 </button>
                 
                 <Separator className="my-4" />
