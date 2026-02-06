@@ -466,8 +466,11 @@ function ProductsComponent() {
         case "price-desc":
           return Number(b.price) - Number(a.price);
         case "featured":
-        default:
-          return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+        default: {
+          const featuredDiff = (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+          if (featuredDiff !== 0) return featuredDiff;
+          return a.name.localeCompare(b.name);
+        }
       }
     });
 
