@@ -1047,7 +1047,7 @@ function ProductsComponent() {
         </div>
       </div>
       {/* Need Help Choosing CTA */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-4">
         <button
           onClick={() => window.dispatchEvent(new Event('openChatbot'))}
           className="w-full flex items-center justify-center gap-3 py-4 px-6 rounded-lg border-2 border-[#21d8ff]/30 bg-[#21d8ff]/5 hover:border-[#21d8ff] hover:bg-[#21d8ff]/10 transition-all group"
@@ -1056,6 +1056,23 @@ function ProductsComponent() {
           <MessageCircle className="h-5 w-5 text-[#21d8ff] md:group-hover:scale-110 transition-transform" />
           <span className="font-display font-bold text-[#21d8ff]">Need Help Choosing?</span>
         </button>
+
+        <div
+          className="w-full flex flex-wrap items-start gap-4 py-4 px-6 rounded-lg border border-white/10 bg-white/[0.02]"
+          data-testid="section-want-this-explainer"
+        >
+          <ArrowUp className="h-5 w-5 text-[#21d8ff] shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <p className="text-sm font-semibold text-white/90">
+              See a <span className="text-[#21d8ff]">"Want This"</span> button?
+            </p>
+            <p className="text-xs text-white/50 leading-relaxed">
+              Some products are temporarily out of stock. Tap <span className="text-[#21d8ff]/70">Want This</span> to
+              let us know you're interested — we prioritize restocking based on community demand. Your
+              vote is anonymous and helps us serve you better.
+            </p>
+          </div>
+        </div>
       </div>
       {/* Quick View Modal */}
       <QuickViewModal 

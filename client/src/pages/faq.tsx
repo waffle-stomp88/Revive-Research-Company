@@ -126,6 +126,10 @@ const FAQ_CATEGORIES = [
       {
         question: "Are your products pharmaceutical grade?",
         answer: "Our products are research-grade compounds manufactured to the highest quality standards with verified purity levels. They are intended for research use only and are not manufactured under FDA pharmaceutical guidelines."
+      },
+      {
+        question: "What does the 'Want This' button do?",
+        answer: "When a product is temporarily out of stock, you'll see a \"Want This\" button on the product image. Tapping it lets us know you're interested in that product. We use this community feedback to prioritize which products to restock first. Your vote is completely anonymous — no account or personal information is required. Once you've voted, the button changes to \"Wanted\" so you know your voice has been heard."
       }
     ]
   },
