@@ -940,9 +940,9 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
   return (
     <div className="space-y-6">
       {/* Two Column Layout: Peptides Left, Build Panel Right */}
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[65%_1fr] gap-6">
         {/* Left Column: Peptide Selection */}
-        <div className="flex-1 lg:max-w-[65%]">
+        <div className="flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-display text-xl font-bold">Select Your Peptides</h3>
@@ -1006,7 +1006,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
               });
 
             return (
-              <div className="space-y-3">
+              <div className="flex flex-col gap-3 flex-1">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -1017,7 +1017,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                     data-testid="input-peptide-search"
                   />
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-[420px] overflow-y-auto pr-1 scrollbar-thin">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {filteredPeptides.map(product => {
                     const isSelected = selectedPeptides.find(p => p.id === product.id);
                     const isDisabled = !isSelected && selectedPeptides.length >= 4;
@@ -1086,7 +1086,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
         </div>
 
         {/* Right Column: Synergy Visualization Panel */}
-        <div className="lg:w-[35%]">
+        <div>
           <div className="lg:sticky lg:top-28 space-y-4">
             
             {/* ====== SYNERGY RING & SCORE ====== */}
