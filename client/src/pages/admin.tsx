@@ -688,46 +688,42 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
               </button>
             </CardContent>
           </Card>
+
+          {demandProducts.length > 0 && (
+            <Card data-testid="card-product-demand">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <div className="flex items-center gap-2">
+                    <Heart className="h-4 w-4 text-[#E7FB10]" />
+                    <h3 className="font-display text-sm font-bold">Product Demand</h3>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 text-[10px] text-[#E7FB10] px-2"
+                    onClick={() => onNavigateToTab("products:demand")}
+                    data-testid="button-view-all-demand"
+                  >
+                    View All
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  {demandProducts.slice(0, 5).map((product, index) => (
+                    <div key={product.id} className="flex items-center gap-2" data-testid={`row-demand-${product.id}`}>
+                      <span className="text-[10px] text-muted-foreground w-3 text-right">{index + 1}</span>
+                      <span className="text-xs font-medium truncate flex-1 min-w-0">{product.name}</span>
+                      {!product.inStock && (
+                        <span className="text-[9px] px-1 py-0.5 rounded bg-red-500/20 text-red-400 shrink-0">OOS</span>
+                      )}
+                      <span className="text-xs font-bold text-[#E7FB10] shrink-0">{product.votes}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
-
-      {demandProducts.length > 0 && (
-        <Card data-testid="card-product-demand">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Heart className="h-4 w-4 text-[#E7FB10]" />
-              <h3 className="font-display text-sm font-bold">Product Demand</h3>
-              <span className="text-[10px] text-muted-foreground ml-auto">"I Want This" votes</span>
-            </div>
-            <div className="space-y-2">
-              {demandProducts.map((product, index) => {
-                const maxVotes = demandProducts[0]?.votes || 1;
-                const barWidth = (product.votes / maxVotes) * 100;
-                return (
-                  <div key={product.id} className="flex items-center gap-3" data-testid={`row-demand-${product.id}`}>
-                    <span className="text-xs text-muted-foreground w-4 text-right">{index + 1}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <span className="text-xs font-medium truncate">{product.name}</span>
-                        {!product.inStock && (
-                          <span className="text-[9px] px-1 py-0.5 rounded bg-red-500/20 text-red-400">OOS</span>
-                        )}
-                      </div>
-                      <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-[#E7FB10] rounded-full transition-all duration-500"
-                          style={{ width: `${barWidth}%` }}
-                        />
-                      </div>
-                    </div>
-                    <span className="text-xs font-bold text-[#E7FB10] w-8 text-right">{product.votes}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Order Quick View Dialog */}
       <Dialog open={!!selectedOrder} onOpenChange={(open) => !open && setSelectedOrder(null)}>
@@ -6710,15 +6706,34 @@ function PricingOptimizerTab() {
   );
 }
 
-function ProductsCombinedTab() {
-  const [productSubTab, setProductSubTab] = useState("inventory");
+function ProductsCombinedTab({ activeSubTab, onSubTabChange }: { activeSubTab: string; onSubTabChange: (tab: string) => void }) {
+  const productSubTab = activeSubTab;
+
+  const { data: voteCounts = [] } = useQuery<Array<{ productId: string; count: number }>>({
+    queryKey: ["/api/products/votes"],
+  });
+
+  const { data: allProductsList = [] } = useQuery<Product[]>({
+    queryKey: ["/api/products"],
+  });
+
+  const demandProducts = useMemo(() => {
+    if (!voteCounts.length || !allProductsList.length) return [];
+    return voteCounts
+      .map(vc => {
+        const prod = allProductsList.find(p => p.id === vc.productId);
+        return prod ? { ...prod, votes: vc.count } : null;
+      })
+      .filter((p): p is Product & { votes: number } => p !== null)
+      .sort((a, b) => b.votes - a.votes);
+  }, [voteCounts, allProductsList]);
   
   return (
     <div className="space-y-4">
-      <div className="flex gap-2 mb-4">
+      <div className="flex flex-wrap gap-2 mb-4">
         <Button 
           variant={productSubTab === "inventory" ? "default" : "outline"}
-          onClick={() => setProductSubTab("inventory")}
+          onClick={() => onSubTabChange("inventory")}
           className="gap-2"
           data-testid="subtab-inventory"
         >
@@ -6727,12 +6742,24 @@ function ProductsCombinedTab() {
         </Button>
         <Button 
           variant={productSubTab === "pricing" ? "default" : "outline"}
-          onClick={() => setProductSubTab("pricing")}
+          onClick={() => onSubTabChange("pricing")}
           className="gap-2"
           data-testid="subtab-pricing"
         >
           <Zap className="h-4 w-4" />
           AI Pricing
+        </Button>
+        <Button 
+          variant={productSubTab === "demand" ? "default" : "outline"}
+          onClick={() => onSubTabChange("demand")}
+          className="gap-2"
+          data-testid="subtab-demand"
+        >
+          <Heart className="h-4 w-4" />
+          Product Demand
+          {demandProducts.length > 0 && (
+            <Badge variant="secondary" className="text-[10px] h-5 ml-1">{demandProducts.length}</Badge>
+          )}
         </Button>
       </div>
       
@@ -6740,9 +6767,61 @@ function ProductsCombinedTab() {
         <Card className="p-6">
           <ProductsTab />
         </Card>
-      ) : (
+      ) : productSubTab === "pricing" ? (
         <Card className="p-6">
           <PricingOptimizerTab />
+        </Card>
+      ) : (
+        <Card className="p-6">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Heart className="h-5 w-5 text-[#E7FB10]" />
+                <h2 className="font-display text-lg font-bold">Product Demand</h2>
+              </div>
+              <span className="text-xs text-muted-foreground">"Want This" votes from customers</span>
+            </div>
+
+            {demandProducts.length > 0 ? (
+              <div className="space-y-2">
+                {demandProducts.map((product, index) => {
+                  const maxVotes = demandProducts[0]?.votes || 1;
+                  const barWidth = (product.votes / maxVotes) * 100;
+                  return (
+                    <div key={product.id} className="flex items-center gap-3 p-3 rounded-lg bg-background/50 border border-border/50" data-testid={`row-demand-full-${product.id}`}>
+                      <span className="text-sm text-muted-foreground w-6 text-right font-bold">{index + 1}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                          <span className="text-sm font-medium">{product.name}</span>
+                          {!product.inStock && (
+                            <Badge variant="destructive" className="text-[10px] h-5">Out of Stock</Badge>
+                          )}
+                          {product.inStock && (
+                            <Badge variant="secondary" className="text-[10px] h-5 bg-green-500/20 text-green-400">In Stock</Badge>
+                          )}
+                        </div>
+                        <div className="h-2 bg-muted rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-[#E7FB10] rounded-full transition-all duration-500"
+                            style={{ width: `${barWidth}%` }}
+                          />
+                        </div>
+                      </div>
+                      <span className="text-lg font-bold text-[#E7FB10] w-12 text-right">{product.votes}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                <Heart className="h-8 w-8 mb-3 opacity-50" />
+                <p className="text-sm font-medium mb-1">No votes yet</p>
+                <p className="text-xs text-center max-w-sm">
+                  When products are out of stock, customers can tap "Want This" to express interest. Vote data will appear here.
+                </p>
+              </div>
+            )}
+          </div>
         </Card>
       )}
     </div>
@@ -6818,6 +6897,17 @@ export default function Admin() {
   const { user, isLoading: authLoading, isAuthenticated, login, logout } = useAuth();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview");
+  const [productSubTab, setProductSubTab] = useState("inventory");
+
+  const handleNavigateToTab = (tab: string) => {
+    if (tab.startsWith("products:")) {
+      const subTab = tab.split(":")[1];
+      setProductSubTab(subTab);
+      setActiveTab("products");
+    } else {
+      setActiveTab(tab);
+    }
+  };
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -6941,11 +7031,11 @@ export default function Admin() {
               </TabsList>
 
               <TabsContent value="overview">
-                <DashboardOverview onNavigateToTab={setActiveTab} />
+                <DashboardOverview onNavigateToTab={handleNavigateToTab} />
               </TabsContent>
 
               <TabsContent value="products">
-                <ProductsCombinedTab />
+                <ProductsCombinedTab activeSubTab={productSubTab} onSubTabChange={setProductSubTab} />
               </TabsContent>
 
               <TabsContent value="orders">
