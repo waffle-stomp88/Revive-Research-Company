@@ -1396,7 +1396,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                           </span>
                                         )}
                                         {!pairing.inStock && (
-                                          <span className="text-[10px] text-white/30 mt-1 block">Out of stock</span>
+                                          <span className="mt-1 block text-[12px] text-[#fc00004d]">Out of stock</span>
                                         )}
                                       </motion.button>
                                     );
