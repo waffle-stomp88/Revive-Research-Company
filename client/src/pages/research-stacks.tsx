@@ -793,9 +793,21 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
               </p>
             </div>
             {selectedPeptides.length > 0 && (
-              <Badge className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30">
-                {selectedPeptides.length}/4 Selected
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30">
+                  {selectedPeptides.length}/4 Selected
+                </Badge>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedPeptides([])}
+                  className="text-xs text-muted-foreground"
+                  data-testid="button-clear-selection"
+                >
+                  <X className="h-3 w-3 mr-1" />
+                  Clear
+                </Button>
+              </div>
             )}
           </div>
           
