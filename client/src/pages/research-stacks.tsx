@@ -1683,7 +1683,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <FlaskConical className="h-4 w-4 text-[#21d8ff]" />
-                <span className="font-display font-bold text-sm">Your Stack</span>
+                <span className="font-display font-bold text-[20px]">Your Stack</span>
                 <Badge variant="outline" className="text-[10px]">{selectedPeptides.length}/4</Badge>
               </div>
               {selectedPeptides.length > 0 && (
