@@ -190,6 +190,7 @@ export const contacts = pgTable("contacts", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   type: text("type").notNull().default("contact"), // "contact" | "wholesale"
   status: text("status").notNull().default("new"), // "new" | "read" | "responded" | "archived"
+  topic: text("topic"),
   name: text("name").notNull(),
   email: text("email").notNull(),
   message: text("message").notNull(),

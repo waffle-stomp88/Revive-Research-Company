@@ -13,6 +13,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Form,
   FormControl,
   FormField,
@@ -33,11 +40,22 @@ import {
   BookOpen,
   ArrowRight,
   Truck,
+  Tag,
 } from "lucide-react";
+
+const CONTACT_TOPICS = [
+  { value: "order_issue", label: "Order Issue", placeholder: "Please include your order number and describe the issue..." },
+  { value: "product_question", label: "Product Question", placeholder: "What would you like to know about our products?" },
+  { value: "shipping", label: "Shipping & Delivery", placeholder: "Include your order number if applicable. Describe your shipping question..." },
+  { value: "wholesale", label: "Wholesale Inquiry", placeholder: "Tell us about your organization and estimated order volume..." },
+  { value: "website_feedback", label: "Website Feedback", placeholder: "Let us know what's not working or what could be better..." },
+  { value: "other", label: "Other", placeholder: "How can we help you?" },
+] as const;
 
 const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
+  topic: z.string().min(1, "Please select a topic"),
   message: z.string().min(10, "Message must be at least 10 characters"),
 });
 
@@ -79,9 +97,13 @@ export default function Contact() {
     defaultValues: {
       name: "",
       email: "",
+      topic: "",
       message: "",
     },
   });
+
+  const selectedTopic = form.watch("topic");
+  const messagePlaceholder = CONTACT_TOPICS.find(t => t.value === selectedTopic)?.placeholder || "How can we help you?";
 
   const mutation = useMutation({
     mutationFn: async (data: ContactFormValues) => {
@@ -255,6 +277,34 @@ export default function Contact() {
 
                         <FormField
                           control={form.control}
+                          name="topic"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="flex items-center gap-2">
+                                <Tag className="h-4 w-4" />
+                                Topic
+                              </FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger data-testid="select-contact-topic">
+                                    <SelectValue placeholder="What can we help you with?" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {CONTACT_TOPICS.map((topic) => (
+                                    <SelectItem key={topic.value} value={topic.value} data-testid={`option-topic-${topic.value}`}>
+                                      {topic.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
                           name="message"
                           render={({ field }) => (
                             <FormItem>
@@ -264,7 +314,7 @@ export default function Contact() {
                               </FormLabel>
                               <FormControl>
                                 <Textarea 
-                                  placeholder="How can we help you?"
+                                  placeholder={messagePlaceholder}
                                   className="min-h-[150px] resize-none"
                                   {...field}
                                   data-testid="input-contact-message"

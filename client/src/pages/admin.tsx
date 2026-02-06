@@ -4058,6 +4058,11 @@ function ContactsTab() {
                           )}
                         </div>
                         <p className="text-sm text-muted-foreground truncate">{selectedContact.email}</p>
+                        {selectedContact.topic && (
+                          <p className="text-xs text-muted-foreground mt-1" data-testid="text-contact-topic">
+                            Topic: <span className="text-[#E7FB10]">{selectedContact.topic.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}</span>
+                          </p>
+                        )}
                         {selectedContact.companyName && (
                           <p className="text-sm text-muted-foreground truncate">{selectedContact.companyName}</p>
                         )}
