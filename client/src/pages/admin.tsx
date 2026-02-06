@@ -116,6 +116,7 @@ import { ObjectUploader } from "@/components/ObjectUploader";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProductSchema, insertCoaSchema, type Product, type Coa, type Order, type Contact, type AffiliateApplication, type Affiliate, type AffiliatePayout, type ProductDosageStock, type ProductWithDosageStock, type ProductBehavioralMetrics } from "@shared/schema";
+import { MANUFACTURER_PRODUCT_IDS, getMfgIdForProduct, getAllMfgIdsForProduct, generateBatchNumber, getNextCycleLetter, validateBatchNumber } from "@shared/batchNumbers";
 import { z } from "zod";
 
 // Dosage stock item type for local state management
@@ -2165,19 +2166,6 @@ function CoasTab() {
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="batchNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Batch Number</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="e.g., BPC-2024-001" data-testid="input-coa-batch" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
@@ -2190,6 +2178,19 @@ function CoasTab() {
                           const product = products?.find(p => p.id === value);
                           if (product) {
                             form.setValue("productName", product.name);
+                            const mfgId = getMfgIdForProduct(product.name);
+                            if (mfgId) {
+                              const now = new Date();
+                              const existingBatches = allCoas?.map(c => c.batchNumber) || [];
+                              const nextCycle = getNextCycleLetter(existingBatches, mfgId, now.getFullYear(), now.getMonth() + 1);
+                              const suggested = generateBatchNumber(mfgId, now.getFullYear(), now.getMonth() + 1, nextCycle);
+                              form.setValue("batchNumber", suggested);
+                            } else {
+                              const allIds = getAllMfgIdsForProduct(product.name);
+                              if (allIds.length > 1) {
+                                form.setValue("batchNumber", "");
+                              }
+                            }
                           }
                         }} defaultValue={field.value}>
                           <FormControl>
@@ -2223,6 +2224,43 @@ function CoasTab() {
                     )}
                   />
                 </div>
+                <FormField
+                  control={form.control}
+                  name="batchNumber"
+                  render={({ field }) => {
+                    const isValid = field.value ? validateBatchNumber(field.value) : false;
+                    const selectedProductName = form.watch("productName");
+                    const ambiguousIds = selectedProductName ? getAllMfgIdsForProduct(selectedProductName) : [];
+                    const isAmbiguous = ambiguousIds.length > 1;
+                    return (
+                      <FormItem>
+                        <FormLabel>Batch Number</FormLabel>
+                        <div className="flex items-center gap-2">
+                          <FormControl>
+                            <Input {...field} placeholder="e.g., RT10-2601A" className="font-mono" data-testid="input-coa-batch" />
+                          </FormControl>
+                          {field.value && (
+                            isValid ? (
+                              <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+                            ) : (
+                              <AlertCircle className="h-5 w-5 text-yellow-500 flex-shrink-0" />
+                            )
+                          )}
+                        </div>
+                        {isAmbiguous && !field.value ? (
+                          <p className="text-xs text-yellow-500">
+                            Multiple dosages — select MfgID: {ambiguousIds.map(a => `${a.mfgId} (${a.dosage})`).join(", ")}
+                          </p>
+                        ) : (
+                          <p className="text-xs text-muted-foreground">
+                            Format: [MfgID]-[YYMM][Cycle] — Auto-fills when you select a product
+                          </p>
+                        )}
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}

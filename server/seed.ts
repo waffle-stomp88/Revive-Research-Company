@@ -144,7 +144,7 @@ async function seed() {
 
   const sampleCoas = [
     {
-      batchNumber: "RVR-2024-001",
+      batchNumber: "BC10-2601A",
       productId: insertedProducts[0].id,
       productName: "BPC-157",
       testDate: "November 15, 2024",
@@ -161,7 +161,7 @@ async function seed() {
       ],
     },
     {
-      batchNumber: "RVR-2024-002",
+      batchNumber: "BT5-2601A",
       productId: insertedProducts[1].id,
       productName: "TB-500",
       testDate: "November 10, 2024",
@@ -178,7 +178,7 @@ async function seed() {
       ],
     },
     {
-      batchNumber: "RVR-2024-003",
+      batchNumber: "CU50-2601A",
       productId: insertedProducts[2].id,
       productName: "GHK-Cu",
       testDate: "November 5, 2024",

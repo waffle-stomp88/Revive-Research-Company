@@ -154,7 +154,7 @@ export default function CoaVerification() {
                         <div className="relative">
                           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                           <Input
-                            placeholder="Enter batch number (e.g., RVR-2024-001)"
+                            placeholder="Enter batch number (e.g., RT10-2601A)"
                             className="pl-12 h-12 text-base"
                             {...field}
                             data-testid="input-batch-number"

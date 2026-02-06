@@ -63,6 +63,38 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **Research Phase & Title System**: Tracks user progression through research phases (Observer → Initiate → Researcher → Analyst → Specialist) and awards titles based on activity thresholds.
 - **Dashboard Interface**: Tabbed interface (`/dashboard`) with "General" (navigation hub, quick stats, achievements, member perks), "Orders" (subscriptions, order history, wishlist, product reviews), and "Settings" tabs.
 
+## Batch Number System
+
+**Format: `[MfgID]-[YYMM][Cycle]`**
+
+The batch number system uses manufacturer product IDs combined with production date and cycle letter.
+
+### Manufacturer Product IDs (Current In-Stock)
+| MfgID | Product | Dosage |
+|-------|---------|--------|
+| BA3   | Bacteriostatic Water | 3ML |
+| BA10  | Bacteriostatic Water | 10ML |
+| BC10  | BPC-157 | 10mg |
+| CU50  | GHK-Cu | 50mg |
+| MS10  | MOTS-c | 10mg |
+| RT10  | Retatrutide | 10mg |
+| BT5   | TB-500 | 5mg |
+
+### Batch Number Components
+- **MfgID**: Manufacturer product shortcode (see table above)
+- **YY**: Two-digit year (e.g., 26 for 2026)
+- **MM**: Two-digit month (e.g., 01 for January)
+- **Cycle**: Letter starting at A, incrementing per production run that month (A, B, C...)
+
+### Examples
+- `RT10-2601A` = First batch of Retatrutide 10mg, January 2026
+- `RT10-2601B` = Second batch of Retatrutide 10mg, January 2026
+- `BC10-2602A` = First batch of BPC-157 10mg, February 2026
+- `BA3-2601A` = First batch of Bac Water 3ML, January 2026
+
+### Validation Pattern
+Regex: `/^[A-Z]{2,4}\d{1,4}-\d{4}[A-Z]$/`
+
 ## External Dependencies
 
 - **Database**: Neon Database (PostgreSQL)
