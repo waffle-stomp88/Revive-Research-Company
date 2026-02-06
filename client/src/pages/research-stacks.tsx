@@ -1070,7 +1070,9 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
               const peptideNames = selectedPeptides.map(p => p.name);
               const synergyScore = calculateSynergyScore(peptideNames);
               const knownStack = checkKnownStack(peptideNames);
+              const recommendation = getStackRecommendation(peptideNames);
               const sharedPathways = findSharedPathways(peptideNames);
+              const activeSystems = getActiveSystems(peptideNames);
               
               return (
                 <>
@@ -1247,282 +1249,208 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                     </Card>
                   )}
 
-                  {/* ====== SELECTED PEPTIDES & PRICING ====== */}
-                  <Card className="border-[#21d8ff]/40 bg-gradient-to-br from-[#1a1a1f] to-[#0f0f12]">
-                    <div className="p-4 border-b border-[#2a2a32]">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-display font-bold">Your Stack</h3>
-                        <span className="text-xs text-muted-foreground">{selectedPeptides.length}/4</span>
-                      </div>
-                    </div>
-                    
-                    <div className="p-4 space-y-3">
-                      {selectedPeptides.length === 0 ? (
-                        <div className="text-center py-4 text-muted-foreground">
-                          <FlaskConical className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                          <p className="text-sm">Select peptides to begin</p>
-                        </div>
-                      ) : (
-                        <div className="space-y-2">
-                          {selectedPeptides.map(peptide => (
-                            <div 
-                              key={peptide.id}
-                              className="flex items-center justify-between p-2 rounded-lg bg-[#21d8ff]/5 border border-[#21d8ff]/20"
-                            >
-                              <span className="font-medium text-sm">
-                                {peptide.name.replace(/\s*\([^)]*\)/g, '')}
-                              </span>
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm text-muted-foreground">${peptide.price}</span>
-                                <button
-                                  onClick={() => togglePeptide(peptide)}
-                                  className="p-1 rounded-full hover:bg-red-500/20 text-muted-foreground hover:text-red-400"
-                                  data-testid={`button-remove-peptide-${peptide.id}`}
-                                >
-                                  <X className="h-3.5 w-3.5" />
-                                </button>
-                              </div>
+                  {/* ====== PAIRING SUGGESTIONS ====== */}
+                  {selectedPeptides.length >= 1 && selectedPeptides.length < 4 && products && (() => {
+                    const generalPairings = getGeneralPairings(
+                      selectedPeptides.map(p => p.name),
+                      products
+                    );
+                    if (generalPairings.length === 0) return null;
+                    if (recommendation && selectedPeptides.length >= 2) return null;
+                    return (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                      >
+                        <Card className="border-[#2a2a32] bg-[#1a1a1f]/50" data-testid="card-pairing-suggestions">
+                          <div className="p-4">
+                            <div className="flex items-center gap-2 mb-3">
+                              <Sparkles className="h-4 w-4 text-[#21d8ff]" />
+                              <span className="text-xs font-semibold text-muted-foreground">PAIRS WELL WITH</span>
                             </div>
-                          ))}
-                        </div>
-                      )}
-
-                      {/* Pricing */}
-                      {selectedPeptides.length >= 2 && (
-                        <div className="pt-3 border-t border-[#2a2a32]">
-                          <div className="flex justify-between">
-                            <span className="font-bold">Total</span>
-                            <span className="font-display text-2xl font-bold text-[#E7FB10]">${getRetailTotal().toFixed(2)}</span>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Add to Cart */}
-                      {(() => {
-                        const hasOutOfStock = selectedPeptides.some(p => !p.inStock);
-                        const notEnough = selectedPeptides.length < 2;
-                        return (
-                          <div className="space-y-2">
-                            <Button
-                              onClick={handleAddToCart}
-                              disabled={notEnough || hasOutOfStock}
-                              className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 font-bold shadow-[0_0_20px_rgba(231,251,16,0.3)]"
-                              data-testid="button-add-custom-stack"
-                            >
-                              <ShoppingCart className="h-4 w-4 mr-2" />
-                              {notEnough ? "Select 2+ Peptides" : hasOutOfStock ? "Contains Out-of-Stock Items" : "Add to Cart"}
-                            </Button>
-                            {hasOutOfStock && selectedPeptides.length >= 2 && (
-                              <p className="text-xs text-center text-white/40 flex items-center justify-center gap-1">
-                                <AlertCircle className="h-3 w-3" />
-                                Remove out-of-stock peptides to add to cart
-                              </p>
-                            )}
-                          </div>
-                        );
-                      })()}
-
-                      {/* Save & Share Buttons */}
-                      {selectedPeptides.length >= 2 && (
-                        <div className="flex gap-2">
-                          <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
-                            <DialogTrigger asChild>
-                              <Button
-                                variant="outline"
-                                className="flex-1 border-[#21d8ff]/40 text-[#21d8ff] hover:bg-[#21d8ff]/10"
-                                onClick={() => {
-                                  if (!isAuthenticated) {
-                                    login();
-                                    return;
-                                  }
-                                  setShowSaveDialog(true);
-                                }}
-                                data-testid="button-save-stack"
-                              >
-                                <Save className="h-4 w-4 mr-2" />
-                                Save Stack
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="bg-[#1a1a1f] border-[#2a2a32]">
-                              <DialogHeader>
-                                <DialogTitle>Save Your Stack</DialogTitle>
-                              </DialogHeader>
-                              <div className="space-y-4">
-                                <div>
-                                  <label className="text-sm text-muted-foreground">Stack Name</label>
-                                  <Input 
-                                    value={stackName}
-                                    onChange={(e) => setStackName(e.target.value)}
-                                    placeholder="My Custom Stack"
-                                    className="mt-1 bg-[#0f0f12] border-[#2a2a32]"
-                                    maxLength={50}
-                                    data-testid="input-stack-name"
-                                  />
-                                </div>
-                                <div className="text-sm text-muted-foreground">
-                                  <p className="font-medium mb-2">Peptides in this stack:</p>
-                                  <div className="flex flex-wrap gap-1">
-                                    {selectedPeptides.map(p => (
-                                      <Badge key={p.id} variant="outline" className="text-xs">
-                                        {p.name}
+                            <div className="space-y-2">
+                              {generalPairings.map((pairing, i) => {
+                                const matchingProduct = products.find(p =>
+                                  normalizePeptideName(p.name).includes(pairing.partner.replace(/-/g, ''))
+                                );
+                                return (
+                                  <motion.button
+                                    key={i}
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: i * 0.1 }}
+                                    onClick={() => {
+                                      if (matchingProduct && selectedPeptides.length < 4) {
+                                        togglePeptide(matchingProduct);
+                                      }
+                                    }}
+                                    className="w-full text-left p-2.5 rounded-lg border border-[#2a2a32] transition-all hover-elevate active-elevate-2"
+                                    data-testid={`button-pair-${pairing.partner}`}
+                                  >
+                                    <div className="flex items-center justify-between gap-2 mb-1">
+                                      <span className="font-display font-bold text-sm text-white">
+                                        {pairing.productName}
+                                      </span>
+                                      <Badge className="text-[9px] shrink-0" style={{ 
+                                        backgroundColor: `${({
+                                          Healing: "#22c55e", Metabolic: "#E7FB10", Growth: "#f59e0b", Cognitive: "#21d8ff",
+                                          Skin: "#ec4899", Longevity: "#a855f7", Immune: "#22c55e", Sleep: "#8b5cf6",
+                                          Hormonal: "#f59e0b", Vascular: "#ef4444", Weight: "#E7FB10",
+                                        } as Record<string, string>)[pairing.boost] || '#21d8ff'}20`,
+                                        color: ({
+                                          Healing: "#22c55e", Metabolic: "#E7FB10", Growth: "#f59e0b", Cognitive: "#21d8ff",
+                                          Skin: "#ec4899", Longevity: "#a855f7", Immune: "#22c55e", Sleep: "#8b5cf6",
+                                          Hormonal: "#f59e0b", Vascular: "#ef4444", Weight: "#E7FB10",
+                                        } as Record<string, string>)[pairing.boost] || '#21d8ff'
+                                      }}>
+                                        {pairing.boost}
                                       </Badge>
-                                    ))}
-                                  </div>
-                                </div>
-                                <Button
-                                  onClick={() => {
-                                    if (!stackName.trim()) {
-                                      toast({ title: "Please enter a name", variant: "destructive" });
-                                      return;
-                                    }
-                                    saveStackMutation.mutate({
-                                      name: stackName,
-                                      peptideIds: selectedPeptides.map(p => p.id),
-                                      peptideNames: selectedPeptides.map(p => p.name),
-                                      isPublic: true
-                                    });
-                                  }}
-                                  disabled={saveStackMutation.isPending}
-                                  className="w-full bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90"
-                                  data-testid="button-confirm-save"
-                                >
-                                  {saveStackMutation.isPending ? "Saving..." : "Save & Get Share Link"}
-                                </Button>
-                              </div>
-                            </DialogContent>
-                          </Dialog>
-                          
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="border-[#2a2a32]"
-                            onClick={() => {
-                              const peptideNames = selectedPeptides.map(p => p.name).join(', ');
-                              const shareText = `Check out my peptide research stack: ${peptideNames}`;
-                              if (navigator.share) {
-                                navigator.share({ title: 'My Research Stack', text: shareText });
-                              } else {
-                                navigator.clipboard.writeText(shareText);
-                                toast({ title: "Stack copied to clipboard!" });
-                              }
-                            }}
-                            data-testid="button-quick-share"
-                          >
-                            <Share2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  </Card>
-
-                  {/* Saved Stacks Section */}
-                  {isAuthenticated && savedStacks && savedStacks.length > 0 && (
-                    <Card className="border-[#2a2a32] bg-[#1a1a1f]/50">
-                      <div className="p-4">
-                        <div className="flex items-center justify-between mb-3">
-                          <h3 className="font-display font-bold text-sm flex items-center gap-2">
-                            <Save className="h-4 w-4 text-[#21d8ff]" />
-                            Your Saved Stacks
-                          </h3>
-                          <Badge variant="outline" className="text-xs">{savedStacks.length}</Badge>
-                        </div>
-                        <div className="space-y-2 max-h-[200px] overflow-y-auto">
-                          {savedStacks.slice(0, 5).map((stack) => (
-                            <div 
-                              key={stack.id}
-                              className="flex items-center justify-between p-2 rounded-lg bg-[#0f0f12] border border-[#2a2a32] hover:border-[#21d8ff]/40 transition-colors"
-                            >
-                              <div className="flex-1 min-w-0">
-                                <p className="font-medium text-sm truncate">{stack.name}</p>
-                                <p className="text-xs text-muted-foreground truncate">
-                                  {stack.peptideNames?.join(' + ')}
-                                </p>
-                              </div>
-                              <div className="flex items-center gap-1 ml-2">
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  className="h-7 w-7"
-                                  onClick={() => {
-                                    // Load this stack into the builder
-                                    if (products) {
-                                      const matchedPeptides = (stack.peptideIds || [])
-                                        .map(id => products.find(p => p.id === id))
-                                        .filter((p): p is Product => p !== undefined);
-                                      setSelectedPeptides(matchedPeptides);
-                                      toast({ title: `Loaded "${stack.name}"` });
-                                    }
-                                  }}
-                                  data-testid={`button-load-stack-${stack.id}`}
-                                >
-                                  <FlaskConical className="h-3.5 w-3.5" />
-                                </Button>
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  className="h-7 w-7"
-                                  onClick={() => {
-                                    const url = `${window.location.origin}/research-stacks?share=${stack.shareCode}`;
-                                    navigator.clipboard.writeText(url);
-                                    toast({ title: "Share link copied!" });
-                                  }}
-                                  data-testid={`button-share-stack-${stack.id}`}
-                                >
-                                  <Copy className="h-3.5 w-3.5" />
-                                </Button>
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  className="h-7 w-7 text-red-400 hover:text-red-300"
-                                  onClick={() => deleteStackMutation.mutate(stack.id)}
-                                  data-testid={`button-delete-stack-${stack.id}`}
-                                >
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </Button>
-                              </div>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">{pairing.reason}</p>
+                                    {!pairing.inStock && (
+                                      <span className="text-[10px] text-white/30 mt-1 block">Out of stock</span>
+                                    )}
+                                  </motion.button>
+                                );
+                              })}
                             </div>
-                          ))}
+                          </div>
+                        </Card>
+                      </motion.div>
+                    );
+                  })()}
+
+                  {/* ====== RECOMMENDATION CARD ====== */}
+                  {recommendation && selectedPeptides.length < 4 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                    >
+                      <Card 
+                        className="border-2 border-dashed overflow-hidden cursor-pointer hover-elevate"
+                        style={{ borderColor: `${recommendation.stack.color}60` }}
+                        data-testid="card-recommendation"
+                      >
+                        <div className="p-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Sparkles className="h-4 w-4" style={{ color: recommendation.stack.color }} />
+                            <span className="font-bold text-sm" style={{ color: recommendation.stack.color }}>
+                              Complete {recommendation.stack.name}!
+                            </span>
+                          </div>
+                          <p className="text-xs text-muted-foreground mb-3">
+                            Add {recommendation.missing.map(m => m.toUpperCase()).join(" + ")} to unlock this legendary combo
+                          </p>
+                          <div className="flex items-center justify-between flex-wrap gap-2">
+                            <div className="flex items-center gap-2">
+                              {(() => {
+                                const RecommendIcon = recommendation.stack.icon;
+                                return <RecommendIcon className="w-5 h-5" style={{ color: recommendation.stack.color }} />;
+                              })()}
+                              <span className="font-display font-bold" style={{ color: recommendation.stack.color }}>
+                                {recommendation.stack.synergyBonus}% synergy
+                              </span>
+                            </div>
+                            <Badge className="text-[10px]" style={{ backgroundColor: `${recommendation.stack.color}20`, color: recommendation.stack.color }}>
+                              +{recommendation.stack.synergyBonus - synergyScore}% boost
+                            </Badge>
+                          </div>
+                        </div>
+                      </Card>
+                    </motion.div>
+                  )}
+
+                  {/* ====== BODY SYSTEMS HEATMAP ====== */}
+                  {selectedPeptides.length > 0 && (
+                    <Card className="border-[#2a2a32] bg-[#1a1a1f]/50" data-testid="card-body-systems">
+                      <div className="p-3">
+                        <p className="text-xs font-semibold text-muted-foreground mb-3">TARGETING</p>
+                        <div className="flex flex-wrap gap-2">
+                          {BODY_SYSTEMS.map(system => {
+                            const isActive = activeSystems.includes(system.id);
+                            const SystemIcon = system.icon;
+                            return (
+                              <Tooltip key={system.id}>
+                                <TooltipTrigger asChild>
+                                  <motion.div
+                                    initial={{ scale: 0.8 }}
+                                    animate={{ 
+                                      scale: isActive ? 1 : 0.9,
+                                      opacity: isActive ? 1 : 0.3
+                                    }}
+                                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-all cursor-help ${
+                                      isActive 
+                                        ? "border-opacity-50" 
+                                        : "border-[#2a2a32] bg-[#1a1a1f]"
+                                    }`}
+                                    style={isActive ? { 
+                                      borderColor: system.color,
+                                      backgroundColor: `${system.color}15`,
+                                      boxShadow: `0 0 12px ${system.color}30`
+                                    } : undefined}
+                                    data-testid={`system-${system.id}`}
+                                  >
+                                    <SystemIcon 
+                                      className="h-3.5 w-3.5" 
+                                      style={{ color: isActive ? system.color : "#6b7280" }} 
+                                    />
+                                    <span 
+                                      className="text-xs font-medium"
+                                      style={{ color: isActive ? system.color : "#6b7280" }}
+                                    >
+                                      {system.name}
+                                    </span>
+                                  </motion.div>
+                                </TooltipTrigger>
+                                <TooltipContent 
+                                  side="top" 
+                                  className="max-w-[200px] text-center bg-[#1a1a1f] border-[#2a2a32]"
+                                >
+                                  <p className="text-xs">{system.description}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            );
+                          })}
                         </div>
                       </div>
                     </Card>
                   )}
 
-                  {/* Popular Stacks Section */}
-                  {popularStacks && popularStacks.length > 0 && (
-                    <Card className="border-[#2a2a32] bg-[#1a1a1f]/50">
-                      <div className="p-4">
-                        <h3 className="font-display font-bold text-sm flex items-center gap-2 mb-3">
-                          <Users className="h-4 w-4 text-[#E7FB10]" />
-                          Popular Combos
-                        </h3>
-                        <div className="space-y-2">
-                          {popularStacks.slice(0, 3).map((combo, i) => (
-                            <div 
-                              key={i}
-                              className="flex items-center justify-between p-2 rounded-lg bg-[#0f0f12] border border-[#2a2a32] cursor-pointer hover:border-[#E7FB10]/40 transition-colors"
-                              onClick={() => {
-                                if (products) {
-                                  const matchedPeptides = combo.peptideNames
-                                    .map(name => products.find(p => p.name === name))
-                                    .filter((p): p is Product => p !== undefined && p.inStock === true);
-                                  if (matchedPeptides.length > 0) {
-                                    setSelectedPeptides(matchedPeptides);
-                                    toast({ title: "Stack loaded!" });
-                                  }
-                                }
-                              }}
-                            >
-                              <p className="text-xs text-muted-foreground truncate flex-1">
-                                {combo.peptideNames.join(' + ')}
-                              </p>
-                              <Badge variant="outline" className="text-[10px] ml-2">
-                                {combo.count}x built
-                              </Badge>
-                            </div>
-                          ))}
+                  {/* ====== SHARED PATHWAYS ====== */}
+                  {sharedPathways.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                    >
+                      <Card className="border-[#22c55e]/30 bg-[#22c55e]/5" data-testid="card-shared-pathways">
+                        <div className="p-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Zap className="h-4 w-4 text-[#22c55e]" />
+                            <span className="font-bold text-sm text-[#22c55e]">Synergy Detected</span>
+                          </div>
+                          <p className="text-xs text-gray-400 mb-2">These peptides share pathways:</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {sharedPathways.map((pathway, i) => (
+                              <Tooltip key={i}>
+                                <TooltipTrigger asChild>
+                                  <Badge 
+                                    className="text-[10px] bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30 cursor-help"
+                                  >
+                                    {pathway}
+                                  </Badge>
+                                </TooltipTrigger>
+                                <TooltipContent 
+                                  side="top"
+                                  className="max-w-[200px] text-center bg-[#1a1a1f] border-[#2a2a32]"
+                                >
+                                  <p className="text-xs">{PATHWAY_DESCRIPTIONS[pathway] || "Shared biological pathway"}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    </Card>
+                      </Card>
+                    </motion.div>
                   )}
                 </>
               );
@@ -1531,225 +1459,282 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
         </div>
       </div>
 
-      {/* ====== GUIDANCE SECTION (below the grid) ====== */}
-      {(() => {
-        const peptideNames = selectedPeptides.map(p => p.name);
-        const synergyScore = calculateSynergyScore(peptideNames);
-        const recommendation = getStackRecommendation(peptideNames);
-        const sharedPathways = findSharedPathways(peptideNames);
-        const activeSystems = getActiveSystems(peptideNames);
-
-        const hasRecommendation = recommendation && selectedPeptides.length < 4;
-        const hasSystems = selectedPeptides.length > 0;
-        const hasPathways = sharedPathways.length > 0;
-
-        const generalPairings = selectedPeptides.length >= 1 && selectedPeptides.length < 4 && products
-          ? getGeneralPairings(selectedPeptides.map(p => p.name), products)
-          : [];
-        const showPairings = generalPairings.length > 0 && !(recommendation && selectedPeptides.length >= 2);
-
-        if (!hasRecommendation && !hasSystems && !hasPathways && !showPairings) return null;
-
-        return (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" data-testid="section-guidance">
-            {/* Recommendation Card */}
-            {hasRecommendation && recommendation && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <Card 
-                  className="border-2 border-dashed overflow-hidden cursor-pointer hover-elevate h-full"
-                  style={{ borderColor: `${recommendation.stack.color}60` }}
-                  data-testid="card-recommendation"
-                >
-                  <div className="p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Sparkles className="h-4 w-4" style={{ color: recommendation.stack.color }} />
-                      <span className="font-bold text-sm" style={{ color: recommendation.stack.color }}>
-                        Complete {recommendation.stack.name}!
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mb-3">
-                      Add {recommendation.missing.map(m => m.toUpperCase()).join(" + ")} to unlock this legendary combo
-                    </p>
-                    <div className="flex items-center justify-between flex-wrap gap-2">
-                      <div className="flex items-center gap-2">
-                        {(() => {
-                          const RecommendIcon = recommendation.stack.icon;
-                          return <RecommendIcon className="w-5 h-5" style={{ color: recommendation.stack.color }} />;
-                        })()}
-                        <span className="font-display font-bold" style={{ color: recommendation.stack.color }}>
-                          {recommendation.stack.synergyBonus}% synergy
-                        </span>
-                      </div>
-                      <Badge className="text-[10px]" style={{ backgroundColor: `${recommendation.stack.color}20`, color: recommendation.stack.color }}>
-                        +{recommendation.stack.synergyBonus - synergyScore}% boost
-                      </Badge>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-            )}
-
-            {/* Pairing Suggestions */}
-            {showPairings && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <Card className="border-[#2a2a32] bg-[#1a1a1f]/50 h-full" data-testid="card-pairing-suggestions">
-                  <div className="p-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Sparkles className="h-4 w-4 text-[#21d8ff]" />
-                      <span className="text-xs font-semibold text-muted-foreground">PAIRS WELL WITH</span>
-                    </div>
-                    <div className="space-y-2">
-                      {generalPairings.map((pairing, i) => {
-                        const matchingProduct = products?.find(p =>
-                          normalizePeptideName(p.name).includes(pairing.partner.replace(/-/g, ''))
-                        );
-                        return (
-                          <motion.button
-                            key={i}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.1 }}
-                            onClick={() => {
-                              if (matchingProduct && selectedPeptides.length < 4) {
-                                togglePeptide(matchingProduct);
-                              }
-                            }}
-                            className="w-full text-left p-2.5 rounded-lg border border-[#2a2a32] transition-all hover-elevate active-elevate-2"
-                            data-testid={`button-pair-${pairing.partner}`}
-                          >
-                            <div className="flex items-center justify-between gap-2 mb-1">
-                              <span className="font-display font-bold text-sm text-white">
-                                {pairing.productName}
-                              </span>
-                              <Badge className="text-[9px] shrink-0" style={{ 
-                                backgroundColor: `${({
-                                  Healing: "#22c55e", Metabolic: "#E7FB10", Growth: "#f59e0b", Cognitive: "#21d8ff",
-                                  Skin: "#ec4899", Longevity: "#a855f7", Immune: "#22c55e", Sleep: "#8b5cf6",
-                                  Hormonal: "#f59e0b", Vascular: "#ef4444", Weight: "#E7FB10",
-                                } as Record<string, string>)[pairing.boost] || '#21d8ff'}20`,
-                                color: ({
-                                  Healing: "#22c55e", Metabolic: "#E7FB10", Growth: "#f59e0b", Cognitive: "#21d8ff",
-                                  Skin: "#ec4899", Longevity: "#a855f7", Immune: "#22c55e", Sleep: "#8b5cf6",
-                                  Hormonal: "#f59e0b", Vascular: "#ef4444", Weight: "#E7FB10",
-                                } as Record<string, string>)[pairing.boost] || '#21d8ff'
-                              }}>
-                                {pairing.boost}
-                              </Badge>
-                            </div>
-                            <p className="text-xs text-muted-foreground">{pairing.reason}</p>
-                            {!pairing.inStock && (
-                              <span className="text-[10px] text-white/30 mt-1 block">Out of stock</span>
-                            )}
-                          </motion.button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-            )}
-
-            {/* Body Systems Heatmap */}
-            {hasSystems && (
-              <Card className="border-[#2a2a32] bg-[#1a1a1f]/50 h-full" data-testid="card-body-systems">
-                <div className="p-4">
-                  <p className="text-xs font-semibold text-muted-foreground mb-3">TARGETING</p>
-                  <div className="flex flex-wrap gap-2">
-                    {BODY_SYSTEMS.map(system => {
-                      const isActive = activeSystems.includes(system.id);
-                      const SystemIcon = system.icon;
-                      return (
-                        <Tooltip key={system.id}>
-                          <TooltipTrigger asChild>
-                            <motion.div
-                              initial={{ scale: 0.8 }}
-                              animate={{ 
-                                scale: isActive ? 1 : 0.9,
-                                opacity: isActive ? 1 : 0.3
-                              }}
-                              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-all cursor-help ${
-                                isActive 
-                                  ? "border-opacity-50" 
-                                  : "border-[#2a2a32] bg-[#1a1a1f]"
-                              }`}
-                              style={isActive ? { 
-                                borderColor: system.color,
-                                backgroundColor: `${system.color}15`,
-                                boxShadow: `0 0 12px ${system.color}30`
-                              } : undefined}
-                              data-testid={`system-${system.id}`}
-                            >
-                              <SystemIcon 
-                                className="h-3.5 w-3.5" 
-                                style={{ color: isActive ? system.color : "#6b7280" }} 
-                              />
-                              <span 
-                                className="text-xs font-medium"
-                                style={{ color: isActive ? system.color : "#6b7280" }}
-                              >
-                                {system.name}
-                              </span>
-                            </motion.div>
-                          </TooltipTrigger>
-                          <TooltipContent 
-                            side="top" 
-                            className="max-w-[200px] text-center bg-[#1a1a1f] border-[#2a2a32]"
-                          >
-                            <p className="text-xs">{system.description}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      );
-                    })}
-                  </div>
-                </div>
-              </Card>
-            )}
-
-            {/* Shared Pathways */}
-            {hasPathways && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <Card className="border-[#22c55e]/30 bg-[#22c55e]/5 h-full" data-testid="card-shared-pathways">
-                  <div className="p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Zap className="h-4 w-4 text-[#22c55e]" />
-                      <span className="font-bold text-sm text-[#22c55e]">Synergy Detected</span>
-                    </div>
-                    <p className="text-xs text-gray-400 mb-2">These peptides share pathways:</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {sharedPathways.map((pathway, i) => (
-                        <Tooltip key={i}>
-                          <TooltipTrigger asChild>
-                            <Badge 
-                              className="text-[10px] bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30 cursor-help"
-                            >
-                              {pathway}
-                            </Badge>
-                          </TooltipTrigger>
-                          <TooltipContent 
-                            side="top"
-                            className="max-w-[200px] text-center bg-[#1a1a1f] border-[#2a2a32]"
-                          >
-                            <p className="text-xs">{PATHWAY_DESCRIPTIONS[pathway] || "Shared biological pathway"}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      ))}
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-            )}
+      {/* ====== YOUR STACK / CART SECTION (below the grid) ====== */}
+      <Card className="border-[#21d8ff]/40 bg-gradient-to-br from-[#1a1a1f] to-[#0f0f12]">
+        <div className="p-4 border-b border-[#2a2a32]">
+          <div className="flex items-center justify-between">
+            <h3 className="font-display font-bold">Your Stack</h3>
+            <span className="text-xs text-muted-foreground">{selectedPeptides.length}/4</span>
           </div>
-        );
-      })()}
+        </div>
+        
+        <div className="p-4">
+          {selectedPeptides.length === 0 ? (
+            <div className="text-center py-4 text-muted-foreground">
+              <FlaskConical className="h-8 w-8 mx-auto mb-2 opacity-50" />
+              <p className="text-sm">Select peptides above to begin</p>
+            </div>
+          ) : (
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="flex-1 space-y-2">
+                {selectedPeptides.map(peptide => (
+                  <div 
+                    key={peptide.id}
+                    className="flex items-center justify-between p-2 rounded-lg bg-[#21d8ff]/5 border border-[#21d8ff]/20"
+                  >
+                    <span className="font-medium text-sm">
+                      {peptide.name.replace(/\s*\([^)]*\)/g, '')}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted-foreground">${peptide.price}</span>
+                      <button
+                        onClick={() => togglePeptide(peptide)}
+                        className="p-1 rounded-full hover:bg-red-500/20 text-muted-foreground hover:text-red-400"
+                        data-testid={`button-remove-peptide-${peptide.id}`}
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="lg:w-[280px] space-y-3">
+                {selectedPeptides.length >= 2 && (
+                  <div className="flex justify-between items-center">
+                    <span className="font-bold">Total</span>
+                    <span className="font-display text-2xl font-bold text-[#E7FB10]">${getRetailTotal().toFixed(2)}</span>
+                  </div>
+                )}
+
+                {(() => {
+                  const hasOutOfStock = selectedPeptides.some(p => !p.inStock);
+                  const notEnough = selectedPeptides.length < 2;
+                  return (
+                    <div className="space-y-2">
+                      <Button
+                        onClick={handleAddToCart}
+                        disabled={notEnough || hasOutOfStock}
+                        className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 font-bold shadow-[0_0_20px_rgba(231,251,16,0.3)]"
+                        data-testid="button-add-custom-stack"
+                      >
+                        <ShoppingCart className="h-4 w-4 mr-2" />
+                        {notEnough ? "Select 2+ Peptides" : hasOutOfStock ? "Contains Out-of-Stock Items" : "Add to Cart"}
+                      </Button>
+                      {hasOutOfStock && selectedPeptides.length >= 2 && (
+                        <p className="text-xs text-center text-white/40 flex items-center justify-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          Remove out-of-stock peptides to add to cart
+                        </p>
+                      )}
+                    </div>
+                  );
+                })()}
+
+                {selectedPeptides.length >= 2 && (
+                  <div className="flex gap-2">
+                    <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="flex-1 border-[#21d8ff]/40 text-[#21d8ff] hover:bg-[#21d8ff]/10"
+                          onClick={() => {
+                            if (!isAuthenticated) {
+                              login();
+                              return;
+                            }
+                            setShowSaveDialog(true);
+                          }}
+                          data-testid="button-save-stack"
+                        >
+                          <Save className="h-4 w-4 mr-2" />
+                          Save Stack
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="bg-[#1a1a1f] border-[#2a2a32]">
+                        <DialogHeader>
+                          <DialogTitle>Save Your Stack</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="text-sm text-muted-foreground">Stack Name</label>
+                            <Input 
+                              value={stackName}
+                              onChange={(e) => setStackName(e.target.value)}
+                              placeholder="My Custom Stack"
+                              className="mt-1 bg-[#0f0f12] border-[#2a2a32]"
+                              maxLength={50}
+                              data-testid="input-stack-name"
+                            />
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            <p className="font-medium mb-2">Peptides in this stack:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {selectedPeptides.map(p => (
+                                <Badge key={p.id} variant="outline" className="text-xs">
+                                  {p.name}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                          <Button
+                            onClick={() => {
+                              if (!stackName.trim()) {
+                                toast({ title: "Please enter a name", variant: "destructive" });
+                                return;
+                              }
+                              saveStackMutation.mutate({
+                                name: stackName,
+                                peptideIds: selectedPeptides.map(p => p.id),
+                                peptideNames: selectedPeptides.map(p => p.name),
+                                isPublic: true
+                              });
+                            }}
+                            disabled={saveStackMutation.isPending}
+                            className="w-full bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90"
+                            data-testid="button-confirm-save"
+                          >
+                            {saveStackMutation.isPending ? "Saving..." : "Save & Get Share Link"}
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                    
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="border-[#2a2a32]"
+                      onClick={() => {
+                        const peptideNames = selectedPeptides.map(p => p.name).join(', ');
+                        const shareText = `Check out my peptide research stack: ${peptideNames}`;
+                        if (navigator.share) {
+                          navigator.share({ title: 'My Research Stack', text: shareText });
+                        } else {
+                          navigator.clipboard.writeText(shareText);
+                          toast({ title: "Stack copied to clipboard!" });
+                        }
+                      }}
+                      data-testid="button-quick-share"
+                    >
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </Card>
+
+      {/* Saved & Popular Stacks */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {isAuthenticated && savedStacks && savedStacks.length > 0 && (
+          <Card className="border-[#2a2a32] bg-[#1a1a1f]/50">
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-display font-bold text-sm flex items-center gap-2">
+                  <Save className="h-4 w-4 text-[#21d8ff]" />
+                  Your Saved Stacks
+                </h3>
+                <Badge variant="outline" className="text-xs">{savedStacks.length}</Badge>
+              </div>
+              <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                {savedStacks.slice(0, 5).map((stack) => (
+                  <div 
+                    key={stack.id}
+                    className="flex items-center justify-between p-2 rounded-lg bg-[#0f0f12] border border-[#2a2a32] hover:border-[#21d8ff]/40 transition-colors"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm truncate">{stack.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {stack.peptideNames?.join(' + ')}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1 ml-2">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7"
+                        onClick={() => {
+                          if (products) {
+                            const matchedPeptides = (stack.peptideIds || [])
+                              .map(id => products.find(p => p.id === id))
+                              .filter((p): p is Product => p !== undefined);
+                            setSelectedPeptides(matchedPeptides);
+                            toast({ title: `Loaded "${stack.name}"` });
+                          }
+                        }}
+                        data-testid={`button-load-stack-${stack.id}`}
+                      >
+                        <FlaskConical className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7"
+                        onClick={() => {
+                          const url = `${window.location.origin}/research-stacks?share=${stack.shareCode}`;
+                          navigator.clipboard.writeText(url);
+                          toast({ title: "Share link copied!" });
+                        }}
+                        data-testid={`button-share-stack-${stack.id}`}
+                      >
+                        <Copy className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7 text-red-400 hover:text-red-300"
+                        onClick={() => deleteStackMutation.mutate(stack.id)}
+                        data-testid={`button-delete-stack-${stack.id}`}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {popularStacks && popularStacks.length > 0 && (
+          <Card className="border-[#2a2a32] bg-[#1a1a1f]/50">
+            <div className="p-4">
+              <h3 className="font-display font-bold text-sm flex items-center gap-2 mb-3">
+                <Users className="h-4 w-4 text-[#E7FB10]" />
+                Popular Combos
+              </h3>
+              <div className="space-y-2">
+                {popularStacks.slice(0, 3).map((combo, i) => (
+                  <div 
+                    key={i}
+                    className="flex items-center justify-between p-2 rounded-lg bg-[#0f0f12] border border-[#2a2a32] cursor-pointer hover:border-[#E7FB10]/40 transition-colors"
+                    onClick={() => {
+                      if (products) {
+                        const matchedPeptides = combo.peptideNames
+                          .map(name => products.find(p => p.name === name))
+                          .filter((p): p is Product => p !== undefined && p.inStock === true);
+                        if (matchedPeptides.length > 0) {
+                          setSelectedPeptides(matchedPeptides);
+                          toast({ title: "Stack loaded!" });
+                        }
+                      }
+                    }}
+                  >
+                    <p className="text-xs text-muted-foreground truncate flex-1">
+                      {combo.peptideNames.join(' + ')}
+                    </p>
+                    <Badge variant="outline" className="text-[10px] ml-2">
+                      {combo.count}x built
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+        )}
+      </div>
 
       {/* Research Disclaimer */}
       <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/20">
