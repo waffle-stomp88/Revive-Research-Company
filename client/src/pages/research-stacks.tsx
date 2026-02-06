@@ -1102,10 +1102,10 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                 <>
                   {/* Synergy Ring Visualization */}
                   <Card className="border-2 border-[#9d4edd]/40 bg-gradient-to-br from-[#1a1a1f] to-[#0f0f12] overflow-hidden" data-testid="card-synergy-ring">
-                    <div className="p-4">
-                      <div className="flex items-center gap-4">
+                    <div className="p-5">
+                      <div className="flex items-center gap-5">
                         {/* Animated Synergy Ring */}
-                        <div className="relative w-24 h-24 flex-shrink-0">
+                        <div className="relative w-32 h-32 flex-shrink-0">
                           <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                             {/* Background ring */}
                             <circle
@@ -1114,7 +1114,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                               r="42"
                               fill="none"
                               stroke="#2a2a32"
-                              strokeWidth="8"
+                              strokeWidth="7"
                             />
                             {/* Progress ring */}
                             <motion.circle
@@ -1123,7 +1123,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                               r="42"
                               fill="none"
                               stroke={knownStack ? knownStack.color : synergyScore > 70 ? "#22c55e" : synergyScore > 50 ? "#E7FB10" : "#21d8ff"}
-                              strokeWidth="8"
+                              strokeWidth="7"
                               strokeLinecap="round"
                               initial={{ strokeDasharray: "0 264" }}
                               animate={{ 
@@ -1141,12 +1141,12 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                               key={synergyScore}
                               initial={{ scale: 0.5, opacity: 0 }}
                               animate={{ scale: 1, opacity: 1 }}
-                              className="font-display text-2xl font-bold"
+                              className="font-display text-4xl font-bold"
                               style={{ color: knownStack ? knownStack.color : "#fff" }}
                             >
                               {synergyScore}%
                             </motion.span>
-                            <span className="text-[10px] text-muted-foreground">SYNERGY</span>
+                            <span className="text-xs text-muted-foreground font-semibold tracking-wider">SYNERGY</span>
                           </div>
                         </div>
                         
@@ -1154,8 +1154,8 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                         <div className="flex-1 min-w-0">
                           {selectedPeptides.length === 0 ? (
                             <div className="text-center">
-                              <p className="font-display font-bold text-sm">Pick a Goal to Start</p>
-                              <p className="text-xs text-muted-foreground mt-1">or select any peptide below</p>
+                              <p className="font-display font-bold text-base">Pick a Goal to Start</p>
+                              <p className="text-sm text-muted-foreground mt-1">or select any peptide below</p>
                             </div>
                           ) : knownStack ? (
                             <motion.div
@@ -1171,10 +1171,10 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                   </div>
                                 );
                               })()}
-                              <p className="font-display font-bold text-lg" style={{ color: knownStack.color }}>
+                              <p className="font-display font-bold text-xl" style={{ color: knownStack.color }}>
                                 {knownStack.name}
                               </p>
-                              <Badge className="mt-1 text-[10px]" style={{ backgroundColor: `${knownStack.color}20`, color: knownStack.color, border: `1px solid ${knownStack.color}40` }}>
+                              <Badge className="mt-1.5 text-xs" style={{ backgroundColor: `${knownStack.color}20`, color: knownStack.color, border: `1px solid ${knownStack.color}40` }}>
                                 Legendary Combo
                               </Badge>
                             </motion.div>
@@ -1193,10 +1193,10 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                     <div className="mb-1 flex justify-center">
                                       <ContainedIcon className="w-5 h-5" style={{ color: bestContained.color }} />
                                     </div>
-                                    <p className="font-display font-bold text-sm" style={{ color: bestContained.color }}>
+                                    <p className="font-display font-bold text-base" style={{ color: bestContained.color }}>
                                       Contains {bestContained.name}
                                     </p>
-                                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                                    <p className="text-xs text-muted-foreground mt-0.5">
                                       + {selectedPeptides.length - bestContained.peptides.length} extra peptide{selectedPeptides.length - bestContained.peptides.length > 1 ? 's' : ''}
                                     </p>
                                   </motion.div>
@@ -1204,8 +1204,8 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                               }
                               return (
                                 <div>
-                                  <p className="font-display font-bold text-sm">Custom Stack</p>
-                                  <p className="text-xs text-muted-foreground mt-1">
+                                  <p className="font-display font-bold text-base">Custom Stack</p>
+                                  <p className="text-sm text-muted-foreground mt-1">
                                     {sharedPathways.length > 0 
                                       ? `${sharedPathways.length} shared pathway${sharedPathways.length > 1 ? 's' : ''} detected`
                                       : "Building synergy..."}
@@ -1215,8 +1215,8 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                             })()
                           ) : (
                             <div>
-                              <p className="font-display font-bold text-sm">Great Pick!</p>
-                              <p className="text-xs text-muted-foreground mt-1">Add 1 more to see synergy</p>
+                              <p className="font-display font-bold text-base">Great Pick!</p>
+                              <p className="text-sm text-muted-foreground mt-1">Add 1 more to see synergy</p>
                             </div>
                           )}
                         </div>
@@ -1660,7 +1660,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                     data-testid="button-add-custom-stack"
                   >
                     <ShoppingCart className="h-4 w-4 mr-2" />
-                    {notEnough ? `${selectedPeptides.length}/2` : hasOutOfStock ? "Has OOS" : "Add to Cart"}
+                    {notEnough ? `${selectedPeptides.length}/2` : hasOutOfStock ? "Item Out of Stock" : "Add to Cart"}
                   </Button>
                 );
               })()}
