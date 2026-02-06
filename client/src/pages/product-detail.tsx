@@ -993,7 +993,7 @@ export default function ProductDetail() {
                   data-testid="button-vote-detail"
                 >
                   {hasVoted ? <Check className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />}
-                  <span>{hasVoted ? "Voted — We Hear You" : "Vote to Bring Back"}</span>
+                  <span>{hasVoted ? "Wanted — We Hear You" : "Want This"}</span>
                 </button>
                 
                 <Separator className="my-4" />

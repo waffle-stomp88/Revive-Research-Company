@@ -918,7 +918,7 @@ function ProductsComponent() {
                                 {isOutOfStock && (
                                   <button
                                     onClick={(e) => handleVote(e, product.id)}
-                                    className={`absolute top-2 right-2 z-20 flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold tracking-wide transition-all duration-200 ${
+                                    className={`absolute bottom-2 right-2 z-20 flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold tracking-wide transition-all duration-200 ${
                                       votedProducts.has(product.id)
                                         ? "bg-[#21d8ff]/25 text-[#21d8ff] border border-[#21d8ff]/50"
                                         : "bg-black/60 text-white/80 border border-white/20 hover:border-[#21d8ff]/50 hover:text-[#21d8ff]"
@@ -928,12 +928,12 @@ function ProductsComponent() {
                                     {votedProducts.has(product.id) ? (
                                       <>
                                         <Check className="h-3 w-3" />
-                                        <span>Voted</span>
+                                        <span>Wanted</span>
                                       </>
                                     ) : (
                                       <>
                                         <ArrowUp className="h-3 w-3" />
-                                        <span>Bring Back</span>
+                                        <span>Want This</span>
                                       </>
                                     )}
                                   </button>
