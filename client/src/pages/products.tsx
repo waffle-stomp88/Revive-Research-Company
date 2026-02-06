@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
@@ -185,6 +186,7 @@ interface ProductsPageState {
 }
 
 function ProductsComponent() {
+  const { toast } = useToast();
   // Restore state from sessionStorage if available (using useState so we can clear it)
   const [savedState, setSavedState] = useState<ProductsPageState | null>(() => {
     try {
@@ -298,6 +300,12 @@ function ProductsComponent() {
         return next;
       });
       queryClient.invalidateQueries({ queryKey: ["/api/products/votes"] });
+      if (action === "vote") {
+        toast({
+          title: "Thanks — we've noted your interest!",
+          description: "We prioritize restocking based on community demand.",
+        });
+      }
     },
   });
 
@@ -1069,7 +1077,10 @@ function ProductsComponent() {
             <p className="text-xs text-white/50 leading-relaxed">
               Some products are temporarily out of stock. Tap <span className="text-[#21d8ff]/70">Want This</span> to
               let us know you're interested — we prioritize restocking based on community demand. Your
-              vote is anonymous and helps us serve you better.
+              vote is anonymous and helps us serve you better.{" "}
+              <Link href="/faq" className="text-[#21d8ff]/70 hover:text-[#21d8ff] underline underline-offset-2" data-testid="link-voting-faq">
+                Learn more
+              </Link>
             </p>
           </div>
         </div>

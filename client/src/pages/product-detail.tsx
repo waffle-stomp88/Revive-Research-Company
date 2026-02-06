@@ -235,6 +235,12 @@ export default function ProductDetail() {
         localStorage.setItem("revive_voted_products", JSON.stringify(list));
       } catch {}
       queryClient.invalidateQueries({ queryKey: ["/api/products/votes"] });
+      if (action === "vote") {
+        toast({
+          title: "Thanks — we've noted your interest!",
+          description: "We prioritize restocking based on community demand.",
+        });
+      }
     },
   });
 
