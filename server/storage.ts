@@ -2,7 +2,7 @@ import {
   users, products, coas, orders, contacts, affiliateApplications, affiliates, affiliateSales, affiliatePayouts,
   batches, productStorageProfiles, legalDocuments, faqEntries, educationArticles, coaGlossaryTerms, stockNotifications, discountCodes, newsletterSubscribers,
   productDosageStock, priceHistory, academyProgress, emailEvents, wishlists, userResearchProfiles, productBehavioralMetrics,
-  savedAddresses, notificationPreferences, researchNotes, loginHistory, batchVerificationHistory,
+  savedAddresses, notificationPreferences, researchNotes, loginHistory, batchVerificationHistory, productVotes,
   type User, type UpsertUser,
   type Product, type InsertProduct,
   type ProductDosageStock, type InsertProductDosageStock, type ProductWithDosageStock,
@@ -34,6 +34,7 @@ import {
   type ResearchNote, type InsertResearchNote,
   type LoginHistory, type InsertLoginHistory,
   type BatchVerificationHistory, type InsertBatchVerificationHistory,
+  type ProductVote, type InsertProductVote,
   priceChangeReasons
 } from "@shared/schema";
 import { db } from "./db";
@@ -322,6 +323,12 @@ export interface IStorage {
   // Batch Verification History
   recordBatchVerification(userId: string, batchNumber: string, productName?: string): Promise<BatchVerificationHistory>;
   getBatchVerificationHistory(userId: string): Promise<BatchVerificationHistory[]>;
+
+  // Product Votes
+  voteForProduct(productId: string, visitorId: string, userId?: string): Promise<ProductVote>;
+  removeVote(productId: string, visitorId: string): Promise<boolean>;
+  getVoteCounts(): Promise<Array<{ productId: string; count: number }>>;
+  hasVoted(productId: string, visitorId: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -2096,6 +2103,51 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(batchVerificationHistory)
       .where(eq(batchVerificationHistory.userId, userId))
       .orderBy(desc(batchVerificationHistory.createdAt));
+  }
+
+  async voteForProduct(productId: string, visitorId: string, userId?: string): Promise<ProductVote> {
+    const existingByVisitor = await db.select().from(productVotes)
+      .where(and(eq(productVotes.productId, productId), eq(productVotes.visitorId, visitorId)));
+    if (existingByVisitor.length > 0) return existingByVisitor[0];
+    if (userId) {
+      const existingByUser = await db.select().from(productVotes)
+        .where(and(eq(productVotes.productId, productId), eq(productVotes.userId, userId)));
+      if (existingByUser.length > 0) return existingByUser[0];
+    }
+    const [vote] = await db.insert(productVotes)
+      .values({ productId, visitorId, userId: userId || null })
+      .returning();
+    return vote;
+  }
+
+  async removeVote(productId: string, visitorId: string, userId?: string): Promise<boolean> {
+    const conditions = [eq(productVotes.productId, productId)];
+    if (userId) {
+      conditions.push(or(eq(productVotes.visitorId, visitorId), eq(productVotes.userId, userId))!);
+    } else {
+      conditions.push(eq(productVotes.visitorId, visitorId));
+    }
+    const result = await db.delete(productVotes).where(and(...conditions));
+    return (result?.rowCount ?? 0) > 0;
+  }
+
+  async getVoteCounts(): Promise<Array<{ productId: string; count: number }>> {
+    const results = await db
+      .select({ productId: productVotes.productId, count: count() })
+      .from(productVotes)
+      .groupBy(productVotes.productId);
+    return results.map(r => ({ productId: r.productId, count: Number(r.count) }));
+  }
+
+  async hasVoted(productId: string, visitorId: string, userId?: string): Promise<boolean> {
+    if (userId) {
+      const result = await db.select().from(productVotes)
+        .where(and(eq(productVotes.productId, productId), or(eq(productVotes.visitorId, visitorId), eq(productVotes.userId, userId))));
+      return result.length > 0;
+    }
+    const result = await db.select().from(productVotes)
+      .where(and(eq(productVotes.productId, productId), eq(productVotes.visitorId, visitorId)));
+    return result.length > 0;
   }
 }
 

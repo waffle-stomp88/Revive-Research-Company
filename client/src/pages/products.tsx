@@ -1,7 +1,7 @@
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -47,9 +47,12 @@ import {
   AlertTriangle,
   Eye,
   Scale,
-  MessageCircle
+  MessageCircle,
+  Heart
 } from "lucide-react";
 import { isInCompare, addToCompare, removeFromCompare } from "@/components/comparison-tool";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { getVisitorId } from "@/lib/utils";
 import type { Product } from "@shared/schema";
 
 type ProductWithPriceRange = Product & { minPrice?: string; maxPrice?: string };
@@ -263,6 +266,50 @@ function ProductsComponent() {
   const { data: sellingFastIds = [] } = useQuery<string[]>({
     queryKey: ["/api/products/selling-fast"],
   });
+
+  const { data: voteCounts = [] } = useQuery<Array<{ productId: string; count: number }>>({
+    queryKey: ["/api/products/votes"],
+  });
+
+  const [votedProducts, setVotedProducts] = useState<Set<string>>(() => {
+    try {
+      const stored = localStorage.getItem("revive_voted_products");
+      return stored ? new Set(JSON.parse(stored)) : new Set();
+    } catch { return new Set(); }
+  });
+
+  const voteMutation = useMutation({
+    mutationFn: async ({ productId, action }: { productId: string; action: "vote" | "unvote" }) => {
+      const visitorId = getVisitorId();
+      if (action === "vote") {
+        await apiRequest("POST", `/api/products/${productId}/vote`, { visitorId });
+      } else {
+        await apiRequest("DELETE", `/api/products/${productId}/vote`, { visitorId });
+      }
+      return { productId, action };
+    },
+    onSuccess: ({ productId, action }) => {
+      setVotedProducts(prev => {
+        const next = new Set(prev);
+        if (action === "vote") next.add(productId);
+        else next.delete(productId);
+        localStorage.setItem("revive_voted_products", JSON.stringify([...next]));
+        return next;
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/products/votes"] });
+    },
+  });
+
+  const handleVote = useCallback((e: React.MouseEvent, productId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const action = votedProducts.has(productId) ? "unvote" : "vote";
+    voteMutation.mutate({ productId, action });
+  }, [votedProducts, voteMutation]);
+
+  const getVoteCount = useCallback((productId: string) => {
+    return voteCounts.find(v => v.productId === productId)?.count || 0;
+  }, [voteCounts]);
 
   const scrollToSection = (section: ShopSection) => {
     setActiveSection(section);
@@ -908,6 +955,25 @@ function ProductsComponent() {
                                     }
                                   </span>
                                 </div>
+                                {isOutOfStock && (
+                                  <div className="mt-2 flex justify-center">
+                                    <button
+                                      onClick={(e) => handleVote(e, product.id)}
+                                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
+                                        votedProducts.has(product.id)
+                                          ? "bg-[#E7FB10]/20 text-[#E7FB10] border border-[#E7FB10]/40"
+                                          : "bg-muted/50 text-muted-foreground border border-muted-foreground/20 hover:border-[#E7FB10]/40 hover:text-[#E7FB10]"
+                                      }`}
+                                      data-testid={`button-vote-${product.id}`}
+                                    >
+                                      <Heart className={`h-3.5 w-3.5 ${votedProducts.has(product.id) ? "fill-[#E7FB10]" : ""}`} />
+                                      <span>{votedProducts.has(product.id) ? "Wanted" : "I Want This"}</span>
+                                      {getVoteCount(product.id) > 0 && (
+                                        <span className="ml-0.5 opacity-70">{getVoteCount(product.id)}</span>
+                                      )}
+                                    </button>
+                                  </div>
+                                )}
                               </div>
                             </Card>
                           );

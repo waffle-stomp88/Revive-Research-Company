@@ -348,6 +348,17 @@ export async function registerRoutes(
     }
   });
 
+  // Product Votes - bulk vote counts (must be before :id route)
+  app.get("/api/products/votes", async (req, res) => {
+    try {
+      const voteCounts = await storage.getVoteCounts();
+      res.json(voteCounts);
+    } catch (error) {
+      console.error("Error fetching vote counts:", error);
+      res.status(500).json({ error: "Failed to fetch vote counts" });
+    }
+  });
+
   // Get single product by ID
   app.get("/api/products/:id", async (req, res) => {
     try {
@@ -887,6 +898,51 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error fetching dosage stocks:", error);
       res.status(500).json({ error: "Failed to fetch dosage stocks" });
+    }
+  });
+
+  app.post("/api/products/:id/vote", async (req, res) => {
+    try {
+      const { visitorId } = req.body;
+      if (!visitorId) {
+        return res.status(400).json({ error: "visitorId is required" });
+      }
+      const userId = (req as any).userId || null;
+      const vote = await storage.voteForProduct(req.params.id, visitorId, userId);
+      res.json(vote);
+    } catch (error) {
+      console.error("Error voting for product:", error);
+      res.status(500).json({ error: "Failed to vote" });
+    }
+  });
+
+  app.delete("/api/products/:id/vote", async (req, res) => {
+    try {
+      const { visitorId } = req.body;
+      if (!visitorId) {
+        return res.status(400).json({ error: "visitorId is required" });
+      }
+      const userId = (req as any).userId || undefined;
+      const removed = await storage.removeVote(req.params.id, visitorId, userId);
+      res.json({ removed });
+    } catch (error) {
+      console.error("Error removing vote:", error);
+      res.status(500).json({ error: "Failed to remove vote" });
+    }
+  });
+
+  app.get("/api/products/:id/vote-check", async (req, res) => {
+    try {
+      const visitorId = req.query.visitorId as string;
+      if (!visitorId) {
+        return res.status(400).json({ error: "visitorId is required" });
+      }
+      const userId = (req as any).userId || undefined;
+      const voted = await storage.hasVoted(req.params.id, visitorId, userId);
+      res.json({ voted });
+    } catch (error) {
+      console.error("Error checking vote:", error);
+      res.status(500).json({ error: "Failed to check vote" });
     }
   });
 

@@ -59,6 +59,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { getVisitorId } from "@/lib/utils";
 import { ModelViewer3D } from "@/components/model-viewer-3d";
 import { PriceTrendBadge } from "@/components/price-trend-badge";
 import type { Product, ProductStorageProfile, Batch, Coa, EducationArticle, ProductDosageStock } from "@shared/schema";
@@ -194,6 +195,45 @@ export default function ProductDetail() {
   // Query for all products (for synergy recommendations)
   const { data: allProducts = [] } = useQuery<Product[]>({
     queryKey: ["/api/products"],
+  });
+
+  const { data: voteCounts = [] } = useQuery<Array<{ productId: string; count: number }>>({
+    queryKey: ["/api/products/votes"],
+  });
+
+  const [hasVoted, setHasVoted] = useState<boolean>(() => {
+    try {
+      const stored = localStorage.getItem("revive_voted_products");
+      return stored ? (JSON.parse(stored) as string[]).includes(params.id || "") : false;
+    } catch { return false; }
+  });
+
+  const voteCount = voteCounts.find(v => v.productId === params.id)?.count || 0;
+
+  const voteMutation = useMutation({
+    mutationFn: async (action: "vote" | "unvote") => {
+      const visitorId = getVisitorId();
+      if (action === "vote") {
+        await apiRequest("POST", `/api/products/${params.id}/vote`, { visitorId });
+      } else {
+        await apiRequest("DELETE", `/api/products/${params.id}/vote`, { visitorId });
+      }
+      return action;
+    },
+    onSuccess: (action) => {
+      setHasVoted(action === "vote");
+      try {
+        const stored = localStorage.getItem("revive_voted_products");
+        const list: string[] = stored ? JSON.parse(stored) : [];
+        if (action === "vote" && params.id && !list.includes(params.id)) list.push(params.id);
+        else if (action === "unvote" && params.id) {
+          const idx = list.indexOf(params.id);
+          if (idx >= 0) list.splice(idx, 1);
+        }
+        localStorage.setItem("revive_voted_products", JSON.stringify(list));
+      } catch {}
+      queryClient.invalidateQueries({ queryKey: ["/api/products/votes"] });
+    },
   });
 
   // Mutation for stock notification signup
@@ -939,6 +979,25 @@ export default function ProductDetail() {
                     <p className="text-xs text-muted-foreground">This product is temporarily unavailable</p>
                   </div>
                 </div>
+
+                <button
+                  onClick={() => voteMutation.mutate(hasVoted ? "unvote" : "vote")}
+                  disabled={voteMutation.isPending}
+                  className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-md text-sm font-medium transition-all duration-200 mb-4 ${
+                    hasVoted
+                      ? "bg-[#E7FB10]/15 text-[#E7FB10] border border-[#E7FB10]/40"
+                      : "bg-muted/30 text-muted-foreground border border-muted-foreground/20 hover:border-[#E7FB10]/40 hover:text-[#E7FB10]"
+                  }`}
+                  data-testid="button-vote-detail"
+                >
+                  <Heart className={`h-4 w-4 ${hasVoted ? "fill-[#E7FB10]" : ""}`} />
+                  <span>{hasVoted ? "You Want This" : "I Want This"}</span>
+                  {voteCount > 0 && (
+                    <span className="ml-1 text-xs opacity-70">
+                      ({voteCount} {voteCount === 1 ? "request" : "requests"})
+                    </span>
+                  )}
+                </button>
                 
                 <Separator className="my-4" />
                 

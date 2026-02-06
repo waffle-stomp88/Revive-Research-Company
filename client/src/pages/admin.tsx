@@ -109,6 +109,7 @@ import {
   ChevronLeft,
   UserCircle,
   Calendar,
+  Heart,
 } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { ObjectUploader } from "@/components/ObjectUploader";
@@ -228,6 +229,26 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
       return response.json();
     }
   });
+
+  const { data: voteCounts = [] } = useQuery<Array<{ productId: string; count: number }>>({
+    queryKey: ["/api/products/votes"],
+  });
+
+  const { data: allProductsList = [] } = useQuery<Product[]>({
+    queryKey: ["/api/products"],
+  });
+
+  const demandProducts = useMemo(() => {
+    if (!voteCounts.length || !allProductsList.length) return [];
+    return voteCounts
+      .map(vc => {
+        const prod = allProductsList.find(p => p.id === vc.productId);
+        return prod ? { ...prod, votes: vc.count } : null;
+      })
+      .filter((p): p is Product & { votes: number } => p !== null)
+      .sort((a, b) => b.votes - a.votes)
+      .slice(0, 10);
+  }, [voteCounts, allProductsList]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -669,6 +690,44 @@ function DashboardOverview({ onNavigateToTab }: { onNavigateToTab: (tab: string)
           </Card>
         </div>
       </div>
+
+      {demandProducts.length > 0 && (
+        <Card data-testid="card-product-demand">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Heart className="h-4 w-4 text-[#E7FB10]" />
+              <h3 className="font-display text-sm font-bold">Product Demand</h3>
+              <span className="text-[10px] text-muted-foreground ml-auto">"I Want This" votes</span>
+            </div>
+            <div className="space-y-2">
+              {demandProducts.map((product, index) => {
+                const maxVotes = demandProducts[0]?.votes || 1;
+                const barWidth = (product.votes / maxVotes) * 100;
+                return (
+                  <div key={product.id} className="flex items-center gap-3" data-testid={`row-demand-${product.id}`}>
+                    <span className="text-xs text-muted-foreground w-4 text-right">{index + 1}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="text-xs font-medium truncate">{product.name}</span>
+                        {!product.inStock && (
+                          <span className="text-[9px] px-1 py-0.5 rounded bg-red-500/20 text-red-400">OOS</span>
+                        )}
+                      </div>
+                      <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-[#E7FB10] rounded-full transition-all duration-500"
+                          style={{ width: `${barWidth}%` }}
+                        />
+                      </div>
+                    </div>
+                    <span className="text-xs font-bold text-[#E7FB10] w-8 text-right">{product.votes}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Order Quick View Dialog */}
       <Dialog open={!!selectedOrder} onOpenChange={(open) => !open && setSelectedOrder(null)}>

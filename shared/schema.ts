@@ -774,3 +774,15 @@ export const savedStacks = pgTable("saved_stacks", {
 export const insertSavedStackSchema = createInsertSchema(savedStacks).omit({ id: true, createdAt: true, updatedAt: true });
 export type InsertSavedStack = z.infer<typeof insertSavedStackSchema>;
 export type SavedStack = typeof savedStacks.$inferSelect;
+
+export const productVotes = pgTable("product_votes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  productId: varchar("product_id").notNull().references(() => products.id, { onDelete: "cascade" }),
+  visitorId: varchar("visitor_id").notNull(),
+  userId: varchar("user_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertProductVoteSchema = createInsertSchema(productVotes).omit({ id: true, createdAt: true });
+export type InsertProductVote = z.infer<typeof insertProductVoteSchema>;
+export type ProductVote = typeof productVotes.$inferSelect;
