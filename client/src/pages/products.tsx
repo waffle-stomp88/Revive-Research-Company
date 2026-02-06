@@ -51,6 +51,8 @@ import {
 } from "lucide-react";
 import { isInCompare, addToCompare, removeFromCompare } from "@/components/comparison-tool";
 import type { Product } from "@shared/schema";
+
+type ProductWithPriceRange = Product & { minPrice?: string; maxPrice?: string };
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { BUNDLES } from "@/lib/bundles";
 import { SEOHead } from "@/components/seo-head";
@@ -253,7 +255,7 @@ function ProductsComponent() {
     sessionStorage.setItem(PRODUCTS_STATE_KEY, JSON.stringify(state));
   };
 
-  const { data: products, isLoading, error } = useQuery<Product[]>({
+  const { data: products, isLoading, error } = useQuery<ProductWithPriceRange[]>({
     queryKey: ["/api/products"],
   });
 
@@ -901,7 +903,10 @@ function ProductsComponent() {
                                 </p>
                                 <div className="flex items-center justify-center mt-auto gap-1.5">
                                   <span className="font-display text-base font-bold text-[#E7FB10]">
-                                    ${Number(product.price).toFixed(2)}
+                                    {product.minPrice && product.maxPrice
+                                      ? `$${Number(product.minPrice).toFixed(2)}–$${Number(product.maxPrice).toFixed(2)}`
+                                      : `$${Number(product.price).toFixed(2)}`
+                                    }
                                   </span>
                                 </div>
                               </div>

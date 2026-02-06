@@ -13,8 +13,10 @@ import { ImageLoader } from "@/components/image-loader";
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 
+type ProductWithPriceRange = Product & { minPrice?: string; maxPrice?: string };
+
 interface QuickViewModalProps {
-  product: Product | null;
+  product: ProductWithPriceRange | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -97,7 +99,10 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
 
               <div className="flex items-baseline gap-3 mb-4">
                 <span className="font-display text-3xl font-bold text-[#E7FB10]" data-testid="text-quickview-price">
-                  ${Number(product.price).toFixed(2)}
+                  {product.minPrice && product.maxPrice
+                    ? `$${Number(product.minPrice).toFixed(2)}–$${Number(product.maxPrice).toFixed(2)}`
+                    : `$${Number(product.price).toFixed(2)}`
+                  }
                 </span>
               </div>
 

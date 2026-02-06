@@ -297,8 +297,22 @@ export async function registerRoutes(
   // Get all products
   app.get("/api/products", async (req, res) => {
     try {
-      const products = await storage.getAllProducts();
-      res.json(products);
+      const productsWithDosage = await storage.getAllProductsWithDosageStock();
+      const enriched = productsWithDosage.map(({ dosageStocks, ...product }) => {
+        const dosagePrices = dosageStocks
+          .filter(ds => ds.price != null && Number(ds.price) > 0)
+          .map(ds => Number(ds.price));
+        
+        if (dosagePrices.length >= 2) {
+          const minPrice = Math.min(...dosagePrices);
+          const maxPrice = Math.max(...dosagePrices);
+          if (minPrice !== maxPrice) {
+            return { ...product, minPrice: minPrice.toFixed(2), maxPrice: maxPrice.toFixed(2) };
+          }
+        }
+        return product;
+      });
+      res.json(enriched);
     } catch (error) {
       console.error("Error fetching products:", error);
       res.status(500).json({ error: "Failed to fetch products" });
