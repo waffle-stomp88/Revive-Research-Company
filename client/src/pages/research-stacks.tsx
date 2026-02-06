@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
 import { CategoryTabs } from "@/components/category-tabs";
-import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, X, Check, ShoppingCart, Beaker, Brain, Target, Rocket, Activity, Moon, Dumbbell, Timer, Save, Share2, Trash2, Copy, Users, LucideIcon } from "lucide-react";
+import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, X, Check, ShoppingCart, Beaker, Brain, Target, Rocket, Activity, Moon, Dumbbell, Timer, Save, Share2, Trash2, Copy, Users, LucideIcon, Search, AlertCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -624,7 +624,8 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
     }
   });
 
-  const inStockPeptides = products?.filter(p => p.inStock && p.category?.toLowerCase() === "peptides") || [];
+  const allPeptides = products?.filter(p => p.category?.toLowerCase() === "peptides") || [];
+  const [peptideSearch, setPeptideSearch] = useState("");
 
   // Check URL for shared stack code
   useEffect(() => {
@@ -638,7 +639,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
           if (sharedStack && sharedStack.peptideIds) {
             const matchedPeptides = sharedStack.peptideIds
               .map(id => products.find(p => p.id === id))
-              .filter((p): p is Product => p !== undefined && p.inStock === true);
+              .filter((p): p is Product => p !== undefined);
             
             if (matchedPeptides.length > 0) {
               setSelectedPeptides(matchedPeptides);
@@ -665,7 +666,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
           p.name.toLowerCase().includes(name.toLowerCase().replace(/\s*\([^)]*\)/g, '')) ||
           name.toLowerCase().includes(p.name.toLowerCase())
         ))
-        .filter((p): p is Product => p !== undefined && p.inStock === true)
+        .filter((p): p is Product => p !== undefined)
         .slice(0, 4);
       
       if (matchedPeptides.length > 0) {
@@ -742,7 +743,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
             <div>
               <h3 className="font-display text-xl font-bold">Select Your Peptides</h3>
               <p className="text-sm text-muted-foreground">
-                Click to select • {inStockPeptides.length} available
+                Click to select • {allPeptides.length} peptides
               </p>
             </div>
             {selectedPeptides.length > 0 && (
@@ -762,65 +763,110 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                 </Card>
               ))}
             </div>
-          ) : inStockPeptides.length === 0 ? (
+          ) : allPeptides.length === 0 ? (
             <Card className="p-8 text-center border-dashed border-[#2a2a32]">
               <FlaskConical className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
               <h3 className="font-display text-xl font-bold mb-2">No Peptides Available</h3>
               <p className="text-muted-foreground max-w-md mx-auto">
-                All peptides are currently out of stock.
+                No peptides found.
               </p>
               <Button variant="outline" className="mt-4" onClick={onSwitchToPreBuilt}>
                 View Pre-Built Stacks
               </Button>
             </Card>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {inStockPeptides.map(product => {
-                const isSelected = selectedPeptides.find(p => p.id === product.id);
-                const isDisabled = !isSelected && selectedPeptides.length >= 4;
-                const categories = getPeptideCategories(product.name);
-                const primaryCategory = categories[0];
+          ) : (() => {
+            const filteredPeptides = allPeptides
+              .filter(p => {
+                if (!peptideSearch.trim()) return true;
+                const q = peptideSearch.toLowerCase();
+                const name = p.name.toLowerCase().replace(/\s*\([^)]*\)/g, '');
+                const cats = getPeptideCategories(p.name);
+                return name.includes(q) || cats.some(c => c.label.toLowerCase().includes(q));
+              })
+              .sort((a, b) => {
+                if (a.inStock && !b.inStock) return -1;
+                if (!a.inStock && b.inStock) return 1;
+                return a.name.localeCompare(b.name);
+              });
 
-                return (
-                  <motion.button
-                    key={product.id}
-                    whileHover={{ scale: isDisabled ? 1 : 1.01 }}
-                    whileTap={{ scale: isDisabled ? 1 : 0.99 }}
-                    onClick={() => !isDisabled && togglePeptide(product)}
-                    disabled={isDisabled}
-                    className={`text-left p-3 rounded-lg border transition-all duration-200 ${
-                      isSelected
-                        ? "border-2 border-[#21d8ff] bg-[#21d8ff]/10"
-                        : isDisabled
-                        ? "opacity-40 cursor-not-allowed border-[#2a2a32] bg-[#1a1a1f]"
-                        : "border-[#2a2a32] bg-[#1a1a1f] hover:border-[#21d8ff]/50 hover:bg-[#21d8ff]/5"
-                    }`}
-                    data-testid={`card-select-peptide-${product.id}`}
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="min-w-0 flex-1">
-                        <p className={`font-display font-bold text-base truncate ${isSelected ? "text-[#21d8ff]" : "text-white"}`}>
-                          {product.name.replace(/\s*\([^)]*\)/g, '')}
-                        </p>
-                        <p className="text-xs mt-0.5" style={{ color: primaryCategory.color }}>
-                          {primaryCategory.label}
-                        </p>
-                      </div>
-                      {isSelected && (
-                        <motion.div 
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="w-5 h-5 rounded-full bg-[#21d8ff] flex items-center justify-center shrink-0"
-                        >
-                          <Check className="h-3 w-3 text-black" />
-                        </motion.div>
-                      )}
-                    </div>
-                  </motion.button>
-                );
-              })}
-            </div>
-          )}
+            return (
+              <div className="space-y-3">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search peptides..."
+                    value={peptideSearch}
+                    onChange={(e) => setPeptideSearch(e.target.value)}
+                    className="pl-9 bg-[#1a1a1f] border-[#2a2a32] focus:border-[#21d8ff]/50"
+                    data-testid="input-peptide-search"
+                  />
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-[420px] overflow-y-auto pr-1 scrollbar-thin">
+                  {filteredPeptides.map(product => {
+                    const isSelected = selectedPeptides.find(p => p.id === product.id);
+                    const isDisabled = !isSelected && selectedPeptides.length >= 4;
+                    const isOutOfStock = !product.inStock;
+                    const categories = getPeptideCategories(product.name);
+                    const primaryCategory = categories[0];
+
+                    return (
+                      <motion.button
+                        key={product.id}
+                        whileHover={{ scale: isDisabled ? 1 : 1.01 }}
+                        whileTap={{ scale: isDisabled ? 1 : 0.99 }}
+                        onClick={() => !isDisabled && togglePeptide(product)}
+                        disabled={isDisabled}
+                        className={`text-left p-3 rounded-lg border transition-all duration-200 relative ${
+                          isSelected
+                            ? isOutOfStock
+                              ? "border-2 border-[#21d8ff] bg-[#21d8ff]/10"
+                              : "border-2 border-[#21d8ff] bg-[#21d8ff]/10"
+                            : isDisabled
+                            ? "opacity-40 cursor-not-allowed border-[#2a2a32] bg-[#1a1a1f]"
+                            : isOutOfStock
+                            ? "border-[#2a2a32] bg-[#1a1a1f]/60 hover:border-[#21d8ff]/30 hover:bg-[#21d8ff]/5"
+                            : "border-[#2a2a32] bg-[#1a1a1f] hover:border-[#21d8ff]/50 hover:bg-[#21d8ff]/5"
+                        }`}
+                        data-testid={`card-select-peptide-${product.id}`}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="min-w-0 flex-1">
+                            <p className={`font-display font-bold text-base truncate ${
+                              isSelected ? "text-[#21d8ff]" : isOutOfStock ? "text-white/50" : "text-white"
+                            }`}>
+                              {product.name.replace(/\s*\([^)]*\)/g, '')}
+                            </p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <p className="text-xs" style={{ color: isOutOfStock ? `${primaryCategory.color}80` : primaryCategory.color }}>
+                                {primaryCategory.label}
+                              </p>
+                              {isOutOfStock && (
+                                <span className="text-[10px] text-white/30 uppercase tracking-wider">Out of stock</span>
+                              )}
+                            </div>
+                          </div>
+                          {isSelected && (
+                            <motion.div 
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              className="w-5 h-5 rounded-full bg-[#21d8ff] flex items-center justify-center shrink-0"
+                            >
+                              <Check className="h-3 w-3 text-black" />
+                            </motion.div>
+                          )}
+                        </div>
+                      </motion.button>
+                    );
+                  })}
+                  {filteredPeptides.length === 0 && (
+                    <p className="col-span-full text-center text-sm text-muted-foreground py-6">
+                      No peptides match "{peptideSearch}"
+                    </p>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
         </div>
 
         {/* Right Column: Synergy Visualization Panel */}
@@ -1157,15 +1203,29 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                       )}
 
                       {/* Add to Cart */}
-                      <Button
-                        onClick={handleAddToCart}
-                        disabled={selectedPeptides.length < 2}
-                        className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 font-bold shadow-[0_0_20px_rgba(231,251,16,0.3)]"
-                        data-testid="button-add-custom-stack"
-                      >
-                        <ShoppingCart className="h-4 w-4 mr-2" />
-                        {selectedPeptides.length < 2 ? "Select 2+ Peptides" : "Add to Cart"}
-                      </Button>
+                      {(() => {
+                        const hasOutOfStock = selectedPeptides.some(p => !p.inStock);
+                        const notEnough = selectedPeptides.length < 2;
+                        return (
+                          <div className="space-y-2">
+                            <Button
+                              onClick={handleAddToCart}
+                              disabled={notEnough || hasOutOfStock}
+                              className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 font-bold shadow-[0_0_20px_rgba(231,251,16,0.3)]"
+                              data-testid="button-add-custom-stack"
+                            >
+                              <ShoppingCart className="h-4 w-4 mr-2" />
+                              {notEnough ? "Select 2+ Peptides" : hasOutOfStock ? "Contains Out-of-Stock Items" : "Add to Cart"}
+                            </Button>
+                            {hasOutOfStock && selectedPeptides.length >= 2 && (
+                              <p className="text-xs text-center text-white/40 flex items-center justify-center gap-1">
+                                <AlertCircle className="h-3 w-3" />
+                                Remove out-of-stock peptides to add to cart
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })()}
 
                       {/* Save & Share Buttons */}
                       {selectedPeptides.length >= 2 && (
