@@ -598,10 +598,55 @@ const PEPTIDE_PAIRINGS: Record<string, { partner: string; reason: string; boost:
 };
 
 // Get general pairing recommendations for selected peptides
-const getGeneralPairings = (selectedNames: string[], allProducts: { name: string; id: string; inStock: boolean | null }[]): { partner: string; reason: string; boost: string; productName: string; inStock: boolean }[] => {
+const getGeneralPairings = (
+  selectedNames: string[],
+  allProducts: { name: string; id: string; inStock: boolean | null }[],
+  recommendation?: { stack: KnownStack; missing: string[] } | null
+): { partner: string; reason: string; boost: string; productName: string; inStock: boolean; stackHint?: string }[] => {
   const normalizedSelected = selectedNames.map(normalizePeptideName);
-  const pairings: { partner: string; reason: string; boost: string; productName: string; inStock: boolean }[] = [];
+  const pairings: { partner: string; reason: string; boost: string; productName: string; inStock: boolean; stackHint?: string }[] = [];
   const seenPartners = new Set<string>();
+
+  if (recommendation && recommendation.missing.length <= 2) {
+    for (const missingPeptide of recommendation.missing) {
+      const missingNorm = missingPeptide.replace(/-/g, '');
+      if (seenPartners.has(missingNorm)) continue;
+
+      const matchingProduct = allProducts.find(p =>
+        normalizePeptideName(p.name).includes(missingNorm)
+      );
+      if (matchingProduct) {
+        seenPartners.add(missingNorm);
+
+        let reason = "";
+        for (const name of selectedNames) {
+          const normalized = normalizePeptideName(name);
+          for (const [key, pairs] of Object.entries(PEPTIDE_PAIRINGS)) {
+            if (normalized.includes(key.replace(/-/g, ''))) {
+              const match = pairs.find(p => p.partner.replace(/-/g, '') === missingNorm);
+              if (match) {
+                reason = match.reason;
+                break;
+              }
+            }
+          }
+          if (reason) break;
+        }
+
+        const stackCategories = peptideCategories[missingPeptide];
+        const boost = stackCategories?.[0]?.label || "Growth";
+
+        pairings.push({
+          partner: missingPeptide,
+          reason: reason || `Completes the ${recommendation.stack.name}`,
+          boost,
+          productName: matchingProduct.name.replace(/\s*\([^)]*\)/g, ''),
+          inStock: matchingProduct.inStock ?? false,
+          stackHint: recommendation.stack.name,
+        });
+      }
+    }
+  }
 
   for (const name of selectedNames) {
     const normalized = normalizePeptideName(name);
@@ -1276,10 +1321,18 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                   {/* ====== GUIDANCE ACCORDION ====== */}
                   {selectedPeptides.length > 0 && (() => {
                     const generalPairings = selectedPeptides.length >= 1 && selectedPeptides.length < 4 && products
-                      ? getGeneralPairings(selectedPeptides.map(p => p.name), products)
+                      ? getGeneralPairings(selectedPeptides.map(p => p.name), products, recommendation)
                       : [];
-                    const showPairings = generalPairings.length > 0 && !(recommendation && selectedPeptides.length >= 2);
-                    const hasRecommendation = recommendation && selectedPeptides.length < 4;
+                    const showPairings = generalPairings.length > 0;
+                    const stackPeptidesSurfacedInPairings = recommendation
+                      ? recommendation.missing.every(m => {
+                          const missingNorm = m.replace(/-/g, '');
+                          return generalPairings.some(p => p.stackHint && p.partner.replace(/-/g, '') === missingNorm);
+                        })
+                      : false;
+                    const hasRecommendation = recommendation && selectedPeptides.length < 4 && (
+                      recommendation.missing.length === 1 || !stackPeptidesSurfacedInPairings
+                    );
                     const hasPathways = sharedPathways.length > 0;
 
                     const autoOpen: string[] = [];
@@ -1339,6 +1392,11 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                           </Badge>
                                         </div>
                                         <p className="text-xs text-muted-foreground">{pairing.reason}</p>
+                                        {pairing.stackHint && (
+                                          <span className="text-[10px] mt-1 block" style={{ color: recommendation?.stack.color || '#21d8ff' }}>
+                                            Unlocks {pairing.stackHint}
+                                          </span>
+                                        )}
                                         {!pairing.inStock && (
                                           <span className="text-[10px] text-white/30 mt-1 block">Out of stock</span>
                                         )}
