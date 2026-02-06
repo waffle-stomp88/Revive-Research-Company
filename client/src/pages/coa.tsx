@@ -404,7 +404,7 @@ export default function CoaVerification() {
                 </div>
                 <h3 className="font-display font-semibold mb-3 text-lg">Where to Find Your Batch Number</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed flex-1">
-                  Your batch number can be found on the product label or included documentation. It uses the format [MfgID]-[YYMM][Cycle], where the MfgID includes the product code and quantity (e.g., RT10 = Retatrutide 10mg). Example: RT10-2601A.
+                  Your batch number can be found on the product label or included documentation, such as RT10-2601A.
                 </p>
               </Card>
 
