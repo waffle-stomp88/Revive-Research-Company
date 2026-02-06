@@ -1070,9 +1070,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
               const peptideNames = selectedPeptides.map(p => p.name);
               const synergyScore = calculateSynergyScore(peptideNames);
               const knownStack = checkKnownStack(peptideNames);
-              const recommendation = getStackRecommendation(peptideNames);
               const sharedPathways = findSharedPathways(peptideNames);
-              const activeSystems = getActiveSystems(peptideNames);
               
               return (
                 <>
@@ -1247,210 +1245,6 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                         </div>
                       </div>
                     </Card>
-                  )}
-
-                  {/* ====== PAIRING SUGGESTIONS (1+ peptides, when no named stack recommendation) ====== */}
-                  {selectedPeptides.length >= 1 && selectedPeptides.length < 4 && products && (() => {
-                    const generalPairings = getGeneralPairings(
-                      selectedPeptides.map(p => p.name),
-                      products
-                    );
-                    if (generalPairings.length === 0) return null;
-                    if (recommendation && selectedPeptides.length >= 2) return null;
-                    return (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                      >
-                        <Card className="border-[#2a2a32] bg-[#1a1a1f]/50" data-testid="card-pairing-suggestions">
-                          <div className="p-4">
-                            <div className="flex items-center gap-2 mb-3">
-                              <Sparkles className="h-4 w-4 text-[#21d8ff]" />
-                              <span className="text-xs font-semibold text-muted-foreground">PAIRS WELL WITH</span>
-                            </div>
-                            <div className="space-y-2">
-                              {generalPairings.map((pairing, i) => {
-                                const matchingProduct = products.find(p =>
-                                  normalizePeptideName(p.name).includes(pairing.partner.replace(/-/g, ''))
-                                );
-                                return (
-                                  <motion.button
-                                    key={i}
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: i * 0.1 }}
-                                    onClick={() => {
-                                      if (matchingProduct && selectedPeptides.length < 4) {
-                                        togglePeptide(matchingProduct);
-                                      }
-                                    }}
-                                    className="w-full text-left p-2.5 rounded-lg border border-[#2a2a32] transition-all hover-elevate active-elevate-2"
-                                    data-testid={`button-pair-${pairing.partner}`}
-                                  >
-                                    <div className="flex items-center justify-between gap-2 mb-1">
-                                      <span className="font-display font-bold text-sm text-white">
-                                        {pairing.productName}
-                                      </span>
-                                      <Badge className="text-[9px] shrink-0" style={{ 
-                                        backgroundColor: `${({
-                                          Healing: "#22c55e", Metabolic: "#E7FB10", Growth: "#f59e0b", Cognitive: "#21d8ff",
-                                          Skin: "#ec4899", Longevity: "#a855f7", Immune: "#22c55e", Sleep: "#8b5cf6",
-                                          Hormonal: "#f59e0b", Vascular: "#ef4444", Weight: "#E7FB10",
-                                        } as Record<string, string>)[pairing.boost] || '#21d8ff'}20`,
-                                        color: ({
-                                          Healing: "#22c55e", Metabolic: "#E7FB10", Growth: "#f59e0b", Cognitive: "#21d8ff",
-                                          Skin: "#ec4899", Longevity: "#a855f7", Immune: "#22c55e", Sleep: "#8b5cf6",
-                                          Hormonal: "#f59e0b", Vascular: "#ef4444", Weight: "#E7FB10",
-                                        } as Record<string, string>)[pairing.boost] || '#21d8ff'
-                                      }}>
-                                        {pairing.boost}
-                                      </Badge>
-                                    </div>
-                                    <p className="text-xs text-muted-foreground">{pairing.reason}</p>
-                                    {!pairing.inStock && (
-                                      <span className="text-[10px] text-white/30 mt-1 block">Out of stock</span>
-                                    )}
-                                  </motion.button>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        </Card>
-                      </motion.div>
-                    );
-                  })()}
-
-                  {/* ====== RECOMMENDATION CARD ====== */}
-                  {recommendation && selectedPeptides.length < 4 && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                    >
-                      <Card 
-                        className="border-2 border-dashed overflow-hidden cursor-pointer hover-elevate"
-                        style={{ borderColor: `${recommendation.stack.color}60` }}
-                        data-testid="card-recommendation"
-                      >
-                        <div className="p-4">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Sparkles className="h-4 w-4" style={{ color: recommendation.stack.color }} />
-                            <span className="font-bold text-sm" style={{ color: recommendation.stack.color }}>
-                              Complete {recommendation.stack.name}!
-                            </span>
-                          </div>
-                          <p className="text-xs text-muted-foreground mb-3">
-                            Add {recommendation.missing.map(m => m.toUpperCase()).join(" + ")} to unlock this legendary combo
-                          </p>
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              {(() => {
-                                const RecommendIcon = recommendation.stack.icon;
-                                return <RecommendIcon className="w-5 h-5" style={{ color: recommendation.stack.color }} />;
-                              })()}
-                              <span className="font-display font-bold" style={{ color: recommendation.stack.color }}>
-                                {recommendation.stack.synergyBonus}% synergy
-                              </span>
-                            </div>
-                            <Badge className="text-[10px]" style={{ backgroundColor: `${recommendation.stack.color}20`, color: recommendation.stack.color }}>
-                              +{recommendation.stack.synergyBonus - synergyScore}% boost
-                            </Badge>
-                          </div>
-                        </div>
-                      </Card>
-                    </motion.div>
-                  )}
-
-                  {/* ====== BODY SYSTEMS HEATMAP ====== */}
-                  {selectedPeptides.length > 0 && (
-                    <Card className="border-[#2a2a32] bg-[#1a1a1f]/50" data-testid="card-body-systems">
-                      <div className="p-3">
-                        <p className="text-xs font-semibold text-muted-foreground mb-3">TARGETING</p>
-                        <div className="flex flex-wrap gap-2">
-                          {BODY_SYSTEMS.map(system => {
-                            const isActive = activeSystems.includes(system.id);
-                            const SystemIcon = system.icon;
-                            return (
-                              <Tooltip key={system.id}>
-                                <TooltipTrigger asChild>
-                                  <motion.div
-                                    initial={{ scale: 0.8 }}
-                                    animate={{ 
-                                      scale: isActive ? 1 : 0.9,
-                                      opacity: isActive ? 1 : 0.3
-                                    }}
-                                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-all cursor-help ${
-                                      isActive 
-                                        ? "border-opacity-50" 
-                                        : "border-[#2a2a32] bg-[#1a1a1f]"
-                                    }`}
-                                    style={isActive ? { 
-                                      borderColor: system.color,
-                                      backgroundColor: `${system.color}15`,
-                                      boxShadow: `0 0 12px ${system.color}30`
-                                    } : undefined}
-                                    data-testid={`system-${system.id}`}
-                                  >
-                                    <SystemIcon 
-                                      className="h-3.5 w-3.5" 
-                                      style={{ color: isActive ? system.color : "#6b7280" }} 
-                                    />
-                                    <span 
-                                      className="text-xs font-medium"
-                                      style={{ color: isActive ? system.color : "#6b7280" }}
-                                    >
-                                      {system.name}
-                                    </span>
-                                  </motion.div>
-                                </TooltipTrigger>
-                                <TooltipContent 
-                                  side="top" 
-                                  className="max-w-[200px] text-center bg-[#1a1a1f] border-[#2a2a32]"
-                                >
-                                  <p className="text-xs">{system.description}</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </Card>
-                  )}
-
-                  {/* ====== SHARED PATHWAYS ====== */}
-                  {sharedPathways.length > 0 && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                    >
-                      <Card className="border-[#22c55e]/30 bg-[#22c55e]/5" data-testid="card-shared-pathways">
-                        <div className="p-3">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Zap className="h-4 w-4 text-[#22c55e]" />
-                            <span className="font-bold text-sm text-[#22c55e]">Synergy Detected</span>
-                          </div>
-                          <p className="text-xs text-gray-400 mb-2">These peptides share pathways:</p>
-                          <div className="flex flex-wrap gap-1.5">
-                            {sharedPathways.map((pathway, i) => (
-                              <Tooltip key={i}>
-                                <TooltipTrigger asChild>
-                                  <Badge 
-                                    className="text-[10px] bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30 cursor-help"
-                                  >
-                                    {pathway}
-                                  </Badge>
-                                </TooltipTrigger>
-                                <TooltipContent 
-                                  side="top"
-                                  className="max-w-[200px] text-center bg-[#1a1a1f] border-[#2a2a32]"
-                                >
-                                  <p className="text-xs">{PATHWAY_DESCRIPTIONS[pathway] || "Shared biological pathway"}</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            ))}
-                          </div>
-                        </div>
-                      </Card>
-                    </motion.div>
                   )}
 
                   {/* ====== SELECTED PEPTIDES & PRICING ====== */}
@@ -1736,6 +1530,226 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
           </div>
         </div>
       </div>
+
+      {/* ====== GUIDANCE SECTION (below the grid) ====== */}
+      {(() => {
+        const peptideNames = selectedPeptides.map(p => p.name);
+        const synergyScore = calculateSynergyScore(peptideNames);
+        const recommendation = getStackRecommendation(peptideNames);
+        const sharedPathways = findSharedPathways(peptideNames);
+        const activeSystems = getActiveSystems(peptideNames);
+
+        const hasRecommendation = recommendation && selectedPeptides.length < 4;
+        const hasSystems = selectedPeptides.length > 0;
+        const hasPathways = sharedPathways.length > 0;
+
+        const generalPairings = selectedPeptides.length >= 1 && selectedPeptides.length < 4 && products
+          ? getGeneralPairings(selectedPeptides.map(p => p.name), products)
+          : [];
+        const showPairings = generalPairings.length > 0 && !(recommendation && selectedPeptides.length >= 2);
+
+        if (!hasRecommendation && !hasSystems && !hasPathways && !showPairings) return null;
+
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" data-testid="section-guidance">
+            {/* Recommendation Card */}
+            {hasRecommendation && recommendation && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <Card 
+                  className="border-2 border-dashed overflow-hidden cursor-pointer hover-elevate h-full"
+                  style={{ borderColor: `${recommendation.stack.color}60` }}
+                  data-testid="card-recommendation"
+                >
+                  <div className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Sparkles className="h-4 w-4" style={{ color: recommendation.stack.color }} />
+                      <span className="font-bold text-sm" style={{ color: recommendation.stack.color }}>
+                        Complete {recommendation.stack.name}!
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Add {recommendation.missing.map(m => m.toUpperCase()).join(" + ")} to unlock this legendary combo
+                    </p>
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <div className="flex items-center gap-2">
+                        {(() => {
+                          const RecommendIcon = recommendation.stack.icon;
+                          return <RecommendIcon className="w-5 h-5" style={{ color: recommendation.stack.color }} />;
+                        })()}
+                        <span className="font-display font-bold" style={{ color: recommendation.stack.color }}>
+                          {recommendation.stack.synergyBonus}% synergy
+                        </span>
+                      </div>
+                      <Badge className="text-[10px]" style={{ backgroundColor: `${recommendation.stack.color}20`, color: recommendation.stack.color }}>
+                        +{recommendation.stack.synergyBonus - synergyScore}% boost
+                      </Badge>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+            )}
+
+            {/* Pairing Suggestions */}
+            {showPairings && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <Card className="border-[#2a2a32] bg-[#1a1a1f]/50 h-full" data-testid="card-pairing-suggestions">
+                  <div className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Sparkles className="h-4 w-4 text-[#21d8ff]" />
+                      <span className="text-xs font-semibold text-muted-foreground">PAIRS WELL WITH</span>
+                    </div>
+                    <div className="space-y-2">
+                      {generalPairings.map((pairing, i) => {
+                        const matchingProduct = products?.find(p =>
+                          normalizePeptideName(p.name).includes(pairing.partner.replace(/-/g, ''))
+                        );
+                        return (
+                          <motion.button
+                            key={i}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.1 }}
+                            onClick={() => {
+                              if (matchingProduct && selectedPeptides.length < 4) {
+                                togglePeptide(matchingProduct);
+                              }
+                            }}
+                            className="w-full text-left p-2.5 rounded-lg border border-[#2a2a32] transition-all hover-elevate active-elevate-2"
+                            data-testid={`button-pair-${pairing.partner}`}
+                          >
+                            <div className="flex items-center justify-between gap-2 mb-1">
+                              <span className="font-display font-bold text-sm text-white">
+                                {pairing.productName}
+                              </span>
+                              <Badge className="text-[9px] shrink-0" style={{ 
+                                backgroundColor: `${({
+                                  Healing: "#22c55e", Metabolic: "#E7FB10", Growth: "#f59e0b", Cognitive: "#21d8ff",
+                                  Skin: "#ec4899", Longevity: "#a855f7", Immune: "#22c55e", Sleep: "#8b5cf6",
+                                  Hormonal: "#f59e0b", Vascular: "#ef4444", Weight: "#E7FB10",
+                                } as Record<string, string>)[pairing.boost] || '#21d8ff'}20`,
+                                color: ({
+                                  Healing: "#22c55e", Metabolic: "#E7FB10", Growth: "#f59e0b", Cognitive: "#21d8ff",
+                                  Skin: "#ec4899", Longevity: "#a855f7", Immune: "#22c55e", Sleep: "#8b5cf6",
+                                  Hormonal: "#f59e0b", Vascular: "#ef4444", Weight: "#E7FB10",
+                                } as Record<string, string>)[pairing.boost] || '#21d8ff'
+                              }}>
+                                {pairing.boost}
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-muted-foreground">{pairing.reason}</p>
+                            {!pairing.inStock && (
+                              <span className="text-[10px] text-white/30 mt-1 block">Out of stock</span>
+                            )}
+                          </motion.button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+            )}
+
+            {/* Body Systems Heatmap */}
+            {hasSystems && (
+              <Card className="border-[#2a2a32] bg-[#1a1a1f]/50 h-full" data-testid="card-body-systems">
+                <div className="p-4">
+                  <p className="text-xs font-semibold text-muted-foreground mb-3">TARGETING</p>
+                  <div className="flex flex-wrap gap-2">
+                    {BODY_SYSTEMS.map(system => {
+                      const isActive = activeSystems.includes(system.id);
+                      const SystemIcon = system.icon;
+                      return (
+                        <Tooltip key={system.id}>
+                          <TooltipTrigger asChild>
+                            <motion.div
+                              initial={{ scale: 0.8 }}
+                              animate={{ 
+                                scale: isActive ? 1 : 0.9,
+                                opacity: isActive ? 1 : 0.3
+                              }}
+                              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-all cursor-help ${
+                                isActive 
+                                  ? "border-opacity-50" 
+                                  : "border-[#2a2a32] bg-[#1a1a1f]"
+                              }`}
+                              style={isActive ? { 
+                                borderColor: system.color,
+                                backgroundColor: `${system.color}15`,
+                                boxShadow: `0 0 12px ${system.color}30`
+                              } : undefined}
+                              data-testid={`system-${system.id}`}
+                            >
+                              <SystemIcon 
+                                className="h-3.5 w-3.5" 
+                                style={{ color: isActive ? system.color : "#6b7280" }} 
+                              />
+                              <span 
+                                className="text-xs font-medium"
+                                style={{ color: isActive ? system.color : "#6b7280" }}
+                              >
+                                {system.name}
+                              </span>
+                            </motion.div>
+                          </TooltipTrigger>
+                          <TooltipContent 
+                            side="top" 
+                            className="max-w-[200px] text-center bg-[#1a1a1f] border-[#2a2a32]"
+                          >
+                            <p className="text-xs">{system.description}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      );
+                    })}
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            {/* Shared Pathways */}
+            {hasPathways && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <Card className="border-[#22c55e]/30 bg-[#22c55e]/5 h-full" data-testid="card-shared-pathways">
+                  <div className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Zap className="h-4 w-4 text-[#22c55e]" />
+                      <span className="font-bold text-sm text-[#22c55e]">Synergy Detected</span>
+                    </div>
+                    <p className="text-xs text-gray-400 mb-2">These peptides share pathways:</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {sharedPathways.map((pathway, i) => (
+                        <Tooltip key={i}>
+                          <TooltipTrigger asChild>
+                            <Badge 
+                              className="text-[10px] bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30 cursor-help"
+                            >
+                              {pathway}
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent 
+                            side="top"
+                            className="max-w-[200px] text-center bg-[#1a1a1f] border-[#2a2a32]"
+                          >
+                            <p className="text-xs">{PATHWAY_DESCRIPTIONS[pathway] || "Shared biological pathway"}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      ))}
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Research Disclaimer */}
       <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/20">
