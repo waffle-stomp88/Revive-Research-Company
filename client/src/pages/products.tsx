@@ -901,7 +901,7 @@ function ProductsComponent() {
                                   {product.shortDescription}
                                 </p>
                                 <div className="flex items-center justify-center mt-auto gap-1.5">
-                                  <span className="font-display text-base font-bold text-[#E7FB10]">
+                                  <span className="font-display text-[20px] font-bold text-[#E7FB10]">
                                     {product.minPrice && product.maxPrice
                                       ? `$${Number(product.minPrice).toFixed(2)}–$${Number(product.maxPrice).toFixed(2)}`
                                       : `$${Number(product.price).toFixed(2)}`
