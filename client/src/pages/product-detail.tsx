@@ -992,11 +992,6 @@ export default function ProductDetail() {
                 >
                   <Heart className={`h-4 w-4 ${hasVoted ? "fill-[#E7FB10]" : ""}`} />
                   <span>{hasVoted ? "You Want This" : "I Want This"}</span>
-                  {voteCount > 0 && (
-                    <span className="ml-1 text-xs opacity-70">
-                      ({voteCount} {voteCount === 1 ? "request" : "requests"})
-                    </span>
-                  )}
                 </button>
                 
                 <Separator className="my-4" />

@@ -307,9 +307,6 @@ function ProductsComponent() {
     voteMutation.mutate({ productId, action });
   }, [votedProducts, voteMutation]);
 
-  const getVoteCount = useCallback((productId: string) => {
-    return voteCounts.find(v => v.productId === productId)?.count || 0;
-  }, [voteCounts]);
 
   const scrollToSection = (section: ShopSection) => {
     setActiveSection(section);
@@ -917,6 +914,20 @@ function ProductsComponent() {
                                     </div>
                                   );
                                 })()}
+                                {isOutOfStock && (
+                                  <button
+                                    onClick={(e) => handleVote(e, product.id)}
+                                    className={`absolute top-2 right-2 z-20 p-1.5 rounded-full transition-all duration-200 ${
+                                      votedProducts.has(product.id)
+                                        ? "bg-[#E7FB10]/20 text-[#E7FB10]"
+                                        : "bg-black/50 text-white/70 hover:text-[#E7FB10] hover:bg-black/70"
+                                    }`}
+                                    data-testid={`button-vote-${product.id}`}
+                                    title={votedProducts.has(product.id) ? "You want this" : "I want this"}
+                                  >
+                                    <Heart className={`h-4 w-4 ${votedProducts.has(product.id) ? "fill-[#E7FB10]" : ""}`} />
+                                  </button>
+                                )}
                               </div>
                               <div className="flex-1 flex flex-col min-h-0">
                                 <div className="mb-1 text-center">
@@ -955,25 +966,6 @@ function ProductsComponent() {
                                     }
                                   </span>
                                 </div>
-                                {isOutOfStock && (
-                                  <div className="mt-2 flex justify-center">
-                                    <button
-                                      onClick={(e) => handleVote(e, product.id)}
-                                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
-                                        votedProducts.has(product.id)
-                                          ? "bg-[#E7FB10]/20 text-[#E7FB10] border border-[#E7FB10]/40"
-                                          : "bg-muted/50 text-muted-foreground border border-muted-foreground/20 hover:border-[#E7FB10]/40 hover:text-[#E7FB10]"
-                                      }`}
-                                      data-testid={`button-vote-${product.id}`}
-                                    >
-                                      <Heart className={`h-3.5 w-3.5 ${votedProducts.has(product.id) ? "fill-[#E7FB10]" : ""}`} />
-                                      <span>{votedProducts.has(product.id) ? "Wanted" : "I Want This"}</span>
-                                      {getVoteCount(product.id) > 0 && (
-                                        <span className="ml-0.5 opacity-70">{getVoteCount(product.id)}</span>
-                                      )}
-                                    </button>
-                                  </div>
-                                )}
                               </div>
                             </Card>
                           );
