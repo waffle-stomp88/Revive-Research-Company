@@ -506,6 +506,140 @@ const getActiveSystems = (peptideNames: string[]): string[] => {
   return Array.from(systems);
 };
 
+// General pairing recommendations for ANY peptide (not just known stacks)
+const PEPTIDE_PAIRINGS: Record<string, { partner: string; reason: string; boost: string }[]> = {
+  "bpc-157": [
+    { partner: "tb-500", reason: "Local + systemic healing for full-body repair", boost: "Healing" },
+    { partner: "ghk-cu", reason: "Tissue repair meets collagen regeneration", boost: "Skin" },
+    { partner: "ll-37", reason: "Healing + antimicrobial defense", boost: "Immune" },
+    { partner: "kpv", reason: "Gut repair + anti-inflammatory support", boost: "Healing" },
+  ],
+  "tb-500": [
+    { partner: "bpc-157", reason: "The classic Wolverine combo — systemic + targeted repair", boost: "Healing" },
+    { partner: "ipamorelin", reason: "Recovery + growth hormone for faster tissue rebuilding", boost: "Growth" },
+    { partner: "ghk-cu", reason: "Tissue mobility + skin matrix renewal", boost: "Skin" },
+  ],
+  "ghk-cu": [
+    { partner: "epithalon", reason: "Collagen renewal + telomere protection for longevity", boost: "Longevity" },
+    { partner: "bpc-157", reason: "Skin repair + internal healing synergy", boost: "Healing" },
+    { partner: "snap-8", reason: "Matrix remodeling + expression line reduction", boost: "Skin" },
+  ],
+  "mots-c": [
+    { partner: "retatrutide", reason: "Mitochondrial energy + metabolic signaling", boost: "Metabolic" },
+    { partner: "aicar", reason: "Dual AMPK activation for enhanced fat oxidation", boost: "Metabolic" },
+    { partner: "ss-31", reason: "Mitochondrial peptide synergy for cellular energy", boost: "Longevity" },
+  ],
+  "retatrutide": [
+    { partner: "mots-c", reason: "Triple agonist + mitochondrial activator", boost: "Metabolic" },
+    { partner: "5-amino-1mq", reason: "Fat metabolism through complementary pathways", boost: "Metabolic" },
+    { partner: "aod-9604", reason: "GLP-1 signaling + targeted fat reduction", boost: "Metabolic" },
+  ],
+  "ipamorelin": [
+    { partner: "cjc-1295", reason: "GH pulse + sustained release — the gold standard GH stack", boost: "Growth" },
+    { partner: "tb-500", reason: "Growth hormone + tissue repair acceleration", boost: "Healing" },
+    { partner: "sermorelin", reason: "Complementary GH secretagogue pathways", boost: "Growth" },
+  ],
+  "cjc-1295": [
+    { partner: "ipamorelin", reason: "GHRH + ghrelin receptor for amplified GH release", boost: "Growth" },
+    { partner: "tesamorelin", reason: "Dual GHRH analogs for sustained growth support", boost: "Growth" },
+    { partner: "mots-c", reason: "Growth + metabolic optimization", boost: "Metabolic" },
+  ],
+  "epithalon": [
+    { partner: "ghk-cu", reason: "Telomere protection + tissue renewal", boost: "Longevity" },
+    { partner: "ipamorelin", reason: "Circadian rhythm + deep sleep GH pulse", boost: "Sleep" },
+    { partner: "foxo4", reason: "Telomerase + senolytic for comprehensive anti-aging", boost: "Longevity" },
+  ],
+  "semax": [
+    { partner: "selank", reason: "Focus + calm — nootropic synergy without jitters", boost: "Cognitive" },
+    { partner: "cerebrolysin", reason: "Neuroprotection through complementary mechanisms", boost: "Cognitive" },
+    { partner: "pinealon", reason: "BDNF enhancement + pineal gland support", boost: "Cognitive" },
+  ],
+  "selank": [
+    { partner: "semax", reason: "Anxiolytic + cognitive enhancer — balanced clarity", boost: "Cognitive" },
+    { partner: "dsip", reason: "Mood regulation + deep sleep restoration", boost: "Sleep" },
+    { partner: "thymosin alpha", reason: "Immune modulation + anxiety relief", boost: "Immune" },
+  ],
+  "ll-37": [
+    { partner: "thymosin alpha", reason: "Antimicrobial + immune activation synergy", boost: "Immune" },
+    { partner: "bpc-157", reason: "Immune defense + tissue healing", boost: "Healing" },
+    { partner: "thymalin", reason: "Dual immune system support peptides", boost: "Immune" },
+  ],
+  "dsip": [
+    { partner: "melatonin", reason: "Deep sleep peptide + circadian hormone", boost: "Sleep" },
+    { partner: "epithalon", reason: "Sleep architecture + pineal function", boost: "Longevity" },
+    { partner: "selank", reason: "Calm mind + restorative sleep", boost: "Cognitive" },
+  ],
+  "aod-9604": [
+    { partner: "5-amino-1mq", reason: "Fat fragment + metabolic enzyme targeting", boost: "Metabolic" },
+    { partner: "mots-c", reason: "Targeted fat loss + mitochondrial energy", boost: "Metabolic" },
+    { partner: "cagrilintide", reason: "Complementary metabolic signaling", boost: "Metabolic" },
+  ],
+  "5-amino-1mq": [
+    { partner: "aod-9604", reason: "NNMT inhibition + GH fragment for fat metabolism", boost: "Metabolic" },
+    { partner: "mots-c", reason: "Enzyme targeting + mitochondrial activation", boost: "Metabolic" },
+  ],
+  "sermorelin": [
+    { partner: "ipamorelin", reason: "GHRH analog + ghrelin mimetic for synergistic GH release", boost: "Growth" },
+    { partner: "cjc-1295", reason: "Complementary GHRH signaling pathways", boost: "Growth" },
+  ],
+  "foxo4": [
+    { partner: "epithalon", reason: "Senolytic + telomerase — advanced longevity protocol", boost: "Longevity" },
+    { partner: "ss-31", reason: "Cellular cleanup + mitochondrial protection", boost: "Longevity" },
+  ],
+  "ss-31": [
+    { partner: "mots-c", reason: "Dual mitochondrial support peptides", boost: "Longevity" },
+    { partner: "foxo4", reason: "Mitochondrial health + senescent cell clearance", boost: "Longevity" },
+  ],
+  "pt-141": [
+    { partner: "kisspeptin", reason: "MC receptor + GnRH pathway for hormonal balance", boost: "Hormonal" },
+    { partner: "oxytocin", reason: "Complementary hormonal and wellbeing support", boost: "Hormonal" },
+  ],
+};
+
+// Get general pairing recommendations for selected peptides
+const getGeneralPairings = (selectedNames: string[], allProducts: { name: string; id: string; inStock: boolean | null }[]): { partner: string; reason: string; boost: string; productName: string; inStock: boolean }[] => {
+  const normalizedSelected = selectedNames.map(normalizePeptideName);
+  const pairings: { partner: string; reason: string; boost: string; productName: string; inStock: boolean }[] = [];
+  const seenPartners = new Set<string>();
+
+  for (const name of selectedNames) {
+    const normalized = normalizePeptideName(name);
+    for (const [key, pairs] of Object.entries(PEPTIDE_PAIRINGS)) {
+      if (normalized.includes(key.replace(/-/g, ''))) {
+        for (const pair of pairs) {
+          const partnerNorm = pair.partner.replace(/-/g, '');
+          if (normalizedSelected.some(s => s.includes(partnerNorm))) continue;
+          if (seenPartners.has(partnerNorm)) continue;
+          
+          const matchingProduct = allProducts.find(p => 
+            normalizePeptideName(p.name).includes(partnerNorm)
+          );
+          if (matchingProduct) {
+            seenPartners.add(partnerNorm);
+            pairings.push({
+              ...pair,
+              productName: matchingProduct.name.replace(/\s*\([^)]*\)/g, ''),
+              inStock: matchingProduct.inStock ?? false,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  return pairings.slice(0, 3);
+};
+
+// Goal-based starter peptides (best first pick per goal)
+const GOAL_STARTERS: { goal: string; icon: typeof Heart; color: string; starterKey: string; description: string }[] = [
+  { goal: "Healing", icon: Heart, color: "#22c55e", starterKey: "bpc-157", description: "Start with BPC-157 — the gold standard for tissue repair" },
+  { goal: "Growth", icon: Target, color: "#f59e0b", starterKey: "ipamorelin", description: "Start with Ipamorelin — clean GH release without side effects" },
+  { goal: "Metabolic", icon: Zap, color: "#E7FB10", starterKey: "mots-c", description: "Start with MOTS-C — mitochondrial energy activator" },
+  { goal: "Cognitive", icon: Brain, color: "#21d8ff", starterKey: "semax", description: "Start with Semax — BDNF-boosting focus enhancer" },
+  { goal: "Skin", icon: Sparkles, color: "#ec4899", starterKey: "ghk-cu", description: "Start with GHK-Cu — collagen and matrix remodeling" },
+  { goal: "Longevity", icon: Crown, color: "#a855f7", starterKey: "epithalon", description: "Start with Epithalon — telomerase activation" },
+];
+
 // Structured synergy analysis interface (for AI response)
 interface SynergyAnalysis {
   peptidePathways: Array<{
@@ -996,8 +1130,8 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                         <div className="flex-1 min-w-0">
                           {selectedPeptides.length === 0 ? (
                             <div className="text-center">
-                              <p className="text-sm text-muted-foreground">Select peptides to see synergy</p>
-                              <p className="text-xs text-muted-foreground/70 mt-1">Known combos unlock bonuses</p>
+                              <p className="font-display font-bold text-sm">Pick a Goal to Start</p>
+                              <p className="text-xs text-muted-foreground mt-1">or select any peptide below</p>
                             </div>
                           ) : knownStack ? (
                             <motion.div
@@ -1057,8 +1191,8 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                             })()
                           ) : (
                             <div>
-                              <p className="text-sm text-muted-foreground">Add 1 more peptide</p>
-                              <p className="text-xs text-muted-foreground/70">to unlock synergy analysis</p>
+                              <p className="font-display font-bold text-sm">Great Pick!</p>
+                              <p className="text-xs text-muted-foreground mt-1">Add 1 more to see synergy</p>
                             </div>
                           )}
                         </div>
@@ -1076,6 +1210,115 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                       )}
                     </div>
                   </Card>
+
+                  {/* ====== GOAL-BASED STARTERS (empty state) ====== */}
+                  {selectedPeptides.length === 0 && products && (
+                    <Card className="border-[#2a2a32] bg-[#1a1a1f]/50" data-testid="card-goal-starters">
+                      <div className="p-4">
+                        <p className="text-xs font-semibold text-muted-foreground mb-1">NOT SURE WHERE TO START?</p>
+                        <p className="text-xs text-muted-foreground mb-3">Pick a research goal and we'll suggest the best starting peptide.</p>
+                        <div className="grid grid-cols-2 gap-2">
+                          {GOAL_STARTERS.map(starter => {
+                            const StarterIcon = starter.icon;
+                            const matchingProduct = products.find(p => 
+                              normalizePeptideName(p.name).includes(starter.starterKey.replace(/-/g, ''))
+                            );
+                            return (
+                              <motion.button
+                                key={starter.goal}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => {
+                                  if (matchingProduct) {
+                                    setSelectedPeptides([matchingProduct]);
+                                  }
+                                }}
+                                className="flex items-center gap-2 p-2.5 rounded-lg border border-[#2a2a32] bg-[#1a1a1f] transition-all text-left hover-elevate active-elevate-2"
+                                style={{ borderColor: `${starter.color}30` }}
+                                data-testid={`button-goal-${starter.goal.toLowerCase()}`}
+                              >
+                                <StarterIcon className="h-4 w-4 shrink-0" style={{ color: starter.color }} />
+                                <span className="text-xs font-medium" style={{ color: starter.color }}>
+                                  {starter.goal}
+                                </span>
+                              </motion.button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </Card>
+                  )}
+
+                  {/* ====== PAIRING SUGGESTIONS (1+ peptides, when no named stack recommendation) ====== */}
+                  {selectedPeptides.length >= 1 && selectedPeptides.length < 4 && products && (() => {
+                    const generalPairings = getGeneralPairings(
+                      selectedPeptides.map(p => p.name),
+                      products
+                    );
+                    if (generalPairings.length === 0) return null;
+                    if (recommendation && selectedPeptides.length >= 2) return null;
+                    return (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                      >
+                        <Card className="border-[#2a2a32] bg-[#1a1a1f]/50" data-testid="card-pairing-suggestions">
+                          <div className="p-4">
+                            <div className="flex items-center gap-2 mb-3">
+                              <Sparkles className="h-4 w-4 text-[#21d8ff]" />
+                              <span className="text-xs font-semibold text-muted-foreground">PAIRS WELL WITH</span>
+                            </div>
+                            <div className="space-y-2">
+                              {generalPairings.map((pairing, i) => {
+                                const matchingProduct = products.find(p =>
+                                  normalizePeptideName(p.name).includes(pairing.partner.replace(/-/g, ''))
+                                );
+                                return (
+                                  <motion.button
+                                    key={i}
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: i * 0.1 }}
+                                    onClick={() => {
+                                      if (matchingProduct && selectedPeptides.length < 4) {
+                                        togglePeptide(matchingProduct);
+                                      }
+                                    }}
+                                    className="w-full text-left p-2.5 rounded-lg border border-[#2a2a32] transition-all hover-elevate active-elevate-2"
+                                    data-testid={`button-pair-${pairing.partner}`}
+                                  >
+                                    <div className="flex items-center justify-between gap-2 mb-1">
+                                      <span className="font-display font-bold text-sm text-white">
+                                        {pairing.productName}
+                                      </span>
+                                      <Badge className="text-[9px] shrink-0" style={{ 
+                                        backgroundColor: `${({
+                                          Healing: "#22c55e", Metabolic: "#E7FB10", Growth: "#f59e0b", Cognitive: "#21d8ff",
+                                          Skin: "#ec4899", Longevity: "#a855f7", Immune: "#22c55e", Sleep: "#8b5cf6",
+                                          Hormonal: "#f59e0b", Vascular: "#ef4444", Weight: "#E7FB10",
+                                        } as Record<string, string>)[pairing.boost] || '#21d8ff'}20`,
+                                        color: ({
+                                          Healing: "#22c55e", Metabolic: "#E7FB10", Growth: "#f59e0b", Cognitive: "#21d8ff",
+                                          Skin: "#ec4899", Longevity: "#a855f7", Immune: "#22c55e", Sleep: "#8b5cf6",
+                                          Hormonal: "#f59e0b", Vascular: "#ef4444", Weight: "#E7FB10",
+                                        } as Record<string, string>)[pairing.boost] || '#21d8ff'
+                                      }}>
+                                        {pairing.boost}
+                                      </Badge>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">{pairing.reason}</p>
+                                    {!pairing.inStock && (
+                                      <span className="text-[10px] text-white/30 mt-1 block">Out of stock</span>
+                                    )}
+                                  </motion.button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </Card>
+                      </motion.div>
+                    );
+                  })()}
 
                   {/* ====== RECOMMENDATION CARD ====== */}
                   {recommendation && selectedPeptides.length < 4 && (
