@@ -763,8 +763,6 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [cartExpanded, setCartExpanded] = useState(false);
   const [showSavedStacks, setShowSavedStacks] = useState(false);
-  const [rightPanelHeight, setRightPanelHeight] = useState(420);
-  const rightPanelRef = useRef<HTMLDivElement>(null);
   const { addToCart } = useCart();
   const { toast } = useToast();
   const [, navigate] = useLocation();
@@ -785,19 +783,6 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
   const { data: popularStacks } = useQuery<{ peptideNames: string[], count: number }[]>({
     queryKey: ["/api/popular-stacks"],
   });
-
-  useEffect(() => {
-    const el = rightPanelRef.current;
-    if (!el) return;
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const h = entry.contentRect.height;
-        setRightPanelHeight(Math.max(420, h));
-      }
-    });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
 
   // Save stack mutation
   const saveStackMutation = useMutation({
@@ -1032,7 +1017,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                     data-testid="input-peptide-search"
                   />
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 overflow-y-auto pr-1 scrollbar-thin transition-[max-height] duration-300 ease-in-out" style={{ maxHeight: `${Math.max(420, rightPanelHeight - 80)}px` }}>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 overflow-y-auto pr-1 scrollbar-thin max-h-[600px]">
                   {filteredPeptides.map(product => {
                     const isSelected = selectedPeptides.find(p => p.id === product.id);
                     const isDisabled = !isSelected && selectedPeptides.length >= 4;
@@ -1101,7 +1086,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
         </div>
 
         {/* Right Column: Synergy Visualization Panel */}
-        <div ref={rightPanelRef}>
+        <div>
           <div className="lg:sticky lg:top-28 space-y-4">
             
             {/* ====== SYNERGY RING & SCORE ====== */}
