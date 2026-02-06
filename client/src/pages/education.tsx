@@ -931,7 +931,7 @@ export default function Education() {
                               <h3 className="font-display text-xl font-bold mb-4">Related Research Compound</h3>
                               <div className="space-y-4">
                                 {matchingProducts.map(product => (
-                                  <Link key={product.id} href={`/peptides/${product.id}`}>
+                                  <Link key={product.id} href={`/peptides/${product.slug || product.id}`}>
                                     <Card className="p-4 border border-[#21d8ff]/20 hover:border-[#21d8ff]/50 transition-all hover-elevate cursor-pointer">
                                       <div className="flex items-center gap-4">
                                         <div className="w-12 h-12 rounded bg-muted flex-shrink-0">

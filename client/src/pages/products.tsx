@@ -885,7 +885,7 @@ function ProductsComponent() {
                       variants={fadeInUp}
                       className="h-full"
                     >
-                      <Link href={`/peptides/${product.id}`} className="h-full block" onClick={savePageState}>
+                      <Link href={`/peptides/${product.slug || product.id}`} className="h-full block" onClick={savePageState}>
                         {/* Check if product is out of stock (either inStock=false OR stockAmount<=0) */}
                         {(() => {
                           const isOutOfStock = !product.inStock || (product.stockAmount !== null && product.stockAmount <= 0);

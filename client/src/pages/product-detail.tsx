@@ -165,6 +165,8 @@ export default function ProductDetail() {
     queryKey: ["/api/products", params.id],
   });
 
+  const productId = product?.id;
+
   // Query for selling fast products
   const { data: sellingFastIds = [] } = useQuery<string[]>({
     queryKey: ["/api/products/selling-fast"],
@@ -172,26 +174,26 @@ export default function ProductDetail() {
 
   // Query for storage profile
   const { data: storageProfile } = useQuery<ProductStorageProfile>({
-    queryKey: ["/api/products", params.id, "storage"],
-    enabled: !!params.id,
+    queryKey: ["/api/products", productId, "storage"],
+    enabled: !!productId,
   });
 
   // Query for recent batches with COAs
   const { data: batchesWithCoas = [] } = useQuery<(Batch & { coas?: Coa[] })[]>({
-    queryKey: ["/api/products", params.id, "batches"],
-    enabled: !!params.id,
+    queryKey: ["/api/products", productId, "batches"],
+    enabled: !!productId,
   });
 
   // Query for related education articles
   const { data: relatedArticles = [] } = useQuery<EducationArticle[]>({
-    queryKey: ["/api/products", params.id, "education"],
-    enabled: !!params.id,
+    queryKey: ["/api/products", productId, "education"],
+    enabled: !!productId,
   });
 
   // Query for dosage-specific stock information
   const { data: dosageStocks = [] } = useQuery<ProductDosageStock[]>({
-    queryKey: ["/api/products", params.id, "dosage-stocks"],
-    enabled: !!params.id,
+    queryKey: ["/api/products", productId, "dosage-stocks"],
+    enabled: !!productId,
   });
 
   // Query for all products (for synergy recommendations)
@@ -206,19 +208,19 @@ export default function ProductDetail() {
   const [hasVoted, setHasVoted] = useState<boolean>(() => {
     try {
       const stored = localStorage.getItem("revive_voted_products");
-      return stored ? (JSON.parse(stored) as string[]).includes(params.id || "") : false;
+      return stored ? (JSON.parse(stored) as string[]).includes(productId || "") : false;
     } catch { return false; }
   });
 
-  const voteCount = voteCounts.find(v => v.productId === params.id)?.count || 0;
+  const voteCount = voteCounts.find(v => v.productId === productId)?.count || 0;
 
   const voteMutation = useMutation({
     mutationFn: async (action: "vote" | "unvote") => {
       const visitorId = getVisitorId();
       if (action === "vote") {
-        await apiRequest("POST", `/api/products/${params.id}/vote`, { visitorId });
+        await apiRequest("POST", `/api/products/${productId}/vote`, { visitorId });
       } else {
-        await apiRequest("DELETE", `/api/products/${params.id}/vote`, { visitorId });
+        await apiRequest("DELETE", `/api/products/${productId}/vote`, { visitorId });
       }
       return action;
     },
@@ -227,9 +229,9 @@ export default function ProductDetail() {
       try {
         const stored = localStorage.getItem("revive_voted_products");
         const list: string[] = stored ? JSON.parse(stored) : [];
-        if (action === "vote" && params.id && !list.includes(params.id)) list.push(params.id);
-        else if (action === "unvote" && params.id) {
-          const idx = list.indexOf(params.id);
+        if (action === "vote" && productId && !list.includes(productId)) list.push(productId);
+        else if (action === "unvote" && productId) {
+          const idx = list.indexOf(productId);
           if (idx >= 0) list.splice(idx, 1);
         }
         localStorage.setItem("revive_voted_products", JSON.stringify(list));
@@ -275,17 +277,17 @@ export default function ProductDetail() {
 
   // Wishlist functionality
   const { data: wishlistStatus } = useQuery<{ isInWishlist: boolean }>({
-    queryKey: ["/api/wishlist/check", params.id],
-    enabled: !!params.id && isAuthenticated,
+    queryKey: ["/api/wishlist/check", productId],
+    enabled: !!productId && isAuthenticated,
   });
 
   const addToWishlistMutation = useMutation({
-    mutationFn: async (productId: string) => {
-      await apiRequest("POST", "/api/wishlist", { productId });
+    mutationFn: async (pid: string) => {
+      await apiRequest("POST", "/api/wishlist", { productId: pid });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/wishlist"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/wishlist/check", params.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/wishlist/check", productId] });
       toast({ title: "Added to Wishlist", description: "Product saved to your wishlist" });
     },
     onError: () => {
@@ -294,12 +296,12 @@ export default function ProductDetail() {
   });
 
   const removeFromWishlistMutation = useMutation({
-    mutationFn: async (productId: string) => {
-      await apiRequest("DELETE", `/api/wishlist/${productId}`);
+    mutationFn: async (pid: string) => {
+      await apiRequest("DELETE", `/api/wishlist/${pid}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/wishlist"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/wishlist/check", params.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/wishlist/check", productId] });
       toast({ title: "Removed from Wishlist", description: "Product removed from your wishlist" });
     },
     onError: () => {
@@ -316,12 +318,12 @@ export default function ProductDetail() {
       login();
       return;
     }
-    if (!params.id) return;
+    if (!productId) return;
     
     if (wishlistStatus?.isInWishlist) {
-      removeFromWishlistMutation.mutate(params.id);
+      removeFromWishlistMutation.mutate(productId);
     } else {
-      addToWishlistMutation.mutate(params.id);
+      addToWishlistMutation.mutate(productId);
     }
   };
 
@@ -355,12 +357,22 @@ export default function ProductDetail() {
     }
   }, [product, dosageStocks]);
 
+  // Redirect UUID URLs to slug URLs for SEO
+  useEffect(() => {
+    if (product?.slug && params.id !== product.slug) {
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.id || "");
+      if (isUUID) {
+        setLocation(`/peptides/${product.slug}`, { replace: true });
+      }
+    }
+  }, [product, params.id, setLocation]);
+
   // Track recently viewed products
   useEffect(() => {
-    if (params.id) {
-      addToRecentlyViewed(params.id);
+    if (productId) {
+      addToRecentlyViewed(productId);
     }
-  }, [params.id]);
+  }, [productId]);
 
   const handleQuantityChange = (delta: number) => {
     setQuantity(prev => Math.max(1, Math.min(10, prev + delta)));
@@ -1442,7 +1454,7 @@ export default function ProductDetail() {
                   );
                   
                   return (
-                    <Link key={partnerProduct.id} href={`/peptides/${partnerProduct.id}`} data-testid={`link-synergy-${partnerProduct.id}`}>
+                    <Link key={partnerProduct.id} href={`/peptides/${partnerProduct.slug || partnerProduct.id}`} data-testid={`link-synergy-${partnerProduct.id}`}>
                       <Card 
                         className="p-4 border-[#22c55e]/20 cursor-pointer hover-elevate"
                         data-testid={`card-synergy-${partnerProduct.id}`}
@@ -1526,7 +1538,7 @@ export default function ProductDetail() {
       </div>
       
       {/* Recently Viewed Sidebar */}
-      <RecentlyViewed currentProductId={params.id} variant="sidebar" />
+      <RecentlyViewed currentProductId={productId} variant="sidebar" />
 
       {/* Sticky Mobile Add-to-Cart Bar */}
       {product && !isOutOfStock && (

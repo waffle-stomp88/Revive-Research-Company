@@ -170,7 +170,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                 </Button>
               </div>
 
-              <Link href={`/peptides/${product.id}`} onClick={onClose}>
+              <Link href={`/peptides/${product.slug || product.id}`} onClick={onClose}>
                 <Button variant="outline" className="w-full gap-2" data-testid="button-quickview-view-details">
                   View Full Details
                   <ArrowRight className="h-4 w-4" />

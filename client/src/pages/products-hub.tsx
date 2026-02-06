@@ -201,7 +201,7 @@ export default function ProductsHub() {
               {featuredProducts.map((product) => (
                 <a 
                   key={product.id} 
-                  href={`/peptides/${product.id}`}
+                  href={`/peptides/${product.slug || product.id}`}
                   className="block p-4 cursor-pointer transition-all duration-300 border border-border/50 md:hover:border-[#E7FB10]/50 md:hover:scale-105 md:active:scale-105 group rounded-lg bg-card focus:outline-none focus-visible:ring-2"
                   data-testid={`card-featured-${product.id}`}
                 >

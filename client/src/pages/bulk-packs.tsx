@@ -181,7 +181,7 @@ export default function BulkPacks() {
                         </div>
                         <p className="text-xs text-green-500">Save ${savings.toFixed(2)}</p>
                       </div>
-                      <Link href={`/peptides/${product.id}?bulk=${selectedPack}`}>
+                      <Link href={`/peptides/${product.slug || product.id}?bulk=${selectedPack}`}>
                         <Button className="w-full mt-3 bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90" size="sm">
                           <ShoppingCart className="h-4 w-4 mr-2" />
                           View Details

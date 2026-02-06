@@ -82,7 +82,7 @@ export function RecentlyViewed({ currentProductId, variant = "sidebar" }: Recent
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {recentProducts.map((product) => (
-            <Link key={product.id} href={`/peptides/${product.id}`}>
+            <Link key={product.id} href={`/peptides/${product.slug || product.id}`}>
               <Card 
                 className="group p-4 cursor-pointer border-[#2a2a32] md:hover:border-[#21d8ff]/50 transition-all duration-300 md:hover:shadow-[0_0_25px_rgba(33,216,255,0.25)] flex items-center gap-5 bg-[#1a1a24]/50"
                 data-testid={`card-recent-${product.id}`}
@@ -164,7 +164,7 @@ export function RecentlyViewed({ currentProductId, variant = "sidebar" }: Recent
               
               <div className="p-2 space-y-1">
                 {recentProducts.map((product) => (
-                  <Link key={product.id} href={`/peptides/${product.id}`}>
+                  <Link key={product.id} href={`/peptides/${product.slug || product.id}`}>
                     <div 
                       className="flex items-center gap-2 p-1.5 rounded-md hover:bg-[#2a2a32] cursor-pointer transition-colors group"
                       data-testid={`sidebar-recent-${product.id}`}

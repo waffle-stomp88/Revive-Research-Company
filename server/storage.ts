@@ -84,6 +84,7 @@ export interface IStorage {
   
   getAllProducts(): Promise<Product[]>;
   getProduct(id: string): Promise<Product | undefined>;
+  getProductBySlug(slug: string): Promise<Product | undefined>;
   getFeaturedProducts(): Promise<Product[]>;
   createProduct(product: InsertProduct): Promise<Product>;
   updateProduct(id: string, product: Partial<InsertProduct>): Promise<Product | undefined>;
@@ -431,11 +432,23 @@ export class DatabaseStorage implements IStorage {
     return product || undefined;
   }
 
+  async getProductBySlug(slug: string): Promise<Product | undefined> {
+    const [product] = await db.select().from(products).where(eq(products.slug, slug));
+    return product || undefined;
+  }
+
   async getFeaturedProducts(): Promise<Product[]> {
     return db.select().from(products).where(eq(products.featured, true));
   }
 
   async createProduct(insertProduct: InsertProduct): Promise<Product> {
+    if (!insertProduct.slug && insertProduct.name) {
+      insertProduct.slug = insertProduct.name
+        .toLowerCase()
+        .replace(/[^a-z0-9\s\-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
+    }
     const [product] = await db.insert(products).values(insertProduct).returning();
     return product;
   }

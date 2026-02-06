@@ -304,7 +304,7 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
                   return (
                     <Link
                       key={result.id}
-                      href={isProduct ? `/peptides/${result.id}` : (result as any).href}
+                      href={isProduct ? `/peptides/${(result as any).slug || result.id}` : (result as any).href}
                       onClick={() => {
                         if (result.type === "product") {
                           handleSelectProduct(result as any);

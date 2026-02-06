@@ -289,7 +289,7 @@ function CompareModal({ products, isOpen, onClose }: CompareModalProps) {
                   <ShoppingCart className="h-3.5 w-3.5" />
                   Add
                 </Button>
-                <Link href={`/peptides/${product.id}`} onClick={onClose}>
+                <Link href={`/peptides/${product.slug || product.id}`} onClick={onClose}>
                   <Button size="sm" variant="outline" data-testid={`button-compare-view-${product.id}`}>
                     View
                   </Button>
