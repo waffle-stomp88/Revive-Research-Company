@@ -404,7 +404,7 @@ export default function CoaVerification() {
                 </div>
                 <h3 className="font-display font-semibold mb-3 text-lg">Where to Find Your Batch Number</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed flex-1">
-                  Your batch number can be found on the product label or included documentation. It typically starts with "RVR" followed by the year and sequence number.
+                  Your batch number can be found on the product label or included documentation. It uses the format [MfgID]-[YYMM][Cycle], such as RT10-2601A.
                 </p>
               </Card>
 
