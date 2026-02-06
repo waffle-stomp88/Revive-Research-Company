@@ -1689,7 +1689,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
               {selectedPeptides.length > 0 && (
                 <div className="hidden sm:flex items-center gap-1.5 flex-1 min-w-0">
                   {selectedPeptides.map((p, i) => (
-                    <span key={p.id} className="text-xs text-muted-foreground truncate">
+                    <span key={p.id} className="text-muted-foreground truncate text-[14px]">
                       {i > 0 && <span className="mx-1 text-[#2a2a32]">+</span>}
                       {p.name.replace(/\s*\([^)]*\)/g, '')}
                     </span>
