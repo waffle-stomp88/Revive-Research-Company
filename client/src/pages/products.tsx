@@ -1078,7 +1078,7 @@ function ProductsComponent() {
               Some products are temporarily out of stock. Tap <span className="text-[#21d8ff]/70">Want This</span> to
               let us know you're interested — we prioritize restocking based on community demand. Your
               vote is anonymous and helps us serve you better.{" "}
-              <Link href="/faq" className="text-[#21d8ff]/70 hover:text-[#21d8ff] underline underline-offset-2" data-testid="link-voting-faq">
+              <Link href="/faq#want-this-voting" className="text-[#21d8ff]/70 hover:text-[#21d8ff] underline underline-offset-2" data-testid="link-voting-faq">
                 Learn more
               </Link>
             </p>

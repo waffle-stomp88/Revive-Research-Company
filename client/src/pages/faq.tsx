@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { SEOHead } from "@/components/seo-head";
@@ -204,7 +205,28 @@ const FAQ_CATEGORIES = [
   }
 ];
 
+const FAQ_HASH_MAP: Record<string, { categoryTitle: string; questionIndex: number }> = {
+  "want-this-voting": { categoryTitle: "Products & Quality", questionIndex: 5 },
+};
+
 export default function FAQ() {
+  const [openAccordions, setOpenAccordions] = useState<Record<string, string | undefined>>({});
+
+  useEffect(() => {
+    const hash = window.location.hash.replace("#", "");
+    if (hash && FAQ_HASH_MAP[hash]) {
+      const { categoryTitle, questionIndex } = FAQ_HASH_MAP[hash];
+      const accordionValue = `${categoryTitle}-${questionIndex}`;
+      setOpenAccordions({ [categoryTitle]: accordionValue });
+      setTimeout(() => {
+        const el = document.getElementById(hash);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 300);
+    }
+  }, []);
+
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
       <SEOHead title="Frequently Asked Questions" description="Get answers about research peptides, ordering, shipping, and storage. Expert guidance for researchers." canonicalPath="/faq" />
@@ -277,13 +299,25 @@ export default function FAQ() {
                     </h2>
                   </div>
                 </div>
-                <Accordion type="single" collapsible className="w-full">
-                  {category.questions.map((item, index) => (
+                <Accordion
+                  type="single"
+                  collapsible
+                  className="w-full"
+                  value={openAccordions[category.title]}
+                  onValueChange={(val) => setOpenAccordions(prev => ({ ...prev, [category.title]: val }))}
+                >
+                  {category.questions.map((item, index) => {
+                    const hashEntry = Object.entries(FAQ_HASH_MAP).find(
+                      ([, v]) => v.categoryTitle === category.title && v.questionIndex === index
+                    );
+                    const itemId = hashEntry ? hashEntry[0] : undefined;
+                    return (
                     <AccordionItem 
                       key={index} 
                       value={`${category.title}-${index}`}
                       className="border-b last:border-b-0"
                       data-testid={`faq-item-${categoryIndex + 1}-${index + 1}`}
+                      {...(itemId ? { id: itemId } : {})}
                     >
                       <AccordionTrigger className="px-6 text-left font-medium hover:no-underline group">
                         <span className="flex-1">{item.question}</span>
@@ -297,7 +331,8 @@ export default function FAQ() {
                         {item.answer}
                       </AccordionContent>
                     </AccordionItem>
-                  ))}
+                  );
+                  })}
                 </Accordion>
               </Card>
             </motion.div>
