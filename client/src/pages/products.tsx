@@ -930,32 +930,17 @@ function ProductsComponent() {
                       >
                         <ChevronRight className="h-4 w-4 rotate-180" />
                       </Button>
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                        const showPage = page === 1 || page === totalPages || 
-                                         Math.abs(page - currentPage) <= 1;
-                        const showEllipsis = page === 2 && currentPage > 3 ||
-                                             page === totalPages - 1 && currentPage < totalPages - 2;
-                        
-                        if (showEllipsis && !showPage) {
-                          return (
-                            <span key={page} className="px-2 text-muted-foreground" data-testid={`text-ellipsis-${page}-bottom`}>...</span>
-                          );
-                        }
-                        
-                        if (!showPage) return null;
-                        
-                        return (
-                          <Button
-                            key={page}
-                            variant={currentPage === page ? "default" : "outline"}
-                            size="icon"
-                            onClick={() => handlePageChange(page)}
-                            data-testid={`button-page-${page}-bottom`}
-                          >
-                            {page}
-                          </Button>
-                        );
-                      })}
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                        <Button
+                          key={page}
+                          variant={currentPage === page ? "default" : "outline"}
+                          size="icon"
+                          onClick={() => handlePageChange(page)}
+                          data-testid={`button-page-${page}-bottom`}
+                        >
+                          {page}
+                        </Button>
+                      ))}
                       <Button
                         variant="outline"
                         size="icon"
