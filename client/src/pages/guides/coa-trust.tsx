@@ -5,6 +5,7 @@ import {
   ArticleSection, 
   BulletList 
 } from "@/components/entry-article-layout";
+import { TrustScaleGraphic, COAAnatomyDiagram } from "@/components/article-graphics";
 
 export default function CoaTrust() {
   const faqs = [
@@ -82,6 +83,8 @@ export default function CoaTrust() {
       faqs={faqs}
       ctaLinks={ctaLinks}
     >
+      <TrustScaleGraphic />
+
       <ArticleSection title="What Is a Certificate of Analysis?">
         <p>
           A Certificate of Analysis (COA) is a document issued after laboratory testing 
@@ -176,6 +179,8 @@ export default function CoaTrust() {
           have concerns. Skepticism is healthy in this industry.
         </p>
       </ArticleSection>
+
+      <COAAnatomyDiagram />
 
       <ArticleSection title="How to Evaluate COAs Like a Skeptic">
         <p>

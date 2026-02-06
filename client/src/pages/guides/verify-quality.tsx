@@ -6,6 +6,7 @@ import {
   BulletList 
 } from "@/components/entry-article-layout";
 import { Card } from "@/components/ui/card";
+import { VerificationStepper, RedGreenFlags } from "@/components/article-graphics";
 
 export default function VerifyQuality() {
   const faqs = [
@@ -104,6 +105,8 @@ export default function VerifyQuality() {
           The solution isn't to trust harder — it's to verify smarter. Here's how.
         </p>
       </ArticleSection>
+
+      <VerificationStepper />
 
       <ArticleSection title="Step 1: Demand Third-Party COAs" variant="proof">
         <p className="mb-3">
@@ -218,6 +221,8 @@ export default function VerifyQuality() {
           </div>
         </div>
       </Card>
+
+      <RedGreenFlags />
 
       <ArticleSection title="Red Flags to Watch For" variant="limitation">
         <p className="font-medium mb-3">Warning signs that suggest quality issues:</p>

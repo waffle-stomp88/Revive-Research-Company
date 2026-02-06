@@ -6,6 +6,7 @@ import {
   BulletList 
 } from "@/components/entry-article-layout";
 import { Card } from "@/components/ui/card";
+import { HPLCChromatogram, PurityComparisonBars } from "@/components/article-graphics";
 
 export default function PurityExplained() {
   const faqs = [
@@ -107,6 +108,8 @@ export default function PurityExplained() {
         />
       </ArticleSection>
 
+      <HPLCChromatogram />
+
       <ArticleSection title="What That 2% Impurity Might Be">
         <p>
           Not all impurities are created equal. The non-target portion can include:
@@ -145,6 +148,8 @@ export default function PurityExplained() {
           credibility of the measurement matters as much as the number.
         </p>
       </ArticleSection>
+
+      <PurityComparisonBars />
 
       <ArticleSection title="Peptide Length Affects Expectations">
         <p>

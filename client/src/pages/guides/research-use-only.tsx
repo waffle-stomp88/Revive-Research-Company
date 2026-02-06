@@ -6,6 +6,7 @@ import {
   BulletList 
 } from "@/components/entry-article-layout";
 import { Card } from "@/components/ui/card";
+import { RegulatoryPathwayComparison, RUOMythsVsReality } from "@/components/article-graphics";
 
 export default function ResearchUseOnly() {
   const faqs = [
@@ -121,6 +122,8 @@ export default function ResearchUseOnly() {
         </p>
       </ArticleSection>
 
+      <RegulatoryPathwayComparison />
+
       <ArticleSection title="What RUO Does NOT Tell You" variant="limitation">
         <p className="font-medium mb-3">RUO labeling doesn't address:</p>
         <BulletList 
@@ -154,6 +157,8 @@ export default function ResearchUseOnly() {
           </div>
         </div>
       </Card>
+
+      <RUOMythsVsReality />
 
       <ArticleSection title="Research Use in Practice">
         <p>

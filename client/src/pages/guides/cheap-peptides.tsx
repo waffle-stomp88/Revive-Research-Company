@@ -6,6 +6,7 @@ import {
   BulletList 
 } from "@/components/entry-article-layout";
 import { Card } from "@/components/ui/card";
+import { CostBreakdownChart, PriceValueMatrix } from "@/components/article-graphics";
 
 export default function CheapPeptides() {
   const faqs = [
@@ -131,6 +132,8 @@ export default function CheapPeptides() {
         </p>
       </ArticleSection>
 
+      <CostBreakdownChart />
+
       <ArticleSection title="The Testing Cost Reality">
         <p>
           Third-party testing is one of the biggest cost differentiators:
@@ -252,6 +255,8 @@ export default function CheapPeptides() {
           </div>
         </div>
       </Card>
+
+      <PriceValueMatrix />
 
       <ArticleSection title="Red Flags in Pricing" variant="limitation">
         <p className="font-medium mb-3">

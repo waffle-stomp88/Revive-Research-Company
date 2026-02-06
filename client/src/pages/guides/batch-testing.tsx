@@ -5,6 +5,7 @@ import {
   ArticleSection, 
   BulletList 
 } from "@/components/entry-article-layout";
+import { BatchTestingPipeline, CostCalculatorVisual } from "@/components/article-graphics";
 
 export default function BatchTesting() {
   const faqs = [
@@ -81,6 +82,8 @@ export default function BatchTesting() {
       faqs={faqs}
       ctaLinks={ctaLinks}
     >
+      <BatchTestingPipeline />
+
       <ArticleSection title="What Is Batch Testing?">
         <p>
           Batch testing (or lot testing) means taking representative samples from a 
@@ -133,6 +136,8 @@ export default function BatchTesting() {
           controls and handling procedures matter as much as the test results.
         </p>
       </ArticleSection>
+
+      <CostCalculatorVisual />
 
       <ArticleSection title="The Limitations of Batch Testing" variant="limitation">
         <p className="font-medium mb-3">To be honest about the constraints:</p>
