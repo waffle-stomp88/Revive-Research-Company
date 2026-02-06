@@ -1418,6 +1418,7 @@ export default function ProductDetail() {
           
           // Find matching products from the products list
           const matchingProducts = allProducts.filter((p: Product) => {
+            if (p.category === "Research Stacks" || p.category === "Supplies" || p.category === "Research Compounds") return false;
             const normalizedProductName = normalizePeptideName(p.name);
             return synergyPartners.some(sp => 
               normalizePeptideName(sp.partner) === normalizedProductName ||
