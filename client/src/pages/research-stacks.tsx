@@ -1279,7 +1279,6 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                       )}
                     </div>
                   </Card>
-
                   {/* ====== GOAL-BASED STARTERS (empty state) ====== */}
                   {selectedPeptides.length === 0 && products && (
                     <Card className="border-[#2a2a32] bg-[#1a1a1f]/50" data-testid="card-goal-starters">
@@ -1317,7 +1316,6 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                       </div>
                     </Card>
                   )}
-
                   {/* ====== GUIDANCE ACCORDION ====== */}
                   {selectedPeptides.length > 0 && (() => {
                     const generalPairings = selectedPeptides.length >= 1 && selectedPeptides.length < 4 && products
@@ -1373,7 +1371,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                         data-testid={`button-pair-${pairing.partner}`}
                                       >
                                         <div className="flex items-center justify-between gap-2 mb-1">
-                                          <span className="font-display font-bold text-sm text-white">
+                                          <span className="font-display font-bold text-white text-[16px]">
                                             {pairing.productName}
                                           </span>
                                           <Badge className="text-[9px] shrink-0" style={{ 
@@ -1653,7 +1651,6 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
           </div>
         </div>
       </div>
-
       {/* Research Disclaimer */}
       <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/20">
         <div className="flex items-start gap-3">
@@ -1667,10 +1664,8 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
           </div>
         </div>
       </div>
-
       {/* Spacer for sticky bottom bar */}
       <div className="h-20" />
-
       {/* ====== STICKY BOTTOM CART BAR ====== */}
       <AnimatePresence>
         <motion.div
