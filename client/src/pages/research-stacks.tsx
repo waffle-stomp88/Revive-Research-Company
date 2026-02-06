@@ -1347,7 +1347,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                               <AccordionTrigger className="text-muted-foreground">
                                 <div className="flex items-center gap-2">
                                   <Sparkles className="h-3.5 w-3.5 text-[#21d8ff]" />
-                                  <span className="text-xs font-semibold">PAIRS WELL WITH</span>
+                                  <span className="font-semibold text-[13px]">PAIRS WELL WITH</span>
                                 </div>
                               </AccordionTrigger>
                               <AccordionContent>
