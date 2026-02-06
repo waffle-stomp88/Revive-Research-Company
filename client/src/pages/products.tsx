@@ -1069,9 +1069,9 @@ function ProductsComponent() {
           className="w-full flex flex-wrap items-start gap-4 py-4 px-6 rounded-lg border border-white/10 bg-white/[0.02]"
           data-testid="section-want-this-explainer"
         >
-          <ArrowUp className="h-5 w-5 text-[#21d8ff] shrink-0 mt-0.5" />
           <div className="space-y-1">
-            <p className="text-sm font-semibold text-white/90">
+            <p className="text-sm font-semibold text-white/90 flex items-center gap-2">
+              <ArrowUp className="h-4 w-4 text-[#21d8ff] shrink-0" />
               See a <span className="text-[#21d8ff]">"Want This"</span> button?
             </p>
             <p className="text-xs text-white/50 leading-relaxed">
