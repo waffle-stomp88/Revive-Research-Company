@@ -324,9 +324,15 @@ export default function CartPage() {
                     </Card>
                   );
 
+                  const getCartItemHref = () => {
+                    if (!item.bundleId) return `/products/${item.productId}`;
+                    if (item.dosage === "Research Stack") return `/research-stacks/${item.bundleId}`;
+                    return `/bundles/${item.bundleId}`;
+                  };
+
                   return isCustomStack ? cardContent : (
                     <Link 
-                      href={item.bundleId ? `/bundles/${item.bundleId}` : `/products/${item.productId}`}
+                      href={getCartItemHref()}
                       className="block"
                       data-testid={`link-cart-item-card-${item.productId}`}
                     >
