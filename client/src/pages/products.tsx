@@ -871,7 +871,6 @@ function ProductsComponent() {
                                   );
                                 })()}
                               </div>
-                              
                               <div className="flex-1 flex flex-col min-h-0">
                                 <div className="mb-1 text-center">
                                   {(() => {
@@ -895,7 +894,7 @@ function ProductsComponent() {
                                     );
                                   })()}
                                 </div>
-                                <h3 className="font-display text-lg md:text-lg font-black mb-0.5 md:group-hover:text-[#E7FB10] transition-colors line-clamp-2 leading-tight text-center">
+                                <h3 className="font-display md:text-lg font-black mb-0.5 md:group-hover:text-[#E7FB10] transition-colors line-clamp-2 text-center text-[20px]">
                                   {product.name}
                                 </h3>
                                 <p className="text-[10px] text-muted-foreground/70 mb-1 line-clamp-1 text-center">
@@ -994,7 +993,6 @@ function ProductsComponent() {
           </div>
         </div>
       </div>
-
       {/* Need Help Choosing CTA */}
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
         <button
@@ -1006,17 +1004,14 @@ function ProductsComponent() {
           <span className="font-display font-bold text-[#21d8ff]">Need Help Choosing?</span>
         </button>
       </div>
-
       {/* Quick View Modal */}
       <QuickViewModal 
         product={quickViewProduct}
         isOpen={!!quickViewProduct}
         onClose={() => setQuickViewProduct(null)}
       />
-      
       {/* Compare Bar */}
       {products && <CompareBar products={products} />}
-      
       {/* Recently Viewed Section */}
       <RecentlyViewed variant="section" />
     </main>
