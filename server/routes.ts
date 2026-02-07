@@ -4318,19 +4318,19 @@ Return ONLY valid JSON in this exact format:
         { url: "/research-stacks", priority: "0.9", changefreq: "weekly" },
         { url: "/bulk-packs", priority: "0.9", changefreq: "weekly" },
         
-        // Key Content Pages
-        { url: "/education", priority: "0.8", changefreq: "weekly" },
-        { url: "/resources", priority: "0.8", changefreq: "monthly" },
+        // Education & Learning Hub
+        { url: "/guides/peptide-education-center", priority: "0.8", changefreq: "weekly" },
+        { url: "/peptide-research-resources", priority: "0.8", changefreq: "monthly" },
         
-        // Trust & Transparency Pages
-        { url: "/quality-process", priority: "0.7", changefreq: "monthly" },
-        { url: "/transparency", priority: "0.7", changefreq: "monthly" },
-        { url: "/what-we-dont-do", priority: "0.7", changefreq: "monthly" },
-        { url: "/ethical-pricing", priority: "0.7", changefreq: "monthly" },
-        { url: "/batch-archive", priority: "0.7", changefreq: "weekly" },
-        { url: "/lab-notes", priority: "0.7", changefreq: "weekly" },
-        { url: "/coa", priority: "0.7", changefreq: "monthly" },
-        { url: "/buyer-checklist", priority: "0.7", changefreq: "monthly" },
+        // Trust & Transparency Pages (SEO-Optimized URLs)
+        { url: "/guides/peptide-quality-assurance-process", priority: "0.7", changefreq: "monthly" },
+        { url: "/about/our-transparency-commitment", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/peptide-vendor-ethics-standards", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/peptide-pricing-breakdown", priority: "0.7", changefreq: "monthly" },
+        { url: "/coa/batch-testing-archive", priority: "0.7", changefreq: "weekly" },
+        { url: "/guides/peptide-lab-research-archive", priority: "0.7", changefreq: "weekly" },
+        { url: "/coa/verify-certificate-of-analysis", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/peptide-vendor-checklist", priority: "0.7", changefreq: "monthly" },
         
         // SEO Entry Articles (Trust Funnel)
         { url: "/guides/are-peptide-coas-trustworthy", priority: "0.7", changefreq: "monthly" },
@@ -4340,12 +4340,52 @@ Return ONLY valid JSON in this exact format:
         { url: "/guides/peptide-purity-explained", priority: "0.7", changefreq: "monthly" },
         { url: "/guides/why-cheap-peptides-are-cheap", priority: "0.7", changefreq: "monthly" },
         
+        // Individual Peptide Education Articles (30 Indexable Pages)
+        { url: "/guides/what-is-bpc-157-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-tb-500-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-ghk-cu-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-semaglutide-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-tirzepatide-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-retatrutide-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-cjc-1295-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-ipamorelin-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-tesamorelin-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-epithalon-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-mots-c-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-igf-1-lr3-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-semax-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-hcg-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-nad-precursor", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-glow-peptide-complex", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-klow-peptide-complex", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-5-amino-1mq-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-dihexa-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-glutathione", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-vitamin-b12", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-melanotan-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-slu-pp-332-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-aod-9604-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-kisspeptin-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-pt-141-bremelanotide-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-thymosin-alpha-1-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-dsip-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-selank-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-thymulin-peptide", priority: "0.7", changefreq: "monthly" },
+        
+        // General Education Articles
+        { url: "/guides/ordering-expectations", priority: "0.6", changefreq: "monthly" },
+        { url: "/guides/how-to-read-coas", priority: "0.6", changefreq: "monthly" },
+        { url: "/guides/understanding-peptide-purity", priority: "0.6", changefreq: "monthly" },
+        { url: "/guides/storage-101", priority: "0.6", changefreq: "monthly" },
+        { url: "/guides/lab-safety-guidelines", priority: "0.6", changefreq: "monthly" },
+        { url: "/guides/understanding-batches", priority: "0.6", changefreq: "monthly" },
+        
         // Support & Information Pages
-        { url: "/faq", priority: "0.6", changefreq: "monthly" },
+        { url: "/peptide-research-faq", priority: "0.6", changefreq: "monthly" },
         { url: "/contact", priority: "0.6", changefreq: "monthly" },
-        { url: "/troubleshooting", priority: "0.6", changefreq: "monthly" },
-        { url: "/package-warm", priority: "0.6", changefreq: "monthly" },
-        { url: "/shipping", priority: "0.6", changefreq: "monthly" },
+        { url: "/guides/peptide-handling-troubleshooting", priority: "0.6", changefreq: "monthly" },
+        { url: "/guides/peptide-package-arrived-warm", priority: "0.6", changefreq: "monthly" },
+        { url: "/peptide-shipping-and-handling", priority: "0.6", changefreq: "monthly" },
         { url: "/affiliate", priority: "0.6", changefreq: "monthly" },
         
         // Legal Pages
@@ -4354,8 +4394,8 @@ Return ONLY valid JSON in this exact format:
         { url: "/privacy", priority: "0.5", changefreq: "yearly" },
         { url: "/disclaimer", priority: "0.5", changefreq: "yearly" },
         
-        // Utility Pages (Lower Priority - Not Entry Points)
-        { url: "/dosage-calculator", priority: "0.4", changefreq: "monthly" },
+        // Tools
+        { url: "/tools/peptide-reconstitution-calculator", priority: "0.6", changefreq: "monthly" },
       ];
 
       let xml = `<?xml version="1.0" encoding="UTF-8"?>
