@@ -1,0 +1,198 @@
+Goal
+
+Confirm why Google says “Blocked by robots.txt” for /peptides even though robots.txt allows it.
+
+This is almost always caused by:
+
+an X-Robots-Tag header
+
+a meta robots noindex
+
+a middleware/route guard returning different content to Googlebot
+
+or an old robots cache (least likely)
+
+Step-by-step investigation checklist (Replit/dev)
+1) Verify the response Google actually gets (headers + status)
+
+Run these commands in the Replit Shell (or anywhere):
+
+curl -I https://reviveresearch.co/robots.txt
+curl -I https://reviveresearch.co/sitemap.xml
+curl -I https://reviveresearch.co/peptides
+curl -I https://reviveresearch.co/products
+
+
+What they’re looking for in the /peptides output:
+
+X-Robots-Tag: noindex (or anything containing noindex)
+
+x-robots-tag at all
+
+suspicious status codes: 401/403/302/307
+
+content-type mismatch or weird redirects
+
+✅ If any X-Robots-Tag includes noindex, that’s the cause.
+
+2) Compare what Googlebot gets vs a normal browser
+
+Googlebot sometimes gets different treatment.
+
+Run:
+
+curl -I -A "Mozilla/5.0" https://reviveresearch.co/peptides
+curl -I -A "Googlebot/2.1 (+http://www.google.com/bot.html)" https://reviveresearch.co/peptides
+
+
+Compare the headers line-by-line.
+
+If Googlebot gets:
+
+403 / 401
+
+a redirect to /login
+
+X-Robots-Tag: noindex
+
+or different cache headers
+
+…then your site is effectively cloaking (usually unintentional via auth middleware).
+
+3) Confirm meta robots tag on the page HTML
+
+Run:
+
+curl -s https://reviveresearch.co/peptides | head -n 80
+
+
+Then search for:
+
+curl -s https://reviveresearch.co/peptides | grep -i "meta name=\"robots\""
+
+
+If it prints anything like:
+
+noindex
+
+nofollow
+
+noarchive
+
+…that’s the blocker (or part of it).
+
+4) Search codebase for noindex and X-Robots-Tag
+
+In the repo, run:
+
+grep -RIn "noindex" .
+grep -RIn "x-robots-tag" .
+grep -RIn "X-Robots-Tag" .
+grep -RIn "robots" .
+
+
+Common places this shows up:
+
+next.config.js / next.config.mjs (headers() function)
+
+middleware.ts
+
+SEO components (Head, layout.tsx)
+
+auth guards that apply globally
+
+deployments that set default headers for all routes
+
+5) Check Next.js config headers (common hidden culprit)
+
+If this is a Next.js app, Replit should open:
+
+next.config.js or next.config.mjs
+
+Look for:
+
+async headers() { ... }
+
+
+If they see anything like:
+
+setting X-Robots-Tag globally
+
+setting noindex for “non-public pages”
+
+matching route patterns too broadly ('/(.*)')
+
+That’s it.
+
+6) Check middleware route protection logic
+
+Open:
+
+middleware.ts or middleware.js
+
+Look for logic like:
+
+redirecting unauthenticated users
+
+blocking non-logged-in views
+
+adding headers when user isn’t authed
+
+Key mistake: protecting /peptides or /products accidentally.
+
+Example of what to look for:
+
+“if not logged in → redirect”
+
+path matchers including /peptides or /(.*)
+
+“indexing disabled” logic for public pages
+
+7) Confirm the GSC URL Inspection is testing the same URL
+
+Sometimes Google tests http vs https, or www vs non-www
+.
+
+Replit should confirm:
+
+site canonical is consistent (https://reviveresearch.co)
+
+no redirect loop
+
+no canonical pointing somewhere else
+
+Use:
+
+curl -I http://reviveresearch.co/peptides
+curl -I https://www.reviveresearch.co/peptides
+
+
+If anything resolves weirdly, fix canonical + redirects.
+
+What “success” looks like
+
+When fixed, this must be true:
+
+/peptides returns 200
+
+no X-Robots-Tag: noindex
+
+no <meta name="robots" content="noindex">
+
+Googlebot and browser responses match
+
+GSC URL inspection shows:
+
+Crawl allowed: Yes
+
+Page fetch: Successful
+
+Quick likely fix once they find it
+
+If they find global noindex headers, they should either:
+
+remove it entirely, or
+
+restrict it to truly private routes only (/account, /dashboard, /checkout, etc.)
+
+Public routes must have no noindex.
