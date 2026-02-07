@@ -781,74 +781,162 @@ export function PriceValueMatrix() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   const vendors = [
-    { name: "No Documentation", price: 20, docs: 10, color: "#ef4444", size: 8 },
-    { name: "In-House Only", price: 35, docs: 35, color: "#f59e0b", size: 8 },
-    { name: "Some Third-Party", price: 50, docs: 60, color: "#a855f7", size: 8 },
-    { name: "Full Verification", price: 65, docs: 90, color: "#22c55e", size: 10 },
-    { name: "Premium (No Extra Value)", price: 120, docs: 70, color: "#f59e0b", size: 8 },
+    { name: "No Documentation", price: 15, docs: 8, color: "#ef4444", size: 12 },
+    { name: "In-House Only", price: 30, docs: 30, color: "#f59e0b", size: 12 },
+    { name: "Some Third-Party", price: 50, docs: 55, color: "#a855f7", size: 12 },
+    { name: "Full Verification", price: 70, docs: 88, color: "#22c55e", size: 14 },
+    { name: "Premium (No Extra Value)", price: 95, docs: 60, color: "#f59e0b", size: 12 },
   ];
+
+  const gridLinesH = [25, 50, 75];
+  const gridLinesV = [25, 50, 75];
+  const priceLabels = ["$20", "$45", "$70", "$95", "$120+"];
+  const docLabels = ["Low", "", "Mid", "", "High"];
 
   return (
     <div ref={ref} className="my-8" data-testid="graphic-price-value">
       <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Price vs. Documentation Quality</h3>
-      <Card className="p-6 border-[#ec4899]/20 bg-[#ec4899]/5">
-        <div className="relative h-64">
-          <p className="absolute -left-1 top-0 text-[10px] text-muted-foreground">High</p>
-          <p className="absolute -left-1 bottom-6 text-[10px] text-muted-foreground">Low</p>
-          <p className="absolute bottom-0 left-8 text-[10px] text-muted-foreground">$20</p>
-          <p className="absolute bottom-0 right-0 text-[10px] text-muted-foreground">$120+</p>
-          <p className="absolute left-1/2 -translate-x-1/2 bottom-0 text-[10px] text-muted-foreground">Price</p>
-          <p className="absolute -left-1 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground -rotate-90">Documentation</p>
-          
-          <div className="absolute top-4 left-8 right-4 bottom-6 border-l border-b border-border">
-            <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-[#22c55e]/5 rounded-tr-lg">
-              <p className="text-[9px] text-[#22c55e]/60 absolute top-2 right-2">Best Value</p>
+      <Card className="p-6 border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 via-transparent to-[#E7FB10]/5">
+        <div className="relative" style={{ height: 300 }}>
+          <p className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 text-[10px] text-[#21d8ff]/70 font-medium -rotate-90 whitespace-nowrap">Documentation Quality</p>
+
+          <div className="absolute top-2 left-10 right-2 bottom-8">
+            <div className="absolute inset-0 border-l-2 border-b-2 border-[#21d8ff]/30 rounded-bl-sm">
+              {gridLinesH.map((pos) => (
+                <div
+                  key={`h-${pos}`}
+                  className="absolute left-0 right-0"
+                  style={{
+                    top: `${100 - pos}%`,
+                    borderBottom: "1px dashed rgba(33, 216, 255, 0.12)",
+                  }}
+                />
+              ))}
+              {gridLinesV.map((pos) => (
+                <div
+                  key={`v-${pos}`}
+                  className="absolute top-0 bottom-0"
+                  style={{
+                    left: `${pos}%`,
+                    borderLeft: "1px dashed rgba(33, 216, 255, 0.12)",
+                  }}
+                />
+              ))}
+
+              <div
+                className="absolute rounded-lg"
+                style={{
+                  top: 0,
+                  right: 0,
+                  width: "45%",
+                  height: "45%",
+                  background: "linear-gradient(135deg, rgba(34, 197, 94, 0.12), rgba(34, 197, 94, 0.04))",
+                  border: "1px solid rgba(34, 197, 94, 0.2)",
+                }}
+              >
+                <p className="text-[10px] font-semibold text-[#22c55e] absolute top-2 right-3 tracking-wide">BEST VALUE</p>
+              </div>
+
+              <div
+                className="absolute rounded-lg"
+                style={{
+                  bottom: 0,
+                  left: 0,
+                  width: "35%",
+                  height: "40%",
+                  background: "linear-gradient(315deg, rgba(239, 68, 68, 0.12), rgba(239, 68, 68, 0.04))",
+                  border: "1px solid rgba(239, 68, 68, 0.2)",
+                }}
+              >
+                <p className="text-[10px] font-semibold text-[#ef4444] absolute bottom-2 left-3 tracking-wide">WORST VALUE</p>
+              </div>
+
+              <div
+                className="absolute rounded-lg"
+                style={{
+                  bottom: 0,
+                  right: 0,
+                  width: "30%",
+                  height: "50%",
+                  background: "linear-gradient(225deg, rgba(249, 115, 22, 0.08), rgba(249, 115, 22, 0.02))",
+                  border: "1px dashed rgba(249, 115, 22, 0.15)",
+                }}
+              >
+                <p className="text-[10px] font-medium text-[#f97316]/60 absolute bottom-2 right-3 tracking-wide">OVERPAYING</p>
+              </div>
+
+              {vendors.map((vendor, i) => {
+                const x = (vendor.price / 100) * 100;
+                const y = 100 - vendor.docs;
+                return (
+                  <motion.div
+                    key={vendor.name}
+                    className="absolute group z-10"
+                    style={{ left: `${x}%`, top: `${y}%`, transform: "translate(-50%, -50%)" }}
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                    transition={{ delay: 0.5 + i * 0.2, type: "spring" }}
+                  >
+                    <div
+                      className="rounded-full relative"
+                      style={{
+                        width: vendor.size * 2,
+                        height: vendor.size * 2,
+                        backgroundColor: `${vendor.color}30`,
+                        border: `2px solid ${vendor.color}`,
+                        boxShadow: `0 0 12px ${vendor.color}40, 0 0 4px ${vendor.color}20`,
+                      }}
+                    />
+                    <div className="invisible group-hover:visible absolute bottom-full left-1/2 -translate-x-1/2 mb-3 whitespace-nowrap bg-background/95 backdrop-blur-sm border border-border rounded-md px-3 py-2 z-20 shadow-lg">
+                      <p className="text-[11px] font-semibold" style={{ color: vendor.color }}>{vendor.name}</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">${vendor.price} avg | Documentation: {vendor.docs}%</p>
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
-            <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-[#ef4444]/5 rounded-bl-lg">
-              <p className="text-[9px] text-[#ef4444]/60 absolute bottom-2 left-2">Worst Value</p>
-            </div>
-            
-            {vendors.map((vendor, i) => {
-              const x = ((vendor.price - 20) / 100) * 100;
-              const y = 100 - vendor.docs;
-              return (
-                <motion.div
-                  key={vendor.name}
-                  className="absolute group"
-                  style={{ left: `${x}%`, top: `${y}%`, transform: "translate(-50%, -50%)" }}
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                  transition={{ delay: 0.5 + i * 0.2, type: "spring" }}
-                >
-                  <div 
-                    className="rounded-full"
-                    style={{ 
-                      width: vendor.size * 2, 
-                      height: vendor.size * 2, 
-                      backgroundColor: `${vendor.color}40`,
-                      border: `2px solid ${vendor.color}`,
-                    }}
-                  />
-                  <div className="invisible group-hover:visible absolute bottom-full left-1/2 -translate-x-1/2 mb-2 whitespace-nowrap bg-background border border-border rounded-md px-2 py-1 z-10">
-                    <p className="text-[10px] font-medium" style={{ color: vendor.color }}>{vendor.name}</p>
-                    <p className="text-[9px] text-muted-foreground">${vendor.price} | Docs: {vendor.docs}%</p>
-                  </div>
-                </motion.div>
-              );
-            })}
+
+            {[0, 25, 50, 75, 100].map((pos, i) => (
+              <p
+                key={`y-${pos}`}
+                className="absolute text-[9px] text-muted-foreground"
+                style={{ left: -8, top: `${100 - pos}%`, transform: "translateY(-50%) translateX(-100%)" }}
+              >
+                {docLabels[i]}
+              </p>
+            ))}
+
+            {[0, 25, 50, 75, 100].map((pos, i) => (
+              <p
+                key={`x-${pos}`}
+                className="absolute text-[9px] text-muted-foreground"
+                style={{ left: `${pos}%`, bottom: -20, transform: "translateX(-50%)" }}
+              >
+                {priceLabels[i]}
+              </p>
+            ))}
           </div>
+
+          <p className="absolute bottom-0 left-1/2 -translate-x-1/2 text-[10px] text-[#21d8ff]/70 font-medium">Price Point</p>
         </div>
-        <div className="flex flex-wrap gap-3 justify-center mt-2">
+
+        <div className="flex flex-wrap gap-4 justify-center mt-6 pt-4 border-t border-border/50">
           {vendors.map((vendor, i) => (
-            <motion.div 
-              key={i} 
-              className="flex items-center gap-1.5"
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : {}}
+            <motion.div
+              key={i}
+              className="flex items-center gap-2"
+              initial={{ opacity: 0, y: 8 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 1.5 + i * 0.1 }}
             >
-              <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: vendor.color }} />
-              <span className="text-[10px] text-muted-foreground">{vendor.name}</span>
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{
+                  backgroundColor: vendor.color,
+                  boxShadow: `0 0 6px ${vendor.color}60`,
+                }}
+              />
+              <span className="text-[11px] text-muted-foreground">{vendor.name}</span>
             </motion.div>
           ))}
         </div>
