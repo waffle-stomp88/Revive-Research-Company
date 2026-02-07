@@ -1,28 +1,9 @@
 # Revive Research - Robots.txt
-# Careful access control for regulatory compliance
 
 User-agent: *
 Allow: /
 
-
-# Disallow all product and shop pages
-Disallow: /products
-Disallow: /products/
-Disallow: /peptides
-Disallow: /peptides/
-Disallow: /shop
-Disallow: /cart
-Disallow: /checkout
-Disallow: /bulk-packs
-Disallow: /research-stacks
-Disallow: /research-stacks/
-Disallow: /bundles
-Disallow: /bundles/
-Disallow: /supplies
-
-# Disallow gated and account pages
-Disallow: /academy
-Disallow: /coa-library
+# Disallow private account and admin pages
 Disallow: /dashboard
 Disallow: /account
 Disallow: /account-settings
@@ -31,12 +12,15 @@ Disallow: /affiliate-dashboard
 Disallow: /login
 Disallow: /signup
 Disallow: /register
+Disallow: /rx-panel-7v3k
 
-# Disallow API and system pages
+# Disallow transactional pages
+Disallow: /cart
+Disallow: /checkout
+Disallow: /order-confirmation
+
+# Disallow API and system routes
 Disallow: /api/
 
 # Sitemap location
 Sitemap: https://reviveresearch.co/sitemap.xml
-
-# Crawl-delay
-Crawl-delay: 1
