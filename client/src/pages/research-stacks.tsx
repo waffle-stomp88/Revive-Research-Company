@@ -1743,26 +1743,37 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                     ) : (
                       <>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          {selectedPeptides.map(peptide => (
+                          {selectedPeptides.map(peptide => {
+                            const isOOS = !peptide.inStock;
+                            return (
                             <div 
                               key={peptide.id}
-                              className="flex items-center justify-between p-2 rounded-lg bg-[#21d8ff]/5 border border-[#21d8ff]/20"
+                              className={`flex items-center justify-between p-2 rounded-lg ${isOOS ? 'bg-red-500/10 border border-red-500/30' : 'bg-[#21d8ff]/5 border border-[#21d8ff]/20'}`}
                             >
-                              <span className="font-medium text-sm">
-                                {peptide.name.replace(/\s*\([^)]*\)/g, '')}
-                              </span>
                               <div className="flex items-center gap-2">
-                                <span className="text-sm text-muted-foreground">${peptide.price}</span>
-                                <button
+                                <span className={`font-medium text-sm ${isOOS ? 'text-red-300/80' : ''}`}>
+                                  {peptide.name.replace(/\s*\([^)]*\)/g, '')}
+                                </span>
+                                {isOOS && (
+                                  <Badge variant="outline" className="text-xs border-red-500/40 text-red-400 no-default-hover-elevate no-default-active-elevate" data-testid={`badge-oos-${peptide.id}`}>
+                                    OOS
+                                  </Badge>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className={`text-sm ${isOOS ? 'line-through text-red-400/50' : 'text-muted-foreground'}`}>${peptide.price}</span>
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
                                   onClick={() => togglePeptide(peptide)}
-                                  className="p-1 rounded-full hover:bg-red-500/20 text-muted-foreground hover:text-red-400"
                                   data-testid={`button-remove-peptide-${peptide.id}`}
                                 >
                                   <X className="h-3.5 w-3.5" />
-                                </button>
+                                </Button>
                               </div>
                             </div>
-                          ))}
+                            );
+                          })}
                         </div>
 
                         {selectedPeptides.length >= 2 && (
