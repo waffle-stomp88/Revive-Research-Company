@@ -18,6 +18,7 @@ interface CartContextType {
   items: CartItem[];
   addToCart: (item: CartItem) => void;
   removeFromCart: (productId: string, dosage: string) => void;
+  removeBundleFromCart: (bundleId: string) => void;
   updateQuantity: (productId: string, dosage: string, quantity: number) => void;
   clearCart: () => void;
   getItemCount: () => number;
@@ -71,6 +72,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
   };
 
+  const removeBundleFromCart = (bundleId: string) => {
+    setItems((prev) => prev.filter((i) => i.bundleId !== bundleId));
+  };
+
   const updateQuantity = (productId: string, dosage: string, quantity: number) => {
     if (quantity <= 0) {
       removeFromCart(productId, dosage);
@@ -104,6 +109,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         items,
         addToCart,
         removeFromCart,
+        removeBundleFromCart,
         updateQuantity,
         clearCart,
         getItemCount,

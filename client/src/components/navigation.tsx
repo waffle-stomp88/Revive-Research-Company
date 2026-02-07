@@ -134,7 +134,7 @@ export function Navigation() {
   const [hoveredCartItem, setHoveredCartItem] = useState<string | null>(null);
   const [location] = useLocation();
   const { user, isAuthenticated, isLoading, login, logout } = useAuth();
-  const { items, getItemCount, getSubtotal, removeFromCart } = useCart();
+  const { items, getItemCount, getSubtotal, removeFromCart, removeBundleFromCart } = useCart();
   const cartItemCount = getItemCount();
   const regularItems = items.filter(item => !item.isBundle);
   const bundleItems = items.filter(item => item.isBundle);
@@ -548,7 +548,7 @@ export function Navigation() {
                                     variant="ghost"
                                     size="sm"
                                     className="text-red-400 hover:text-red-500 hover:bg-red-500/10 h-auto"
-                                    onClick={() => removeFromCart(bundle.bundleId || "", "")}
+                                    onClick={() => removeBundleFromCart(bundle.bundleId || "")}
                                     data-testid={`button-remove-cart-bundle-${bundle.bundleId}`}
                                   >
                                     <Trash2 className="h-4 w-4" />
