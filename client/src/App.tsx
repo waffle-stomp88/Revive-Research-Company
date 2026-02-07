@@ -133,7 +133,8 @@ function Router() {
         <Route path="/affiliate-dashboard" component={AffiliateDashboard} />
         <Route path="/faq" component={FAQ} />
         <Route path="/shipping" component={Shipping} />
-        <Route path="/terms" component={TermsOfService} />
+        <Route path="/terms-of-service" component={TermsOfService} />
+        <Route path="/terms">{() => { window.location.replace("/terms-of-service"); return null; }}</Route>
         <Route path="/privacy" component={PrivacyPolicy} />
         <Route path="/disclaimer" component={Disclaimer} />
         <Route path="/contact" component={Contact} />
@@ -157,7 +158,7 @@ function Router() {
         <Route path="/dosage-calculator" component={DosageCalculator} />
         <Route path="/resources" component={ResourcesHub} />
         <Route path="/unsubscribe" component={Unsubscribe} />
-        <Route path="/dev-login" component={DevLogin} />
+        <Route path="/rx-panel-7v3k" component={DevLogin} />
         
         <Route path="/guides/are-peptide-coas-trustworthy" component={CoaTrust} />
         <Route path="/guides/how-batch-testing-works" component={BatchTesting} />

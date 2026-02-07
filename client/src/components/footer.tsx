@@ -207,7 +207,7 @@ export function Footer({ className }: FooterProps) {
                 Important Legal Disclaimer
               </h4>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                All products are sold for laboratory research use only. <span className="text-red-400 font-semibold">Not for human consumption.</span> Not evaluated by the FDA. Not intended to diagnose, treat, cure, or prevent any disease. Revive Research is not a compounding pharmacy (503A) or outsourcing facility (503B) under the Federal Food, Drug, and Cosmetic Act. By purchasing, you agree to our <Link href="/terms"><span className="text-red-400 hover:underline cursor-pointer">Terms of Service</span></Link>.
+                All products are sold for laboratory research use only. <span className="text-red-400 font-semibold">Not for human consumption.</span> Not evaluated by the FDA. Not intended to diagnose, treat, cure, or prevent any disease. Revive Research is not a compounding pharmacy (503A) or outsourcing facility (503B) under the Federal Food, Drug, and Cosmetic Act. By purchasing, you agree to our <Link href="/terms-of-service"><span className="text-red-400 hover:underline cursor-pointer">Terms of Service</span></Link>.
               </p>
             </div>
           </div>
@@ -223,7 +223,7 @@ export function Footer({ className }: FooterProps) {
                 <span className="text-muted-foreground hover:text-[#E7FB10] transition-colors cursor-pointer">Privacy Policy</span>
               </Link>
               <span className="text-muted-foreground/40">–</span>
-              <Link href="/terms">
+              <Link href="/terms-of-service">
                 <span className="text-muted-foreground hover:text-[#E7FB10] transition-colors cursor-pointer">Terms & Conditions</span>
               </Link>
               <span className="text-muted-foreground/40">–</span>

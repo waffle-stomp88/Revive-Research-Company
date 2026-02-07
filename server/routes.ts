@@ -208,7 +208,7 @@ export async function registerRoutes(
       const userId = (req.session as any)?.userId;
       
       if (!userId) {
-        return res.status(401).json({ message: "Not authenticated" });
+        return res.status(200).json(null);
       }
       
       const user = await storage.getUser(userId);

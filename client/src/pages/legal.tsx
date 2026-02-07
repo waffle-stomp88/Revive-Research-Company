@@ -30,7 +30,7 @@ const categories = [
 ];
 
 const quickLinks = [
-  { href: "/terms", title: "Terms of Service", description: "Usage agreement", color: "#9d4edd" },
+  { href: "/terms-of-service", title: "Terms of Service", description: "Usage agreement", color: "#9d4edd" },
   { href: "/privacy", title: "Privacy Policy", description: "Data practices", color: "#21d8ff" },
   { href: "/shipping", title: "Shipping Policy", description: "Delivery info", color: "#E7FB10" },
 ];
