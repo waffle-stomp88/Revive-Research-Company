@@ -588,7 +588,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <SEOHead title="My Account" description="Manage your orders and account settings." canonicalPath="/dashboard" />
+      <SEOHead title="My Dashboard" description="Manage your orders and account settings." canonicalPath="/dashboard" />
       <main className="min-h-screen pt-32 md:pt-40 pb-24 relative overflow-hidden">
         {/* Ambient Background Gradients for Welcoming Feel */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">

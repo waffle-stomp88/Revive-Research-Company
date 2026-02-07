@@ -110,7 +110,7 @@ export default function CoaLibrary() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead title="Certificate of Analysis Library" description="Access all COAs for our research compounds. Independent lab verification ensures 98%+ purity on every batch." canonicalPath="/coa-library" />
+      <SEOHead title="COA Library" description="Access all COAs for our research compounds. Independent lab verification ensures 98%+ purity on every batch." canonicalPath="/coa-library" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

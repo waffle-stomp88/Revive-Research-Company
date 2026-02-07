@@ -117,7 +117,7 @@ export default function CoaVerification() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead title="COA Verification" description="Verify your Certificate of Analysis. Every batch is third-party tested for purity, identity, and sterility." canonicalPath="/coa" />
+      <SEOHead title="COA Verifier" description="Verify your Certificate of Analysis. Every batch is third-party tested for purity, identity, and sterility." canonicalPath="/coa" />
       <div className="max-w-4xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

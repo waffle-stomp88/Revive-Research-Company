@@ -95,7 +95,7 @@ export default function OrderConfirmation() {
   return (
     <>
       <SEOHead
-        title="Order Confirmed | Revive Research"
+        title="Order Confirmation | Revive Research"
         description="Your order has been successfully placed. Thank you for choosing Revive Research."
       />
       

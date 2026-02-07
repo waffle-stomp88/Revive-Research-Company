@@ -270,7 +270,7 @@ export default function Wholesale() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-12">
-      <SEOHead title="Wholesale Program" description="Wholesale pricing for institutions and resellers. Contact us for volume discounts." canonicalPath="/wholesale" />
+      <SEOHead title="Wholesale Inquiry" description="Wholesale pricing for institutions and resellers. Contact us for volume discounts." canonicalPath="/wholesale" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         {/* Category Navigation Tabs */}
         <div className="mb-6">

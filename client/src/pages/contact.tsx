@@ -132,7 +132,7 @@ export default function Contact() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead title="Contact Us" description="Get in touch with our research support team. Fast response times for order inquiries and product questions." canonicalPath="/contact" />
+      <SEOHead title="Contact" description="Get in touch with our research support team. Fast response times for order inquiries and product questions." canonicalPath="/contact" />
       <div className="container mx-auto px-4 max-w-4xl">
         <motion.div
           variants={containerVariants}

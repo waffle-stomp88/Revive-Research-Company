@@ -166,7 +166,7 @@ export default function CartPage() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-12 px-3 sm:px-4 md:px-8">
-      <SEOHead title="Shopping Cart" description="Review your research compound order. Free shipping on orders over $200. Secure checkout with fast processing." canonicalPath="/cart" />
+      <SEOHead title="Cart" description="Review your research compound order. Free shipping on orders over $200. Secure checkout with fast processing." canonicalPath="/cart" />
       <div className="max-w-6xl mx-auto w-full">
         <motion.div
           initial={{ opacity: 0, x: -20 }}

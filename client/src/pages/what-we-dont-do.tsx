@@ -78,7 +78,7 @@ const whatWeDoInstead = [
 export default function WhatWeDontDo() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead title="Our Standards" description="Learn what sets us apart. Our commitment to quality, transparency, and ethical research practices." canonicalPath="/what-we-dont-do" />
+      <SEOHead title="What We Don't Do" description="Learn what sets us apart. Our commitment to quality, transparency, and ethical research practices." canonicalPath="/what-we-dont-do" />
       <div className="max-w-6xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
