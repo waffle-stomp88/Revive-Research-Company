@@ -48,7 +48,7 @@ const beginnerArticles: Record<string, BeginnerArticle> = {
   // PEPTIDE PROFILE ARTICLES - Beginner Versions
   // ==========================================
 
-  "bpc-157-research-guide": {
+  "what-is-bpc-157-peptide": {
     icon: Heart,
     iconColor: "#22c55e",
     intro: `BPC-157 is one of the most popular peptides in research today. The name stands for "Body Protection Compound," and it comes from a protein naturally found in your stomach's digestive juices. Scientists created a synthetic version with just 15 amino acids so they could study its fascinating effects on tissue repair.`,
@@ -89,7 +89,7 @@ Most of this research is still in early stages, primarily involving cell culture
     takeaway: "BPC-157 is a 15-amino-acid peptide derived from a stomach protein. Researchers study it for its potential role in supporting tissue repair processes through effects on blood vessel formation, growth factors, and the nitric oxide system."
   },
 
-  "tb-500-research-guide": {
+  "what-is-tb-500-peptide": {
     icon: Activity,
     iconColor: "#21d8ff",
     intro: `TB-500 is the synthetic version of a peptide called Thymosin Beta-4, which is found naturally in almost every cell of your body. With 43 amino acids, it's a medium-sized peptide that researchers study for its apparent role in how cells move, heal, and regenerate.`,
@@ -132,7 +132,7 @@ Understanding exactly how TB-500 works is still an active area of research, with
     takeaway: "TB-500 is a synthetic version of Thymosin Beta-4, a naturally occurring peptide found in nearly all your cells. It works by regulating actin (cell structure), which affects how cells move and migrate during healing processes."
   },
 
-  "semaglutide-research-guide": {
+  "what-is-semaglutide-peptide": {
     icon: Target,
     iconColor: "#E7FB10",
     intro: `Semaglutide is a GLP-1 receptor agonist - a peptide that mimics a hormone your body naturally produces after eating. The natural hormone (GLP-1) breaks down in just minutes, but scientists modified semaglutide to last much longer, making it valuable for metabolic research.`,
@@ -179,7 +179,7 @@ The extensive research on semaglutide has made it a foundational peptide for und
     takeaway: "Semaglutide mimics GLP-1, a natural gut hormone that affects insulin release, appetite, and digestion. It's been engineered to last about a week instead of minutes, making it valuable for metabolic research."
   },
 
-  "tirzepatide-research-guide": {
+  "what-is-tirzepatide-peptide": {
     icon: Zap,
     iconColor: "#9d4edd",
     intro: `Tirzepatide takes the GLP-1 concept a step further - it's a dual agonist that activates both GLP-1 and GIP receptors. GIP is another gut hormone that works alongside GLP-1 in regulating metabolism. By targeting both, researchers can study what happens when you activate two complementary pathways simultaneously.`,
@@ -222,7 +222,7 @@ Tirzepatide represents a shift from single-target to multi-target approaches in 
     takeaway: "Tirzepatide activates two gut hormone receptors (GLP-1 and GIP) instead of just one. This dual approach lets researchers study how these complementary metabolic pathways work together."
   },
 
-  "retatrutide-research-guide": {
+  "what-is-retatrutide-peptide": {
     icon: Flame,
     iconColor: "#f97316",
     intro: `Retatrutide is the newest generation of metabolic peptides - a triple agonist that activates GLP-1, GIP, AND glucagon receptors. While semaglutide targets one receptor and tirzepatide targets two, retatrutide targets three, representing the cutting edge of incretin research.`,
@@ -273,7 +273,7 @@ Retatrutide represents where the field of incretin research is heading - toward 
     takeaway: "Retatrutide is a triple agonist targeting GLP-1, GIP, and glucagon receptors. Adding glucagon brings energy expenditure and fat breakdown pathways into the research picture, creating a more comprehensive metabolic research tool."
   },
 
-  "cjc-1295-research-guide": {
+  "what-is-cjc-1295-peptide": {
     icon: Activity,
     iconColor: "#21d8ff",
     intro: `CJC-1295 is a synthetic version of GHRH (growth hormone-releasing hormone) - the signal your brain uses to tell your pituitary gland to release growth hormone. The natural signal is very short-lived, but CJC-1295 was engineered to last much longer, making it valuable for growth hormone axis research.`,
@@ -319,7 +319,7 @@ CJC-1295 has become a standard research tool for anyone studying the GHRH/GH/IGF
     takeaway: "CJC-1295 is a long-lasting version of GHRH, the hormone that tells your pituitary to release growth hormone. It's used to study the growth hormone axis because it lasts hours or days instead of minutes."
   },
 
-  "ipamorelin-research-guide": {
+  "what-is-ipamorelin-peptide": {
     icon: Target,
     iconColor: "#22c55e",
     intro: `Ipamorelin is a growth hormone secretagogue - it triggers growth hormone release, but through a different pathway than CJC-1295. While CJC-1295 mimics GHRH, ipamorelin mimics ghrelin (the "hunger hormone"). This different approach gives researchers another tool for studying growth hormone regulation.`,
@@ -368,7 +368,7 @@ The selectivity and predictable response make ipamorelin a clean research tool f
     takeaway: "Ipamorelin triggers growth hormone release by mimicking ghrelin (the hunger hormone), not GHRH. It's valued for being selective - it affects growth hormone without significantly changing cortisol or prolactin levels."
   },
 
-  "tesamorelin-research-guide": {
+  "what-is-tesamorelin-peptide": {
     icon: Zap,
     iconColor: "#E7FB10",
     intro: `Tesamorelin is another GHRH analog like CJC-1295, but with a different modification strategy. It uses a unique chemical group attached to its structure that helps it resist breakdown. Researchers study tesamorelin particularly for its effects on body composition.`,
@@ -411,7 +411,7 @@ Tesamorelin provides researchers with another tool for studying the growth hormo
     takeaway: "Tesamorelin is a 44-amino-acid GHRH analog with a chemical modification that helps it resist breakdown. It's studied for growth hormone axis research with particular interest in body composition effects."
   },
 
-  "epithalon-research-guide": {
+  "what-is-epithalon-peptide": {
     icon: Clock,
     iconColor: "#9d4edd",
     intro: `Epithalon is a small tetrapeptide (just 4 amino acids: Ala-Glu-Asp-Gly) that emerged from Russian research on the pineal gland. It's studied for its potential effects on telomerase, an enzyme involved in cellular aging. This makes it one of the most interesting peptides in longevity research.`,
@@ -460,7 +460,7 @@ While much research remains to be done, epithalon represents an approach to agin
     takeaway: "Epithalon is a tiny 4-amino-acid peptide studied for its potential effects on telomerase, an enzyme that helps maintain telomeres (the protective caps on your chromosomes that shorten with age)."
   },
 
-  "semax-research-guide": {
+  "what-is-semax-peptide": {
     icon: Brain,
     iconColor: "#21d8ff",
     intro: `Semax is a synthetic peptide derived from ACTH, a hormone your pituitary gland produces. Scientists took a small fragment of ACTH (amino acids 4-7) and added a stabilizing tail to create semax. The result is a peptide that researchers study for cognitive and neuroprotective effects - without the hormonal effects of full ACTH.`,
@@ -508,7 +508,7 @@ Semax represents a creative approach: taking a small piece of a larger hormone a
     takeaway: "Semax is a modified fragment of ACTH (a pituitary hormone) engineered for brain research. It has effects on BDNF and other neurological factors without affecting cortisol, making it useful for cognitive research."
   },
 
-  "ghk-cu-research-guide": {
+  "what-is-ghk-cu-peptide": {
     icon: Sparkles,
     iconColor: "#ec4899",
     intro: `GHK-Cu is one of the simplest and most studied peptides - just three amino acids (Glycine-Histidine-Lysine) bound to a copper ion. Despite its tiny size, it's remarkably bioactive. Your body naturally produces GHK, and levels decrease significantly as you age. Researchers study it for its effects on skin, wound healing, and tissue remodeling.`,
@@ -557,7 +557,7 @@ GHK-Cu represents one of the more accessible peptides for research - it's small,
     takeaway: "GHK-Cu is a copper-binding tripeptide that decreases with age. Researchers study it for tissue remodeling, skin health, and wound healing, with the copper ion being essential to its biological activity."
   },
 
-  "glow-peptide-complex-research-guide": {
+  "what-is-glow-peptide-complex": {
     icon: Sparkles,
     iconColor: "#E7FB10",
     intro: `GLOW Peptide Complex represents a multi-peptide approach to skin research. Rather than using a single peptide, it combines several bioactive peptides that work through different pathways. The idea is that targeting multiple mechanisms simultaneously might produce more comprehensive effects than any single peptide alone.`,
@@ -610,7 +610,7 @@ Despite these challenges, multi-peptide research reflects how the body actually 
     takeaway: "GLOW Peptide Complex combines multiple peptides (signal, carrier, enzyme-inhibiting) to target different skin health pathways simultaneously, allowing research into synergistic effects."
   },
 
-  "klow-peptide-complex-research-guide": {
+  "what-is-klow-peptide-complex": {
     icon: Shield,
     iconColor: "#21d8ff",
     intro: `KLOW Peptide Complex takes the tissue repair concept further by adding a powerful anti-inflammatory component. It combines four peptides: TB-500, BPC-157, GHK-Cu, and KPV. The special ingredient is KPV, a tripeptide that specifically targets inflammation - which often gets in the way of healing.`,
@@ -676,7 +676,7 @@ Do four peptides together work better than four peptides separately? This is a f
     takeaway: "KLOW Peptide Complex combines tissue repair peptides (TB-500, BPC-157, GHK-Cu) with the anti-inflammatory KPV, which blocks the NF-κB inflammation pathway. The key insight: controlling inflammation creates a better environment for healing."
   },
 
-  "igf-1-lr3-research-guide": {
+  "what-is-igf-1-lr3-peptide": {
     icon: Dna,
     iconColor: "#22c55e",
     intro: `IGF-1 LR3 is a modified version of IGF-1 (Insulin-like Growth Factor 1), an important signaling molecule your liver produces in response to growth hormone. The "LR3" modifications make it more potent and longer-lasting than natural IGF-1, making it valuable for growth factor research.`,
@@ -732,7 +732,7 @@ The enhanced properties of IGF-1 LR3 make it particularly useful when researcher
     takeaway: "IGF-1 LR3 is a modified version of IGF-1 (a growth factor your liver makes in response to growth hormone). The modifications prevent it from binding to carrier proteins, making more available to interact with receptors."
   },
 
-  "mots-c-research-guide": {
+  "what-is-mots-c-peptide": {
     icon: Flame,
     iconColor: "#f97316",
     intro: `MOTS-c is a unique peptide - it's encoded by your mitochondria, not your regular DNA. Discovered in 2015, this 16-amino-acid peptide is sometimes called an "exercise mimetic" because it seems to produce some effects similar to exercise. It's at the forefront of mitochondrial and metabolic research.`,
@@ -781,7 +781,7 @@ As a relatively new discovery, MOTS-c represents an exciting frontier in underst
     takeaway: "MOTS-c is a mitochondria-encoded peptide that activates AMPK, the same energy-sensing pathway triggered by exercise. It's studied for metabolic effects and its role in mitochondrial communication."
   },
 
-  "nad-precursor-research-guide": {
+  "what-is-nad-precursor": {
     icon: Zap,
     iconColor: "#9d4edd",
     intro: `NAD+ (Nicotinamide Adenine Dinucleotide) isn't a peptide - it's a coenzyme found in every cell of your body. It's essential for energy production, DNA repair, and many other processes. NAD+ precursors are compounds your body converts into NAD+, and they're central to aging and metabolic research.`,
@@ -834,7 +834,7 @@ NAD+ precursor research bridges chemistry, metabolism, and aging science in ways
     takeaway: "NAD+ is a coenzyme essential for energy production, DNA repair, and sirtuin function. NAD+ precursors (like NMN and NR) are studied because NAD+ levels decline significantly with age."
   },
 
-  "hcg-research-guide": {
+  "what-is-hcg-peptide": {
     icon: Droplets,
     iconColor: "#21d8ff",
     intro: `HCG (Human Chorionic Gonadotropin) is a glycoprotein hormone composed of 237 amino acids. It's best known as the "pregnancy hormone" because it's produced during pregnancy, but researchers study it for its effects on the reproductive system and hormonal regulation.`,
@@ -1015,7 +1015,7 @@ A proper COA comes from an independent, third-party laboratory - not the company
   // EDUCATIONAL PEPTIDES - Not carried by company
   // ==========================================
 
-  "kisspeptin-research-guide": {
+  "what-is-kisspeptin-peptide": {
     icon: Heart,
     iconColor: "#ec4899",
     intro: `Kisspeptin is a neuropeptide that plays a crucial role in reproductive biology. It acts as the master switch for the body's reproductive hormone system, discovered through its role in puberty and fertility. Scientists study it to understand how the brain controls reproductive function.`,
@@ -1054,7 +1054,7 @@ A proper COA comes from an independent, third-party laboratory - not the company
     takeaway: "Kisspeptin is a neuropeptide that controls the reproductive hormone cascade. It's the master switch that initiates puberty and regulates fertility, making it fundamental to reproductive biology research."
   },
 
-  "pt-141-bremelanotide-research-guide": {
+  "what-is-pt-141-bremelanotide-peptide": {
     icon: Brain,
     iconColor: "#9d4edd",
     intro: `PT-141, also known as bremelanotide, is a synthetic peptide derived from melanotan II. Unlike hormones that work through the circulatory system, PT-141 works directly through the central nervous system by activating melanocortin receptors in the brain. This makes it unique among peptides studied for sexual function.`,
@@ -1093,7 +1093,7 @@ A proper COA comes from an independent, third-party laboratory - not the company
     takeaway: "PT-141 (bremelanotide) works through brain melanocortin receptors rather than vascular pathways. It's studied to understand how the central nervous system regulates sexual arousal and response."
   },
 
-  "thymosin-alpha-1-research-guide": {
+  "what-is-thymosin-alpha-1-peptide": {
     icon: Shield,
     iconColor: "#22c55e",
     intro: `Thymosin Alpha-1 (Tα1) is a 28-amino-acid peptide originally isolated from the thymus gland. The thymus is a specialized organ that trains immune cells during development. Thymosin Alpha-1 appears to be one of the key signaling molecules involved in this process, making it a significant subject for immunology research.`,
@@ -1132,7 +1132,7 @@ A proper COA comes from an independent, third-party laboratory - not the company
     takeaway: "Thymosin Alpha-1 is a thymus-derived peptide that influences T-cell development and immune regulation. It's studied to understand how thymic signaling affects immune competence, especially in the context of aging."
   },
 
-  "dsip-research-guide": {
+  "what-is-dsip-peptide": {
     icon: Moon,
     iconColor: "#6366f1",
     intro: `DSIP (Delta Sleep-Inducing Peptide) is a small nonapeptide (9 amino acids) originally isolated from the blood of rabbits during slow-wave sleep. Despite its name, DSIP's relationship with sleep is complex, and researchers now study it for a variety of effects beyond just sleep induction.`,
@@ -1175,7 +1175,7 @@ A proper COA comes from an independent, third-party laboratory - not the company
     takeaway: "DSIP is a 9-amino-acid peptide that affects sleep architecture, stress response, and potentially pain pathways. It's studied to understand how peptide signals regulate states of rest and stress."
   },
 
-  "selank-research-guide": {
+  "what-is-selank-peptide": {
     icon: Brain,
     iconColor: "#21d8ff",
     intro: `Selank is a synthetic peptide developed in Russia that combines a sequence from the natural immune peptide tuftsin with additional amino acids. This design was intended to create a compound that affects both immune and neurological function, making it interesting for research on the connection between these systems.`,
@@ -1214,7 +1214,7 @@ A proper COA comes from an independent, third-party laboratory - not the company
     takeaway: "Selank is a synthetic peptide based on the immune peptide tuftsin. It's studied for potential effects on both immune function and the nervous system, particularly GABAergic signaling and anxiety-related pathways."
   },
 
-  "aod-9604-research-guide": {
+  "what-is-aod-9604-peptide": {
     icon: Zap,
     iconColor: "#f97316",
     intro: `AOD-9604 is a modified fragment of human growth hormone (HGH). Specifically, it's amino acids 177-191 from the C-terminal end of HGH, with an added tyrosine at the beginning. This fragment was designed to capture some of growth hormone's metabolic effects without the growth-promoting activities.`,
@@ -1253,7 +1253,7 @@ A proper COA comes from an independent, third-party laboratory - not the company
     takeaway: "AOD-9604 is a fragment of growth hormone (amino acids 177-191 plus tyrosine) studied for its effects on fat metabolism. It was designed to capture specific metabolic effects without the growth-promoting activities of full HGH."
   },
 
-  "thymulin-research-guide": {
+  "what-is-thymulin-peptide": {
     icon: Shield,
     iconColor: "#22c55e",
     intro: `Thymulin (also called facteur thymique sérique or FTS) is a small nonapeptide hormone produced exclusively by the thymus gland. Unlike Thymosin Alpha-1, thymulin requires zinc to be biologically active, making it a unique metallopeptide. It's studied for its role in T-cell maturation and immune regulation.`,
@@ -1294,7 +1294,7 @@ A proper COA comes from an independent, third-party laboratory - not the company
     takeaway: "Thymulin is a zinc-dependent thymic hormone essential for T-cell maturation. It's unique in requiring zinc for activity and serves as a marker of thymic function, making it valuable for immune and aging research."
   },
 
-  "5-amino-1mq-research-guide": {
+  "what-is-5-amino-1mq-peptide": {
     icon: Zap,
     iconColor: "#E7FB10",
     intro: `5-Amino-1MQ is a small molecule that inhibits an enzyme called NNMT (nicotinamide N-methyltransferase). This enzyme plays a role in how your body processes NAD+, a crucial molecule for cellular energy. By blocking NNMT, researchers study how cells might have more NAD+ available for energy production.`,
@@ -1339,7 +1339,7 @@ Think of it like a drain stopper - it helps keep more NAD+ in the system rather 
     takeaway: "5-Amino-1MQ inhibits the NNMT enzyme, which normally depletes NAD+ precursors. By blocking NNMT, it may help maintain higher cellular NAD+ levels, supporting energy metabolism and cellular function."
   },
 
-  "dihexa-research-guide": {
+  "what-is-dihexa-peptide": {
     icon: Brain,
     iconColor: "#9d4edd",
     intro: `Dihexa is a peptide derivative that researchers study for its effects on cognitive function. It works through the HGF/c-Met system - a signaling pathway involved in nerve cell connections. What makes Dihexa remarkable is its reported potency: it appears to be about 7 times more powerful than BDNF (brain-derived neurotrophic factor) at promoting synapse formation.`,
@@ -1384,7 +1384,7 @@ Think of it like a fertilizer specifically designed to help brain cells form new
     takeaway: "Dihexa is a peptide derivative that works through the HGF/c-Met pathway to promote synapse formation. It's studied for being approximately 7 times more potent than BDNF at stimulating new neuronal connections."
   },
 
-  "glutathione-research-guide": {
+  "what-is-glutathione": {
     icon: Shield,
     iconColor: "#22c55e",
     intro: `Glutathione is often called the "master antioxidant" because it's the most abundant antioxidant your body makes. It's a tripeptide (just three amino acids: glutamate, cysteine, and glycine) found in virtually every cell. Unlike most antioxidants you eat, glutathione is made inside your cells where it's needed most.`,
@@ -1429,7 +1429,7 @@ Think of it like a fertilizer specifically designed to help brain cells form new
     takeaway: "Glutathione is a tripeptide antioxidant made by every cell in your body. It protects cells from oxidative damage through a regenerating cycle (GSH↔GSSG) and supports detoxification, making it central to cellular health research."
   },
 
-  "vitamin-b12-research-guide": {
+  "what-is-vitamin-b12": {
     icon: Dna,
     iconColor: "#ec4899",
     intro: `Vitamin B12 (cobalamin) is an essential nutrient that contains cobalt at its center - the only vitamin with a metal atom. Despite needing only tiny amounts, B12 is crucial for DNA synthesis, nerve function, and energy metabolism. It's unique among vitamins because it requires a special protein (intrinsic factor) for absorption.`,
@@ -1474,7 +1474,7 @@ Think of it like a fertilizer specifically designed to help brain cells form new
     takeaway: "Vitamin B12 is the only vitamin containing a metal (cobalt). It's essential for methylation reactions that affect DNA synthesis, nerve function, and energy metabolism. Its unique absorption mechanism involving intrinsic factor makes it a subject of ongoing research."
   },
 
-  "melanotan-research-guide": {
+  "what-is-melanotan-peptide": {
     icon: Sparkles,
     iconColor: "#f97316",
     intro: `Melanotan I and Melanotan II are synthetic peptides that mimic alpha-melanocyte stimulating hormone (α-MSH), which naturally regulates skin pigmentation. Developed at the University of Arizona, these peptides activate melanocortin receptors, with MT-I being more selective for MC1R (skin pigmentation) and MT-II affecting multiple receptor subtypes.`,
@@ -1519,7 +1519,7 @@ Think of it like a fertilizer specifically designed to help brain cells form new
     takeaway: "Melanotan I and II are synthetic melanocortin receptor agonists that stimulate melanin production. MT-I is selective for MC1R (skin), while MT-II activates multiple receptors affecting pigmentation, appetite, and other systems."
   },
 
-  "slu-pp-332-research-guide": {
+  "what-is-slu-pp-332-peptide": {
     icon: Zap,
     iconColor: "#E7FB10",
     intro: `SLU-PP-332 is a first-in-class research compound known as an "exercise mimetic." While most peptides work like traditional hormones, SLU-PP-332 works like a "fitness switch" for your cells. It tells your body to act as if it's undergoing intense endurance training, triggering metabolic pathways usually reserved for high-intensity physical exertion even when the subject is at rest.`,
