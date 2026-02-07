@@ -3182,8 +3182,8 @@ ${productInfo}
 Product Categories:
 - Peptides: BPC-157 (10mg), TB-500 (5mg), GHK-Cu (50mg), MOTS-c (10mg), Retatrutide (10mg), and more
 - Supplies: Bacteriostatic Water in 3mL and 10mL sizes
-- Research Stacks: Pre-built bundles of complementary peptides at 15-20% discount
-- Custom Stacks: Build-your-own bundles of 2-4 peptides at a flat 10% discount
+- Research Stacks: Pre-built bundles of complementary peptides with bundle pricing savings
+- Custom Stacks: Build-your-own bundles of 2-4 peptides (no discount — the value is the AI-powered synergy analysis and research pathway insights)
 
 ===== BATCH NUMBERING SYSTEM =====
 Revive Research uses a precise batch numbering format: [MfgID]-[YYMM][Cycle]
@@ -3216,7 +3216,7 @@ This system allows full traceability from production to customer. Every batch nu
 - Every product batch has a Certificate of Analysis (COA) from independent third-party laboratories
 - Customers can verify COAs using the COA Verifier tool on the website at /coa
 - COAs show purity percentages, identity confirmation, and testing methodology
-- The Quality Process page (/quality) explains the full testing pipeline
+- The Quality Process page (/quality-process) explains the full testing pipeline
 - Batch Archive (/batch-archive) allows browsing all historical batch records
 - Revive Research does NOT self-test — all testing is done by independent labs for maximum credibility
 
@@ -3224,7 +3224,7 @@ This system allows full traceability from production to customer. Every batch nu
 - Standard shipping: $20 flat rate
 - Free shipping on orders over $200
 - Processing: 24-hour standard, same-day shipping if ordered before 12:00 PM CT
-- Package Warm Guide available at /package-warm-guide for temperature-sensitive compounds
+- Package Warm Guide available at /package-warm for temperature-sensitive compounds
 - Guest checkout available — no account required to purchase
 - Payment via PayPal (one-time and subscriptions)
 
@@ -3235,12 +3235,11 @@ This system allows full traceability from production to customer. Every batch nu
 
 ===== SUBSCRIPTION SYSTEM =====
 - Recurring subscriptions available via PayPal for regular research supply needs
-- Frequency options: Weekly, Bi-weekly, or Monthly
-- Tiered discounts based on subscription frequency
+- Frequency options with specific discounts: Weekly (15% off), Bi-weekly (12% off), Monthly (10% off)
 - Manage subscriptions through the user dashboard at /dashboard under the Orders tab
 
 ===== RESEARCH STACKS (BUNDLES) =====
-Pre-built Research Stacks are curated bundles of complementary peptides offering 15-20% savings:
+Pre-built Research Stacks are curated bundles of complementary peptides with bundle pricing (each stack shows exact savings vs buying separately):
 - Wolverine Stack: BPC-157 + TB-500 (95% synergy score) — tissue repair focus
 - Glow Protocol: BPC-157 + TB-500 + GHK-Cu (90%) — skin/tissue regeneration
 - GH Amplifier: Ipamorelin + CJC-1295 (88%) — growth hormone research
@@ -3252,7 +3251,7 @@ Pre-built Research Stacks are curated bundles of complementary peptides offering
 - Recovery+ Protocol: BPC-157 + GHK-Cu + TB-500 (82%) — recovery research
 
 Custom Stack Builder (at /research-stacks, "Build Custom" tab):
-- Select 2-4 peptides to create a custom bundle with a flat 10% discount
+- Select 2-4 peptides to create a custom research bundle (no discount applied — the value is the AI synergy analysis, pathway insights, and stack detection)
 - Features a Synergy Ring showing compatibility score (0-100%)
 - Detects famous stack combinations with celebration badges
 - Shows Body System Heatmap with biological mechanism icons (Healing, Metabolic, Cognitive, Skin, Growth, Longevity)
@@ -3277,7 +3276,7 @@ Each phase unlocks based on engagement thresholds and awards corresponding title
 ===== USER DASHBOARD =====
 Registered users have a tabbed dashboard at /dashboard:
 - General tab: Navigation hub, quick stats, achievements, member perks
-- Orders tab: Subscription management, order history, wishlist, product reviews
+- Orders tab: Subscription management, order history, wishlist
 - Settings tab: Account management, preferences
 
 ===== EDUCATIONAL RESOURCES =====
@@ -3296,13 +3295,13 @@ Other Educational Pages:
 - Lab Notes Blog (/lab-notes) — ongoing research articles
 - Dosage Calculator (/dosage-calculator) — research calculation tool
 - Buyer Checklist (/buyer-checklist) — what to look for in a supplier
-- Troubleshooting Guides — help with common research questions
+- Troubleshooting Guides (/troubleshooting) — help with common research questions
 - Resources Hub (/resources) — consolidated resource directory
 
 ===== TRUST & TRANSPARENCY =====
 - Ethical Pricing page (/ethical-pricing) — explains pricing philosophy and cost breakdown
 - Transparency page (/transparency) — full operational transparency
-- Quality Process page (/quality) — detailed testing and sourcing pipeline
+- Quality Process page (/quality-process) — detailed testing and sourcing pipeline
 - Price History — historical price trends shown on product pages for full transparency
 - "Want This" voting — anonymous product interest voting on out-of-stock items
 
