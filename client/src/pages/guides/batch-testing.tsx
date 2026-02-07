@@ -34,7 +34,7 @@ export default function BatchTesting() {
   const ctaLinks = [
     {
       label: "Browse Batch Archive",
-      href: "/batch-archive",
+      href: "/coa/batch-testing-archive",
       icon: Archive,
       description: "View historical testing records by batch"
     },
@@ -46,7 +46,7 @@ export default function BatchTesting() {
     },
     {
       label: "Our Quality Process",
-      href: "/quality-process",
+      href: "/guides/peptide-quality-assurance-process",
       icon: FlaskConical,
       description: "See our full testing protocol"
     },

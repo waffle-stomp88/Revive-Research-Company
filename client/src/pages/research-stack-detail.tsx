@@ -78,8 +78,8 @@ const researchStacksData: Record<string, ResearchStack> = {
     ],
     storageGuide: "Store between 2-8°C (36-46°F) in original packaging. Protect from light and excessive heat.",
     educationLinks: [
-      { peptideName: "BPC-157", articleUrl: "/education/bpc-157-guide", articleTitle: "BPC-157: Comprehensive Research Guide" },
-      { peptideName: "TB-500", articleUrl: "/education/tb-500-mechanisms", articleTitle: "TB-500: Mechanism of Action Overview" },
+      { peptideName: "BPC-157", articleUrl: "/guides/what-is-bpc-157-peptide", articleTitle: "BPC-157: Comprehensive Research Guide" },
+      { peptideName: "TB-500", articleUrl: "/guides/what-is-tb-500-peptide", articleTitle: "TB-500: Mechanism of Action Overview" },
     ],
     icon: "Heart",
     color: "#22c55e",
@@ -116,8 +116,8 @@ const researchStacksData: Record<string, ResearchStack> = {
     ],
     storageGuide: "Maintain 2-8°C (36-46°F) for optimal stability. Store away from direct sunlight.",
     educationLinks: [
-      { peptideName: "MOTS-C", articleUrl: "/education/mots-c-guide", articleTitle: "MOTS-C: Mitochondrial Pathway Research" },
-      { peptideName: "Retatrutide", articleUrl: "/education/retatrutide-mechanisms", articleTitle: "Retatrutide: Triple Agonist Overview" },
+      { peptideName: "MOTS-C", articleUrl: "/guides/what-is-mots-c-peptide", articleTitle: "MOTS-C: Mitochondrial Pathway Research" },
+      { peptideName: "Retatrutide", articleUrl: "/guides/what-is-retatrutide-peptide", articleTitle: "Retatrutide: Triple Agonist Overview" },
     ],
     icon: "Zap",
     color: "#E7FB10",
@@ -154,8 +154,8 @@ const researchStacksData: Record<string, ResearchStack> = {
     ],
     storageGuide: "Keep refrigerated at 2-8°C (36-46°F). Copper peptides are sensitive to temperature fluctuations.",
     educationLinks: [
-      { peptideName: "GHK-Cu", articleUrl: "/education/ghk-cu-guide", articleTitle: "GHK-Cu: Copper Peptide Research Guide" },
-      { peptideName: "MOTS-C", articleUrl: "/education/mots-c-mechanisms", articleTitle: "MOTS-C: Cellular Energy Pathways" },
+      { peptideName: "GHK-Cu", articleUrl: "/guides/what-is-ghk-cu-peptide", articleTitle: "GHK-Cu: Copper Peptide Research Guide" },
+      { peptideName: "MOTS-C", articleUrl: "/guides/what-is-mots-c-peptide", articleTitle: "MOTS-C: Cellular Energy Pathways" },
     ],
     icon: "Sparkles",
     color: "#a855f7",
@@ -190,8 +190,8 @@ const researchStacksData: Record<string, ResearchStack> = {
     ],
     storageGuide: "Refrigerate at 2-8°C (36-46°F). These are research-grade compounds requiring proper storage.",
     educationLinks: [
-      { peptideName: "BPC-157", articleUrl: "/education/bpc-157-starter", articleTitle: "BPC-157: Starter's Guide to Tissue Pathways" },
-      { peptideName: "MOTS-C", articleUrl: "/education/mots-c-starter", articleTitle: "MOTS-C: Introduction to Mitochondrial Research" },
+      { peptideName: "BPC-157", articleUrl: "/guides/what-is-bpc-157-peptide", articleTitle: "BPC-157: Starter's Guide to Tissue Pathways" },
+      { peptideName: "MOTS-C", articleUrl: "/guides/what-is-mots-c-peptide", articleTitle: "MOTS-C: Introduction to Mitochondrial Research" },
     ],
     icon: "Star",
     color: "#21d8ff",
@@ -228,8 +228,8 @@ const researchStacksData: Record<string, ResearchStack> = {
     ],
     storageGuide: "Store at 2-8°C (36-46°F). Keep both compounds protected from light and temperature variation.",
     educationLinks: [
-      { peptideName: "GHK-Cu", articleUrl: "/education/ghk-cu-collagen", articleTitle: "GHK-Cu: Collagen and Matrix Research" },
-      { peptideName: "BPC-157", articleUrl: "/education/bpc-157-dermal", articleTitle: "BPC-157: Tissue Mechanisms in Skin Research" },
+      { peptideName: "GHK-Cu", articleUrl: "/guides/what-is-ghk-cu-peptide", articleTitle: "GHK-Cu: Collagen and Matrix Research" },
+      { peptideName: "BPC-157", articleUrl: "/guides/what-is-bpc-157-peptide", articleTitle: "BPC-157: Tissue Mechanisms in Skin Research" },
     ],
     icon: "Leaf",
     color: "#ec4899",
@@ -265,9 +265,9 @@ const researchStacksData: Record<string, ResearchStack> = {
     ],
     storageGuide: "Maintain 2-8°C (36-46°F) storage conditions for all three compounds. Handle with appropriate research protocols.",
     educationLinks: [
-      { peptideName: "Retatrutide", articleUrl: "/education/retatrutide-advanced", articleTitle: "Retatrutide: Advanced Multi-Target Research" },
-      { peptideName: "MOTS-C", articleUrl: "/education/mots-c-advanced", articleTitle: "MOTS-C: Advanced Metabolic Pathways" },
-      { peptideName: "BPC-157", articleUrl: "/education/bpc-157-advanced", articleTitle: "BPC-157: Advanced Tissue Mechanisms" },
+      { peptideName: "Retatrutide", articleUrl: "/guides/what-is-retatrutide-peptide", articleTitle: "Retatrutide: Advanced Multi-Target Research" },
+      { peptideName: "MOTS-C", articleUrl: "/guides/what-is-mots-c-peptide", articleTitle: "MOTS-C: Advanced Metabolic Pathways" },
+      { peptideName: "BPC-157", articleUrl: "/guides/what-is-bpc-157-peptide", articleTitle: "BPC-157: Advanced Tissue Mechanisms" },
     ],
     icon: "Crown",
     color: "#f59e0b",
@@ -463,7 +463,7 @@ export default function ResearchStackDetail() {
                     <GraduationCap className="h-5 w-5" style={{ color: stack.color }} />
                     <h3 className="font-display text-lg font-bold">Learn About These Peptides</h3>
                   </div>
-                  <Link href="/education">
+                  <Link href="/guides/peptide-education-center">
                     <Button variant="outline" size="sm" className="border-[#ec4899]/30 hover:border-[#ec4899]" data-testid="link-view-all-education">
                       All Articles
                       <ChevronRight className="h-4 w-4 ml-1" />
@@ -514,7 +514,7 @@ export default function ResearchStackDetail() {
               <p className="text-muted-foreground leading-relaxed mb-4">
                 {stack.storageGuide}
               </p>
-              <Link href="/education/storage-101">
+              <Link href="/guides/storage-101">
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}

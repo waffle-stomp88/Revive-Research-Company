@@ -40,7 +40,7 @@ const issues = [
         "Vial seals are intact",
       ],
       action: "Transfer to proper storage immediately (-20°C for powder, 2-8°C after reconstitution). If you have concerns about a specific shipment, contact us with photos.",
-      learnMore: "/package-warm",
+      learnMore: "/guides/peptide-package-arrived-warm",
     },
   },
   {
@@ -150,7 +150,7 @@ export default function Troubleshooting() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead title="Troubleshooting Guide" description="Solutions for common research peptide issues. Expert guidance on reconstitution, storage, and handling." canonicalPath="/troubleshooting" />
+      <SEOHead title="Troubleshooting Guide" description="Solutions for common research peptide issues. Expert guidance on reconstitution, storage, and handling." canonicalPath="/guides/peptide-handling-troubleshooting" />
       <div className="max-w-4xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

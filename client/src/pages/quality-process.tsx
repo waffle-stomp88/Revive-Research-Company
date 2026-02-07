@@ -17,7 +17,7 @@ import { VerificationJourneyCompact } from "@/components/infographics/verificati
 export default function QualityProcess() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead title="Quality Process" description="Our 6-step quality assurance process. From sourcing to shipping, every step is verified and documented." canonicalPath="/quality-process" />
+      <SEOHead title="Quality Process" description="Our 6-step quality assurance process. From sourcing to shipping, every step is verified and documented." canonicalPath="/guides/peptide-quality-assurance-process" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -174,7 +174,7 @@ export default function QualityProcess() {
               </div>
               <VerificationJourneyCompact />
               <div className="text-center mt-8">
-                <Link href="/coa">
+                <Link href="/coa/verify-certificate-of-analysis">
                   <Button className="bg-[#21d8ff] text-black gap-2" data-testid="button-verify-now">
                     Verify a Product Now
                     <ArrowRight className="h-4 w-4" />

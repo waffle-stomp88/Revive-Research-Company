@@ -29,7 +29,7 @@ const SHIPPING_INFO = {
 export default function Shipping() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead title="Shipping Information" description="Free shipping over $200. Same-day dispatch before 12 PM CT. Discreet packaging with temperature protection." canonicalPath="/shipping" />
+      <SEOHead title="Shipping Information" description="Free shipping over $200. Same-day dispatch before 12 PM CT. Discreet packaging with temperature protection." canonicalPath="/peptide-shipping-and-handling" />
       <div className="max-w-4xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -238,7 +238,7 @@ export default function Shipping() {
                 </ul>
                 <p className="text-sm text-muted-foreground mt-4 font-medium">
                   Note: Due to the nature of our products, all sales are final. See our 
-                  <Link href="/faq" className="text-[#9d4edd] hover:underline ml-1">FAQ</Link> for 
+                  <Link href="/peptide-research-faq" className="text-[#9d4edd] hover:underline ml-1">FAQ</Link> for 
                   details on our refund policy.
                 </p>
               </div>
@@ -259,7 +259,7 @@ export default function Shipping() {
             </p>
             <p className="text-sm text-muted-foreground mb-6">
               New to ordering? Check out our{" "}
-              <Link href="/education/ordering-expectations" className="text-[#9d4edd] hover:underline">
+              <Link href="/guides/ordering-expectations" className="text-[#9d4edd] hover:underline">
                 complete ordering & delivery guide
               </Link>.
             </p>

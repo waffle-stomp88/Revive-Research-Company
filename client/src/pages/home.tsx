@@ -132,7 +132,7 @@ function HeroSection() {
               </Button>
             </div>
           </Link>
-          <Link href="/coa">
+          <Link href="/coa/verify-certificate-of-analysis">
             <Button size="lg" variant="outline" className="font-display text-base sm:text-lg px-6 sm:px-10 bg-black/30 backdrop-blur-sm border-white/30 text-white transition-all duration-300 hover:bg-[#21d8ff] hover:text-black hover:border-[#21d8ff]" data-testid="button-hero-coa">
               Verify COA
             </Button>
@@ -145,7 +145,7 @@ function HeroSection() {
           transition={{ duration: 0.8, delay: 0.9 }}
           className="mt-8"
         >
-          <Link href="/education" onClick={() => trackEvent('hero_cta_click', 'engagement', 'learn_peptides')}>
+          <Link href="/guides/peptide-education-center" onClick={() => trackEvent('hero_cta_click', 'engagement', 'learn_peptides')}>
             <Button size="lg" variant="outline" className="font-display text-base sm:text-lg px-6 sm:px-10 bg-transparent border-[#ec4899]/50 text-[#ec4899] hover:bg-[#ec4899]/10 hover:border-[#ec4899] transition-all duration-300" data-testid="button-hero-learn">
               New to Peptides? Start Here
               <ArrowRight className="h-4 w-4" />
@@ -337,7 +337,7 @@ function EducationTeaser() {
                   })}
                 </div>
 
-                <Link href="/education" onClick={() => trackEvent('education_cta_click', 'engagement', 'education_center')}>
+                <Link href="/guides/peptide-education-center" onClick={() => trackEvent('education_cta_click', 'engagement', 'education_center')}>
                   <Button 
                     className="w-full font-display gap-2 bg-[#9d4edd] text-white transition-all duration-300 md:hover:scale-105 md:active:scale-105 md:hover:shadow-[0_0_25px_rgba(157,78,221,0.6)]" 
                     data-testid="button-browse-articles"
@@ -361,7 +361,7 @@ function EducationTeaser() {
         >
           <p className="text-muted-foreground text-sm">
             New to peptide research?{" "}
-            <Link href="/education" className="text-[#ec4899] hover:underline cursor-pointer" data-testid="link-beginners-guide">
+            <Link href="/guides/peptide-education-center" className="text-[#ec4899] hover:underline cursor-pointer" data-testid="link-beginners-guide">
               Try our beginner-friendly Quick Breakdown mode
             </Link>
           </p>

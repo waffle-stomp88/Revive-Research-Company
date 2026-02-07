@@ -113,39 +113,36 @@ const articleVisuals: Record<string, () => JSX.Element> = {
   "how-to-read-coas": () => <COAAnatomyDiagram />,
   "understanding-peptide-purity": () => <HPLCExplainer />,
   "storage-101": () => <StorageTemperatureGuide />,
-  // New MOTS-C quality level infographics - mechanism-specific visualizations
-  "epithalon-research-guide": () => <EpithalonTelomeraseVisual />,
-  "semaglutide-research-guide": () => <GLP1ReceptorVisual />,
-  "tirzepatide-research-guide": () => <GLP1ReceptorVisual />,
-  "retatrutide-research-guide": () => <GLP1ReceptorVisual />,
-  "cjc-1295-research-guide": () => <CJC1295AlbuminVisual />,
-  "ipamorelin-research-guide": () => <IpamorelinSelectivityVisual />,
-  "tesamorelin-research-guide": () => <TesomorelinPulseVisual />,
-  "bpc-157-research-guide": () => <BPC157AngiogenesisVisual />,
-  "tb-500-research-guide": () => <TB500ActinVisual />,
-  "ghk-cu-research-guide": () => <GHKCuCopperVisual />,
-  "glow-peptide-complex-research-guide": () => <GLOWSynergyVisual />,
-  "klow-peptide-complex-research-guide": () => <KLOWSynergyVisual />,
-  "igf-1-lr3-research-guide": () => <IGF1SignalingVisual />,
-  "mots-c-research-guide": () => <CellularEnergyVisual peptide="mots-c" />,
-  "nad-precursor-research-guide": () => <NADSirtuinVisual />,
-  "semax-research-guide": () => <SemaxNeuralVisual />,
-  "hcg-research-guide": () => <HCGHormonalVisual />,
-  // Educational peptides (compounds not carried by company)
-  "kisspeptin-research-guide": () => <KisspeptinVisual />,
-  "pt-141-bremelanotide-research-guide": () => <PT141Visual />,
-  "thymosin-alpha-1-research-guide": () => <ThymosinAlpha1Visual />,
-  "dsip-research-guide": () => <DSIPVisual />,
-  "selank-research-guide": () => <SelankVisual />,
-  "aod-9604-research-guide": () => <AOD9604Visual />,
-  "thymulin-research-guide": () => <ThymulinVisual />,
-  // New compound research visuals
-  "5-amino-1mq-research-guide": () => <Amino1MQNADVisual />,
-  "dihexa-research-guide": () => <DihexaSynapseVisual />,
-  "glutathione-research-guide": () => <GlutathioneRedoxVisual />,
-  "vitamin-b12-research-guide": () => <B12MethylationVisual />,
-  "melanotan-research-guide": () => <MelanotanReceptorVisual />,
-  "slu-pp-332-research-guide": () => <SLUPP332Visual />,
+  "what-is-epithalon-peptide": () => <EpithalonTelomeraseVisual />,
+  "what-is-semaglutide-peptide": () => <GLP1ReceptorVisual />,
+  "what-is-tirzepatide-peptide": () => <GLP1ReceptorVisual />,
+  "what-is-retatrutide-peptide": () => <GLP1ReceptorVisual />,
+  "what-is-cjc-1295-peptide": () => <CJC1295AlbuminVisual />,
+  "what-is-ipamorelin-peptide": () => <IpamorelinSelectivityVisual />,
+  "what-is-tesamorelin-peptide": () => <TesomorelinPulseVisual />,
+  "what-is-bpc-157-peptide": () => <BPC157AngiogenesisVisual />,
+  "what-is-tb-500-peptide": () => <TB500ActinVisual />,
+  "what-is-ghk-cu-peptide": () => <GHKCuCopperVisual />,
+  "what-is-glow-peptide-complex": () => <GLOWSynergyVisual />,
+  "what-is-klow-peptide-complex": () => <KLOWSynergyVisual />,
+  "what-is-igf-1-lr3-peptide": () => <IGF1SignalingVisual />,
+  "what-is-mots-c-peptide": () => <CellularEnergyVisual peptide="mots-c" />,
+  "what-is-nad-precursor": () => <NADSirtuinVisual />,
+  "what-is-semax-peptide": () => <SemaxNeuralVisual />,
+  "what-is-hcg-peptide": () => <HCGHormonalVisual />,
+  "what-is-kisspeptin-peptide": () => <KisspeptinVisual />,
+  "what-is-pt-141-bremelanotide-peptide": () => <PT141Visual />,
+  "what-is-thymosin-alpha-1-peptide": () => <ThymosinAlpha1Visual />,
+  "what-is-dsip-peptide": () => <DSIPVisual />,
+  "what-is-selank-peptide": () => <SelankVisual />,
+  "what-is-aod-9604-peptide": () => <AOD9604Visual />,
+  "what-is-thymulin-peptide": () => <ThymulinVisual />,
+  "what-is-5-amino-1mq-peptide": () => <Amino1MQNADVisual />,
+  "what-is-dihexa-peptide": () => <DihexaSynapseVisual />,
+  "what-is-glutathione": () => <GlutathioneRedoxVisual />,
+  "what-is-vitamin-b12": () => <B12MethylationVisual />,
+  "what-is-melanotan-peptide": () => <MelanotanReceptorVisual />,
+  "what-is-slu-pp-332-peptide": () => <SLUPP332Visual />,
 };
 
 const categories = [
@@ -253,7 +250,7 @@ const peptideGroups = [
   { id: "metabolic", label: "Metabolic / GLP-1", color: "#E7FB10", slugs: ["semaglutide", "tirzepatide", "retatrutide", "aod-9604", "5-amino-1mq", "slu-pp-332"] },
   { id: "growth-hormone", label: "Growth Hormone", color: "#21d8ff", slugs: ["cjc-1295", "ipamorelin", "tesamorelin", "igf-1-lr3"] },
   { id: "tissue-repair", label: "Tissue Repair", color: "#22c55e", slugs: ["bpc-157", "tb-500"] },
-  { id: "skin-regeneration", label: "Skin & Regeneration", color: "#ec4899", slugs: ["ghk-cu", "glow-peptide-complex", "melanotan"] },
+  { id: "skin-regeneration", label: "Skin & Regeneration", color: "#ec4899", slugs: ["ghk-cu", "glow-peptide-complex", "klow-peptide-complex", "melanotan"] },
   { id: "longevity", label: "Longevity & Cellular", color: "#9d4edd", slugs: ["epithalon", "mots-c", "nad-precursor", "thymosin-alpha-1", "thymulin", "glutathione", "vitamin-b12"] },
   { id: "cognitive", label: "Cognitive / Neuro", color: "#f97316", slugs: ["semax", "pt-141", "dsip", "selank", "dihexa"] },
   { id: "hormonal", label: "Hormonal", color: "#21d8ff", slugs: ["hcg", "kisspeptin"] },
@@ -269,8 +266,8 @@ const generalEdCategories = [
 
 // Multi-category articles: complex peptides that appear under multiple research groups
 const multiCategoryArticles: Record<string, string[]> = {
-  "glow-peptide-complex-research-guide": ["skin-regeneration", "tissue-repair", "longevity"],
-  "klow-peptide-complex-research-guide": ["tissue-repair", "longevity", "immune"],
+  "what-is-glow-peptide-complex": ["skin-regeneration", "tissue-repair", "longevity"],
+  "what-is-klow-peptide-complex": ["tissue-repair", "longevity", "immune"],
 };
 
 type SortOption = "a-z" | "z-a";
@@ -461,16 +458,24 @@ export default function Education() {
     queryKey: ["/api/products"],
   });
 
+  const [, setLocation] = useLocation();
+  
   const handleOpenArticle = (articleId: string) => {
-    // Store scroll position before opening article
-    sessionStorage.setItem('education_scroll_pos', window.pageYOffset.toString());
-    setExpandedArticle(articleId);
-    setArticleMode("quick-breakdown");
+    const article = articles.find(a => a.id === articleId);
+    if (article?.slug) {
+      setLocation(`/guides/${article.slug}`);
+    } else {
+      sessionStorage.setItem('education_scroll_pos', window.pageYOffset.toString());
+      setExpandedArticle(articleId);
+      setArticleMode("quick-breakdown");
+    }
   };
 
   const handleBackToArticles = () => {
     setExpandedArticle(null);
-    // Use requestAnimationFrame to wait for the list to render
+    if (params.slug) {
+      setLocation("/guides/peptide-education-center");
+    }
     requestAnimationFrame(() => {
       const savedPos = sessionStorage.getItem('education_scroll_pos');
       if (savedPos) {
@@ -483,12 +488,10 @@ export default function Education() {
     });
   };
 
-  // Helper to find matching products for a peptide article
   const getMatchingProducts = (slug: string): Product[] => {
-    if (!slug?.endsWith('-research-guide')) return [];
+    if (!slug?.startsWith('what-is-')) return [];
     
-    // Special case for Melanotan article which covers both MT-1 and MT-2
-    if (slug === "melanotan-research-guide") {
+    if (slug === "what-is-melanotan-peptide") {
       return products.filter(p => 
         p.name.toLowerCase().includes("melanotan i") || 
         p.name.toLowerCase().includes("melanotan 1") ||
@@ -497,7 +500,7 @@ export default function Education() {
       );
     }
 
-    const peptideName = slug.replace('-research-guide', '').replace(/-/g, ' ').toLowerCase();
+    const peptideName = slug.replace('what-is-', '').replace(/-peptide$/, '').replace(/-/g, ' ').toLowerCase();
     const directMatch = products.find(p => {
       const pName = p.name.toLowerCase();
       const pNameClean = pName.replace(/[^a-z0-9]/g, ' ').trim();
@@ -670,7 +673,7 @@ export default function Education() {
 
   return (
     <main className="min-h-screen bg-background pt-24 pb-16">
-      <SEOHead title="Education Center" description="Learn about peptide research, proper handling, and storage. Free educational resources for researchers." canonicalPath="/education" />
+      <SEOHead title="Education Center" description="Learn about peptide research, proper handling, and storage. Free educational resources for researchers." canonicalPath="/guides/peptide-education-center" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -840,10 +843,10 @@ export default function Education() {
                               onModeChange={setArticleMode} 
                             />
                             {articleMode === "quick-breakdown" && <BeginnerBadge />}
-                            {article.category === "peptides" && article.slug?.endsWith('-research-guide') && !article.slug?.includes('complex') && (
+                            {article.category === "peptides" && article.slug?.startsWith('what-is-') && !article.slug?.includes('complex') && (
                               <a 
                                 href={`https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(
-                                  (article.slug?.replace('-research-guide', '') || article.title)
+                                  (article.slug?.replace('what-is-', '').replace(/-peptide$/, '') || article.title)
                                     .split('-')
                                     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                                     .join('-')

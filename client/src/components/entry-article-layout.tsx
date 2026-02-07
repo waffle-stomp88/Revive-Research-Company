@@ -211,7 +211,7 @@ export function EntryArticleLayout({
         >
           <p className="text-sm text-muted-foreground text-center">
             This article is part of the{" "}
-            <Link href="/education" className="text-[#21d8ff] hover:underline">
+            <Link href="/guides/peptide-education-center" className="text-[#21d8ff] hover:underline">
               Revive Education Library
             </Link>
             . We believe informed researchers make better decisions.

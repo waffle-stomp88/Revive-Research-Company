@@ -23,7 +23,7 @@ const commitments = [
 export default function EthicalPricing() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead title="Ethical Pricing" description="Fair, transparent pricing on all research compounds. No hidden fees, no price gouging, no games." canonicalPath="/ethical-pricing" />
+      <SEOHead title="Ethical Pricing" description="Fair, transparent pricing on all research compounds. No hidden fees, no price gouging, no games." canonicalPath="/guides/peptide-pricing-breakdown" />
       <div className="max-w-5xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

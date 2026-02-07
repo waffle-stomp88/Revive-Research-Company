@@ -21,23 +21,23 @@ const footerLinks = {
     { label: "Affiliate Program", href: "/affiliate" },
   ],
   resources: [
-    { label: "Resource Hub", href: "/resources" },
-    { label: "Quality Process", href: "/quality-process" },
-    { label: "Research Archive", href: "/lab-notes" },
+    { label: "Resource Hub", href: "/peptide-research-resources" },
+    { label: "Quality Process", href: "/guides/peptide-quality-assurance-process" },
+    { label: "Research Archive", href: "/guides/peptide-lab-research-archive" },
     { label: "COA Library", href: "/coa-library" },
-    { label: "Batch Archive", href: "/batch-archive" },
+    { label: "Batch Archive", href: "/coa/batch-testing-archive" },
   ],
   support: [
-    { label: "FAQ", href: "/faq" },
-    { label: "Troubleshooting", href: "/troubleshooting" },
-    { label: "Package Arrived Warm?", href: "/package-warm" },
+    { label: "FAQ", href: "/peptide-research-faq" },
+    { label: "Troubleshooting", href: "/guides/peptide-handling-troubleshooting" },
+    { label: "Package Arrived Warm?", href: "/guides/peptide-package-arrived-warm" },
     { label: "Contact Us", href: "/contact" },
   ],
   company: [
-    { label: "Our Standards", href: "/what-we-dont-do" },
+    { label: "Our Standards", href: "/guides/peptide-vendor-ethics-standards" },
     { label: "Legal & Compliance", href: "/legal" },
-    { label: "Transparency", href: "/transparency" },
-    { label: "Ethical Pricing", href: "/ethical-pricing" },
+    { label: "Transparency", href: "/about/our-transparency-commitment" },
+    { label: "Ethical Pricing", href: "/guides/peptide-pricing-breakdown" },
   ],
 };
 
@@ -231,7 +231,7 @@ export function Footer({ className }: FooterProps) {
                 <span className="text-muted-foreground hover:text-[#E7FB10] transition-colors cursor-pointer">Disclaimer</span>
               </Link>
               <span className="text-muted-foreground/40">–</span>
-              <Link href="/coa">
+              <Link href="/coa/verify-certificate-of-analysis">
                 <span className="text-muted-foreground hover:text-[#E7FB10] transition-colors cursor-pointer">COA Verification</span>
               </Link>
             </div>

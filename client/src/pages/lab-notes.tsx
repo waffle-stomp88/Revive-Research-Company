@@ -102,7 +102,7 @@ const getCategoryColor = (category: string) => {
 export default function LabNotes() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead title="Lab Notes" description="Technical research updates and compound insights. Stay informed with our scientific archive." canonicalPath="/lab-notes" />
+      <SEOHead title="Lab Notes" description="Technical research updates and compound insights. Stay informed with our scientific archive." canonicalPath="/guides/peptide-lab-research-archive" />
       <div className="max-w-4xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

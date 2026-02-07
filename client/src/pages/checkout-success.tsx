@@ -142,7 +142,7 @@ export default function CheckoutSuccess() {
                 Continue Shopping
               </Button>
             </Link>
-            <Link href="/coa">
+            <Link href="/coa/verify-certificate-of-analysis">
               <Button className="w-full sm:w-auto gap-2">
                 Verify COA
                 <ArrowRight className="h-4 w-4" />

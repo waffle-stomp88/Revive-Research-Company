@@ -59,6 +59,24 @@ The platform features an Apple-inspired design with a dark charcoal background (
   - `/guides/why-cheap-peptides-are-cheap` - Why Cheap Peptides Are Cheap
   - Uses shared `EntryArticleLayout` component with JSON-LD schemas (Article + FAQ), SEO metadata, and confidence CTAs routing to proof pages.
   - 301 redirects configured for old URLs to preserve SEO authority.
+- **Individual Peptide Article Pages**: 30 peptide research articles each have their own indexable URL at `/guides/what-is-[name]-peptide` pattern (e.g., `/guides/what-is-bpc-157-peptide`). Article slugs stored in database as `what-is-[name]-peptide` format. Exceptions: non-peptide compounds use `/guides/what-is-glutathione`, `/guides/what-is-vitamin-b12`, `/guides/what-is-nad-precursor`, and complex names use `/guides/what-is-glow-peptide-complex`.
+- **SEO URL Structure**: All content pages use keyword-rich, descriptive URLs:
+  - Education Center: `/guides/peptide-education-center`
+  - Quality Process: `/guides/peptide-quality-assurance-process`
+  - Transparency: `/about/our-transparency-commitment`
+  - Standards: `/guides/peptide-vendor-ethics-standards`
+  - Pricing: `/guides/peptide-pricing-breakdown`
+  - Lab Notes: `/guides/peptide-lab-research-archive`
+  - Troubleshooting: `/guides/peptide-handling-troubleshooting`
+  - Package Warm: `/guides/peptide-package-arrived-warm`
+  - Buyer Checklist: `/guides/peptide-vendor-checklist`
+  - Dosage Calculator: `/tools/peptide-reconstitution-calculator`
+  - COA Verification: `/coa/verify-certificate-of-analysis`
+  - Batch Archive: `/coa/batch-testing-archive`
+  - FAQ: `/peptide-research-faq`
+  - Shipping: `/peptide-shipping-and-handling`
+  - Resources: `/peptide-research-resources`
+  - 301 redirects configured for all old URLs in App.tsx to preserve SEO authority.
 - **Peptide Academy**: Gamified learning experience at `/academy` with a 4-module curriculum (17 lessons), persona-based personalization (Beginner, Intermediate, Advanced), personalized dashboard, XP-based reward milestones, achievement badges, and progress tracking.
 - **Research Phase & Title System**: Tracks user progression through research phases (Observer → Initiate → Researcher → Analyst → Specialist) and awards titles based on activity thresholds.
 - **Dashboard Interface**: Tabbed interface (`/dashboard`) with "General" (navigation hub, quick stats, achievements, member perks), "Orders" (subscriptions, order history, wishlist, product reviews), and "Settings" tabs.

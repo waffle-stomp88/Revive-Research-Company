@@ -32,7 +32,7 @@ const categories = [
 const quickLinks = [
   { href: "/terms-of-service", title: "Terms of Service", description: "Usage agreement", color: "#9d4edd" },
   { href: "/privacy", title: "Privacy Policy", description: "Data practices", color: "#21d8ff" },
-  { href: "/shipping", title: "Shipping Policy", description: "Delivery info", color: "#E7FB10" },
+  { href: "/peptide-shipping-and-handling", title: "Shipping Policy", description: "Delivery info", color: "#E7FB10" },
 ];
 
 export default function LegalHub() {
@@ -291,7 +291,7 @@ export default function LegalHub() {
                   qualified researcher and will use products only for legitimate research purposes.
                 </p>
                 <div className="flex flex-wrap gap-4">
-                  <Link href="/what-we-dont-do">
+                  <Link href="/guides/peptide-vendor-ethics-standards">
                     <Button
                       variant="outline"
                       className="border-[#21d8ff]/30 hover:border-[#21d8ff] text-[#21d8ff]"

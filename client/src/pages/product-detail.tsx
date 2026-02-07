@@ -617,7 +617,7 @@ export default function ProductDetail() {
                     <GraduationCap className="h-5 w-5 text-[#ec4899]" />
                     <h3 className="font-display text-lg font-bold">Learn About This Peptide</h3>
                   </div>
-                  <Link href="/education">
+                  <Link href="/guides/peptide-education-center">
                     <Button variant="outline" size="sm" className="border-[#ec4899]/30 hover:border-[#ec4899]" data-testid="link-view-all-education">
                       All Articles
                       <ChevronRight className="h-4 w-4 ml-1" />
@@ -672,7 +672,7 @@ export default function ProductDetail() {
                   {product.usage}
                 </p>
                 <div className="py-2">
-                  <Link href="/education/storage-101">
+                  <Link href="/guides/storage-101">
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -1192,7 +1192,7 @@ export default function ProductDetail() {
                   {product.usage}
                 </p>
                 <div className="py-2 px-1 -mx-1">
-                  <Link href="/education/storage-101">
+                  <Link href="/guides/storage-101">
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -1322,7 +1322,7 @@ export default function ProductDetail() {
                   <p className="text-xs text-muted-foreground">Our guide covers everything you need to know</p>
                 </div>
               </div>
-              <Link href="/education/storage-101">
+              <Link href="/guides/storage-101">
                 <Button variant="outline" size="sm" className="border-[#9d4edd]/30 hover:border-[#9d4edd] gap-2" data-testid="link-storage-guide">
                   Storage 101
                   <ChevronRight className="h-4 w-4" />

@@ -897,7 +897,7 @@ export default function Academy() {
               >
                 <BookOpen className="w-4 h-4 text-[#21d8ff] flex-shrink-0" />
                 <span className="text-sm text-[#21d8ff]">Need quick reference?</span>
-                <Link href="/education" className="text-sm font-semibold px-3 py-1 rounded-full bg-[#21d8ff] text-black md:hover:bg-[#E7FB10] md:hover:scale-105 md:active:scale-105 md:hover:shadow-lg transition-all duration-200 cursor-pointer">
+                <Link href="/guides/peptide-education-center" className="text-sm font-semibold px-3 py-1 rounded-full bg-[#21d8ff] text-black md:hover:bg-[#E7FB10] md:hover:scale-105 md:active:scale-105 md:hover:shadow-lg transition-all duration-200 cursor-pointer">
                   Education Center
                 </Link>
               </div>

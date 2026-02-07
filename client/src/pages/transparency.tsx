@@ -70,7 +70,7 @@ const dontList = [
 export default function Transparency() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead title="Transparency" description="Full transparency on sourcing, testing, and pricing. See exactly what goes into every research compound." canonicalPath="/transparency" />
+      <SEOHead title="Transparency" description="Full transparency on sourcing, testing, and pricing. See exactly what goes into every research compound." canonicalPath="/about/our-transparency-commitment" />
       <div className="max-w-6xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -229,7 +229,7 @@ export default function Transparency() {
           transition={{ delay: 0.6 }}
           className="grid md:grid-cols-3 gap-6"
         >
-          <Link href="/quality-process">
+          <Link href="/guides/peptide-quality-assurance-process">
             <Card className="p-6 h-full border-[#21d8ff]/20 hover:border-[#21d8ff]/40 transition-colors cursor-pointer group" data-testid="link-quality-process">
               <Target className="h-8 w-8 text-[#21d8ff] mb-4" />
               <h3 className="font-display text-lg font-bold mb-2 group-hover:text-[#21d8ff] transition-colors">

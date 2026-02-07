@@ -27,11 +27,11 @@ interface SearchAutocompleteProps {
 
 // Site-wide resources for search
 const siteResources: Omit<SearchResult, "id">[] = [
-  { type: "page", title: "Education Center", href: "/education", icon: BookOpen, category: "Learning" },
-  { type: "page", title: "Dosage Calculator", href: "/dosage-calculator", icon: Calculator, category: "Tools" },
-  { type: "page", title: "COA Verification", href: "/coa", icon: FileCheck, category: "Verification" },
+  { type: "page", title: "Education Center", href: "/guides/peptide-education-center", icon: BookOpen, category: "Learning" },
+  { type: "page", title: "Dosage Calculator", href: "/tools/peptide-reconstitution-calculator", icon: Calculator, category: "Tools" },
+  { type: "page", title: "COA Verification", href: "/coa/verify-certificate-of-analysis", icon: FileCheck, category: "Verification" },
   { type: "page", title: "Legal & Compliance", href: "/legal", icon: Scale, category: "Info" },
-  { type: "page", title: "FAQ", href: "/faq", icon: BookOpen, category: "Help" },
+  { type: "page", title: "FAQ", href: "/peptide-research-faq", icon: BookOpen, category: "Help" },
 ];
 
 export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAutocompleteProps) {

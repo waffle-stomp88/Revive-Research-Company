@@ -85,7 +85,7 @@ export default function DosageCalculator() {
 
   return (
     <div className="min-h-screen bg-[#0d0d10] pt-20">
-      <SEOHead title="Peptide Dosage Calculator" description="Calculate precise dosing for your research. Professional-grade calculator for peptide reconstitution." canonicalPath="/dosage-calculator" />
+      <SEOHead title="Peptide Dosage Calculator" description="Calculate precise dosing for your research. Professional-grade calculator for peptide reconstitution." canonicalPath="/tools/peptide-reconstitution-calculator" />
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#E7FB10]/8 rounded-full blur-[120px]" />
         <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-[#21d8ff]/8 rounded-full blur-[100px]" />

@@ -45,13 +45,13 @@ export default function PurityExplained() {
     },
     {
       label: "How to Read a COA",
-      href: "/education/understanding-coas",
+      href: "/guides/how-to-read-coas",
       icon: BookOpen,
       description: "Interpret purity reports yourself"
     },
     {
       label: "Browse Compound Information",
-      href: "/education",
+      href: "/guides/peptide-education-center",
       icon: FlaskConical,
       description: "Research context for specific peptides"
     },

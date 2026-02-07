@@ -31,9 +31,9 @@ const navItems: NavItem[] = [
   },
   { 
     label: "Education", 
-    href: "/education", 
+    href: "/guides/peptide-education-center", 
     icon: GraduationCap,
-    matchPaths: ["/education", "/academy", "/resources", "/quality-process", "/buyer-checklist"]
+    matchPaths: ["/guides", "/academy", "/peptide-research-resources", "/tools"]
   },
   { 
     label: "Account", 

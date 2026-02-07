@@ -30,15 +30,15 @@ const productLinks = [
 ];
 
 const coaLinks = [
-  { href: "/coa", label: "COA Verification", icon: FileCheck, description: "Verify product analysis", color: "#21d8ff" },
+  { href: "/coa/verify-certificate-of-analysis", label: "COA Verification", icon: FileCheck, description: "Verify product analysis", color: "#21d8ff" },
   { href: "/coa-library", label: "COA Library", icon: FileCheck, description: "Browse verified certifications", color: "#21d8ff" },
 ];
 
 const resourceLinks = [
-  { href: "/education", label: "Education Center", icon: BookOpen, description: "Learn about peptides & research", color: "#ec4899" },
+  { href: "/guides/peptide-education-center", label: "Education Center", icon: BookOpen, description: "Learn about peptides & research", color: "#ec4899" },
   { href: "/academy", label: "Research Academy", icon: GraduationCap, description: "Guided learning for researchers", color: "#E7FB10" },
-  { href: "/dosage-calculator", label: "Dosage Calculator", icon: Calculator, description: "Calculate peptide dosing volumes", color: "#21d8ff" },
-  { href: "/faq", label: "FAQ", icon: BookOpen, description: "Common questions answered", color: "#a855f7" },
+  { href: "/tools/peptide-reconstitution-calculator", label: "Dosage Calculator", icon: Calculator, description: "Calculate peptide dosing volumes", color: "#21d8ff" },
+  { href: "/peptide-research-faq", label: "FAQ", icon: BookOpen, description: "Common questions answered", color: "#a855f7" },
   { href: "/contact", label: "Support & Contact", icon: Mail, description: "Reach out for research support", color: "#9d4edd" },
 ];
 
@@ -376,7 +376,7 @@ export function Navigation() {
                     <DropdownMenuTrigger asChild>
                       {(() => {
                         const resourcesColor = "#a855f7";
-                        const isActive = location === "/resources" || resourceLinks.some(r => location === r.href);
+                        const isActive = location === "/peptide-research-resources" || resourceLinks.some(r => location === r.href || location.startsWith(r.href));
                         
                         return (
                           <button
@@ -396,7 +396,7 @@ export function Navigation() {
                     <DropdownMenuContent align="center" className="w-72 z-[100]">
                       {resourceLinks.map((link, index) => {
                         const Icon = link.icon;
-                        const isActive = location === link.href;
+                        const isActive = location === link.href || location.startsWith(link.href);
                         return (
                           <div key={link.href}>
                             <DropdownMenuItem asChild>
@@ -421,7 +421,7 @@ export function Navigation() {
                   </DropdownMenu>
                   {(() => {
                     const resourcesColor = "#a855f7";
-                    const isActive = location === "/resources" || resourceLinks.some(r => location === r.href);
+                    const isActive = location === "/peptide-research-resources" || resourceLinks.some(r => location === r.href || location.startsWith(r.href));
                     
                     return isActive ? (
                       <motion.div

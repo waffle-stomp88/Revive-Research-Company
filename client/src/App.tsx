@@ -120,7 +120,7 @@ function Router() {
         <Route path="/checkout/success" component={CheckoutSuccess} />
         <Route path="/subscription/success" component={SubscriptionSuccess} />
         <Route path="/order-confirmation" component={OrderConfirmation} />
-        <Route path="/coa" component={CoaVerification} />
+        <Route path="/coa/verify-certificate-of-analysis" component={CoaVerification} />
         <Route path="/coa-library">
           <ProtectedRoute title="COA Library" description="Access our complete library of Certificates of Analysis for verified research compounds.">
             <CoaLibrary />
@@ -131,41 +131,60 @@ function Router() {
         <Route path="/admin" component={Admin} />
         <Route path="/affiliate" component={Affiliate} />
         <Route path="/affiliate-dashboard" component={AffiliateDashboard} />
-        <Route path="/faq" component={FAQ} />
-        <Route path="/shipping" component={Shipping} />
         <Route path="/terms-of-service" component={TermsOfService} />
         <Route path="/terms">{() => { window.location.replace("/terms-of-service"); return null; }}</Route>
         <Route path="/privacy" component={PrivacyPolicy} />
         <Route path="/disclaimer" component={Disclaimer} />
         <Route path="/contact" component={Contact} />
         <Route path="/legal" component={Legal} />
-        <Route path="/what-we-dont-do" component={WhatWeDontDo} />
-        <Route path="/education" component={Education} />
-        <Route path="/education/:slug" component={Education} />
-        <Route path="/academy">
-          <ProtectedRoute title="Peptide Research Academy" description="Access exclusive educational content, courses, and earn achievements as you learn.">
-            <Academy />
-          </ProtectedRoute>
-        </Route>
-        <Route path="/quality-process" component={QualityProcess} />
-        <Route path="/package-warm" component={PackageWarm} />
-        <Route path="/transparency" component={Transparency} />
-        <Route path="/ethical-pricing" component={EthicalPricing} />
-        <Route path="/buyer-checklist" component={BuyerChecklist} />
-        <Route path="/troubleshooting" component={Troubleshooting} />
-        <Route path="/batch-archive" component={BatchArchive} />
-        <Route path="/lab-notes" component={LabNotes} />
-        <Route path="/dosage-calculator" component={DosageCalculator} />
-        <Route path="/resources" component={ResourcesHub} />
-        <Route path="/unsubscribe" component={Unsubscribe} />
-        <Route path="/rx-panel-7v3k" component={DevLogin} />
-        
+        {/* Specific /guides/ pages (must come before catch-all /guides/:slug) */}
+        <Route path="/guides/peptide-vendor-ethics-standards" component={WhatWeDontDo} />
+        <Route path="/guides/peptide-quality-assurance-process" component={QualityProcess} />
+        <Route path="/guides/peptide-package-arrived-warm" component={PackageWarm} />
+        <Route path="/guides/peptide-pricing-breakdown" component={EthicalPricing} />
+        <Route path="/guides/peptide-vendor-checklist" component={BuyerChecklist} />
+        <Route path="/guides/peptide-handling-troubleshooting" component={Troubleshooting} />
+        <Route path="/guides/peptide-lab-research-archive" component={LabNotes} />
         <Route path="/guides/are-peptide-coas-trustworthy" component={CoaTrust} />
         <Route path="/guides/how-batch-testing-works" component={BatchTesting} />
         <Route path="/guides/what-research-use-only-means" component={ResearchUseOnly} />
         <Route path="/guides/how-to-verify-peptide-quality" component={VerifyQuality} />
         <Route path="/guides/peptide-purity-explained" component={PurityExplained} />
         <Route path="/guides/why-cheap-peptides-are-cheap" component={CheapPeptides} />
+        <Route path="/guides/peptide-education-center" component={Education} />
+        {/* Catch-all for individual peptide article pages (e.g. /guides/what-is-bpc-157-peptide) */}
+        <Route path="/guides/:slug" component={Education} />
+        <Route path="/academy">
+          <ProtectedRoute title="Peptide Research Academy" description="Access exclusive educational content, courses, and earn achievements as you learn.">
+            <Academy />
+          </ProtectedRoute>
+        </Route>
+        <Route path="/about/our-transparency-commitment" component={Transparency} />
+        <Route path="/coa/batch-testing-archive" component={BatchArchive} />
+        <Route path="/tools/peptide-reconstitution-calculator" component={DosageCalculator} />
+        <Route path="/peptide-research-resources" component={ResourcesHub} />
+        <Route path="/peptide-research-faq" component={FAQ} />
+        <Route path="/peptide-shipping-and-handling" component={Shipping} />
+        <Route path="/unsubscribe" component={Unsubscribe} />
+        <Route path="/rx-panel-7v3k" component={DevLogin} />
+
+        {/* 301 Redirects for old URLs */}
+        <Route path="/coa">{() => { window.location.replace("/coa/verify-certificate-of-analysis"); return null; }}</Route>
+        <Route path="/faq">{() => { window.location.replace("/peptide-research-faq"); return null; }}</Route>
+        <Route path="/shipping">{() => { window.location.replace("/peptide-shipping-and-handling"); return null; }}</Route>
+        <Route path="/what-we-dont-do">{() => { window.location.replace("/guides/peptide-vendor-ethics-standards"); return null; }}</Route>
+        <Route path="/education/:slug">{(params: { slug: string }) => { window.location.replace(`/guides/${params.slug}`); return null; }}</Route>
+        <Route path="/education">{() => { window.location.replace("/guides/peptide-education-center"); return null; }}</Route>
+        <Route path="/quality-process">{() => { window.location.replace("/guides/peptide-quality-assurance-process"); return null; }}</Route>
+        <Route path="/package-warm">{() => { window.location.replace("/guides/peptide-package-arrived-warm"); return null; }}</Route>
+        <Route path="/transparency">{() => { window.location.replace("/about/our-transparency-commitment"); return null; }}</Route>
+        <Route path="/ethical-pricing">{() => { window.location.replace("/guides/peptide-pricing-breakdown"); return null; }}</Route>
+        <Route path="/buyer-checklist">{() => { window.location.replace("/guides/peptide-vendor-checklist"); return null; }}</Route>
+        <Route path="/troubleshooting">{() => { window.location.replace("/guides/peptide-handling-troubleshooting"); return null; }}</Route>
+        <Route path="/batch-archive">{() => { window.location.replace("/coa/batch-testing-archive"); return null; }}</Route>
+        <Route path="/lab-notes">{() => { window.location.replace("/guides/peptide-lab-research-archive"); return null; }}</Route>
+        <Route path="/dosage-calculator">{() => { window.location.replace("/tools/peptide-reconstitution-calculator"); return null; }}</Route>
+        <Route path="/resources">{() => { window.location.replace("/peptide-research-resources"); return null; }}</Route>
         
         <Route component={NotFound} />
       </Switch>

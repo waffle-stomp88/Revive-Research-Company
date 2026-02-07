@@ -132,7 +132,7 @@ export default function CoaLibrary() {
             Analysis. Every batch is tested for purity and identity.
           </p>
           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-            <Link href="/coa">
+            <Link href="/coa/verify-certificate-of-analysis">
               <Button variant="ghost" className="text-[#9d4edd] p-0 h-auto hover:bg-transparent hover:text-[#9d4edd]/80" data-testid="link-verify-batch">
                 Verify a specific batch
                 <ChevronRight className="h-4 w-4 ml-1" />

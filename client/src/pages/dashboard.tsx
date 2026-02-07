@@ -844,7 +844,7 @@ export default function Dashboard() {
                           </Link>
                           
                           {/* Verify COA Link */}
-                          <Link href="/coa" data-testid="nav-coa">
+                          <Link href="/coa/verify-certificate-of-analysis" data-testid="nav-coa">
                             <div className="flex items-center gap-3 p-3 rounded-xl border border-[#21d8ff]/30 bg-[#21d8ff]/5 cursor-pointer hover-elevate transition-all">
                               <div className="p-2 rounded-full bg-[#21d8ff]/20">
                                 <FileCheck className="h-5 w-5 text-[#21d8ff]" />
@@ -1434,7 +1434,7 @@ export default function Dashboard() {
                             </CardTitle>
                             <CardDescription>Your verified COA batches</CardDescription>
                           </div>
-                          <Link href="/coa">
+                          <Link href="/coa/verify-certificate-of-analysis">
                             <Button size="sm" variant="outline" className="border-[#21d8ff]/40" data-testid="button-verify-new">
                               <FileCheck className="h-4 w-4 mr-1" />
                               Verify
@@ -1467,7 +1467,7 @@ export default function Dashboard() {
                           <div className="text-center py-6">
                             <FileCheck className="h-10 w-10 mx-auto text-muted-foreground/30 mb-3" />
                             <p className="text-sm text-muted-foreground mb-3">No verifications yet</p>
-                            <Link href="/coa">
+                            <Link href="/coa/verify-certificate-of-analysis">
                               <Button size="sm" className="bg-[#21d8ff] text-black" data-testid="button-verify-first">
                                 Verify First Batch
                               </Button>
@@ -1565,7 +1565,7 @@ export default function Dashboard() {
                         </div>
                       </Card>
                     </Link>
-                    <Link href="/coa" data-testid="link-coa-education">
+                    <Link href="/coa/verify-certificate-of-analysis" data-testid="link-coa-education">
                       <Card className="relative overflow-hidden p-5 cursor-pointer border-[#21d8ff]/30 hover:border-[#21d8ff]/60 bg-gradient-to-r from-[#21d8ff]/10 via-[#21d8ff]/5 to-transparent transition-all duration-300 group">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-[#21d8ff]/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="relative flex items-center justify-between">

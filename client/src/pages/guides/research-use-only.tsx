@@ -41,13 +41,13 @@ export default function ResearchUseOnly() {
     },
     {
       label: "Education Center",
-      href: "/education",
+      href: "/guides/peptide-education-center",
       icon: BookOpen,
       description: "Research-focused educational resources"
     },
     {
       label: "Our Quality Process",
-      href: "/quality-process",
+      href: "/guides/peptide-quality-assurance-process",
       icon: Shield,
       description: "How we ensure research-grade quality"
     },

@@ -293,7 +293,7 @@ export default function CoaVerification() {
                     <h4 className="font-display font-semibold text-lg">
                       Test Results
                     </h4>
-                    <Link href="/education/how-to-read-coas">
+                    <Link href="/guides/how-to-read-coas">
                       <div className="flex items-center gap-2 text-sm text-[#ec4899] hover:underline cursor-pointer" data-testid="link-learn-read-coas">
                         <GraduationCap className="h-4 w-4" />
                         <span>Learn how to read COAs</span>
@@ -382,7 +382,7 @@ export default function CoaVerification() {
               className="mt-16"
             >
               <div className="grid md:grid-cols-3 gap-6">
-              <Link href="/education/how-to-read-coas">
+              <Link href="/guides/how-to-read-coas">
                 <Card className="p-6 cursor-pointer h-full border-2 border-[#ec4899]/40 md:hover:border-[#ec4899]/100 md:hover:shadow-[0_0_20px_rgba(236,72,153,0.3)] transition-all duration-300 flex flex-col items-center text-center">
                   <div className="p-4 rounded-full bg-[#ec4899]/10 mb-4">
                     <GraduationCap className="h-8 w-8 text-[#ec4899]" />

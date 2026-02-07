@@ -45,13 +45,13 @@ export default function VerifyQuality() {
     },
     {
       label: "Browse Batch Archive",
-      href: "/batch-archive",
+      href: "/coa/batch-testing-archive",
       icon: Archive,
       description: "Historical testing records by batch"
     },
     {
       label: "Our Quality Process",
-      href: "/quality-process",
+      href: "/guides/peptide-quality-assurance-process",
       icon: Shield,
       description: "How we handle testing and verification"
     },

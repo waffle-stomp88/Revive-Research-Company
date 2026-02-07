@@ -502,13 +502,13 @@ export default function CartPage() {
                     What to Expect
                   </h4>
                   <div className="space-y-2 text-xs text-muted-foreground">
-                    <Link href="/education/ordering-expectations">
+                    <Link href="/guides/ordering-expectations">
                       <div className="flex items-center gap-1.5 text-[#21d8ff] hover:underline cursor-pointer" data-testid="link-ordering-expectations">
                         <span>Full ordering & delivery guide</span>
                         <ExternalLink className="h-3 w-3" />
                       </div>
                     </Link>
-                    <Link href="/package-warm">
+                    <Link href="/guides/peptide-package-arrived-warm">
                       <div className="flex items-center gap-1.5 text-[#21d8ff] hover:underline cursor-pointer" data-testid="link-package-warm">
                         <span>Package arrived warm? Don't worry</span>
                         <ExternalLink className="h-3 w-3" />

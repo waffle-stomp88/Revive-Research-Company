@@ -19,7 +19,7 @@ import {
 export default function PackageWarm() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead title="Package Arrived Warm?" description="Guide on peptide stability and temperature. Most research peptides remain stable during shipping." canonicalPath="/package-warm" />
+      <SEOHead title="Package Arrived Warm?" description="Guide on peptide stability and temperature. Most research peptides remain stable during shipping." canonicalPath="/guides/peptide-package-arrived-warm" />
       <div className="max-w-4xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

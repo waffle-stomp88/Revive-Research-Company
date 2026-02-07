@@ -40,19 +40,19 @@ export default function CoaTrust() {
     },
     {
       label: "Browse Batch Archive",
-      href: "/batch-archive",
+      href: "/coa/batch-testing-archive",
       icon: Archive,
       description: "Historical testing records by batch number"
     },
     {
       label: "Learn How to Read a COA",
-      href: "/education/understanding-coas",
+      href: "/guides/how-to-read-coas",
       icon: BookOpen,
       description: "Educational guide to interpreting test results"
     },
     {
       label: "Our Quality Process",
-      href: "/quality-process",
+      href: "/guides/peptide-quality-assurance-process",
       icon: Shield,
       description: "See how we handle testing and verification"
     }

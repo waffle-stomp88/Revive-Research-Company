@@ -39,7 +39,7 @@ export default function BatchArchive() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead title="Batch Archive" description="Historical batch records and testing data. Full transparency on all research compounds we've produced." canonicalPath="/batch-archive" />
+      <SEOHead title="Batch Archive" description="Historical batch records and testing data. Full transparency on all research compounds we've produced." canonicalPath="/coa/batch-testing-archive" />
       <div className="max-w-6xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -65,7 +65,7 @@ const checklistItems = [
 export default function BuyerChecklist() {
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead title="Buyer Checklist" description="What to look for when buying research peptides. Protect your research with our quality checklist." canonicalPath="/buyer-checklist" />
+      <SEOHead title="Buyer Checklist" description="What to look for when buying research peptides. Protect your research with our quality checklist." canonicalPath="/guides/peptide-vendor-checklist" />
       <div className="max-w-5xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -185,7 +185,7 @@ export default function BuyerChecklist() {
                     View Our COA Library
                   </Button>
                 </Link>
-                <Link href="/quality-process">
+                <Link href="/guides/peptide-quality-assurance-process">
                   <Button variant="outline" className="gap-2 border-[#E7FB10]/30 text-[#E7FB10] hover:bg-[#E7FB10]/10" data-testid="button-see-process">
                     <Shield className="h-4 w-4" />
                     See Our Process

@@ -234,12 +234,12 @@ export default function ProductsHub() {
               peptide research, and guide you to the right products for your protocols.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link href="/education">
+              <Link href="/guides/peptide-education-center">
                 <Button variant="outline" className="gap-2" data-testid="button-education-center">
                   Education Center <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
-              <Link href="/faq">
+              <Link href="/peptide-research-faq">
                 <Button variant="outline" className="gap-2" data-testid="button-faq">
                   View FAQ <ArrowRight className="h-4 w-4" />
                 </Button>

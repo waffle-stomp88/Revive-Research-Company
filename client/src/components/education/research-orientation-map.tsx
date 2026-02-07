@@ -79,7 +79,7 @@ export function ResearchOrientationMap() {
                 <div
                     className="group cursor-pointer h-full transform transition-all duration-300 md:hover:scale-[1.03] md:active:scale-[1.03] md:hover:-translate-y-1 md:active:-translate-y-1"
                     data-testid={`domain-card-${domain.id}`}
-                    onClick={() => navigate(`/education/${domain.slug}`)}
+                    onClick={() => navigate(`/guides/${domain.slug}`)}
                   >
                     <div
                       className="relative p-5 rounded-xl transition-all duration-300 overflow-hidden h-full flex flex-col group-hover:border-2"

@@ -15,14 +15,14 @@ const resources = [
   {
     title: "Education Center",
     description: "Comprehensive learning resources covering peptide research, storage best practices, reading COAs, batch numbers, and research expectations.",
-    href: "/education",
+    href: "/guides/peptide-education-center",
     icon: GraduationCap,
     color: "#21d8ff",
   },
   {
     title: "Trust & Verification Guides",
     description: "Honest, no-hype guides to help you evaluate any peptide supplier — including us. Skepticism is healthy.",
-    href: "/education?tab=trust",
+    href: "/guides/peptide-education-center",
     icon: Shield,
     color: "#f97316",
   },
@@ -36,14 +36,14 @@ const resources = [
   {
     title: "What We Don't Do",
     description: "Our ethical commitments and what we explicitly do not support. Transparency about our business practices and values.",
-    href: "/what-we-dont-do",
+    href: "/guides/peptide-vendor-ethics-standards",
     icon: BookOpen,
     color: "#ec4899",
   },
   {
     title: "FAQ",
     description: "Frequently asked questions about ordering, shipping, product analysis, storage, and general support.",
-    href: "/faq",
+    href: "/peptide-research-faq",
     icon: HelpCircle,
     color: "#22c55e",
   },
@@ -52,7 +52,7 @@ const resources = [
 export default function ResourcesHub() {
   return (
     <main className="min-h-screen pt-32">
-      <SEOHead title="Resources Hub" description="Tools and guides for peptide researchers. Calculators, protocols, and educational materials." canonicalPath="/resources" />
+      <SEOHead title="Resources Hub" description="Tools and guides for peptide researchers. Calculators, protocols, and educational materials." canonicalPath="/peptide-research-resources" />
       {/* Hero Section */}
       <section className="relative pb-16 md:pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#9d4edd]/8 via-background to-background" />

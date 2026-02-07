@@ -39,7 +39,7 @@ export default function CheapPeptides() {
   const ctaLinks = [
     {
       label: "Our Ethical Pricing Philosophy",
-      href: "/ethical-pricing",
+      href: "/guides/peptide-pricing-breakdown",
       icon: Scale,
       description: "How we think about fair pricing"
     },
@@ -51,7 +51,7 @@ export default function CheapPeptides() {
     },
     {
       label: "Quality Process Explained",
-      href: "/quality-process",
+      href: "/guides/peptide-quality-assurance-process",
       icon: Shield,
       description: "What goes into our products"
     },

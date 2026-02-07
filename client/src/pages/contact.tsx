@@ -168,21 +168,21 @@ export default function Contact() {
                     Many questions can be answered instantly! Check out these helpful resources:
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <Link href="/troubleshooting">
+                    <Link href="/guides/peptide-handling-troubleshooting">
                       <div className="flex items-center gap-2 p-3 rounded-lg border border-border hover:border-[#21d8ff]/40 hover:bg-[#21d8ff]/5 transition-colors cursor-pointer" data-testid="link-troubleshooting">
                         <Wrench className="h-4 w-4 text-[#21d8ff]" />
                         <span className="text-sm font-medium">Troubleshooting</span>
                         <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground" />
                       </div>
                     </Link>
-                    <Link href="/faq">
+                    <Link href="/peptide-research-faq">
                       <div className="flex items-center gap-2 p-3 rounded-lg border border-border hover:border-[#E7FB10]/40 hover:bg-[#E7FB10]/5 transition-colors cursor-pointer" data-testid="link-faq">
                         <HelpCircle className="h-4 w-4 text-[#E7FB10]" />
                         <span className="text-sm font-medium">FAQ</span>
                         <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground" />
                       </div>
                     </Link>
-                    <Link href="/education">
+                    <Link href="/guides/peptide-education-center">
                       <div className="flex items-center gap-2 p-3 rounded-lg border border-border hover:border-[#ec4899]/40 hover:bg-[#ec4899]/5 transition-colors cursor-pointer" data-testid="link-education">
                         <BookOpen className="h-4 w-4 text-[#ec4899]" />
                         <span className="text-sm font-medium">Education</span>
