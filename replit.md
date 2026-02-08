@@ -37,6 +37,7 @@ The platform features an Apple-inspired design with a dark charcoal background (
     - Longevity Protocol: Epithalon+GHK-Cu (84%)
     - Total Regen: BPC-157+TB-500+Ipamorelin (92%)
     - Recovery+ Protocol: BPC-157+GHK-Cu+TB-500 (82%)
+    - KLOW Stack: BPC-157+TB-500+GHK-Cu+KPV (94%) — 3-phase regeneration: inflammation control → tissue repair → collagen remodeling
   - **Smart Recommendations**: Suggests peptides to complete known stacks ("Add TB-500 to unlock Wolverine Stack")
   - **Body System Heatmap**: Visual icons (Healing, Metabolic, Cognitive, Skin, Growth, Longevity) with hover tooltips explaining the biological mechanisms
   - **Shared Pathway Detection**: Shows common mechanisms between selected peptides with tooltips (Angiogenesis, Collagen Synthesis, mTOR Pathway, etc.)

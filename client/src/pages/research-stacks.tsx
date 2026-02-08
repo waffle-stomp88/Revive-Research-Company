@@ -246,6 +246,14 @@ const KNOWN_STACKS: KnownStack[] = [
     description: "GH amplification + metabolic enhancement for body composition",
     synergyBonus: 87,
   },
+  {
+    name: "KLOW Stack",
+    peptides: ["bpc-157", "tb-500", "ghk-cu", "kpv"],
+    icon: Leaf,
+    color: "#00e5a0",
+    description: "3-phase regeneration: KPV clears inflammation, BPC-157 + TB-500 repair tissue, GHK-Cu remodels collagen",
+    synergyBonus: 94,
+  },
 ];
 
 // Peptide pathway data for connections
@@ -310,6 +318,12 @@ const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
     mechanisms: ["Anxiolytic", "Immunomodulation", "Tuftsin analog"],
     systems: ["Cognitive", "Mood", "Immune"],
   },
+  "kpv": {
+    name: "KPV",
+    pathways: ["NF-κB Inhibition", "Anti-Inflammatory", "Mucosal Healing"],
+    mechanisms: ["α-MSH fragment", "Immune modulation", "Gut barrier repair"],
+    systems: ["Healing", "Gut", "Immune"],
+  },
 };
 
 // Body systems with icons and descriptions
@@ -346,6 +360,9 @@ const PATHWAY_DESCRIPTIONS: Record<string, string> = {
   "Dopamine": "Neurotransmitter pathway for motivation and reward",
   "GABA": "Inhibitory neurotransmitter for calm and anxiety reduction",
   "Serotonin": "Mood-regulating neurotransmitter pathway",
+  "NF-κB Inhibition": "Blocks the master inflammatory switch to create a healing-ready environment",
+  "Anti-Inflammatory": "Reduces systemic inflammation to allow repair peptides to function optimally",
+  "Mucosal Healing": "Restores gut barrier integrity and mucosal lining for gut-immune axis health",
 };
 
 // Helper to normalize peptide names for matching
@@ -519,11 +536,13 @@ const PEPTIDE_PAIRINGS: Record<string, { partner: string; reason: string; boost:
     { partner: "bpc-157", reason: "The classic Wolverine combo — systemic + targeted repair", boost: "Healing" },
     { partner: "ipamorelin", reason: "Recovery + growth hormone for faster tissue rebuilding", boost: "Growth" },
     { partner: "ghk-cu", reason: "Tissue mobility + skin matrix renewal", boost: "Skin" },
+    { partner: "kpv", reason: "Anti-inflammatory clearance lets TB-500 repair faster", boost: "Healing" },
   ],
   "ghk-cu": [
     { partner: "epithalon", reason: "Collagen renewal + telomere protection for longevity", boost: "Longevity" },
     { partner: "bpc-157", reason: "Skin repair + internal healing synergy", boost: "Healing" },
     { partner: "snap-8", reason: "Matrix remodeling + expression line reduction", boost: "Skin" },
+    { partner: "kpv", reason: "Inflammation control enhances collagen remodeling", boost: "Skin" },
   ],
   "mots-c": [
     { partner: "retatrutide", reason: "Mitochondrial energy + metabolic signaling", boost: "Metabolic" },
@@ -594,6 +613,11 @@ const PEPTIDE_PAIRINGS: Record<string, { partner: string; reason: string; boost:
   "pt-141": [
     { partner: "kisspeptin", reason: "MC receptor + GnRH pathway for hormonal balance", boost: "Hormonal" },
     { partner: "oxytocin", reason: "Complementary hormonal and wellbeing support", boost: "Hormonal" },
+  ],
+  "kpv": [
+    { partner: "bpc-157", reason: "Clear inflammation first, then repair — the KLOW principle", boost: "Healing" },
+    { partner: "tb-500", reason: "Anti-inflammatory prep + systemic tissue regeneration", boost: "Healing" },
+    { partner: "ghk-cu", reason: "NF-κB inhibition + collagen remodeling for skin renewal", boost: "Skin" },
   ],
 };
 
@@ -738,7 +762,7 @@ const peptideCategories: Record<string, { label: string; color: string; icon: ty
   "igf-1": [{ label: "Growth", color: "#f59e0b", icon: Dumbbell }],
   "igf-des": [{ label: "Growth", color: "#f59e0b", icon: Dumbbell }],
   "klow": [{ label: "Skin", color: "#ec4899", icon: Sparkles }],
-  "kpv": [{ label: "Healing", color: "#22c55e", icon: Shield }],
+  "kpv": [{ label: "Healing", color: "#22c55e", icon: Shield }, { label: "Skin", color: "#ec4899", icon: Sparkles }, { label: "Longevity", color: "#a855f7", icon: Crown }],
   "kisspeptin": [{ label: "Hormonal", color: "#f59e0b", icon: Activity }],
   "ll-37": [{ label: "Immune", color: "#22c55e", icon: Shield }],
   "mgf": [{ label: "Growth", color: "#f59e0b", icon: Dumbbell }],
