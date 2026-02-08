@@ -987,7 +987,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
       {/* Two Column Layout: Peptides Left, Build Panel Right */}
       <div className="grid grid-cols-1 lg:grid-cols-[65%_1fr] gap-6">
         {/* Left Column: Peptide Selection */}
-        <div className="flex flex-col">
+        <div className="flex flex-col pb-4 lg:pb-0">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-display text-xl font-bold">Select Your Peptides</h3>
@@ -1062,7 +1062,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                     data-testid="input-peptide-search"
                   />
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 overflow-y-auto pr-1 scrollbar-thin max-h-[600px]">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 overflow-y-auto pr-1 scrollbar-thin max-h-[400px] sm:max-h-[600px]">
                   {filteredPeptides.map(product => {
                     const isSelected = selectedPeptides.find(p => p.id === product.id);
                     const isDisabled = !isSelected && selectedPeptides.length >= 4;
@@ -1130,7 +1130,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
           })()}
         </div>
 
-        {/* Right Column: Synergy Visualization Panel */}
+        {/* Right Column: Synergy Visualization Panel - inline on mobile, sticky sidebar on desktop */}
         <div>
           <div className="lg:sticky lg:top-28 space-y-4">
             
@@ -1147,10 +1147,10 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                 <>
                   {/* Synergy Ring Visualization */}
                   <Card className="border-2 border-[#9d4edd]/40 bg-gradient-to-br from-[#1a1a1f] to-[#0f0f12] overflow-hidden" data-testid="card-synergy-ring">
-                    <div className="p-5">
-                      <div className="flex items-center gap-5">
+                    <div className="p-3 sm:p-5">
+                      <div className="flex items-center gap-3 sm:gap-5">
                         {/* Animated Synergy Ring */}
-                        <div className="relative w-32 h-32 flex-shrink-0">
+                        <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
                           <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                             {/* Background ring */}
                             <circle
@@ -1186,7 +1186,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                               key={synergyScore}
                               initial={{ scale: 0.5, opacity: 0 }}
                               animate={{ scale: 1, opacity: 1 }}
-                              className="font-display text-4xl font-bold"
+                              className="font-display text-3xl sm:text-4xl font-bold"
                               style={{ color: knownStack ? knownStack.color : "#fff" }}
                             >
                               {synergyScore}%
@@ -1664,28 +1664,46 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
           </div>
         </div>
       </div>
-      {/* Spacer for sticky bottom bar */}
-      <div className="h-20" />
+      {/* Spacer for sticky bottom bar + mobile nav */}
+      <div className="h-36 md:h-20" />
       {/* ====== STICKY BOTTOM CART BAR ====== */}
       <AnimatePresence>
         <motion.div
           initial={{ y: 100 }}
           animate={{ y: 0 }}
-          className="fixed bottom-0 left-0 right-0 z-50 border-t border-[#21d8ff]/30 bg-[#0f0f12]/95 backdrop-blur-xl shadow-[0_-4px_30px_rgba(33,216,255,0.1)]"
+          className="fixed bottom-16 md:bottom-0 left-0 right-0 z-[51] border-t border-[#21d8ff]/30 bg-[#0f0f12]/95 backdrop-blur-xl shadow-[0_-4px_30px_rgba(33,216,255,0.1)]"
           data-testid="sticky-cart-bar"
         >
           {/* Collapsed bar */}
           <div 
-            className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4 cursor-pointer"
+            className="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between gap-2 sm:gap-4 cursor-pointer"
             onClick={() => setCartExpanded(!cartExpanded)}
             data-testid="button-toggle-cart"
           >
-            <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2">
                 <FlaskConical className="h-4 w-4 text-[#21d8ff]" />
-                <span className="font-display font-bold text-[20px]">Your Stack</span>
-                <Badge variant="outline" className="text-[15px]">{selectedPeptides.length}/4</Badge>
+                <span className="font-display font-bold text-base sm:text-[20px]">Your Stack</span>
+                <Badge variant="outline" className="text-xs sm:text-[15px]">{selectedPeptides.length}/4</Badge>
               </div>
+              {selectedPeptides.length >= 2 && (() => {
+                const peptideNames = selectedPeptides.map(p => p.name);
+                const synergyScore = calculateSynergyScore(peptideNames);
+                const knownStack = checkKnownStack(peptideNames);
+                return (
+                  <Badge 
+                    className="lg:hidden text-[10px] shrink-0"
+                    style={{ 
+                      backgroundColor: `${knownStack ? knownStack.color : synergyScore > 70 ? "#22c55e" : synergyScore > 50 ? "#E7FB10" : "#21d8ff"}20`,
+                      color: knownStack ? knownStack.color : synergyScore > 70 ? "#22c55e" : synergyScore > 50 ? "#E7FB10" : "#21d8ff",
+                      border: `1px solid ${knownStack ? knownStack.color : synergyScore > 70 ? "#22c55e" : synergyScore > 50 ? "#E7FB10" : "#21d8ff"}40`
+                    }}
+                    data-testid="badge-mobile-synergy"
+                  >
+                    {synergyScore}% {knownStack ? knownStack.name : "Synergy"}
+                  </Badge>
+                );
+              })()}
               {selectedPeptides.length > 0 && (
                 <div className="hidden sm:flex items-center gap-1.5 flex-1 min-w-0">
                   {selectedPeptides.map((p, i) => (
@@ -1698,22 +1716,24 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
               )}
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               {selectedPeptides.length >= 2 && (
-                <span className="font-display text-lg font-bold text-[#E7FB10]">${getRetailTotal().toFixed(2)}</span>
+                <span className="hidden sm:inline font-display text-lg font-bold text-[#E7FB10]">${getRetailTotal().toFixed(2)}</span>
               )}
               {(() => {
                 const hasOutOfStock = selectedPeptides.some(p => !p.inStock);
                 const notEnough = selectedPeptides.length < 2;
                 return (
                   <Button
+                    size="sm"
                     onClick={(e) => { e.stopPropagation(); handleAddToCart(); }}
                     disabled={notEnough || hasOutOfStock}
-                    className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 font-bold shadow-[0_0_20px_rgba(231,251,16,0.3)]"
+                    className="bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 font-bold shadow-[0_0_20px_rgba(231,251,16,0.3)] text-xs sm:text-sm"
                     data-testid="button-add-custom-stack"
                   >
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    {notEnough ? `${selectedPeptides.length}/2` : hasOutOfStock ? "Item Out of Stock" : "Add to Cart"}
+                    <ShoppingCart className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">{notEnough ? `${selectedPeptides.length}/2` : hasOutOfStock ? "Item Out of Stock" : "Add to Cart"}</span>
+                    <span className="sm:hidden">{notEnough ? `${selectedPeptides.length}/2` : hasOutOfStock ? "OOS" : "Add"}</span>
                   </Button>
                 );
               })()}
@@ -1736,8 +1756,8 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                 transition={{ duration: 0.2 }}
                 className="overflow-hidden"
               >
-                <div className="max-w-7xl mx-auto px-4 pb-4 border-t border-[#2a2a32]">
-                  <div className="pt-3 space-y-3">
+                <div className="max-w-7xl mx-auto px-3 sm:px-4 pb-3 sm:pb-4 border-t border-[#2a2a32]">
+                  <div className="pt-3 space-y-3 max-h-[50vh] overflow-y-auto">
                     {selectedPeptides.length === 0 ? (
                       <p className="text-sm text-muted-foreground text-center py-2">Select peptides from the grid above</p>
                     ) : (
@@ -1775,6 +1795,70 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                             );
                           })}
                         </div>
+
+                        {/* Mobile-only synergy & systems summary */}
+                        {selectedPeptides.length >= 2 && (() => {
+                          const peptideNames = selectedPeptides.map(p => p.name);
+                          const synergyScore = calculateSynergyScore(peptideNames);
+                          const knownStack = checkKnownStack(peptideNames);
+                          const sharedPathways = findSharedPathways(peptideNames);
+                          const activeSystems = getActiveSystems(peptideNames);
+                          const synergyColor = knownStack ? knownStack.color : synergyScore > 70 ? "#22c55e" : synergyScore > 50 ? "#E7FB10" : "#21d8ff";
+                          return (
+                            <div className="lg:hidden space-y-2 pt-2 border-t border-[#2a2a32]" data-testid="mobile-synergy-summary">
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2">
+                                  <div className="relative w-10 h-10 shrink-0">
+                                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                      <circle cx="18" cy="18" r="14" fill="none" stroke="#2a2a32" strokeWidth="3" />
+                                      <circle cx="18" cy="18" r="14" fill="none" stroke={synergyColor} strokeWidth="3" strokeLinecap="round"
+                                        strokeDasharray={`${(synergyScore / 100) * 88} 88`}
+                                        style={{ filter: knownStack ? `drop-shadow(0 0 4px ${knownStack.color})` : undefined }}
+                                      />
+                                    </svg>
+                                    <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold" style={{ color: synergyColor }}>
+                                      {synergyScore}%
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <p className="text-xs font-bold" style={{ color: synergyColor }}>
+                                      {knownStack ? knownStack.name : "Custom Stack"}
+                                    </p>
+                                    {knownStack && (
+                                      <Badge className="text-[8px] mt-0.5" style={{ backgroundColor: `${knownStack.color}20`, color: knownStack.color }}>
+                                        Legendary Combo
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </div>
+                                <span className="font-display text-lg font-bold text-[#E7FB10]">${getRetailTotal().toFixed(2)}</span>
+                              </div>
+                              {activeSystems.length > 0 && (
+                                <div className="flex flex-wrap gap-1">
+                                  {BODY_SYSTEMS.filter(s => activeSystems.includes(s.id)).map(system => {
+                                    const SystemIcon = system.icon;
+                                    return (
+                                      <div key={system.id} className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px]"
+                                        style={{ backgroundColor: `${system.color}15`, color: system.color }}>
+                                        <SystemIcon className="h-2.5 w-2.5" />
+                                        {system.name}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                              {sharedPathways.length > 0 && (
+                                <div className="flex flex-wrap gap-1">
+                                  {sharedPathways.map((pathway, i) => (
+                                    <Badge key={i} className="text-[9px] bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30">
+                                      {pathway}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
 
                         {selectedPeptides.length >= 2 && (
                           <div className="flex items-center justify-between flex-wrap gap-3 pt-2 border-t border-[#2a2a32]">
@@ -1906,7 +1990,7 @@ function ResearchStacks() {
   };
 
   return (
-    <main className="min-h-screen pt-32 md:pt-40 pb-12">
+    <main className="min-h-screen pt-32 md:pt-40 pb-24 md:pb-12">
       <SEOHead title="Research Stacks" description="Curated peptide combinations for specific research goals. Save with bundle pricing." canonicalPath="/research-stacks" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div
