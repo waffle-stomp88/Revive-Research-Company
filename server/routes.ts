@@ -307,8 +307,12 @@ export async function registerRoutes(
           const minPrice = Math.min(...dosagePrices);
           const maxPrice = Math.max(...dosagePrices);
           if (minPrice !== maxPrice) {
-            return { ...product, minPrice: minPrice.toFixed(2), maxPrice: maxPrice.toFixed(2) };
+            return { ...product, price: minPrice.toFixed(2), minPrice: minPrice.toFixed(2), maxPrice: maxPrice.toFixed(2) };
           }
+          return { ...product, price: minPrice.toFixed(2) };
+        }
+        if (dosagePrices.length === 1) {
+          return { ...product, price: dosagePrices[0].toFixed(2) };
         }
         return product;
       });
