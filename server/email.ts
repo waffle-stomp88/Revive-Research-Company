@@ -128,6 +128,88 @@ const getEmailBaseStyles = () => {
   };
 };
 
+// Company address for CAN-SPAM compliance
+const COMPANY_ADDRESS = 'Frisco, TX 75033';
+
+// Shared email footer components for CAN-SPAM compliance
+function getUnsubscribeUrl(email: string): string {
+  return `https://reviveresearch.co/unsubscribe?email=${encodeURIComponent(email)}`;
+}
+
+type EmailReason = 'order' | 'shipping' | 'newsletter';
+
+function getSharedFooterText(email: string, reason: EmailReason): string {
+  const reasonText = {
+    order: "You're receiving this email because you placed an order at reviveresearch.co.",
+    shipping: "You're receiving this email because you have an active order with reviveresearch.co.",
+    newsletter: "You're receiving this email because you subscribed at reviveresearch.co.",
+  };
+
+  return `
+---
+RESEARCH USE ONLY
+All products are intended for laboratory research purposes only.
+Not for human or animal consumption.
+
+${reasonText[reason]}
+Revive Research | ${COMPANY_ADDRESS}
+Unsubscribe: ${getUnsubscribeUrl(email)}
+
+© ${new Date().getFullYear()} Revive Research. All rights reserved.`;
+}
+
+function getSharedFooterHtml(email: string, reason: EmailReason, theme: 'dark' | 'light' = 'dark'): string {
+  const styles = getEmailBaseStyles();
+  const unsubscribeUrl = getUnsubscribeUrl(email);
+
+  const reasonText = {
+    order: 'You\'re receiving this email because you placed an order at <a href="https://reviveresearch.co" style="color: inherit; text-decoration: underline;">reviveresearch.co</a>.',
+    shipping: 'You\'re receiving this email because you have an active order with <a href="https://reviveresearch.co" style="color: inherit; text-decoration: underline;">reviveresearch.co</a>.',
+    newsletter: 'You\'re receiving this email because you subscribed at <a href="https://reviveresearch.co" style="color: inherit; text-decoration: underline;">reviveresearch.co</a>.',
+  };
+
+  const isDark = theme === 'dark';
+  const textColor = isDark ? '#999999' : '#888888';
+  const linkColor = isDark ? styles.accentColor : '#0891b2';
+  const dividerColor = isDark ? 'rgba(255,255,255,0.08)' : '#dddddd';
+  const brandColor = isDark ? styles.primaryColor : '#0a6b5c';
+
+  const ruoBorderColor = isDark ? 'rgba(33, 216, 255, 0.3)' : '#0891b2';
+  const ruoBgColor = isDark ? 'rgba(33, 216, 255, 0.05)' : '#f0fdfa';
+  const ruoTextColor = isDark ? '#cccccc' : '#555555';
+
+  return `
+              <div style="height: 1px; background: ${dividerColor}; margin: 20px 0;"></div>
+              
+              <div style="border: 1px solid ${ruoBorderColor}; background: ${ruoBgColor}; border-radius: 6px; padding: 12px 16px; margin: 0 0 16px 0; text-align: center;">
+                <p style="color: ${linkColor}; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 4px 0;">
+                  Research Use Only
+                </p>
+                <p style="color: ${ruoTextColor}; font-size: 10px; line-height: 1.5; margin: 0;">
+                  All products are intended for laboratory research purposes only. Not for human or animal consumption.
+                </p>
+              </div>
+              
+              <p style="color: ${textColor}; font-size: 11px; line-height: 1.6; margin: 0 0 12px 0;">
+                ${reasonText[reason]}
+              </p>
+              
+              <p style="color: ${brandColor}; font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; margin: 0 0 4px 0;">
+                Revive Research
+              </p>
+              <p style="color: ${textColor}; font-size: 11px; margin: 0 0 12px 0;">
+                ${COMPANY_ADDRESS}
+              </p>
+              
+              <p style="margin: 0 0 8px 0; font-size: 11px;">
+                <a href="${unsubscribeUrl}" style="color: ${linkColor}; text-decoration: underline;">Unsubscribe</a>
+              </p>
+              
+              <p style="color: ${textColor}; font-size: 11px; margin: 0;">
+                &copy; ${new Date().getFullYear()} Revive Research. All rights reserved.
+              </p>`;
+}
+
 // Cart item type for multi-item orders
 interface OrderItem {
   name: string;
@@ -206,14 +288,8 @@ WHAT'S NEXT
 -----------
 Your order will ship within 24 hours. You'll receive tracking information once shipped.
 
-RESEARCH USE ONLY
------------------
-All products are intended for laboratory research purposes only. 
-Not for human or animal consumption.
-
 Questions? Contact us at ${EMAIL_CONFIG.replyTo}
-
-${brand.name}
+${getSharedFooterText(order.email, 'order')}
 `;
 
   const html = `
@@ -480,16 +556,7 @@ ${brand.name}
                 Contact Support
               </a>
               
-              <!-- Divider -->
-              <div style="height: 1px; background: rgba(255,255,255,0.08); margin: 20px 0;"></div>
-              
-              <!-- Brand Footer -->
-              <p style="color: ${styles.primaryColor}; font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; margin: 0 0 8px 0;">
-                Revive Research
-              </p>
-              <p style="color: #eeeeee; font-size: 11px; margin: 0;">
-                &copy; ${new Date().getFullYear()} Revive Research. All rights reserved.
-              </p>
+              ${getSharedFooterHtml(order.email, 'order')}
             </td>
           </tr>
           
@@ -610,14 +677,8 @@ ${order.country || 'USA'}
 
 Estimated Delivery: ${deliveryEstimate}
 
-RESEARCH USE ONLY
------------------
-All products are intended for laboratory research purposes only. 
-Not for human or animal consumption.
-
 Questions? Contact us at ${EMAIL_CONFIG.replyTo}
-
-${brand.name}
+${getSharedFooterText(order.email, 'shipping')}
 `;
 
   const html = `
@@ -862,20 +923,7 @@ ${brand.name}
                 </tr>
               </table>
               
-              <!-- Divider -->
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
-                <tr>
-                  <td bgcolor="#dddddd" style="height: 1px; background-color: #dddddd;"></td>
-                </tr>
-              </table>
-              
-              <!-- Brand Footer -->
-              <p style="color: #0a6b5c; font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; margin: 20px 0 8px 0;">
-                Revive Research
-              </p>
-              <p style="color: #666666; font-size: 11px; margin: 0;">
-                &copy; ${new Date().getFullYear()} Revive Research. All rights reserved.
-              </p>
+              ${getSharedFooterHtml(order.email, 'shipping', 'light')}
             </td>
           </tr>
           
@@ -1215,9 +1263,6 @@ function getNewsletterWelcomeTemplate(email: string): { subject: string; text: s
   // Logo URL - served from public assets folder
   const logoUrl = 'https://reviveresearch.co/assets/email-logo.png';
   
-  // Unsubscribe URL placeholder (replace with actual unsubscribe system)
-  const unsubscribeUrl = `https://reviveresearch.co/unsubscribe?email=${encodeURIComponent(email)}`;
-  
   const subject = 'Welcome to Revive Research';
   
   const text = `REVIVE RESEARCH
@@ -1238,10 +1283,7 @@ Here's what you can expect as a subscriber:
 - Low Volume, High Signal: No spam, no noise. Only occasional updates tied to new research, education, or meaningful platform changes.
 
 Explore Available Research: https://reviveresearch.co/
-
----
-You're receiving this email because you subscribed at reviveresearch.co.
-Unsubscribe: ${unsubscribeUrl}`;
+${getSharedFooterText(email, 'newsletter')}`;
 
   const html = `
 <!DOCTYPE html>
@@ -1478,22 +1520,7 @@ Unsubscribe: ${unsubscribeUrl}`;
                 <span style="color: ${colors.textPrimary}; font-weight: 500;">The Revive Research Team</span>
               </p>
               
-              <!-- Divider -->
-              <table role="presentation" width="60" cellspacing="0" cellpadding="0" align="center" style="margin: 0 auto 20px auto;">
-                <tr>
-                  <td style="height: 1px; background: linear-gradient(90deg, transparent, ${colors.textMuted}, transparent);"></td>
-                </tr>
-              </table>
-              
-              <!-- Email info -->
-              <p style="margin: 0 0 8px 0; font-size: 12px; color: #999999;">
-                You're receiving this email because you subscribed at <a href="https://reviveresearch.co" style="color: #bbbbbb; text-decoration: none;">reviveresearch.co</a>.
-              </p>
-              
-              <!-- Unsubscribe Link -->
-              <p style="margin: 0; font-size: 12px;">
-                <a href="${unsubscribeUrl}" style="color: ${colors.cyan}; text-decoration: underline;">Unsubscribe</a>
-              </p>
+              ${getSharedFooterHtml(email, 'newsletter')}
               
             </td>
           </tr>
