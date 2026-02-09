@@ -74,7 +74,7 @@ interface ProductBadge {
   icon?: typeof Flame;
 }
 
-const LOW_STOCK_THRESHOLD = 20;
+const LOW_STOCK_THRESHOLD = 10;
 
 function getProductBadges(
   product: Product, 
@@ -995,7 +995,7 @@ function ProductsComponent() {
                                       <span className="w-1.5 h-1.5 rounded-full bg-red-400 inline-block" />
                                       Out of Stock
                                     </span>
-                                  ) : product.stockAmount !== null && product.stockAmount > 0 && product.stockAmount <= 20 ? (
+                                  ) : product.stockAmount !== null && product.stockAmount > 0 && product.stockAmount <= 10 ? (
                                     <span className="text-[10px] text-orange-400 font-medium flex items-center gap-1">
                                       <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse inline-block" />
                                       Only {product.stockAmount} left

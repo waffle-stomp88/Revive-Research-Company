@@ -73,10 +73,9 @@ export default function BundleDetail() {
     return getDiscountedPrice() * quantity;
   };
 
-  const handleBuyNow = () => {
+  const handleBuyNow = async () => {
     if (bundle) {
-      // Add to cart first, then go to checkout
-      addToCart({
+      await addToCart({
         productId: `bundle-${bundle.id}`,
         bundleId: bundle.id,
         name: bundle.name,
@@ -87,14 +86,13 @@ export default function BundleDetail() {
         isBundle: true,
         image: productImage,
       });
-      // Navigate directly to checkout
       setLocation('/checkout?fromCart=true');
     }
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (bundle) {
-      addToCart({
+      await addToCart({
         productId: `bundle-${bundle.id}`,
         bundleId: bundle.id,
         name: bundle.name,

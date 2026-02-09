@@ -344,8 +344,8 @@ export default function ResearchStackDetail() {
     setQuantity(prev => Math.max(1, Math.min(10, prev + delta)));
   };
 
-  const handleAddToCart = () => {
-    addToCart({
+  const handleAddToCart = async () => {
+    await addToCart({
       productId: stack.id,
       bundleId: stack.id,
       name: stack.name,
@@ -366,9 +366,8 @@ export default function ResearchStackDetail() {
     });
   };
 
-  const handleBuyNow = () => {
-    // Add to cart first, then go to checkout
-    addToCart({
+  const handleBuyNow = async () => {
+    await addToCart({
       productId: stack.id,
       bundleId: stack.id,
       name: stack.name,
@@ -378,7 +377,6 @@ export default function ResearchStackDetail() {
       image: productImage,
       isBundle: true,
     });
-    // Navigate directly to checkout
     window.location.href = '/checkout?fromCart=true';
   };
 

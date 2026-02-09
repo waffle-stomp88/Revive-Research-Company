@@ -35,10 +35,10 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
     setQuantity(prev => Math.max(1, Math.min(10, prev + delta)));
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (isOutOfStock) return;
     
-    addToCart({
+    const added = await addToCart({
       productId: product.id,
       name: product.name,
       price: Number(product.price),
@@ -47,6 +47,11 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
       dosage: "Default",
       image: product.imageUrl || productImage,
     });
+    
+    if (!added) {
+      toast({ title: "Out of Stock", description: `${product.name} is currently out of stock.`, variant: "destructive" });
+      return;
+    }
     
     toast({
       title: "Added to Cart",

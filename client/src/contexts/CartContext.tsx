@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 
 export interface CartItem {
   productId: string;
@@ -16,7 +16,7 @@ export interface CartItem {
 
 interface CartContextType {
   items: CartItem[];
-  addToCart: (item: CartItem) => void;
+  addToCart: (item: CartItem) => Promise<boolean>;
   removeFromCart: (productId: string, dosage: string) => void;
   removeBundleFromCart: (bundleId: string) => void;
   updateQuantity: (productId: string, dosage: string, quantity: number) => void;
@@ -42,14 +42,45 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
   }, [items]);
 
-  const addToCart = (item: CartItem) => {
+  const addToCart = useCallback(async (item: CartItem): Promise<boolean> => {
+    if (item.isBundle || item.bundleId) {
+      setItems((prev) => {
+        const existingIndex = prev.findIndex(
+          (i) => i.bundleId === item.bundleId && i.dosage === item.dosage
+        );
+        if (existingIndex >= 0) {
+          const updated = [...prev];
+          updated[existingIndex].quantity += item.quantity;
+          return updated;
+        }
+        return [...prev, item];
+      });
+      return true;
+    }
+
+    try {
+      const res = await fetch("/api/stock/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: [{
+            productId: item.productId,
+            dosage: item.dosage,
+            quantity: item.quantity,
+          }],
+        }),
+      });
+      const data = await res.json();
+      if (!data.valid) {
+        return false;
+      }
+    } catch {
+      // If validation fails due to network, allow the add (checkout will re-validate)
+    }
+
     setItems((prev) => {
       const existingIndex = prev.findIndex(
         (i) => {
-          if (item.bundleId) {
-            return i.bundleId === item.bundleId && i.dosage === item.dosage;
-          }
-          // Subscription items should not merge with one-time items
           const sameSubscriptionType = i.isSubscription === item.isSubscription && 
             i.subscriptionInterval === item.subscriptionInterval;
           return i.productId === item.productId && i.dosage === item.dosage && sameSubscriptionType;
@@ -64,7 +95,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
       return [...prev, item];
     });
-  };
+    return true;
+  }, []);
 
   const removeFromCart = (productId: string, dosage: string) => {
     setItems((prev) =>

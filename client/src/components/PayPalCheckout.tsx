@@ -51,6 +51,11 @@ export default function PayPalCheckout({
       amount: amount,
       currency: currency,
       intent: intent,
+      items: cartItems?.map(item => ({
+        productId: item.productId,
+        dosage: item.dosage,
+        quantity: item.quantity,
+      })),
     };
     const response = await fetch("/paypal/order", {
       method: "POST",
@@ -59,6 +64,10 @@ export default function PayPalCheckout({
     });
     const output = await response.json();
     if (!response.ok) {
+      if (response.status === 409) {
+        const errorMsg = output.stockErrors?.join(", ") || "Some items are out of stock";
+        throw new Error(errorMsg);
+      }
       throw new Error(output.error || "Failed to create PayPal order");
     }
     return { orderId: output.id };

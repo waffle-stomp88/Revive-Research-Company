@@ -96,6 +96,22 @@ export async function registerRoutes(
   });
 
   app.post("/paypal/order", async (req, res) => {
+    // Validate stock before creating PayPal order (before payment is captured)
+    const { items } = req.body;
+    if (items && Array.isArray(items)) {
+      const stockItems = items.map((item: any) => ({
+        productId: item.productId || item.id,
+        dosage: item.dosage || undefined,
+        quantity: item.quantity || 1,
+      }));
+      const stockCheck = await storage.validateStock(stockItems);
+      if (!stockCheck.valid) {
+        return res.status(409).json({
+          error: "Some items are out of stock",
+          stockErrors: stockCheck.errors,
+        });
+      }
+    }
     await createPaypalOrder(req, res);
   });
 

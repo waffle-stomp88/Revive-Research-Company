@@ -90,6 +90,41 @@ export default function Checkout() {
   // Early access email signup state
   const [notifyEmail, setNotifyEmail] = useState("");
   const [emailSubmitted, setEmailSubmitted] = useState(false);
+  
+  // Stock validation state
+  const [stockErrors, setStockErrors] = useState<string[]>([]);
+  const [stockValidating, setStockValidating] = useState(false);
+  
+  // Validate stock when checkout loads and when cart changes
+  useEffect(() => {
+    const validateCartStock = async () => {
+      if (cartItems.length === 0) {
+        setStockErrors([]);
+        return;
+      }
+      setStockValidating(true);
+      try {
+        const res = await fetch("/api/stock/validate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            items: cartItems.map(item => ({
+              productId: item.productId,
+              dosage: item.dosage,
+              quantity: item.quantity,
+            })),
+          }),
+        });
+        const data = await res.json();
+        setStockErrors(data.valid ? [] : (data.errors || ["Some items are unavailable"]));
+      } catch {
+        setStockErrors([]);
+      } finally {
+        setStockValidating(false);
+      }
+    };
+    validateCartStock();
+  }, [cartItems]);
 
   // Query for BAC water product
   const { data: bacWaterProducts } = useQuery<Product[]>({
@@ -135,12 +170,12 @@ export default function Checkout() {
   // For single subscription item from cart (used in payment section)
   const cartSubscriptionItem = subscriptionItems.length === 1 ? subscriptionItems[0] : null;
 
-  const handleAddBacWater = (size?: string) => {
+  const handleAddBacWater = async (size?: string) => {
     if (bacWater && !hasBacWater) {
       const selectedSize = size || selectedBacWaterSize;
       const sizeStock = bacWaterStocks?.find(s => s.dosage === selectedSize);
       const price = sizeStock?.price ? Number(sizeStock.price) : Number(bacWater.price);
-      addToCart({
+      const added = await addToCart({
         productId: bacWater.id,
         name: bacWater.name,
         price: price,
@@ -148,6 +183,10 @@ export default function Checkout() {
         dosage: selectedSize,
         image: productImage,
       });
+      if (!added) {
+        toast({ title: "Out of Stock", description: `${bacWater.name} (${selectedSize}) is out of stock.`, variant: "destructive" });
+        return;
+      }
       toast({
         title: "Added to cart",
         description: `${bacWater.name} (${selectedSize}) added to your cart.`,
@@ -1517,8 +1556,36 @@ export default function Checkout() {
                     </div>
                   )}
 
+                  {/* Stock Validation Warning */}
+                  {stockErrors.length > 0 && (
+                    <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30" data-testid="stock-error-warning">
+                      <div className="flex items-start gap-2">
+                        <AlertTriangle className="h-4 w-4 text-red-400 mt-0.5 flex-shrink-0" />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-red-400">Some items in your cart are unavailable</p>
+                          <ul className="mt-1 space-y-0.5">
+                            {stockErrors.map((err, i) => (
+                              <li key={i} className="text-xs text-red-300">{err}</li>
+                            ))}
+                          </ul>
+                          <p className="text-xs text-muted-foreground mt-2">Please remove unavailable items to continue.</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Payment Button */}
-                  {selectedPaymentMethod === "paypal" ? (
+                  {stockErrors.length > 0 ? (
+                    <Button
+                      size="lg"
+                      className="w-full font-display text-lg gap-2 bg-red-500/20 text-red-400 border border-red-500/30 cursor-not-allowed"
+                      disabled
+                      data-testid="button-checkout-blocked"
+                    >
+                      <AlertTriangle className="h-5 w-5" />
+                      Items Out of Stock
+                    </Button>
+                  ) : selectedPaymentMethod === "paypal" ? (
                     <div className="space-y-3">
                       {!hasValidZip ? (
                         <Button

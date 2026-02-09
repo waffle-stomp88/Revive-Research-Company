@@ -1124,15 +1124,14 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
     return selectedPeptides.reduce((sum, p) => sum + parseFloat(String(p.price)), 0);
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (selectedPeptides.length < 2) return;
 
     const customStackName = selectedPeptides.map(p => p.name).join(" + ");
     const bundleId = `custom-${Date.now()}`;
     const totalPrice = getRetailTotal();
     
-    // Add as a bundle to cart (no discount - value is the synergy analysis)
-    addToCart({
+    await addToCart({
       productId: bundleId,
       bundleId: bundleId,
       name: customStackName,

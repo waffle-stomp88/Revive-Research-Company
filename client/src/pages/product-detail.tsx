@@ -82,7 +82,7 @@ interface ProductBadge {
   icon?: typeof TrendingUp;
 }
 
-const LOW_STOCK_THRESHOLD = 20;
+const LOW_STOCK_THRESHOLD = 10;
 
 function getProductBadges(
   product: Product, 
@@ -423,11 +423,10 @@ export default function ProductDetail() {
     return getDiscountedPrice() * quantity;
   };
 
-  const handleBuyNow = () => {
+  const handleBuyNow = async () => {
     if (product) {
       const isSubPurchase = purchaseType === "subscription";
-      // Add to cart first, then go to checkout
-      addToCart({
+      const added = await addToCart({
         productId: product.id,
         name: product.name,
         price: getBasePrice(),
@@ -438,15 +437,18 @@ export default function ProductDetail() {
         isSubscription: isSubPurchase,
         subscriptionInterval: isSubPurchase ? subscriptionInterval : undefined,
       });
-      // Navigate directly to checkout
+      if (!added) {
+        toast({ title: "Out of Stock", description: `${product.name} (${selectedDosage}) is currently out of stock.`, variant: "destructive" });
+        return;
+      }
       setLocation('/checkout?fromCart=true');
     }
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (product) {
       const isSubPurchase = purchaseType === "subscription";
-      addToCart({
+      const added = await addToCart({
         productId: product.id,
         name: product.name,
         price: getBasePrice(),
@@ -457,6 +459,10 @@ export default function ProductDetail() {
         isSubscription: isSubPurchase,
         subscriptionInterval: isSubPurchase ? subscriptionInterval : undefined,
       });
+      if (!added) {
+        toast({ title: "Out of Stock", description: `${product.name} (${selectedDosage}) is currently out of stock.`, variant: "destructive" });
+        return;
+      }
       toast({
         title: isSubPurchase ? "Subscription added to cart" : "Added to cart",
         description: isSubPurchase 
@@ -901,7 +907,7 @@ export default function ProductDetail() {
                 </span>
               ) : (
                 <span className="flex items-center gap-1">
-                  {displayStockAmount > 0 && displayStockAmount <= 20 ? (
+                  {displayStockAmount > 0 && displayStockAmount <= 10 ? (
                     <>
                       <AlertTriangle className="h-3 w-3 text-orange-500" />
                       <span className="text-orange-500 font-medium">Only {displayStockAmount} left</span>
