@@ -796,7 +796,7 @@ export function Navigation() {
                   <Button 
                     variant="outline" 
                     size="lg"
-                    className="w-full border-[#E7FB10]/50 text-[#E7FB10] text-base"
+                    className="w-full bg-[#21d8ff] border-[#21d8ff] text-black font-semibold text-base hover:bg-[#21d8ff]/90"
                     data-testid="button-mobile-sign-in"
                     onClick={() => login()}
                   >
