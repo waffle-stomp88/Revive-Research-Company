@@ -48,7 +48,6 @@ import type { EducationArticle, Product } from "@shared/schema";
 import { ResearchOrientationMap } from "@/components/education/research-orientation-map";
 import { OrderingJourney } from "@/components/infographics/ordering-journey";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
-import { EmailCapture } from "@/components/email-capture";
 import { 
   COAAnatomyDiagram, 
   HPLCExplainer, 
@@ -959,13 +958,6 @@ export default function Education() {
                           );
                         })()}
 
-                        <EmailCapture
-                          heading="Enjoying the research?"
-                          description="Get updates when we publish new compound guides and educational content."
-                          source="article_footer"
-                          variant="compact"
-                          className="mt-8"
-                        />
                       </div>
                     </Card>
                   );
