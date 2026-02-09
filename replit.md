@@ -38,6 +38,14 @@ The platform features an Apple-inspired design with a dark charcoal background (
     - Total Regen: BPC-157+TB-500+Ipamorelin (92%)
     - Recovery+ Protocol: BPC-157+GHK-Cu+TB-500 (82%)
     - KLOW Stack: BPC-157+TB-500+GHK-Cu+KPV (94%) — 3-phase regeneration: inflammation control → tissue repair → collagen remodeling
+    - GH Max: CJC-1295+Ipamorelin+Sermorelin (91%) — triple GHRH/GHRP stimulation
+    - Gut Restore: BPC-157+KPV (88%) — gut lining repair + NF-κB inhibition
+    - Longevity+: Epithalon+Thymalin (87%) — telomerase + thymic immune restoration
+    - Neuro Stack: Semax+Cerebrolysin (86%) — BDNF + neurotrophic dual neuroprotection
+    - Performance: IGF-1 LR3+BPC-157 (86%) — muscle growth factor + tissue repair
+    - Immune Shield: Thymosin Alpha-1+LL-37 (85%) — adaptive + antimicrobial immune defense
+    - Fat Burner: AOD-9604+5-Amino-1MQ (84%) — GH fragment + NNMT enzyme inhibitor
+    - Skin Renewal: GHK-Cu+Snap-8 (83%) — collagen remodeling + expression line reduction
   - **Smart Recommendations**: Suggests peptides to complete known stacks ("Add TB-500 to unlock Wolverine Stack")
   - **Body System Heatmap**: Visual icons (Healing, Metabolic, Cognitive, Skin, Growth, Longevity) with hover tooltips explaining the biological mechanisms
   - **Shared Pathway Detection**: Shows common mechanisms between selected peptides with tooltips (Angiogenesis, Collagen Synthesis, mTOR Pathway, etc.)

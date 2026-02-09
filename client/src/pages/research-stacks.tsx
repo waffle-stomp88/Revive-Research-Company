@@ -254,6 +254,70 @@ const KNOWN_STACKS: KnownStack[] = [
     description: "3-phase regeneration: KPV clears inflammation, BPC-157 + TB-500 repair tissue, GHK-Cu remodels collagen",
     synergyBonus: 94,
   },
+  {
+    name: "Immune Shield",
+    peptides: ["thymosin alpha", "ll-37"],
+    icon: Shield,
+    color: "#34d399",
+    description: "Adaptive immunity + antimicrobial defense — dual-layer immune system protection",
+    synergyBonus: 85,
+  },
+  {
+    name: "Gut Restore",
+    peptides: ["bpc-157", "kpv"],
+    icon: Heart,
+    color: "#60a5fa",
+    description: "Gut lining repair + NF-κB inhibition — comprehensive gut barrier restoration",
+    synergyBonus: 88,
+  },
+  {
+    name: "Neuro Stack",
+    peptides: ["semax", "cerebrolysin"],
+    icon: Brain,
+    color: "#38bdf8",
+    description: "BDNF upregulation + neurotrophic factors — dual neuroprotection for cognitive research",
+    synergyBonus: 86,
+  },
+  {
+    name: "Fat Burner",
+    peptides: ["aod-9604", "5-amino-1mq"],
+    icon: Zap,
+    color: "#fb923c",
+    description: "GH fragment fat breakdown + NNMT enzyme inhibitor — complementary fat metabolism pathways",
+    synergyBonus: 84,
+  },
+  {
+    name: "GH Max",
+    peptides: ["cjc-1295", "ipamorelin", "sermorelin"],
+    icon: Rocket,
+    color: "#fbbf24",
+    description: "Triple GHRH/GHRP stimulation — maximum growth hormone output through complementary pathways",
+    synergyBonus: 91,
+  },
+  {
+    name: "Skin Renewal",
+    peptides: ["ghk-cu", "snap-8"],
+    icon: Sparkles,
+    color: "#f472b6",
+    description: "Collagen matrix remodeling + expression line reduction — advanced skin rejuvenation research",
+    synergyBonus: 83,
+  },
+  {
+    name: "Longevity+",
+    peptides: ["epithalon", "thymalin"],
+    icon: Crown,
+    color: "#c084fc",
+    description: "Telomerase activation + thymic immune restoration — the Russian longevity protocol",
+    synergyBonus: 87,
+  },
+  {
+    name: "Performance",
+    peptides: ["igf-1 lr3", "bpc-157"],
+    icon: Dumbbell,
+    color: "#ef4444",
+    description: "Direct muscle growth factor + tissue repair accelerator — athletic recovery research",
+    synergyBonus: 86,
+  },
 ];
 
 // Peptide pathway data for connections
@@ -324,6 +388,60 @@ const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
     mechanisms: ["α-MSH fragment", "Immune modulation", "Gut barrier repair"],
     systems: ["Healing", "Gut", "Immune"],
   },
+  "thymosin alpha": {
+    name: "Thymosin Alpha-1",
+    pathways: ["T-Cell Activation", "Immune Modulation", "Dendritic Cell Maturation"],
+    mechanisms: ["Thymic peptide", "NK cell enhancement", "Toll-like receptor signaling"],
+    systems: ["Immune", "Longevity"],
+  },
+  "ll-37": {
+    name: "LL-37",
+    pathways: ["Antimicrobial Defense", "Innate Immunity", "Wound Healing"],
+    mechanisms: ["Cathelicidin peptide", "Membrane disruption", "Biofilm breakdown"],
+    systems: ["Immune", "Healing"],
+  },
+  "cerebrolysin": {
+    name: "Cerebrolysin",
+    pathways: ["Neurotrophic Signaling", "BDNF", "Synaptic Plasticity"],
+    mechanisms: ["Porcine brain-derived peptides", "Neuronal survival", "Cognitive restoration"],
+    systems: ["Cognitive", "Neuroprotection"],
+  },
+  "aod-9604": {
+    name: "AOD-9604",
+    pathways: ["Lipolysis", "Fat Oxidation"],
+    mechanisms: ["GH fragment (176-191)", "Adipocyte metabolism", "No IGF-1 effect"],
+    systems: ["Metabolic", "Weight"],
+  },
+  "5-amino-1mq": {
+    name: "5-Amino-1MQ",
+    pathways: ["NNMT Inhibition", "NAD+ Salvage"],
+    mechanisms: ["Metabolic enzyme targeting", "Fat cell differentiation block", "Energy metabolism"],
+    systems: ["Metabolic", "Energy"],
+  },
+  "sermorelin": {
+    name: "Sermorelin",
+    pathways: ["GHRH Signaling", "GH Secretion"],
+    mechanisms: ["GHRH analog (1-29)", "Pituitary stimulation", "Physiologic GH release"],
+    systems: ["Growth", "Recovery"],
+  },
+  "snap-8": {
+    name: "Snap-8",
+    pathways: ["SNARE Complex", "Neuromuscular Modulation"],
+    mechanisms: ["Acetyl octapeptide-3", "Muscle contraction reduction", "Expression line softening"],
+    systems: ["Skin", "Cosmetic"],
+  },
+  "thymalin": {
+    name: "Thymalin",
+    pathways: ["Thymic Restoration", "Immune Modulation", "T-Cell Activation"],
+    mechanisms: ["Thymus extract peptide", "Immunosenescence reversal", "Immune cell maturation"],
+    systems: ["Immune", "Longevity"],
+  },
+  "igf-1 lr3": {
+    name: "IGF-1 LR3",
+    pathways: ["IGF-1 Signaling", "mTOR Pathway", "Cell Proliferation"],
+    mechanisms: ["Extended half-life IGF-1", "Muscle protein synthesis", "Satellite cell activation"],
+    systems: ["Growth", "Muscle", "Recovery"],
+  },
 };
 
 // Body systems with icons and descriptions
@@ -363,6 +481,24 @@ const PATHWAY_DESCRIPTIONS: Record<string, string> = {
   "NF-κB Inhibition": "Blocks the master inflammatory switch to create a healing-ready environment",
   "Anti-Inflammatory": "Reduces systemic inflammation to allow repair peptides to function optimally",
   "Mucosal Healing": "Restores gut barrier integrity and mucosal lining for gut-immune axis health",
+  "T-Cell Activation": "Stimulates T-lymphocyte maturation for adaptive immune response",
+  "Immune Modulation": "Fine-tunes immune system balance between activation and tolerance",
+  "Dendritic Cell Maturation": "Enhances antigen-presenting cells for improved immune surveillance",
+  "Antimicrobial Defense": "Direct pathogen killing through membrane disruption",
+  "Innate Immunity": "First-line immune defense through pattern recognition receptors",
+  "Wound Healing": "Coordinated tissue repair through cell migration and matrix deposition",
+  "Neurotrophic Signaling": "Growth factor support for neuronal survival and function",
+  "Synaptic Plasticity": "Strengthening neural connections for learning and memory",
+  "Lipolysis": "Enzymatic breakdown of stored fat for energy utilization",
+  "Fat Oxidation": "Mitochondrial burning of fatty acids for ATP production",
+  "NNMT Inhibition": "Blocks nicotinamide N-methyltransferase to boost cellular NAD+ and metabolism",
+  "NAD+ Salvage": "Recycling pathway for maintaining cellular energy currency levels",
+  "SNARE Complex": "Protein complex controlling neurotransmitter release at neuromuscular junctions",
+  "Neuromuscular Modulation": "Fine-tuning of muscle contraction signaling at the nerve-muscle interface",
+  "Thymic Restoration": "Reversal of age-related thymus decline for immune cell production",
+  "IGF-1 Signaling": "Insulin-like growth factor pathway for cellular growth and repair",
+  "mTOR Pathway": "Master growth regulator controlling protein synthesis and cell proliferation",
+  "Cell Proliferation": "Controlled cell division for tissue growth and regeneration",
 };
 
 // Helper to normalize peptide names for matching
@@ -579,28 +715,10 @@ const PEPTIDE_PAIRINGS: Record<string, { partner: string; reason: string; boost:
     { partner: "dsip", reason: "Mood regulation + deep sleep restoration", boost: "Sleep" },
     { partner: "thymosin alpha", reason: "Immune modulation + anxiety relief", boost: "Immune" },
   ],
-  "ll-37": [
-    { partner: "thymosin alpha", reason: "Antimicrobial + immune activation synergy", boost: "Immune" },
-    { partner: "bpc-157", reason: "Immune defense + tissue healing", boost: "Healing" },
-    { partner: "thymalin", reason: "Dual immune system support peptides", boost: "Immune" },
-  ],
   "dsip": [
     { partner: "melatonin", reason: "Deep sleep peptide + circadian hormone", boost: "Sleep" },
     { partner: "epithalon", reason: "Sleep architecture + pineal function", boost: "Longevity" },
     { partner: "selank", reason: "Calm mind + restorative sleep", boost: "Cognitive" },
-  ],
-  "aod-9604": [
-    { partner: "5-amino-1mq", reason: "Fat fragment + metabolic enzyme targeting", boost: "Metabolic" },
-    { partner: "mots-c", reason: "Targeted fat loss + mitochondrial energy", boost: "Metabolic" },
-    { partner: "cagrilintide", reason: "Complementary metabolic signaling", boost: "Metabolic" },
-  ],
-  "5-amino-1mq": [
-    { partner: "aod-9604", reason: "NNMT inhibition + GH fragment for fat metabolism", boost: "Metabolic" },
-    { partner: "mots-c", reason: "Enzyme targeting + mitochondrial activation", boost: "Metabolic" },
-  ],
-  "sermorelin": [
-    { partner: "ipamorelin", reason: "GHRH analog + ghrelin mimetic for synergistic GH release", boost: "Growth" },
-    { partner: "cjc-1295", reason: "Complementary GHRH signaling pathways", boost: "Growth" },
   ],
   "foxo4": [
     { partner: "epithalon", reason: "Senolytic + telomerase — advanced longevity protocol", boost: "Longevity" },
@@ -618,6 +736,47 @@ const PEPTIDE_PAIRINGS: Record<string, { partner: string; reason: string; boost:
     { partner: "bpc-157", reason: "Clear inflammation first, then repair — the KLOW principle", boost: "Healing" },
     { partner: "tb-500", reason: "Anti-inflammatory prep + systemic tissue regeneration", boost: "Healing" },
     { partner: "ghk-cu", reason: "NF-κB inhibition + collagen remodeling for skin renewal", boost: "Skin" },
+  ],
+  "thymosin alpha": [
+    { partner: "ll-37", reason: "Adaptive immunity + antimicrobial peptide — complete immune defense", boost: "Immune" },
+    { partner: "thymalin", reason: "Dual thymic peptides for comprehensive immune restoration", boost: "Immune" },
+    { partner: "bpc-157", reason: "Immune modulation + gut barrier support", boost: "Healing" },
+  ],
+  "ll-37": [
+    { partner: "thymosin alpha", reason: "Antimicrobial + immune activation synergy", boost: "Immune" },
+    { partner: "bpc-157", reason: "Immune defense + tissue healing", boost: "Healing" },
+    { partner: "thymalin", reason: "Dual immune system support peptides", boost: "Immune" },
+  ],
+  "cerebrolysin": [
+    { partner: "semax", reason: "Neurotrophic factors + BDNF — dual neuroprotection", boost: "Cognitive" },
+    { partner: "selank", reason: "Brain repair + anxiolytic calm for cognitive balance", boost: "Cognitive" },
+    { partner: "pinealon", reason: "Neuroprotection + pineal gland support", boost: "Cognitive" },
+  ],
+  "aod-9604": [
+    { partner: "5-amino-1mq", reason: "Fat fragment + metabolic enzyme targeting", boost: "Metabolic" },
+    { partner: "mots-c", reason: "Targeted fat loss + mitochondrial energy", boost: "Metabolic" },
+    { partner: "cagrilintide", reason: "Complementary metabolic signaling", boost: "Metabolic" },
+  ],
+  "5-amino-1mq": [
+    { partner: "aod-9604", reason: "NNMT inhibition + GH fragment for fat metabolism", boost: "Metabolic" },
+    { partner: "mots-c", reason: "Enzyme targeting + mitochondrial activation", boost: "Metabolic" },
+  ],
+  "sermorelin": [
+    { partner: "ipamorelin", reason: "GHRH analog + ghrelin mimetic for synergistic GH release", boost: "Growth" },
+    { partner: "cjc-1295", reason: "Complementary GHRH signaling pathways", boost: "Growth" },
+  ],
+  "snap-8": [
+    { partner: "ghk-cu", reason: "Expression line reduction + collagen matrix renewal", boost: "Skin" },
+    { partner: "bpc-157", reason: "Neuromuscular modulation + tissue healing", boost: "Skin" },
+  ],
+  "thymalin": [
+    { partner: "epithalon", reason: "Thymic restoration + telomerase — the Russian longevity protocol", boost: "Longevity" },
+    { partner: "thymosin alpha", reason: "Comprehensive thymic peptide therapy for immune rejuvenation", boost: "Immune" },
+  ],
+  "igf-1 lr3": [
+    { partner: "bpc-157", reason: "Muscle growth factor + tissue repair acceleration", boost: "Growth" },
+    { partner: "ipamorelin", reason: "Direct IGF-1 + endogenous GH for maximum anabolic research", boost: "Growth" },
+    { partner: "tb-500", reason: "Growth signaling + systemic recovery support", boost: "Healing" },
   ],
 };
 
