@@ -130,7 +130,7 @@ function SynergyBarGraph({ isInView }: { isInView: boolean }) {
           Wolverine Stack = 95% Synergy
         </Badge>
         <p className="text-xs text-muted-foreground mt-3" data-testid="text-more-stacks">
-          +8 additional peptide stacks to discover
+          +18 more stacks to discover
         </p>
       </motion.div>
     </div>
@@ -190,7 +190,7 @@ export function StackBuilderTeaser() {
           className="flex flex-wrap justify-center gap-2 mb-6 md:mb-10"
         >
           <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30 text-xs" data-testid="badge-legendary-stacks">
-            <Crown className="h-3 w-3 mr-1" /> 9 Legendary Stacks
+            <Crown className="h-3 w-3 mr-1" /> 19 Known Stacks
           </Badge>
           <Badge className="bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30 text-xs" data-testid="badge-synergy-scores">
             <Activity className="h-3 w-3 mr-1" /> Synergy Scores
