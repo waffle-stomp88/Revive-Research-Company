@@ -529,24 +529,12 @@ ${getSharedFooterText(order.email, 'order')}
                 </table>
               </div>
               
-              <!-- Research Notice -->
-              <div style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 16px; padding: 20px; margin-top: 20px; text-align: center;">
-                <p style="color: #ef4444; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 8px 0;">
-                  RESEARCH USE ONLY
-                </p>
-                <p style="color: #ffffff; font-size: 13px; line-height: 1.5; margin: 0;">
-                  All products are intended for laboratory research purposes only.<br>
-                  Not for human or animal consumption.
-                </p>
-              </div>
-              
             </td>
           </tr>
           
           <!-- Footer -->
           <tr>
             <td style="background-color: #1a1a1f; padding: 32px 40px; text-align: center;">
-              <!-- Social/Support Links -->
               <p style="color: #ffffff; font-size: 13px; margin: 0 0 16px 0;">
                 Questions about your order?
               </p>
@@ -850,17 +838,6 @@ ${getSharedFooterText(order.email, 'shipping')}
                     </td>
                   </tr>
                 </table>
-              </div>
-              
-              <!-- Research Notice -->
-              <div style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 16px; padding: 20px; margin-top: 20px; text-align: center;">
-                <p style="color: #ef4444; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 8px 0;">
-                  RESEARCH USE ONLY
-                </p>
-                <p style="color: #ffffff; font-size: 13px; line-height: 1.5; margin: 0;">
-                  All products are intended for laboratory research purposes only.<br>
-                  Not for human or animal consumption.
-                </p>
               </div>
               
             </td>
