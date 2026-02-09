@@ -129,7 +129,7 @@ const getEmailBaseStyles = () => {
 };
 
 // Company address for CAN-SPAM compliance
-const COMPANY_ADDRESS = 'Frisco, TX 75033';
+const COMPANY_ADDRESS = 'Revive Research Company, LLC\nFrisco, TX 75033';
 
 // Shared email footer components for CAN-SPAM compliance
 function getUnsubscribeUrl(email: string): string {
@@ -196,7 +196,7 @@ function getSharedFooterHtml(email: string, reason: EmailReason, theme: 'dark' |
               </p>
               
               <p style="color: ${textColor}; font-size: 11px; margin: 0 0 12px 0;">
-                ${COMPANY_ADDRESS}
+                ${COMPANY_ADDRESS.replace(/\n/g, '<br>')}
               </p>
               
               <p style="margin: 0 0 8px 0; font-size: 11px;">
