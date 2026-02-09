@@ -988,25 +988,14 @@ function ProductsComponent() {
                                     }
                                   </span>
                                 </div>
-                                {/* Live stock indicator */}
-                                <div className="flex items-center justify-center gap-1 mt-1" data-testid={`stock-indicator-${product.id}`}>
-                                  {isOutOfStock ? (
+                                {isOutOfStock && (
+                                  <div className="flex items-center justify-center gap-1 mt-1" data-testid={`stock-indicator-${product.id}`}>
                                     <span className="text-[10px] text-red-400 font-medium flex items-center gap-1">
                                       <span className="w-1.5 h-1.5 rounded-full bg-red-400 inline-block" />
                                       Out of Stock
                                     </span>
-                                  ) : product.stockAmount !== null && product.stockAmount > 0 && product.stockAmount <= 10 ? (
-                                    <span className="text-[10px] text-orange-400 font-medium flex items-center gap-1">
-                                      <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse inline-block" />
-                                      Low Stock
-                                    </span>
-                                  ) : (
-                                    <span className="text-[10px] text-green-400 flex items-center gap-1">
-                                      <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />
-                                      In Stock
-                                    </span>
-                                  )}
-                                </div>
+                                  </div>
+                                )}
                               </div>
                             </Card>
                           );
