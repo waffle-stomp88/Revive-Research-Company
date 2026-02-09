@@ -712,89 +712,74 @@ export function Navigation() {
             className="fixed inset-0 z-40 bg-background/98 backdrop-blur-lg md:hidden"
             style={{ paddingTop: 'calc(var(--banner-height, 36px) + 64px)' }}
           >
-            <nav className="flex flex-col h-full overflow-y-auto pb-8">
+            <nav className="flex flex-col h-full overflow-y-auto pb-24">
               {/* Mobile Search Bar */}
               <div className="px-5 py-4 border-b border-border/50">
                 <SearchAutocomplete className="w-full" />
               </div>
               
-              {/* Main Navigation Links */}
-              <div className="px-5 py-3">
-                {navLinks.map((link) => {
-                  const isActive = location === link.href;
-                  return (
-                    <Link key={link.href} href={link.href}>
-                      <div
-                        className={`flex items-center gap-3 py-4 border-b border-border/30 ${
-                          isActive ? "text-[#E7FB10]" : "text-foreground"
-                        }`}
-                        data-testid={`link-mobile-${link.label.toLowerCase().replace(" ", "-")}`}
-                      >
-                        <span className="text-lg font-display font-semibold">{link.label}</span>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-
-              {/* Products Section - Collapsible */}
-              <MobileMenuSection
-                title="Products"
-                color="#E7FB10"
-                items={productLinks}
-                location={location}
-              />
-              
-              {/* Resources Section - Collapsible */}
-              <MobileMenuSection
-                title="Resources"
-                color="#a855f7"
-                items={resourceLinks}
-                location={location}
-              />
-              
-              {/* Account Section */}
-              {isAuthenticated && (
-                <div className="px-5 py-3 border-t border-border/50">
-                  <Link href="/dashboard">
-                    <div
-                      className={`flex items-center gap-3 py-4 border-b border-border/30 ${
-                        location === "/dashboard" ? "text-[#21d8ff]" : "text-foreground"
-                      }`}
-                      data-testid="link-mobile-dashboard"
-                    >
-                      <User className="h-5 w-5" />
-                      <span className="text-lg font-display font-semibold">Dashboard</span>
-                    </div>
-                  </Link>
-                  {user?.isAdmin && (
-                    <Link href="/admin">
-                      <div
-                        className={`flex items-center gap-3 py-4 border-b border-border/30 ${
-                          location === "/admin" ? "text-[#21d8ff]" : "text-foreground"
-                        }`}
-                        data-testid="link-mobile-admin"
-                      >
-                        <Shield className="h-5 w-5" />
-                        <span className="text-lg font-display font-semibold">Admin Panel</span>
-                      </div>
-                    </Link>
-                  )}
-                </div>
-              )}
-              
-              {/* CTA Buttons */}
-              <div className="px-5 py-6 mt-auto space-y-3">
-                <Link href="/peptides" className="block">
-                  <Button 
-                    size="lg"
-                    className="w-full font-display text-base bg-[#E7FB10] text-black border-2 border-[#E7FB10] shadow-[0_0_20px_rgba(231,251,16,0.4)]" 
-                    data-testid="button-mobile-shop"
+              {/* Streamlined Navigation - only items NOT in bottom bar or avatar dropdown */}
+              <div className="px-5 py-3 space-y-1">
+                <Link href="/coa/verify-certificate-of-analysis">
+                  <div
+                    className={`flex items-center gap-4 py-4 px-4 rounded-lg transition-colors ${
+                      location.startsWith("/coa") ? "bg-muted/50" : "hover:bg-muted/30"
+                    }`}
+                    data-testid="link-mobile-coa-verification"
                   >
-                    Shop Peptides
-                  </Button>
+                    <FileCheck className="h-5 w-5 flex-shrink-0 text-[#21d8ff]" />
+                    <div className="flex-1 min-w-0">
+                      <span className={`text-base font-medium block ${location.startsWith("/coa") ? "text-[#21d8ff]" : ""}`}>
+                        COA Verification
+                      </span>
+                      <span className="text-sm text-muted-foreground block">
+                        Verify product certificates
+                      </span>
+                    </div>
+                  </div>
                 </Link>
-                
+
+                <Link href="/contact">
+                  <div
+                    className={`flex items-center gap-4 py-4 px-4 rounded-lg transition-colors ${
+                      location === "/contact" ? "bg-muted/50" : "hover:bg-muted/30"
+                    }`}
+                    data-testid="link-mobile-contact"
+                  >
+                    <Mail className="h-5 w-5 flex-shrink-0 text-[#9d4edd]" />
+                    <div className="flex-1 min-w-0">
+                      <span className={`text-base font-medium block ${location === "/contact" ? "text-[#9d4edd]" : ""}`}>
+                        Contact Us
+                      </span>
+                      <span className="text-sm text-muted-foreground block">
+                        Reach out for research support
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+
+                <Link href="/affiliate">
+                  <div
+                    className={`flex items-center gap-4 py-4 px-4 rounded-lg transition-colors ${
+                      location === "/affiliate" || location.startsWith("/affiliate") ? "bg-muted/50" : "hover:bg-muted/30"
+                    }`}
+                    data-testid="link-mobile-affiliates"
+                  >
+                    <User className="h-5 w-5 flex-shrink-0 text-[#22c55e]" />
+                    <div className="flex-1 min-w-0">
+                      <span className={`text-base font-medium block ${location === "/affiliate" || location.startsWith("/affiliate") ? "text-[#22c55e]" : ""}`}>
+                        Affiliates
+                      </span>
+                      <span className="text-sm text-muted-foreground block">
+                        Earn commissions on referrals
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+              
+              {/* Auth Buttons */}
+              <div className="px-5 py-6 mt-auto space-y-3">
                 {!isLoading && !isAuthenticated && (
                   <Button 
                     variant="outline" 
