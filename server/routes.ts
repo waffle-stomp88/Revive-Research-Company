@@ -293,18 +293,6 @@ export async function registerRoutes(
           zipCode: '75033',
           country: 'United States',
         }, 'BPC-157 10mg');
-      } else if (type === 'shipped') {
-        result = await sendShippedNotificationEmail({
-          id: 'TEST-' + Date.now(),
-          email: to,
-          firstName: 'Test',
-          lastName: 'Researcher',
-          address: '123 Research Lane',
-          city: 'Frisco',
-          state: 'TX',
-          zipCode: '75033',
-          country: 'United States',
-        }, 'USPS123456789', 'BPC-157 10mg');
       } else {
         result = await sendEmail({
           to,
