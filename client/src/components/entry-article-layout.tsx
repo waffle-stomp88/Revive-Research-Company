@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, FileCheck, BookOpen, Layers, Archive, CheckCircle2 } from "lucide-react";
 import type { ReactNode } from "react";
+import { EmailCapture } from "@/components/email-capture";
 
 interface FAQItem {
   question: string;
@@ -202,6 +203,13 @@ export function EntryArticleLayout({
             })}
           </div>
         </motion.section>
+
+        <EmailCapture
+          heading="Join our research community"
+          description="Get new guides, product launches, and research insights delivered to your inbox. No pressure, no spam — just knowledge."
+          source="article_footer"
+          className="mt-12"
+        />
 
         <motion.section
           initial={{ opacity: 0, y: 20 }}

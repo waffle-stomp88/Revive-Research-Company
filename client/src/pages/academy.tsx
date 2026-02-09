@@ -47,6 +47,7 @@ import type { AcademyProgress, EducationArticle } from "@shared/schema";
 import { academyPersonas, academyAchievements } from "@shared/schema";
 import { getLessonSlides } from "@/components/academy/lesson-slides";
 import { HorizontalLearningPath } from "@/components/academy/horizontal-learning-path";
+import { EmailCapture } from "@/components/email-capture";
 
 const CURRICULUM = [
   {
@@ -493,6 +494,17 @@ function EmbeddedLessonViewer({
             )}
           </div>
         </div>
+
+        {isLastSlide && isCompleted && (
+          <div className="px-4 pb-4">
+            <EmailCapture
+              heading="Get notified about new lessons"
+              description="We'll let you know when new Academy modules drop. No spam."
+              source="academy_completion"
+              variant="academy"
+            />
+          </div>
+        )}
       </motion.div>
     </motion.div>
   );
