@@ -998,12 +998,12 @@ function ProductsComponent() {
                                   ) : product.stockAmount !== null && product.stockAmount > 0 && product.stockAmount <= 10 ? (
                                     <span className="text-[10px] text-orange-400 font-medium flex items-center gap-1">
                                       <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse inline-block" />
-                                      Only {product.stockAmount} left
+                                      Low Stock
                                     </span>
                                   ) : (
                                     <span className="text-[10px] text-green-400 flex items-center gap-1">
                                       <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />
-                                      {product.stockAmount !== null && product.stockAmount > 0 ? `${product.stockAmount} in stock` : "In Stock"}
+                                      In Stock
                                     </span>
                                   )}
                                 </div>
