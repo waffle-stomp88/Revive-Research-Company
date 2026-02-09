@@ -251,6 +251,10 @@ export interface IStorage {
   syncProductDosageStocks(productId: string, dosageStocks: Array<{ dosage: string; stockAmount: number; inStock: boolean; price?: string | null; originalPrice?: string | null }>): Promise<ProductDosageStock[]>;
   initializeDosageStocksFromProduct(productId: string): Promise<ProductDosageStock[]>;
   
+  // Stock Management (Live Inventory)
+  decrementStock(items: Array<{ productId: string; dosage?: string; quantity: number }>): Promise<{ success: boolean; errors?: string[] }>;
+  validateStock(items: Array<{ productId: string; dosage?: string; quantity: number }>): Promise<{ valid: boolean; errors?: string[] }>;
+  
   // Price History (Stock Exchange Style Transparency)
   recordPriceChange(productId: string, newPrice: number, reason: PriceChangeReason, notes?: string): Promise<{ success: boolean; priceHistory?: PriceHistory; error?: string }>;
   getProductPriceTrend(productId: string): Promise<PriceTrend | null>;
@@ -1511,6 +1515,109 @@ export class DatabaseStorage implements IStorage {
     }
     
     return results;
+  }
+
+  // Stock Management (Live Inventory)
+  async validateStock(items: Array<{ productId: string; dosage?: string; quantity: number }>): Promise<{ valid: boolean; errors?: string[] }> {
+    const errors: string[] = [];
+    
+    for (const item of items) {
+      const product = await this.getProduct(item.productId);
+      if (!product) {
+        errors.push(`Product ${item.productId} not found`);
+        continue;
+      }
+      
+      if (item.dosage) {
+        const [dosageStock] = await db.select().from(productDosageStock)
+          .where(and(
+            eq(productDosageStock.productId, item.productId),
+            eq(productDosageStock.dosage, item.dosage)
+          ));
+        
+        if (!dosageStock) {
+          errors.push(`${product.name} (${item.dosage}) is not available`);
+        } else if (!dosageStock.inStock || dosageStock.stockAmount <= 0) {
+          errors.push(`${product.name} (${item.dosage}) is out of stock`);
+        } else if (dosageStock.stockAmount < item.quantity) {
+          errors.push(`${product.name} (${item.dosage}) only has ${dosageStock.stockAmount} in stock (requested ${item.quantity})`);
+        }
+      } else {
+        if (!product.inStock) {
+          errors.push(`${product.name} is out of stock`);
+        } else if ((product.stockAmount || 0) < item.quantity) {
+          errors.push(`${product.name} only has ${product.stockAmount || 0} in stock (requested ${item.quantity})`);
+        }
+      }
+    }
+    
+    return { valid: errors.length === 0, errors: errors.length > 0 ? errors : undefined };
+  }
+
+  async decrementStock(items: Array<{ productId: string; dosage?: string; quantity: number }>): Promise<{ success: boolean; errors?: string[] }> {
+    const errors: string[] = [];
+    const affectedProductIds = new Set<string>();
+    
+    for (const item of items) {
+      try {
+        if (item.dosage) {
+          const [dosageStock] = await db.select().from(productDosageStock)
+            .where(and(
+              eq(productDosageStock.productId, item.productId),
+              eq(productDosageStock.dosage, item.dosage)
+            ));
+          
+          if (dosageStock) {
+            const newAmount = Math.max(0, dosageStock.stockAmount - item.quantity);
+            await db.update(productDosageStock)
+              .set({ 
+                stockAmount: newAmount, 
+                inStock: newAmount > 0 
+              })
+              .where(eq(productDosageStock.id, dosageStock.id));
+            
+            affectedProductIds.add(item.productId);
+            console.log(`[Stock] Decremented ${item.productId} (${item.dosage}): ${dosageStock.stockAmount} → ${newAmount}`);
+          } else {
+            errors.push(`Dosage stock not found for ${item.productId} (${item.dosage})`);
+          }
+        } else {
+          const product = await this.getProduct(item.productId);
+          if (product) {
+            const newAmount = Math.max(0, (product.stockAmount || 0) - item.quantity);
+            await db.update(products)
+              .set({ 
+                stockAmount: newAmount, 
+                inStock: newAmount > 0 
+              })
+              .where(eq(products.id, item.productId));
+            
+            console.log(`[Stock] Decremented ${item.productId}: ${product.stockAmount} → ${newAmount}`);
+          } else {
+            errors.push(`Product ${item.productId} not found`);
+          }
+        }
+      } catch (err: any) {
+        errors.push(`Failed to decrement ${item.productId}: ${err.message}`);
+      }
+    }
+    
+    // Sync product-level stock from dosage stocks for affected products
+    for (const productId of Array.from(affectedProductIds)) {
+      try {
+        const dosageStocks = await this.getProductDosageStocks(productId);
+        const anyInStock = dosageStocks.some(ds => ds.inStock && ds.stockAmount > 0);
+        const totalStock = dosageStocks.reduce((sum, ds) => sum + ds.stockAmount, 0);
+        await db.update(products).set({ 
+          inStock: anyInStock,
+          stockAmount: totalStock
+        }).where(eq(products.id, productId));
+      } catch (err: any) {
+        console.error(`[Stock] Failed to sync product-level stock for ${productId}:`, err.message);
+      }
+    }
+    
+    return { success: errors.length === 0, errors: errors.length > 0 ? errors : undefined };
   }
 
   // Price History Methods (Stock Exchange Style Transparency)

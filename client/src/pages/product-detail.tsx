@@ -163,6 +163,7 @@ export default function ProductDetail() {
 
   const { data: product, isLoading, error } = useQuery<Product>({
     queryKey: ["/api/products", params.id],
+    refetchInterval: 30000,
   });
 
   const productId = product?.id;
@@ -194,6 +195,7 @@ export default function ProductDetail() {
   const { data: dosageStocks = [] } = useQuery<ProductDosageStock[]>({
     queryKey: ["/api/products", productId, "dosage-stocks"],
     enabled: !!productId,
+    refetchInterval: 30000,
   });
 
   // Query for all products (for synergy recommendations)

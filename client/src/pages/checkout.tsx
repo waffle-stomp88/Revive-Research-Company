@@ -282,6 +282,12 @@ export default function Checkout() {
       };
       sessionStorage.setItem('orderSummary', JSON.stringify(orderSummary));
       
+      // Invalidate all product-related caches so stock levels refresh immediately
+      queryClient.invalidateQueries({ predicate: (query) => {
+        const key = query.queryKey[0];
+        return typeof key === 'string' && key.startsWith('/api/products');
+      }});
+      
       clearCart();
       localStorage.removeItem("appliedDiscount");
       // Redirect to order confirmation or orders page
@@ -376,6 +382,12 @@ export default function Checkout() {
       customerEmail: user?.email || customerEmail,
     };
     sessionStorage.setItem('orderSummary', JSON.stringify(orderSummary));
+    
+    // Invalidate all product-related caches so stock levels refresh immediately
+    queryClient.invalidateQueries({ predicate: (query) => {
+      const key = query.queryKey[0];
+      return typeof key === 'string' && key.startsWith('/api/products');
+    }});
     
     clearCart();
     localStorage.removeItem("appliedDiscount");

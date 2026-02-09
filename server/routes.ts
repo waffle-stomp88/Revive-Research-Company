@@ -434,6 +434,21 @@ export async function registerRoutes(
     }
   });
 
+  // Validate stock availability before checkout
+  app.post("/api/stock/validate", async (req, res) => {
+    try {
+      const { items } = req.body;
+      if (!items || !Array.isArray(items)) {
+        return res.status(400).json({ error: "Items array is required" });
+      }
+      const result = await storage.validateStock(items);
+      res.json(result);
+    } catch (error) {
+      console.error("Error validating stock:", error);
+      res.status(500).json({ valid: false, errors: ["Failed to validate stock"] });
+    }
+  });
+
   // Create order with pending_payment status (processor-agnostic checkout)
   app.post("/api/orders", async (req: any, res) => {
     try {
@@ -522,10 +537,34 @@ export async function registerRoutes(
         orderData.userId = req.user.claims.sub;
       }
 
+      // Validate stock before creating the order
+      const stockItems = items.map((item: any) => ({
+        productId: item.productId,
+        dosage: item.dosage || undefined,
+        quantity: item.quantity || 1,
+      }));
+      const stockCheck = await storage.validateStock(stockItems);
+      if (!stockCheck.valid) {
+        return res.status(409).json({ 
+          error: "Some items are no longer available", 
+          stockErrors: stockCheck.errors 
+        });
+      }
+
       const validatedData = insertOrderSchema.parse(orderData);
       const order = await storage.createOrder(validatedData);
       
       console.log(`[Manual Order ${order.id}] Created with ${paymentMethod} - awaiting payment`);
+      
+      // Decrement stock immediately to reserve inventory
+      try {
+        const stockResult = await storage.decrementStock(stockItems);
+        if (!stockResult.success) {
+          console.warn(`[Manual Order ${order.id}] Stock decrement warnings:`, stockResult.errors);
+        }
+      } catch (stockError: any) {
+        console.error(`[Manual Order ${order.id}] Stock decrement failed:`, stockError.message);
+      }
       
       // Calculate order details for email
       const orderSubtotal = items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
@@ -628,10 +667,32 @@ export async function registerRoutes(
         orderData.userId = req.user.claims.sub;
       }
 
+      // Validate stock before creating the order
+      const stockItems = items.map((item: any) => ({
+        productId: item.productId,
+        dosage: item.dosage || undefined,
+        quantity: item.quantity || 1,
+      }));
+      const stockCheck = await storage.validateStock(stockItems);
+      if (!stockCheck.valid) {
+        console.warn(`[PayPal Order] Stock validation failed:`, stockCheck.errors);
+        // Still create the order since PayPal payment is already captured, but log the warning
+      }
+
       const validatedData = insertOrderSchema.parse(orderData);
       const order = await storage.createOrder(validatedData);
       
       console.log(`[PayPal Order ${order.id}] Created as PAID - PayPal ID: ${paypalOrderId}`);
+      
+      // Decrement stock for all items in this order
+      try {
+        const stockResult = await storage.decrementStock(stockItems);
+        if (!stockResult.success) {
+          console.warn(`[PayPal Order ${order.id}] Stock decrement warnings:`, stockResult.errors);
+        }
+      } catch (stockError: any) {
+        console.error(`[PayPal Order ${order.id}] Stock decrement failed:`, stockError.message);
+      }
       
       // Build order items array for email (includes all cart items)
       const orderItems = items.map((item: any) => ({
