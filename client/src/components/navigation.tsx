@@ -725,7 +725,7 @@ export function Navigation() {
                     className={`flex items-center gap-4 py-4 px-4 rounded-lg border transition-colors ${
                       location.startsWith("/coa") 
                         ? "bg-[#21d8ff]/15 border-[#21d8ff]/40" 
-                        : "bg-white/10 border-white/20 active:bg-white/15"
+                        : "bg-[#2a2a30] border-[#3a3a42] active:bg-[#333338]"
                     }`}
                     data-testid="link-mobile-coa-verification"
                   >
@@ -748,7 +748,7 @@ export function Navigation() {
                     className={`flex items-center gap-4 py-4 px-4 rounded-lg border transition-colors ${
                       location === "/contact" 
                         ? "bg-[#9d4edd]/15 border-[#9d4edd]/40" 
-                        : "bg-white/10 border-white/20 active:bg-white/15"
+                        : "bg-[#2a2a30] border-[#3a3a42] active:bg-[#333338]"
                     }`}
                     data-testid="link-mobile-contact"
                   >
@@ -771,7 +771,7 @@ export function Navigation() {
                     className={`flex items-center gap-4 py-4 px-4 rounded-lg border transition-colors ${
                       location === "/affiliate" || location.startsWith("/affiliate") 
                         ? "bg-[#22c55e]/15 border-[#22c55e]/40" 
-                        : "bg-white/10 border-white/20 active:bg-white/15"
+                        : "bg-[#2a2a30] border-[#3a3a42] active:bg-[#333338]"
                     }`}
                     data-testid="link-mobile-affiliates"
                   >
