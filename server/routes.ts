@@ -10,7 +10,7 @@ import { setupAuth, isAuthenticated } from "./auth0Auth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { processProductImage } from "./imageProcessor";
-import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendNewsletterWelcomeEmail, isEmailConfigured } from "./email";
+import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendShippedNotificationEmail, sendNewsletterWelcomeEmail, isEmailConfigured } from "./email";
 import { sendOrderNotifications, getNotificationStatus } from "./notifications";
 import { 
   createPaypalOrder, 
@@ -278,6 +278,33 @@ export async function registerRoutes(
       let result;
       if (type === 'newsletter') {
         result = await sendNewsletterWelcomeEmail(to);
+      } else if (type === 'order') {
+        result = await sendOrderConfirmationEmail({
+          id: 'TEST-' + Date.now(),
+          email: to,
+          firstName: 'Test',
+          lastName: 'Researcher',
+          productId: 'test-product',
+          quantity: 2,
+          totalAmount: '149.99',
+          address: '123 Research Lane',
+          city: 'Frisco',
+          state: 'TX',
+          zipCode: '75033',
+          country: 'United States',
+        }, 'BPC-157 10mg');
+      } else if (type === 'shipped') {
+        result = await sendShippedNotificationEmail({
+          id: 'TEST-' + Date.now(),
+          email: to,
+          firstName: 'Test',
+          lastName: 'Researcher',
+          address: '123 Research Lane',
+          city: 'Frisco',
+          state: 'TX',
+          zipCode: '75033',
+          country: 'United States',
+        }, 'USPS123456789', 'BPC-157 10mg');
       } else {
         result = await sendEmail({
           to,
