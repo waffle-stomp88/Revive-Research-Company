@@ -719,20 +719,24 @@ export function Navigation() {
               </div>
               
               {/* Streamlined Navigation - only items NOT in bottom bar or avatar dropdown */}
-              <div className="px-5 py-3 space-y-1">
+              <div className="px-5 py-4 space-y-3">
                 <Link href="/coa/verify-certificate-of-analysis">
                   <div
-                    className={`flex items-center gap-4 py-4 px-4 rounded-lg transition-colors ${
-                      location.startsWith("/coa") ? "bg-muted/50" : "hover:bg-muted/30"
+                    className={`flex items-center gap-4 py-4 px-4 rounded-lg border transition-colors ${
+                      location.startsWith("/coa") 
+                        ? "bg-[#21d8ff]/10 border-[#21d8ff]/30" 
+                        : "bg-white/[0.04] border-white/[0.08] active:bg-white/[0.08]"
                     }`}
                     data-testid="link-mobile-coa-verification"
                   >
-                    <FileCheck className="h-5 w-5 flex-shrink-0 text-[#21d8ff]" />
+                    <div className="w-10 h-10 rounded-lg bg-[#21d8ff]/15 flex items-center justify-center flex-shrink-0">
+                      <FileCheck className="h-5 w-5 text-[#21d8ff]" />
+                    </div>
                     <div className="flex-1 min-w-0">
-                      <span className={`text-base font-medium block ${location.startsWith("/coa") ? "text-[#21d8ff]" : ""}`}>
+                      <span className={`text-base font-semibold block ${location.startsWith("/coa") ? "text-[#21d8ff]" : "text-white"}`}>
                         COA Verification
                       </span>
-                      <span className="text-sm text-muted-foreground block">
+                      <span className="text-sm text-gray-400 block">
                         Verify product certificates
                       </span>
                     </div>
@@ -741,17 +745,21 @@ export function Navigation() {
 
                 <Link href="/contact">
                   <div
-                    className={`flex items-center gap-4 py-4 px-4 rounded-lg transition-colors ${
-                      location === "/contact" ? "bg-muted/50" : "hover:bg-muted/30"
+                    className={`flex items-center gap-4 py-4 px-4 rounded-lg border transition-colors ${
+                      location === "/contact" 
+                        ? "bg-[#9d4edd]/10 border-[#9d4edd]/30" 
+                        : "bg-white/[0.04] border-white/[0.08] active:bg-white/[0.08]"
                     }`}
                     data-testid="link-mobile-contact"
                   >
-                    <Mail className="h-5 w-5 flex-shrink-0 text-[#9d4edd]" />
+                    <div className="w-10 h-10 rounded-lg bg-[#9d4edd]/15 flex items-center justify-center flex-shrink-0">
+                      <Mail className="h-5 w-5 text-[#9d4edd]" />
+                    </div>
                     <div className="flex-1 min-w-0">
-                      <span className={`text-base font-medium block ${location === "/contact" ? "text-[#9d4edd]" : ""}`}>
+                      <span className={`text-base font-semibold block ${location === "/contact" ? "text-[#9d4edd]" : "text-white"}`}>
                         Contact Us
                       </span>
-                      <span className="text-sm text-muted-foreground block">
+                      <span className="text-sm text-gray-400 block">
                         Reach out for research support
                       </span>
                     </div>
@@ -760,17 +768,21 @@ export function Navigation() {
 
                 <Link href="/affiliate">
                   <div
-                    className={`flex items-center gap-4 py-4 px-4 rounded-lg transition-colors ${
-                      location === "/affiliate" || location.startsWith("/affiliate") ? "bg-muted/50" : "hover:bg-muted/30"
+                    className={`flex items-center gap-4 py-4 px-4 rounded-lg border transition-colors ${
+                      location === "/affiliate" || location.startsWith("/affiliate") 
+                        ? "bg-[#22c55e]/10 border-[#22c55e]/30" 
+                        : "bg-white/[0.04] border-white/[0.08] active:bg-white/[0.08]"
                     }`}
                     data-testid="link-mobile-affiliates"
                   >
-                    <User className="h-5 w-5 flex-shrink-0 text-[#22c55e]" />
+                    <div className="w-10 h-10 rounded-lg bg-[#22c55e]/15 flex items-center justify-center flex-shrink-0">
+                      <User className="h-5 w-5 text-[#22c55e]" />
+                    </div>
                     <div className="flex-1 min-w-0">
-                      <span className={`text-base font-medium block ${location === "/affiliate" || location.startsWith("/affiliate") ? "text-[#22c55e]" : ""}`}>
+                      <span className={`text-base font-semibold block ${location === "/affiliate" || location.startsWith("/affiliate") ? "text-[#22c55e]" : "text-white"}`}>
                         Affiliates
                       </span>
-                      <span className="text-sm text-muted-foreground block">
+                      <span className="text-sm text-gray-400 block">
                         Earn commissions on referrals
                       </span>
                     </div>
@@ -798,7 +810,7 @@ export function Navigation() {
                     variant="outline" 
                     size="lg"
                     data-testid="button-mobile-logout" 
-                    className="w-full text-base"
+                    className="w-full text-base border-red-500/50 text-red-400 hover:bg-red-500/10 hover:border-red-500"
                     onClick={() => logout()}
                   >
                     <LogOut className="h-5 w-5 mr-2" />
