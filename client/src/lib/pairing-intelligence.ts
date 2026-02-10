@@ -1063,8 +1063,8 @@ export function getPairingReasons(compoundSlug: string): PairingReason[] {
   return PAIRING_INTELLIGENCE[resolved]?.topPairings || [];
 }
 
-export function getTopPairingForProduct(productName: string, partnerName: string): PairingReason | null {
-  const slug = productName.toLowerCase()
+function resolveSlug(name: string): string {
+  const slug = name.toLowerCase()
     .replace(/[^a-z0-9]/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '');
@@ -1075,11 +1075,20 @@ export function getTopPairingForProduct(productName: string, partnerName: string
     "cjc-1295-with-dac": "cjc-1295",
   };
 
-  const resolved = knownAliases[slug] || slug;
-  const pairings = PAIRING_INTELLIGENCE[resolved]?.topPairings || [];
+  return knownAliases[slug] || slug;
+}
 
-  const partnerNorm = partnerName.toLowerCase();
-  return pairings.find(p => p.partner.toLowerCase() === partnerNorm) || null;
+export function getTopPairingForProduct(productName: string, partnerName: string): PairingReason | null {
+  const productSlug = resolveSlug(productName);
+  const partnerSlug = resolveSlug(partnerName);
+
+  const forwardPairings = PAIRING_INTELLIGENCE[productSlug]?.topPairings || [];
+  const forwardMatch = forwardPairings.find(p => resolveSlug(p.partner) === partnerSlug);
+  if (forwardMatch) return forwardMatch;
+
+  const reversePairings = PAIRING_INTELLIGENCE[partnerSlug]?.topPairings || [];
+  const reverseMatch = reversePairings.find(p => resolveSlug(p.partner) === productSlug);
+  return reverseMatch || null;
 }
 
 export function getCrossSellSuggestions(cartProductNames: string[]): { product: string; reason: string; forProduct: string }[] {
