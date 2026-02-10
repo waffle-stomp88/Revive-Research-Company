@@ -22,7 +22,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     peptides: ["bpc-157", "tb-500"],
     icon: Zap,
     color: "#22c55e",
-    description: "Legendary healing combo - BPC-157's local repair + TB-500's systemic regeneration",
+    description: "BPC-157 drives local repair via VEGF upregulation while TB-500 provides systemic healing through thymosin beta-4 actin regulation \u2014 covering both localized and whole-body regeneration",
     synergyBonus: 95,
   },
   {
@@ -30,7 +30,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     peptides: ["bpc-157", "tb-500", "ipamorelin"],
     icon: Shield,
     color: "#10b981",
-    description: "Complete recovery - local healing + systemic repair + growth support",
+    description: "Local VEGF-driven healing + systemic thymosin repair + selective GH/IGF-1 amplification for comprehensive tissue regeneration",
     synergyBonus: 92,
   },
   {
@@ -38,7 +38,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     peptides: ["bpc-157", "kpv"],
     icon: Pill,
     color: "#14b8a6",
-    description: "Digestive healing - gut lining repair + potent anti-inflammatory action",
+    description: "BPC-157 repairs gut mucosal lining through cytoprotection while KPV inhibits NF-\u03BAB inflammatory cascades \u2014 structural repair + inflammation suppression",
     synergyBonus: 91,
   },
   {
@@ -46,7 +46,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     peptides: ["bpc-157", "tb-500", "ghk-cu"],
     icon: Sparkles,
     color: "#ec4899",
-    description: "Ultimate skin rejuvenation - collagen + blood vessels + tissue repair",
+    description: "Copper-peptide collagen synthesis + thymosin vascular repair + VEGF-driven angiogenesis for multi-layer skin regeneration",
     synergyBonus: 90,
   },
   {
@@ -54,7 +54,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     peptides: ["ipamorelin", "cjc-1295"],
     icon: Rocket,
     color: "#f59e0b",
-    description: "Growth hormone synergy - GHRP + GHRH work better together",
+    description: "Pituitary GHRP + hypothalamic GHRH dual-axis stimulation \u2014 the gold-standard GH amplification protocol producing synergistic output far greater than either alone",
     synergyBonus: 88,
   },
   {
@@ -62,7 +62,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     peptides: ["cjc-1295", "ipamorelin", "mots-c"],
     icon: Dumbbell,
     color: "#f97316",
-    description: "GH amplification + metabolic enhancement for body composition",
+    description: "Dual-axis GH amplification + AMPK-driven mitochondrial energy production for body composition optimization",
     synergyBonus: 87,
   },
   {
@@ -70,7 +70,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     peptides: ["semax", "selank"],
     icon: Brain,
     color: "#21d8ff",
-    description: "Nootropic synergy - focus enhancement + anxiety reduction",
+    description: "Gold-standard nootropic pairing \u2014 BDNF/NGF cognitive enhancement + GABAergic anxiolytic modulation for calm, focused performance",
     synergyBonus: 86,
   },
   {
@@ -78,7 +78,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     peptides: ["epithalon", "ghk-cu", "ipamorelin"],
     icon: Leaf,
     color: "#84cc16",
-    description: "Telomere support + collagen regeneration + natural GH optimization",
+    description: "Telomerase activation + DNA repair gene expression + GH-driven tissue renewal \u2014 three complementary anti-aging mechanisms",
     synergyBonus: 85,
   },
   {
@@ -86,7 +86,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     peptides: ["epithalon", "ghk-cu"],
     icon: Crown,
     color: "#a855f7",
-    description: "Telomere extension meets collagen regeneration",
+    description: "Epithalon activates telomerase for cellular longevity while GHK-Cu activates DNA repair genes and collagen turnover \u2014 both address aging at the cellular level",
     synergyBonus: 84,
   },
   {
@@ -94,7 +94,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     peptides: ["dsip", "ipamorelin", "epithalon"],
     icon: Moon,
     color: "#6366f1",
-    description: "Sleep peptide + GH pulse + circadian rhythm optimization",
+    description: "Delta sleep induction + sleep-phase GH release + pineal melatonin regulation \u2014 optimizing the nighttime regeneration window",
     synergyBonus: 84,
   },
   {
@@ -110,7 +110,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     peptides: ["bpc-157", "ghk-cu"],
     icon: Heart,
     color: "#22c55e",
-    description: "Collagen synthesis meets tissue protection",
+    description: "GHK-Cu drives copper-dependent collagen and elastin synthesis while BPC-157 provides the vascular infrastructure for nutrient delivery to remodeling tissue",
     synergyBonus: 82,
   },
   {
@@ -142,7 +142,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     peptides: ["retatrutide", "bpc-157"],
     icon: RefreshCw,
     color: "#10b981",
-    description: "Triple-agonist metabolic signaling + gut lining protection for sustainable results",
+    description: "GLP-1/GIP/glucagon triple receptor agonism + gut cytoprotection \u2014 BPC-157 supports GI comfort during metabolic compound research",
     synergyBonus: 88,
   },
   {
@@ -174,7 +174,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     peptides: ["cerebrolysin", "semax", "selank"],
     icon: Brain,
     color: "#7c3aed",
-    description: "Neurotrophic factors + BDNF enhancement + anxiolytic mood support",
+    description: "Multi-peptide neurotrophic mix + targeted BDNF/NGF stimulation + GABAergic mood stabilization \u2014 triple-layered brain support",
     synergyBonus: 90,
   },
   {
@@ -190,7 +190,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     peptides: ["ll-37", "thymalin"],
     icon: Shield,
     color: "#0891b2",
-    description: "Antimicrobial cathelicidin + thymic immune reconstitution",
+    description: "LL-37 cathelicidin provides innate antimicrobial defense while Thymalin restores adaptive immunity through thymic T-cell regeneration",
     synergyBonus: 85,
   },
   {
@@ -206,7 +206,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     peptides: ["ss-31", "mots-c"],
     icon: Zap,
     color: "#059669",
-    description: "Cardiolipin stabilization + AMPK activation for cellular energy",
+    description: "SS-31 stabilizes cardiolipin in mitochondrial membranes, then MOTS-C activates AMPK for new mitochondrial biogenesis \u2014 sequential: prime existing, then build new",
     synergyBonus: 88,
   },
   {

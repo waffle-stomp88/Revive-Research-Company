@@ -26,6 +26,7 @@ import {
   Clock,
 } from "lucide-react";
 import type { Product } from "@shared/schema";
+import { getPairingReasons } from "@/lib/pairing-intelligence";
 
 interface CompoundFinderProps {
   products: Product[];
@@ -475,6 +476,16 @@ export function CompoundFinder({ products, onAddToCart }: CompoundFinderProps) {
                     <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
                       {answers.goal && getWhyText(answers.goal, product.name)}
                     </p>
+                    {(() => {
+                      const topPairing = getPairingReasons(product.name).slice(0, 1);
+                      if (topPairing.length === 0) return null;
+                      return (
+                        <div className="mt-1.5 flex items-center gap-1.5 text-[10px] text-[#22c55e]/80" data-testid={`text-finder-pairing-${product.id}`}>
+                          <Zap className="h-3 w-3 text-[#22c55e]" />
+                          <span>Pairs with {topPairing[0].partner}: {topPairing[0].mechanism}</span>
+                        </div>
+                      );
+                    })()}
                     <div className="flex items-center gap-3 mt-2">
                       <span className="text-sm font-semibold text-[#21d8ff]">
                         ${Number(product.price).toFixed(2)}

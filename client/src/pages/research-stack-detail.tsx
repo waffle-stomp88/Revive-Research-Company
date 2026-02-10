@@ -59,7 +59,7 @@ const researchStacksData: Record<string, ResearchStack> = {
     name: "Recovery + Tissue Mechanisms Stack",
     subtitle: "Dual Pathway Tissue Stack",
     description: "This stack combines two of the most extensively researched compounds for tissue mechanism pathways.",
-    longDescription: "This synergistic combination brings together BPC-157 and TB-500, two of the most extensively researched peptides in tissue mechanism studies. Researchers have documented extensive literature on the complementary signaling pathways these compounds target. The combination is ideal for studies investigating cellular repair mechanisms, tissue regeneration models, and synergistic peptide interactions.",
+    longDescription: "The most well-known peptide pairing in research. BPC-157 drives local tissue repair via VEGF upregulation, growth hormone receptor activation, and cytoprotective mechanisms, while TB-500 provides systemic healing through thymosin beta-4 actin regulation and blood vessel formation. Together they cover both localized and whole-body regeneration pathways \u2014 which is why researchers call this the Wolverine Stack.",
     peptides: [
       { name: "BPC-157", description: "Extensively studied for tissue mechanism pathways and cellular signaling research" },
       { name: "TB-500", description: "Research focus on thymosin beta-4 derived sequences and tissue modeling" },
@@ -97,7 +97,7 @@ const researchStacksData: Record<string, ResearchStack> = {
     name: "Metabolic Pathway Research Stack",
     subtitle: "Triple-Pathway Research Bundle",
     description: "Explore incretin signaling and mitochondrial function pathways with this comprehensive metabolic research combination.",
-    longDescription: "This advanced research stack combines MOTS-C and Retatrutide for comprehensive metabolic pathway studies. MOTS-C, a mitochondrial-derived peptide, has been extensively studied for its role in cellular energy regulation. Retatrutide represents a novel triple-agonist approach targeting GIP, GLP-1, and glucagon receptor pathways. Together, they provide researchers with tools for investigating multiple metabolic signaling mechanisms.",
+    longDescription: "This stack hits metabolism from two independent angles. MOTS-C enhances cellular energy production by activating AMPK and driving mitochondrial biogenesis \u2014 essentially making each cell more efficient at producing energy. Retatrutide activates GLP-1, GIP, and glucagon receptors simultaneously as a triple agonist, managing appetite signaling, insulin sensitivity, and fat oxidation at the hormonal level. One works at the cellular powerhouse, the other at the hormonal control center.",
     peptides: [
       { name: "MOTS-C", description: "Mitochondrial-derived peptide studied for cellular energy metabolism pathways" },
       { name: "Retatrutide", description: "Triple-agonist compound for incretin and glucagon receptor pathway research" },
@@ -135,7 +135,7 @@ const researchStacksData: Record<string, ResearchStack> = {
     name: "Cellular Optimization Stack",
     subtitle: "Signal Pathway Combo",
     description: "Research cellular signaling pathways and copper peptide mechanisms.",
-    longDescription: "This stack combines GHK-Cu and MOTS-C for comprehensive cellular optimization research. GHK-Cu (glycyl-l-histidyl-l-lysine copper) is a naturally occurring tripeptide with copper that has been studied for its role in various cellular signaling pathways. Combined with MOTS-C's mitochondrial pathway activity, this stack enables multi-target cellular mechanism research.",
+    longDescription: "GHK-Cu activates over 4,000 human genes involved in tissue remodeling, collagen synthesis, and DNA repair \u2014 essentially telling cells to renew themselves. MOTS-C activates AMPK to enhance mitochondrial biogenesis, improving how cells produce energy. Together they create parallel signaling: extracellular matrix optimization (GHK-Cu) + intracellular energy metabolism (MOTS-C), addressing both structural and functional cellular pathways.",
     peptides: [
       { name: "GHK-Cu (100mg)", description: "Copper peptide studied for cellular signaling and matrix protein pathway research" },
       { name: "MOTS-C", description: "Mitochondrial-derived peptide for energy pathway and cellular optimization studies" },
@@ -171,7 +171,7 @@ const researchStacksData: Record<string, ResearchStack> = {
     name: "Premium Research Starter Stack",
     subtitle: "Beginner Research Essentials",
     description: "The ideal entry point for new research programs.",
-    longDescription: "Designed as an accessible entry point for new research programs, this stack features two of the most well-characterized peptide compounds available. BPC-157 and MOTS-C both have extensive documentation in peer-reviewed literature, making them ideal for researchers establishing baseline protocols and familiarizing themselves with peptide research methodologies.",
+    longDescription: "Two of the most well-documented peptides covering two fundamental research domains. BPC-157 drives tissue repair through VEGF upregulation, NO modulation, and growth hormone receptor activation \u2014 it's often called a universal connector because it pairs well with nearly everything. MOTS-C supports cellular energy production through AMPK activation and mitochondrial biogenesis via the PGC-1\u03B1 pathway. Together: tissue repair + cellular energy, the two most foundational areas of peptide research.",
     peptides: [
       { name: "BPC-157", description: "Well-documented peptide for tissue mechanism and cellular signaling studies" },
       { name: "MOTS-C", description: "Extensively researched mitochondrial peptide with established protocols" },
@@ -209,7 +209,7 @@ const researchStacksData: Record<string, ResearchStack> = {
     name: "Collagen & Skin Pathway Stack",
     subtitle: "Dermal Research Bundle",
     description: "Study collagen synthesis pathways and dermal tissue mechanisms.",
-    longDescription: "This stack combines GHK-Cu and BPC-157 for comprehensive dermal and collagen pathway research. GHK-Cu has been extensively studied for its role in extracellular matrix protein interactions and collagen-related signaling. BPC-157 complements this with its documented tissue mechanism activity. Together, they provide a robust toolkit for dermal research applications.",
+    longDescription: "GHK-Cu drives collagen synthesis through TGF-\u03B2 modulation, upregulating collagen I, III, and elastin production while activating copper-dependent matrix remodeling enzymes. BPC-157 provides the vascular infrastructure through VEGF-driven angiogenesis, ensuring nutrient delivery to remodeling tissue. One rebuilds the structural proteins, the other builds the blood supply to support it \u2014 architecture + supply chain.",
     peptides: [
       { name: "GHK-Cu", description: "Copper peptide for collagen pathway and matrix protein research" },
       { name: "BPC-157", description: "Tissue mechanism peptide complementing dermal pathway studies" },
@@ -245,7 +245,7 @@ const researchStacksData: Record<string, ResearchStack> = {
     name: "Elite Pathway Triple Stack",
     subtitle: "Advanced Multi-Mechanism Bundle",
     description: "Our most comprehensive research stack covering three major mechanism categories.",
-    longDescription: "Our most comprehensive research offering combines Retatrutide, MOTS-C, and BPC-157 for advanced multi-target investigations. This triple stack covers incretin signaling pathways, mitochondrial function mechanisms, and tissue repair models—three of the most actively researched areas in peptide science. Ideal for established research programs requiring multi-target pathway analysis.",
+    longDescription: "Three compounds targeting three independent signaling cascades. Retatrutide activates GLP-1, GIP, and glucagon receptors simultaneously for hormonal metabolic control. MOTS-C activates AMPK for mitochondrial biogenesis and cellular energy production. BPC-157 provides tissue-level cytoprotection via VEGF upregulation and NO modulation \u2014 including gut lining support during metabolic compound research. The combination enables cross-talk investigation between metabolic, energetic, and regenerative signaling.",
     peptides: [
       { name: "Retatrutide", description: "Triple-agonist for GIP, GLP-1, and glucagon receptor pathway research" },
       { name: "MOTS-C", description: "Mitochondrial peptide for cellular energy and metabolism studies" },

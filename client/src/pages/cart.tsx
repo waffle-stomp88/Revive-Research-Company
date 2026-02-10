@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import {
   ShoppingCart,
@@ -30,8 +30,11 @@ import {
   ExternalLink,
   RefreshCw,
   Layers,
+  Zap,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { getCrossSellSuggestions } from "@/lib/pairing-intelligence";
+import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 
 interface AppliedDiscount {
@@ -60,10 +63,24 @@ function getSubscriptionDiscount(interval: "weekly" | "biweekly" | "monthly" | u
 }
 
 export default function CartPage() {
-  const { items, removeFromCart, updateQuantity, getSubtotal, clearCart } = useCart();
+  const { items, removeFromCart, updateQuantity, getSubtotal, clearCart, addToCart } = useCart();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [discountCode, setDiscountCode] = useState("");
+
+  const { data: allProducts = [] } = useQuery<Product[]>({
+    queryKey: ["/api/products"],
+  });
+
+  const crossSellSuggestions = getCrossSellSuggestions(items.map(i => i.name));
+  const crossSellProducts = crossSellSuggestions.map(s => {
+    const product = allProducts.find(p => 
+      p.name.toLowerCase() === s.product.toLowerCase() ||
+      p.name.toLowerCase().includes(s.product.toLowerCase()) ||
+      s.product.toLowerCase().includes(p.name.toLowerCase())
+    );
+    return { ...s, product: product };
+  }).filter(s => s.product && s.product.inStock);
   const [appliedDiscount, setAppliedDiscount] = useState<AppliedDiscount | null>(() => {
     const saved = localStorage.getItem("appliedDiscount");
     return saved ? JSON.parse(saved) : null;
@@ -354,6 +371,68 @@ export default function CartPage() {
                 Clear Cart
               </Button>
             </div>
+
+            {crossSellProducts.length > 0 && (
+              <div className="mt-6 pt-6 border-t border-border/50" data-testid="cart-cross-sell-section">
+                <h3 className="font-display text-lg font-semibold mb-1 flex items-center gap-2">
+                  <Zap className="h-5 w-5 text-[#22c55e]" />
+                  Research Pairings
+                </h3>
+                <p className="text-xs text-muted-foreground mb-4">
+                  Based on what's in your cart, these compounds share complementary mechanisms.
+                </p>
+                <div className="space-y-3">
+                  {crossSellProducts.map(({ product: suggestedProduct, reason, forProduct }) => (
+                    <Card key={suggestedProduct!.id} className="p-3 border-[#22c55e]/20" data-testid={`card-cross-sell-${suggestedProduct!.id}`}>
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded bg-muted flex-shrink-0">
+                          <img
+                            src={suggestedProduct!.imageUrl || productImage}
+                            alt={suggestedProduct!.name}
+                            className="w-full h-full object-contain p-1"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="font-semibold text-sm">{suggestedProduct!.name}</p>
+                            <span className="text-xs font-semibold text-[#E7FB10]">
+                              ${Number(suggestedProduct!.price).toFixed(2)}
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-muted-foreground mt-0.5">
+                            Pairs with {forProduct}: {reason}
+                          </p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Link href={`/peptides/${suggestedProduct!.slug || suggestedProduct!.id}`}>
+                              <Button variant="ghost" size="sm" className="text-xs h-7 px-2" data-testid={`button-cross-sell-view-${suggestedProduct!.id}`}>
+                                Details
+                              </Button>
+                            </Link>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-xs h-7 px-2 border-[#22c55e]/30 text-[#22c55e]"
+                              onClick={() => addToCart({
+                                productId: String(suggestedProduct!.id),
+                                name: suggestedProduct!.name,
+                                price: Number(suggestedProduct!.price),
+                                quantity: 1,
+                                dosage: suggestedProduct!.dosageOptions?.[0] || "",
+                                image: suggestedProduct!.imageUrl || undefined,
+                              })}
+                              data-testid={`button-cross-sell-add-${suggestedProduct!.id}`}
+                            >
+                              <Plus className="h-3 w-3 mr-1" />
+                              Add
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="lg:col-span-1">

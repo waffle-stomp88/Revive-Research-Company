@@ -33,6 +33,7 @@ import {
   ExternalLink,
   Search,
   ArrowRight,
+  Layers,
 } from "lucide-react";
 import {
   Select,
@@ -44,6 +45,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArticleModeToggle, BeginnerBadge } from "@/components/education/article-mode-toggle";
 import { BeginnerArticleContent, WhatIsPeptideSection, hasQuickBreakdown } from "@/components/education/beginner-content";
+import { getPairingReasons } from "@/lib/pairing-intelligence";
 import type { EducationArticle, Product } from "@shared/schema";
 import { ResearchOrientationMap } from "@/components/education/research-orientation-map";
 import { OrderingJourney } from "@/components/infographics/ordering-journey";
@@ -954,6 +956,73 @@ export default function Education() {
                                   </Link>
                                 ))}
                               </div>
+                            </div>
+                          );
+                        })()}
+
+                        {/* Pairs Well With section for peptide articles */}
+                        {article.category === "peptides" && (() => {
+                          const matchingProducts = getMatchingProducts(article.slug || "");
+                          if (matchingProducts.length === 0) return null;
+                          const mainProduct = matchingProducts[0];
+                          const pairings = getPairingReasons(mainProduct.name);
+                          if (pairings.length === 0) return null;
+                          const pairedProducts = pairings.slice(0, 3).map(p => {
+                            const found = products.find(prod => 
+                              prod.name.toLowerCase() === p.partner.toLowerCase() ||
+                              prod.name.toLowerCase().includes(p.partner.toLowerCase()) ||
+                              p.partner.toLowerCase().includes(prod.name.toLowerCase())
+                            );
+                            return { pairing: p, product: found };
+                          }).filter(pp => pp.product);
+
+                          if (pairedProducts.length === 0) return null;
+                          return (
+                            <div className="mt-8 pt-8 border-t border-border/50" data-testid="article-pairs-well-with">
+                              <h3 className="font-display text-xl font-bold mb-2 flex items-center gap-2">
+                                <Layers className="h-5 w-5 text-[#22c55e]" />
+                                Pairs Well With
+                              </h3>
+                              <p className="text-xs text-muted-foreground mb-4">
+                                Research-backed pairings based on complementary mechanisms of action.
+                              </p>
+                              <div className="space-y-3">
+                                {pairedProducts.map(({ pairing, product: partnerProd }) => (
+                                  <Link key={partnerProd!.id} href={`/peptides/${partnerProd!.slug || partnerProd!.id}`}>
+                                    <Card className="p-4 border border-[#22c55e]/20 hover:border-[#22c55e]/50 transition-all hover-elevate cursor-pointer" data-testid={`card-article-pairing-${partnerProd!.id}`}>
+                                      <div className="flex items-start gap-3">
+                                        <div className="w-10 h-10 rounded bg-muted flex-shrink-0">
+                                          <img 
+                                            src={partnerProd!.imageUrl || productImage}
+                                            alt={partnerProd!.name}
+                                            className="w-full h-full object-contain p-1"
+                                          />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                          <div className="flex items-center gap-2 flex-wrap">
+                                            <h4 className="font-semibold text-sm">{partnerProd!.name}</h4>
+                                            {pairing.sequential && (
+                                              <Badge className="text-[10px] bg-amber-500/20 text-amber-400 border-amber-500/30">
+                                                Sequential
+                                              </Badge>
+                                            )}
+                                          </div>
+                                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                                            {pairing.mechanism}
+                                          </p>
+                                        </div>
+                                        <ArrowRight className="h-4 w-4 text-[#22c55e] flex-shrink-0 mt-1" />
+                                      </div>
+                                    </Card>
+                                  </Link>
+                                ))}
+                              </div>
+                              <Link href="/research-stacks">
+                                <Button variant="ghost" size="sm" className="mt-3 text-xs text-muted-foreground w-full" data-testid="link-article-stacks">
+                                  Explore Research Stacks
+                                  <ArrowRight className="h-3 w-3 ml-1" />
+                                </Button>
+                              </Link>
                             </div>
                           );
                         })()}

@@ -69,6 +69,7 @@ import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { SEOHead } from "@/components/seo-head";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { getSynergyPartners, normalizePeptideName } from "@/lib/synergy-data";
+import { getTopPairingForProduct } from "@/lib/pairing-intelligence";
 import { Layers, Zap } from "lucide-react";
 
 // Badge priority system - max 2 badges per product
@@ -1451,7 +1452,7 @@ export default function ProductDetail() {
               </div>
               
               <p className="text-muted-foreground mb-6" data-testid="text-synergy-description">
-                These peptides share complementary research pathways with {product.name}. Combine them for enhanced synergy.
+                Research-backed pairings with {product.name} based on complementary mechanisms of action.
               </p>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -1461,6 +1462,7 @@ export default function ProductDetail() {
                     normalizePeptideName(partnerProduct.name).includes(normalizePeptideName(sp.partner)) ||
                     normalizePeptideName(sp.partner).includes(normalizePeptideName(partnerProduct.name))
                   );
+                  const pairingReason = getTopPairingForProduct(product.name, partnerProduct.name);
                   
                   return (
                     <Link key={partnerProduct.id} href={`/peptides/${partnerProduct.slug || partnerProduct.id}`} data-testid={`link-synergy-${partnerProduct.id}`}>
@@ -1491,6 +1493,16 @@ export default function ProductDetail() {
                               >
                                 <Zap className="h-3 w-3 mr-1" />
                                 {partnerSynergy.stack.name} • {partnerSynergy.synergyBonus}%
+                              </Badge>
+                            )}
+                            {pairingReason && (
+                              <p className="text-xs text-muted-foreground mt-2 line-clamp-2" data-testid={`text-pairing-reason-${partnerProduct.id}`}>
+                                {pairingReason.mechanism}
+                              </p>
+                            )}
+                            {pairingReason?.sequential && (
+                              <Badge className="mt-1 text-xs bg-amber-500/20 text-amber-400 border-amber-500/30" data-testid={`badge-sequential-${partnerProduct.id}`}>
+                                Sequential Pairing
                               </Badge>
                             )}
                             <p 

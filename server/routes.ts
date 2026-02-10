@@ -3336,15 +3336,27 @@ This system allows full traceability from production to customer. Every batch nu
 
 ===== RESEARCH STACKS (BUNDLES) =====
 Pre-built Research Stacks are curated bundles of complementary peptides with bundle pricing (each stack shows exact savings vs buying separately):
-- Wolverine Stack: BPC-157 + TB-500 (95% synergy score) — tissue repair focus
-- Glow Protocol: BPC-157 + TB-500 + GHK-Cu (90%) — skin/tissue regeneration
-- GH Amplifier: Ipamorelin + CJC-1295 (88%) — growth hormone research
-- Cognitive Edge: Semax + Selank (86%) — cognitive pathway research
-- Lean Mass Protocol: CJC-1295 + Ipamorelin + MOTS-C (87%) — metabolic research
-- Deep Sleep Formula: Epithalon + Ipamorelin (83%) — circadian research
-- Longevity Protocol: Epithalon + GHK-Cu (84%) — longevity pathway research
-- Total Regen: BPC-157 + TB-500 + Ipamorelin (92%) — comprehensive regeneration
-- Recovery+ Protocol: BPC-157 + GHK-Cu + TB-500 (82%) — recovery research
+- Wolverine Stack: BPC-157 + TB-500 (95% synergy) — BPC-157 drives local repair via VEGF upregulation while TB-500 provides systemic healing through thymosin beta-4 actin regulation
+- Glow Protocol: BPC-157 + TB-500 + GHK-Cu (90%) — 3-phase regeneration: vascular repair → tissue migration → collagen remodeling
+- GH Amplifier: Ipamorelin + CJC-1295 (88%) — Ipamorelin's selective GHSR agonism paired with CJC-1295's sustained GHRH analog action for amplified pulsatile GH release
+- Cognitive Edge: Semax + Selank (86%) — Gold-standard nootropic combo: Semax upregulates BDNF for cognitive enhancement while Selank modulates GABA for anxiolytic balance
+- Lean Mass Protocol: CJC-1295 + Ipamorelin + MOTS-C (87%) — Dual GH secretion + mitochondrial AMPK activation for metabolic and body composition research
+- Deep Sleep Formula: Epithalon + Ipamorelin (83%) — Epithalon's pineal melatonin synthesis + Ipamorelin's GH pulse during sleep amplification
+- Longevity Protocol: Epithalon + GHK-Cu (84%) — Telomerase activation + DNA repair gene stimulation for cellular-level anti-aging
+- Total Regen: BPC-157 + TB-500 + Ipamorelin (92%) — Local VEGF repair + systemic thymosin healing + GH/IGF-1 amplification
+- Recovery+ Protocol: BPC-157 + GHK-Cu + TB-500 (82%) — Multi-vector recovery: cytoprotection + copper-peptide matrix remodeling + cell migration
+
+===== KEY STACKING INTELLIGENCE =====
+When discussing compound pairings, use these mechanistic explanations:
+- BPC-157 is a "universal connector" — it pairs well with almost everything due to its VEGF-driven angiogenesis and cytoprotective mechanisms
+- TB-500 + BPC-157 ("Wolverine Stack") is the most well-known peptide pairing in research — local + systemic repair coverage
+- Semax + Selank is the gold-standard nootropic combination — BDNF upregulation (cognitive) + GABA modulation (anxiolytic)
+- SS-31 → MOTS-c is a SEQUENTIAL pairing (order matters): SS-31 stabilizes cardiolipin in mitochondrial membranes first, then MOTS-c activates AMPK for new mitochondrial biogenesis
+- Epithalon + GHK-Cu targets aging at two cellular levels: telomerase activation + DNA repair gene stimulation
+- CJC-1295 + Ipamorelin: GHRH analog + GHSR agonist for synergistic pulsatile GH release
+- GHK-Cu + Snap-8 for skin research: collagen remodeling from within + SNARE complex neuromuscular relaxation for expression lines
+- Thymosin Alpha-1 + LL-37 for immune research: adaptive immune enhancement + antimicrobial innate defense
+- AOD-9604 + 5-Amino-1MQ for metabolic research: GH fragment lipolysis + NNMT enzyme inhibition
 
 Custom Stack Builder (at /research-stacks, "Build Custom" tab):
 - Select 2-4 peptides to create a custom research bundle (no discount applied — the value is the AI synergy analysis, pathway insights, and stack detection)
