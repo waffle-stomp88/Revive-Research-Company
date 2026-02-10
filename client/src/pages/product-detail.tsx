@@ -1455,7 +1455,7 @@ export default function ProductDetail() {
                 Research-backed pairings with {product.name} based on complementary mechanisms of action.
               </p>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
                 {matchingProducts.slice(0, 3).map((partnerProduct: Product) => {
                   const partnerSynergy = synergyPartners.find(sp => 
                     normalizePeptideName(sp.partner) === normalizePeptideName(partnerProduct.name) ||
@@ -1465,12 +1465,12 @@ export default function ProductDetail() {
                   const pairingReason = getTopPairingForProduct(product.name, partnerProduct.name);
                   
                   return (
-                    <Link key={partnerProduct.id} href={`/peptides/${partnerProduct.slug || partnerProduct.id}`} data-testid={`link-synergy-${partnerProduct.id}`}>
+                    <Link key={partnerProduct.id} href={`/peptides/${partnerProduct.slug || partnerProduct.id}`} className="h-full" data-testid={`link-synergy-${partnerProduct.id}`}>
                       <Card 
-                        className="p-4 border-[#22c55e]/20 cursor-pointer hover-elevate"
+                        className="p-4 border-[#22c55e]/20 cursor-pointer hover-elevate h-full"
                         data-testid={`card-synergy-${partnerProduct.id}`}
                       >
-                        <div className="flex flex-wrap items-start gap-4">
+                        <div className="flex flex-wrap items-start gap-4 h-full">
                           <div className="w-16 h-16 rounded-lg overflow-hidden bg-card flex-shrink-0">
                             <img 
                               src={partnerProduct.imageUrl || productImage} 
@@ -1479,7 +1479,7 @@ export default function ProductDetail() {
                               data-testid={`img-synergy-${partnerProduct.id}`}
                             />
                           </div>
-                          <div className="flex-1 min-w-0">
+                          <div className="flex-1 min-w-0 flex flex-col h-full">
                             <p 
                               className="font-medium text-sm truncate"
                               data-testid={`text-synergy-name-${partnerProduct.id}`}
@@ -1496,9 +1496,12 @@ export default function ProductDetail() {
                               </Badge>
                             )}
                             {pairingReason && (
-                              <p className="text-xs text-muted-foreground mt-2 line-clamp-2" data-testid={`text-pairing-reason-${partnerProduct.id}`}>
+                              <p className="text-xs text-muted-foreground mt-2 line-clamp-2 flex-1" data-testid={`text-pairing-reason-${partnerProduct.id}`}>
                                 {pairingReason.mechanism}
                               </p>
+                            )}
+                            {!pairingReason && (
+                              <div className="flex-1" />
                             )}
                             {pairingReason?.sequential && (
                               <Badge className="mt-1 text-xs bg-amber-500/20 text-amber-400 border-amber-500/30" data-testid={`badge-sequential-${partnerProduct.id}`}>
@@ -1506,7 +1509,7 @@ export default function ProductDetail() {
                               </Badge>
                             )}
                             <p 
-                              className="text-sm font-bold text-[#E7FB10] mt-2"
+                              className="text-sm font-bold text-[#E7FB10] mt-2 mt-auto"
                               data-testid={`text-synergy-price-${partnerProduct.id}`}
                             >
                               ${Number(partnerProduct.price).toFixed(2)}
