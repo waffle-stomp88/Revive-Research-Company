@@ -426,7 +426,7 @@ function CTASection() {
 export default function Home() {
   return (
     <main>
-      <SEOHead title="Home" description="Shop third-party tested peptides for scientific research. GMP-certified compounds with Certificates of Analysis. Free shipping over $200." canonicalPath="/" />
+      <SEOHead title="Revive Research" description="Shop third-party tested peptides for scientific research. GMP-certified compounds with Certificates of Analysis. Free shipping over $200." canonicalPath="/" />
       <HeroSection />
       {/* MolecularDNAVisual - hidden on mobile for performance */}
       <div className="hidden md:block">

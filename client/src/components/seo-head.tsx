@@ -20,7 +20,7 @@ export function SEOHead({
   const fullCanonicalUrl = `${canonicalDomain}${path}`;
 
   useEffect(() => {
-    const fullTitle = `${title} | Revive Research`;
+    const fullTitle = title === 'Revive Research' ? title : `${title} | Revive Research`;
     if (hasRun.current && document.title === fullTitle) {
       return;
     }
