@@ -493,7 +493,7 @@ export default function CartPage() {
 
             {crossSellProducts.length > 0 && (
               <div className="mt-6 pt-6 border-t border-border/50" data-testid="cart-cross-sell-section">
-                <h3 className="font-display text-lg font-semibold mb-1 flex items-center gap-2">
+                <h3 className="font-display font-semibold mb-1 flex items-center gap-2 text-[22px]">
                   <Zap className="h-5 w-5 text-[#22c55e]" />
                   Research Pairings
                 </h3>
