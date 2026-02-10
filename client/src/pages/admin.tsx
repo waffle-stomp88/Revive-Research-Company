@@ -5072,6 +5072,7 @@ function DiscountCodesTab() {
   const [editDiscountPercent, setEditDiscountPercent] = useState("10");
   const [editType, setEditType] = useState("promo");
   const [editFreeShipping, setEditFreeShipping] = useState(false);
+  const [showSystemCodes, setShowSystemCodes] = useState(false);
 
   const { data: discountCodes, isLoading } = useQuery<DiscountCode[]>({
     queryKey: ["/api/admin/discount-codes"],
@@ -5157,6 +5158,10 @@ function DiscountCodesTab() {
     },
   });
 
+  const isSystemCode = (code: DiscountCode) => code.code.startsWith("GRAD-");
+  const filteredCodes = discountCodes?.filter(c => showSystemCodes || !isSystemCode(c));
+  const systemCodeCount = discountCodes?.filter(isSystemCode).length || 0;
+
   const startEdit = (code: DiscountCode) => {
     setEditingId(code.id);
     setEditCode(code.code);
@@ -5193,6 +5198,19 @@ function DiscountCodesTab() {
           <p className="text-muted-foreground text-sm">
             Manage promo codes and affiliate discount codes
           </p>
+          {systemCodeCount > 0 && (
+            <div className="flex items-center gap-2 mt-1">
+              <Checkbox
+                id="show-system-codes"
+                checked={showSystemCodes}
+                onCheckedChange={(checked) => setShowSystemCodes(checked === true)}
+                data-testid="checkbox-show-system-codes"
+              />
+              <Label htmlFor="show-system-codes" className="text-xs text-muted-foreground cursor-pointer">
+                Show auto-generated codes ({systemCodeCount})
+              </Label>
+            </div>
+          )}
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
@@ -5372,7 +5390,7 @@ function DiscountCodesTab() {
         </DialogContent>
       </Dialog>
 
-      {!discountCodes || discountCodes.length === 0 ? (
+      {!filteredCodes || filteredCodes.length === 0 ? (
         <div className="text-center py-12">
           <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4">
             <Tag className="h-8 w-8 text-muted-foreground" />
@@ -5398,7 +5416,7 @@ function DiscountCodesTab() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {discountCodes.map((code) => (
+              {filteredCodes.map((code) => (
                 <TableRow key={code.id} data-testid={`row-discount-code-${code.id}`}>
                   <TableCell className="select-none">
                     <code className="font-mono font-bold text-sm bg-muted px-2 py-1 rounded">
