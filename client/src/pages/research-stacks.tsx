@@ -73,7 +73,7 @@ const researchStacks: ResearchStack[] = [
     stackPrice: 115,
     synergy: {
       beginner: "MOTS-C helps cells produce energy more efficiently at the mitochondrial level, while RR-A3 signals the body to use stored fat for fuel. Together, they target metabolism from two different angles—one at the cellular power plant, one at the hormonal control center.",
-      expert: "MOTS-C activates AMPK pathways and enhances mitochondrial biogenesis, while RR-A3 acts as a triple agonist (GLP-1/GIP/Glucagon receptors) modulating incretin signaling. This creates multi-target metabolic pathway activation: mitochondrial efficiency + peripheral insulin sensitivity + hepatic gluconeogenesis modulation."
+      expert: "MOTS-C activates AMPK pathways and enhances mitochondrial biogenesis, while RR-A3 acts as a triple agonist (Incretin/GIP/Glucagon receptors) modulating metabolic signaling. This creates multi-target metabolic pathway activation: mitochondrial efficiency + peripheral insulin sensitivity + hepatic gluconeogenesis modulation."
     }
   },
   {
@@ -137,7 +137,7 @@ const researchStacks: ResearchStack[] = [
     stackPrice: 169,
     synergy: {
       beginner: "This triple stack covers three major research areas: RR-A3 for metabolic hormone signaling, MOTS-C for cellular energy production, and BPC-157 for tissue repair. It's designed for advanced researchers who want to study how these different systems interact and influence each other.",
-      expert: "This triple-compound stack enables multi-pathway investigation: RR-A3 (GLP-1/GIP/GCGR triple agonist) for incretin and hepatic signaling, MOTS-C for mitochondrial biogenesis and AMPK activation, and BPC-157 for tissue regeneration via NO/GH pathways. The combination allows researchers to study cross-talk between metabolic, energetic, and regenerative signaling cascades in a single protocol."
+      expert: "This triple-compound stack enables multi-pathway investigation: RR-A3 (Incretin/GIP/GCGR triple agonist) for metabolic and hepatic signaling, MOTS-C for mitochondrial biogenesis and AMPK activation, and BPC-157 for tissue regeneration via NO/GH pathways. The combination allows researchers to study cross-talk between metabolic, energetic, and regenerative signaling cascades in a single protocol."
     }
   },
 ];
@@ -348,7 +348,7 @@ const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
   },
   "rr-a3": {
     name: "RR-A3",
-    pathways: ["GLP-1", "GIP", "Glucagon"],
+    pathways: ["Incretin Receptor", "GIP", "Glucagon"],
     mechanisms: ["Triple receptor agonist", "Insulin sensitivity", "Fat oxidation"],
     systems: ["Metabolic", "Weight"],
   },
@@ -465,7 +465,7 @@ const PATHWAY_DESCRIPTIONS: Record<string, string> = {
   "Matrix Remodeling": "Restructuring of extracellular matrix for tissue regeneration",
   "AMPK Activation": "Master metabolic switch for energy production and fat burning",
   "Mitochondrial Biogenesis": "Creation of new mitochondria for cellular energy",
-  "GLP-1": "Incretin hormone pathway for appetite and glucose control",
+  "Incretin Receptor": "Incretin hormone pathway for appetite and glucose control",
   "GIP": "Gastric inhibitory peptide for enhanced insulin sensitivity",
   "Glucagon": "Counter-regulatory hormone for fat mobilization",
   "Ghrelin Receptor": "Growth hormone secretagogue receptor activation",
@@ -688,7 +688,7 @@ const PEPTIDE_PAIRINGS: Record<string, { partner: string; reason: string; boost:
   "rr-a3": [
     { partner: "mots-c", reason: "Triple agonist + mitochondrial activator", boost: "Metabolic" },
     { partner: "5-amino-1mq", reason: "Fat metabolism through complementary pathways", boost: "Metabolic" },
-    { partner: "aod-9604", reason: "GLP-1 signaling + targeted fat reduction", boost: "Metabolic" },
+    { partner: "aod-9604", reason: "Incretin signaling + targeted fat reduction", boost: "Metabolic" },
   ],
   "ipamorelin": [
     { partner: "cjc-1295", reason: "GH pulse + sustained release — the gold standard GH stack", boost: "Growth" },
