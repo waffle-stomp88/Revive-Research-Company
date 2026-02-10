@@ -55,13 +55,28 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
 
   const isLoading = productsLoading || articlesLoading;
 
+  const BLOCKED_SEARCH_TERMS = [
+    "glp-1", "glp1", "glp 1",
+    "semaglutide", "tirzepatide", "retatrutide",
+    "ozempic", "wegovy", "rybelsus",
+    "mounjaro", "zepbound",
+    "liraglutide", "saxenda", "victoza",
+    "dulaglutide", "trulicity",
+  ];
+
+  const isBlockedQuery = (q: string) => {
+    const lower = q.toLowerCase().trim();
+    return BLOCKED_SEARCH_TERMS.some(term => lower.includes(term));
+  };
+
   // Extract unique categories from products
   const productCategories = Array.from(
     new Set(products?.map(p => p.category || "Other").filter(Boolean) || [])
   ).sort();
 
-  // Filter products - match at word boundaries to avoid substring matches
-  const filteredProducts = products?.filter(product => {
+  const blocked = isBlockedQuery(query);
+
+  const filteredProducts = blocked ? [] : products?.filter(product => {
     if (typeFilter !== "all" && typeFilter !== "product") return false;
     if (categoryFilter && product.category !== categoryFilter) return false;
     if (inStockOnly && !product.inStock) return false;
@@ -70,13 +85,11 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
     const name = product.name.toLowerCase();
     const description = product.shortDescription?.toLowerCase() || "";
     
-    // Match if search term is at the start of a word (word boundary)
     const wordBoundaryRegex = new RegExp(`\\b${searchStr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`);
     return wordBoundaryRegex.test(name) || wordBoundaryRegex.test(description);
   }).map(p => ({ ...p, id: p.id, type: "product" as const })).slice(0, 4) || [];
 
-  // Filter articles - only match title or summary (not full content to avoid false matches)
-  const filteredArticles = articles?.filter(article => {
+  const filteredArticles = blocked ? [] : articles?.filter(article => {
     if (typeFilter !== "all" && typeFilter !== "article") return false;
 
     const searchStr = query.toLowerCase();
@@ -92,7 +105,7 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
     category: a.category || "Article"
   })).slice(0, 4) || [];
 
-  const filteredPages = siteResources
+  const filteredPages = blocked ? [] : siteResources
     .filter(page => {
       if (typeFilter !== "all" && typeFilter !== "page") return false;
       return page.title.toLowerCase().includes(query.toLowerCase()) ||
