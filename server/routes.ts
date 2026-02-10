@@ -3880,8 +3880,7 @@ Return ONLY valid JSON in this exact format:
       const totalLessons = 17;
       const isGraduate = completedCount >= totalLessons;
 
-      // Check if user already has a graduate discount code
-      const existingCode = await storage.getDiscountCodeByCode(`GRAD-${userId.substring(0, 8).toUpperCase()}`);
+      const existingCode = await storage.getGraduateDiscountForUser(userId);
 
       res.json({
         isGraduate,
@@ -3907,15 +3906,21 @@ Return ONLY valid JSON in this exact format:
         return res.status(400).json({ error: "You must complete all 17 Academy lessons to claim this reward." });
       }
 
-      const codeStr = `GRAD-${userId.substring(0, 8).toUpperCase()}`;
-      const existing = await storage.getDiscountCodeByCode(codeStr);
+      const existing = await storage.getGraduateDiscountForUser(userId);
       if (existing) {
         return res.json({ discountCode: existing.code, discountPercent: Number(existing.discountPercent), alreadyClaimed: true });
       }
 
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let randomPart = "";
+      for (let i = 0; i < 6; i++) {
+        randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      const codeStr = `GRAD-${randomPart}`;
+
       const newCode = await storage.createDiscountCode({
         code: codeStr,
-        description: `Peptide Academy Graduate reward for user ${userId}`,
+        description: `Academy Graduate: ${userId}`,
         discountPercent: "15.00",
         type: "promo",
         freeShipping: false,

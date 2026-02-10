@@ -226,6 +226,7 @@ export interface IStorage {
   getAllDiscountCodes(): Promise<DiscountCode[]>;
   getDiscountCode(id: string): Promise<DiscountCode | undefined>;
   getDiscountCodeByCode(code: string): Promise<DiscountCode | undefined>;
+  getGraduateDiscountForUser(userId: string): Promise<DiscountCode | undefined>;
   createDiscountCode(code: InsertDiscountCode): Promise<DiscountCode>;
   updateDiscountCode(id: string, data: Partial<InsertDiscountCode>): Promise<DiscountCode | undefined>;
   toggleDiscountCodeActive(id: string, isActive: boolean): Promise<DiscountCode | undefined>;
@@ -1300,6 +1301,12 @@ export class DatabaseStorage implements IStorage {
     const [discountCode] = await db.select().from(discountCodes)
       .where(eq(discountCodes.code, code.toUpperCase()));
     return discountCode || undefined;
+  }
+
+  async getGraduateDiscountForUser(userId: string): Promise<DiscountCode | undefined> {
+    const [code] = await db.select().from(discountCodes)
+      .where(ilike(discountCodes.description, `Academy Graduate:%${userId}`));
+    return code || undefined;
   }
   
   async createDiscountCode(codeData: InsertDiscountCode): Promise<DiscountCode> {
