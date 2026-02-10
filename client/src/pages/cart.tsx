@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -81,6 +82,8 @@ export default function CartPage() {
     );
     return { ...s, product: product };
   }).filter(s => s.product && s.product.inStock);
+  const [crossSellDosages, setCrossSellDosages] = useState<Record<string, string>>({});
+
   const [appliedDiscount, setAppliedDiscount] = useState<AppliedDiscount | null>(() => {
     const saved = localStorage.getItem("appliedDiscount");
     return saved ? JSON.parse(saved) : null;
@@ -382,54 +385,88 @@ export default function CartPage() {
                   Based on what's in your cart, these compounds share complementary mechanisms.
                 </p>
                 <div className="space-y-3">
-                  {crossSellProducts.map(({ product: suggestedProduct, reason, forProduct }) => (
-                    <Card key={suggestedProduct!.id} className="p-3 border-[#22c55e]/20" data-testid={`card-cross-sell-${suggestedProduct!.id}`}>
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded bg-muted flex-shrink-0">
-                          <img
-                            src={suggestedProduct!.imageUrl || productImage}
-                            alt={suggestedProduct!.name}
-                            className="w-full h-full object-contain p-1"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <p className="font-semibold text-sm">{suggestedProduct!.name}</p>
-                            <span className="text-xs font-semibold text-[#E7FB10]">
-                              ${Number(suggestedProduct!.price).toFixed(2)}
-                            </span>
+                  {crossSellProducts.map(({ product: suggestedProduct, reason, forProduct }) => {
+                    const productId = String(suggestedProduct!.id);
+                    const dosageOpts = suggestedProduct!.dosageOptions || [];
+                    const selectedDosage = crossSellDosages[productId] || dosageOpts[0] || "";
+                    const hasDosageOptions = dosageOpts.length > 1;
+
+                    const dosageMultipliers: Record<string, number> = {
+                      "10mg": 1.0, "15mg": 1.25, "20mg": 1.50,
+                    };
+                    const basePrice = Number(suggestedProduct!.price);
+                    const selectedMultiplier = dosageMultipliers[selectedDosage] || 1.0;
+                    const displayPrice = basePrice * selectedMultiplier;
+
+                    return (
+                      <Card key={suggestedProduct!.id} className="p-3 border-[#22c55e]/20" data-testid={`card-cross-sell-${suggestedProduct!.id}`}>
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 rounded bg-muted flex-shrink-0">
+                            <img
+                              src={suggestedProduct!.imageUrl || productImage}
+                              alt={suggestedProduct!.name}
+                              className="w-full h-full object-contain p-1"
+                            />
                           </div>
-                          <p className="text-[10px] text-muted-foreground mt-0.5">
-                            Pairs with {forProduct}: {reason}
-                          </p>
-                          <div className="flex items-center gap-2 mt-2">
-                            <Link href={`/peptides/${suggestedProduct!.slug || suggestedProduct!.id}`}>
-                              <Button variant="ghost" size="sm" className="text-xs h-7 px-2" data-testid={`button-cross-sell-view-${suggestedProduct!.id}`}>
-                                Details
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p className="font-semibold text-sm">{suggestedProduct!.name}</p>
+                              <span className="text-xs font-semibold text-[#E7FB10]" data-testid={`text-cross-sell-price-${suggestedProduct!.id}`}>
+                                ${displayPrice.toFixed(2)}
+                              </span>
+                            </div>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">
+                              Pairs with {forProduct}: {reason}
+                            </p>
+                            <div className="flex items-center gap-2 mt-2 flex-wrap">
+                              {hasDosageOptions && (
+                                <Select
+                                  value={selectedDosage}
+                                  onValueChange={(val) => setCrossSellDosages(prev => ({ ...prev, [productId]: val }))}
+                                >
+                                  <SelectTrigger className="h-7 w-[80px] text-xs" data-testid={`select-cross-sell-dosage-${suggestedProduct!.id}`}>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {dosageOpts.map((d: string) => (
+                                      <SelectItem key={d} value={d} data-testid={`option-dosage-${suggestedProduct!.id}-${d}`}>
+                                        {d}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              )}
+                              {!hasDosageOptions && dosageOpts[0] && (
+                                <Badge variant="outline" className="text-xs h-7 px-2">{dosageOpts[0]}</Badge>
+                              )}
+                              <Link href={`/peptides/${suggestedProduct!.slug || suggestedProduct!.id}`}>
+                                <Button variant="ghost" size="sm" className="text-xs h-7 px-2" data-testid={`button-cross-sell-view-${suggestedProduct!.id}`}>
+                                  Details
+                                </Button>
+                              </Link>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-xs h-7 px-2 border-[#22c55e]/30 text-[#22c55e]"
+                                onClick={() => addToCart({
+                                  productId,
+                                  name: suggestedProduct!.name,
+                                  price: displayPrice,
+                                  quantity: 1,
+                                  dosage: selectedDosage,
+                                  image: suggestedProduct!.imageUrl || undefined,
+                                })}
+                                data-testid={`button-cross-sell-add-${suggestedProduct!.id}`}
+                              >
+                                <Plus className="h-3 w-3 mr-1" />
+                                Add
                               </Button>
-                            </Link>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="text-xs h-7 px-2 border-[#22c55e]/30 text-[#22c55e]"
-                              onClick={() => addToCart({
-                                productId: String(suggestedProduct!.id),
-                                name: suggestedProduct!.name,
-                                price: Number(suggestedProduct!.price),
-                                quantity: 1,
-                                dosage: suggestedProduct!.dosageOptions?.[0] || "",
-                                image: suggestedProduct!.imageUrl || undefined,
-                              })}
-                              data-testid={`button-cross-sell-add-${suggestedProduct!.id}`}
-                            >
-                              <Plus className="h-3 w-3 mr-1" />
-                              Add
-                            </Button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </Card>
-                  ))}
+                      </Card>
+                    );
+                  })}
                 </div>
               </div>
             )}
