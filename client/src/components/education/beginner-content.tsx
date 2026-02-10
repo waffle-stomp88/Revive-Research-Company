@@ -171,7 +171,7 @@ This is a great example of how understanding a molecule's structure lets scienti
 
 **Cardiovascular Effects** - There's research into how GLP-1 agonists might affect heart and blood vessel function.
 
-**Comparative Studies** - Researchers compare semaglutide with newer dual and triple agonists (like tirzepatide and retatrutide) to understand how targeting additional receptors changes the response.
+**Comparative Studies** - Researchers compare semaglutide with newer dual and triple agonists (like tirzepatide and RR-A3) to understand how targeting additional receptors changes the response.
 
 The extensive research on semaglutide has made it a foundational peptide for understanding incretin-based metabolic pathways.`
       }
@@ -222,10 +222,10 @@ Tirzepatide represents a shift from single-target to multi-target approaches in 
     takeaway: "Tirzepatide activates two gut hormone receptors (GLP-1 and GIP) instead of just one. This dual approach lets researchers study how these complementary metabolic pathways work together."
   },
 
-  "what-is-retatrutide-peptide": {
+  "what-is-rr-a3-peptide": {
     icon: Flame,
     iconColor: "#f97316",
-    intro: `Retatrutide is the newest generation of metabolic peptides - a triple agonist that activates GLP-1, GIP, AND glucagon receptors. While semaglutide targets one receptor and tirzepatide targets two, retatrutide targets three, representing the cutting edge of incretin research.`,
+    intro: `RR-A3 is the newest generation of metabolic peptides - a triple agonist that activates GLP-1, GIP, AND glucagon receptors. While semaglutide targets one receptor and tirzepatide targets two, RR-A3 targets three, representing the cutting edge of incretin research.`,
     sections: [
       {
         title: "Why Add Glucagon?",
@@ -243,7 +243,7 @@ By adding controlled glucagon receptor activation to GLP-1 and GIP activation, r
       },
       {
         title: "The Triple Agonist Approach",
-        content: `Retatrutide activates three receptors with carefully balanced activity:
+        content: `RR-A3 activates three receptors with carefully balanced activity:
 
 **GLP-1** - The familiar pathway affecting insulin, appetite, and digestion.
 
@@ -253,11 +253,11 @@ By adding controlled glucagon receptor activation to GLP-1 and GIP activation, r
 
 The challenge for scientists was designing a single molecule that could engage all three receptors appropriately. Too much glucagon activity could cause problems; too little would negate the benefits of adding it.
 
-Retatrutide represents years of molecular engineering to achieve a specific activity profile across all three targets.`
+RR-A3 represents years of molecular engineering to achieve a specific activity profile across all three targets.`
       },
       {
         title: "Current Research Focus",
-        content: `As the newest of the incretin agonists, retatrutide research is actively expanding:
+        content: `As the newest of the incretin agonists, RR-A3 research is actively expanding:
 
 **Comparative Studies** - How do triple agonist effects compare to dual and single agonists? Early research suggests potentially additive benefits.
 
@@ -267,10 +267,10 @@ Retatrutide represents years of molecular engineering to achieve a specific acti
 
 **Optimization** - Finding the right balance of activity at each receptor remains an active area of investigation.
 
-Retatrutide represents where the field of incretin research is heading - toward multi-target approaches that address metabolism from multiple angles simultaneously.`
+RR-A3 represents where the field of incretin research is heading - toward multi-target approaches that address metabolism from multiple angles simultaneously.`
       }
     ],
-    takeaway: "Retatrutide is a triple agonist targeting GLP-1, GIP, and glucagon receptors. Adding glucagon brings energy expenditure and fat breakdown pathways into the research picture, creating a more comprehensive metabolic research tool."
+    takeaway: "RR-A3 is a triple agonist targeting GLP-1, GIP, and glucagon receptors. Adding glucagon brings energy expenditure and fat breakdown pathways into the research picture, creating a more comprehensive metabolic research tool."
   },
 
   "what-is-cjc-1295-peptide": {

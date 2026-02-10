@@ -41,7 +41,7 @@ const peptideComparison: ReceptorData[] = [
     keyFeature: "Imbalanced agonism for synergy"
   },
   {
-    name: "Retatrutide",
+    name: "RR-A3",
     type: "Triple Agonist",
     color: "#ec4899",
     receptors: [
@@ -202,7 +202,7 @@ export function GLP1ReceptorComparison() {
             <Info className="h-4 w-4 text-[#21d8ff] mt-0.5 flex-shrink-0" />
             <div className="text-sm text-muted-foreground">
               <strong className="text-foreground">Research context:</strong> Each additional 
-              receptor target adds distinct signaling pathways. Triple agonists like Retatrutide 
+              receptor target adds distinct signaling pathways. Triple agonists like RR-A3 
               combine GLP-1 incretin modulation, GIP pathway activation, and glucagon receptor 
               signaling for multi-pathway research applications.
             </div>

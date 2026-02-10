@@ -185,6 +185,9 @@ function Router() {
         <Route path="/lab-notes">{() => { window.location.replace("/guides/peptide-lab-research-archive"); return null; }}</Route>
         <Route path="/dosage-calculator">{() => { window.location.replace("/tools/peptide-reconstitution-calculator"); return null; }}</Route>
         <Route path="/resources">{() => { window.location.replace("/peptide-research-resources"); return null; }}</Route>
+        <Route path="/peptides/retatrutide">{() => { window.location.replace("/peptides/rr-a3"); return null; }}</Route>
+        <Route path="/products/retatrutide">{() => { window.location.replace("/products/rr-a3"); return null; }}</Route>
+        <Route path="/guides/what-is-retatrutide-peptide">{() => { window.location.replace("/guides/what-is-rr-a3-peptide"); return null; }}</Route>
         
         <Route component={NotFound} />
       </Switch>

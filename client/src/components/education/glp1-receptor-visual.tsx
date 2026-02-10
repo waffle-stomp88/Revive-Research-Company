@@ -232,8 +232,8 @@ const peptideProfiles = [
     benefits: ['Enhanced glycemic effects', 'Weight research', 'Metabolic studies']
   },
   {
-    id: 'retatrutide',
-    name: 'Retatrutide',
+    id: 'rr-a3',
+    name: 'RR-A3',
     type: 'Triple Agonist',
     receptors: ['glp1', 'gip', 'glucagon'],
     color: '#ec4899',

@@ -82,7 +82,7 @@ const goalToCompounds: Record<ResearchGoal, string[]> = {
   performance: ["CJC-1295 w/ DAC", "CJC-1295 (No DAC)", "Ipamorelin", "IGF-1 LR3", "Sermorelin", "Tesamorelin", "MGF"],
   skin: ["GHK-Cu", "GLOW Peptide Complex", "Snap-8", "BPC-157", "Hyaluronic Acid"],
   immune: ["Thymosin Alpha-1", "LL-37", "Thymalin"],
-  metabolic: ["Retatrutide", "AOD-9604", "5-Amino-1MQ", "MOTS-c", "Mazdutide", "Survodutide", "Cagrilintide"],
+  metabolic: ["RR-A3", "AOD-9604", "5-Amino-1MQ", "MOTS-c", "Mazdutide", "Survodutide", "Cagrilintide"],
   sleep: ["DSIP", "Melatonin", "Epithalon", "Selank"],
 };
 
@@ -117,7 +117,7 @@ function getRecommendations(answers: QuizAnswers, products: Product[]) {
   }
 
   if (answers.experience === "new") {
-    const beginner = ["BPC-157", "GHK-Cu", "Ipamorelin", "Selank", "MOTS-c", "Melatonin", "Epithalon", "AOD-9604", "Retatrutide"];
+    const beginner = ["BPC-157", "GHK-Cu", "Ipamorelin", "Selank", "MOTS-c", "Melatonin", "Epithalon", "AOD-9604", "RR-A3"];
     candidates.sort((a, b) => {
       const aB = beginner.includes(a.name) ? 0 : 1;
       const bB = beginner.includes(b.name) ? 0 : 1;
@@ -177,7 +177,7 @@ function getWhyText(goal: ResearchGoal, productName: string): string {
       "Thymalin": "Thymic polypeptide studied for immune system modulation.",
     },
     metabolic: {
-      "Retatrutide": "Triple-agonist targeting GLP-1, GIP, and glucagon receptors simultaneously.",
+      "RR-A3": "Triple-agonist targeting GLP-1, GIP, and glucagon receptors simultaneously.",
       "AOD-9604": "HGH fragment studied for lipolytic pathway interactions.",
       "5-Amino-1MQ": "Small molecule studied for NNMT enzyme interactions in metabolic research.",
       "MOTS-c": "Mitochondrial peptide studied for metabolic regulation and AMPK activation.",

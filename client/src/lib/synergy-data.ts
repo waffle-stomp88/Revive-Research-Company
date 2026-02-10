@@ -123,7 +123,7 @@ export const KNOWN_STACKS: KnownStack[] = [
   },
   {
     name: "Energy Stack",
-    peptides: ["mots-c", "retatrutide"],
+    peptides: ["mots-c", "rr-a3"],
     icon: Activity,
     color: "#E7FB10",
     description: "Mitochondrial power + metabolic signaling",
@@ -139,7 +139,7 @@ export const KNOWN_STACKS: KnownStack[] = [
   },
   {
     name: "Metabolic Reset",
-    peptides: ["retatrutide", "bpc-157"],
+    peptides: ["rr-a3", "bpc-157"],
     icon: RefreshCw,
     color: "#10b981",
     description: "GLP-1/GIP/glucagon triple receptor agonism + gut cytoprotection \u2014 BPC-157 supports GI comfort during metabolic compound research",
@@ -147,7 +147,7 @@ export const KNOWN_STACKS: KnownStack[] = [
   },
   {
     name: "Dual Metabolic",
-    peptides: ["retatrutide", "aod-9604"],
+    peptides: ["rr-a3", "aod-9604"],
     icon: Flame,
     color: "#f97316",
     description: "GLP-1/GIP/glucagon triple agonist + targeted lipolysis fragment",
@@ -155,7 +155,7 @@ export const KNOWN_STACKS: KnownStack[] = [
   },
   {
     name: "Metabolic Optimizer",
-    peptides: ["retatrutide", "tesamorelin"],
+    peptides: ["rr-a3", "tesamorelin"],
     icon: Target,
     color: "#eab308",
     description: "Triple receptor metabolic control + visceral fat-targeting GHRH analog",
@@ -315,7 +315,7 @@ export const KNOWN_STACKS: KnownStack[] = [
   },
   {
     name: "Weight Management Pro",
-    peptides: ["cagrilintide", "retatrutide"],
+    peptides: ["cagrilintide", "rr-a3"],
     icon: Target,
     color: "#16a34a",
     description: "Amylin analog appetite control + triple metabolic receptor agonist",
@@ -748,8 +748,8 @@ export const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
     mechanisms: ["PGC-1α pathway", "Metabolic regulation", "Energy production"],
     systems: ["Metabolic", "Energy", "Longevity"],
   },
-  "retatrutide": {
-    name: "Retatrutide",
+  "rr-a3": {
+    name: "RR-A3",
     pathways: ["GLP-1", "GIP", "Glucagon"],
     mechanisms: ["Triple receptor agonist", "Insulin sensitivity", "Fat oxidation"],
     systems: ["Metabolic", "Weight", "Fat Loss"],

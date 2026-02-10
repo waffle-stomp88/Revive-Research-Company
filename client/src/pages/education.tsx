@@ -118,7 +118,7 @@ const articleVisuals: Record<string, () => JSX.Element> = {
   "what-is-epithalon-peptide": () => <EpithalonTelomeraseVisual />,
   "what-is-semaglutide-peptide": () => <GLP1ReceptorVisual />,
   "what-is-tirzepatide-peptide": () => <GLP1ReceptorVisual />,
-  "what-is-retatrutide-peptide": () => <GLP1ReceptorVisual />,
+  "what-is-rr-a3-peptide": () => <GLP1ReceptorVisual />,
   "what-is-cjc-1295-peptide": () => <CJC1295AlbuminVisual />,
   "what-is-ipamorelin-peptide": () => <IpamorelinSelectivityVisual />,
   "what-is-tesamorelin-peptide": () => <TesomorelinPulseVisual />,
@@ -249,7 +249,7 @@ const TRUST_GUIDES = [
 
 const peptideGroups = [
   { id: "all", label: "All Peptides", color: "#ec4899" },
-  { id: "metabolic", label: "Metabolic / GLP-1", color: "#E7FB10", slugs: ["semaglutide", "tirzepatide", "retatrutide", "aod-9604", "5-amino-1mq", "slu-pp-332"] },
+  { id: "metabolic", label: "Metabolic / GLP-1", color: "#E7FB10", slugs: ["semaglutide", "tirzepatide", "rr-a3", "aod-9604", "5-amino-1mq", "slu-pp-332"] },
   { id: "growth-hormone", label: "Growth Hormone", color: "#21d8ff", slugs: ["cjc-1295", "ipamorelin", "tesamorelin", "igf-1-lr3"] },
   { id: "tissue-repair", label: "Tissue Repair", color: "#22c55e", slugs: ["bpc-157", "tb-500"] },
   { id: "skin-regeneration", label: "Skin & Regeneration", color: "#ec4899", slugs: ["ghk-cu", "glow-peptide-complex", "klow-peptide-complex", "melanotan"] },

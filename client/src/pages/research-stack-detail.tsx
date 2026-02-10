@@ -97,10 +97,10 @@ const researchStacksData: Record<string, ResearchStack> = {
     name: "Metabolic Pathway Research Stack",
     subtitle: "Triple-Pathway Research Bundle",
     description: "Explore incretin signaling and mitochondrial function pathways with this comprehensive metabolic research combination.",
-    longDescription: "This stack hits metabolism from two independent angles. MOTS-C enhances cellular energy production by activating AMPK and driving mitochondrial biogenesis \u2014 essentially making each cell more efficient at producing energy. Retatrutide activates GLP-1, GIP, and glucagon receptors simultaneously as a triple agonist, managing appetite signaling, insulin sensitivity, and fat oxidation at the hormonal level. One works at the cellular powerhouse, the other at the hormonal control center.",
+    longDescription: "This stack hits metabolism from two independent angles. MOTS-C enhances cellular energy production by activating AMPK and driving mitochondrial biogenesis \u2014 essentially making each cell more efficient at producing energy. RR-A3 activates GLP-1, GIP, and glucagon receptors simultaneously as a triple agonist, managing appetite signaling, insulin sensitivity, and fat oxidation at the hormonal level. One works at the cellular powerhouse, the other at the hormonal control center.",
     peptides: [
       { name: "MOTS-C", description: "Mitochondrial-derived peptide studied for cellular energy metabolism pathways" },
-      { name: "Retatrutide", description: "Triple-agonist compound for incretin and glucagon receptor pathway research" },
+      { name: "RR-A3", description: "Triple-agonist compound for incretin and glucagon receptor pathway research" },
     ],
     keyBenefits: [
       "Multi-target metabolic pathway investigation",
@@ -117,7 +117,7 @@ const researchStacksData: Record<string, ResearchStack> = {
     storageGuide: "Maintain 2-8°C (36-46°F) for optimal stability. Store away from direct sunlight.",
     educationLinks: [
       { peptideName: "MOTS-C", articleUrl: "/guides/what-is-mots-c-peptide", articleTitle: "MOTS-C: Mitochondrial Pathway Research" },
-      { peptideName: "Retatrutide", articleUrl: "/guides/what-is-retatrutide-peptide", articleTitle: "Retatrutide: Triple Agonist Overview" },
+      { peptideName: "RR-A3", articleUrl: "/guides/what-is-rr-a3-peptide", articleTitle: "RR-A3: Triple Agonist Overview" },
     ],
     icon: "Zap",
     color: "#E7FB10",
@@ -126,8 +126,8 @@ const researchStacksData: Record<string, ResearchStack> = {
     retailValue: 135,
     stackPrice: 115,
     synergy: {
-      beginner: "MOTS-C helps cells produce energy more efficiently at the mitochondrial level, while Retatrutide signals the body to use stored fat for fuel. Together, they target metabolism from two different angles—one at the cellular power plant, one at the hormonal control center.",
-      expert: "MOTS-C activates AMPK pathways and enhances mitochondrial biogenesis, while Retatrutide acts as a triple agonist (GLP-1/GIP/Glucagon receptors) modulating incretin signaling. This creates multi-target metabolic pathway activation: mitochondrial efficiency + peripheral insulin sensitivity + hepatic gluconeogenesis modulation."
+      beginner: "MOTS-C helps cells produce energy more efficiently at the mitochondrial level, while RR-A3 signals the body to use stored fat for fuel. Together, they target metabolism from two different angles—one at the cellular power plant, one at the hormonal control center.",
+      expert: "MOTS-C activates AMPK pathways and enhances mitochondrial biogenesis, while RR-A3 acts as a triple agonist (GLP-1/GIP/Glucagon receptors) modulating incretin signaling. This creates multi-target metabolic pathway activation: mitochondrial efficiency + peripheral insulin sensitivity + hepatic gluconeogenesis modulation."
     }
   },
   "cellular-optimization-stack": {
@@ -245,9 +245,9 @@ const researchStacksData: Record<string, ResearchStack> = {
     name: "Elite Pathway Triple Stack",
     subtitle: "Advanced Multi-Mechanism Bundle",
     description: "Our most comprehensive research stack covering three major mechanism categories.",
-    longDescription: "Three compounds targeting three independent signaling cascades. Retatrutide activates GLP-1, GIP, and glucagon receptors simultaneously for hormonal metabolic control. MOTS-C activates AMPK for mitochondrial biogenesis and cellular energy production. BPC-157 provides tissue-level cytoprotection via VEGF upregulation and NO modulation \u2014 including gut lining support during metabolic compound research. The combination enables cross-talk investigation between metabolic, energetic, and regenerative signaling.",
+    longDescription: "Three compounds targeting three independent signaling cascades. RR-A3 activates GLP-1, GIP, and glucagon receptors simultaneously for hormonal metabolic control. MOTS-C activates AMPK for mitochondrial biogenesis and cellular energy production. BPC-157 provides tissue-level cytoprotection via VEGF upregulation and NO modulation \u2014 including gut lining support during metabolic compound research. The combination enables cross-talk investigation between metabolic, energetic, and regenerative signaling.",
     peptides: [
-      { name: "Retatrutide", description: "Triple-agonist for GIP, GLP-1, and glucagon receptor pathway research" },
+      { name: "RR-A3", description: "Triple-agonist for GIP, GLP-1, and glucagon receptor pathway research" },
       { name: "MOTS-C", description: "Mitochondrial peptide for cellular energy and metabolism studies" },
       { name: "BPC-157", description: "Extensively documented peptide for tissue mechanism research" },
     ],
@@ -265,7 +265,7 @@ const researchStacksData: Record<string, ResearchStack> = {
     ],
     storageGuide: "Maintain 2-8°C (36-46°F) storage conditions for all three compounds. Handle with appropriate research protocols.",
     educationLinks: [
-      { peptideName: "Retatrutide", articleUrl: "/guides/what-is-retatrutide-peptide", articleTitle: "Retatrutide: Advanced Multi-Target Research" },
+      { peptideName: "RR-A3", articleUrl: "/guides/what-is-rr-a3-peptide", articleTitle: "RR-A3: Advanced Multi-Target Research" },
       { peptideName: "MOTS-C", articleUrl: "/guides/what-is-mots-c-peptide", articleTitle: "MOTS-C: Advanced Metabolic Pathways" },
       { peptideName: "BPC-157", articleUrl: "/guides/what-is-bpc-157-peptide", articleTitle: "BPC-157: Advanced Tissue Mechanisms" },
     ],
@@ -276,8 +276,8 @@ const researchStacksData: Record<string, ResearchStack> = {
     retailValue: 200,
     stackPrice: 169,
     synergy: {
-      beginner: "This triple stack covers three major research areas: Retatrutide for metabolic hormone signaling, MOTS-C for cellular energy production, and BPC-157 for tissue repair. It's designed for advanced researchers who want to study how these different systems interact and influence each other.",
-      expert: "This triple-compound stack enables multi-pathway investigation: Retatrutide (GLP-1/GIP/GCGR triple agonist) for incretin and hepatic signaling, MOTS-C for mitochondrial biogenesis and AMPK activation, and BPC-157 for tissue regeneration via NO/GH pathways. The combination allows researchers to study cross-talk between metabolic, energetic, and regenerative signaling cascades in a single protocol."
+      beginner: "This triple stack covers three major research areas: RR-A3 for metabolic hormone signaling, MOTS-C for cellular energy production, and BPC-157 for tissue repair. It's designed for advanced researchers who want to study how these different systems interact and influence each other.",
+      expert: "This triple-compound stack enables multi-pathway investigation: RR-A3 (GLP-1/GIP/GCGR triple agonist) for incretin and hepatic signaling, MOTS-C for mitochondrial biogenesis and AMPK activation, and BPC-157 for tissue regeneration via NO/GH pathways. The combination allows researchers to study cross-talk between metabolic, energetic, and regenerative signaling cascades in a single protocol."
     }
   },
 };

@@ -4,7 +4,7 @@ export const MANUFACTURER_PRODUCT_IDS: Record<string, { product: string; dosage:
   "BC10": { product: "BPC-157", dosage: "10mg" },
   "CU50": { product: "GHK-Cu", dosage: "50mg" },
   "MS10": { product: "MOTS-c", dosage: "10mg" },
-  "RT10": { product: "Retatrutide", dosage: "10mg" },
+  "RT10": { product: "RR-A3", dosage: "10mg" },
   "BT5": { product: "TB-500", dosage: "5mg" },
 };
 
@@ -15,7 +15,7 @@ export const PRODUCT_TO_MFG_ID: Record<string, string> = {
   "GHK-Cu|50mg": "CU50",
   "GHK-Cu|50MG": "CU50",
   "MOTS-c|10mg": "MS10",
-  "Retatrutide|10mg": "RT10",
+  "RR-A3|10mg": "RT10",
   "TB-500|5mg": "BT5",
 };
 

@@ -3276,7 +3276,7 @@ Revive Research specializes in premium peptide research compounds for laboratory
 ${productInfo}
 
 Product Categories:
-- Peptides: BPC-157 (10mg), TB-500 (5mg), GHK-Cu (50mg), MOTS-c (10mg), Retatrutide (10mg), and more
+- Peptides: BPC-157 (10mg), TB-500 (5mg), GHK-Cu (50mg), MOTS-c (10mg), RR-A3 (10mg), and more
 - Supplies: Bacteriostatic Water in 3mL and 10mL sizes
 - Research Stacks: Pre-built bundles of complementary peptides with bundle pricing savings
 - Custom Stacks: Build-your-own bundles of 2-4 peptides (no discount — the value is the AI-powered synergy analysis and research pathway insights)
@@ -3297,12 +3297,12 @@ Current Manufacturer Product IDs:
 | BC10 | BPC-157 | 10mg |
 | CU50 | GHK-Cu | 50mg |
 | MS10 | MOTS-c | 10mg |
-| RT10 | Retatrutide | 10mg |
+| RT10 | RR-A3 | 10mg |
 | BT5 | TB-500 | 5mg |
 
 Examples:
-- RT10-2601A = First batch of Retatrutide 10mg, January 2026
-- RT10-2601B = Second batch of Retatrutide 10mg, January 2026
+- RT10-2601A = First batch of RR-A3 10mg, January 2026
+- RT10-2601B = Second batch of RR-A3 10mg, January 2026
 - BC10-2602A = First batch of BPC-157 10mg, February 2026
 - BA3-2601A = First batch of Bac Water 3mL, January 2026
 
@@ -4519,7 +4519,7 @@ Return ONLY valid JSON in this exact format:
         { url: "/guides/what-is-ghk-cu-peptide", priority: "0.7", changefreq: "monthly" },
         { url: "/guides/what-is-semaglutide-peptide", priority: "0.7", changefreq: "monthly" },
         { url: "/guides/what-is-tirzepatide-peptide", priority: "0.7", changefreq: "monthly" },
-        { url: "/guides/what-is-retatrutide-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-rr-a3-peptide", priority: "0.7", changefreq: "monthly" },
         { url: "/guides/what-is-cjc-1295-peptide", priority: "0.7", changefreq: "monthly" },
         { url: "/guides/what-is-ipamorelin-peptide", priority: "0.7", changefreq: "monthly" },
         { url: "/guides/what-is-tesamorelin-peptide", priority: "0.7", changefreq: "monthly" },

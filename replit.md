@@ -104,7 +104,7 @@ The batch number system uses manufacturer product IDs combined with production d
 | BC10  | BPC-157 | 10mg |
 | CU50  | GHK-Cu | 50mg |
 | MS10  | MOTS-c | 10mg |
-| RT10  | Retatrutide | 10mg |
+| RT10  | RR-A3 | 10mg |
 | BT5   | TB-500 | 5mg |
 
 ### Batch Number Components
@@ -114,8 +114,8 @@ The batch number system uses manufacturer product IDs combined with production d
 - **Cycle**: Letter starting at A, incrementing per production run that month (A, B, C...)
 
 ### Examples
-- `RT10-2601A` = First batch of Retatrutide 10mg, January 2026
-- `RT10-2601B` = Second batch of Retatrutide 10mg, January 2026
+- `RT10-2601A` = First batch of RR-A3 10mg, January 2026
+- `RT10-2601B` = Second batch of RR-A3 10mg, January 2026
 - `BC10-2602A` = First batch of BPC-157 10mg, February 2026
 - `BA3-2601A` = First batch of Bac Water 3ML, January 2026
 

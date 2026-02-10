@@ -38,8 +38,8 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
         mechanism: "Tissue repair + selective GH/IGF-1 amplification",
       },
       {
-        partner: "Retatrutide",
-        why: "BPC-157 protects the GI tract lining while Retatrutide's GLP-1/GIP/glucagon triple agonism drives metabolic changes. The gut-protective effect of BPC-157 can support GI comfort during metabolic compound research.",
+        partner: "RR-A3",
+        why: "BPC-157 protects the GI tract lining while RR-A3's GLP-1/GIP/glucagon triple agonism drives metabolic changes. The gut-protective effect of BPC-157 can support GI comfort during metabolic compound research.",
         mechanism: "Gut cytoprotection + triple metabolic receptor agonism",
       },
     ],
@@ -103,8 +103,8 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
         sequentialNote: "SS-31 first to prime mitochondria, then MOTS-C to expand mitochondrial population",
       },
       {
-        partner: "Retatrutide",
-        why: "MOTS-C enhances cellular energy production through AMPK activation while Retatrutide targets metabolic receptors (GLP-1/GIP/glucagon). The combination addresses metabolism at both the cellular energy and hormonal signaling levels.",
+        partner: "RR-A3",
+        why: "MOTS-C enhances cellular energy production through AMPK activation while RR-A3 targets metabolic receptors (GLP-1/GIP/glucagon). The combination addresses metabolism at both the cellular energy and hormonal signaling levels.",
         mechanism: "AMPK cellular energy + triple metabolic receptor agonism",
       },
       {
@@ -119,28 +119,28 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
       },
     ],
   },
-  "retatrutide": {
-    name: "Retatrutide",
-    slug: "retatrutide",
+  "rr-a3": {
+    name: "RR-A3",
+    slug: "rr-a3",
     topPairings: [
       {
         partner: "BPC-157",
-        why: "Retatrutide's triple agonism (GLP-1/GIP/glucagon) creates significant metabolic shifts. BPC-157 protects the gut lining during this process, supporting GI comfort and nutrient absorption.",
+        why: "RR-A3's triple agonism (GLP-1/GIP/glucagon) creates significant metabolic shifts. BPC-157 protects the gut lining during this process, supporting GI comfort and nutrient absorption.",
         mechanism: "Triple receptor metabolic signaling + gut cytoprotection",
       },
       {
         partner: "MOTS-C",
-        why: "Retatrutide drives metabolic signaling through hormone receptors while MOTS-C enhances mitochondrial energy production via AMPK. This hits metabolism from both the receptor and cellular energy levels.",
+        why: "RR-A3 drives metabolic signaling through hormone receptors while MOTS-C enhances mitochondrial energy production via AMPK. This hits metabolism from both the receptor and cellular energy levels.",
         mechanism: "Hormonal metabolic control + mitochondrial energy",
       },
       {
         partner: "AOD-9604",
-        why: "Retatrutide provides hormonal appetite and metabolic regulation while AOD-9604 directly stimulates lipolysis through GH fragment mechanisms without IGF-1 increase. Dual approach to body composition research.",
+        why: "RR-A3 provides hormonal appetite and metabolic regulation while AOD-9604 directly stimulates lipolysis through GH fragment mechanisms without IGF-1 increase. Dual approach to body composition research.",
         mechanism: "Triple receptor agonism + HGH fragment-driven lipolysis",
       },
       {
         partner: "Tesamorelin",
-        why: "Retatrutide handles broad metabolic receptor activation while Tesamorelin specifically targets visceral fat through GHRH-mediated growth hormone release.",
+        why: "RR-A3 handles broad metabolic receptor activation while Tesamorelin specifically targets visceral fat through GHRH-mediated growth hormone release.",
         mechanism: "Multi-receptor metabolic control + visceral fat-targeting GHRH",
       },
     ],
@@ -319,8 +319,8 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
         mechanism: "GH fragment lipolysis + NNMT enzyme inhibition",
       },
       {
-        partner: "Retatrutide",
-        why: "AOD-9604 directly drives fat breakdown while Retatrutide manages appetite and metabolic hormones through triple receptor agonism. Direct lipolysis + systemic metabolic control.",
+        partner: "RR-A3",
+        why: "AOD-9604 directly drives fat breakdown while RR-A3 manages appetite and metabolic hormones through triple receptor agonism. Direct lipolysis + systemic metabolic control.",
         mechanism: "Direct lipolysis + GLP-1/GIP/glucagon receptor control",
       },
       {
@@ -345,8 +345,8 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
         mechanism: "NNMT enzyme blockade + GH fragment lipolysis",
       },
       {
-        partner: "Retatrutide",
-        why: "5-Amino-1MQ shifts fat cell metabolism at the enzymatic level while Retatrutide manages systemic metabolic hormones. Cellular-level + hormonal-level metabolic control.",
+        partner: "RR-A3",
+        why: "5-Amino-1MQ shifts fat cell metabolism at the enzymatic level while RR-A3 manages systemic metabolic hormones. Cellular-level + hormonal-level metabolic control.",
         mechanism: "NNMT metabolic shift + triple receptor metabolic signaling",
       },
       {
@@ -874,8 +874,8 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
     slug: "cagrilintide",
     topPairings: [
       {
-        partner: "Retatrutide",
-        why: "Cagrilintide provides long-acting amylin receptor agonism for appetite control while Retatrutide adds GLP-1/GIP/glucagon triple agonism. Dual-mechanism metabolic control.",
+        partner: "RR-A3",
+        why: "Cagrilintide provides long-acting amylin receptor agonism for appetite control while RR-A3 adds GLP-1/GIP/glucagon triple agonism. Dual-mechanism metabolic control.",
         mechanism: "Amylin appetite suppression + triple metabolic receptor agonism",
       },
       {
