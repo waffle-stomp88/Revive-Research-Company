@@ -35,7 +35,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getCrossSellSuggestions } from "@/lib/pairing-intelligence";
-import type { Product } from "@shared/schema";
+import type { Product, ProductDosageStock } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 
 interface AppliedDiscount {
@@ -63,6 +63,124 @@ function getSubscriptionDiscount(interval: "weekly" | "biweekly" | "monthly" | u
   }
 }
 
+function CrossSellCard({ 
+  suggestedProduct, 
+  reason, 
+  forProduct, 
+  addToCart 
+}: { 
+  suggestedProduct: Product; 
+  reason: string; 
+  forProduct: string; 
+  addToCart: (item: any) => void;
+}) {
+  const [selectedDosage, setSelectedDosage] = useState("");
+  const productId = String(suggestedProduct.id);
+  const dosageOpts = suggestedProduct.dosageOptions || [];
+
+  const { data: dosageStocks = [] } = useQuery<ProductDosageStock[]>({
+    queryKey: [`/api/products/${productId}/dosage-stocks`],
+    enabled: dosageOpts.length > 0,
+  });
+
+  const hasDosageStockData = dosageStocks.length > 0;
+
+  const inStockDosages = hasDosageStockData
+    ? dosageOpts.filter(d => {
+        const stock = dosageStocks.find(ds => ds.dosage === d);
+        return stock && stock.inStock && (stock.stockAmount ?? 0) > 0;
+      })
+    : dosageOpts;
+
+  const currentDosage = selectedDosage && inStockDosages.includes(selectedDosage)
+    ? selectedDosage
+    : inStockDosages[0] || "";
+
+  if (hasDosageStockData && inStockDosages.length === 0) {
+    return null;
+  }
+
+  const getDosagePrice = (dosage: string): number => {
+    if (hasDosageStockData) {
+      const stock = dosageStocks.find(ds => ds.dosage === dosage);
+      if (stock?.price) return Number(stock.price);
+    }
+    return Number(suggestedProduct.price);
+  };
+
+  const displayPrice = getDosagePrice(currentDosage);
+  const hasMultipleOptions = inStockDosages.length > 1;
+
+  return (
+    <Card className="p-3 border-[#22c55e]/20" data-testid={`card-cross-sell-${suggestedProduct.id}`}>
+      <div className="flex items-start gap-3">
+        <div className="w-10 h-10 rounded bg-muted flex-shrink-0">
+          <img
+            src={suggestedProduct.imageUrl || productImage}
+            alt={suggestedProduct.name}
+            className="w-full h-full object-contain p-1"
+          />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <p className="font-semibold text-sm">{suggestedProduct.name}</p>
+            <span className="text-xs font-semibold text-[#E7FB10]" data-testid={`text-cross-sell-price-${suggestedProduct.id}`}>
+              ${displayPrice.toFixed(2)}
+            </span>
+          </div>
+          <p className="text-[10px] text-muted-foreground mt-0.5">
+            Pairs with {forProduct}: {reason}
+          </p>
+          <div className="flex items-center gap-2 mt-2 flex-wrap">
+            {hasMultipleOptions ? (
+              <Select
+                value={currentDosage}
+                onValueChange={setSelectedDosage}
+              >
+                <SelectTrigger className="h-7 w-[80px] text-xs" data-testid={`select-cross-sell-dosage-${suggestedProduct.id}`}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {inStockDosages.map((d: string) => (
+                    <SelectItem key={d} value={d} data-testid={`option-dosage-${suggestedProduct.id}-${d}`}>
+                      {d}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : currentDosage ? (
+              <Badge variant="outline" className="text-xs h-7 px-2">{currentDosage}</Badge>
+            ) : null}
+            <Link href={`/peptides/${suggestedProduct.slug || suggestedProduct.id}`}>
+              <Button variant="ghost" size="sm" className="text-xs h-7 px-2" data-testid={`button-cross-sell-view-${suggestedProduct.id}`}>
+                Details
+              </Button>
+            </Link>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-xs h-7 px-2 border-[#22c55e]/30 text-[#22c55e]"
+              disabled={!currentDosage}
+              onClick={() => addToCart({
+                productId,
+                name: suggestedProduct.name,
+                price: displayPrice,
+                quantity: 1,
+                dosage: currentDosage,
+                image: suggestedProduct.imageUrl || undefined,
+              })}
+              data-testid={`button-cross-sell-add-${suggestedProduct.id}`}
+            >
+              <Plus className="h-3 w-3 mr-1" />
+              Add
+            </Button>
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, getSubtotal, clearCart, addToCart } = useCart();
   const [, setLocation] = useLocation();
@@ -82,8 +200,6 @@ export default function CartPage() {
     );
     return { ...s, product: product };
   }).filter(s => s.product && s.product.inStock);
-  const [crossSellDosages, setCrossSellDosages] = useState<Record<string, string>>({});
-
   const [appliedDiscount, setAppliedDiscount] = useState<AppliedDiscount | null>(() => {
     const saved = localStorage.getItem("appliedDiscount");
     return saved ? JSON.parse(saved) : null;
@@ -385,88 +501,15 @@ export default function CartPage() {
                   Based on what's in your cart, these compounds share complementary mechanisms.
                 </p>
                 <div className="space-y-3">
-                  {crossSellProducts.map(({ product: suggestedProduct, reason, forProduct }) => {
-                    const productId = String(suggestedProduct!.id);
-                    const dosageOpts = suggestedProduct!.dosageOptions || [];
-                    const selectedDosage = crossSellDosages[productId] || dosageOpts[0] || "";
-                    const hasDosageOptions = dosageOpts.length > 1;
-
-                    const dosageMultipliers: Record<string, number> = {
-                      "10mg": 1.0, "15mg": 1.25, "20mg": 1.50,
-                    };
-                    const basePrice = Number(suggestedProduct!.price);
-                    const selectedMultiplier = dosageMultipliers[selectedDosage] || 1.0;
-                    const displayPrice = basePrice * selectedMultiplier;
-
-                    return (
-                      <Card key={suggestedProduct!.id} className="p-3 border-[#22c55e]/20" data-testid={`card-cross-sell-${suggestedProduct!.id}`}>
-                        <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 rounded bg-muted flex-shrink-0">
-                            <img
-                              src={suggestedProduct!.imageUrl || productImage}
-                              alt={suggestedProduct!.name}
-                              className="w-full h-full object-contain p-1"
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <p className="font-semibold text-sm">{suggestedProduct!.name}</p>
-                              <span className="text-xs font-semibold text-[#E7FB10]" data-testid={`text-cross-sell-price-${suggestedProduct!.id}`}>
-                                ${displayPrice.toFixed(2)}
-                              </span>
-                            </div>
-                            <p className="text-[10px] text-muted-foreground mt-0.5">
-                              Pairs with {forProduct}: {reason}
-                            </p>
-                            <div className="flex items-center gap-2 mt-2 flex-wrap">
-                              {hasDosageOptions && (
-                                <Select
-                                  value={selectedDosage}
-                                  onValueChange={(val) => setCrossSellDosages(prev => ({ ...prev, [productId]: val }))}
-                                >
-                                  <SelectTrigger className="h-7 w-[80px] text-xs" data-testid={`select-cross-sell-dosage-${suggestedProduct!.id}`}>
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {dosageOpts.map((d: string) => (
-                                      <SelectItem key={d} value={d} data-testid={`option-dosage-${suggestedProduct!.id}-${d}`}>
-                                        {d}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              )}
-                              {!hasDosageOptions && dosageOpts[0] && (
-                                <Badge variant="outline" className="text-xs h-7 px-2">{dosageOpts[0]}</Badge>
-                              )}
-                              <Link href={`/peptides/${suggestedProduct!.slug || suggestedProduct!.id}`}>
-                                <Button variant="ghost" size="sm" className="text-xs h-7 px-2" data-testid={`button-cross-sell-view-${suggestedProduct!.id}`}>
-                                  Details
-                                </Button>
-                              </Link>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-xs h-7 px-2 border-[#22c55e]/30 text-[#22c55e]"
-                                onClick={() => addToCart({
-                                  productId,
-                                  name: suggestedProduct!.name,
-                                  price: displayPrice,
-                                  quantity: 1,
-                                  dosage: selectedDosage,
-                                  image: suggestedProduct!.imageUrl || undefined,
-                                })}
-                                data-testid={`button-cross-sell-add-${suggestedProduct!.id}`}
-                              >
-                                <Plus className="h-3 w-3 mr-1" />
-                                Add
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </Card>
-                    );
-                  })}
+                  {crossSellProducts.map(({ product: suggestedProduct, reason, forProduct }) => (
+                    <CrossSellCard
+                      key={suggestedProduct!.id}
+                      suggestedProduct={suggestedProduct!}
+                      reason={reason}
+                      forProduct={forProduct}
+                      addToCart={addToCart}
+                    />
+                  ))}
                 </div>
               </div>
             )}
