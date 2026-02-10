@@ -152,6 +152,10 @@ function Router() {
         <Route path="/guides/peptide-purity-explained" component={PurityExplained} />
         <Route path="/guides/why-cheap-peptides-are-cheap" component={CheapPeptides} />
         <Route path="/guides/peptide-education-center" component={Education} />
+        {/* FDA compliance redirects (must come before catch-all /guides/:slug) */}
+        <Route path="/guides/what-is-retatrutide-peptide">{() => { window.location.replace("/guides/what-is-rr-a3-peptide"); return null; }}</Route>
+        <Route path="/guides/what-is-semaglutide-peptide">{() => { window.location.replace("/guides/what-is-rr-a1-peptide"); return null; }}</Route>
+        <Route path="/guides/what-is-tirzepatide-peptide">{() => { window.location.replace("/guides/what-is-rr-a2-peptide"); return null; }}</Route>
         {/* Catch-all for individual peptide article pages (e.g. /guides/what-is-bpc-157-peptide) */}
         <Route path="/guides/:slug" component={Education} />
         <Route path="/academy">
@@ -187,8 +191,6 @@ function Router() {
         <Route path="/resources">{() => { window.location.replace("/peptide-research-resources"); return null; }}</Route>
         <Route path="/peptides/retatrutide">{() => { window.location.replace("/peptides/rr-a3"); return null; }}</Route>
         <Route path="/products/retatrutide">{() => { window.location.replace("/products/rr-a3"); return null; }}</Route>
-        <Route path="/guides/what-is-retatrutide-peptide">{() => { window.location.replace("/guides/what-is-rr-a3-peptide"); return null; }}</Route>
-        
         <Route component={NotFound} />
       </Switch>
     </>

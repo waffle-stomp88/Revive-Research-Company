@@ -142,7 +142,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     peptides: ["rr-a3", "bpc-157"],
     icon: RefreshCw,
     color: "#10b981",
-    description: "GLP-1/GIP/glucagon triple receptor agonism + gut cytoprotection \u2014 BPC-157 supports GI comfort during metabolic compound research",
+    description: "Triple metabolic receptor agonism + gut cytoprotection — BPC-157 supports GI comfort during metabolic compound research",
     synergyBonus: 88,
   },
   {
@@ -150,7 +150,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     peptides: ["rr-a3", "aod-9604"],
     icon: Flame,
     color: "#f97316",
-    description: "GLP-1/GIP/glucagon triple agonist + targeted lipolysis fragment",
+    description: "Triple metabolic receptor agonist + targeted lipolysis fragment",
     synergyBonus: 85,
   },
   {
@@ -322,11 +322,11 @@ export const KNOWN_STACKS: KnownStack[] = [
     synergyBonus: 88,
   },
   {
-    name: "GLP-1 Duo",
+    name: "Metabolic Duo",
     peptides: ["mazdutide", "bpc-157"],
     icon: Pill,
     color: "#0d9488",
-    description: "Dual GLP-1/glucagon agonist + gut protective healing peptide",
+    description: "Dual metabolic receptor agonist + gut protective healing peptide",
     synergyBonus: 83,
   },
   {
@@ -334,7 +334,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     peptides: ["survodutide", "aod-9604"],
     icon: Flame,
     color: "#e11d48",
-    description: "GLP-1/glucagon dual agonist + HGH fragment for body composition",
+    description: "Dual metabolic receptor agonist + HGH fragment for body composition",
     synergyBonus: 82,
   },
   {
@@ -622,7 +622,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     peptides: ["mazdutide", "tesamorelin"],
     icon: Flame,
     color: "#ea580c",
-    description: "GLP-1/glucagon dual agonist + GHRH visceral fat reduction",
+    description: "Dual metabolic receptor agonist + GHRH visceral fat reduction",
     synergyBonus: 82,
   },
   {
@@ -750,7 +750,7 @@ export const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
   },
   "rr-a3": {
     name: "RR-A3",
-    pathways: ["GLP-1", "GIP", "Glucagon"],
+    pathways: ["Incretin", "GIP", "Glucagon"],
     mechanisms: ["Triple receptor agonist", "Insulin sensitivity", "Fat oxidation"],
     systems: ["Metabolic", "Weight", "Fat Loss"],
   },
@@ -966,7 +966,7 @@ export const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
   },
   "mazdutide": {
     name: "Mazdutide",
-    pathways: ["GLP-1", "Glucagon"],
+    pathways: ["Incretin", "Glucagon"],
     mechanisms: ["Dual receptor agonist", "Appetite reduction", "Hepatic fat oxidation"],
     systems: ["Weight", "Metabolic", "Fat Loss"],
   },
@@ -1044,7 +1044,7 @@ export const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
   },
   "survodutide": {
     name: "Survodutide",
-    pathways: ["GLP-1", "Glucagon"],
+    pathways: ["Incretin", "Glucagon"],
     mechanisms: ["Dual incretin agonist", "Energy expenditure increase", "Liver fat reduction"],
     systems: ["Weight", "Metabolic", "Fat Loss"],
   },

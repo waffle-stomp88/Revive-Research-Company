@@ -132,10 +132,10 @@ Understanding exactly how TB-500 works is still an active area of research, with
     takeaway: "TB-500 is a synthetic version of Thymosin Beta-4, a naturally occurring peptide found in nearly all your cells. It works by regulating actin (cell structure), which affects how cells move and migrate during healing processes."
   },
 
-  "what-is-semaglutide-peptide": {
+  "what-is-rr-a1-peptide": {
     icon: Target,
     iconColor: "#E7FB10",
-    intro: `Semaglutide is a GLP-1 receptor agonist - a peptide that mimics a hormone your body naturally produces after eating. The natural hormone (GLP-1) breaks down in just minutes, but scientists modified semaglutide to last much longer, making it valuable for metabolic research.`,
+    intro: `RR-A1 is a GLP-1 receptor agonist - a peptide that mimics a hormone your body naturally produces after eating. The natural hormone (GLP-1) breaks down in just minutes, but scientists modified RR-A1 to last much longer, making it valuable for metabolic research.`,
     sections: [
       {
         title: "Understanding GLP-1",
@@ -147,11 +147,11 @@ Understanding exactly how TB-500 works is still an active area of research, with
 
 **Slows stomach emptying** - Food stays in your stomach longer, contributing to that "full" feeling.
 
-The problem for researchers was that natural GLP-1 breaks down in just 1-2 minutes. That's too fast to study effectively. Semaglutide was designed to resist this breakdown, lasting about a week instead of minutes.`
+The problem for researchers was that natural GLP-1 breaks down in just 1-2 minutes. That's too fast to study effectively. RR-A1 was designed to resist this breakdown, lasting about a week instead of minutes.`
       },
       {
-        title: "How Semaglutide Was Designed",
-        content: `Scientists made specific modifications to create semaglutide:
+        title: "How RR-A1 Was Designed",
+        content: `Scientists made specific modifications to create RR-A1:
 
 **Amino Acid Changes** - They swapped out certain amino acids that the body's enzymes typically target for breakdown.
 
@@ -163,7 +163,7 @@ This is a great example of how understanding a molecule's structure lets scienti
       },
       {
         title: "What Researchers Investigate",
-        content: `Semaglutide has become one of the most-studied peptides in metabolic research:
+        content: `RR-A1 has become one of the most-studied peptides in metabolic research:
 
 **Glucose Regulation** - How GLP-1 receptor activation affects blood sugar control is a major research focus.
 
@@ -171,42 +171,42 @@ This is a great example of how understanding a molecule's structure lets scienti
 
 **Cardiovascular Effects** - There's research into how GLP-1 agonists might affect heart and blood vessel function.
 
-**Comparative Studies** - Researchers compare semaglutide with newer dual and triple agonists (like tirzepatide and RR-A3) to understand how targeting additional receptors changes the response.
+**Comparative Studies** - Researchers compare RR-A1 with newer dual and triple agonists (like RR-A2 and RR-A3) to understand how targeting additional receptors changes the response.
 
-The extensive research on semaglutide has made it a foundational peptide for understanding incretin-based metabolic pathways.`
+The extensive research on RR-A1 has made it a foundational peptide for understanding incretin-based metabolic pathways.`
       }
     ],
-    takeaway: "Semaglutide mimics GLP-1, a natural gut hormone that affects insulin release, appetite, and digestion. It's been engineered to last about a week instead of minutes, making it valuable for metabolic research."
+    takeaway: "RR-A1 mimics GLP-1, a natural gut hormone that affects insulin release, appetite, and digestion. It's been engineered to last about a week instead of minutes, making it valuable for metabolic research."
   },
 
-  "what-is-tirzepatide-peptide": {
+  "what-is-rr-a2-peptide": {
     icon: Zap,
     iconColor: "#9d4edd",
-    intro: `Tirzepatide takes the GLP-1 concept a step further - it's a dual agonist that activates both GLP-1 and GIP receptors. GIP is another gut hormone that works alongside GLP-1 in regulating metabolism. By targeting both, researchers can study what happens when you activate two complementary pathways simultaneously.`,
+    intro: `RR-A2 takes the GLP-1 concept a step further - it's a dual agonist that activates both GLP-1 and GIP receptors. GIP is another gut hormone that works alongside GLP-1 in regulating metabolism. By targeting both, researchers can study what happens when you activate two complementary pathways simultaneously.`,
     sections: [
       {
         title: "Why Two Receptors?",
         content: `Your gut produces multiple hormones after you eat, and they work together like a team:
 
-**GLP-1** (which semaglutide targets) - Promotes insulin release, slows digestion, signals fullness to the brain.
+**GLP-1** (which RR-A1 targets) - Promotes insulin release, slows digestion, signals fullness to the brain.
 
 **GIP** (glucose-dependent insulinotropic polypeptide) - Also promotes insulin release, and has effects on fat tissue and bone health.
 
-For years, researchers focused mainly on GLP-1. But GIP was actually discovered first, and scientists wondered: what if you could activate both systems at once? Would the effects be additive? Synergistic? That's what tirzepatide was designed to explore.`
+For years, researchers focused mainly on GLP-1. But GIP was actually discovered first, and scientists wondered: what if you could activate both systems at once? Would the effects be additive? Synergistic? That's what RR-A2 was designed to explore.`
       },
       {
-        title: "How Tirzepatide Works",
-        content: `Tirzepatide is sometimes called a "twincretin" because it activates two incretin receptors:
+        title: "How RR-A2 Works",
+        content: `RR-A2 is sometimes called a "twincretin" because it activates two incretin receptors:
 
-**Unbalanced Agonism** - Interestingly, tirzepatide doesn't activate both receptors equally. It has stronger GIP activity relative to its GLP-1 activity. Researchers study how this ratio affects outcomes.
+**Unbalanced Agonism** - Interestingly, RR-A2 doesn't activate both receptors equally. It has stronger GIP activity relative to its GLP-1 activity. Researchers study how this ratio affects outcomes.
 
-**Long-Acting Design** - Like semaglutide, tirzepatide has a fatty acid attached that extends its duration in the body to about 5 days, allowing once-weekly dosing in research settings.
+**Long-Acting Design** - Like RR-A1, RR-A2 has a fatty acid attached that extends its duration in the body to about 5 days, allowing once-weekly dosing in research settings.
 
-**Complementary Pathways** - By activating both GIP and GLP-1 receptors, tirzepatide engages two related but distinct signaling pathways. Researchers study whether this dual activation produces effects different from single-receptor activation.`
+**Complementary Pathways** - By activating both GIP and GLP-1 receptors, RR-A2 engages two related but distinct signaling pathways. Researchers study whether this dual activation produces effects different from single-receptor activation.`
       },
       {
         title: "Research Directions",
-        content: `Tirzepatide has opened new avenues for metabolic research:
+        content: `RR-A2 has opened new avenues for metabolic research:
 
 **Comparative Studies** - How do results differ between single GLP-1 agonists and dual GLP-1/GIP agonists? This is a key research question.
 
@@ -216,16 +216,16 @@ For years, researchers focused mainly on GLP-1. But GIP was actually discovered 
 
 **Dosing Optimization** - Finding optimal ratios of GIP to GLP-1 activity is an ongoing research interest.
 
-Tirzepatide represents a shift from single-target to multi-target approaches in metabolic peptide research.`
+RR-A2 represents a shift from single-target to multi-target approaches in metabolic peptide research.`
       }
     ],
-    takeaway: "Tirzepatide activates two gut hormone receptors (GLP-1 and GIP) instead of just one. This dual approach lets researchers study how these complementary metabolic pathways work together."
+    takeaway: "RR-A2 activates two gut hormone receptors (GLP-1 and GIP) instead of just one. This dual approach lets researchers study how these complementary metabolic pathways work together."
   },
 
   "what-is-rr-a3-peptide": {
     icon: Flame,
     iconColor: "#f97316",
-    intro: `RR-A3 is the newest generation of metabolic peptides - a triple agonist that activates GLP-1, GIP, AND glucagon receptors. While semaglutide targets one receptor and tirzepatide targets two, RR-A3 targets three, representing the cutting edge of incretin research.`,
+    intro: `RR-A3 is the newest generation of metabolic peptides - a triple agonist that activates GLP-1, GIP, AND glucagon receptors. While RR-A1 targets one receptor and RR-A2 targets two, RR-A3 targets three, representing the cutting edge of incretin research.`,
     sections: [
       {
         title: "Why Add Glucagon?",

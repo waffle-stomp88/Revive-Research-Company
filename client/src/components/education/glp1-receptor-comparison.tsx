@@ -17,7 +17,7 @@ interface ReceptorData {
 
 const peptideComparison: ReceptorData[] = [
   {
-    name: "Semaglutide",
+    name: "RR-A1",
     type: "Single Agonist",
     color: "#21d8ff",
     receptors: [
@@ -29,7 +29,7 @@ const peptideComparison: ReceptorData[] = [
     keyFeature: "Albumin binding for extended action"
   },
   {
-    name: "Tirzepatide",
+    name: "RR-A2",
     type: "Dual Agonist",
     color: "#E7FB10",
     receptors: [

@@ -151,7 +151,7 @@ const CATEGORIES = [
 
 const peptideGroups = [
   { id: "all", label: "All Peptides", color: "#ec4899" },
-  { id: "metabolic", label: "Metabolic / GLP-1", color: "#E7FB10", names: ["rr-a3", "cagrilintide", "mazdutide", "survodutide", "aod-9604", "5-amino-1mq", "aicar", "slu-pp-322", "l-carnitine", "lipo-c", "adipotide"] },
+  { id: "metabolic", label: "Metabolic", color: "#E7FB10", names: ["rr-a1", "rr-a2", "rr-a3", "cagrilintide", "mazdutide", "survodutide", "aod-9604", "5-amino-1mq", "aicar", "slu-pp-322", "l-carnitine", "lipo-c", "adipotide"] },
   { id: "growth-hormone", label: "Growth Hormone", color: "#21d8ff", names: ["cjc-1295", "ipamorelin", "tesamorelin", "igf-1 lr3", "igf-des", "ghrp-2", "ghrp-6", "hexarelin", "sermorelin", "mgf", "peg-mgf", "ace-031"] },
   { id: "tissue-repair", label: "Tissue Repair", color: "#22c55e", names: ["bpc-157", "tb-500", "ll-37", "ara-290", "klow"] },
   { id: "skin-regeneration", label: "Skin & Regeneration", color: "#ec4899", names: ["ghk-cu", "glow", "snap-8", "hyaluronic", "melanotan"] },
@@ -540,7 +540,7 @@ function ProductsComponent() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead title="Shop Peptides" description="Browse our complete catalog of premium research peptides. Third-party lab tested, COA verified. BPC-157, TB-500, Semaglutide & more." canonicalPath="/products" />
+      <SEOHead title="Shop Peptides" description="Browse our complete catalog of premium research peptides. Third-party lab tested, COA verified. BPC-157, TB-500, RR-A1 & more." canonicalPath="/products" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         {/* Category Navigation Tabs */}
         <div className="mb-6">

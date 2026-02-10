@@ -39,7 +39,7 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
       },
       {
         partner: "RR-A3",
-        why: "BPC-157 protects the GI tract lining while RR-A3's GLP-1/GIP/glucagon triple agonism drives metabolic changes. The gut-protective effect of BPC-157 can support GI comfort during metabolic compound research.",
+        why: "BPC-157 protects the GI tract lining while RR-A3's triple metabolic receptor agonism drives metabolic changes. The gut-protective effect of BPC-157 can support GI comfort during metabolic compound research.",
         mechanism: "Gut cytoprotection + triple metabolic receptor agonism",
       },
     ],
@@ -104,7 +104,7 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
       },
       {
         partner: "RR-A3",
-        why: "MOTS-C enhances cellular energy production through AMPK activation while RR-A3 targets metabolic receptors (GLP-1/GIP/glucagon). The combination addresses metabolism at both the cellular energy and hormonal signaling levels.",
+        why: "MOTS-C enhances cellular energy production through AMPK activation while RR-A3 targets multiple metabolic receptors. The combination addresses metabolism at both the cellular energy and hormonal signaling levels.",
         mechanism: "AMPK cellular energy + triple metabolic receptor agonism",
       },
       {
@@ -125,7 +125,7 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
     topPairings: [
       {
         partner: "BPC-157",
-        why: "RR-A3's triple agonism (GLP-1/GIP/glucagon) creates significant metabolic shifts. BPC-157 protects the gut lining during this process, supporting GI comfort and nutrient absorption.",
+        why: "RR-A3's triple metabolic receptor agonism creates significant metabolic shifts. BPC-157 protects the gut lining during this process, supporting GI comfort and nutrient absorption.",
         mechanism: "Triple receptor metabolic signaling + gut cytoprotection",
       },
       {
@@ -321,7 +321,7 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
       {
         partner: "RR-A3",
         why: "AOD-9604 directly drives fat breakdown while RR-A3 manages appetite and metabolic hormones through triple receptor agonism. Direct lipolysis + systemic metabolic control.",
-        mechanism: "Direct lipolysis + GLP-1/GIP/glucagon receptor control",
+        mechanism: "Direct lipolysis + triple metabolic receptor control",
       },
       {
         partner: "MOTS-C",
@@ -875,7 +875,7 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
     topPairings: [
       {
         partner: "RR-A3",
-        why: "Cagrilintide provides long-acting amylin receptor agonism for appetite control while RR-A3 adds GLP-1/GIP/glucagon triple agonism. Dual-mechanism metabolic control.",
+        why: "Cagrilintide provides long-acting amylin receptor agonism for appetite control while RR-A3 adds triple metabolic receptor agonism. Dual-mechanism metabolic control.",
         mechanism: "Amylin appetite suppression + triple metabolic receptor agonism",
       },
       {
@@ -891,13 +891,13 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
     topPairings: [
       {
         partner: "BPC-157",
-        why: "Mazdutide activates GLP-1 and glucagon receptors for metabolic effects while BPC-157 protects the gut lining. Metabolic signaling + GI protection.",
-        mechanism: "Dual GLP-1/glucagon agonism + gut cytoprotection",
+        why: "Mazdutide activates incretin and glucagon receptors for metabolic effects while BPC-157 protects the gut lining. Metabolic signaling + GI protection.",
+        mechanism: "Dual incretin/glucagon agonism + gut cytoprotection",
       },
       {
         partner: "Tesamorelin",
         why: "Mazdutide provides dual incretin agonism while Tesamorelin targets visceral fat through GHRH release. Incretin + GHRH for body composition research.",
-        mechanism: "GLP-1/glucagon agonism + GHRH visceral fat targeting",
+        mechanism: "Incretin/glucagon agonism + GHRH visceral fat targeting",
       },
     ],
   },
@@ -907,8 +907,8 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
     topPairings: [
       {
         partner: "AOD-9604",
-        why: "Survodutide activates GLP-1 and glucagon receptors for energy expenditure increase while AOD-9604 provides direct lipolysis. Hormonal + direct fat breakdown.",
-        mechanism: "Dual GLP-1/glucagon agonism + GH fragment lipolysis",
+        why: "Survodutide activates incretin and glucagon receptors for energy expenditure increase while AOD-9604 provides direct lipolysis. Hormonal + direct fat breakdown.",
+        mechanism: "Dual incretin/glucagon agonism + GH fragment lipolysis",
       },
       {
         partner: "5-Amino-1MQ",

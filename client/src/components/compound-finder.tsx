@@ -177,12 +177,12 @@ function getWhyText(goal: ResearchGoal, productName: string): string {
       "Thymalin": "Thymic polypeptide studied for immune system modulation.",
     },
     metabolic: {
-      "RR-A3": "Triple-agonist targeting GLP-1, GIP, and glucagon receptors simultaneously.",
+      "RR-A3": "Triple-agonist targeting multiple metabolic receptors simultaneously.",
       "AOD-9604": "HGH fragment studied for lipolytic pathway interactions.",
       "5-Amino-1MQ": "Small molecule studied for NNMT enzyme interactions in metabolic research.",
       "MOTS-c": "Mitochondrial peptide studied for metabolic regulation and AMPK activation.",
-      "Mazdutide": "Dual GLP-1/glucagon agonist for synergistic metabolic research.",
-      "Survodutide": "Dual GLP-1/glucagon agonist studied for metabolic effects.",
+      "Mazdutide": "Dual metabolic receptor agonist for synergistic metabolic research.",
+      "Survodutide": "Dual metabolic receptor agonist studied for metabolic effects.",
       "Cagrilintide": "Long-acting amylin analog for appetite and glucose metabolism research.",
     },
     sleep: {

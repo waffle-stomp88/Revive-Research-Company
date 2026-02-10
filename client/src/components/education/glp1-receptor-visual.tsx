@@ -212,8 +212,8 @@ function CellMembraneWithReceptors({ isInView, activeReceptors, peptide }: {
 
 const peptideProfiles = [
   {
-    id: 'semaglutide',
-    name: 'Semaglutide',
+    id: 'rr-a1',
+    name: 'RR-A1',
     type: 'Single Agonist',
     receptors: ['glp1'],
     color: '#21d8ff',
@@ -222,8 +222,8 @@ const peptideProfiles = [
     benefits: ['Glycemic control', 'Appetite modulation', 'Cardiovascular research']
   },
   {
-    id: 'tirzepatide',
-    name: 'Tirzepatide',
+    id: 'rr-a2',
+    name: 'RR-A2',
     type: 'Dual Agonist',
     receptors: ['glp1', 'gip'],
     color: '#E7FB10',
