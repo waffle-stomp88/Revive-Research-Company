@@ -3871,6 +3871,66 @@ Return ONLY valid JSON in this exact format:
     }
   });
 
+  // Academy Graduate Discount - Check status and claim reward
+  app.get("/api/academy/graduate-reward", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const progress = await storage.getAcademyProgress(userId);
+      const completedCount = progress?.completedLessons?.length || 0;
+      const totalLessons = 17;
+      const isGraduate = completedCount >= totalLessons;
+
+      // Check if user already has a graduate discount code
+      const existingCode = await storage.getDiscountCodeByCode(`GRAD-${userId.substring(0, 8).toUpperCase()}`);
+
+      res.json({
+        isGraduate,
+        completedCount,
+        totalLessons,
+        discountCode: existingCode?.code || null,
+        discountPercent: existingCode ? Number(existingCode.discountPercent) : 15,
+        alreadyClaimed: !!existingCode,
+      });
+    } catch (error) {
+      console.error("Error checking graduate reward:", error);
+      res.status(500).json({ error: "Failed to check graduate reward" });
+    }
+  });
+
+  app.post("/api/academy/claim-graduate-reward", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const progress = await storage.getAcademyProgress(userId);
+      const completedCount = progress?.completedLessons?.length || 0;
+
+      if (completedCount < 17) {
+        return res.status(400).json({ error: "You must complete all 17 Academy lessons to claim this reward." });
+      }
+
+      const codeStr = `GRAD-${userId.substring(0, 8).toUpperCase()}`;
+      const existing = await storage.getDiscountCodeByCode(codeStr);
+      if (existing) {
+        return res.json({ discountCode: existing.code, discountPercent: Number(existing.discountPercent), alreadyClaimed: true });
+      }
+
+      const newCode = await storage.createDiscountCode({
+        code: codeStr,
+        description: `Peptide Academy Graduate reward for user ${userId}`,
+        discountPercent: "15.00",
+        type: "promo",
+        freeShipping: false,
+        isActive: true,
+        maxUsages: 1,
+        expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days
+      });
+
+      res.json({ discountCode: newCode.code, discountPercent: Number(newCode.discountPercent), alreadyClaimed: false });
+    } catch (error) {
+      console.error("Error claiming graduate reward:", error);
+      res.status(500).json({ error: "Failed to claim graduate reward" });
+    }
+  });
+
   // Delete user account
   app.post("/api/user/delete-account", isAuthenticated, async (req: any, res) => {
     try {

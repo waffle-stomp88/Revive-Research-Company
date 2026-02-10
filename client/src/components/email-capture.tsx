@@ -16,8 +16,8 @@ interface EmailCaptureProps {
 }
 
 export function EmailCapture({
-  heading = "Stay in the loop",
-  description = "Get weekly research updates, new product alerts, and educational content — no spam, unsubscribe anytime.",
+  heading = "Be the First to Know",
+  description = "Get notified when we launch new compounds, plus a one-time welcome discount. No spam — only updates that matter.",
   source = "article_footer",
   variant = "default",
   className = "",
@@ -56,7 +56,7 @@ export function EmailCapture({
           <CheckCircle2 className="h-8 w-8 text-green-500 mx-auto mb-3" />
           <p className="font-semibold text-green-400">You're on the list</p>
           <p className="text-sm text-muted-foreground mt-1">
-            We'll send you research updates worth reading.
+            You'll be the first to know about new compound launches. Check your email for your welcome discount.
           </p>
         </Card>
       </motion.div>

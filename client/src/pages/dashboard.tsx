@@ -71,6 +71,7 @@ import {
 } from "lucide-react";
 import type { Order, Product, Coa, ResearchPhase, ResearchTitle } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { CompoundFinder } from "@/components/compound-finder";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -190,6 +191,18 @@ export default function Dashboard() {
     enabled: isAuthenticated,
   });
 
+  const { data: graduateReward } = useQuery<{
+    isGraduate: boolean;
+    completedCount: number;
+    totalLessons: number;
+    discountCode: string | null;
+    discountPercent: number;
+    alreadyClaimed: boolean;
+  }>({
+    queryKey: ["/api/academy/graduate-reward"],
+    enabled: isAuthenticated,
+  });
+
   const { data: subscriptions, isLoading: subscriptionsLoading } = useQuery<Array<{
     id: string;
     paypalSubscriptionId: string;
@@ -266,6 +279,19 @@ export default function Dashboard() {
   }>>({
     queryKey: ["/api/login-history"],
     enabled: isAuthenticated,
+  });
+
+  const claimGraduateRewardMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("POST", "/api/academy/claim-graduate-reward");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/academy/graduate-reward"] });
+      toast({ title: "Reward Claimed", description: "Your 15% discount code has been generated. Use it at checkout!" });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Could not claim your reward. Please try again.", variant: "destructive" });
+    },
   });
 
   const removeMutation = useMutation({
@@ -1077,107 +1103,165 @@ export default function Dashboard() {
                     </Card>
                   </div>
 
-                  {/* Member Perks Card */}
-                  <Card className="border-green-500/20 bg-gradient-to-br from-green-500/5 to-transparent">
+                  {/* Member Benefits Card */}
+                  <Card className="border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 to-transparent">
                     <CardHeader className="pb-3">
                       <CardTitle className="flex items-center gap-2 text-base">
-                        <div className="p-1.5 rounded-lg bg-green-500/20">
-                          <Gem className="h-4 w-4 text-green-500" />
+                        <div className="p-1.5 rounded-lg bg-[#21d8ff]/20">
+                          <Gem className="h-4 w-4 text-[#21d8ff]" />
                         </div>
-                        Member Perks
+                        Your Benefits
                       </CardTitle>
+                      <CardDescription className="text-xs">Real value you've earned as a member</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {/* Free Shipping Perk */}
-                        <div className={`flex items-center gap-3 p-3 rounded-xl border ${(orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0) >= 200 ? 'border-green-500/40 bg-green-500/10' : 'border-muted/20 bg-muted/10'}`}>
-                          <div className={`p-2 rounded-full ${(orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0) >= 200 ? 'bg-green-500/20' : 'bg-muted/20'}`}>
-                            <Truck className={`h-4 w-4 ${(orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0) >= 200 ? 'text-green-500' : 'text-muted-foreground'}`} />
+                      <div className="space-y-4">
+                        {/* Registered Member Benefits - Always unlocked */}
+                        <div>
+                          <p className="text-xs font-medium text-[#21d8ff] mb-2 flex items-center gap-1.5">
+                            <CheckCircle className="h-3 w-3" />
+                            MEMBER BENEFITS
+                          </p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div className="flex items-center gap-2.5 p-2.5 rounded-lg border border-[#21d8ff]/20 bg-[#21d8ff]/5">
+                              <ShoppingBag className="h-3.5 w-3.5 text-[#21d8ff] shrink-0" />
+                              <span className="text-xs">Order history & tracking</span>
+                            </div>
+                            <div className="flex items-center gap-2.5 p-2.5 rounded-lg border border-[#21d8ff]/20 bg-[#21d8ff]/5">
+                              <Bookmark className="h-3.5 w-3.5 text-[#21d8ff] shrink-0" />
+                              <span className="text-xs">Saved stacks & wishlist</span>
+                            </div>
+                            <div className="flex items-center gap-2.5 p-2.5 rounded-lg border border-[#21d8ff]/20 bg-[#21d8ff]/5">
+                              <FlaskConical className="h-3.5 w-3.5 text-[#21d8ff] shrink-0" />
+                              <span className="text-xs">Research phase progression</span>
+                            </div>
+                            <div className="flex items-center gap-2.5 p-2.5 rounded-lg border border-[#21d8ff]/20 bg-[#21d8ff]/5">
+                              <Target className="h-3.5 w-3.5 text-[#21d8ff] shrink-0" />
+                              <span className="text-xs">Compound Finder tool</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Shipping Perk */}
+                        <div className="flex items-center gap-3 p-3 rounded-xl border border-green-500/30 bg-green-500/5">
+                          <div className="p-2 rounded-full bg-green-500/20">
+                            <Truck className="h-4 w-4 text-green-500" />
                           </div>
                           <div className="flex-1">
                             <p className="font-medium text-sm">Free Shipping</p>
-                            <p className="text-xs text-muted-foreground">
-                              {(orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0) >= 200 
-                                ? 'Unlocked! Orders $200+' 
-                                : `$${Math.max(0, 200 - (orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0)).toFixed(0)} to unlock`}
-                            </p>
+                            <p className="text-xs text-muted-foreground">On all orders over $200</p>
                           </div>
-                          {(orders?.reduce((sum, o) => sum + Number(o.totalAmount), 0) || 0) >= 200 && <CheckCircle className="h-4 w-4 text-green-500" />}
+                          <CheckCircle className="h-4 w-4 text-green-500" />
                         </div>
-                        
-                        {/* Early Access Perk */}
-                        <div className={`flex items-center gap-3 p-3 rounded-xl border ${user?.createdAt && new Date(user.createdAt) < new Date('2026-02-01') ? 'border-[#E7FB10]/40 bg-[#E7FB10]/10' : 'border-muted/20 bg-muted/10'}`}>
-                          <div className={`p-2 rounded-full ${user?.createdAt && new Date(user.createdAt) < new Date('2026-02-01') ? 'bg-[#E7FB10]/20' : 'bg-muted/20'}`}>
-                            <Rocket className={`h-4 w-4 ${user?.createdAt && new Date(user.createdAt) < new Date('2026-02-01') ? 'text-[#E7FB10]' : 'text-muted-foreground'}`} />
+
+                        {/* Academy Graduate Reward */}
+                        <div className={`flex items-center gap-3 p-3 rounded-xl border ${
+                          graduateReward?.isGraduate
+                            ? 'border-[#E7FB10]/40 bg-[#E7FB10]/10'
+                            : 'border-muted/20 bg-muted/5'
+                        }`}>
+                          <div className={`p-2 rounded-full ${graduateReward?.isGraduate ? 'bg-[#E7FB10]/20' : 'bg-muted/20'}`}>
+                            <GraduationCap className={`h-4 w-4 ${graduateReward?.isGraduate ? 'text-[#E7FB10]' : 'text-muted-foreground'}`} />
                           </div>
                           <div className="flex-1">
-                            <p className="font-medium text-sm">Early Access</p>
+                            <p className="font-medium text-sm">Academy Graduate Reward</p>
                             <p className="text-xs text-muted-foreground">
-                              {user?.createdAt && new Date(user.createdAt) < new Date('2026-02-01') 
-                                ? 'Founder member benefits' 
-                                : 'Become a founder member'}
+                              {graduateReward?.discountCode
+                                ? <>Your code: <span className="font-mono font-semibold text-[#E7FB10]">{graduateReward.discountCode}</span> ({graduateReward.discountPercent}% off)</>
+                                : graduateReward?.isGraduate
+                                  ? 'You earned it — claim your 15% discount below'
+                                  : `Complete all ${graduateReward?.totalLessons || 17} Academy lessons to earn 15% off (${graduateReward?.completedCount || 0}/${graduateReward?.totalLessons || 17})`}
                             </p>
                           </div>
-                          {user?.createdAt && new Date(user.createdAt) < new Date('2026-02-01') && <CheckCircle className="h-4 w-4 text-[#E7FB10]" />}
+                          {graduateReward?.discountCode ? (
+                            <CheckCircle className="h-4 w-4 text-[#E7FB10]" />
+                          ) : graduateReward?.isGraduate ? (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-xs shrink-0 border-[#E7FB10]/40 text-[#E7FB10]"
+                              onClick={() => claimGraduateRewardMutation.mutate()}
+                              disabled={claimGraduateRewardMutation.isPending}
+                              data-testid="button-claim-graduate-reward"
+                            >
+                              {claimGraduateRewardMutation.isPending ? "Claiming..." : "Claim"}
+                            </Button>
+                          ) : (
+                            <Link href="/academy">
+                              <Button variant="ghost" size="sm" className="text-xs shrink-0" data-testid="button-go-academy">
+                                <ArrowRight className="h-3 w-3" />
+                              </Button>
+                            </Link>
+                          )}
                         </div>
-                        
-                        {/* Priority Support Perk */}
-                        <div className={`flex items-center gap-3 p-3 rounded-xl border ${(orders?.length || 0) >= 3 ? 'border-[#21d8ff]/40 bg-[#21d8ff]/10' : 'border-muted/20 bg-muted/10'}`}>
-                          <div className={`p-2 rounded-full ${(orders?.length || 0) >= 3 ? 'bg-[#21d8ff]/20' : 'bg-muted/20'}`}>
-                            <MessageSquare className={`h-4 w-4 ${(orders?.length || 0) >= 3 ? 'text-[#21d8ff]' : 'text-muted-foreground'}`} />
+
+                        {/* Loyalty: Early Access */}
+                        <div className={`flex items-center gap-3 p-3 rounded-xl border ${
+                          (orders?.length || 0) >= 5
+                            ? 'border-[#E7FB10]/40 bg-[#E7FB10]/10'
+                            : 'border-muted/20 bg-muted/5'
+                        }`}>
+                          <div className={`p-2 rounded-full ${(orders?.length || 0) >= 5 ? 'bg-[#E7FB10]/20' : 'bg-muted/20'}`}>
+                            <Rocket className={`h-4 w-4 ${(orders?.length || 0) >= 5 ? 'text-[#E7FB10]' : 'text-muted-foreground'}`} />
                           </div>
                           <div className="flex-1">
-                            <p className="font-medium text-sm">Priority Support</p>
+                            <p className="font-medium text-sm">Early Access to New Launches</p>
                             <p className="text-xs text-muted-foreground">
-                              {(orders?.length || 0) >= 3 
-                                ? 'Unlocked! 3+ orders' 
-                                : `${Math.max(0, 3 - (orders?.length || 0))} more orders to unlock`}
+                              {(orders?.length || 0) >= 5
+                                ? 'Unlocked — you get first access to new compounds'
+                                : `Place ${Math.max(0, 5 - (orders?.length || 0))} more order${Math.max(0, 5 - (orders?.length || 0)) === 1 ? '' : 's'} to unlock`}
                             </p>
                           </div>
-                          {(orders?.length || 0) >= 3 && <CheckCircle className="h-4 w-4 text-[#21d8ff]" />}
+                          {(orders?.length || 0) >= 5 && <CheckCircle className="h-4 w-4 text-[#E7FB10]" />}
                         </div>
-                        
-                        {/* Affiliate Earnings Perk */}
-                        <div className={`flex items-center gap-3 p-3 rounded-xl border ${affiliate?.id ? 'border-[#9d4edd]/40 bg-[#9d4edd]/10' : 'border-muted/20 bg-muted/10'}`}>
+
+                        {/* Affiliate Program */}
+                        <div className={`flex items-center gap-3 p-3 rounded-xl border ${
+                          affiliate?.id
+                            ? 'border-[#9d4edd]/40 bg-[#9d4edd]/10'
+                            : 'border-muted/20 bg-muted/5'
+                        }`}>
                           <div className={`p-2 rounded-full ${affiliate?.id ? 'bg-[#9d4edd]/20' : 'bg-muted/20'}`}>
                             <Diamond className={`h-4 w-4 ${affiliate?.id ? 'text-[#9d4edd]' : 'text-muted-foreground'}`} />
                           </div>
                           <div className="flex-1">
                             <p className="font-medium text-sm">Affiliate Earnings</p>
                             <p className="text-xs text-muted-foreground">
-                              {affiliate?.id 
-                                ? 'Earn 10% on referrals' 
-                                : 'Join affiliate program'}
+                              {affiliate?.id
+                                ? 'Earn 10% on every referral'
+                                : 'Apply to earn 10% commission on referrals'}
                             </p>
                           </div>
-                          {affiliate?.id && <CheckCircle className="h-4 w-4 text-[#9d4edd]" />}
+                          {affiliate?.id ? (
+                            <CheckCircle className="h-4 w-4 text-[#9d4edd]" />
+                          ) : (
+                            <Link href="/affiliate">
+                              <Button variant="ghost" size="sm" className="text-xs shrink-0" data-testid="button-apply-affiliate">
+                                <ArrowRight className="h-3 w-3" />
+                              </Button>
+                            </Link>
+                          )}
                         </div>
                       </div>
                     </CardContent>
                   </Card>
 
-                  {/* Research Quiz CTA */}
-                  <Card className="relative overflow-hidden border-[#21d8ff]/30 bg-gradient-to-r from-[#21d8ff]/10 via-[#E7FB10]/5 to-transparent">
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-[#21d8ff]/15 rounded-full blur-3xl" />
-                    <CardContent className="p-5">
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                        <div className="p-3 rounded-xl bg-gradient-to-br from-[#21d8ff]/30 to-[#E7FB10]/20 shadow-lg">
-                          <Brain className="h-7 w-7 text-[#21d8ff]" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-lg">Research Knowledge Quiz</h3>
-                            <Badge className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30 text-xs">Coming Soon</Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground">Test your peptide knowledge and earn exclusive badges and rewards.</p>
-                        </div>
-                        <Button variant="outline" className="border-[#21d8ff]/40 text-[#21d8ff] shrink-0" disabled data-testid="button-take-quiz">
-                          <Target className="h-4 w-4 mr-2" />
-                          Take Quiz
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  {/* Compound Finder */}
+                  <CompoundFinder
+                    products={products || []}
+                    onAddToCart={(product) => {
+                      const defaultDosage = product.dosageOptions?.[0] || "";
+                      addToCart({
+                        productId: product.id,
+                        name: product.name,
+                        price: Number(product.price),
+                        quantity: 1,
+                        dosage: defaultDosage,
+                        image: product.imageUrl || undefined,
+                      });
+                      toast({ title: "Added to Cart", description: `${product.name} has been added to your cart.` });
+                    }}
+                  />
 
                   {/* Join Affiliate Program CTA - Only show if not already an affiliate */}
                   {!affiliate?.id && (
