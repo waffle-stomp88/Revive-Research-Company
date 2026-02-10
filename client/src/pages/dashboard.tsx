@@ -68,6 +68,7 @@ import {
   Smartphone,
   Mail,
   Brain,
+  Copy,
 } from "lucide-react";
 import type { Order, Product, Coa, ResearchPhase, ResearchTitle } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -1167,14 +1168,25 @@ export default function Dashboard() {
                             <p className="font-medium text-sm">Academy Graduate Reward</p>
                             <p className="text-xs text-muted-foreground">
                               {graduateReward?.discountCode
-                                ? <>Your code: <span className="font-mono font-semibold text-[#E7FB10]">{graduateReward.discountCode}</span> ({graduateReward.discountPercent}% off)</>
+                                ? <>Your code: <span className="font-mono font-semibold text-[#E7FB10] select-text">{graduateReward.discountCode}</span> ({graduateReward.discountPercent}% off)</>
                                 : graduateReward?.isGraduate
                                   ? 'You earned it — claim your 15% discount below'
                                   : `Complete all ${graduateReward?.totalLessons || 17} Academy lessons to earn 15% off (${graduateReward?.completedCount || 0}/${graduateReward?.totalLessons || 17})`}
                             </p>
                           </div>
                           {graduateReward?.discountCode ? (
-                            <CheckCircle className="h-4 w-4 text-[#E7FB10]" />
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="shrink-0"
+                              data-testid="button-copy-grad-code"
+                              onClick={() => {
+                                navigator.clipboard.writeText(graduateReward.discountCode!);
+                                toast({ title: "Copied", description: "Discount code copied to clipboard" });
+                              }}
+                            >
+                              <Copy className="h-4 w-4 text-[#E7FB10]" />
+                            </Button>
                           ) : graduateReward?.isGraduate ? (
                             <Button
                               variant="outline"
