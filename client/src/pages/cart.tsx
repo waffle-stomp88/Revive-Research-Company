@@ -78,10 +78,11 @@ function CrossSellCard({
   const productId = String(suggestedProduct.id);
   const dosageOpts = suggestedProduct.dosageOptions || [];
 
-  const { data: dosageStocks = [] } = useQuery<ProductDosageStock[]>({
+  const dosageStockQuery = useQuery<ProductDosageStock[]>({
     queryKey: [`/api/products/${productId}/dosage-stocks`],
     enabled: dosageOpts.length > 0,
   });
+  const dosageStocks = dosageStockQuery.data ?? [];
 
   const hasDosageStockData = dosageStocks.length > 0;
 
@@ -90,13 +91,21 @@ function CrossSellCard({
         const stock = dosageStocks.find(ds => ds.dosage === d);
         return stock && stock.inStock && (stock.stockAmount ?? 0) > 0;
       })
-    : dosageOpts;
+    : [];
 
   const currentDosage = selectedDosage && inStockDosages.includes(selectedDosage)
     ? selectedDosage
     : inStockDosages[0] || "";
 
-  if (hasDosageStockData && inStockDosages.length === 0) {
+  if (dosageOpts.length === 0) {
+    return null;
+  }
+
+  if (!dosageStockQuery.isSuccess) {
+    return null;
+  }
+
+  if (inStockDosages.length === 0) {
     return null;
   }
 
