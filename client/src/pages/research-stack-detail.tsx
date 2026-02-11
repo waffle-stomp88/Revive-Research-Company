@@ -4,13 +4,14 @@ import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
 import {
-  ArrowLeft, FlaskConical, ShoppingCart, Sparkles, CheckCircle2, AlertTriangle, Info, Package, GraduationCap, Shield, FileCheck, Truck, RefreshCw, ShoppingBag, Repeat, CheckCircle, Minus, Plus, BookOpen, ChevronRight, Clock, ExternalLink, Star, User
+  ArrowLeft, FlaskConical, ShoppingCart, Sparkles, CheckCircle2, AlertTriangle, Package, GraduationCap, Shield, FileCheck, Truck, RefreshCw, ShoppingBag, Repeat, CheckCircle, Minus, Plus, BookOpen, ChevronRight, ChevronDown, Star, User
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ImageLoader } from "@/components/image-loader";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
@@ -380,23 +381,24 @@ export default function ResearchStackDetail() {
   };
 
   return (
-    <main className="min-h-screen pt-32 md:pt-40 pb-12">
+    <main className="min-h-screen pt-24 md:pt-40 pb-12 overflow-x-hidden">
       <SEOHead 
         title={`${stack.name} | Research Stack`}
         description={stack.description}
         canonicalPath={`/research-stacks/${stack.id}`}
       />
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
-        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-4">
+      <div className="max-w-7xl mx-auto px-4 pr-6 md:px-8">
+        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-2 md:mb-4">
           <Link href="/research-stacks">
-            <Button variant="ghost" className="gap-2 -ml-4" data-testid="button-back-stacks">
-              <ArrowLeft className="h-4 w-4" />
-              Back to Research Stacks
+            <Button variant="ghost" size="sm" className="gap-1.5 -ml-2 md:-ml-4 md:gap-2" data-testid="button-back-stacks">
+              <ArrowLeft className="h-3.5 w-3.5 md:h-4 md:w-4" />
+              <span className="hidden md:inline">Back to Research Stacks</span>
+              <span className="md:hidden">Back</span>
             </Button>
           </Link>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="flex flex-col">
             <Card className="overflow-hidden border-[#2a2a32] sticky top-24">
               <div
@@ -433,7 +435,7 @@ export default function ResearchStackDetail() {
               </div>
             </Card>
 
-            <Card className="p-2.5 bg-red-950/30 border border-red-500/50 animate-pulse-subtle mt-3" data-testid="card-ruo-disclaimer">
+            <Card className="hidden md:block p-2.5 bg-red-950/30 border border-red-500/50 animate-pulse-subtle mt-3" data-testid="card-ruo-disclaimer">
               <div className="flex items-start gap-2">
                 <div className="p-1 rounded bg-red-500/20 flex-shrink-0">
                   <AlertTriangle className="h-3 w-3 text-red-400" />
@@ -452,12 +454,12 @@ export default function ResearchStackDetail() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.12 }}
-                className="mt-6"
-                data-testid="section-education"
+                className="mt-16 hidden md:block relative z-10 bg-background"
+                data-testid="section-education-desktop"
               >
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <GraduationCap className="h-5 w-5" style={{ color: stack.color }} />
+                    <GraduationCap className="h-5 w-5 text-[#ec4899]" />
                     <h3 className="font-display text-lg font-bold">Learn About These Peptides</h3>
                   </div>
                   <Link href="/guides/peptide-education-center">
@@ -470,9 +472,9 @@ export default function ResearchStackDetail() {
 
                 <div className="space-y-2">
                   {stack.educationLinks.slice(0, 1).map((link) => (
-                    <a key={link.peptideName} href={link.articleUrl} target="_blank" rel="noopener noreferrer">
+                    <Link key={link.peptideName} href={link.articleUrl}>
                       <Card
-                        className="p-4 border-[#ec4899]/20 md:hover:border-[#ec4899]/40 transition-all duration-300 cursor-pointer group md:hover:scale-[1.02] md:active:scale-[1.02]"
+                        className="p-4 border-[#ec4899]/20 md:hover:border-[#ec4899]/40 transition-all duration-300 cursor-pointer group md:hover:scale-[1.02] md:active:scale-[1.02] md:hover:shadow-[0_0_20px_rgba(236,72,153,0.3)]"
                         data-testid={`card-article-${link.peptideName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}
                       >
                         <div className="flex items-start gap-3">
@@ -485,51 +487,50 @@ export default function ResearchStackDetail() {
                                 Research Guide
                               </Badge>
                             </div>
-                            <h4 className="font-display text-sm font-bold group-hover:text-[#ec4899] transition-colors">{link.articleTitle}</h4>
+                            <h4 className="font-display text-base md:text-lg font-bold group-hover:text-[#ec4899] transition-colors uppercase tracking-tight leading-tight">{link.articleTitle}</h4>
                           </div>
-                          <ExternalLink className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                         </div>
                       </Card>
-                    </a>
+                    </Link>
                   ))}
                 </div>
               </motion.section>
             )}
 
-            {/* Storage Information - Left Column */}
+            {/* Storage Information - DESKTOP ONLY */}
             <motion.section
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.14 }}
-              className="mt-6"
-              data-testid="section-storage"
+              className="mt-8 hidden md:block"
+              data-testid="section-storage-desktop"
             >
-              <div className="flex items-center gap-3 mb-4">
-                <BookOpen className="h-5 w-5" style={{ color: stack.color }} />
-                <h3 className="font-display text-lg font-bold">Storage Information</h3>
-              </div>
+              <h3 className="font-display font-semibold text-lg mb-4">Storage Information</h3>
               <p className="text-muted-foreground leading-relaxed mb-4">
                 {stack.storageGuide}
               </p>
-              <Link href="/guides/storage-101">
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Button 
-                    className="gap-2 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold md:hover:shadow-[0_0_20px_rgba(33,216,255,0.6)] transition-shadow" 
-                    data-testid="link-learn-storage"
+              <div className="py-2">
+                <Link href="/guides/storage-101">
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="inline-block"
                   >
-                    <BookOpen className="h-4 w-4" />
-                    Learn More: Storage Best Practices
-                    <ChevronRight className="h-3 w-3" />
-                  </Button>
-                </motion.div>
-              </Link>
+                    <Button 
+                      className="gap-2 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold md:hover:shadow-[0_0_20px_rgba(33,216,255,0.6)] transition-shadow" 
+                      data-testid="link-learn-storage-desktop"
+                    >
+                      <BookOpen className="h-4 w-4" />
+                      Learn More: Storage Best Practices
+                      <ChevronRight className="h-3 w-3" />
+                    </Button>
+                  </motion.div>
+                </Link>
+              </div>
             </motion.section>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }} className="min-w-0 overflow-hidden">
             <div className="flex items-center gap-2 mb-2 flex-wrap">
               <Badge variant="secondary" className="text-xs uppercase tracking-wider">
                 Research Stack
@@ -547,26 +548,28 @@ export default function ResearchStackDetail() {
               ))}
             </div>
 
-            <h1 className="font-display text-2xl md:text-3xl font-bold mb-2" data-testid="text-stack-name">
+            <h1 className="font-display text-3xl md:text-6xl font-bold mb-1 md:mb-2 uppercase tracking-tighter leading-none" data-testid="text-stack-name">
               {stack.name}
             </h1>
 
-            <div className="flex items-baseline gap-3 mb-3 flex-wrap">
-              <span className="font-display text-3xl font-bold text-[#E7FB10]" data-testid="text-stack-price">
-                ${getBasePrice().toFixed(2)}
-              </span>
-              <span className="text-lg text-muted-foreground line-through" data-testid="text-stack-retail-value">
-                ${stack.retailValue}
-              </span>
+            <div className="mb-2 md:mb-3">
+              <div className="flex items-baseline gap-2 md:gap-3 flex-wrap">
+                <span className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10]" data-testid="text-stack-price">
+                  ${getBasePrice().toFixed(2)}
+                </span>
+                <span className="text-lg text-muted-foreground line-through" data-testid="text-stack-retail-value">
+                  ${stack.retailValue}
+                </span>
+              </div>
             </div>
 
-            <p className="text-xs text-muted-foreground leading-relaxed mb-3" data-testid="text-stack-description">
+            <p className="hidden md:block text-sm text-muted-foreground leading-relaxed mb-4" data-testid="text-stack-description">
               {stack.longDescription}
             </p>
 
-            <div className="grid grid-cols-2 gap-3 mb-3">
+            <div className="grid grid-cols-2 gap-3 mb-3 md:mb-4">
               <div>
-                <Label className="text-xs font-medium mb-1 block text-muted-foreground">Quantity</Label>
+                <Label className="text-xs font-medium mb-1.5 block text-muted-foreground">Quantity</Label>
                 <div className="flex items-center border rounded-md h-9 border-border">
                   <Button
                     variant="ghost"
@@ -595,8 +598,8 @@ export default function ResearchStackDetail() {
               </div>
             </div>
 
-            <div className="mb-3">
-              <Label className="text-xs font-medium mb-1 block text-muted-foreground">Purchase Option</Label>
+            <div className="mb-3 md:mb-4">
+              <Label className="text-xs font-medium mb-1.5 block text-muted-foreground">Purchase Option</Label>
               <div className="grid grid-cols-2 gap-2">
                 <div
                   className={`relative flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
@@ -638,9 +641,9 @@ export default function ResearchStackDetail() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mb-3"
+                className="mb-3 md:mb-4"
               >
-                <Label className="text-xs font-medium mb-1 block text-muted-foreground">Delivery Frequency</Label>
+                <Label className="text-xs font-medium mb-1.5 block text-muted-foreground">Delivery Frequency</Label>
                 <div className="grid grid-cols-3 gap-2">
                   {subscriptionOptions.map((option) => {
                     const discountedPrice = getBasePrice() * (1 - option.discount / 100);
@@ -662,7 +665,7 @@ export default function ResearchStackDetail() {
               </motion.div>
             )}
 
-            <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+            <div className="flex items-center justify-between text-xs text-muted-foreground mb-2 md:mb-3">
               <span className="flex items-center gap-1">
                 <CheckCircle className="h-3 w-3 text-green-500" />
                 In Stock
@@ -677,11 +680,16 @@ export default function ResearchStackDetail() {
               </div>
             </div>
 
-            <div className="flex gap-3 mb-3">
+            <div className="md:hidden flex items-center gap-2 p-2.5 rounded-lg bg-red-950/30 border border-red-500/40 mb-3" data-testid="card-ruo-mobile">
+              <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0" />
+              <span className="text-xs text-red-400 font-medium">Research Use Only - Not for human consumption</span>
+            </div>
+
+            <div className="flex gap-3">
               <Button
                 size="lg"
                 variant="outline"
-                className="flex-1 font-display gap-2 border-2"
+                className="flex-1 font-display gap-2 border-2 md:hover:border-[#21d8ff] md:hover:text-[#21d8ff] md:hover:shadow-[0_0_15px_rgba(33,216,255,0.3)] transition-all duration-300"
                 onClick={handleAddToCart}
                 data-testid="button-add-to-cart"
               >
@@ -692,8 +700,8 @@ export default function ResearchStackDetail() {
                 size="lg"
                 className={`flex-1 font-display gap-2 transition-shadow duration-300 text-black ${
                   purchaseType === "subscription"
-                    ? "bg-[#21d8ff] border-[#21d8ff] hover:bg-[#21d8ff]/90 shadow-[0_0_20px_rgba(33,216,255,0.4)]"
-                    : "bg-[#E7FB10] border-[#E7FB10] hover:bg-[#E7FB10]/90 shadow-[0_0_20px_rgba(231,251,16,0.4)]"
+                    ? "bg-[#21d8ff] border-[#21d8ff] md:hover:bg-[#21d8ff]/90 shadow-[0_0_20px_rgba(33,216,255,0.4)] md:hover:shadow-[0_0_40px_rgba(33,216,255,0.6)]"
+                    : "bg-[#E7FB10] border-[#E7FB10] md:hover:bg-[#E7FB10]/90 shadow-[0_0_20px_rgba(231,251,16,0.4)] md:hover:shadow-[0_0_40px_rgba(231,251,16,0.6)]"
                 }`}
                 onClick={handleBuyNow}
                 data-testid="button-buy-now"
@@ -713,14 +721,33 @@ export default function ResearchStackDetail() {
             </div>
 
             {purchaseType === "subscription" && (
-              <p className="text-[10px] text-center text-muted-foreground mb-3">
+              <p className="text-[10px] text-center text-muted-foreground mt-1">
                 Save ${((getBasePrice() - getDiscountedPrice()) * quantity).toFixed(2)} per order • Cancel anytime
               </p>
             )}
 
-            <Separator className="my-4" />
+            <Collapsible className="md:hidden mt-4">
+              <CollapsibleTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className="w-full justify-between text-sm"
+                  data-testid="button-toggle-description-mobile"
+                >
+                  <span className="text-muted-foreground">About this stack</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pt-2">
+                <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-stack-description-mobile">
+                  {stack.longDescription}
+                </p>
+              </CollapsibleContent>
+            </Collapsible>
 
-            <div className="grid grid-cols-4 gap-2 text-center mb-4">
+            <Separator className="my-4 md:my-6" />
+
+            <div className="grid grid-cols-4 gap-2 text-center mb-4 md:mb-6">
               <div className="flex flex-col items-center gap-1">
                 <Shield className="h-4 w-4 text-[#21d8ff]" />
                 <span className="text-[10px] text-muted-foreground">3rd Party Tested</span>
@@ -739,6 +766,42 @@ export default function ResearchStackDetail() {
               </div>
             </div>
 
+            {stack.educationLinks.length > 0 && (
+              <Collapsible className="md:hidden mb-6">
+                <CollapsibleTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-between border-[#ec4899]/30 hover:border-[#ec4899] text-sm"
+                    data-testid="button-toggle-education-mobile"
+                  >
+                    <div className="flex items-center gap-2">
+                      <GraduationCap className="h-4 w-4 text-[#ec4899]" />
+                      <span>Learn About These Peptides</span>
+                    </div>
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-3 space-y-2">
+                  {stack.educationLinks.map((link) => (
+                    <Link key={link.peptideName} href={link.articleUrl}>
+                      <Card 
+                        className="p-3 border-[#ec4899]/20 hover:border-[#ec4899]/40 transition-all cursor-pointer"
+                        data-testid={`card-article-mobile-${link.peptideName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <BookOpen className="h-4 w-4 text-[#ec4899] flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-sm font-medium truncate">{link.articleTitle}</h4>
+                          </div>
+                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                      </Card>
+                    </Link>
+                  ))}
+                </CollapsibleContent>
+              </Collapsible>
+            )}
+
             {stack.keyBenefits.length > 0 && (
               <div className="mb-8">
                 <h3 className="font-display font-semibold text-lg mb-4">Key Benefits</h3>
@@ -752,6 +815,23 @@ export default function ResearchStackDetail() {
                 </ul>
               </div>
             )}
+
+            <div className="mb-8 overflow-visible md:hidden">
+              <h3 className="font-display font-semibold text-lg mb-4">Storage Information</h3>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                {stack.storageGuide}
+              </p>
+              <Link href="/guides/storage-101">
+                <Button 
+                  className="gap-2 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold transition-shadow" 
+                  data-testid="link-learn-storage-mobile"
+                >
+                  <BookOpen className="h-4 w-4" />
+                  Learn More: Storage Best Practices
+                  <ChevronRight className="h-3 w-3" />
+                </Button>
+              </Link>
+            </div>
 
           </motion.div>
         </div>
