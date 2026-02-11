@@ -77,35 +77,35 @@ const researchStacks: ResearchStack[] = [
     }
   },
   {
-    id: "cellular-optimization-stack",
-    name: "Cellular Optimization Stack",
-    subtitle: "Signal Pathway Combo",
-    description: "Research cellular signaling pathways and copper peptide mechanisms. This stack is designed for studies on mitochondrial function, cellular longevity models, and signal transduction research.",
-    peptides: ["GHK-Cu (100mg)", "MOTS-C"],
+    id: "longevity-protocol-stack",
+    name: "Longevity Protocol Stack",
+    subtitle: "Anti-Aging Research Bundle",
+    description: "Explore two of the most compelling anti-aging research compounds together. This stack pairs telomerase-activating mechanisms with copper peptide tissue renewal for comprehensive cellular longevity research.",
+    peptides: ["Epithalon", "GHK-Cu"],
     icon: Sparkles,
     color: "#a855f7",
-    retailValue: 90,
-    stackPrice: 76,
-    synergy: {
-      beginner: "GHK-Cu is a copper peptide that helps cells 'clean house' and produce healthy proteins, while MOTS-C improves how cells generate energy. Think of it as upgrading both the maintenance crew and the power supply at the cellular level.",
-      expert: "GHK-Cu modulates gene expression for tissue remodeling (collagen, decorin, metalloproteinases) while MOTS-C enhances mitochondrial function via AMPK activation. The combination creates parallel signaling for extracellular matrix optimization and intracellular energy metabolism—addressing both structural and functional cellular pathways."
-    }
-  },
-  {
-    id: "starter-research-stack",
-    name: "Premium Research Starter Stack",
-    subtitle: "Beginner Research Essentials",
-    description: "The ideal entry point for new research programs. Features two of the most well-characterized and widely-studied peptide compounds, perfect for establishing baseline protocols.",
-    peptides: ["BPC-157", "MOTS-C"],
-    icon: Star,
-    color: "#21d8ff",
-    badge: "Best for Beginners",
-    badgeColor: "#21d8ff",
     retailValue: 105,
     stackPrice: 89,
     synergy: {
-      beginner: "BPC-157 is one of the most studied repair peptides, helping tissues heal and regenerate. MOTS-C supports energy production at the cellular level. Together, they give researchers a solid foundation covering two fundamental areas: tissue repair and cellular energy.",
-      expert: "BPC-157's cytoprotective and pro-angiogenic properties complement MOTS-C's mitochondrial biogenesis activation. This pairing covers two primary research domains—tissue regeneration signaling (BPC-157 via NO/GH pathways) and metabolic optimization (MOTS-C via AMPK/PGC-1α)—making it ideal for establishing baseline assays before advancing to more complex protocols."
+      beginner: "Epithalon works on the 'aging clock' inside your cells by supporting telomere maintenance—the protective caps on your DNA. GHK-Cu is a copper peptide that helps cells rebuild and renew tissue. Together, they target aging from two angles: protecting your DNA's integrity and keeping tissue renewal active.",
+      expert: "Epithalon activates telomerase reverse transcriptase, extending telomere length and delaying replicative senescence. GHK-Cu modulates 4,000+ genes involved in tissue remodeling, upregulating collagen synthesis, decorin, and metalloproteinases while suppressing inflammatory cytokines. The combination creates synergistic anti-aging signaling: telomere protection (Epithalon) + extracellular matrix restoration and gene expression reset (GHK-Cu)."
+    }
+  },
+  {
+    id: "cognitive-edge-stack",
+    name: "Cognitive Edge Stack",
+    subtitle: "Nootropic Research Duo",
+    description: "The gold-standard nootropic research pairing. Semax and Selank target complementary cognitive pathways—one enhancing focus and BDNF expression, the other promoting calm clarity through anxiolytic mechanisms. Widely studied for neuroprotective synergy.",
+    peptides: ["Semax", "Selank"],
+    icon: Brain,
+    color: "#21d8ff",
+    badge: "Top Nootropic",
+    badgeColor: "#21d8ff",
+    retailValue: 120,
+    stackPrice: 99,
+    synergy: {
+      beginner: "Semax is a brain-boosting peptide that helps sharpen focus and supports the growth of new neural connections. Selank promotes a calm, clear-headed state by reducing stress signals without causing drowsiness. Together, they create a 'focused calm'—enhanced mental clarity without the jitters or anxiety.",
+      expert: "Semax (ACTH 4-10 analog) upregulates BDNF and NGF expression, enhancing neuroplasticity and cognitive processing speed. Selank (tuftsin analog) modulates GABAergic neurotransmission and reduces IL-6 levels, providing anxiolytic effects through immune-neuroendocrine cross-talk. The dual-pathway activation—neurotrophic enhancement (Semax) + anxiolytic neuroprotection (Selank)—creates complementary cognitive optimization without receptor competition."
     }
   },
   {

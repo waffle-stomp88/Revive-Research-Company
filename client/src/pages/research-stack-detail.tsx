@@ -130,78 +130,78 @@ const researchStacksData: Record<string, ResearchStack> = {
       expert: "MOTS-C activates AMPK pathways and enhances mitochondrial biogenesis, while RR-A3 acts as a triple agonist (Incretin/GIP/Glucagon receptors) modulating metabolic signaling. This creates multi-target metabolic pathway activation: mitochondrial efficiency + peripheral insulin sensitivity + hepatic gluconeogenesis modulation."
     }
   },
-  "cellular-optimization-stack": {
-    id: "cellular-optimization-stack",
-    name: "Cellular Optimization Stack",
-    subtitle: "Signal Pathway Combo",
-    description: "Research cellular signaling pathways and copper peptide mechanisms.",
-    longDescription: "GHK-Cu activates over 4,000 human genes involved in tissue remodeling, collagen synthesis, and DNA repair \u2014 essentially telling cells to renew themselves. MOTS-C activates AMPK to enhance mitochondrial biogenesis, improving how cells produce energy. Together they create parallel signaling: extracellular matrix optimization (GHK-Cu) + intracellular energy metabolism (MOTS-C), addressing both structural and functional cellular pathways.",
+  "longevity-protocol-stack": {
+    id: "longevity-protocol-stack",
+    name: "Longevity Protocol Stack",
+    subtitle: "Anti-Aging Research Bundle",
+    description: "Comprehensive cellular longevity research.",
+    longDescription: "Epithalon activates telomerase reverse transcriptase, the enzyme responsible for extending telomeres — the protective caps on chromosomes that shorten with each cell division. As telomeres erode, cells enter senescence and stop dividing. By maintaining telomere length, Epithalon delays this cellular aging clock. GHK-Cu modulates over 4,000 human genes involved in tissue remodeling, collagen synthesis, and DNA repair. Together: telomere protection (Epithalon) + extracellular matrix restoration and gene expression reset (GHK-Cu) — targeting aging at both the DNA and tissue level.",
     peptides: [
-      { name: "GHK-Cu (100mg)", description: "Copper peptide studied for cellular signaling and matrix protein pathway research" },
-      { name: "MOTS-C", description: "Mitochondrial-derived peptide for energy pathway and cellular optimization studies" },
+      { name: "Epithalon", description: "Telomerase-activating tetrapeptide for cellular aging and telomere research" },
+      { name: "GHK-Cu", description: "Copper tripeptide for tissue renewal, gene expression modulation, and anti-aging studies" },
     ],
     keyBenefits: [
-      "Copper peptide signaling research support",
-      "Cellular energy optimization",
-      "Gene expression modulation research",
-      "Comprehensive cellular health model development",
+      "Telomere maintenance research",
+      "Gene expression modulation for tissue renewal",
+      "Dual-pathway anti-aging investigation",
+      "Cellular senescence delay mechanisms",
     ],
     researchApplications: [
-      "Copper peptide mechanism research",
-      "Mitochondrial pathway studies",
+      "Telomerase activation studies",
+      "Anti-aging mechanism research",
       "Cellular longevity model development",
-      "Signal transduction investigations",
+      "Copper peptide gene expression profiling",
     ],
-    storageGuide: "Keep refrigerated at 2-8°C (36-46°F). Copper peptides are sensitive to temperature fluctuations.",
+    storageGuide: "Keep refrigerated at 2-8°C (36-46°F). Copper peptides are sensitive to temperature fluctuations. Epithalon should be stored protected from light.",
     educationLinks: [
+      { peptideName: "Epithalon", articleUrl: "/guides/what-is-epithalon-peptide", articleTitle: "Epithalon: Telomerase & Longevity Research" },
       { peptideName: "GHK-Cu", articleUrl: "/guides/what-is-ghk-cu-peptide", articleTitle: "GHK-Cu: Copper Peptide Research Guide" },
-      { peptideName: "MOTS-C", articleUrl: "/guides/what-is-mots-c-peptide", articleTitle: "MOTS-C: Cellular Energy Pathways" },
     ],
     icon: "Sparkles",
     color: "#a855f7",
-    retailValue: 90,
-    stackPrice: 76,
-    synergy: {
-      beginner: "GHK-Cu is a copper peptide that helps cells 'clean house' and produce healthy proteins, while MOTS-C improves how cells generate energy. Think of it as upgrading both the maintenance crew and the power supply at the cellular level.",
-      expert: "GHK-Cu modulates gene expression for tissue remodeling (collagen, decorin, metalloproteinases) while MOTS-C enhances mitochondrial function via AMPK activation. The combination creates parallel signaling for extracellular matrix optimization and intracellular energy metabolism—addressing both structural and functional cellular pathways."
-    }
-  },
-  "starter-research-stack": {
-    id: "starter-research-stack",
-    name: "Premium Research Starter Stack",
-    subtitle: "Beginner Research Essentials",
-    description: "The ideal entry point for new research programs.",
-    longDescription: "Two of the most well-documented peptides covering two fundamental research domains. BPC-157 drives tissue repair through VEGF upregulation, NO modulation, and growth hormone receptor activation \u2014 it's often called a universal connector because it pairs well with nearly everything. MOTS-C supports cellular energy production through AMPK activation and mitochondrial biogenesis via the PGC-1\u03B1 pathway. Together: tissue repair + cellular energy, the two most foundational areas of peptide research.",
-    peptides: [
-      { name: "BPC-157", description: "Well-documented peptide for tissue mechanism and cellular signaling studies" },
-      { name: "MOTS-C", description: "Extensively researched mitochondrial peptide with established protocols" },
-    ],
-    keyBenefits: [
-      "Well-characterized research compounds",
-      "Established research protocols",
-      "Multi-domain pathway exploration",
-      "Ideal for new research programs",
-    ],
-    researchApplications: [
-      "Protocol development and standardization",
-      "Baseline mechanism studies",
-      "Introduction to peptide research methodologies",
-      "Multi-pathway preliminary investigations",
-    ],
-    storageGuide: "Refrigerate at 2-8°C (36-46°F). These are research-grade compounds requiring proper storage.",
-    educationLinks: [
-      { peptideName: "BPC-157", articleUrl: "/guides/what-is-bpc-157-peptide", articleTitle: "BPC-157: Starter's Guide to Tissue Pathways" },
-      { peptideName: "MOTS-C", articleUrl: "/guides/what-is-mots-c-peptide", articleTitle: "MOTS-C: Introduction to Mitochondrial Research" },
-    ],
-    icon: "Star",
-    color: "#21d8ff",
-    badge: "Best for Beginners",
-    badgeColor: "#21d8ff",
     retailValue: 105,
     stackPrice: 89,
     synergy: {
-      beginner: "BPC-157 is one of the most studied repair peptides, helping tissues heal and regenerate. MOTS-C supports energy production at the cellular level. Together, they give researchers a solid foundation covering two fundamental areas: tissue repair and cellular energy.",
-      expert: "BPC-157's cytoprotective and pro-angiogenic properties complement MOTS-C's mitochondrial biogenesis activation. This pairing covers two primary research domains—tissue regeneration signaling (BPC-157 via NO/GH pathways) and metabolic optimization (MOTS-C via AMPK/PGC-1α)—making it ideal for establishing baseline assays before advancing to more complex protocols."
+      beginner: "Epithalon works on the 'aging clock' inside your cells by supporting telomere maintenance—the protective caps on your DNA. GHK-Cu is a copper peptide that helps cells rebuild and renew tissue. Together, they target aging from two angles: protecting your DNA's integrity and keeping tissue renewal active.",
+      expert: "Epithalon activates telomerase reverse transcriptase, extending telomere length and delaying replicative senescence. GHK-Cu modulates 4,000+ genes involved in tissue remodeling, upregulating collagen synthesis, decorin, and metalloproteinases while suppressing inflammatory cytokines. The combination creates synergistic anti-aging signaling: telomere protection (Epithalon) + extracellular matrix restoration and gene expression reset (GHK-Cu)."
+    }
+  },
+  "cognitive-edge-stack": {
+    id: "cognitive-edge-stack",
+    name: "Cognitive Edge Stack",
+    subtitle: "Nootropic Research Duo",
+    description: "Gold-standard nootropic research pairing.",
+    longDescription: "Semax is an ACTH(4-10) analog that upregulates Brain-Derived Neurotrophic Factor (BDNF) and Nerve Growth Factor (NGF), enhancing neuroplasticity and cognitive processing. Selank is a tuftsin analog that modulates GABAergic neurotransmission and reduces inflammatory cytokines like IL-6, providing anxiolytic neuroprotection through immune-neuroendocrine cross-talk. The dual-pathway activation — neurotrophic enhancement (Semax) + anxiolytic neuroprotection (Selank) — creates complementary cognitive optimization without receptor competition. This is one of the most widely studied nootropic combinations in peptide research.",
+    peptides: [
+      { name: "Semax", description: "ACTH fragment analog for BDNF upregulation, neuroplasticity, and cognitive enhancement research" },
+      { name: "Selank", description: "Tuftsin analog for anxiolytic mechanisms, GABAergic modulation, and neuroprotection studies" },
+    ],
+    keyBenefits: [
+      "BDNF and NGF expression research",
+      "Anxiolytic neuroprotection investigation",
+      "Complementary nootropic pathway activation",
+      "Neuroplasticity and cognitive processing studies",
+    ],
+    researchApplications: [
+      "Neurotrophic factor expression studies",
+      "Cognitive enhancement mechanism research",
+      "Anxiety and stress-response pathway investigation",
+      "Immune-neuroendocrine cross-talk models",
+    ],
+    storageGuide: "Refrigerate at 2-8°C (36-46°F). Both peptides should be reconstituted with bacteriostatic water and used within recommended timeframes.",
+    educationLinks: [
+      { peptideName: "Semax", articleUrl: "/guides/what-is-semax-peptide", articleTitle: "Semax: Cognitive Enhancement Research" },
+      { peptideName: "Selank", articleUrl: "/guides/what-is-selank-peptide", articleTitle: "Selank: Anxiolytic Neuroprotection Research" },
+    ],
+    icon: "Brain",
+    color: "#21d8ff",
+    badge: "Top Nootropic",
+    badgeColor: "#21d8ff",
+    retailValue: 120,
+    stackPrice: 99,
+    synergy: {
+      beginner: "Semax is a brain-boosting peptide that helps sharpen focus and supports the growth of new neural connections. Selank promotes a calm, clear-headed state by reducing stress signals without causing drowsiness. Together, they create a 'focused calm'—enhanced mental clarity without the jitters or anxiety.",
+      expert: "Semax (ACTH 4-10 analog) upregulates BDNF and NGF expression, enhancing neuroplasticity and cognitive processing speed. Selank (tuftsin analog) modulates GABAergic neurotransmission and reduces IL-6 levels, providing anxiolytic effects through immune-neuroendocrine cross-talk. The dual-pathway activation—neurotrophic enhancement (Semax) + anxiolytic neuroprotection (Selank)—creates complementary cognitive optimization without receptor competition."
     }
   },
   "collagen-skin-stack": {
