@@ -844,6 +844,7 @@ export default function ResearchStackDetail() {
           const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
           const peptideNorms = stack.peptides.map(p => normalize(p.name));
           const suggestedProducts = allProducts?.filter(p => 
+            p.category === "Peptides" &&
             peptideNorms.some(norm => normalize(p.name).includes(norm))
           ) || [];
           
@@ -861,26 +862,26 @@ export default function ResearchStackDetail() {
                 <FlaskConical className="h-5 w-5 text-[#21d8ff]" />
                 <h2 className="font-display text-2xl font-bold">Explore Individual Peptides</h2>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {suggestedProducts.map((product) => (
                   <Link key={product.id} href={`/products/${product.slug}`}>
                     <Card
-                      className="overflow-hidden cursor-pointer group md:hover:scale-[1.02] md:active:scale-[1.02] transition-all duration-300 md:hover:shadow-[0_0_30px_rgba(33,216,255,0.15)]"
+                      className="overflow-hidden cursor-pointer group md:hover:scale-[1.02] md:active:scale-[1.02] transition-all duration-300 md:hover:shadow-[0_0_30px_rgba(33,216,255,0.15)] border-[#2a2a32]"
                       data-testid={`card-suggested-${product.slug}`}
                     >
-                      <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 overflow-hidden">
+                      <div className="aspect-square bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10] overflow-hidden">
                         <ImageLoader
                           src={product.imageUrl || productImage}
                           alt={product.name}
-                          className="w-full h-full object-contain p-4"
+                          className="w-full h-full object-contain p-6"
                           containerClassName="w-full h-full"
                         />
                       </div>
-                      <div className="p-3">
+                      <div className="p-3 md:p-4">
                         <h3 className="font-display font-bold text-sm uppercase tracking-tight group-hover:text-[#21d8ff] transition-colors line-clamp-1">
                           {product.name}
                         </h3>
-                        <div className="flex items-center gap-2 mt-1">
+                        <div className="flex items-center flex-wrap gap-2 mt-1.5">
                           <span className="text-sm font-semibold">${Number(product.price).toFixed(2)}</span>
                           {product.inStock ? (
                             <Badge variant="outline" className="text-[10px] border-green-500/50 text-green-400">In Stock</Badge>
