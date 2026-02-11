@@ -16,6 +16,7 @@ import { ImageLoader } from "@/components/image-loader";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
+import { KNOWN_STACKS } from "@/lib/synergy-data";
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 
@@ -839,48 +840,87 @@ export default function ResearchStackDetail() {
           </div>
         </Card>
 
-        {/* Suggested Products Section */}
+        {/* Synergy-Based Recommendations */}
         {(() => {
           const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
-          const peptideNorms = stack.peptides.map(p => normalize(p.name));
-          const suggestedProducts = allProducts?.filter(p => 
-            p.category === "Peptides" &&
-            peptideNorms.some(norm => normalize(p.name).includes(norm))
-          ) || [];
-          
-          if (suggestedProducts.length === 0) return null;
-          
+          const stackPeptideNorms = stack.peptides.map(p => normalize(p.name));
+
+          const normsMatch = (a: string, b: string) => a === b;
+          const recMap = new Map<string, { peptideSlug: string; reason: string; stackName: string; synergyScore: number }>();
+
+          for (const ks of KNOWN_STACKS) {
+            const ksNorms = ks.peptides.map(p => normalize(p));
+            const hasOverlap = ksNorms.some(n => stackPeptideNorms.some(sp => normsMatch(n, sp)));
+            if (!hasOverlap) continue;
+            const missing = ks.peptides.filter(p => {
+              const n = normalize(p);
+              return !stackPeptideNorms.some(sp => normsMatch(n, sp));
+            });
+            for (const m of missing) {
+              const slug = normalize(m);
+              const existing = recMap.get(slug);
+              if (!existing || ks.synergyBonus > existing.synergyScore) {
+                recMap.set(slug, {
+                  peptideSlug: slug,
+                  reason: `Completes the ${ks.name}`,
+                  stackName: ks.name,
+                  synergyScore: ks.synergyBonus,
+                });
+              }
+            }
+          }
+
+          const recommendations = Array.from(recMap.values()).sort((a, b) => b.synergyScore - a.synergyScore);
+
+          const matchedProducts = recommendations
+            .map(rec => {
+              const product = allProducts?.find(p => {
+                if (p.category !== "Peptides") return false;
+                const pNorm = normalize(p.name);
+                return pNorm === rec.peptideSlug || pNorm.startsWith(rec.peptideSlug);
+              });
+              return product ? { product, ...rec } : null;
+            })
+            .filter(Boolean) as { product: Product; reason: string; stackName: string; synergyScore: number }[];
+
+          if (matchedProducts.length === 0) return null;
+
           return (
             <motion.section
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
               className="mt-12"
-              data-testid="section-suggested-products"
+              data-testid="section-synergy-recommendations"
             >
-              <div className="flex items-center gap-3 mb-6">
-                <FlaskConical className="h-5 w-5 text-[#21d8ff]" />
-                <h2 className="font-display text-2xl font-bold">Explore Individual Peptides</h2>
+              <div className="flex items-center gap-3 mb-2">
+                <Sparkles className="h-5 w-5 text-[#E7FB10]" />
+                <h2 className="font-display text-2xl font-bold">Synergy Recommendations</h2>
               </div>
-              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                {suggestedProducts.map((product) => (
+              <p className="text-sm text-muted-foreground mb-5">Peptides that pair well with this stack based on known research combinations</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                {matchedProducts.slice(0, 8).map(({ product, reason, synergyScore }) => (
                   <Link key={product.id} href={`/products/${product.slug}`}>
                     <Card
                       className="overflow-hidden cursor-pointer group md:hover:scale-[1.02] md:active:scale-[1.02] transition-all duration-300 md:hover:shadow-[0_0_20px_rgba(33,216,255,0.15)] border-[#2a2a32]"
-                      data-testid={`card-suggested-${product.slug}`}
+                      data-testid={`card-synergy-${product.slug}`}
                     >
-                      <div className="aspect-square bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10] overflow-hidden">
+                      <div className="aspect-square bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10] overflow-hidden relative">
                         <ImageLoader
                           src={product.imageUrl || productImage}
                           alt={product.name}
                           className="w-full h-full object-contain p-3"
                           containerClassName="w-full h-full"
                         />
+                        <div className="absolute top-1.5 right-1.5">
+                          <Badge className="text-[9px] px-1.5 py-0 bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30">{synergyScore}%</Badge>
+                        </div>
                       </div>
                       <div className="p-2">
                         <h3 className="font-display font-bold text-xs uppercase tracking-tight group-hover:text-[#21d8ff] transition-colors line-clamp-1">
                           {product.name}
                         </h3>
+                        <p className="text-[10px] text-[#E7FB10]/80 mt-0.5 line-clamp-1">{reason}</p>
                         <div className="flex items-center flex-wrap gap-1.5 mt-1">
                           <span className="text-xs font-semibold">${Number(product.price).toFixed(2)}</span>
                           {product.inStock ? (
