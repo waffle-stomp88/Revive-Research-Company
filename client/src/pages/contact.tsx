@@ -134,15 +134,15 @@ function FeedbackWidget() {
   return (
     <>
       <div
-        className="p-4 rounded-lg border-2 border-[#E7FB10]/50 cursor-pointer hover-elevate"
+        className="p-4 rounded-lg border border-[#21d8ff]/40 cursor-pointer hover-elevate relative overflow-visible"
         style={{
-          background: "linear-gradient(135deg, rgba(231,251,16,0.12) 0%, rgba(231,251,16,0.04) 100%)",
-          boxShadow: "0 0 20px rgba(231,251,16,0.10), inset 0 1px 0 rgba(231,251,16,0.15)",
+          background: "linear-gradient(135deg, rgba(33,216,255,0.10) 0%, rgba(139,92,246,0.08) 50%, rgba(33,216,255,0.04) 100%)",
+          boxShadow: "0 0 24px rgba(33,216,255,0.12), 0 0 8px rgba(139,92,246,0.08)",
         }}
         onClick={() => setIsOpen(true)}
         data-testid="btn-open-feedback"
       >
-        <h4 className="font-semibold text-[#E7FB10] mb-1 flex items-center gap-2 text-base">
+        <h4 className="font-semibold text-[#21d8ff] mb-1 flex items-center gap-2 text-base">
           <MessageSquare className="h-5 w-5" />
           Share Your Feedback
         </h4>
@@ -151,7 +151,7 @@ function FeedbackWidget() {
         </p>
         <Button
           size="sm"
-          className="bg-[#E7FB10] text-black border border-[#E7FB10] font-semibold"
+          className="bg-[#21d8ff] text-black border border-[#21d8ff] font-semibold"
           data-testid="btn-give-feedback"
           onClick={(e) => { e.stopPropagation(); setIsOpen(true); }}
         >
