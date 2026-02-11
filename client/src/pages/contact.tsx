@@ -99,22 +99,51 @@ function FeedbackWidget() {
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedType, setSelectedType] = useState<string | null>(null);
-  const [feedbackText, setFeedbackText] = useState("");
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 
+  const [bugWhat, setBugWhat] = useState("");
+  const [bugPage, setBugPage] = useState("");
+  const [featureTitle, setFeatureTitle] = useState("");
+  const [featureDesc, setFeatureDesc] = useState("");
+  const [generalText, setGeneralText] = useState("");
+  const [feedbackEmail, setFeedbackEmail] = useState("");
+
+  const resetFields = () => {
+    setBugWhat(""); setBugPage(""); setFeatureTitle(""); setFeatureDesc("");
+    setGeneralText(""); setFeedbackEmail(""); setSelectedType(null);
+  };
+
+  const buildMessage = () => {
+    if (selectedType === "bug") {
+      let msg = `What went wrong: ${bugWhat}`;
+      if (bugPage.trim()) msg += `\nPage: ${bugPage}`;
+      return msg;
+    }
+    if (selectedType === "feature") {
+      let msg = `Feature: ${featureTitle}\nDescription: ${featureDesc}`;
+      return msg;
+    }
+    return generalText;
+  };
+
+  const isValid = () => {
+    if (selectedType === "bug") return bugWhat.trim().length >= 10;
+    if (selectedType === "feature") return featureTitle.trim().length >= 3 && featureDesc.trim().length >= 10;
+    return generalText.trim().length >= 10;
+  };
+
   const feedbackMutation = useMutation({
-    mutationFn: async (data: { type: string; message: string }) => {
+    mutationFn: async (data: { type: string; message: string; email: string }) => {
       return apiRequest("POST", "/api/contact", {
         name: "Site Visitor",
-        email: "feedback@reviveresearch.co",
+        email: data.email || "feedback@reviveresearch.co",
         topic: "website_feedback",
         message: `[${data.type.toUpperCase()}] ${data.message}`,
       });
     },
     onSuccess: () => {
       setFeedbackSubmitted(true);
-      setFeedbackText("");
-      setSelectedType(null);
+      resetFields();
       toast({ title: "Feedback Sent", description: "Thanks for helping us improve!" });
     },
     onError: () => {
@@ -125,8 +154,7 @@ function FeedbackWidget() {
   const handleClose = () => {
     setIsOpen(false);
     setTimeout(() => {
-      setSelectedType(null);
-      setFeedbackText("");
+      resetFields();
       setFeedbackSubmitted(false);
     }, 200);
   };
@@ -164,16 +192,9 @@ function FeedbackWidget() {
         <DialogContent className="sm:max-w-md" data-testid="dialog-feedback">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              {selectedType ? (
-                <button
-                  onClick={() => { setSelectedType(null); setFeedbackText(""); }}
-                  className="text-muted-foreground mr-1"
-                  data-testid="btn-feedback-back"
-                >
-                  <ChevronRight className="h-4 w-4 rotate-180" />
-                </button>
-              ) : null}
-              How can we help?
+              {selectedType
+                ? FEEDBACK_TYPES.find(t => t.value === selectedType)?.label || "Feedback"
+                : "How can we help?"}
             </DialogTitle>
           </DialogHeader>
 
@@ -233,46 +254,107 @@ function FeedbackWidget() {
             </div>
           ) : (
             <div className="space-y-4 py-2">
-              <div className="flex items-center gap-2">
-                {(() => {
-                  const type = FEEDBACK_TYPES.find(t => t.value === selectedType);
-                  if (!type) return null;
-                  const Icon = type.icon;
-                  return (
-                    <>
-                      <div
-                        className="h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                        style={{ backgroundColor: `${type.color}15` }}
-                      >
-                        <Icon className="h-4 w-4" style={{ color: type.color }} />
-                      </div>
-                      <span className="text-sm font-semibold">{type.label}</span>
-                    </>
-                  );
-                })()}
+              {selectedType === "bug" && (
+                <>
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">What went wrong?</label>
+                    <Textarea
+                      value={bugWhat}
+                      onChange={(e) => setBugWhat(e.target.value)}
+                      placeholder="Describe the issue you encountered..."
+                      className="min-h-[80px] resize-none"
+                      data-testid="input-bug-what"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">
+                      Which page were you on? <span className="text-muted-foreground font-normal">(optional)</span>
+                    </label>
+                    <Input
+                      value={bugPage}
+                      onChange={(e) => setBugPage(e.target.value)}
+                      placeholder="e.g., Shop, Cart, Product page..."
+                      data-testid="input-bug-page"
+                    />
+                  </div>
+                </>
+              )}
+
+              {selectedType === "feature" && (
+                <>
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Feature Title</label>
+                    <Input
+                      value={featureTitle}
+                      onChange={(e) => setFeatureTitle(e.target.value)}
+                      placeholder="e.g., Wishlist, COA downloads..."
+                      data-testid="input-feature-title"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">How would this help your research?</label>
+                    <Textarea
+                      value={featureDesc}
+                      onChange={(e) => setFeatureDesc(e.target.value)}
+                      placeholder="What would this feature do? How would it help you?"
+                      className="min-h-[80px] resize-none"
+                      data-testid="input-feature-desc"
+                    />
+                  </div>
+                </>
+              )}
+
+              {selectedType === "general" && (
+                <div>
+                  <label className="text-sm font-medium mb-1.5 block">What's on your mind?</label>
+                  <Textarea
+                    value={generalText}
+                    onChange={(e) => setGeneralText(e.target.value)}
+                    placeholder="Share your thoughts about our site or products..."
+                    className="min-h-[100px] resize-none"
+                    data-testid="input-general-text"
+                  />
+                </div>
+              )}
+
+              <div>
+                <label className="text-sm font-medium mb-1.5 block">
+                  Email <span className="text-muted-foreground font-normal">(optional)</span>
+                </label>
+                <Input
+                  type="email"
+                  value={feedbackEmail}
+                  onChange={(e) => setFeedbackEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  data-testid="input-feedback-email"
+                />
+                <p className="text-xs text-muted-foreground mt-1">So we can follow up if needed</p>
               </div>
-              <Textarea
-                value={feedbackText}
-                onChange={(e) => setFeedbackText(e.target.value)}
-                placeholder="Share your thoughts..."
-                className="min-h-[100px] resize-none"
-                data-testid="input-feedback-message"
-              />
-              <Button
-                className="w-full bg-[#E7FB10] text-black border border-[#E7FB10]"
-                disabled={feedbackText.trim().length < 10 || feedbackMutation.isPending}
-                onClick={() => feedbackMutation.mutate({ type: selectedType, message: feedbackText })}
-                data-testid="btn-submit-feedback"
-              >
-                {feedbackMutation.isPending ? (
-                  <span>Sending...</span>
-                ) : (
-                  <>
-                    <Send className="h-4 w-4 mr-2" />
-                    Send Feedback
-                  </>
-                )}
-              </Button>
+
+              <div className="flex items-center gap-2 pt-1">
+                <Button
+                  variant="outline"
+                  onClick={() => resetFields()}
+                  data-testid="btn-feedback-back-form"
+                >
+                  Back
+                </Button>
+                <Button
+                  className="flex-1 bg-[#21d8ff] text-black border border-[#21d8ff]"
+                  disabled={!isValid() || feedbackMutation.isPending}
+                  onClick={() => feedbackMutation.mutate({ type: selectedType!, message: buildMessage(), email: feedbackEmail })}
+                  data-testid="btn-submit-feedback"
+                >
+                  {feedbackMutation.isPending ? (
+                    <span>Sending...</span>
+                  ) : (
+                    <>
+                      <Send className="h-4 w-4 mr-2" />
+                      Submit
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
           )}
         </DialogContent>
