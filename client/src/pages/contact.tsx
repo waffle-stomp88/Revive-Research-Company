@@ -134,17 +134,30 @@ function FeedbackWidget() {
   return (
     <>
       <div
-        className="p-4 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30 cursor-pointer hover-elevate"
+        className="p-4 rounded-lg border-2 border-[#E7FB10]/50 cursor-pointer hover-elevate"
+        style={{
+          background: "linear-gradient(135deg, rgba(231,251,16,0.12) 0%, rgba(231,251,16,0.04) 100%)",
+          boxShadow: "0 0 20px rgba(231,251,16,0.10), inset 0 1px 0 rgba(231,251,16,0.15)",
+        }}
         onClick={() => setIsOpen(true)}
         data-testid="btn-open-feedback"
       >
-        <h4 className="font-medium text-[#E7FB10] mb-2 flex items-center gap-2">
-          <MessageSquare className="h-4 w-4" />
+        <h4 className="font-semibold text-[#E7FB10] mb-1 flex items-center gap-2 text-base">
+          <MessageSquare className="h-5 w-5" />
           Share Your Feedback
         </h4>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground mb-3">
           Report bugs, suggest features, or tell us what you think.
         </p>
+        <Button
+          size="sm"
+          className="bg-[#E7FB10] text-black border border-[#E7FB10] font-semibold"
+          data-testid="btn-give-feedback"
+          onClick={(e) => { e.stopPropagation(); setIsOpen(true); }}
+        >
+          <Send className="h-3.5 w-3.5 mr-1.5" />
+          Give Feedback
+        </Button>
       </div>
 
       <Dialog open={isOpen} onOpenChange={(open) => { if (!open) handleClose(); }}>
