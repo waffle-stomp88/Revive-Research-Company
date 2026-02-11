@@ -862,31 +862,31 @@ export default function ResearchStackDetail() {
                 <FlaskConical className="h-5 w-5 text-[#21d8ff]" />
                 <h2 className="font-display text-2xl font-bold">Explore Individual Peptides</h2>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                 {suggestedProducts.map((product) => (
                   <Link key={product.id} href={`/products/${product.slug}`}>
                     <Card
-                      className="overflow-hidden cursor-pointer group md:hover:scale-[1.02] md:active:scale-[1.02] transition-all duration-300 md:hover:shadow-[0_0_30px_rgba(33,216,255,0.15)] border-[#2a2a32]"
+                      className="overflow-hidden cursor-pointer group md:hover:scale-[1.02] md:active:scale-[1.02] transition-all duration-300 md:hover:shadow-[0_0_20px_rgba(33,216,255,0.15)] border-[#2a2a32]"
                       data-testid={`card-suggested-${product.slug}`}
                     >
                       <div className="aspect-square bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10] overflow-hidden">
                         <ImageLoader
                           src={product.imageUrl || productImage}
                           alt={product.name}
-                          className="w-full h-full object-contain p-6"
+                          className="w-full h-full object-contain p-3"
                           containerClassName="w-full h-full"
                         />
                       </div>
-                      <div className="p-3 md:p-4">
-                        <h3 className="font-display font-bold text-sm uppercase tracking-tight group-hover:text-[#21d8ff] transition-colors line-clamp-1">
+                      <div className="p-2">
+                        <h3 className="font-display font-bold text-xs uppercase tracking-tight group-hover:text-[#21d8ff] transition-colors line-clamp-1">
                           {product.name}
                         </h3>
-                        <div className="flex items-center flex-wrap gap-2 mt-1.5">
-                          <span className="text-sm font-semibold">${Number(product.price).toFixed(2)}</span>
+                        <div className="flex items-center flex-wrap gap-1.5 mt-1">
+                          <span className="text-xs font-semibold">${Number(product.price).toFixed(2)}</span>
                           {product.inStock ? (
-                            <Badge variant="outline" className="text-[10px] border-green-500/50 text-green-400">In Stock</Badge>
+                            <Badge variant="outline" className="text-[9px] px-1 py-0 border-green-500/50 text-green-400">In Stock</Badge>
                           ) : (
-                            <Badge variant="outline" className="text-[10px] border-red-500/50 text-red-400">Out of Stock</Badge>
+                            <Badge variant="outline" className="text-[9px] px-1 py-0 border-red-500/50 text-red-400">Out of Stock</Badge>
                           )}
                         </div>
                       </div>
