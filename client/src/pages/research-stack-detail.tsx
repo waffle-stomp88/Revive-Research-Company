@@ -16,7 +16,9 @@ import { ImageLoader } from "@/components/image-loader";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-import { KNOWN_STACKS } from "@/lib/synergy-data";
+import { getSynergyPartners, normalizePeptideName } from "@/lib/synergy-data";
+import { getTopPairingForProduct } from "@/lib/pairing-intelligence";
+import { Layers, Zap } from "lucide-react";
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 
@@ -840,50 +842,40 @@ export default function ResearchStackDetail() {
           </div>
         </Card>
 
-        {/* Synergy-Based Recommendations */}
+        {/* Works Well With - Synergy Recommendations */}
         {(() => {
-          const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
-          const stackPeptideNorms = stack.peptides.map(p => normalize(p.name));
+          const stackPeptideNames = stack.peptides.map(p => p.name);
+          const stackNorms = new Set(stackPeptideNames.map(n => normalizePeptideName(n)));
 
-          const normsMatch = (a: string, b: string) => a === b;
-          const recMap = new Map<string, { peptideSlug: string; reason: string; stackName: string; synergyScore: number }>();
-
-          for (const ks of KNOWN_STACKS) {
-            const ksNorms = ks.peptides.map(p => normalize(p));
-            const hasOverlap = ksNorms.some(n => stackPeptideNorms.some(sp => normsMatch(n, sp)));
-            if (!hasOverlap) continue;
-            const missing = ks.peptides.filter(p => {
-              const n = normalize(p);
-              return !stackPeptideNorms.some(sp => normsMatch(n, sp));
-            });
-            for (const m of missing) {
-              const slug = normalize(m);
-              const existing = recMap.get(slug);
-              if (!existing || ks.synergyBonus > existing.synergyScore) {
-                recMap.set(slug, {
-                  peptideSlug: slug,
-                  reason: `Completes the ${ks.name}`,
-                  stackName: ks.name,
-                  synergyScore: ks.synergyBonus,
-                });
+          const partnerMap = new Map<string, { partner: string; stack: { name: string }; synergyBonus: number }>();
+          for (const peptideName of stackPeptideNames) {
+            const partners = getSynergyPartners(peptideName);
+            for (const p of partners) {
+              const norm = normalizePeptideName(p.partner);
+              if (stackNorms.has(norm)) continue;
+              const existing = partnerMap.get(norm);
+              if (!existing || p.synergyBonus > existing.synergyBonus) {
+                partnerMap.set(norm, p);
               }
             }
           }
 
-          const recommendations = Array.from(recMap.values()).sort((a, b) => b.synergyScore - a.synergyScore);
+          const sortedPartners = Array.from(partnerMap.values()).sort((a, b) => b.synergyBonus - a.synergyBonus);
 
-          const matchedProducts = recommendations
-            .map(rec => {
+          const matchingProducts = sortedPartners
+            .map(sp => {
               const product = allProducts?.find(p => {
-                if (p.category !== "Peptides") return false;
-                const pNorm = normalize(p.name);
-                return pNorm === rec.peptideSlug || pNorm.startsWith(rec.peptideSlug);
+                if (p.category === "Research Stacks" || p.category === "Supplies" || p.category === "Research Compounds") return false;
+                const normalizedProductName = normalizePeptideName(p.name);
+                return normalizePeptideName(sp.partner) === normalizedProductName ||
+                  normalizedProductName.includes(normalizePeptideName(sp.partner)) ||
+                  normalizePeptideName(sp.partner).includes(normalizedProductName);
               });
-              return product ? { product, ...rec } : null;
+              return product ? { product, synergy: sp } : null;
             })
-            .filter(Boolean) as { product: Product; reason: string; stackName: string; synergyScore: number }[];
+            .filter(Boolean) as { product: Product; synergy: { partner: string; stack: { name: string }; synergyBonus: number } }[];
 
-          if (matchedProducts.length === 0) return null;
+          if (matchingProducts.length === 0) return null;
 
           return (
             <motion.section
@@ -893,46 +885,74 @@ export default function ResearchStackDetail() {
               className="mt-12"
               data-testid="section-synergy-recommendations"
             >
-              <div className="flex items-center gap-3 mb-2">
-                <Sparkles className="h-5 w-5 text-[#E7FB10]" />
-                <h2 className="font-display text-2xl font-bold">Synergy Recommendations</h2>
+              <div className="flex flex-wrap items-center gap-3 mb-6">
+                <Layers className="h-6 w-6 text-[#22c55e]" />
+                <h2 className="font-display text-2xl font-bold">Works Well With</h2>
               </div>
-              <p className="text-sm text-muted-foreground mb-5">Peptides that pair well with this stack based on known research combinations</p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                {matchedProducts.slice(0, 8).map(({ product, reason, synergyScore }) => (
-                  <Link key={product.id} href={`/products/${product.slug}`}>
-                    <Card
-                      className="overflow-hidden cursor-pointer group md:hover:scale-[1.02] md:active:scale-[1.02] transition-all duration-300 md:hover:shadow-[0_0_20px_rgba(33,216,255,0.15)] border-[#2a2a32]"
-                      data-testid={`card-synergy-${product.slug}`}
-                    >
-                      <div className="aspect-square bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10] overflow-hidden relative">
-                        <ImageLoader
-                          src={product.imageUrl || productImage}
-                          alt={product.name}
-                          className="w-full h-full object-contain p-3"
-                          containerClassName="w-full h-full"
-                        />
-                        <div className="absolute top-1.5 right-1.5">
-                          <Badge className="text-[9px] px-1.5 py-0 bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30">{synergyScore}%</Badge>
+
+              <p className="text-muted-foreground mb-6">
+                Research-backed pairings based on complementary mechanisms of action.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
+                {matchingProducts.slice(0, 3).map(({ product: partnerProduct, synergy }) => {
+                  const pairingReason = (() => {
+                    for (const peptideName of stackPeptideNames) {
+                      const reason = getTopPairingForProduct(peptideName, partnerProduct.name);
+                      if (reason) return reason;
+                    }
+                    return null;
+                  })();
+
+                  return (
+                    <Link key={partnerProduct.id} href={`/products/${partnerProduct.slug || partnerProduct.id}`} className="h-full" data-testid={`link-synergy-${partnerProduct.id}`}>
+                      <Card
+                        className="p-4 border-[#22c55e]/20 cursor-pointer hover-elevate h-full"
+                        data-testid={`card-synergy-${partnerProduct.slug}`}
+                      >
+                        <div className="flex flex-wrap items-start gap-4 h-full">
+                          <div className="w-16 h-16 rounded-lg overflow-hidden bg-card flex-shrink-0">
+                            <img
+                              src={partnerProduct.imageUrl || productImage}
+                              alt={partnerProduct.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0 flex flex-col h-full">
+                            <p className="font-medium text-sm truncate">
+                              {partnerProduct.name}
+                            </p>
+                            <Badge
+                              className="mt-2 text-xs bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30"
+                            >
+                              <Zap className="h-3 w-3 mr-1" />
+                              {synergy.stack.name} • {synergy.synergyBonus}%
+                            </Badge>
+                            {pairingReason && (
+                              <p className="text-xs text-muted-foreground mt-2 line-clamp-2 flex-1">
+                                {pairingReason.mechanism}
+                              </p>
+                            )}
+                            {!pairingReason && <div className="flex-1" />}
+                            <p className="text-sm font-bold text-[#E7FB10] mt-2 mt-auto">
+                              ${Number(partnerProduct.price).toFixed(2)}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="p-2">
-                        <h3 className="font-display font-bold text-xs uppercase tracking-tight group-hover:text-[#21d8ff] transition-colors line-clamp-1">
-                          {product.name}
-                        </h3>
-                        <p className="text-[10px] text-[#E7FB10]/80 mt-0.5 line-clamp-1">{reason}</p>
-                        <div className="flex items-center flex-wrap gap-1.5 mt-1">
-                          <span className="text-xs font-semibold">${Number(product.price).toFixed(2)}</span>
-                          {product.inStock ? (
-                            <Badge variant="outline" className="text-[9px] px-1 py-0 border-green-500/50 text-green-400">In Stock</Badge>
-                          ) : (
-                            <Badge variant="outline" className="text-[9px] px-1 py-0 border-red-500/50 text-red-400">Out of Stock</Badge>
-                          )}
-                        </div>
-                      </div>
-                    </Card>
-                  </Link>
-                ))}
+                      </Card>
+                    </Link>
+                  );
+                })}
+              </div>
+
+              <div className="mt-6 flex justify-center">
+                <Link href="/research-stacks?tab=custom" data-testid="link-build-custom-stack">
+                  <Button className="bg-gradient-to-r from-[#22c55e] to-[#21d8ff] text-black font-bold">
+                    <Layers className="h-4 w-4 mr-2" />
+                    Build a Custom Stack
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </Link>
               </div>
             </motion.section>
           );
