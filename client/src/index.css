@@ -189,7 +189,7 @@
   }
 }
 
-/* Banner height CSS variable - controlled by FreeShippingBanner component */
+/* Banner height CSS variable - dynamically set by FreeShippingBanner component via ResizeObserver */
 :root {
   --banner-height: 36px;
 }

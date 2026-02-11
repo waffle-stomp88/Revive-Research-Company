@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { X, Truck } from "lucide-react";
 import { Link } from "wouter";
 
@@ -6,21 +6,42 @@ const FREE_SHIPPING_THRESHOLD = 200;
 
 export function FreeShippingBanner() {
   const [dismissed, setDismissed] = useState(false);
+  const bannerRef = useRef<HTMLDivElement>(null);
+
+  const updateBannerHeight = useCallback(() => {
+    if (bannerRef.current) {
+      const height = bannerRef.current.getBoundingClientRect().height;
+      document.documentElement.style.setProperty('--banner-height', `${height}px`);
+    }
+  }, []);
 
   useEffect(() => {
-    if (!dismissed) {
-      // Account for safe area inset on iOS devices with notch/dynamic island
-      document.documentElement.style.setProperty('--banner-height', 'calc(36px + env(safe-area-inset-top, 0px))');
-    } else {
-      document.documentElement.style.setProperty('--banner-height', 'env(safe-area-inset-top, 0px)');
+    if (dismissed) {
+      document.documentElement.style.setProperty('--banner-height', '0px');
+      return;
     }
-  }, [dismissed]);
+
+    updateBannerHeight();
+
+    const el = bannerRef.current;
+    if (!el) return;
+
+    const observer = new ResizeObserver(() => {
+      updateBannerHeight();
+    });
+    observer.observe(el);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [dismissed, updateBannerHeight]);
 
   if (dismissed) return null;
 
   return (
-    <div 
-      className="fixed top-0 left-0 right-0 z-[60] bg-[#E7FB10] text-black py-2 px-2 sm:px-4 overflow-hidden" 
+    <div
+      ref={bannerRef}
+      className="fixed top-0 left-0 right-0 z-[60] bg-[#E7FB10] text-black py-2 px-2 sm:px-4 overflow-hidden"
       style={{
         paddingTop: 'max(env(safe-area-inset-top, 0px), 0.5rem)',
         WebkitTransform: 'translateZ(0)',
@@ -32,14 +53,17 @@ export function FreeShippingBanner() {
         <Truck className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
         <span className="truncate">
           <span className="font-bold text-red-500" style={{ animation: 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}>FREE SHIPPING</span> on orders over ${FREE_SHIPPING_THRESHOLD}
-          <span className="hidden sm:inline"> • Same day shipping on orders placed before 12:00 PM CT</span>
+          <span className="hidden sm:inline"> &bull; Same day shipping on orders placed before 12:00 PM CT</span>
         </span>
         <Link href="/peptides" className="ml-1 sm:ml-2 underline hover:no-underline font-semibold whitespace-nowrap flex-shrink-0">
           Shop Now
         </Link>
       </div>
       <button
-        onClick={() => setDismissed(true)}
+        onClick={() => {
+          document.documentElement.style.setProperty('--banner-height', '0px');
+          setDismissed(true);
+        }}
         className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-black/10 rounded transition-colors"
         aria-label="Dismiss banner"
         data-testid="button-dismiss-banner"
