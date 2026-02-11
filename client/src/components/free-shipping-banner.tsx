@@ -1,42 +1,28 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { X, Truck } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { Truck } from "lucide-react";
 import { Link } from "wouter";
 
 const FREE_SHIPPING_THRESHOLD = 200;
 
 export function FreeShippingBanner() {
-  const [dismissed, setDismissed] = useState(false);
   const bannerRef = useRef<HTMLDivElement>(null);
 
-  const updateBannerHeight = useCallback(() => {
-    if (bannerRef.current) {
-      const height = bannerRef.current.getBoundingClientRect().height;
-      document.documentElement.style.setProperty('--banner-height', `${height}px`);
-    }
-  }, []);
-
   useEffect(() => {
-    if (dismissed) {
-      document.documentElement.style.setProperty('--banner-height', '0px');
-      return;
-    }
-
-    updateBannerHeight();
-
     const el = bannerRef.current;
     if (!el) return;
 
-    const observer = new ResizeObserver(() => {
-      updateBannerHeight();
-    });
+    const updateHeight = () => {
+      const height = el.getBoundingClientRect().height;
+      document.documentElement.style.setProperty('--banner-height', `${height}px`);
+    };
+
+    updateHeight();
+
+    const observer = new ResizeObserver(updateHeight);
     observer.observe(el);
 
-    return () => {
-      observer.disconnect();
-    };
-  }, [dismissed, updateBannerHeight]);
-
-  if (dismissed) return null;
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div
@@ -49,7 +35,7 @@ export function FreeShippingBanner() {
       }}
       data-testid="banner-free-shipping"
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium pr-6">
+      <div className="max-w-7xl mx-auto flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium">
         <Truck className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
         <span className="truncate">
           <span className="font-bold text-red-500" style={{ animation: 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}>FREE SHIPPING</span> on orders over ${FREE_SHIPPING_THRESHOLD}
@@ -59,17 +45,6 @@ export function FreeShippingBanner() {
           Shop Now
         </Link>
       </div>
-      <button
-        onClick={() => {
-          document.documentElement.style.setProperty('--banner-height', '0px');
-          setDismissed(true);
-        }}
-        className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-black/10 rounded transition-colors"
-        aria-label="Dismiss banner"
-        data-testid="button-dismiss-banner"
-      >
-        <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-      </button>
     </div>
   );
 }
