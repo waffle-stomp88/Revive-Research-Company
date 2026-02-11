@@ -41,6 +41,11 @@ import {
   ArrowRight,
   Truck,
   Tag,
+  Bug,
+  Lightbulb,
+  ThumbsUp,
+  ChevronRight,
+  X,
 } from "lucide-react";
 
 const CONTACT_TOPICS = [
@@ -48,7 +53,6 @@ const CONTACT_TOPICS = [
   { value: "product_question", label: "Product Question", placeholder: "What would you like to know about our products?" },
   { value: "shipping", label: "Shipping & Delivery", placeholder: "Include your order number if applicable. Describe your shipping question..." },
   { value: "wholesale", label: "Wholesale Inquiry", placeholder: "Tell us about your organization and estimated order volume..." },
-  { value: "website_feedback", label: "Website Feedback", placeholder: "Let us know what's not working or what could be better..." },
   { value: "other", label: "Other", placeholder: "How can we help you?" },
 ] as const;
 
@@ -77,6 +81,152 @@ function getResponseTimeByTimeZone(): string {
   const ctHour = ctTime.getHours();
   const isOffHours = ctHour >= 17 || ctHour < 9;
   return isOffHours ? "12 hours" : "2-4 hours";
+}
+
+const FEEDBACK_TYPES = [
+  { value: "bug", label: "Report a Bug", description: "Found an issue on the site", icon: Bug, color: "#ef4444" },
+  { value: "feature", label: "Suggest a Feature", description: "Share an idea for improvement", icon: Lightbulb, color: "#E7FB10" },
+  { value: "general", label: "General Feedback", description: "Tell us what you think", icon: ThumbsUp, color: "#22c55e" },
+] as const;
+
+function FeedbackWidget() {
+  const { toast } = useToast();
+  const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [feedbackText, setFeedbackText] = useState("");
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+
+  const feedbackMutation = useMutation({
+    mutationFn: async (data: { type: string; message: string }) => {
+      return apiRequest("POST", "/api/contact", {
+        name: "Site Visitor",
+        email: "feedback@reviveresearch.co",
+        topic: "website_feedback",
+        message: `[${data.type.toUpperCase()}] ${data.message}`,
+      });
+    },
+    onSuccess: () => {
+      setFeedbackSubmitted(true);
+      setFeedbackText("");
+      setSelectedType(null);
+      toast({ title: "Feedback Sent", description: "Thanks for helping us improve!" });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to send feedback. Please try again.", variant: "destructive" });
+    },
+  });
+
+  if (feedbackSubmitted) {
+    return (
+      <Card className="border-[#22c55e]/30">
+        <CardContent className="pt-6">
+          <div className="flex flex-col items-center text-center py-4">
+            <div className="h-10 w-10 rounded-full bg-[#22c55e]/20 flex items-center justify-center mb-3">
+              <CheckCircle className="h-5 w-5 text-[#22c55e]" />
+            </div>
+            <p className="font-medium text-sm mb-1">Thank you!</p>
+            <p className="text-xs text-muted-foreground mb-3">Your feedback helps us improve.</p>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setFeedbackSubmitted(false)}
+              data-testid="btn-feedback-another"
+            >
+              Send More Feedback
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="border-[#E7FB10]/20">
+      <CardContent className="pt-6">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-medium text-sm flex items-center gap-2">
+            <MessageSquare className="h-4 w-4 text-[#E7FB10]" />
+            Quick Feedback
+          </h3>
+          {selectedType && (
+            <button
+              onClick={() => { setSelectedType(null); setFeedbackText(""); }}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              data-testid="btn-feedback-back"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+
+        {!selectedType ? (
+          <div className="space-y-2">
+            {FEEDBACK_TYPES.map((type) => {
+              const Icon = type.icon;
+              return (
+                <button
+                  key={type.value}
+                  onClick={() => setSelectedType(type.value)}
+                  className="w-full flex items-center gap-3 p-3 rounded-lg border border-border/50 transition-colors text-left hover-elevate"
+                  data-testid={`btn-feedback-${type.value}`}
+                >
+                  <div
+                    className="h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style={{ backgroundColor: `${type.color}15` }}
+                  >
+                    <Icon className="h-4 w-4" style={{ color: type.color }} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm font-medium block">{type.label}</span>
+                    <span className="text-[11px] text-muted-foreground block">{type.description}</span>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              {(() => {
+                const type = FEEDBACK_TYPES.find(t => t.value === selectedType);
+                if (!type) return null;
+                const Icon = type.icon;
+                return (
+                  <>
+                    <Icon className="h-4 w-4" style={{ color: type.color }} />
+                    <span className="text-sm font-medium">{type.label}</span>
+                  </>
+                );
+              })()}
+            </div>
+            <Textarea
+              value={feedbackText}
+              onChange={(e) => setFeedbackText(e.target.value)}
+              placeholder="Share your thoughts..."
+              className="min-h-[80px] resize-none text-sm"
+              data-testid="input-feedback-message"
+            />
+            <Button
+              size="sm"
+              className="w-full bg-[#E7FB10] text-black border border-[#E7FB10]"
+              disabled={feedbackText.trim().length < 10 || feedbackMutation.isPending}
+              onClick={() => feedbackMutation.mutate({ type: selectedType, message: feedbackText })}
+              data-testid="btn-submit-feedback"
+            >
+              {feedbackMutation.isPending ? (
+                <span className="text-sm">Sending...</span>
+              ) : (
+                <>
+                  <Send className="h-3 w-3 mr-1" />
+                  <span className="text-sm">Send Feedback</span>
+                </>
+              )}
+            </Button>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
 }
 
 export default function Contact() {
@@ -369,6 +519,8 @@ export default function Contact() {
                   </div>
                 </CardContent>
               </Card>
+
+              <FeedbackWidget />
 
               <div className="p-4 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30">
                 <h4 className="font-medium text-[#E7FB10] mb-2 flex items-center gap-2">
