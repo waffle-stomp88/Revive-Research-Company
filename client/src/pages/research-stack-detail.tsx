@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useRoute, Link, useLocation } from "wouter";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
 import {
-  ArrowLeft, FlaskConical, ShoppingCart, Sparkles, CheckCircle2, AlertTriangle, Info, Package, GraduationCap, Beaker, Shield, FileCheck, Truck, RefreshCw, ShoppingBag, Repeat, CheckCircle, Minus, Plus, BookOpen, ChevronRight, Clock, ExternalLink, Star, User
+  ArrowLeft, FlaskConical, ShoppingCart, Sparkles, CheckCircle2, AlertTriangle, Info, Package, GraduationCap, Shield, FileCheck, Truck, RefreshCw, ShoppingBag, Repeat, CheckCircle, Minus, Plus, BookOpen, ChevronRight, Clock, ExternalLink, Star, User
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -288,7 +288,6 @@ export default function ResearchStackDetail() {
   const { addToCart } = useCart();
   const { toast } = useToast();
   const { isAuthenticated, login } = useAuth();
-  const [synergyMode, setSynergyMode] = useState<"beginner" | "expert">("beginner");
   const [quantity, setQuantity] = useState(1);
   const [purchaseType, setPurchaseType] = useState<PurchaseType>("one-time");
   const [subscriptionInterval, setSubscriptionInterval] = useState<SubscriptionInterval>("monthly");
@@ -754,43 +753,6 @@ export default function ResearchStackDetail() {
               </div>
             )}
 
-            {/* Why These Work Together */}
-            <div className="mb-8">
-              <h3 className="font-display font-semibold text-lg mb-4">Why These Work Together</h3>
-              <Card className="p-4 border-[#2a2a32]">
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-[#0d0d10] border border-[#2a2a32]">
-                    <button
-                      onClick={() => setSynergyMode("beginner")}
-                      className={`flex-1 px-3 py-1.5 rounded text-sm font-medium transition-all ${
-                        synergyMode === "beginner" ? "bg-[#21d8ff]/20 text-[#21d8ff]" : "text-muted-foreground hover:text-white"
-                      }`}
-                      data-testid="button-synergy-beginner"
-                    >
-                      <GraduationCap className="h-4 w-4 inline mr-1" />
-                      Quick Breakdown
-                    </button>
-                    <button
-                      onClick={() => setSynergyMode("expert")}
-                      className={`flex-1 px-3 py-1.5 rounded text-sm font-medium transition-all ${
-                        synergyMode === "expert" ? "bg-[#a855f7]/20 text-[#a855f7]" : "text-muted-foreground hover:text-white"
-                      }`}
-                      data-testid="button-synergy-expert"
-                    >
-                      <Beaker className="h-4 w-4 inline mr-1" />
-                      Deep Dive
-                    </button>
-                  </div>
-                  <AnimatePresence mode="wait">
-                    <motion.div key={synergyMode} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="p-4 rounded-lg bg-[#0d0d10] border border-[#2a2a32]">
-                      <p className={`text-sm leading-relaxed ${synergyMode === "beginner" ? "text-gray-200" : "text-gray-300"}`} data-testid={`text-synergy-${synergyMode}`}>
-                        {synergyMode === "beginner" ? stack.synergy.beginner : stack.synergy.expert}
-                      </p>
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
-              </Card>
-            </div>
           </motion.div>
         </div>
 
