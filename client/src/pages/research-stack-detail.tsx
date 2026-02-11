@@ -420,8 +420,8 @@ export default function ResearchStackDetail() {
                   </Badge>
                 )}
                 <div className="text-center">
-                  <div className="w-32 h-32 rounded-3xl mx-auto flex items-center justify-center mb-4" style={{ backgroundColor: `${stack.color}20` }}>
-                    <Package className="h-16 w-16" style={{ color: stack.color }} />
+                  <div className="w-40 h-40 md:w-48 md:h-48 rounded-3xl mx-auto flex items-center justify-center mb-4" style={{ backgroundColor: `${stack.color}20` }}>
+                    <Package className="h-20 w-20 md:h-24 md:w-24" style={{ color: stack.color }} />
                   </div>
                   <div className="flex justify-center gap-2 mt-4">
                     {stack.peptides.map((peptide, i) => (
@@ -435,19 +435,6 @@ export default function ResearchStackDetail() {
               </div>
             </Card>
 
-            <Card className="hidden md:block p-2.5 bg-red-950/30 border border-red-500/50 animate-pulse-subtle mt-3" data-testid="card-ruo-disclaimer">
-              <div className="flex items-start gap-2">
-                <div className="p-1 rounded bg-red-500/20 flex-shrink-0">
-                  <AlertTriangle className="h-3 w-3 text-red-400" />
-                </div>
-                <div className="min-w-0">
-                  <h4 className="font-display font-bold text-red-400 uppercase tracking-wider text-xs mb-0.5">Research Use Only</h4>
-                  <p className="text-xs text-muted-foreground leading-tight">
-                    For research purposes only. Not for human consumption.
-                  </p>
-                </div>
-              </div>
-            </Card>
 
             {stack.educationLinks.length > 0 && (
               <motion.section
@@ -835,6 +822,26 @@ export default function ResearchStackDetail() {
 
           </motion.div>
         </div>
+
+        {/* RUO Disclaimer - DESKTOP ONLY - Full width below both columns */}
+        <Card className="p-6 bg-red-950/30 border-2 border-red-500/50 animate-pulse-subtle mt-8 hidden md:block" data-testid="card-ruo-disclaimer-desktop">
+          <div className="flex items-start gap-4">
+            <div className="p-3 rounded-full bg-red-500/20 border border-red-500/30 flex-shrink-0">
+              <AlertTriangle className="h-6 w-6 text-red-400" />
+            </div>
+            <div>
+              <h4 className="font-display font-bold text-red-400 uppercase tracking-wider text-lg mb-2">
+                Research Use Only
+              </h4>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                This product is sold for research purposes only and is not intended 
+                for human consumption. By purchasing, you confirm you are a qualified 
+                researcher and will use this product in accordance with all applicable 
+                federal and state laws and regulations.
+              </p>
+            </div>
+          </div>
+        </Card>
 
         {/* Reviews Section */}
         <motion.section
