@@ -788,6 +788,29 @@ export function Navigation() {
                     </div>
                   </div>
                 </Link>
+
+                <Link href="/legal">
+                  <div
+                    className={`flex items-center gap-4 py-4 px-4 rounded-lg border transition-colors ${
+                      location === "/legal"
+                        ? "bg-[#a855f7]/15 border-[#a855f7]/40" 
+                        : "bg-[#2a2a30] border-[#3a3a42] active:bg-[#333338]"
+                    }`}
+                    data-testid="link-mobile-legal-resources"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-[#a855f7]/15 flex items-center justify-center flex-shrink-0">
+                      <Scale className="h-5 w-5 text-[#a855f7]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className={`text-base font-semibold block ${location === "/legal" ? "text-[#a855f7]" : "text-white"}`}>
+                        Legal Resources
+                      </span>
+                      <span className="text-sm text-gray-400 block">
+                        Terms, privacy & compliance docs
+                      </span>
+                    </div>
+                  </div>
+                </Link>
               </div>
               
               {/* Auth Buttons */}
