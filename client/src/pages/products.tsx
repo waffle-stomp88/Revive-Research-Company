@@ -906,8 +906,8 @@ function ProductsComponent() {
                                 <ImageLoader 
                                   src={product.imageUrl || productImage} 
                                   alt={`${product.name} research peptide - third party lab tested`}
-                                  className="w-full h-full object-contain transition-transform duration-300 p-3 md:group-hover:scale-105 md:group-active:scale-105"
-                                  containerClassName="relative w-full h-full bg-gradient-to-br from-muted to-muted/50 overflow-hidden rounded-md"
+                                  className="w-full h-full object-cover transition-transform duration-300 md:group-hover:scale-105 md:group-active:scale-105"
+                                  containerClassName="absolute inset-0 bg-gradient-to-br from-muted to-muted/50 overflow-hidden rounded-md"
                                 />
                                 {/* Smart badge system - max 2 badges, positioned top-left */}
                                 {(() => {
