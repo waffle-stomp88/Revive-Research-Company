@@ -2626,7 +2626,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
           </div>
           
           {isLoading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-3">
               {[...Array(12)].map((_, i) => (
                 <Card key={i} className="p-2">
                   <Skeleton className="aspect-[4/3] rounded-md mb-2" />
@@ -2673,7 +2673,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                     data-testid="input-peptide-search"
                   />
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-2 overflow-y-auto pr-1 scrollbar-thin max-h-[400px] sm:max-h-[600px]">
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-2 overflow-y-auto pr-1 scrollbar-thin max-h-[400px] sm:max-h-[600px]">
                   {filteredPeptides.map(product => {
                     const isSelected = selectedPeptides.find(p => p.id === product.id);
                     const isDisabled = !isSelected && selectedPeptides.length >= 4;
