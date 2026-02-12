@@ -1679,6 +1679,30 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
             <feGaussianBlur stdDeviation="3" result="blur" />
             <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
+          <linearGradient id="pm-holo-gold" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="200" y2="0">
+            <stop offset="0%" stopColor="#fbbf24" />
+            <stop offset="30%" stopColor="#fde68a" />
+            <stop offset="50%" stopColor="#ffffff" />
+            <stop offset="70%" stopColor="#fde68a" />
+            <stop offset="100%" stopColor="#fbbf24" />
+            <animateTransform attributeName="gradientTransform" type="translate" from="-200 0" to="200 0" dur="3s" repeatCount="indefinite" />
+          </linearGradient>
+          <linearGradient id="pm-holo-cyan" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="200" y2="0">
+            <stop offset="0%" stopColor="#21d8ff" />
+            <stop offset="30%" stopColor="#67e8f9" />
+            <stop offset="50%" stopColor="#ffffff" />
+            <stop offset="70%" stopColor="#67e8f9" />
+            <stop offset="100%" stopColor="#21d8ff" />
+            <animateTransform attributeName="gradientTransform" type="translate" from="-200 0" to="200 0" dur="3.5s" repeatCount="indefinite" />
+          </linearGradient>
+          <linearGradient id="pm-holo-gray" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="200" y2="0">
+            <stop offset="0%" stopColor="#9ca3af" />
+            <stop offset="30%" stopColor="#d1d5db" />
+            <stop offset="50%" stopColor="#ffffff" />
+            <stop offset="70%" stopColor="#d1d5db" />
+            <stop offset="100%" stopColor="#9ca3af" />
+            <animateTransform attributeName="gradientTransform" type="translate" from="-200 0" to="200 0" dur="4s" repeatCount="indefinite" />
+          </linearGradient>
           <filter id="pm-glow-strong">
             <feGaussianBlur stdDeviation="6" result="blur" />
             <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
@@ -1966,7 +1990,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                         y={stackPos.y}
                         textAnchor="middle"
                         dominantBaseline="middle"
-                        fill={isLegendary ? "#fbbf24" : isStrong ? "#21d8ff" : "#9ca3af"}
+                        fill={isLegendary ? "url(#pm-holo-gold)" : isStrong ? "url(#pm-holo-cyan)" : "url(#pm-holo-gray)"}
                         fontSize="10"
                         fontWeight="700"
                         letterSpacing="1"
@@ -1974,7 +1998,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.7 }}
                         className="pointer-events-none select-none uppercase"
-                        style={isLegendary ? { filter: "drop-shadow(0 0 6px rgba(251,191,36,0.6))" } : undefined}
+                        style={{ filter: isLegendary ? "drop-shadow(0 0 6px rgba(251,191,36,0.6))" : isStrong ? "drop-shadow(0 0 4px rgba(33,216,255,0.4))" : undefined }}
                       >
                         {conn.stackName}
                       </motion.text>
