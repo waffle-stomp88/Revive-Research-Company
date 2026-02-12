@@ -1983,9 +1983,9 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                         width={(conn.stackName.length * 8 + 32)}
                         height={22}
                         rx={11}
-                        fill={isLegendary ? "rgba(251,191,36,0.35)" : isStrong ? "rgba(33,216,255,0.25)" : "rgba(107,114,128,0.2)"}
-                        stroke={isLegendary ? "rgba(251,191,36,0.5)" : isStrong ? "rgba(33,216,255,0.3)" : "rgba(107,114,128,0.2)"}
-                        strokeWidth={1}
+                        fill={isLegendary ? "rgba(30,25,10,0.85)" : isStrong ? "rgba(10,25,30,0.8)" : "rgba(20,20,25,0.75)"}
+                        stroke={isLegendary ? "rgba(251,191,36,0.7)" : isStrong ? "rgba(33,216,255,0.5)" : "rgba(107,114,128,0.4)"}
+                        strokeWidth={1.5}
                         filter={isLegendary ? "url(#pm-glow-soft)" : undefined}
                         initial={{ opacity: 0, scale: 0.7 }}
                         animate={{ opacity: 1, scale: 1 }}
