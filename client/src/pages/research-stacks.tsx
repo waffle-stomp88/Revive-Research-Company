@@ -2556,6 +2556,45 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
       <div className="hidden md:block">
         <PathwayMap selectedPeptides={selectedPeptides} />
       </div>
+      {/* Mobile-only Goal Starters - shown above grid so new users see it first */}
+      {selectedPeptides.length === 0 && products && (
+        <div className="lg:hidden">
+          <Card className="border-[#2a2a32] bg-[#1a1a1f]/50" data-testid="card-goal-starters-mobile">
+            <div className="p-4">
+              <p className="text-xs font-semibold text-muted-foreground mb-1">NOT SURE WHERE TO START?</p>
+              <p className="text-xs text-muted-foreground mb-3">Pick a research goal and we'll suggest the best starting peptide.</p>
+              <div className="grid grid-cols-3 gap-2">
+                {GOAL_STARTERS.map(starter => {
+                  const StarterIcon = starter.icon;
+                  const matchingProduct = products.find(p => 
+                    normalizePeptideName(p.name).includes(starter.starterKey.replace(/[^a-z0-9]/g, ''))
+                  );
+                  return (
+                    <motion.button
+                      key={starter.goal}
+                      whileTap={{ scale: 0.96 }}
+                      onClick={() => {
+                        if (matchingProduct) {
+                          setSelectedPeptides([matchingProduct]);
+                        }
+                      }}
+                      className="flex flex-col items-center gap-1.5 p-2 rounded-lg border border-[#2a2a32] bg-[#1a1a1f] transition-all text-center hover-elevate active-elevate-2"
+                      style={{ borderColor: `${starter.color}30` }}
+                      data-testid={`button-goal-mobile-${starter.goal.toLowerCase()}`}
+                    >
+                      <StarterIcon className="h-4 w-4 shrink-0" style={{ color: starter.color }} />
+                      <span className="text-[10px] font-medium leading-tight" style={{ color: starter.color }}>
+                        {starter.goal}
+                      </span>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+
       {/* Two Column Layout: Peptides Left, Build Panel Right */}
       <div className="grid grid-cols-1 lg:grid-cols-[65%_1fr] gap-6">
         {/* Left Column: Peptide Selection */}
@@ -2634,7 +2673,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                     data-testid="input-peptide-search"
                   />
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 overflow-y-auto pr-1 scrollbar-thin max-h-[400px] sm:max-h-[600px]">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-2 overflow-y-auto pr-1 scrollbar-thin max-h-[400px] sm:max-h-[600px]">
                   {filteredPeptides.map(product => {
                     const isSelected = selectedPeptides.find(p => p.id === product.id);
                     const isDisabled = !isSelected && selectedPeptides.length >= 4;
@@ -2649,7 +2688,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                         whileTap={{ scale: isDisabled ? 1 : 0.99 }}
                         onClick={() => !isDisabled && togglePeptide(product)}
                         disabled={isDisabled}
-                        className={`text-left p-3 rounded-lg border transition-all duration-200 relative ${
+                        className={`text-left p-2 sm:p-3 rounded-lg border transition-all duration-200 relative ${
                           isSelected
                             ? isOutOfStock
                               ? "border-2 border-[#21d8ff] bg-[#21d8ff]/10"
@@ -2664,7 +2703,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                       >
                         <div className="flex items-center justify-between gap-2">
                           <div className="min-w-0 flex-1">
-                            <p className={`font-display font-bold text-base truncate ${
+                            <p className={`font-display font-bold text-sm sm:text-base truncate ${
                               isSelected ? "text-[#21d8ff]" : isOutOfStock ? "text-white/50" : "text-white"
                             }`}>
                               {product.name.replace(/\s*\([^)]*\)/g, '')}
@@ -2851,9 +2890,9 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                       )}
                     </div>
                   </Card>
-                  {/* ====== GOAL-BASED STARTERS (empty state) ====== */}
+                  {/* ====== GOAL-BASED STARTERS (empty state, desktop only - mobile version is above grid) ====== */}
                   {selectedPeptides.length === 0 && products && (
-                    <Card className="border-[#2a2a32] bg-[#1a1a1f]/50" data-testid="card-goal-starters">
+                    <Card className="hidden lg:block border-[#2a2a32] bg-[#1a1a1f]/50" data-testid="card-goal-starters">
                       <div className="p-4">
                         <p className="text-xs font-semibold text-muted-foreground mb-1">NOT SURE WHERE TO START?</p>
                         <p className="text-xs text-muted-foreground mb-3">Pick a research goal and we'll suggest the best starting peptide.</p>
