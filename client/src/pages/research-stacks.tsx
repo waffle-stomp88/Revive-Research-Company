@@ -2739,8 +2739,8 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
           })()}
         </div>
 
-        {/* Right Column: Synergy Visualization Panel - inline on mobile, sticky sidebar on desktop */}
-        <div>
+        {/* Right Column: Synergy Visualization Panel - hidden on mobile, sticky sidebar on desktop */}
+        <div className="hidden lg:block">
           <div className="lg:sticky lg:top-28 space-y-4">
             
             {/* ====== SYNERGY RING & SCORE ====== */}
@@ -3240,8 +3240,93 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
           </div>
         </div>
       </div>
-      {/* Spacer for sticky bottom bar + mobile nav */}
-      <div className="h-36 md:h-20" />
+      {/* ====== MOBILE FLOATING SYNERGY BAR ====== */}
+      <AnimatePresence>
+        {selectedPeptides.length >= 2 && (() => {
+          const peptideNames = selectedPeptides.map(p => p.name);
+          const synergyScore = calculateSynergyScore(peptideNames);
+          const knownStack = checkKnownStack(peptideNames);
+          const synergyColor = knownStack ? knownStack.color : synergyScore > 70 ? "#22c55e" : synergyScore > 50 ? "#E7FB10" : "#21d8ff";
+          const sharedPathways = findSharedPathways(peptideNames);
+          return (
+            <motion.div
+              initial={{ y: 60, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 60, opacity: 0 }}
+              transition={{ type: "spring", damping: 20, stiffness: 300 }}
+              className="lg:hidden fixed bottom-[120px] md:bottom-[56px] left-2 right-2 z-[52] rounded-xl border bg-[#0f0f12]/95 backdrop-blur-xl shadow-[0_0_30px_rgba(0,0,0,0.5)]"
+              style={{ borderColor: `${synergyColor}40` }}
+              data-testid="mobile-synergy-bar"
+            >
+              <div className="flex items-center gap-3 px-3 py-2">
+                {/* Mini Synergy Ring */}
+                <div className="relative w-11 h-11 flex-shrink-0">
+                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="#2a2a32" strokeWidth="8" />
+                    <motion.circle
+                      cx="50" cy="50" r="42" fill="none"
+                      stroke={synergyColor}
+                      strokeWidth="8"
+                      strokeLinecap="round"
+                      initial={{ strokeDasharray: "0 264" }}
+                      animate={{ strokeDasharray: `${(synergyScore / 100) * 264} 264` }}
+                      transition={{ duration: 0.6, ease: "easeOut" }}
+                      style={{ filter: `drop-shadow(0 0 4px ${synergyColor}80)` }}
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <motion.span
+                      key={synergyScore}
+                      initial={{ scale: 0.5, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="font-display text-sm font-bold"
+                      style={{ color: synergyColor }}
+                    >
+                      {synergyScore}%
+                    </motion.span>
+                  </div>
+                </div>
+
+                {/* Stack Info */}
+                <div className="flex-1 min-w-0">
+                  {knownStack ? (
+                    <motion.div initial={{ x: -10, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
+                      <p className="font-display font-bold text-sm truncate" style={{ color: knownStack.color }}>
+                        {knownStack.name}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground truncate">{knownStack.description?.slice(0, 60)}...</p>
+                    </motion.div>
+                  ) : (
+                    <div>
+                      <p className="font-display font-bold text-sm text-white">
+                        {sharedPathways.length > 0 ? `${sharedPathways.length} Shared Pathway${sharedPathways.length > 1 ? 's' : ''}` : "Custom Stack"}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {sharedPathways.length > 0 ? sharedPathways.slice(0, 2).join(', ') : "Select more for higher synergy"}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Synergy label */}
+                <Badge 
+                  className="shrink-0 text-[10px] no-default-hover-elevate no-default-active-elevate"
+                  style={{ 
+                    backgroundColor: `${synergyColor}15`,
+                    color: synergyColor,
+                    border: `1px solid ${synergyColor}40`
+                  }}
+                >
+                  {synergyScore >= 85 ? "Legendary" : synergyScore >= 70 ? "Strong" : "Building"}
+                </Badge>
+              </div>
+            </motion.div>
+          );
+        })()}
+      </AnimatePresence>
+
+      {/* Spacer for sticky bottom bar + mobile synergy bar + mobile nav */}
+      <div className={`${selectedPeptides.length >= 2 ? "h-52" : "h-36"} md:h-20`} />
       {/* ====== STICKY BOTTOM CART BAR ====== */}
       <AnimatePresence>
         <motion.div
@@ -3262,24 +3347,6 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                 <span className="font-display font-bold text-base sm:text-[20px]">Your Stack</span>
                 <Badge variant="outline" className="text-xs sm:text-[15px]">{selectedPeptides.length}/4</Badge>
               </div>
-              {selectedPeptides.length >= 2 && (() => {
-                const peptideNames = selectedPeptides.map(p => p.name);
-                const synergyScore = calculateSynergyScore(peptideNames);
-                const knownStack = checkKnownStack(peptideNames);
-                return (
-                  <Badge 
-                    className="lg:hidden text-[10px] shrink-0"
-                    style={{ 
-                      backgroundColor: `${knownStack ? knownStack.color : synergyScore > 70 ? "#22c55e" : synergyScore > 50 ? "#E7FB10" : "#21d8ff"}20`,
-                      color: knownStack ? knownStack.color : synergyScore > 70 ? "#22c55e" : synergyScore > 50 ? "#E7FB10" : "#21d8ff",
-                      border: `1px solid ${knownStack ? knownStack.color : synergyScore > 70 ? "#22c55e" : synergyScore > 50 ? "#E7FB10" : "#21d8ff"}40`
-                    }}
-                    data-testid="badge-mobile-synergy"
-                  >
-                    {synergyScore}% {knownStack ? knownStack.name : "Synergy"}
-                  </Badge>
-                );
-              })()}
               {selectedPeptides.length > 0 && (
                 <div className="hidden sm:flex items-center gap-1.5 flex-1 min-w-0">
                   {selectedPeptides.map((p, i) => (
