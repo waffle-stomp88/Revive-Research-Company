@@ -2180,7 +2180,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
             {allSharedPathways.map((pathway, i) => (
               <Tooltip key={i}>
                 <TooltipTrigger asChild>
-                  <Badge className="text-[10px] bg-[#22c55e]/10 text-[#22c55e] border-[#22c55e]/20 cursor-help"
+                  <Badge className="text-[13px] bg-[#22c55e]/10 text-[#22c55e] border-[#22c55e]/20 cursor-help"
                     style={{ textShadow: "0 0 6px rgba(34,197,94,0.3)" }}>
                     {pathway}
                   </Badge>
