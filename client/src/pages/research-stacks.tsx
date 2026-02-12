@@ -1679,29 +1679,35 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
             <feGaussianBlur stdDeviation="3" result="blur" />
             <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
-          <linearGradient id="pm-holo-gold" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="200" y2="0">
+          <linearGradient id="pm-holo-gold" gradientUnits="userSpaceOnUse" x1="-300" y1="0" x2="300" y2="0">
             <stop offset="0%" stopColor="#fbbf24" />
-            <stop offset="30%" stopColor="#fde68a" />
-            <stop offset="50%" stopColor="#ffffff" />
-            <stop offset="70%" stopColor="#fde68a" />
+            <stop offset="35%" stopColor="#fbbf24" />
+            <stop offset="45%" stopColor="#fde68a" />
+            <stop offset="50%" stopColor="#fffbe6" />
+            <stop offset="55%" stopColor="#fde68a" />
+            <stop offset="65%" stopColor="#fbbf24" />
             <stop offset="100%" stopColor="#fbbf24" />
-            <animateTransform attributeName="gradientTransform" type="translate" from="-200 0" to="200 0" dur="3s" repeatCount="indefinite" />
+            <animateTransform attributeName="gradientTransform" type="translate" values="-300 0; 300 0; 300 0" keyTimes="0; 0.7; 1" dur="2.5s" repeatCount="indefinite" />
           </linearGradient>
-          <linearGradient id="pm-holo-cyan" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="200" y2="0">
+          <linearGradient id="pm-holo-cyan" gradientUnits="userSpaceOnUse" x1="-300" y1="0" x2="300" y2="0">
             <stop offset="0%" stopColor="#21d8ff" />
-            <stop offset="30%" stopColor="#67e8f9" />
-            <stop offset="50%" stopColor="#ffffff" />
-            <stop offset="70%" stopColor="#67e8f9" />
+            <stop offset="35%" stopColor="#21d8ff" />
+            <stop offset="45%" stopColor="#67e8f9" />
+            <stop offset="50%" stopColor="#e0fbff" />
+            <stop offset="55%" stopColor="#67e8f9" />
+            <stop offset="65%" stopColor="#21d8ff" />
             <stop offset="100%" stopColor="#21d8ff" />
-            <animateTransform attributeName="gradientTransform" type="translate" from="-200 0" to="200 0" dur="3.5s" repeatCount="indefinite" />
+            <animateTransform attributeName="gradientTransform" type="translate" values="-300 0; 300 0; 300 0" keyTimes="0; 0.7; 1" dur="2.8s" repeatCount="indefinite" />
           </linearGradient>
-          <linearGradient id="pm-holo-gray" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="200" y2="0">
+          <linearGradient id="pm-holo-gray" gradientUnits="userSpaceOnUse" x1="-300" y1="0" x2="300" y2="0">
             <stop offset="0%" stopColor="#9ca3af" />
-            <stop offset="30%" stopColor="#d1d5db" />
-            <stop offset="50%" stopColor="#ffffff" />
-            <stop offset="70%" stopColor="#d1d5db" />
+            <stop offset="35%" stopColor="#9ca3af" />
+            <stop offset="45%" stopColor="#d1d5db" />
+            <stop offset="50%" stopColor="#f0f0f0" />
+            <stop offset="55%" stopColor="#d1d5db" />
+            <stop offset="65%" stopColor="#9ca3af" />
             <stop offset="100%" stopColor="#9ca3af" />
-            <animateTransform attributeName="gradientTransform" type="translate" from="-200 0" to="200 0" dur="4s" repeatCount="indefinite" />
+            <animateTransform attributeName="gradientTransform" type="translate" values="-300 0; 300 0; 300 0" keyTimes="0; 0.7; 1" dur="3s" repeatCount="indefinite" />
           </linearGradient>
           <filter id="pm-glow-strong">
             <feGaussianBlur stdDeviation="6" result="blur" />
