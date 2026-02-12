@@ -1327,9 +1327,9 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
   };
 
   const svgWidth = 900;
-  const svgHeight = 320;
+  const svgHeight = 420;
   const centerX = svgWidth / 2;
-  const centerY = svgHeight / 2 - 10;
+  const centerY = svgHeight / 2;
 
   const starfield = Array.from({ length: 60 }, (_, i) => ({
     x: (i * 97 + 13) % svgWidth,
@@ -1352,10 +1352,17 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
 
   const nodes = hasActiveData ? peptideData.map((p, i) => {
     const count = peptideData.length;
-    const spread = Math.min(svgWidth * 0.7, count * 200);
+    const spread = Math.min(svgWidth * 0.65, count * 200);
     const startX = count === 1 ? centerX : centerX - spread / 2;
     const step = count > 1 ? spread / (count - 1) : 0;
-    const yOffset = count <= 2 ? 0 : (i % 2 === 0 ? -30 : 30);
+    const yPatterns: Record<number, number[]> = {
+      1: [0],
+      2: [-30, 30],
+      3: [-55, 40, -55],
+      4: [-60, 50, -50, 60],
+    };
+    const yOffsets = yPatterns[count] || yPatterns[4]!;
+    const yOffset = yOffsets[i] || 0;
     return {
       x: startX + step * i,
       y: centerY + yOffset,
@@ -1449,18 +1456,110 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
     }
   }
 
+  interface LabelBox {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    priority: number;
+  }
+
+  const resolveCollisions = (labels: LabelBox[]): LabelBox[] => {
+    const sorted = [...labels].sort((a, b) => a.priority - b.priority);
+    const placed: LabelBox[] = [];
+
+    const overlaps = (a: LabelBox, b: LabelBox): boolean => {
+      return !(a.x + a.w / 2 < b.x - b.w / 2 || a.x - a.w / 2 > b.x + b.w / 2 ||
+               a.y + a.h / 2 < b.y - b.h / 2 || a.y - a.h / 2 > b.y + b.h / 2);
+    };
+
+    for (const label of sorted) {
+      let adjusted = { ...label };
+      let attempts = 0;
+      const maxAttempts = 12;
+      while (attempts < maxAttempts) {
+        const hasCollision = placed.some(p => overlaps(adjusted, p));
+        if (!hasCollision) break;
+        const direction = attempts % 2 === 0 ? -1 : 1;
+        const step = Math.ceil((attempts + 1) / 2) * 18;
+        adjusted = { ...adjusted, y: label.y + direction * step };
+        attempts++;
+      }
+      const margin = 20;
+      adjusted.y = Math.max(margin + adjusted.h / 2, Math.min(svgHeight - margin - adjusted.h / 2, adjusted.y));
+      placed.push(adjusted);
+    }
+    return placed;
+  };
+
+  const connLabelData: { connIdx: number; midX: number; midY: number; stackNameW: number; stackNameH: number; hasSynergy: boolean; hasReason: boolean }[] = [];
+  connections.forEach((conn, ci) => {
+    const fn = nodes[conn.from];
+    const tn = nodes[conn.to];
+    const midX = (fn.x + tn.x) / 2;
+    const midY = (fn.y + tn.y) / 2;
+    const stackNameW = conn.stackName ? (conn.stackName.length * 8 + 32) : 0;
+    connLabelData.push({ connIdx: ci, midX, midY, stackNameW, stackNameH: 22, hasSynergy: conn.synergyScore > 0, hasReason: !!conn.reason && !conn.stackName });
+  });
+
+  const allLabelBoxes: (LabelBox & { type: string; idx: number })[] = [];
+  connLabelData.forEach((cl, i) => {
+    const conn = connections[cl.connIdx];
+    if (conn.stackName) {
+      allLabelBoxes.push({ x: cl.midX, y: cl.midY - 15, w: cl.stackNameW, h: cl.stackNameH, priority: conn.tier === "legendary" ? 0 : conn.tier === "strong" ? 1 : 2, type: "stack", idx: i });
+    }
+    if (cl.hasSynergy) {
+      allLabelBoxes.push({ x: cl.midX, y: cl.midY + (conn.stackName ? 6 : -4), w: 80, h: 14, priority: conn.tier === "legendary" ? 3 : 4, type: "synergy", idx: i });
+    }
+    if (cl.hasReason) {
+      allLabelBoxes.push({ x: cl.midX, y: cl.midY - 18, w: 120, h: 14, priority: 5, type: "reason", idx: i });
+    }
+  });
+
+  const resolvedLabels = resolveCollisions(allLabelBoxes);
+  const labelPositions: Record<string, { x: number; y: number }> = {};
+  resolvedLabels.forEach((lb, i) => {
+    const orig = allLabelBoxes[i];
+    labelPositions[`${orig.type}-${orig.idx}`] = { x: lb.x, y: lb.y };
+  });
+
   const allPathwayNodes: { x: number; y: number; name: string; fromNode: number; toNode: number }[] = [];
   connections.forEach(conn => {
     const fromNode = nodes[conn.from];
     const toNode = nodes[conn.to];
+    const dx = toNode.x - fromNode.x;
+    const dy = toNode.y - fromNode.y;
+    const len = Math.sqrt(dx * dx + dy * dy) || 1;
+    const perpNormX = -dy / len;
+    const perpNormY = dx / len;
     conn.pathways.forEach((pathway, pi) => {
       const t = (pi + 1) / (conn.pathways.length + 1);
-      const midX = fromNode.x + (toNode.x - fromNode.x) * t;
-      const midY = fromNode.y + (toNode.y - fromNode.y) * t;
-      const perpX = -(toNode.y - fromNode.y) * 0.15;
-      const perpY = (toNode.x - fromNode.x) * 0.15;
-      allPathwayNodes.push({ x: midX + perpX, y: midY + perpY, name: pathway, fromNode: conn.from, toNode: conn.to });
+      const midX = fromNode.x + dx * t;
+      const midY = fromNode.y + dy * t;
+      const perpDist = 45 + pi * 22;
+      const side = pi % 2 === 0 ? 1 : -1;
+      const px = midX + perpNormX * perpDist * side;
+      const py = midY + perpNormY * perpDist * side;
+      allPathwayNodes.push({ x: px, y: Math.max(15, Math.min(svgHeight - 15, py)), name: pathway, fromNode: conn.from, toNode: conn.to });
     });
+  });
+
+  const pwLabelBoxes: (LabelBox & { idx: number })[] = allPathwayNodes.map((pn, i) => ({
+    x: pn.x,
+    y: pn.y,
+    w: Math.min(90, pn.name.length * 7 + 16),
+    h: 20,
+    priority: 10 + i,
+    idx: i,
+  }));
+  const allBoxesForPw = [...resolvedLabels, ...pwLabelBoxes.map(b => ({ ...b, type: "pw", idx: b.idx }))];
+  const resolvedPwLabels = resolveCollisions(allBoxesForPw);
+  const pwPositions = resolvedPwLabels.slice(resolvedLabels.length);
+  pwPositions.forEach((lb, i) => {
+    if (i < allPathwayNodes.length) {
+      allPathwayNodes[i].x = lb.x;
+      allPathwayNodes[i].y = lb.y;
+    }
   });
 
   const soloPathwayLabels: { x: number; y: number; name: string }[] = [];
@@ -1724,7 +1823,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
             exit={{ opacity: 0, transition: { duration: 0.4 } }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            {connections.map(conn => {
+            {connections.map((conn, ci) => {
               const fn = nodes[conn.from];
               const tn = nodes[conn.to];
               const key = connKey(conn.from, conn.to);
@@ -1737,8 +1836,12 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
 
               const baseW = isLegendary ? 3 : isStrong ? 2.5 : isGood ? 2 : 1 + (conn.strength / maxStrength) * 2;
               const particleCount = isLegendary ? 6 : isStrong ? 4 : Math.max(2, Math.min(5, conn.strength));
-              const midX = (fn.x + tn.x) / 2;
-              const midY = (fn.y + tn.y) / 2;
+              const rawMidX = (fn.x + tn.x) / 2;
+              const rawMidY = (fn.y + tn.y) / 2;
+
+              const stackPos = labelPositions[`stack-${ci}`];
+              const synergyPos = labelPositions[`synergy-${ci}`];
+              const reasonPos = labelPositions[`reason-${ci}`];
 
               return (
                 <g key={key}>
@@ -1797,6 +1900,8 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                     return (
                       <motion.circle
                         key={`particle-${key}-${pi}`}
+                        cx={fn.x}
+                        cy={fn.y}
                         r={isLegendary ? 2.5 : isActive ? 3 : 1.5}
                         fill={isLegendary ? pColor : (isActive ? "white" : pColor)}
                         filter={isLegendary || isActive ? "url(#pm-glow-soft)" : undefined}
@@ -1817,11 +1922,20 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                     );
                   })}
 
-                  {conn.stackName && (
+                  {conn.stackName && stackPos && (
                     <g>
+                      <motion.line
+                        x1={rawMidX} y1={rawMidY} x2={stackPos.x} y2={stackPos.y}
+                        stroke={isLegendary ? "rgba(251,191,36,0.15)" : "rgba(107,114,128,0.1)"}
+                        strokeWidth={0.5}
+                        strokeDasharray="3,4"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: Math.abs(stackPos.y - rawMidY) > 5 ? 0.6 : 0 }}
+                        transition={{ delay: 0.5 }}
+                      />
                       <motion.rect
-                        x={midX - (conn.stackName.length * 4 + 16)}
-                        y={midY - 26}
+                        x={stackPos.x - (conn.stackName.length * 4 + 16)}
+                        y={stackPos.y - 11}
                         width={(conn.stackName.length * 8 + 32)}
                         height={22}
                         rx={11}
@@ -1834,8 +1948,8 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                         transition={{ delay: 0.6, type: "spring", stiffness: 200 }}
                       />
                       <motion.text
-                        x={midX}
-                        y={midY - 14}
+                        x={stackPos.x}
+                        y={stackPos.y}
                         textAnchor="middle"
                         dominantBaseline="middle"
                         fill={isLegendary ? "#fbbf24" : isStrong ? "#21d8ff" : "#9ca3af"}
@@ -1853,10 +1967,10 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                     </g>
                   )}
 
-                  {!conn.stackName && conn.reason && (isActive || isLegendary) && (
+                  {!conn.stackName && conn.reason && (isActive || isLegendary) && reasonPos && (
                     <motion.text
-                      x={midX}
-                      y={midY - 18}
+                      x={reasonPos.x}
+                      y={reasonPos.y}
                       textAnchor="middle"
                       dominantBaseline="middle"
                       fill={tierColor}
@@ -1871,10 +1985,10 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                     </motion.text>
                   )}
 
-                  {conn.synergyScore > 0 && (
+                  {conn.synergyScore > 0 && synergyPos && (
                     <motion.text
-                      x={midX}
-                      y={midY + (conn.stackName ? 6 : -4)}
+                      x={synergyPos.x}
+                      y={synergyPos.y}
                       textAnchor="middle"
                       dominantBaseline="middle"
                       fill={isLegendary ? "#fbbf24" : isStrong ? "#21d8ff" : "#9ca3af"}
