@@ -1067,6 +1067,350 @@ const getPeptideCategories = (productName: string) => {
 };
 
 // Custom Stack Builder Component
+interface PathwayMapProps {
+  selectedPeptides: { name: string }[];
+}
+
+function PathwayMap({ selectedPeptides }: PathwayMapProps) {
+  const [clickedConnection, setClickedConnection] = useState<string | null>(null);
+  const [clickedNode, setClickedNode] = useState<string | null>(null);
+  const [hoveredConnection, setHoveredConnection] = useState<string | null>(null);
+  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+  const activeConnection = clickedConnection || hoveredConnection;
+  const activeNode = clickedNode || hoveredNode;
+
+  const peptideData = selectedPeptides
+    .map(p => {
+      const pathway = getPeptidePathway(p.name);
+      return pathway ? { ...pathway, originalName: p.name } : null;
+    })
+    .filter((p): p is PeptidePathway & { originalName: string } => p !== null);
+
+  if (peptideData.length < 2) return null;
+
+  const SYSTEM_COLORS: Record<string, string> = {
+    healing: "#22c55e", gut: "#22c55e", joints: "#22c55e",
+    metabolic: "#E7FB10", energy: "#E7FB10", weight: "#E7FB10",
+    growth: "#f59e0b", muscle: "#f59e0b",
+    cognitive: "#21d8ff", focus: "#21d8ff", neuroprotection: "#21d8ff", mood: "#21d8ff",
+    skin: "#ec4899", cosmetic: "#ec4899", hair: "#ec4899",
+    longevity: "#a855f7", sleep: "#8b5cf6",
+    immune: "#34d399", recovery: "#60a5fa",
+    hormonal: "#f59e0b", heart: "#ef4444", vascular: "#ef4444",
+  };
+
+  const getPrimaryColor = (systems: string[]) => {
+    for (const s of systems) {
+      const c = SYSTEM_COLORS[s.toLowerCase()];
+      if (c) return c;
+    }
+    return "#21d8ff";
+  };
+
+  const svgWidth = 320;
+  const svgHeight = Math.max(200, peptideData.length * 60 + 40);
+  const centerX = svgWidth / 2;
+  const centerY = svgHeight / 2;
+  const radius = Math.min(svgWidth, svgHeight) * 0.32;
+
+  const nodes = peptideData.map((p, i) => {
+    const angle = (i / peptideData.length) * 2 * Math.PI - Math.PI / 2;
+    return {
+      x: centerX + radius * Math.cos(angle),
+      y: centerY + radius * Math.sin(angle),
+      name: p.name,
+      pathways: p.pathways,
+      systems: p.systems,
+      color: getPrimaryColor(p.systems),
+    };
+  });
+
+  const connections: { from: number; to: number; pathways: string[]; strength: number }[] = [];
+  for (let i = 0; i < peptideData.length; i++) {
+    for (let j = i + 1; j < peptideData.length; j++) {
+      const shared = peptideData[i].pathways.filter(p => peptideData[j].pathways.includes(p));
+      if (shared.length > 0) {
+        connections.push({ from: i, to: j, pathways: shared, strength: shared.length });
+      }
+    }
+  }
+
+  const allPathwayNodes: { x: number; y: number; name: string; fromNode: number; toNode: number }[] = [];
+  connections.forEach(conn => {
+    const fromNode = nodes[conn.from];
+    const toNode = nodes[conn.to];
+    conn.pathways.forEach((pathway, pi) => {
+      const t = (pi + 1) / (conn.pathways.length + 1);
+      const midX = fromNode.x + (toNode.x - fromNode.x) * t;
+      const midY = fromNode.y + (toNode.y - fromNode.y) * t;
+      const perpX = -(toNode.y - fromNode.y) * 0.12;
+      const perpY = (toNode.x - fromNode.x) * 0.12;
+      allPathwayNodes.push({
+        x: midX + perpX,
+        y: midY + perpY,
+        name: pathway,
+        fromNode: conn.from,
+        toNode: conn.to,
+      });
+    });
+  });
+
+  const connKey = (from: number, to: number) => `${from}-${to}`;
+  const maxStrength = Math.max(...connections.map(c => c.strength), 1);
+
+  const handleNodeClick = (name: string) => {
+    setClickedConnection(null);
+    setClickedNode(prev => prev === name ? null : name);
+  };
+  const handleConnectionClick = (key: string) => {
+    setClickedNode(null);
+    setClickedConnection(prev => prev === key ? null : key);
+  };
+
+  return (
+    <div className="relative" data-testid="pathway-map">
+      <svg
+        width="100%"
+        viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+        className="overflow-visible"
+      >
+        <defs>
+          {connections.map(conn => {
+            const fromNode = nodes[conn.from];
+            const toNode = nodes[conn.to];
+            const gradId = `grad-${conn.from}-${conn.to}`;
+            return (
+              <linearGradient key={gradId} id={gradId} x1={fromNode.x} y1={fromNode.y} x2={toNode.x} y2={toNode.y} gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor={fromNode.color} stopOpacity={0.6} />
+                <stop offset="100%" stopColor={toNode.color} stopOpacity={0.6} />
+              </linearGradient>
+            );
+          })}
+          <filter id="glow-line">
+            <feGaussianBlur stdDeviation="2" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <filter id="glow-node">
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        {connections.map(conn => {
+          const fromNode = nodes[conn.from];
+          const toNode = nodes[conn.to];
+          const key = connKey(conn.from, conn.to);
+          const isHovered = activeConnection === key ||
+            activeNode === nodes[conn.from].name ||
+            activeNode === nodes[conn.to].name;
+          const strokeW = 1.5 + (conn.strength / maxStrength) * 2;
+
+          return (
+            <g key={key}>
+              <motion.line
+                x1={fromNode.x}
+                y1={fromNode.y}
+                x2={toNode.x}
+                y2={toNode.y}
+                stroke={`url(#grad-${conn.from}-${conn.to})`}
+                strokeWidth={isHovered ? strokeW + 1 : strokeW}
+                strokeLinecap="round"
+                filter={isHovered ? "url(#glow-line)" : undefined}
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: isHovered ? 1 : 0.5 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                onMouseEnter={() => setHoveredConnection(key)}
+                onMouseLeave={() => setHoveredConnection(null)}
+                onClick={() => handleConnectionClick(key)}
+                className="cursor-pointer"
+              />
+              {isHovered && (
+                <motion.circle
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: [0.3, 0.8, 0.3] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  cx={(fromNode.x + toNode.x) / 2}
+                  cy={(fromNode.y + toNode.y) / 2}
+                  r={4}
+                  fill="#22c55e"
+                />
+              )}
+            </g>
+          );
+        })}
+
+        {allPathwayNodes.map((pn, i) => {
+          const parentKey = connKey(pn.fromNode, pn.toNode);
+          const isActive = activeConnection === parentKey ||
+            activeNode === nodes[pn.fromNode].name ||
+            activeNode === nodes[pn.toNode].name;
+
+          return (
+            <g key={`pw-${i}`}>
+              <motion.line
+                x1={(nodes[pn.fromNode].x + nodes[pn.toNode].x) / 2}
+                y1={(nodes[pn.fromNode].y + nodes[pn.toNode].y) / 2}
+                x2={pn.x}
+                y2={pn.y}
+                stroke="#22c55e"
+                strokeWidth={0.5}
+                strokeDasharray="2,2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isActive ? 0.6 : 0.2 }}
+              />
+              <motion.rect
+                x={pn.x - 30}
+                y={pn.y - 8}
+                width={60}
+                height={16}
+                rx={4}
+                fill={isActive ? "rgba(34,197,94,0.2)" : "rgba(34,197,94,0.08)"}
+                stroke={isActive ? "rgba(34,197,94,0.5)" : "rgba(34,197,94,0.2)"}
+                strokeWidth={0.5}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4 + i * 0.1 }}
+                onMouseEnter={() => setHoveredConnection(parentKey)}
+                onMouseLeave={() => setHoveredConnection(null)}
+                onClick={() => handleConnectionClick(parentKey)}
+                className="cursor-help"
+              />
+              <motion.text
+                x={pn.x}
+                y={pn.y + 1}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fill={isActive ? "#22c55e" : "#4ade80"}
+                fontSize="6"
+                fontWeight={isActive ? "600" : "400"}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isActive ? 1 : 0.7 }}
+                transition={{ delay: 0.4 + i * 0.1 }}
+                className="pointer-events-none select-none"
+              >
+                {pn.name.length > 14 ? pn.name.slice(0, 12) + "…" : pn.name}
+              </motion.text>
+            </g>
+          );
+        })}
+
+        {nodes.map((node, i) => {
+          const isHovered = activeNode === node.name;
+          const nodeRadius = isHovered ? 22 : 18;
+
+          return (
+            <g
+              key={`node-${i}`}
+              onMouseEnter={() => setHoveredNode(node.name)}
+              onMouseLeave={() => setHoveredNode(null)}
+              onClick={() => handleNodeClick(node.name)}
+              className="cursor-pointer"
+            >
+              <motion.circle
+                cx={node.x}
+                cy={node.y}
+                r={nodeRadius + 4}
+                fill="none"
+                stroke={node.color}
+                strokeWidth={1}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isHovered ? [0.2, 0.5, 0.2] : 0 }}
+                transition={isHovered ? { duration: 2, repeat: Infinity } : {}}
+              />
+              <motion.circle
+                cx={node.x}
+                cy={node.y}
+                fill={`${node.color}15`}
+                stroke={node.color}
+                strokeWidth={isHovered ? 2 : 1.5}
+                filter={isHovered ? "url(#glow-node)" : undefined}
+                initial={{ r: 0, opacity: 0 }}
+                animate={{ r: nodeRadius, opacity: 1 }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+              />
+              <motion.text
+                x={node.x}
+                y={node.y}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fill={isHovered ? "#fff" : node.color}
+                fontSize={node.name.length > 10 ? "6" : "7"}
+                fontWeight="600"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 + i * 0.1 }}
+                className="pointer-events-none select-none"
+              >
+                {node.name.length > 14 ? node.name.slice(0, 12) + "…" : node.name}
+              </motion.text>
+            </g>
+          );
+        })}
+      </svg>
+
+      {activeConnection && (() => {
+        const parts = activeConnection.split("-");
+        const fromIdx = parseInt(parts[0]);
+        const toIdx = parseInt(parts[1]);
+        const conn = connections.find(c => c.from === fromIdx && c.to === toIdx);
+        if (!conn) return null;
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="absolute bottom-0 left-0 right-0 p-2 rounded-lg bg-[#0f0f12]/95 border border-[#22c55e]/30 backdrop-blur-sm"
+          >
+            <p className="text-[10px] text-[#22c55e] font-semibold mb-1">
+              {nodes[conn.from].name} ↔ {nodes[conn.to].name}
+            </p>
+            <div className="flex flex-wrap gap-1">
+              {conn.pathways.map((p, i) => (
+                <span key={i} className="text-[9px] px-1.5 py-0.5 rounded bg-[#22c55e]/15 text-[#4ade80]">
+                  {p}{PATHWAY_DESCRIPTIONS[p] ? ` — ${PATHWAY_DESCRIPTIONS[p].slice(0, 50)}…` : ""}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        );
+      })()}
+
+      {activeNode && (() => {
+        const node = nodes.find(n => n.name === activeNode);
+        if (!node) return null;
+        const connCount = connections.filter(c => nodes[c.from].name === activeNode || nodes[c.to].name === activeNode).length;
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="absolute bottom-0 left-0 right-0 p-2 rounded-lg bg-[#0f0f12]/95 border backdrop-blur-sm"
+            style={{ borderColor: `${node.color}40` }}
+          >
+            <p className="text-[10px] font-semibold mb-0.5" style={{ color: node.color }}>
+              {node.name}
+            </p>
+            <p className="text-[9px] text-muted-foreground">
+              {connCount} connection{connCount !== 1 ? "s" : ""} · {node.systems.join(", ")}
+            </p>
+            <div className="flex flex-wrap gap-1 mt-1">
+              {node.pathways.map((p, i) => (
+                <span key={i} className="text-[9px] px-1.5 py-0.5 rounded" style={{ backgroundColor: `${node.color}15`, color: node.color }}>
+                  {p}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        );
+      })()}
+    </div>
+  );
+}
+
 interface CustomStackBuilderProps {
   onSwitchToPreBuilt: () => void;
   templatePeptideNames?: string[];
@@ -1629,7 +1973,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                     if (showPairings) autoOpen.push("pairings");
                     if (hasRecommendation) autoOpen.push("recommendation");
                     autoOpen.push("systems");
-                    if (hasPathways) autoOpen.push("pathways");
+                    if (selectedPeptides.length >= 2) autoOpen.push("pathways");
 
                     return (
                       <Card className="border-[#2a2a32] bg-[#1a1a1f]/50" data-testid="section-guidance-accordion">
@@ -1791,36 +2135,44 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                             </AccordionContent>
                           </AccordionItem>
 
-                          {hasPathways && (
+                          {selectedPeptides.length >= 2 && (
                             <AccordionItem value="pathways" className="border-[#2a2a32] border-b-0" data-testid="accordion-pathways">
                               <AccordionTrigger>
                                 <div className="flex items-center gap-2">
                                   <Zap className="h-3.5 w-3.5 text-[#22c55e]" />
-                                  <span className="text-xs font-semibold text-[#22c55e]">SYNERGY DETECTED</span>
-                                  <Badge className="text-[9px] bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30">{sharedPathways.length}</Badge>
+                                  <span className="text-xs font-semibold text-[#22c55e]">PATHWAY MAP</span>
+                                  {sharedPathways.length > 0 && (
+                                    <Badge className="text-[9px] bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30">{sharedPathways.length} shared</Badge>
+                                  )}
                                 </div>
                               </AccordionTrigger>
                               <AccordionContent>
-                                <p className="text-xs text-gray-400 mb-2">These peptides share pathways:</p>
-                                <div className="flex flex-wrap gap-1.5">
-                                  {sharedPathways.map((pathway, i) => (
-                                    <Tooltip key={i}>
-                                      <TooltipTrigger asChild>
-                                        <Badge 
-                                          className="text-[10px] bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30 cursor-help"
-                                        >
-                                          {pathway}
-                                        </Badge>
-                                      </TooltipTrigger>
-                                      <TooltipContent 
-                                        side="top"
-                                        className="max-w-[200px] text-center bg-[#1a1a1f] border-[#2a2a32]"
-                                      >
-                                        <p className="text-xs">{PATHWAY_DESCRIPTIONS[pathway] || "Shared biological pathway"}</p>
-                                      </TooltipContent>
-                                    </Tooltip>
-                                  ))}
-                                </div>
+                                <p className="text-[10px] text-gray-500 mb-2">Tap or hover nodes to explore biological pathways</p>
+                                <PathwayMap selectedPeptides={selectedPeptides} />
+                                {sharedPathways.length > 0 && (
+                                  <div className="mt-3 pt-2 border-t border-[#2a2a32]">
+                                    <p className="text-[10px] text-gray-500 mb-1.5">Shared pathways:</p>
+                                    <div className="flex flex-wrap gap-1.5">
+                                      {sharedPathways.map((pathway, i) => (
+                                        <Tooltip key={i}>
+                                          <TooltipTrigger asChild>
+                                            <Badge 
+                                              className="text-[10px] bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30 cursor-help"
+                                            >
+                                              {pathway}
+                                            </Badge>
+                                          </TooltipTrigger>
+                                          <TooltipContent 
+                                            side="top"
+                                            className="max-w-[200px] text-center bg-[#1a1a1f] border-[#2a2a32]"
+                                          >
+                                            <p className="text-xs">{PATHWAY_DESCRIPTIONS[pathway] || "Shared biological pathway"}</p>
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
                               </AccordionContent>
                             </AccordionItem>
                           )}
