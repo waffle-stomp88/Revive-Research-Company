@@ -318,6 +318,62 @@ const KNOWN_STACKS: KnownStack[] = [
     description: "Direct muscle growth factor + tissue repair accelerator — athletic recovery research",
     synergyBonus: 86,
   },
+  {
+    name: "NAD+ Mito Stack",
+    peptides: ["nad-precursor", "ss-31"],
+    icon: Activity,
+    color: "#8b5cf6",
+    description: "NAD+ restoration + cardiolipin stabilization — dual mitochondrial rescue",
+    synergyBonus: 89,
+  },
+  {
+    name: "Cellular Longevity",
+    peptides: ["nad-precursor", "epithalon"],
+    icon: Crown,
+    color: "#c084fc",
+    description: "NAD+ sirtuin activation + telomerase extension — comprehensive cellular aging defense",
+    synergyBonus: 88,
+  },
+  {
+    name: "NAD+ Energy",
+    peptides: ["nad-precursor", "mots-c"],
+    icon: Zap,
+    color: "#f59e0b",
+    description: "NAD+ salvage pathway + AMPK mitochondrial biogenesis — cellular energy amplification",
+    synergyBonus: 85,
+  },
+  {
+    name: "Cellular Defense",
+    peptides: ["nad-precursor", "glutathione"],
+    icon: Shield,
+    color: "#10b981",
+    description: "NAD+ DNA repair enzymes + master antioxidant — dual cellular protection",
+    synergyBonus: 84,
+  },
+  {
+    name: "Skin Radiance",
+    peptides: ["glow-peptide-complex", "hyaluronic-acid"],
+    icon: Sparkles,
+    color: "#f472b6",
+    description: "Multi-peptide skin rejuvenation + deep tissue hydration — complete dermal renewal",
+    synergyBonus: 85,
+  },
+  {
+    name: "Regen Glow",
+    peptides: ["klow-peptide-complex", "ghk-cu"],
+    icon: Heart,
+    color: "#22c55e",
+    description: "Anti-inflammatory healing blend + copper peptide collagen remodeling — repair-to-renewal pipeline",
+    synergyBonus: 86,
+  },
+  {
+    name: "Anti-Wrinkle",
+    peptides: ["botulinum-toxin-type-a", "snap-8"],
+    icon: Sparkles,
+    color: "#ec4899",
+    description: "Neuromuscular relaxation + SNARE complex modulation — complementary expression line reduction",
+    synergyBonus: 87,
+  },
 ];
 
 // Peptide pathway data for connections
@@ -442,6 +498,48 @@ const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
     mechanisms: ["Extended half-life IGF-1", "Muscle protein synthesis", "Satellite cell activation"],
     systems: ["Growth", "Muscle", "Recovery"],
   },
+  "ss-31": {
+    name: "SS-31",
+    pathways: ["Cardiolipin Binding", "Mitochondrial Electron Transport", "ROS Scavenging"],
+    mechanisms: ["Inner membrane stabilization", "Electron transport chain optimization", "Mitochondrial antioxidant"],
+    systems: ["Longevity", "Energy", "Recovery"],
+  },
+  "glutathione": {
+    name: "Glutathione",
+    pathways: ["Glutathione Peroxidase", "Phase II Detoxification", "Redox Homeostasis"],
+    mechanisms: ["Master antioxidant", "Toxin conjugation", "Immune cell support"],
+    systems: ["Longevity", "Immune", "Recovery"],
+  },
+  "glow-peptide-complex": {
+    name: "GLOW Peptide Complex",
+    pathways: ["Collagen Synthesis", "Matrix Remodeling", "Melanogenesis Modulation"],
+    mechanisms: ["Multi-peptide skin rejuvenation", "Elastin production support", "Pigmentation balance"],
+    systems: ["Skin", "Longevity"],
+  },
+  "klow-peptide-complex": {
+    name: "KLOW Peptide Complex",
+    pathways: ["NF-κB Inhibition", "Collagen Synthesis", "Mucosal Healing"],
+    mechanisms: ["Anti-inflammatory blend", "Tissue regeneration support", "Gut-skin axis modulation"],
+    systems: ["Healing", "Skin", "Gut"],
+  },
+  "hyaluronic-acid": {
+    name: "Hyaluronic Acid",
+    pathways: ["CD44 Receptor", "Extracellular Matrix Hydration", "Collagen Synthesis"],
+    mechanisms: ["Tissue hydration", "Joint lubrication", "Dermal volume restoration"],
+    systems: ["Skin", "Joints", "Healing"],
+  },
+  "nad-precursor": {
+    name: "NAD+ Precursor",
+    pathways: ["NAD+ Salvage", "Sirtuin Activation", "PARP DNA Repair"],
+    mechanisms: ["NAD+ level restoration", "Sirtuin-dependent DNA repair", "Mitochondrial enzyme support"],
+    systems: ["Longevity", "Metabolic", "Recovery"],
+  },
+  "botulinum-toxin-type-a": {
+    name: "Botulinum Toxin Type A",
+    pathways: ["SNARE Complex", "Neuromuscular Modulation", "Acetylcholine Inhibition"],
+    mechanisms: ["Neurotransmitter release block", "Muscle relaxation", "Wrinkle reduction"],
+    systems: ["Skin", "Cosmetic"],
+  },
 };
 
 // Body systems with icons and descriptions
@@ -499,6 +597,18 @@ const PATHWAY_DESCRIPTIONS: Record<string, string> = {
   "IGF-1 Signaling": "Insulin-like growth factor pathway for cellular growth and repair",
   "mTOR Pathway": "Master growth regulator controlling protein synthesis and cell proliferation",
   "Cell Proliferation": "Controlled cell division for tissue growth and regeneration",
+  "Melanogenesis Modulation": "Regulation of melanin production for even skin pigmentation and tone",
+  "CD44 Receptor": "Primary hyaluronan receptor mediating cell adhesion, migration, and tissue hydration signaling",
+  "Extracellular Matrix Hydration": "Water retention within tissue scaffolding for structural support and elasticity",
+  "Sirtuin Activation": "NAD+-dependent deacetylase enzymes regulating DNA repair and metabolic homeostasis",
+  "PARP DNA Repair": "Poly(ADP-ribose) polymerase-mediated detection and repair of DNA strand breaks",
+  "Acetylcholine Inhibition": "Blocking acetylcholine release at neuromuscular junctions to reduce muscle contraction",
+  "Cardiolipin Binding": "Stabilization of inner mitochondrial membrane lipid essential for electron transport",
+  "Mitochondrial Electron Transport": "Energy-producing chain of redox reactions within mitochondria",
+  "ROS Scavenging": "Neutralization of reactive oxygen species to prevent oxidative cell damage",
+  "Glutathione Peroxidase": "Enzyme system reducing hydrogen peroxide and lipid hydroperoxides",
+  "Phase II Detoxification": "Conjugation reactions that neutralize and prepare toxins for elimination",
+  "Redox Homeostasis": "Maintaining the balance between oxidants and antioxidants for cellular health",
 };
 
 // Helper to normalize peptide names for matching
