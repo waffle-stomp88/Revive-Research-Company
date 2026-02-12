@@ -1087,7 +1087,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
     })
     .filter((p): p is PeptidePathway & { originalName: string } => p !== null);
 
-  if (peptideData.length < 2) return null;
+  const hasActiveData = peptideData.length >= 2;
 
   const SYSTEM_COLORS: Record<string, string> = {
     healing: "#22c55e", gut: "#22c55e", joints: "#22c55e",
@@ -1121,7 +1121,18 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
     delay: (i % 7) * 0.5,
   }));
 
-  const nodes = peptideData.map((p, i) => {
+  const ghostNodes = [
+    { x: 200, y: centerY - 20, color: "#22c55e", label: "?" },
+    { x: 450, y: centerY + 15, color: "#21d8ff", label: "?" },
+    { x: 700, y: centerY - 10, color: "#a855f7", label: "?" },
+  ];
+
+  const ghostConnections = [
+    { from: 0, to: 1 },
+    { from: 1, to: 2 },
+  ];
+
+  const nodes = hasActiveData ? peptideData.map((p, i) => {
     const count = peptideData.length;
     const spread = Math.min(svgWidth * 0.7, count * 200);
     const startX = centerX - spread / 2;
@@ -1135,14 +1146,16 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
       systems: p.systems,
       color: getPrimaryColor(p.systems),
     };
-  });
+  }) : [];
 
   const connections: { from: number; to: number; pathways: string[]; strength: number }[] = [];
-  for (let i = 0; i < peptideData.length; i++) {
-    for (let j = i + 1; j < peptideData.length; j++) {
-      const shared = peptideData[i].pathways.filter(p => peptideData[j].pathways.includes(p));
-      if (shared.length > 0) {
-        connections.push({ from: i, to: j, pathways: shared, strength: shared.length });
+  if (hasActiveData) {
+    for (let i = 0; i < peptideData.length; i++) {
+      for (let j = i + 1; j < peptideData.length; j++) {
+        const shared = peptideData[i].pathways.filter(p => peptideData[j].pathways.includes(p));
+        if (shared.length > 0) {
+          connections.push({ from: i, to: j, pathways: shared, strength: shared.length });
+        }
       }
     }
   }
@@ -1198,7 +1211,9 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
             <h4 className="text-sm font-bold text-white tracking-wide" style={{ textShadow: "0 0 20px rgba(34,197,94,0.3)" }}>
               PATHWAY MAP
             </h4>
-            <p className="text-[11px] text-gray-500">Tap or hover to explore biological connections</p>
+            <p className="text-[11px] text-gray-500">
+              {hasActiveData ? "Tap or hover to explore biological connections" : "Select 2+ peptides below to visualize their connections"}
+            </p>
           </div>
         </div>
         {allSharedPathways.length > 0 && (
@@ -1233,6 +1248,13 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
               <stop offset="100%" stopColor={node.color} stopOpacity={0} />
             </radialGradient>
           ))}
+          {ghostNodes.map((gn, i) => (
+            <radialGradient key={`pm-ghost-glow-${i}`} id={`pm-ghost-glow-${i}`} cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor={gn.color} stopOpacity={0.15} />
+              <stop offset="60%" stopColor={gn.color} stopOpacity={0.04} />
+              <stop offset="100%" stopColor={gn.color} stopOpacity={0} />
+            </radialGradient>
+          ))}
           <filter id="pm-glow-soft">
             <feGaussianBlur stdDeviation="3" result="blur" />
             <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
@@ -1260,242 +1282,373 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
           />
         ))}
 
-        {connections.map(conn => {
-          const fn = nodes[conn.from];
-          const tn = nodes[conn.to];
-          const key = connKey(conn.from, conn.to);
-          const isActive = activeConnection === key || activeNode === fn.name || activeNode === tn.name;
-          const baseW = 1 + (conn.strength / maxStrength) * 2;
-
-          const dx = tn.x - fn.x;
-          const dy = tn.y - fn.y;
-          const len = Math.sqrt(dx * dx + dy * dy);
-          const particleCount = Math.max(2, Math.min(5, conn.strength));
-
-          return (
-            <g key={key}>
-              <motion.line
-                x1={fn.x} y1={fn.y} x2={tn.x} y2={tn.y}
-                stroke={`url(#pm-grad-${conn.from}-${conn.to})`}
-                strokeWidth={isActive ? baseW + 2 : baseW}
-                strokeLinecap="round"
-                strokeOpacity={isActive ? 0.9 : 0.25}
-                filter={isActive ? "url(#pm-glow-line)" : undefined}
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-              />
-
-              {isActive && (
+        <AnimatePresence mode="wait">
+        {!hasActiveData ? (
+          <motion.g
+            key="ghost-state"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.4 } }}
+          >
+            {ghostConnections.map((gc, i) => {
+              const fn = ghostNodes[gc.from];
+              const tn = ghostNodes[gc.to];
+              return (
                 <motion.line
+                  key={`ghost-conn-${i}`}
                   x1={fn.x} y1={fn.y} x2={tn.x} y2={tn.y}
-                  stroke={`url(#pm-grad-${conn.from}-${conn.to})`}
-                  strokeWidth={baseW + 6}
-                  strokeLinecap="round"
-                  strokeOpacity={0.15}
-                  filter="url(#pm-glow-line)"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                  stroke="rgba(255,255,255,0.06)"
+                  strokeWidth={1}
+                  strokeDasharray="8,12"
+                  animate={{ opacity: [0.3, 0.6, 0.3] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 1.5 }}
                 />
-              )}
+              );
+            })}
 
+            {ghostNodes.map((gn, i) => (
+              <g key={`ghost-${i}`}>
+                <motion.circle
+                  cx={gn.x} cy={gn.y} r={40}
+                  fill={`url(#pm-ghost-glow-${i})`}
+                  animate={{ opacity: [0.3, 0.6, 0.3] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.7 }}
+                />
+                <motion.circle
+                  cx={gn.x} cy={gn.y} r={24}
+                  fill="none"
+                  stroke={gn.color}
+                  strokeWidth={0.5}
+                  strokeDasharray="6,8"
+                  animate={{ opacity: [0.08, 0.2, 0.08], rotate: 360 }}
+                  transition={{ opacity: { duration: 3, repeat: Infinity }, rotate: { duration: 25, repeat: Infinity, ease: "linear" } }}
+                  style={{ transformOrigin: `${gn.x}px ${gn.y}px` }}
+                />
+                <motion.circle
+                  cx={gn.x} cy={gn.y} r={18}
+                  fill="rgba(255,255,255,0.02)"
+                  stroke={gn.color}
+                  strokeWidth={0.8}
+                  strokeOpacity={0.15}
+                  animate={{ opacity: [0.3, 0.6, 0.3] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: i * 0.5 }}
+                />
+                <motion.text
+                  x={gn.x} y={gn.y + 1}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fill={gn.color}
+                  fontSize="14"
+                  fontWeight="300"
+                  animate={{ opacity: [0.15, 0.35, 0.15] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: i * 0.5 }}
+                  className="pointer-events-none select-none"
+                >
+                  {gn.label}
+                </motion.text>
+              </g>
+            ))}
+
+            <motion.text
+              x={centerX} y={centerY - 50}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill="white"
+              fontSize="16"
+              fontWeight="700"
+              letterSpacing="1"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.8 }}
+              transition={{ duration: 1, delay: 0.3 }}
+              className="pointer-events-none select-none"
+              style={{ textShadow: "0 0 20px rgba(34,197,94,0.4), 0 0 40px rgba(33,216,255,0.2)" }}
+            >
+              Select peptides to map their pathways
+            </motion.text>
+
+            <motion.text
+              x={centerX} y={centerY - 28}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill="#9ca3af"
+              fontSize="11"
+              fontWeight="400"
+              letterSpacing="0.3"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.5 }}
+              transition={{ duration: 1, delay: 0.6 }}
+              className="pointer-events-none select-none"
+            >
+              Discover how compounds interact through shared mechanisms
+            </motion.text>
+
+            <motion.g
+              animate={{ opacity: [0.3, 0.6, 0.3] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            >
               <line
-                x1={fn.x} y1={fn.y} x2={tn.x} y2={tn.y}
-                stroke="transparent"
-                strokeWidth={20}
-                onMouseEnter={() => setHoveredConnection(key)}
-                onMouseLeave={() => setHoveredConnection(null)}
-                onClick={() => handleConnectionClick(key)}
-                className="cursor-pointer"
+                x1={centerX} y1={centerY + 30}
+                x2={centerX} y2={centerY + 50}
+                stroke="#22c55e"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeOpacity={0.5}
               />
+              <path
+                d={`M${centerX - 6} ${centerY + 44} L${centerX} ${centerY + 52} L${centerX + 6} ${centerY + 44}`}
+                fill="none"
+                stroke="#22c55e"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeOpacity={0.5}
+              />
+            </motion.g>
+          </motion.g>
+        ) : (
+          <motion.g
+            key="active-state"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.4 } }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            {connections.map(conn => {
+              const fn = nodes[conn.from];
+              const tn = nodes[conn.to];
+              const key = connKey(conn.from, conn.to);
+              const isActive = activeConnection === key || activeNode === fn.name || activeNode === tn.name;
+              const baseW = 1 + (conn.strength / maxStrength) * 2;
 
-              {Array.from({ length: particleCount }).map((_, pi) => {
-                const delay = pi * (3 / particleCount);
-                return (
-                  <motion.circle
-                    key={`particle-${key}-${pi}`}
-                    r={isActive ? 3 : 1.5}
-                    fill={isActive ? "white" : fn.color}
-                    filter={isActive ? "url(#pm-glow-soft)" : undefined}
+              const particleCount = Math.max(2, Math.min(5, conn.strength));
+
+              return (
+                <g key={key}>
+                  <motion.line
+                    x1={fn.x} y1={fn.y} x2={tn.x} y2={tn.y}
+                    stroke={`url(#pm-grad-${conn.from}-${conn.to})`}
+                    strokeWidth={isActive ? baseW + 2 : baseW}
+                    strokeLinecap="round"
+                    strokeOpacity={isActive ? 0.9 : 0.25}
+                    filter={isActive ? "url(#pm-glow-line)" : undefined}
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                  />
+
+                  {isActive && (
+                    <motion.line
+                      x1={fn.x} y1={fn.y} x2={tn.x} y2={tn.y}
+                      stroke={`url(#pm-grad-${conn.from}-${conn.to})`}
+                      strokeWidth={baseW + 6}
+                      strokeLinecap="round"
+                      strokeOpacity={0.15}
+                      filter="url(#pm-glow-line)"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                    />
+                  )}
+
+                  <line
+                    x1={fn.x} y1={fn.y} x2={tn.x} y2={tn.y}
+                    stroke="transparent"
+                    strokeWidth={20}
+                    onMouseEnter={() => setHoveredConnection(key)}
+                    onMouseLeave={() => setHoveredConnection(null)}
+                    onClick={() => handleConnectionClick(key)}
+                    className="cursor-pointer"
+                  />
+
+                  {Array.from({ length: particleCount }).map((_, pi) => {
+                    const delay = pi * (3 / particleCount);
+                    return (
+                      <motion.circle
+                        key={`particle-${key}-${pi}`}
+                        r={isActive ? 3 : 1.5}
+                        fill={isActive ? "white" : fn.color}
+                        filter={isActive ? "url(#pm-glow-soft)" : undefined}
+                        initial={{ opacity: 0 }}
+                        animate={{
+                          cx: [fn.x, tn.x],
+                          cy: [fn.y, tn.y],
+                          opacity: [0, isActive ? 0.9 : 0.4, 0],
+                        }}
+                        transition={{
+                          duration: 3,
+                          delay,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
+                        className="pointer-events-none"
+                      />
+                    );
+                  })}
+                </g>
+              );
+            })}
+
+            {allPathwayNodes.map((pn, i) => {
+              const parentKey = connKey(pn.fromNode, pn.toNode);
+              const isActive = activeConnection === parentKey || activeNode === nodes[pn.fromNode].name || activeNode === nodes[pn.toNode].name;
+              const midX = (nodes[pn.fromNode].x + nodes[pn.toNode].x) / 2;
+              const midY = (nodes[pn.fromNode].y + nodes[pn.toNode].y) / 2;
+              const labelW = Math.min(90, pn.name.length * 7 + 16);
+
+              return (
+                <g key={`pw-${i}`}>
+                  <motion.line
+                    x1={midX} y1={midY} x2={pn.x} y2={pn.y}
+                    stroke="#22c55e"
+                    strokeWidth={0.5}
+                    strokeDasharray="3,3"
+                    strokeOpacity={isActive ? 0.6 : 0.15}
                     initial={{ opacity: 0 }}
-                    animate={{
-                      cx: [fn.x, tn.x],
-                      cy: [fn.y, tn.y],
-                      opacity: [0, isActive ? 0.9 : 0.4, 0],
-                    }}
-                    transition={{
-                      duration: 3,
-                      delay,
-                      repeat: Infinity,
-                      ease: "linear",
-                    }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5 + i * 0.08 }}
+                  />
+                  <motion.rect
+                    x={pn.x - labelW / 2}
+                    y={pn.y - 10}
+                    width={labelW}
+                    height={20}
+                    rx={10}
+                    fill={isActive ? "rgba(34,197,94,0.2)" : "rgba(34,197,94,0.06)"}
+                    stroke={isActive ? "rgba(34,197,94,0.6)" : "rgba(34,197,94,0.15)"}
+                    strokeWidth={isActive ? 1 : 0.5}
+                    filter={isActive ? "url(#pm-glow-soft)" : undefined}
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.5 + i * 0.08, type: "spring", stiffness: 200 }}
+                    onMouseEnter={() => setHoveredConnection(parentKey)}
+                    onMouseLeave={() => setHoveredConnection(null)}
+                    onClick={() => handleConnectionClick(parentKey)}
+                    className="cursor-pointer"
+                  />
+                  <motion.text
+                    x={pn.x}
+                    y={pn.y + 1}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fill={isActive ? "#4ade80" : "#22c55e"}
+                    fontSize="9"
+                    fontWeight={isActive ? "700" : "500"}
+                    letterSpacing="0.3"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: isActive ? 1 : 0.7 }}
+                    transition={{ delay: 0.5 + i * 0.08 }}
+                    className="pointer-events-none select-none"
+                    style={isActive ? { filter: "drop-shadow(0 0 4px rgba(34,197,94,0.6))" } : undefined}
+                  >
+                    {pn.name.length > 16 ? pn.name.slice(0, 14) + "…" : pn.name}
+                  </motion.text>
+                </g>
+              );
+            })}
+
+            {nodes.map((node, i) => {
+              const isActive = activeNode === node.name;
+              const nodeR = isActive ? 32 : 26;
+
+              return (
+                <g
+                  key={`node-${i}`}
+                  onMouseEnter={() => setHoveredNode(node.name)}
+                  onMouseLeave={() => setHoveredNode(null)}
+                  onClick={() => handleNodeClick(node.name)}
+                  className="cursor-pointer"
+                >
+                  <motion.circle
+                    cx={node.x}
+                    cy={node.y}
+                    r={nodeR + 20}
+                    fill={`url(#pm-nglow-${i})`}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: isActive ? 0.8 : 0.4 }}
                     className="pointer-events-none"
                   />
-                );
-              })}
-            </g>
-          );
-        })}
 
-        {allPathwayNodes.map((pn, i) => {
-          const parentKey = connKey(pn.fromNode, pn.toNode);
-          const isActive = activeConnection === parentKey || activeNode === nodes[pn.fromNode].name || activeNode === nodes[pn.toNode].name;
-          const midX = (nodes[pn.fromNode].x + nodes[pn.toNode].x) / 2;
-          const midY = (nodes[pn.fromNode].y + nodes[pn.toNode].y) / 2;
-          const labelW = Math.min(90, pn.name.length * 7 + 16);
+                  <motion.circle
+                    cx={node.x}
+                    cy={node.y}
+                    r={nodeR + 8}
+                    fill="none"
+                    stroke={node.color}
+                    strokeWidth={0.5}
+                    strokeDasharray="4,6"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [0.1, 0.3, 0.1], rotate: 360 }}
+                    transition={{ opacity: { duration: 3, repeat: Infinity }, rotate: { duration: 20, repeat: Infinity, ease: "linear" } }}
+                    style={{ transformOrigin: `${node.x}px ${node.y}px` }}
+                  />
 
-          return (
-            <g key={`pw-${i}`}>
-              <motion.line
-                x1={midX} y1={midY} x2={pn.x} y2={pn.y}
-                stroke={isActive ? "#22c55e" : "#22c55e"}
-                strokeWidth={0.5}
-                strokeDasharray="3,3"
-                strokeOpacity={isActive ? 0.6 : 0.15}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 + i * 0.08 }}
-              />
-              <motion.rect
-                x={pn.x - labelW / 2}
-                y={pn.y - 10}
-                width={labelW}
-                height={20}
-                rx={10}
-                fill={isActive ? "rgba(34,197,94,0.2)" : "rgba(34,197,94,0.06)"}
-                stroke={isActive ? "rgba(34,197,94,0.6)" : "rgba(34,197,94,0.15)"}
-                strokeWidth={isActive ? 1 : 0.5}
-                filter={isActive ? "url(#pm-glow-soft)" : undefined}
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.5 + i * 0.08, type: "spring", stiffness: 200 }}
-                onMouseEnter={() => setHoveredConnection(parentKey)}
-                onMouseLeave={() => setHoveredConnection(null)}
-                onClick={() => handleConnectionClick(parentKey)}
-                className="cursor-pointer"
-              />
-              <motion.text
-                x={pn.x}
-                y={pn.y + 1}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fill={isActive ? "#4ade80" : "#22c55e"}
-                fontSize="9"
-                fontWeight={isActive ? "700" : "500"}
-                letterSpacing="0.3"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: isActive ? 1 : 0.7 }}
-                transition={{ delay: 0.5 + i * 0.08 }}
-                className="pointer-events-none select-none"
-                style={isActive ? { filter: "drop-shadow(0 0 4px rgba(34,197,94,0.6))" } : undefined}
-              >
-                {pn.name.length > 16 ? pn.name.slice(0, 14) + "…" : pn.name}
-              </motion.text>
-            </g>
-          );
-        })}
+                  {isActive && (
+                    <motion.circle
+                      cx={node.x}
+                      cy={node.y}
+                      r={nodeR + 4}
+                      fill="none"
+                      stroke={node.color}
+                      strokeWidth={1.5}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: [0.3, 0.7, 0.3], scale: [1, 1.05, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      style={{ transformOrigin: `${node.x}px ${node.y}px` }}
+                    />
+                  )}
 
-        {nodes.map((node, i) => {
-          const isActive = activeNode === node.name;
-          const nodeR = isActive ? 32 : 26;
+                  <motion.circle
+                    cx={node.x}
+                    cy={node.y}
+                    fill={`${node.color}10`}
+                    stroke={node.color}
+                    strokeWidth={isActive ? 2.5 : 1.5}
+                    filter={isActive ? "url(#pm-glow-strong)" : "url(#pm-glow-soft)"}
+                    initial={{ r: 0, opacity: 0 }}
+                    animate={{ r: nodeR, opacity: 1 }}
+                    transition={{ duration: 0.6, delay: i * 0.12, type: "spring", stiffness: 150 }}
+                  />
 
-          return (
-            <g
-              key={`node-${i}`}
-              onMouseEnter={() => setHoveredNode(node.name)}
-              onMouseLeave={() => setHoveredNode(null)}
-              onClick={() => handleNodeClick(node.name)}
-              className="cursor-pointer"
-            >
-              <motion.circle
-                cx={node.x}
-                cy={node.y}
-                r={nodeR + 20}
-                fill={`url(#pm-nglow-${i})`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: isActive ? 0.8 : 0.4 }}
-                className="pointer-events-none"
-              />
+                  <motion.circle
+                    cx={node.x}
+                    cy={node.y}
+                    r={3}
+                    fill={node.color}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
+                    className="pointer-events-none"
+                  />
 
-              <motion.circle
-                cx={node.x}
-                cy={node.y}
-                r={nodeR + 8}
-                fill="none"
-                stroke={node.color}
-                strokeWidth={0.5}
-                strokeDasharray="4,6"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0.1, 0.3, 0.1], rotate: 360 }}
-                transition={{ opacity: { duration: 3, repeat: Infinity }, rotate: { duration: 20, repeat: Infinity, ease: "linear" } }}
-                style={{ transformOrigin: `${node.x}px ${node.y}px` }}
-              />
-
-              {isActive && (
-                <motion.circle
-                  cx={node.x}
-                  cy={node.y}
-                  r={nodeR + 4}
-                  fill="none"
-                  stroke={node.color}
-                  strokeWidth={1.5}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: [0.3, 0.7, 0.3], scale: [1, 1.05, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  style={{ transformOrigin: `${node.x}px ${node.y}px` }}
-                />
-              )}
-
-              <motion.circle
-                cx={node.x}
-                cy={node.y}
-                fill={`${node.color}10`}
-                stroke={node.color}
-                strokeWidth={isActive ? 2.5 : 1.5}
-                filter={isActive ? "url(#pm-glow-strong)" : "url(#pm-glow-soft)"}
-                initial={{ r: 0, opacity: 0 }}
-                animate={{ r: nodeR, opacity: 1 }}
-                transition={{ duration: 0.6, delay: i * 0.12, type: "spring", stiffness: 150 }}
-              />
-
-              <motion.circle
-                cx={node.x}
-                cy={node.y}
-                r={3}
-                fill={node.color}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
-                className="pointer-events-none"
-              />
-
-              <motion.text
-                x={node.x}
-                y={node.y}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fill={isActive ? "#ffffff" : node.color}
-                fontSize={node.name.length > 12 ? "9" : node.name.length > 8 ? "10" : "11"}
-                fontWeight="700"
-                letterSpacing="0.5"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 + i * 0.12 }}
-                className="pointer-events-none select-none"
-                style={{ 
-                  filter: isActive ? `drop-shadow(0 0 8px ${node.color})` : `drop-shadow(0 0 3px ${node.color}80)`,
-                  textShadow: isActive ? `0 0 12px ${node.color}` : undefined,
-                }}
-              >
-                {node.name.length > 14 ? node.name.slice(0, 12) + "…" : node.name}
-              </motion.text>
-            </g>
-          );
-        })}
+                  <motion.text
+                    x={node.x}
+                    y={node.y}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fill={isActive ? "#ffffff" : node.color}
+                    fontSize={node.name.length > 12 ? "9" : node.name.length > 8 ? "10" : "11"}
+                    fontWeight="700"
+                    letterSpacing="0.5"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 + i * 0.12 }}
+                    className="pointer-events-none select-none"
+                    style={{ 
+                      filter: isActive ? `drop-shadow(0 0 8px ${node.color})` : `drop-shadow(0 0 3px ${node.color}80)`,
+                      textShadow: isActive ? `0 0 12px ${node.color}` : undefined,
+                    }}
+                  >
+                    {node.name.length > 14 ? node.name.slice(0, 12) + "…" : node.name}
+                  </motion.text>
+                </g>
+              );
+            })}
+          </motion.g>
+        )}
+        </AnimatePresence>
       </svg>
 
       <AnimatePresence>
-        {activeConnection && (() => {
+        {hasActiveData && activeConnection && (() => {
           const parts = activeConnection.split("-");
           const fromIdx = parseInt(parts[0]);
           const toIdx = parseInt(parts[1]);
@@ -1532,7 +1685,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
           );
         })()}
 
-        {activeNode && !activeConnection && (() => {
+        {hasActiveData && activeNode && !activeConnection && (() => {
           const node = nodes.find(n => n.name === activeNode);
           if (!node) return null;
           const connCount = connections.filter(c => nodes[c.from].name === activeNode || nodes[c.to].name === activeNode).length;
@@ -1571,7 +1724,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
         })()}
       </AnimatePresence>
 
-      {!activeNode && !activeConnection && allSharedPathways.length > 0 && (
+      {hasActiveData && !activeNode && !activeConnection && allSharedPathways.length > 0 && (
         <div className="px-4 pb-4">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-[11px] text-gray-500 font-medium">Shared pathways:</span>
@@ -1804,6 +1957,8 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
 
   return (
     <div className="space-y-6">
+      <PathwayMap selectedPeptides={selectedPeptides} />
+
       {/* Two Column Layout: Peptides Left, Build Panel Right */}
       <div className="grid grid-cols-1 lg:grid-cols-[65%_1fr] gap-6">
         {/* Left Column: Peptide Selection */}
@@ -2755,9 +2910,6 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
         </motion.div>
       </AnimatePresence>
 
-      {selectedPeptides.length >= 2 && (
-        <PathwayMap selectedPeptides={selectedPeptides} />
-      )}
     </div>
   );
 }
