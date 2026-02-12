@@ -540,6 +540,180 @@ const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
     mechanisms: ["Neurotransmitter release block", "Muscle relaxation", "Wrinkle reduction"],
     systems: ["Skin", "Cosmetic"],
   },
+  "dsip": {
+    name: "DSIP",
+    pathways: ["GABA", "Serotonin", "Sleep Architecture"],
+    mechanisms: ["Delta wave enhancement", "Circadian rhythm modulation", "Stress hormone reduction"],
+    systems: ["Sleep", "Cognitive", "Recovery"],
+  },
+  "ace-031": {
+    name: "ACE-031",
+    pathways: ["Myostatin Inhibition", "Activin Signaling", "Muscle Hypertrophy"],
+    mechanisms: ["ActRIIB-Fc fusion", "TGF-β superfamily blocking", "Muscle mass increase"],
+    systems: ["Growth", "Muscle"],
+  },
+  "aicar": {
+    name: "AICAR",
+    pathways: ["AMPK Activation", "Fat Oxidation", "Mitochondrial Biogenesis"],
+    mechanisms: ["AMP-kinase activation", "Endurance enhancement", "Metabolic switching"],
+    systems: ["Metabolic", "Energy", "Recovery"],
+  },
+  "adipotide": {
+    name: "Adipotide",
+    pathways: ["Prohibitin Targeting", "Vascular Disruption", "Apoptosis"],
+    mechanisms: ["White fat vessel targeting", "Adipose tissue reduction", "CKGGRAKDC peptide"],
+    systems: ["Weight", "Metabolic"],
+  },
+  "alprostadil": {
+    name: "Alprostadil",
+    pathways: ["Prostaglandin E1", "Vasodilation", "cAMP Signaling"],
+    mechanisms: ["Smooth muscle relaxation", "Blood flow enhancement", "Platelet aggregation inhibition"],
+    systems: ["Vascular", "Heart", "Healing"],
+  },
+  "ara-290": {
+    name: "ARA-290",
+    pathways: ["Innate Repair Receptor", "Anti-Inflammatory", "Neuroprotection"],
+    mechanisms: ["Tissue protective receptor activation", "Small fiber nerve repair", "Cytoprotection without erythropoiesis"],
+    systems: ["Healing", "Neuroprotection", "Recovery"],
+  },
+  "cagrilintide": {
+    name: "Cagrilintide",
+    pathways: ["Amylin Receptor", "Appetite Regulation", "Gastric Emptying"],
+    mechanisms: ["Long-acting amylin analog", "Satiety signaling", "Glucagon suppression"],
+    systems: ["Metabolic", "Weight"],
+  },
+  "foxo4-dri": {
+    name: "FOXO4-DRI",
+    pathways: ["FOXO4-p53 Disruption", "Senescence Clearance", "Apoptosis"],
+    mechanisms: ["D-retro-inverso peptide", "Senescent cell targeting", "p53 nuclear exclusion"],
+    systems: ["Longevity", "Recovery"],
+  },
+  "ghrp-2": {
+    name: "GHRP-2",
+    pathways: ["Ghrelin Receptor", "GH Secretion", "Appetite Stimulation"],
+    mechanisms: ["Hexapeptide GHRP", "Pituitary GH release", "Hunger hormone activation"],
+    systems: ["Growth", "Muscle", "Recovery"],
+  },
+  "ghrp-6": {
+    name: "GHRP-6",
+    pathways: ["Ghrelin Receptor", "GH Secretion", "IGF-1 Signaling"],
+    mechanisms: ["Strong GH release", "Appetite stimulation", "Cortisol and prolactin effects"],
+    systems: ["Growth", "Muscle", "Recovery"],
+  },
+  "gonadorelin": {
+    name: "Gonadorelin",
+    pathways: ["GnRH Receptor", "LH Release", "FSH Release"],
+    mechanisms: ["Gonadotropin-releasing hormone", "Pituitary gonadotropin stimulation", "Reproductive axis activation"],
+    systems: ["Hormonal", "Recovery"],
+  },
+  "hcg": {
+    name: "HCG",
+    pathways: ["LH Receptor", "Testosterone Stimulation", "Leydig Cell Activation"],
+    mechanisms: ["LH mimetic", "Intratesticular testosterone", "Fertility support"],
+    systems: ["Hormonal", "Recovery"],
+  },
+  "hmg": {
+    name: "HMG",
+    pathways: ["FSH Signaling", "LH Signaling", "Gonadal Stimulation"],
+    mechanisms: ["Combined FSH/LH activity", "Spermatogenesis support", "Follicle stimulation"],
+    systems: ["Hormonal", "Recovery"],
+  },
+  "hexarelin": {
+    name: "Hexarelin",
+    pathways: ["Ghrelin Receptor", "GH Secretion", "Cardioprotection"],
+    mechanisms: ["Strongest GHRP", "Cardiac cell protection", "GH/IGF-1 axis activation"],
+    systems: ["Growth", "Heart", "Recovery"],
+  },
+  "igf-des": {
+    name: "IGF-DES",
+    pathways: ["IGF-1 Signaling", "mTOR Pathway", "Cell Proliferation"],
+    mechanisms: ["Truncated IGF-1 variant", "Enhanced receptor binding", "Localized muscle growth"],
+    systems: ["Growth", "Muscle"],
+  },
+  "kisspeptin-10": {
+    name: "Kisspeptin-10",
+    pathways: ["GnRH Receptor", "LH Release", "Reproductive Axis"],
+    mechanisms: ["Kisspeptin receptor activation", "GnRH neuron stimulation", "Puberty and fertility regulation"],
+    systems: ["Hormonal"],
+  },
+  "mazdutide": {
+    name: "Mazdutide",
+    pathways: ["Incretin Receptor", "Glucagon", "Appetite Regulation"],
+    mechanisms: ["Dual receptor agonist", "Enhanced energy expenditure", "Appetite suppression"],
+    systems: ["Metabolic", "Weight"],
+  },
+  "melanotan": {
+    name: "Melanotan",
+    pathways: ["MC1R Activation", "Melanogenesis Modulation", "cAMP Signaling"],
+    mechanisms: ["Alpha-MSH analog", "Melanin production stimulation", "UV protection enhancement"],
+    systems: ["Skin", "Cosmetic"],
+  },
+  "melatonin": {
+    name: "Melatonin",
+    pathways: ["Melatonin Receptor", "Circadian Rhythm", "Antioxidant Defense"],
+    mechanisms: ["MT1/MT2 receptor binding", "Sleep-wake cycle regulation", "Free radical scavenging"],
+    systems: ["Sleep", "Longevity", "Immune"],
+  },
+  "mgf": {
+    name: "MGF",
+    pathways: ["IGF-1 Signaling", "Satellite Cell Activation", "Muscle Repair"],
+    mechanisms: ["IGF-1 splice variant", "Muscle stem cell proliferation", "Exercise-induced growth factor"],
+    systems: ["Growth", "Muscle", "Recovery"],
+  },
+  "oxytocin": {
+    name: "Oxytocin",
+    pathways: ["Oxytocin Receptor", "Social Bonding", "Anti-Inflammatory"],
+    mechanisms: ["Hypothalamic neuropeptide", "Stress reduction", "Uterine contraction regulation"],
+    systems: ["Mood", "Healing", "Hormonal"],
+  },
+  "pnc-27": {
+    name: "PNC-27",
+    pathways: ["p53 Activation", "HDM2 Binding", "Membrane Disruption"],
+    mechanisms: ["Tumor cell membrane targeting", "Necrosis induction in cancer cells", "Normal cell sparing"],
+    systems: ["Immune", "Longevity"],
+  },
+  "pt-141": {
+    name: "PT-141",
+    pathways: ["MC4R Activation", "Melanocortin Signaling", "Dopamine"],
+    mechanisms: ["Melanocortin receptor agonist", "Central nervous system arousal", "Sexual function enhancement"],
+    systems: ["Hormonal", "Mood"],
+  },
+  "pinealon": {
+    name: "Pinealon",
+    pathways: ["Pineal Function", "BDNF", "Neuroprotection"],
+    mechanisms: ["Tripeptide brain bioregulator", "Pineal gland support", "Cognitive decline prevention"],
+    systems: ["Cognitive", "Sleep", "Longevity"],
+  },
+  "slu-pp-332": {
+    name: "SLU-PP-332",
+    pathways: ["ERRα Activation", "Mitochondrial Biogenesis", "Fat Oxidation"],
+    mechanisms: ["Estrogen-related receptor alpha agonist", "Exercise pathway mimicry", "Endurance enhancement"],
+    systems: ["Metabolic", "Energy", "Muscle"],
+  },
+  "survodutide": {
+    name: "Survodutide",
+    pathways: ["Incretin Receptor", "Glucagon", "Appetite Regulation"],
+    mechanisms: ["Dual agonist", "Hepatic fat reduction", "Weight management"],
+    systems: ["Metabolic", "Weight"],
+  },
+  "tesamorelin": {
+    name: "Tesamorelin",
+    pathways: ["GHRH Signaling", "GH Secretion", "Lipolysis"],
+    mechanisms: ["Synthetic GHRH", "Visceral fat reduction", "IGF-1 elevation"],
+    systems: ["Growth", "Metabolic", "Recovery"],
+  },
+  "triptorelin": {
+    name: "Triptorelin",
+    pathways: ["GnRH Receptor", "LH Release", "FSH Release"],
+    mechanisms: ["Decapeptide GnRH analog", "Initial gonadotropin surge then suppression", "HPG axis modulation"],
+    systems: ["Hormonal"],
+  },
+  "vip": {
+    name: "VIP",
+    pathways: ["VPAC Receptor", "Vasodilation", "Anti-Inflammatory"],
+    mechanisms: ["Neuropeptide vasodilator", "Smooth muscle relaxation", "Immune tolerance"],
+    systems: ["Gut", "Immune", "Vascular"],
+  },
 };
 
 // Body systems with icons and descriptions
@@ -609,6 +783,50 @@ const PATHWAY_DESCRIPTIONS: Record<string, string> = {
   "Glutathione Peroxidase": "Enzyme system reducing hydrogen peroxide and lipid hydroperoxides",
   "Phase II Detoxification": "Conjugation reactions that neutralize and prepare toxins for elimination",
   "Redox Homeostasis": "Maintaining the balance between oxidants and antioxidants for cellular health",
+  "Sleep Architecture": "Neural patterns governing sleep stage cycling and deep restorative sleep",
+  "Myostatin Inhibition": "Blocking the primary negative regulator of skeletal muscle mass",
+  "Activin Signaling": "TGF-beta superfamily member regulating muscle and tissue growth",
+  "Muscle Hypertrophy": "Increase in muscle fiber size through protein synthesis activation",
+  "Prohibitin Targeting": "Selective targeting of blood vessels supplying white adipose tissue",
+  "Vascular Disruption": "Cutting blood supply to targeted tissue for controlled reduction",
+  "Apoptosis": "Programmed cell death pathway for eliminating damaged or unwanted cells",
+  "Prostaglandin E1": "Lipid compound mediating vasodilation and smooth muscle relaxation",
+  "cAMP Signaling": "Cyclic AMP second messenger system for intracellular signal transduction",
+  "Innate Repair Receptor": "Tissue-protective receptor mediating repair without erythropoiesis",
+  "Amylin Receptor": "Receptor for amylin hormone regulating satiety and gastric emptying",
+  "Appetite Regulation": "Central nervous system pathways controlling hunger and satiety signals",
+  "Gastric Emptying": "Rate control of stomach content release into the small intestine",
+  "FOXO4-p53 Disruption": "Breaking the interaction keeping senescent cells alive",
+  "Senescence Clearance": "Selective removal of zombie cells that drive aging and inflammation",
+  "Appetite Stimulation": "Ghrelin-mediated hunger signal activation from the hypothalamus",
+  "GnRH Receptor": "Gonadotropin-releasing hormone receptor on pituitary gonadotrophs",
+  "LH Release": "Luteinizing hormone secretion for testosterone and ovulation",
+  "FSH Release": "Follicle-stimulating hormone secretion for gamete production",
+  "LH Receptor": "Luteinizing hormone receptor on Leydig and theca cells",
+  "Testosterone Stimulation": "Direct stimulation of testosterone biosynthesis",
+  "Leydig Cell Activation": "Stimulating testicular cells responsible for androgen production",
+  "FSH Signaling": "Follicle-stimulating hormone pathway for germ cell maturation",
+  "LH Signaling": "Luteinizing hormone pathway for steroidogenesis and reproductive function",
+  "Gonadal Stimulation": "Combined hormonal stimulation of reproductive glands",
+  "Cardioprotection": "Protective mechanisms against cardiac ischemia and cell death",
+  "Reproductive Axis": "Hypothalamic-pituitary-gonadal axis controlling reproduction",
+  "MC1R Activation": "Melanocortin 1 receptor stimulation for melanin production",
+  "Melatonin Receptor": "MT1/MT2 receptor activation for circadian and sleep regulation",
+  "Circadian Rhythm": "Internal biological clock governing sleep-wake and metabolic cycles",
+  "Antioxidant Defense": "Cellular systems neutralizing free radicals and oxidative stress",
+  "Satellite Cell Activation": "Muscle stem cell recruitment for fiber repair and growth",
+  "Muscle Repair": "Coordinated regeneration of damaged skeletal muscle fibers",
+  "Oxytocin Receptor": "Neuropeptide receptor mediating social bonding and stress reduction",
+  "Social Bonding": "Neurochemical pathways promoting trust and social connection",
+  "p53 Activation": "Tumor suppressor protein activation for cancer cell elimination",
+  "HDM2 Binding": "Interaction with p53 regulatory protein to restore tumor suppression",
+  "Membrane Disruption": "Physical disruption of cell membrane integrity in targeted cells",
+  "MC4R Activation": "Melanocortin 4 receptor stimulation in CNS for arousal pathways",
+  "Melanocortin Signaling": "Neuropeptide pathway regulating pigmentation, energy, and behavior",
+  "ERRα Activation": "Estrogen-related receptor alpha pathway mimicking exercise adaptations",
+  "VPAC Receptor": "Vasoactive intestinal peptide receptor for vasodilation and immune modulation",
+  "Neuroprotection": "Mechanisms protecting neurons from degeneration and injury",
+  "Vasodilation": "Relaxation of blood vessel walls to increase blood flow",
 };
 
 // Helper to normalize peptide names for matching
@@ -623,7 +841,7 @@ const normalizePeptideName = (name: string): string => {
 const getPeptidePathway = (productName: string): PeptidePathway | null => {
   const normalized = normalizePeptideName(productName);
   for (const [key, data] of Object.entries(PEPTIDE_PATHWAYS)) {
-    if (normalized.includes(key.replace(/-/g, ''))) {
+    if (normalized.includes(key.replace(/[^a-z0-9]/g, ''))) {
       return data;
     }
   }
@@ -1087,7 +1305,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
     })
     .filter((p): p is PeptidePathway & { originalName: string } => p !== null);
 
-  const hasActiveData = peptideData.length >= 2;
+  const hasActiveData = peptideData.length >= 1;
 
   const SYSTEM_COLORS: Record<string, string> = {
     healing: "#22c55e", gut: "#22c55e", joints: "#22c55e",
@@ -1135,7 +1353,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
   const nodes = hasActiveData ? peptideData.map((p, i) => {
     const count = peptideData.length;
     const spread = Math.min(svgWidth * 0.7, count * 200);
-    const startX = centerX - spread / 2;
+    const startX = count === 1 ? centerX : centerX - spread / 2;
     const step = count > 1 ? spread / (count - 1) : 0;
     const yOffset = count <= 2 ? 0 : (i % 2 === 0 ? -30 : 30);
     return {
@@ -1173,6 +1391,22 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
       allPathwayNodes.push({ x: midX + perpX, y: midY + perpY, name: pathway, fromNode: conn.from, toNode: conn.to });
     });
   });
+
+  const soloPathwayLabels: { x: number; y: number; name: string }[] = [];
+  if (peptideData.length === 1 && nodes.length === 1) {
+    const node = nodes[0];
+    const pathways = peptideData[0].pathways;
+    const angleStep = (2 * Math.PI) / Math.max(pathways.length, 1);
+    const radius = 90;
+    pathways.forEach((pathway, pi) => {
+      const angle = -Math.PI / 2 + angleStep * pi;
+      soloPathwayLabels.push({
+        x: node.x + Math.cos(angle) * radius,
+        y: node.y + Math.sin(angle) * radius,
+        name: pathway,
+      });
+    });
+  }
 
   const connKey = (from: number, to: number) => `${from}-${to}`;
   const maxStrength = Math.max(...connections.map(c => c.strength), 1);
@@ -1212,7 +1446,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
               PATHWAY MAP
             </h4>
             <p className="text-[11px] text-gray-500">
-              {hasActiveData ? "Tap or hover to explore biological connections" : "Select 2+ peptides below to visualize their connections"}
+              {hasActiveData ? "Tap or hover to explore biological connections" : "Select peptides below to visualize their connections"}
             </p>
           </div>
         </div>
@@ -1353,15 +1587,15 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
               x={centerX} y={centerY - 50}
               textAnchor="middle"
               dominantBaseline="middle"
-              fill="white"
-              fontSize="16"
+              fill="#21d8ff"
+              fontSize="18"
               fontWeight="700"
               letterSpacing="1"
               initial={{ opacity: 0 }}
-              animate={{ opacity: 0.8 }}
+              animate={{ opacity: 1 }}
               transition={{ duration: 1, delay: 0.3 }}
               className="pointer-events-none select-none"
-              style={{ textShadow: "0 0 20px rgba(34,197,94,0.4), 0 0 40px rgba(33,216,255,0.2)" }}
+              style={{ textShadow: "0 0 20px rgba(33,216,255,0.6), 0 0 40px rgba(33,216,255,0.3), 0 0 60px rgba(33,216,255,0.15)" }}
             >
               Select peptides to map their pathways
             </motion.text>
@@ -1370,12 +1604,12 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
               x={centerX} y={centerY - 28}
               textAnchor="middle"
               dominantBaseline="middle"
-              fill="#9ca3af"
-              fontSize="11"
+              fill="rgba(255,255,255,0.7)"
+              fontSize="12"
               fontWeight="400"
               letterSpacing="0.3"
               initial={{ opacity: 0 }}
-              animate={{ opacity: 0.5 }}
+              animate={{ opacity: 0.75 }}
               transition={{ duration: 1, delay: 0.6 }}
               className="pointer-events-none select-none"
             >
@@ -1642,6 +1876,51 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                 </g>
               );
             })}
+            {soloPathwayLabels.length > 0 && nodes.length === 1 && (
+              <>
+                {soloPathwayLabels.map((label, li) => {
+                  const node = nodes[0];
+                  return (
+                    <g key={`solo-path-${li}`}>
+                      <motion.line
+                        x1={node.x} y1={node.y}
+                        x2={label.x} y2={label.y}
+                        stroke={node.color}
+                        strokeWidth={0.8}
+                        strokeOpacity={0.3}
+                        strokeDasharray="4,6"
+                        initial={{ pathLength: 0, opacity: 0 }}
+                        animate={{ pathLength: 1, opacity: 1 }}
+                        transition={{ duration: 0.8, delay: 0.3 + li * 0.15 }}
+                      />
+                      <motion.circle
+                        cx={label.x} cy={label.y} r={4}
+                        fill={node.color}
+                        fillOpacity={0.4}
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.4, delay: 0.5 + li * 0.15 }}
+                      />
+                      <motion.text
+                        x={label.x} y={label.y - 12}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        fill="white"
+                        fontSize="9"
+                        fontWeight="500"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 0.8 }}
+                        transition={{ duration: 0.5, delay: 0.6 + li * 0.15 }}
+                        className="pointer-events-none select-none"
+                        style={{ textShadow: `0 0 6px ${node.color}40` }}
+                      >
+                        {label.name}
+                      </motion.text>
+                    </g>
+                  );
+                })}
+              </>
+            )}
           </motion.g>
         )}
         </AnimatePresence>
