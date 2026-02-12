@@ -1078,6 +1078,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const activeConnection = clickedConnection || hoveredConnection;
   const activeNode = clickedNode || hoveredNode;
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const peptideData = selectedPeptides
     .map(p => {
@@ -1107,17 +1108,28 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
     return "#21d8ff";
   };
 
-  const svgWidth = 320;
-  const svgHeight = Math.max(200, peptideData.length * 60 + 40);
+  const svgWidth = 900;
+  const svgHeight = 320;
   const centerX = svgWidth / 2;
-  const centerY = svgHeight / 2;
-  const radius = Math.min(svgWidth, svgHeight) * 0.32;
+  const centerY = svgHeight / 2 - 10;
+
+  const starfield = Array.from({ length: 60 }, (_, i) => ({
+    x: (i * 97 + 13) % svgWidth,
+    y: (i * 53 + 7) % (svgHeight - 40),
+    r: 0.3 + (i % 4) * 0.3,
+    opacity: 0.15 + (i % 5) * 0.08,
+    delay: (i % 7) * 0.5,
+  }));
 
   const nodes = peptideData.map((p, i) => {
-    const angle = (i / peptideData.length) * 2 * Math.PI - Math.PI / 2;
+    const count = peptideData.length;
+    const spread = Math.min(svgWidth * 0.7, count * 200);
+    const startX = centerX - spread / 2;
+    const step = count > 1 ? spread / (count - 1) : 0;
+    const yOffset = count <= 2 ? 0 : (i % 2 === 0 ? -30 : 30);
     return {
-      x: centerX + radius * Math.cos(angle),
-      y: centerY + radius * Math.sin(angle),
+      x: startX + step * i,
+      y: centerY + yOffset,
       name: p.name,
       pathways: p.pathways,
       systems: p.systems,
@@ -1143,15 +1155,9 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
       const t = (pi + 1) / (conn.pathways.length + 1);
       const midX = fromNode.x + (toNode.x - fromNode.x) * t;
       const midY = fromNode.y + (toNode.y - fromNode.y) * t;
-      const perpX = -(toNode.y - fromNode.y) * 0.12;
-      const perpY = (toNode.x - fromNode.x) * 0.12;
-      allPathwayNodes.push({
-        x: midX + perpX,
-        y: midY + perpY,
-        name: pathway,
-        fromNode: conn.from,
-        toNode: conn.to,
-      });
+      const perpX = -(toNode.y - fromNode.y) * 0.15;
+      const perpY = (toNode.x - fromNode.x) * 0.15;
+      allPathwayNodes.push({ x: midX + perpX, y: midY + perpY, name: pathway, fromNode: conn.from, toNode: conn.to });
     });
   });
 
@@ -1167,142 +1173,231 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
     setClickedConnection(prev => prev === key ? null : key);
   };
 
+  const allSharedPathways = Array.from(new Set(connections.flatMap(c => c.pathways)));
+
   return (
-    <div className="relative" data-testid="pathway-map">
+    <motion.div
+      ref={containerRef}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="relative rounded-xl overflow-hidden"
+      style={{ background: "radial-gradient(ellipse at center, #0d1117 0%, #080b10 60%, #050709 100%)" }}
+      data-testid="pathway-map"
+    >
+      <div className="absolute inset-0 pointer-events-none" style={{
+        background: "linear-gradient(180deg, transparent 0%, rgba(34,197,94,0.03) 50%, transparent 100%)",
+      }} />
+
+      <div className="px-4 pt-4 pb-2 flex items-center justify-between flex-wrap gap-2">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <Zap className="h-5 w-5 text-[#22c55e]" style={{ filter: "drop-shadow(0 0 6px rgba(34,197,94,0.6))" }} />
+          </div>
+          <div>
+            <h4 className="text-sm font-bold text-white tracking-wide" style={{ textShadow: "0 0 20px rgba(34,197,94,0.3)" }}>
+              PATHWAY MAP
+            </h4>
+            <p className="text-[11px] text-gray-500">Tap or hover to explore biological connections</p>
+          </div>
+        </div>
+        {allSharedPathways.length > 0 && (
+          <Badge className="text-[10px] bg-[#22c55e]/15 text-[#22c55e] border-[#22c55e]/30" style={{ boxShadow: "0 0 8px rgba(34,197,94,0.2)" }}>
+            {allSharedPathways.length} shared pathway{allSharedPathways.length !== 1 ? "s" : ""}
+          </Badge>
+        )}
+      </div>
+
       <svg
         width="100%"
         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
         className="overflow-visible"
+        style={{ minHeight: "240px" }}
       >
         <defs>
           {connections.map(conn => {
-            const fromNode = nodes[conn.from];
-            const toNode = nodes[conn.to];
-            const gradId = `grad-${conn.from}-${conn.to}`;
+            const fn = nodes[conn.from];
+            const tn = nodes[conn.to];
+            const gid = `pm-grad-${conn.from}-${conn.to}`;
             return (
-              <linearGradient key={gradId} id={gradId} x1={fromNode.x} y1={fromNode.y} x2={toNode.x} y2={toNode.y} gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor={fromNode.color} stopOpacity={0.6} />
-                <stop offset="100%" stopColor={toNode.color} stopOpacity={0.6} />
+              <linearGradient key={gid} id={gid} x1={fn.x} y1={fn.y} x2={tn.x} y2={tn.y} gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor={fn.color} />
+                <stop offset="100%" stopColor={tn.color} />
               </linearGradient>
             );
           })}
-          <filter id="glow-line">
-            <feGaussianBlur stdDeviation="2" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
+          {nodes.map((node, i) => (
+            <radialGradient key={`pm-nglow-${i}`} id={`pm-nglow-${i}`} cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor={node.color} stopOpacity={0.4} />
+              <stop offset="60%" stopColor={node.color} stopOpacity={0.1} />
+              <stop offset="100%" stopColor={node.color} stopOpacity={0} />
+            </radialGradient>
+          ))}
+          <filter id="pm-glow-soft">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
-          <filter id="glow-node">
+          <filter id="pm-glow-strong">
+            <feGaussianBlur stdDeviation="6" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+          <filter id="pm-glow-line">
             <feGaussianBlur stdDeviation="4" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
         </defs>
 
+        {starfield.map((star, i) => (
+          <motion.circle
+            key={`star-${i}`}
+            cx={star.x}
+            cy={star.y}
+            r={star.r}
+            fill="white"
+            initial={{ opacity: star.opacity * 0.5 }}
+            animate={{ opacity: [star.opacity * 0.3, star.opacity, star.opacity * 0.3] }}
+            transition={{ duration: 3 + star.delay, repeat: Infinity, ease: "easeInOut" }}
+          />
+        ))}
+
         {connections.map(conn => {
-          const fromNode = nodes[conn.from];
-          const toNode = nodes[conn.to];
+          const fn = nodes[conn.from];
+          const tn = nodes[conn.to];
           const key = connKey(conn.from, conn.to);
-          const isHovered = activeConnection === key ||
-            activeNode === nodes[conn.from].name ||
-            activeNode === nodes[conn.to].name;
-          const strokeW = 1.5 + (conn.strength / maxStrength) * 2;
+          const isActive = activeConnection === key || activeNode === fn.name || activeNode === tn.name;
+          const baseW = 1 + (conn.strength / maxStrength) * 2;
+
+          const dx = tn.x - fn.x;
+          const dy = tn.y - fn.y;
+          const len = Math.sqrt(dx * dx + dy * dy);
+          const particleCount = Math.max(2, Math.min(5, conn.strength));
 
           return (
             <g key={key}>
               <motion.line
-                x1={fromNode.x}
-                y1={fromNode.y}
-                x2={toNode.x}
-                y2={toNode.y}
-                stroke={`url(#grad-${conn.from}-${conn.to})`}
-                strokeWidth={isHovered ? strokeW + 1 : strokeW}
+                x1={fn.x} y1={fn.y} x2={tn.x} y2={tn.y}
+                stroke={`url(#pm-grad-${conn.from}-${conn.to})`}
+                strokeWidth={isActive ? baseW + 2 : baseW}
                 strokeLinecap="round"
-                filter={isHovered ? "url(#glow-line)" : undefined}
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: isHovered ? 1 : 0.5 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
+                strokeOpacity={isActive ? 0.9 : 0.25}
+                filter={isActive ? "url(#pm-glow-line)" : undefined}
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              />
+
+              {isActive && (
+                <motion.line
+                  x1={fn.x} y1={fn.y} x2={tn.x} y2={tn.y}
+                  stroke={`url(#pm-grad-${conn.from}-${conn.to})`}
+                  strokeWidth={baseW + 6}
+                  strokeLinecap="round"
+                  strokeOpacity={0.15}
+                  filter="url(#pm-glow-line)"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                />
+              )}
+
+              <line
+                x1={fn.x} y1={fn.y} x2={tn.x} y2={tn.y}
+                stroke="transparent"
+                strokeWidth={20}
                 onMouseEnter={() => setHoveredConnection(key)}
                 onMouseLeave={() => setHoveredConnection(null)}
                 onClick={() => handleConnectionClick(key)}
                 className="cursor-pointer"
               />
-              {isHovered && (
-                <motion.circle
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: [0.3, 0.8, 0.3] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  cx={(fromNode.x + toNode.x) / 2}
-                  cy={(fromNode.y + toNode.y) / 2}
-                  r={4}
-                  fill="#22c55e"
-                />
-              )}
+
+              {Array.from({ length: particleCount }).map((_, pi) => {
+                const delay = pi * (3 / particleCount);
+                return (
+                  <motion.circle
+                    key={`particle-${key}-${pi}`}
+                    r={isActive ? 3 : 1.5}
+                    fill={isActive ? "white" : fn.color}
+                    filter={isActive ? "url(#pm-glow-soft)" : undefined}
+                    initial={{ opacity: 0 }}
+                    animate={{
+                      cx: [fn.x, tn.x],
+                      cy: [fn.y, tn.y],
+                      opacity: [0, isActive ? 0.9 : 0.4, 0],
+                    }}
+                    transition={{
+                      duration: 3,
+                      delay,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
+                    className="pointer-events-none"
+                  />
+                );
+              })}
             </g>
           );
         })}
 
         {allPathwayNodes.map((pn, i) => {
           const parentKey = connKey(pn.fromNode, pn.toNode);
-          const isActive = activeConnection === parentKey ||
-            activeNode === nodes[pn.fromNode].name ||
-            activeNode === nodes[pn.toNode].name;
+          const isActive = activeConnection === parentKey || activeNode === nodes[pn.fromNode].name || activeNode === nodes[pn.toNode].name;
+          const midX = (nodes[pn.fromNode].x + nodes[pn.toNode].x) / 2;
+          const midY = (nodes[pn.fromNode].y + nodes[pn.toNode].y) / 2;
+          const labelW = Math.min(90, pn.name.length * 7 + 16);
 
           return (
             <g key={`pw-${i}`}>
               <motion.line
-                x1={(nodes[pn.fromNode].x + nodes[pn.toNode].x) / 2}
-                y1={(nodes[pn.fromNode].y + nodes[pn.toNode].y) / 2}
-                x2={pn.x}
-                y2={pn.y}
-                stroke="#22c55e"
+                x1={midX} y1={midY} x2={pn.x} y2={pn.y}
+                stroke={isActive ? "#22c55e" : "#22c55e"}
                 strokeWidth={0.5}
-                strokeDasharray="2,2"
+                strokeDasharray="3,3"
+                strokeOpacity={isActive ? 0.6 : 0.15}
                 initial={{ opacity: 0 }}
-                animate={{ opacity: isActive ? 0.6 : 0.2 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 + i * 0.08 }}
               />
               <motion.rect
-                x={pn.x - 30}
-                y={pn.y - 8}
-                width={60}
-                height={16}
-                rx={4}
-                fill={isActive ? "rgba(34,197,94,0.2)" : "rgba(34,197,94,0.08)"}
-                stroke={isActive ? "rgba(34,197,94,0.5)" : "rgba(34,197,94,0.2)"}
-                strokeWidth={0.5}
-                initial={{ opacity: 0, scale: 0.8 }}
+                x={pn.x - labelW / 2}
+                y={pn.y - 10}
+                width={labelW}
+                height={20}
+                rx={10}
+                fill={isActive ? "rgba(34,197,94,0.2)" : "rgba(34,197,94,0.06)"}
+                stroke={isActive ? "rgba(34,197,94,0.6)" : "rgba(34,197,94,0.15)"}
+                strokeWidth={isActive ? 1 : 0.5}
+                filter={isActive ? "url(#pm-glow-soft)" : undefined}
+                initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4 + i * 0.1 }}
+                transition={{ delay: 0.5 + i * 0.08, type: "spring", stiffness: 200 }}
                 onMouseEnter={() => setHoveredConnection(parentKey)}
                 onMouseLeave={() => setHoveredConnection(null)}
                 onClick={() => handleConnectionClick(parentKey)}
-                className="cursor-help"
+                className="cursor-pointer"
               />
               <motion.text
                 x={pn.x}
                 y={pn.y + 1}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fill={isActive ? "#22c55e" : "#4ade80"}
-                fontSize="6"
-                fontWeight={isActive ? "600" : "400"}
+                fill={isActive ? "#4ade80" : "#22c55e"}
+                fontSize="9"
+                fontWeight={isActive ? "700" : "500"}
+                letterSpacing="0.3"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: isActive ? 1 : 0.7 }}
-                transition={{ delay: 0.4 + i * 0.1 }}
+                transition={{ delay: 0.5 + i * 0.08 }}
                 className="pointer-events-none select-none"
+                style={isActive ? { filter: "drop-shadow(0 0 4px rgba(34,197,94,0.6))" } : undefined}
               >
-                {pn.name.length > 14 ? pn.name.slice(0, 12) + "…" : pn.name}
+                {pn.name.length > 16 ? pn.name.slice(0, 14) + "…" : pn.name}
               </motion.text>
             </g>
           );
         })}
 
         {nodes.map((node, i) => {
-          const isHovered = activeNode === node.name;
-          const nodeRadius = isHovered ? 22 : 18;
+          const isActive = activeNode === node.name;
+          const nodeR = isActive ? 32 : 26;
 
           return (
             <g
@@ -1315,37 +1410,82 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
               <motion.circle
                 cx={node.x}
                 cy={node.y}
-                r={nodeRadius + 4}
-                fill="none"
-                stroke={node.color}
-                strokeWidth={1}
+                r={nodeR + 20}
+                fill={`url(#pm-nglow-${i})`}
                 initial={{ opacity: 0 }}
-                animate={{ opacity: isHovered ? [0.2, 0.5, 0.2] : 0 }}
-                transition={isHovered ? { duration: 2, repeat: Infinity } : {}}
+                animate={{ opacity: isActive ? 0.8 : 0.4 }}
+                className="pointer-events-none"
               />
+
               <motion.circle
                 cx={node.x}
                 cy={node.y}
-                fill={`${node.color}15`}
+                r={nodeR + 8}
+                fill="none"
                 stroke={node.color}
-                strokeWidth={isHovered ? 2 : 1.5}
-                filter={isHovered ? "url(#glow-node)" : undefined}
-                initial={{ r: 0, opacity: 0 }}
-                animate={{ r: nodeRadius, opacity: 1 }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
+                strokeWidth={0.5}
+                strokeDasharray="4,6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0.1, 0.3, 0.1], rotate: 360 }}
+                transition={{ opacity: { duration: 3, repeat: Infinity }, rotate: { duration: 20, repeat: Infinity, ease: "linear" } }}
+                style={{ transformOrigin: `${node.x}px ${node.y}px` }}
               />
+
+              {isActive && (
+                <motion.circle
+                  cx={node.x}
+                  cy={node.y}
+                  r={nodeR + 4}
+                  fill="none"
+                  stroke={node.color}
+                  strokeWidth={1.5}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: [0.3, 0.7, 0.3], scale: [1, 1.05, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  style={{ transformOrigin: `${node.x}px ${node.y}px` }}
+                />
+              )}
+
+              <motion.circle
+                cx={node.x}
+                cy={node.y}
+                fill={`${node.color}10`}
+                stroke={node.color}
+                strokeWidth={isActive ? 2.5 : 1.5}
+                filter={isActive ? "url(#pm-glow-strong)" : "url(#pm-glow-soft)"}
+                initial={{ r: 0, opacity: 0 }}
+                animate={{ r: nodeR, opacity: 1 }}
+                transition={{ duration: 0.6, delay: i * 0.12, type: "spring", stiffness: 150 }}
+              />
+
+              <motion.circle
+                cx={node.x}
+                cy={node.y}
+                r={3}
+                fill={node.color}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
+                className="pointer-events-none"
+              />
+
               <motion.text
                 x={node.x}
                 y={node.y}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fill={isHovered ? "#fff" : node.color}
-                fontSize={node.name.length > 10 ? "6" : "7"}
-                fontWeight="600"
+                fill={isActive ? "#ffffff" : node.color}
+                fontSize={node.name.length > 12 ? "9" : node.name.length > 8 ? "10" : "11"}
+                fontWeight="700"
+                letterSpacing="0.5"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 + i * 0.1 }}
+                transition={{ delay: 0.4 + i * 0.12 }}
                 className="pointer-events-none select-none"
+                style={{ 
+                  filter: isActive ? `drop-shadow(0 0 8px ${node.color})` : `drop-shadow(0 0 3px ${node.color}80)`,
+                  textShadow: isActive ? `0 0 12px ${node.color}` : undefined,
+                }}
               >
                 {node.name.length > 14 ? node.name.slice(0, 12) + "…" : node.name}
               </motion.text>
@@ -1354,60 +1494,104 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
         })}
       </svg>
 
-      {activeConnection && (() => {
-        const parts = activeConnection.split("-");
-        const fromIdx = parseInt(parts[0]);
-        const toIdx = parseInt(parts[1]);
-        const conn = connections.find(c => c.from === fromIdx && c.to === toIdx);
-        if (!conn) return null;
-        return (
-          <motion.div
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="absolute bottom-0 left-0 right-0 p-2 rounded-lg bg-[#0f0f12]/95 border border-[#22c55e]/30 backdrop-blur-sm"
-          >
-            <p className="text-[10px] text-[#22c55e] font-semibold mb-1">
-              {nodes[conn.from].name} ↔ {nodes[conn.to].name}
-            </p>
-            <div className="flex flex-wrap gap-1">
-              {conn.pathways.map((p, i) => (
-                <span key={i} className="text-[9px] px-1.5 py-0.5 rounded bg-[#22c55e]/15 text-[#4ade80]">
-                  {p}{PATHWAY_DESCRIPTIONS[p] ? ` — ${PATHWAY_DESCRIPTIONS[p].slice(0, 50)}…` : ""}
+      <AnimatePresence>
+        {activeConnection && (() => {
+          const parts = activeConnection.split("-");
+          const fromIdx = parseInt(parts[0]);
+          const toIdx = parseInt(parts[1]);
+          const conn = connections.find(c => c.from === fromIdx && c.to === toIdx);
+          if (!conn) return null;
+          return (
+            <motion.div
+              key="conn-info"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="mx-4 mb-4 p-3 rounded-lg border backdrop-blur-sm"
+              style={{
+                background: "linear-gradient(135deg, rgba(34,197,94,0.08), rgba(13,17,23,0.95))",
+                borderColor: "rgba(34,197,94,0.3)",
+                boxShadow: "0 0 20px rgba(34,197,94,0.1), inset 0 1px 0 rgba(34,197,94,0.1)",
+              }}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <Zap className="h-3.5 w-3.5 text-[#22c55e]" style={{ filter: "drop-shadow(0 0 4px rgba(34,197,94,0.5))" }} />
+                <span className="text-xs font-bold text-[#22c55e]" style={{ textShadow: "0 0 8px rgba(34,197,94,0.4)" }}>
+                  {nodes[conn.from].name} ↔ {nodes[conn.to].name}
                 </span>
-              ))}
-            </div>
-          </motion.div>
-        );
-      })()}
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {conn.pathways.map((p, i) => (
+                  <span key={i} className="text-[11px] px-2 py-1 rounded-full bg-[#22c55e]/10 text-[#4ade80] border border-[#22c55e]/20"
+                    style={{ textShadow: "0 0 6px rgba(34,197,94,0.3)" }}>
+                    {p}{PATHWAY_DESCRIPTIONS[p] ? ` — ${PATHWAY_DESCRIPTIONS[p].slice(0, 60)}` : ""}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+          );
+        })()}
 
-      {activeNode && (() => {
-        const node = nodes.find(n => n.name === activeNode);
-        if (!node) return null;
-        const connCount = connections.filter(c => nodes[c.from].name === activeNode || nodes[c.to].name === activeNode).length;
-        return (
-          <motion.div
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="absolute bottom-0 left-0 right-0 p-2 rounded-lg bg-[#0f0f12]/95 border backdrop-blur-sm"
-            style={{ borderColor: `${node.color}40` }}
-          >
-            <p className="text-[10px] font-semibold mb-0.5" style={{ color: node.color }}>
-              {node.name}
-            </p>
-            <p className="text-[9px] text-muted-foreground">
-              {connCount} connection{connCount !== 1 ? "s" : ""} · {node.systems.join(", ")}
-            </p>
-            <div className="flex flex-wrap gap-1 mt-1">
-              {node.pathways.map((p, i) => (
-                <span key={i} className="text-[9px] px-1.5 py-0.5 rounded" style={{ backgroundColor: `${node.color}15`, color: node.color }}>
-                  {p}
+        {activeNode && !activeConnection && (() => {
+          const node = nodes.find(n => n.name === activeNode);
+          if (!node) return null;
+          const connCount = connections.filter(c => nodes[c.from].name === activeNode || nodes[c.to].name === activeNode).length;
+          return (
+            <motion.div
+              key="node-info"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="mx-4 mb-4 p-3 rounded-lg border backdrop-blur-sm"
+              style={{
+                background: `linear-gradient(135deg, ${node.color}08, rgba(13,17,23,0.95))`,
+                borderColor: `${node.color}30`,
+                boxShadow: `0 0 20px ${node.color}10, inset 0 1px 0 ${node.color}10`,
+              }}
+            >
+              <div className="flex items-center gap-2 mb-1.5">
+                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: node.color, boxShadow: `0 0 8px ${node.color}` }} />
+                <span className="text-sm font-bold" style={{ color: node.color, textShadow: `0 0 8px ${node.color}60` }}>
+                  {node.name}
                 </span>
-              ))}
-            </div>
-          </motion.div>
-        );
-      })()}
-    </div>
+                <span className="text-[11px] text-gray-500 ml-1">
+                  {connCount} connection{connCount !== 1 ? "s" : ""} · {node.systems.join(", ")}
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {node.pathways.map((p, i) => (
+                  <span key={i} className="text-[11px] px-2 py-1 rounded-full border"
+                    style={{ backgroundColor: `${node.color}10`, color: node.color, borderColor: `${node.color}25` }}>
+                    {p}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+          );
+        })()}
+      </AnimatePresence>
+
+      {!activeNode && !activeConnection && allSharedPathways.length > 0 && (
+        <div className="px-4 pb-4">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[11px] text-gray-500 font-medium">Shared pathways:</span>
+            {allSharedPathways.map((pathway, i) => (
+              <Tooltip key={i}>
+                <TooltipTrigger asChild>
+                  <Badge className="text-[10px] bg-[#22c55e]/10 text-[#22c55e] border-[#22c55e]/20 cursor-help"
+                    style={{ textShadow: "0 0 6px rgba(34,197,94,0.3)" }}>
+                    {pathway}
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-[220px] text-center bg-[#0d1117] border-[#22c55e]/30">
+                  <p className="text-xs">{PATHWAY_DESCRIPTIONS[pathway] || "Shared biological pathway"}</p>
+                </TooltipContent>
+              </Tooltip>
+            ))}
+          </div>
+        </div>
+      )}
+    </motion.div>
   );
 }
 
@@ -2135,47 +2319,6 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                             </AccordionContent>
                           </AccordionItem>
 
-                          {selectedPeptides.length >= 2 && (
-                            <AccordionItem value="pathways" className="border-[#2a2a32] border-b-0" data-testid="accordion-pathways">
-                              <AccordionTrigger>
-                                <div className="flex items-center gap-2">
-                                  <Zap className="h-3.5 w-3.5 text-[#22c55e]" />
-                                  <span className="text-xs font-semibold text-[#22c55e]">PATHWAY MAP</span>
-                                  {sharedPathways.length > 0 && (
-                                    <Badge className="text-[9px] bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30">{sharedPathways.length} shared</Badge>
-                                  )}
-                                </div>
-                              </AccordionTrigger>
-                              <AccordionContent>
-                                <p className="text-[10px] text-gray-500 mb-2">Tap or hover nodes to explore biological pathways</p>
-                                <PathwayMap selectedPeptides={selectedPeptides} />
-                                {sharedPathways.length > 0 && (
-                                  <div className="mt-3 pt-2 border-t border-[#2a2a32]">
-                                    <p className="text-[10px] text-gray-500 mb-1.5">Shared pathways:</p>
-                                    <div className="flex flex-wrap gap-1.5">
-                                      {sharedPathways.map((pathway, i) => (
-                                        <Tooltip key={i}>
-                                          <TooltipTrigger asChild>
-                                            <Badge 
-                                              className="text-[10px] bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30 cursor-help"
-                                            >
-                                              {pathway}
-                                            </Badge>
-                                          </TooltipTrigger>
-                                          <TooltipContent 
-                                            side="top"
-                                            className="max-w-[200px] text-center bg-[#1a1a1f] border-[#2a2a32]"
-                                          >
-                                            <p className="text-xs">{PATHWAY_DESCRIPTIONS[pathway] || "Shared biological pathway"}</p>
-                                          </TooltipContent>
-                                        </Tooltip>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-                              </AccordionContent>
-                            </AccordionItem>
-                          )}
 
                           {/* Saved Stacks inside accordion */}
                           {isAuthenticated && savedStacks && savedStacks.length > 0 && (
@@ -2611,6 +2754,10 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
           </AnimatePresence>
         </motion.div>
       </AnimatePresence>
+
+      {selectedPeptides.length >= 2 && (
+        <PathwayMap selectedPeptides={selectedPeptides} />
+      )}
     </div>
   );
 }
