@@ -591,7 +591,7 @@ export default function ProductDetail() {
                 <ImageLoader 
                   src={product.imageUrl || productImage} 
                   alt={`${product.name} ${selectedDosage} research peptide - COA verified`}
-                  className={`w-full h-full object-contain p-6 md:p-8 ${isOutOfStock ? 'opacity-60' : ''}`}
+                  className={`w-full h-full object-contain p-2 md:p-4 ${isOutOfStock ? 'opacity-60' : ''}`}
                   containerClassName="relative w-full h-full bg-gradient-to-br from-muted to-muted/50 overflow-hidden rounded-lg"
                 />
               {/* Out of Stock Overlay */}
