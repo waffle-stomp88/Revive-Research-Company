@@ -76,7 +76,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
             <ImageLoader
               src={product.imageUrl || productImage}
               alt={`${product.name} research peptide - lab verified compound`}
-              className="w-full h-full object-contain p-8"
+              className="w-full h-full object-cover"
               containerClassName="relative w-full h-full"
             />
             {isOutOfStock && (
