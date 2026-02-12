@@ -855,7 +855,7 @@ const checkKnownStack = (selectedNames: string[]): KnownStack | null => {
   for (const stack of KNOWN_STACKS) {
     const stackPeptides = stack.peptides;
     const hasAll = stackPeptides.every(p => 
-      normalizedSelected.some(s => s.includes(p.replace(/-/g, '')))
+      normalizedSelected.some(s => s.includes(p.replace(/[^a-z0-9]/g, '')))
     );
     const isExactMatch = stackPeptides.length === normalizedSelected.length;
     
@@ -873,7 +873,7 @@ const checkContainedStacks = (selectedNames: string[]): KnownStack[] => {
   
   for (const stack of KNOWN_STACKS) {
     const hasAll = stack.peptides.every(p => 
-      normalizedSelected.some(s => s.includes(p.replace(/-/g, '')))
+      normalizedSelected.some(s => s.includes(p.replace(/[^a-z0-9]/g, '')))
     );
     // Only count as "contained" if we have MORE peptides than the stack (not exact match)
     const hasExtra = normalizedSelected.length > stack.peptides.length;
@@ -897,11 +897,11 @@ const getStackRecommendation = (selectedNames: string[]): { stack: KnownStack; m
   
   for (const stack of sortedStacks) {
     const matchCount = stack.peptides.filter(p => 
-      normalizedSelected.some(s => s.includes(p.replace(/-/g, '')))
+      normalizedSelected.some(s => s.includes(p.replace(/[^a-z0-9]/g, '')))
     ).length;
     
     const missing = stack.peptides.filter(p => 
-      !normalizedSelected.some(s => s.includes(p.replace(/-/g, '')))
+      !normalizedSelected.some(s => s.includes(p.replace(/[^a-z0-9]/g, '')))
     );
     
     // Only recommend if:
@@ -1120,7 +1120,7 @@ const getGeneralPairings = (
 
   if (recommendation && recommendation.missing.length <= 2) {
     for (const missingPeptide of recommendation.missing) {
-      const missingNorm = missingPeptide.replace(/-/g, '');
+      const missingNorm = missingPeptide.replace(/[^a-z0-9]/g, '');
       if (seenPartners.has(missingNorm)) continue;
 
       const matchingProduct = allProducts.find(p =>
@@ -1133,8 +1133,8 @@ const getGeneralPairings = (
         for (const name of selectedNames) {
           const normalized = normalizePeptideName(name);
           for (const [key, pairs] of Object.entries(PEPTIDE_PAIRINGS)) {
-            if (normalized.includes(key.replace(/-/g, ''))) {
-              const match = pairs.find(p => p.partner.replace(/-/g, '') === missingNorm);
+            if (normalized.includes(key.replace(/[^a-z0-9]/g, ''))) {
+              const match = pairs.find(p => p.partner.replace(/[^a-z0-9]/g, '') === missingNorm);
               if (match) {
                 reason = match.reason;
                 break;
@@ -1162,9 +1162,9 @@ const getGeneralPairings = (
   for (const name of selectedNames) {
     const normalized = normalizePeptideName(name);
     for (const [key, pairs] of Object.entries(PEPTIDE_PAIRINGS)) {
-      if (normalized.includes(key.replace(/-/g, ''))) {
+      if (normalized.includes(key.replace(/[^a-z0-9]/g, ''))) {
         for (const pair of pairs) {
-          const partnerNorm = pair.partner.replace(/-/g, '');
+          const partnerNorm = pair.partner.replace(/[^a-z0-9]/g, '');
           if (normalizedSelected.some(s => s.includes(partnerNorm))) continue;
           if (seenPartners.has(partnerNorm)) continue;
           
@@ -2543,7 +2543,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                           {GOAL_STARTERS.map(starter => {
                             const StarterIcon = starter.icon;
                             const matchingProduct = products.find(p => 
-                              normalizePeptideName(p.name).includes(starter.starterKey.replace(/-/g, ''))
+                              normalizePeptideName(p.name).includes(starter.starterKey.replace(/[^a-z0-9]/g, ''))
                             );
                             return (
                               <motion.button
@@ -2578,8 +2578,8 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                     const showPairings = generalPairings.length > 0;
                     const stackPeptidesSurfacedInPairings = recommendation
                       ? recommendation.missing.every(m => {
-                          const missingNorm = m.replace(/-/g, '');
-                          return generalPairings.some(p => p.stackHint && p.partner.replace(/-/g, '') === missingNorm);
+                          const missingNorm = m.replace(/[^a-z0-9]/g, '');
+                          return generalPairings.some(p => p.stackHint && p.partner.replace(/[^a-z0-9]/g, '') === missingNorm);
                         })
                       : false;
                     const hasRecommendation = recommendation && selectedPeptides.length < 4 && (
@@ -2608,7 +2608,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                 <div className="space-y-2">
                                   {generalPairings.map((pairing, i) => {
                                     const matchingProduct = products?.find(p =>
-                                      normalizePeptideName(p.name).includes(pairing.partner.replace(/-/g, ''))
+                                      normalizePeptideName(p.name).includes(pairing.partner.replace(/[^a-z0-9]/g, ''))
                                     );
                                     return (
                                       <motion.button
