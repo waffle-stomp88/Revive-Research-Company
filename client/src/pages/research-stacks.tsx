@@ -2176,7 +2176,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
       {hasActiveData && !activeNode && !activeConnection && allSharedPathways.length > 0 && (
         <div className="px-4 pb-4">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[11px] text-gray-500 font-medium">Shared pathways:</span>
+            <span className="text-gray-500 font-medium text-[14px]">Shared pathways:</span>
             {allSharedPathways.map((pathway, i) => (
               <Tooltip key={i}>
                 <TooltipTrigger asChild>
