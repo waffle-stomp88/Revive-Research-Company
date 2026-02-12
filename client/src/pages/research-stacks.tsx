@@ -1521,7 +1521,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
           </div>
         </div>
         {allSharedPathways.length > 0 && (
-          <Badge className="text-[10px] bg-[#22c55e]/15 text-[#22c55e] border-[#22c55e]/30" style={{ boxShadow: "0 0 8px rgba(34,197,94,0.2)" }}>
+          <Badge className="text-[16px] bg-[#22c55e]/15 text-[#22c55e] border-[#22c55e]/30" style={{ boxShadow: "0 0 8px rgba(34,197,94,0.2)" }}>
             {allSharedPathways.length} shared pathway{allSharedPathways.length !== 1 ? "s" : ""}
           </Badge>
         )}
