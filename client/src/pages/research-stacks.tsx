@@ -2708,12 +2708,12 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                             }`}>
                               {product.name.replace(/\s*\([^)]*\)/g, '')}
                             </p>
-                            <div className="flex items-center gap-2 mt-0.5">
+                            <div className="flex items-center gap-1 mt-0.5 flex-wrap">
                               <p className="text-xs" style={{ color: isOutOfStock ? `${primaryCategory.color}80` : primaryCategory.color }}>
                                 {primaryCategory.label}
                               </p>
                               {isOutOfStock && (
-                                <span className="text-[10px] text-white/30 uppercase tracking-wider">Out of stock</span>
+                                <span className="text-[9px] text-red-400/60 font-semibold uppercase">OOS</span>
                               )}
                             </div>
                           </div>
