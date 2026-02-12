@@ -1366,13 +1366,84 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
     };
   }) : [];
 
-  const connections: { from: number; to: number; pathways: string[]; strength: number }[] = [];
-  if (hasActiveData) {
+  type SynergyTier = "legendary" | "strong" | "good" | "pathway";
+  const getTier = (score: number): SynergyTier => score >= 85 ? "legendary" : score >= 70 ? "strong" : "good";
+  const TIER_COLORS: Record<SynergyTier, string> = {
+    legendary: "#fbbf24",
+    strong: "#21d8ff",
+    good: "#6b7280",
+    pathway: "#22c55e",
+  };
+
+  interface MapConnection {
+    from: number;
+    to: number;
+    pathways: string[];
+    strength: number;
+    tier: SynergyTier;
+    synergyScore: number;
+    stackName?: string;
+    stackColor?: string;
+    reason?: string;
+  }
+
+  const connections: MapConnection[] = [];
+  if (hasActiveData && peptideData.length >= 2) {
     for (let i = 0; i < peptideData.length; i++) {
       for (let j = i + 1; j < peptideData.length; j++) {
         const shared = peptideData[i].pathways.filter(p => peptideData[j].pathways.includes(p));
-        if (shared.length > 0) {
-          connections.push({ from: i, to: j, pathways: shared, strength: shared.length });
+        const normI = normalizePeptideName(peptideData[i].originalName);
+        const normJ = normalizePeptideName(peptideData[j].originalName);
+
+        let pairingReason = "";
+        let pairingBoost = "";
+        for (const [key, pairs] of Object.entries(PEPTIDE_PAIRINGS)) {
+          const keyNorm = key.replace(/[^a-z0-9]/g, '');
+          if (normI.includes(keyNorm)) {
+            const match = pairs.find(p => normJ.includes(p.partner.replace(/[^a-z0-9]/g, '')));
+            if (match) { pairingReason = match.reason; pairingBoost = match.boost; break; }
+          }
+          if (normJ.includes(keyNorm)) {
+            const match = pairs.find(p => normI.includes(p.partner.replace(/[^a-z0-9]/g, '')));
+            if (match) { pairingReason = match.reason; pairingBoost = match.boost; break; }
+          }
+        }
+
+        let matchedStack: KnownStack | undefined;
+        const selectedNorms = peptideData.map(p => normalizePeptideName(p.originalName));
+        for (const stack of KNOWN_STACKS) {
+          const stackNorms = stack.peptides.map(p => p.replace(/[^a-z0-9]/g, ''));
+          const iInStack = stackNorms.some(sn => normI.includes(sn));
+          const jInStack = stackNorms.some(sn => normJ.includes(sn));
+          if (iInStack && jInStack) {
+            const allPresent = stackNorms.every(sn => selectedNorms.some(sel => sel.includes(sn)));
+            if (allPresent || stackNorms.length === 2) {
+              matchedStack = stack;
+              break;
+            }
+            if (!matchedStack || stack.synergyBonus > (matchedStack?.synergyBonus || 0)) {
+              matchedStack = stack;
+            }
+          }
+        }
+
+        const synergyScore = matchedStack?.synergyBonus || (pairingReason ? 75 : 0);
+        const hasPairing = !!pairingReason || !!matchedStack;
+
+        if (shared.length > 0 || hasPairing) {
+          const tier: SynergyTier = matchedStack ? getTier(matchedStack.synergyBonus) :
+            pairingReason ? "good" : "pathway";
+          connections.push({
+            from: i,
+            to: j,
+            pathways: shared,
+            strength: Math.max(shared.length, hasPairing ? 2 : 0),
+            tier,
+            synergyScore,
+            stackName: matchedStack?.name,
+            stackColor: matchedStack?.color,
+            reason: pairingReason || matchedStack?.description,
+          });
         }
       }
     }
@@ -1465,13 +1536,17 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
       >
         <defs>
           {connections.map(conn => {
+            const tierColor = TIER_COLORS[conn.tier];
+            const useStackColor = conn.stackColor && conn.tier === "legendary";
+            const color = useStackColor ? conn.stackColor! : tierColor;
             const fn = nodes[conn.from];
             const tn = nodes[conn.to];
             const gid = `pm-grad-${conn.from}-${conn.to}`;
             return (
               <linearGradient key={gid} id={gid} x1={fn.x} y1={fn.y} x2={tn.x} y2={tn.y} gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor={fn.color} />
-                <stop offset="100%" stopColor={tn.color} />
+                <stop offset="0%" stopColor={conn.tier === "pathway" ? fn.color : color} />
+                <stop offset="50%" stopColor={color} />
+                <stop offset="100%" stopColor={conn.tier === "pathway" ? tn.color : color} />
               </linearGradient>
             );
           })}
@@ -1500,6 +1575,10 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
           <filter id="pm-glow-line">
             <feGaussianBlur stdDeviation="4" result="blur" />
             <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+          <filter id="pm-glow-legendary">
+            <feGaussianBlur stdDeviation="8" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
         </defs>
 
@@ -1652,32 +1731,53 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
               const tn = nodes[conn.to];
               const key = connKey(conn.from, conn.to);
               const isActive = activeConnection === key || activeNode === fn.name || activeNode === tn.name;
-              const baseW = 1 + (conn.strength / maxStrength) * 2;
+              const tierColor = TIER_COLORS[conn.tier];
+              const isLegendary = conn.tier === "legendary";
+              const isStrong = conn.tier === "strong";
+              const isGood = conn.tier === "good";
+              const hasTier = isLegendary || isStrong || isGood;
 
-              const particleCount = Math.max(2, Math.min(5, conn.strength));
+              const baseW = isLegendary ? 3 : isStrong ? 2.5 : isGood ? 2 : 1 + (conn.strength / maxStrength) * 2;
+              const particleCount = isLegendary ? 6 : isStrong ? 4 : Math.max(2, Math.min(5, conn.strength));
+              const midX = (fn.x + tn.x) / 2;
+              const midY = (fn.y + tn.y) / 2;
 
               return (
                 <g key={key}>
+                  {isLegendary && (
+                    <motion.line
+                      x1={fn.x} y1={fn.y} x2={tn.x} y2={tn.y}
+                      stroke={conn.stackColor || tierColor}
+                      strokeWidth={baseW + 12}
+                      strokeLinecap="round"
+                      strokeOpacity={0.08}
+                      filter="url(#pm-glow-legendary)"
+                      animate={{ strokeOpacity: [0.05, 0.12, 0.05] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    />
+                  )}
+
                   <motion.line
                     x1={fn.x} y1={fn.y} x2={tn.x} y2={tn.y}
-                    stroke={`url(#pm-grad-${conn.from}-${conn.to})`}
+                    stroke={hasTier ? tierColor : `url(#pm-grad-${conn.from}-${conn.to})`}
                     strokeWidth={isActive ? baseW + 2 : baseW}
                     strokeLinecap="round"
-                    strokeOpacity={isActive ? 0.9 : 0.25}
-                    filter={isActive ? "url(#pm-glow-line)" : undefined}
+                    strokeOpacity={isLegendary ? 0.85 : isStrong ? 0.6 : isGood ? 0.4 : (isActive ? 0.9 : 0.25)}
+                    strokeDasharray={isGood ? "8,6" : undefined}
+                    filter={isLegendary ? "url(#pm-glow-legendary)" : (isActive || isStrong) ? "url(#pm-glow-line)" : undefined}
                     initial={{ pathLength: 0 }}
                     animate={{ pathLength: 1 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
                   />
 
-                  {isActive && (
+                  {(isActive || isLegendary) && (
                     <motion.line
                       x1={fn.x} y1={fn.y} x2={tn.x} y2={tn.y}
-                      stroke={`url(#pm-grad-${conn.from}-${conn.to})`}
+                      stroke={hasTier ? tierColor : `url(#pm-grad-${conn.from}-${conn.to})`}
                       strokeWidth={baseW + 6}
                       strokeLinecap="round"
-                      strokeOpacity={0.15}
-                      filter="url(#pm-glow-line)"
+                      strokeOpacity={isLegendary ? 0.2 : 0.15}
+                      filter={isLegendary ? "url(#pm-glow-legendary)" : "url(#pm-glow-line)"}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                     />
@@ -1695,20 +1795,21 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
 
                   {Array.from({ length: particleCount }).map((_, pi) => {
                     const delay = pi * (3 / particleCount);
+                    const pColor = isLegendary ? (conn.stackColor || tierColor) : isStrong ? tierColor : fn.color;
                     return (
                       <motion.circle
                         key={`particle-${key}-${pi}`}
-                        r={isActive ? 3 : 1.5}
-                        fill={isActive ? "white" : fn.color}
-                        filter={isActive ? "url(#pm-glow-soft)" : undefined}
+                        r={isLegendary ? 2.5 : isActive ? 3 : 1.5}
+                        fill={isLegendary ? pColor : (isActive ? "white" : pColor)}
+                        filter={isLegendary || isActive ? "url(#pm-glow-soft)" : undefined}
                         initial={{ opacity: 0 }}
                         animate={{
                           cx: [fn.x, tn.x],
                           cy: [fn.y, tn.y],
-                          opacity: [0, isActive ? 0.9 : 0.4, 0],
+                          opacity: [0, isLegendary ? 0.9 : (isActive ? 0.9 : 0.4), 0],
                         }}
                         transition={{
-                          duration: 3,
+                          duration: isLegendary ? 2.5 : 3,
                           delay,
                           repeat: Infinity,
                           ease: "linear",
@@ -1717,6 +1818,79 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                       />
                     );
                   })}
+
+                  {conn.stackName && (
+                    <g>
+                      <motion.rect
+                        x={midX - (conn.stackName.length * 4 + 16)}
+                        y={midY - 26}
+                        width={(conn.stackName.length * 8 + 32)}
+                        height={22}
+                        rx={11}
+                        fill={isLegendary ? "rgba(251,191,36,0.15)" : isStrong ? "rgba(33,216,255,0.1)" : "rgba(107,114,128,0.1)"}
+                        stroke={isLegendary ? "rgba(251,191,36,0.5)" : isStrong ? "rgba(33,216,255,0.3)" : "rgba(107,114,128,0.2)"}
+                        strokeWidth={1}
+                        filter={isLegendary ? "url(#pm-glow-soft)" : undefined}
+                        initial={{ opacity: 0, scale: 0.7 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.6, type: "spring", stiffness: 200 }}
+                      />
+                      <motion.text
+                        x={midX}
+                        y={midY - 14}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        fill={isLegendary ? "#fbbf24" : isStrong ? "#21d8ff" : "#9ca3af"}
+                        fontSize="10"
+                        fontWeight="700"
+                        letterSpacing="1"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.7 }}
+                        className="pointer-events-none select-none uppercase"
+                        style={isLegendary ? { filter: "drop-shadow(0 0 6px rgba(251,191,36,0.6))" } : undefined}
+                      >
+                        {conn.stackName}
+                      </motion.text>
+                    </g>
+                  )}
+
+                  {!conn.stackName && conn.reason && (isActive || isLegendary) && (
+                    <motion.text
+                      x={midX}
+                      y={midY - 18}
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      fill={tierColor}
+                      fontSize="9"
+                      fontWeight="500"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 0.7 }}
+                      transition={{ delay: 0.5 }}
+                      className="pointer-events-none select-none"
+                    >
+                      {conn.reason.length > 50 ? conn.reason.slice(0, 48) + "…" : conn.reason}
+                    </motion.text>
+                  )}
+
+                  {conn.synergyScore > 0 && (
+                    <motion.text
+                      x={midX}
+                      y={midY + (conn.stackName ? 6 : -4)}
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      fill={isLegendary ? "#fbbf24" : isStrong ? "#21d8ff" : "#9ca3af"}
+                      fontSize="8"
+                      fontWeight="600"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: isLegendary ? 0.9 : 0.6 }}
+                      transition={{ delay: 0.8 }}
+                      className="pointer-events-none select-none"
+                      style={isLegendary ? { filter: "drop-shadow(0 0 4px rgba(251,191,36,0.4))" } : undefined}
+                    >
+                      {conn.synergyScore}% synergy
+                    </motion.text>
+                  )}
                 </g>
               );
             })}
