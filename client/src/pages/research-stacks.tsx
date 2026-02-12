@@ -1611,9 +1611,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
             <Zap className="h-5 w-5 text-[#22c55e]" style={{ filter: "drop-shadow(0 0 6px rgba(34,197,94,0.6))" }} />
           </div>
           <div>
-            <h4 className="font-bold text-white tracking-wide text-[18px]" style={{ textShadow: "0 0 20px rgba(34,197,94,0.3)" }}>
-              PATHWAY MAP
-            </h4>
+            <h4 className="font-bold text-white tracking-wide text-[18px]" style={{ textShadow: "0 0 20px rgba(34,197,94,0.3)" }}>SYNERGY PATHWAY MAP</h4>
             <p className="text-[11px] text-gray-500">
               {hasActiveData ? "Tap or hover to explore biological connections" : "Select peptides below to visualize their connections"}
             </p>
