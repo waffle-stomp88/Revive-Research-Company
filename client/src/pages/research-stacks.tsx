@@ -2553,7 +2553,9 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
 
   return (
     <div className="space-y-6">
-      <PathwayMap selectedPeptides={selectedPeptides} />
+      <div className="hidden md:block">
+        <PathwayMap selectedPeptides={selectedPeptides} />
+      </div>
       {/* Two Column Layout: Peptides Left, Build Panel Right */}
       <div className="grid grid-cols-1 lg:grid-cols-[65%_1fr] gap-6">
         {/* Left Column: Peptide Selection */}
