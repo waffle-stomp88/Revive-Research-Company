@@ -587,12 +587,12 @@ export default function ProductDetail() {
                 />
               </div>
             ) : (
-              <div className={`relative w-full md:sticky md:top-24 overflow-hidden rounded-lg ${isOutOfStock ? 'border-2 border-red-500' : ''}`}>
+              <div className={`relative w-full md:sticky md:top-24 overflow-hidden rounded-lg aspect-[4/3] ${isOutOfStock ? 'border-2 border-red-500' : ''}`}>
                 <ImageLoader 
                   src={product.imageUrl || productImage} 
                   alt={`${product.name} ${selectedDosage} research peptide - COA verified`}
                   className={`w-full h-full object-cover ${isOutOfStock ? 'opacity-60' : ''}`}
-                  containerClassName="relative w-full h-full bg-gradient-to-br from-muted to-muted/50 overflow-hidden rounded-lg"
+                  containerClassName="absolute inset-0 bg-gradient-to-br from-muted to-muted/50 overflow-hidden rounded-lg"
                 />
               {/* Out of Stock Overlay */}
               {isOutOfStock && (
