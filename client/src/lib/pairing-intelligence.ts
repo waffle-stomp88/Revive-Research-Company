@@ -1045,6 +1045,116 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
       },
     ],
   },
+  "glow-peptide-complex": {
+    name: "GLOW Peptide Complex",
+    slug: "glow-peptide-complex",
+    topPairings: [
+      {
+        partner: "Snap-8",
+        why: "GLOW's copper-peptide and thymosin blend drives deep skin regeneration while Snap-8 reduces dynamic expression lines through SNARE complex inhibition. Internal renewal + surface wrinkle relaxation.",
+        mechanism: "Multi-peptide skin regeneration + neuromuscular expression line reduction",
+      },
+      {
+        partner: "Epithalon",
+        why: "GLOW targets visible skin rejuvenation through collagen and vascular repair, while Epithalon activates telomerase to slow cellular aging at the DNA level. Surface-level aesthetics + cellular longevity.",
+        mechanism: "Collagen-vascular skin repair + telomerase cellular preservation",
+      },
+      {
+        partner: "Glutathione",
+        why: "GLOW provides structural skin repair while Glutathione offers master antioxidant protection, neutralizing oxidative stress that accelerates skin aging. Structural rebuilding + oxidative defense.",
+        mechanism: "Multi-peptide skin repair + master antioxidant ROS neutralization",
+      },
+    ],
+  },
+  "klow-peptide-complex": {
+    name: "KLOW Peptide Complex",
+    slug: "klow-peptide-complex",
+    topPairings: [
+      {
+        partner: "Ipamorelin",
+        why: "KLOW's four-peptide regeneration blend (BPC-157+TB-500+GHK-Cu+KPV) covers inflammation control, tissue repair, and collagen remodeling. Ipamorelin adds selective GH/IGF-1 amplification to accelerate every phase of the recovery process.",
+        mechanism: "3-phase regeneration cascade + GH/IGF-1 recovery amplification",
+      },
+      {
+        partner: "Epithalon",
+        why: "KLOW handles comprehensive tissue recovery through its multi-peptide blend while Epithalon supports cellular longevity through telomerase activation. Full-spectrum repair + anti-aging at the cellular level.",
+        mechanism: "Multi-peptide tissue recovery + telomerase longevity support",
+      },
+      {
+        partner: "SS-31",
+        why: "KLOW addresses tissue-level damage while SS-31 protects the mitochondrial energy production that powers cellular repair. Structural healing + mitochondrial energy preservation.",
+        mechanism: "Tissue repair cascade + cardiolipin mitochondrial protection",
+      },
+    ],
+  },
+  "hyaluronic-acid": {
+    name: "Hyaluronic Acid",
+    slug: "hyaluronic-acid",
+    topPairings: [
+      {
+        partner: "GHK-Cu",
+        why: "Hyaluronic acid provides deep tissue hydration and synovial fluid support while GHK-Cu drives copper-dependent collagen and elastin synthesis. Hydration matrix + structural protein rebuilding for comprehensive joint and skin health.",
+        mechanism: "Tissue hydration matrix + copper-peptide collagen synthesis",
+      },
+      {
+        partner: "BPC-157",
+        why: "Hyaluronic acid restores synovial fluid viscosity and tissue hydration while BPC-157 repairs connective tissue through VEGF-driven angiogenesis. Joint lubrication + vascular tissue healing.",
+        mechanism: "Synovial fluid restoration + VEGF angiogenic tissue repair",
+      },
+      {
+        partner: "GLOW Peptide Complex",
+        why: "Hyaluronic acid provides deep moisture retention at the dermal level while GLOW's multi-peptide blend drives collagen regeneration and vascular repair. Hydration + multi-layer skin rejuvenation.",
+        mechanism: "Dermal hydration retention + multi-peptide skin regeneration",
+      },
+    ],
+  },
+  "nad-precursor": {
+    name: "NAD+ Precursor",
+    slug: "nad-precursor",
+    topPairings: [
+      {
+        partner: "SS-31",
+        why: "NAD+ Precursor restores cellular NAD+ levels critical for mitochondrial enzyme function (sirtuins, PARP) while SS-31 stabilizes mitochondrial membrane structure. Fuel supply + structural protection for mitochondria.",
+        mechanism: "NAD+ cellular restoration + cardiolipin membrane stabilization",
+      },
+      {
+        partner: "Epithalon",
+        why: "NAD+ Precursor supports sirtuin-dependent DNA repair and energy metabolism while Epithalon activates telomerase for chromosome protection. Two foundational anti-aging mechanisms: metabolic repair + telomere preservation.",
+        mechanism: "NAD+/sirtuin DNA repair + telomerase activation",
+      },
+      {
+        partner: "MOTS-C",
+        why: "NAD+ Precursor fuels cellular energy pathways while MOTS-C activates AMPK for mitochondrial biogenesis. NAD+ powers existing mitochondria while MOTS-C builds new ones.",
+        mechanism: "NAD+ metabolic fuel + AMPK mitochondrial biogenesis",
+      },
+      {
+        partner: "Glutathione",
+        why: "NAD+ Precursor supports cellular energy and repair enzymes while Glutathione provides master antioxidant defense. Energy production generates ROS — Glutathione neutralizes it. Essential pairing for cellular health.",
+        mechanism: "NAD+ energy metabolism + master antioxidant ROS defense",
+      },
+    ],
+  },
+  "botulinum-toxin-type-a": {
+    name: "Botulinum Toxin Type A",
+    slug: "botulinum-toxin-type-a",
+    topPairings: [
+      {
+        partner: "GHK-Cu",
+        why: "Botulinum Toxin Type A relaxes targeted muscles to reduce dynamic wrinkles while GHK-Cu rebuilds the underlying collagen and elastin matrix. Surface muscle relaxation + deep structural remodeling for comprehensive aesthetic research.",
+        mechanism: "Neuromuscular acetylcholine blockade + copper-peptide collagen synthesis",
+      },
+      {
+        partner: "Snap-8",
+        why: "Both target expression lines through neuromuscular mechanisms but through different pathways. Botulinum Toxin blocks acetylcholine release at the neuromuscular junction while Snap-8 inhibits the SNARE complex. Dual-pathway wrinkle research.",
+        mechanism: "Acetylcholine release blockade + SNARE complex inhibition",
+      },
+      {
+        partner: "Hyaluronic Acid",
+        why: "Botulinum Toxin relaxes dynamic wrinkles while Hyaluronic Acid provides volumetric hydration and tissue plumping. Muscle relaxation + dermal volume restoration for complementary aesthetic approaches.",
+        mechanism: "Neuromuscular relaxation + dermal hydration volumization",
+      },
+    ],
+  },
 };
 
 export function getPairingReasons(compoundSlug: string): PairingReason[] {

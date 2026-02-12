@@ -721,6 +721,38 @@ export const KNOWN_STACKS: KnownStack[] = [
     description: "Social bonding neuropeptide + tissue healing for stress-related gut-brain support",
     synergyBonus: 78,
   },
+  {
+    name: "NAD+ Mito Stack",
+    peptides: ["nad-precursor", "ss-31"],
+    icon: Zap,
+    color: "#06b6d4",
+    description: "NAD+ fuels sirtuin-dependent mitochondrial enzymes while SS-31 stabilizes cardiolipin membrane structure — metabolic fuel + structural protection",
+    synergyBonus: 86,
+  },
+  {
+    name: "Cellular Longevity",
+    peptides: ["nad-precursor", "epithalon"],
+    icon: Crown,
+    color: "#8b5cf6",
+    description: "NAD+/sirtuin DNA repair pathways + telomerase activation — two foundational anti-aging mechanisms working in parallel",
+    synergyBonus: 85,
+  },
+  {
+    name: "NAD+ Energy",
+    peptides: ["nad-precursor", "mots-c"],
+    icon: Activity,
+    color: "#10b981",
+    description: "NAD+ powers existing mitochondrial enzymes while MOTS-C activates AMPK to build new mitochondria — fuel supply + biogenesis",
+    synergyBonus: 84,
+  },
+  {
+    name: "Cellular Defense",
+    peptides: ["nad-precursor", "glutathione"],
+    icon: Shield,
+    color: "#22c55e",
+    description: "NAD+ supports energy metabolism and sirtuin repair while Glutathione neutralizes the ROS generated — essential energy + antioxidant pairing",
+    synergyBonus: 83,
+  },
 ];
 
 export const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
@@ -987,6 +1019,12 @@ export const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
     pathways: ["MT1/MT2 Receptor", "Circadian Rhythm"],
     mechanisms: ["Sleep-wake cycle regulation", "Antioxidant", "Immune modulation"],
     systems: ["Sleep", "Immunity", "Anti-Aging"],
+  },
+  "nad-precursor": {
+    name: "NAD+ Precursor",
+    pathways: ["NAD+ Salvage", "Sirtuin Activation", "PARP DNA Repair"],
+    mechanisms: ["NAD+ level restoration", "Sirtuin-dependent DNA repair", "Mitochondrial enzyme support"],
+    systems: ["Longevity", "Metabolic", "Recovery"],
   },
   "oxytocin": {
     name: "Oxytocin",
