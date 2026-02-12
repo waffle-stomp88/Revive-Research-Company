@@ -1506,14 +1506,13 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
       <div className="absolute inset-0 pointer-events-none" style={{
         background: "linear-gradient(180deg, transparent 0%, rgba(34,197,94,0.03) 50%, transparent 100%)",
       }} />
-
       <div className="px-4 pt-4 pb-2 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-3">
           <div className="relative">
             <Zap className="h-5 w-5 text-[#22c55e]" style={{ filter: "drop-shadow(0 0 6px rgba(34,197,94,0.6))" }} />
           </div>
           <div>
-            <h4 className="text-sm font-bold text-white tracking-wide" style={{ textShadow: "0 0 20px rgba(34,197,94,0.3)" }}>
+            <h4 className="font-bold text-white tracking-wide text-[18px]" style={{ textShadow: "0 0 20px rgba(34,197,94,0.3)" }}>
               PATHWAY MAP
             </h4>
             <p className="text-[11px] text-gray-500">
@@ -1527,7 +1526,6 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
           </Badge>
         )}
       </div>
-
       <svg
         width="100%"
         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
@@ -2099,7 +2097,6 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
         )}
         </AnimatePresence>
       </svg>
-
       <AnimatePresence>
         {hasActiveData && activeConnection && (() => {
           const parts = activeConnection.split("-");
@@ -2176,7 +2173,6 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
           );
         })()}
       </AnimatePresence>
-
       {hasActiveData && !activeNode && !activeConnection && allSharedPathways.length > 0 && (
         <div className="px-4 pb-4">
           <div className="flex items-center gap-2 flex-wrap">
@@ -2411,7 +2407,6 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
   return (
     <div className="space-y-6">
       <PathwayMap selectedPeptides={selectedPeptides} />
-
       {/* Two Column Layout: Peptides Left, Build Panel Right */}
       <div className="grid grid-cols-1 lg:grid-cols-[65%_1fr] gap-6">
         {/* Left Column: Peptide Selection */}
@@ -3161,32 +3156,32 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                           {selectedPeptides.map(peptide => {
                             const isOOS = !peptide.inStock;
                             return (
-                            <div 
-                              key={peptide.id}
-                              className={`flex items-center justify-between p-2 rounded-lg ${isOOS ? 'bg-red-500/10 border border-red-500/30' : 'bg-[#21d8ff]/5 border border-[#21d8ff]/20'}`}
-                            >
-                              <div className="flex items-center gap-2">
-                                <span className={`font-medium text-sm ${isOOS ? 'text-red-300/80' : ''}`}>
-                                  {peptide.name.replace(/\s*\([^)]*\)/g, '')}
-                                </span>
-                                {isOOS && (
-                                  <Badge variant="outline" className="text-xs border-red-500/40 text-red-400 no-default-hover-elevate no-default-active-elevate" data-testid={`badge-oos-${peptide.id}`}>
-                                    OOS
-                                  </Badge>
-                                )}
+                              <div 
+                                key={peptide.id}
+                                className={`flex items-center justify-between p-2 rounded-lg ${isOOS ? 'bg-red-500/10 border border-red-500/30' : 'bg-[#21d8ff]/5 border border-[#21d8ff]/20'}`}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <span className={`font-medium text-sm ${isOOS ? 'text-red-300/80' : ''}`}>
+                                    {peptide.name.replace(/\s*\([^)]*\)/g, '')}
+                                  </span>
+                                  {isOOS && (
+                                    <Badge variant="outline" className="text-xs border-red-500/40 text-red-400 no-default-hover-elevate no-default-active-elevate" data-testid={`badge-oos-${peptide.id}`}>
+                                      OOS
+                                    </Badge>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className={`text-sm ${isOOS ? 'line-through text-red-400/50' : 'text-muted-foreground'}`}>${peptide.price}</span>
+                                  <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    onClick={() => togglePeptide(peptide)}
+                                    data-testid={`button-remove-peptide-${peptide.id}`}
+                                  >
+                                    <X className="h-3.5 w-3.5" />
+                                  </Button>
+                                </div>
                               </div>
-                              <div className="flex items-center gap-2">
-                                <span className={`text-sm ${isOOS ? 'line-through text-red-400/50' : 'text-muted-foreground'}`}>${peptide.price}</span>
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  onClick={() => togglePeptide(peptide)}
-                                  data-testid={`button-remove-peptide-${peptide.id}`}
-                                >
-                                  <X className="h-3.5 w-3.5" />
-                                </Button>
-                              </div>
-                            </div>
                             );
                           })}
                         </div>
@@ -3362,7 +3357,6 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
           </AnimatePresence>
         </motion.div>
       </AnimatePresence>
-
     </div>
   );
 }
