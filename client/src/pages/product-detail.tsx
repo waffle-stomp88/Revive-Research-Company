@@ -722,7 +722,7 @@ export default function ProductDetail() {
               ))}
             </div>
 
-            <h1 className="font-display text-3xl md:text-6xl font-bold mb-1 md:mb-2 uppercase tracking-tighter leading-none" data-testid="text-product-name">
+            <h1 className="font-display md:text-6xl font-bold mb-1 md:mb-2 uppercase tracking-tighter text-[55px]" data-testid="text-product-name">
               {product.name}
             </h1>
 
@@ -994,7 +994,7 @@ export default function ProductDetail() {
               </>
             ) : (
               /* Out of Stock - Show prominent notification signup */
-              <motion.div
+              (<motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="p-5 rounded-lg border-2 border-red-500/30 bg-red-500/5"
@@ -1008,7 +1008,6 @@ export default function ProductDetail() {
                     <p className="text-xs text-muted-foreground">This product is temporarily unavailable</p>
                   </div>
                 </div>
-
                 <button
                   onClick={() => voteMutation.mutate(hasVoted ? "unvote" : "vote")}
                   disabled={voteMutation.isPending}
@@ -1022,14 +1021,11 @@ export default function ProductDetail() {
                   {hasVoted ? <Check className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />}
                   <span>{hasVoted ? "Wanted — We Hear You" : "Want This"}</span>
                 </button>
-                
                 <Separator className="my-4" />
-                
                 <div className="flex items-center gap-2 mb-3">
                   <Bell className="h-4 w-4 text-[#21d8ff]" />
                   <h4 className="font-display font-semibold text-sm">Get Notified When Back in Stock</h4>
                 </div>
-                
                 {notifySuccess ? (
                   <div className="flex items-center gap-2 text-sm text-green-400 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
                     <CheckCircle className="h-5 w-5" />
@@ -1093,7 +1089,7 @@ export default function ProductDetail() {
                 <p className="text-[10px] text-muted-foreground mt-3">
                   We'll send you one email when this product is restocked. No spam, ever.
                 </p>
-              </motion.div>
+              </motion.div>)
             )}
 
             {/* Mobile-only collapsible description - shown below purchase actions */}
@@ -1560,10 +1556,8 @@ export default function ProductDetail() {
         })()}
 
       </div>
-      
       {/* Recently Viewed Sidebar */}
       <RecentlyViewed currentProductId={productId} variant="sidebar" />
-
       {/* Sticky Mobile Add-to-Cart Bar */}
       {product && !isOutOfStock && (
         <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-border p-3 safe-area-pb" data-testid="sticky-cart-bar-mobile">
