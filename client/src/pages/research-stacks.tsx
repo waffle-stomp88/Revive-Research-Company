@@ -2352,12 +2352,6 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
         )}
         </AnimatePresence>
       </svg>
-      <div className="pointer-events-none absolute inset-0" style={{ zIndex: 2 }}>
-        <div className="absolute top-0 left-0 right-0" style={{ height: "48px", background: "linear-gradient(to bottom, #1a1a1f 0%, transparent 100%)" }} />
-        <div className="absolute bottom-0 left-0 right-0" style={{ height: "48px", background: "linear-gradient(to top, #1a1a1f 0%, transparent 100%)" }} />
-        <div className="absolute top-0 bottom-0 left-0" style={{ width: "48px", background: "linear-gradient(to right, #1a1a1f 0%, transparent 100%)" }} />
-        <div className="absolute top-0 bottom-0 right-0" style={{ width: "48px", background: "linear-gradient(to left, #1a1a1f 0%, transparent 100%)" }} />
-      </div>
       </div>
       <AnimatePresence>
         {hasActiveData && activeConnection && (() => {
