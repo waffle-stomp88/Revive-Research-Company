@@ -1714,15 +1714,12 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
           </Badge>
         )}
       </div>
-      <div className="overflow-hidden" style={{
-        maskImage: "linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%)",
-        WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%)",
-      }}>
+      <div style={{ overflow: "hidden" }}>
       <svg
         width="100%"
-        viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-        className="overflow-visible"
-        style={{ minHeight: "240px" }}
+        viewBox={`-40 -30 ${svgWidth + 80} ${svgHeight + 60}`}
+        preserveAspectRatio="xMidYMid meet"
+        style={{ minHeight: "260px" }}
       >
         <defs>
           {connections.map(conn => {
@@ -1800,9 +1797,27 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
             <feGaussianBlur stdDeviation="8" result="blur" />
             <feMerge><feMergeNode in="blur" /><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
+          <linearGradient id="pm-fade-h" gradientUnits="userSpaceOnUse" x1={-40} y1="0" x2={svgWidth + 40} y2="0">
+            <stop offset="0%" stopColor="black" />
+            <stop offset="6%" stopColor="white" />
+            <stop offset="94%" stopColor="white" />
+            <stop offset="100%" stopColor="black" />
+          </linearGradient>
+          <linearGradient id="pm-fade-v" gradientUnits="userSpaceOnUse" x1="0" y1={-30} x2="0" y2={svgHeight + 30}>
+            <stop offset="0%" stopColor="black" />
+            <stop offset="8%" stopColor="white" />
+            <stop offset="92%" stopColor="white" />
+            <stop offset="100%" stopColor="black" />
+          </linearGradient>
+          <mask id="pm-fade-lr" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x={-40} y={-30} width={svgWidth + 80} height={svgHeight + 60}>
+            <rect x={-40} y={-30} width={svgWidth + 80} height={svgHeight + 60} fill="url(#pm-fade-h)" />
+          </mask>
+          <mask id="pm-fade-tb" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x={-40} y={-30} width={svgWidth + 80} height={svgHeight + 60}>
+            <rect x={-40} y={-30} width={svgWidth + 80} height={svgHeight + 60} fill="url(#pm-fade-v)" />
+          </mask>
         </defs>
 
-        <g>
+        <g mask="url(#pm-fade-lr)"><g mask="url(#pm-fade-tb)">
         {starfield.map((star, i) => (
           <motion.circle
             key={`star-${i}`}
@@ -2346,6 +2361,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
           </motion.g>
         )}
         </AnimatePresence>
+        </g>
         </g>
       </svg>
       </div>
