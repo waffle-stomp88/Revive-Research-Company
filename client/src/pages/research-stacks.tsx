@@ -1012,26 +1012,48 @@ const PEPTIDE_PAIRINGS: Record<string, { partner: string; reason: string; boost:
     { partner: "rr-a3", reason: "Mitochondrial energy + metabolic signaling", boost: "Metabolic" },
     { partner: "aicar", reason: "Dual AMPK activation for enhanced fat oxidation", boost: "Metabolic" },
     { partner: "ss-31", reason: "Mitochondrial peptide synergy for cellular energy", boost: "Longevity" },
+    { partner: "ipamorelin", reason: "Metabolic + GH support for body composition optimization", boost: "Metabolic" },
+    { partner: "cjc-1295", reason: "AMPK metabolic drive + sustained GH release synergy", boost: "Metabolic" },
+    { partner: "aod-9604", reason: "Mitochondrial fat oxidation + GH fragment lipolysis", boost: "Metabolic" },
+    { partner: "5-amino-1mq", reason: "AMPK activation + NNMT enzyme targeting for dual fat metabolism", boost: "Metabolic" },
+    { partner: "nad-precursor", reason: "Mitochondrial biogenesis + NAD+ cellular energy restoration", boost: "Longevity" },
   ],
   "rr-a3": [
     { partner: "mots-c", reason: "Triple agonist + mitochondrial activator", boost: "Metabolic" },
     { partner: "5-amino-1mq", reason: "Fat metabolism through complementary pathways", boost: "Metabolic" },
     { partner: "aod-9604", reason: "Incretin signaling + targeted fat reduction", boost: "Metabolic" },
+    { partner: "bpc-157", reason: "Gut cytoprotection supports GI comfort during metabolic research", boost: "Metabolic" },
+    { partner: "ipamorelin", reason: "Metabolic signaling + GH pulse for body composition", boost: "Growth" },
   ],
   "ipamorelin": [
     { partner: "cjc-1295", reason: "GH pulse + sustained release — the gold standard GH stack", boost: "Growth" },
     { partner: "tb-500", reason: "Growth hormone + tissue repair acceleration", boost: "Healing" },
     { partner: "sermorelin", reason: "Complementary GH secretagogue pathways", boost: "Growth" },
+    { partner: "bpc-157", reason: "Selective GH/IGF-1 amplifies BPC-157 tissue repair", boost: "Healing" },
+    { partner: "mots-c", reason: "GH support + AMPK metabolic drive for body composition", boost: "Metabolic" },
+    { partner: "rr-a3", reason: "GH pulse + metabolic receptor agonism for composition research", boost: "Metabolic" },
+    { partner: "epithalon", reason: "Deep sleep GH pulse + circadian rhythm optimization", boost: "Sleep" },
+    { partner: "ghk-cu", reason: "GH-driven collagen + copper-peptide matrix remodeling", boost: "Skin" },
+    { partner: "igf-1 lr3", reason: "Endogenous GH release + direct IGF-1 for anabolic synergy", boost: "Growth" },
   ],
   "cjc-1295": [
     { partner: "ipamorelin", reason: "GHRH + ghrelin receptor for amplified GH release", boost: "Growth" },
     { partner: "tesamorelin", reason: "Dual GHRH analogs for sustained growth support", boost: "Growth" },
     { partner: "mots-c", reason: "Growth + metabolic optimization", boost: "Metabolic" },
+    { partner: "sermorelin", reason: "Complementary GHRH signaling for sustained GH output", boost: "Growth" },
+    { partner: "tb-500", reason: "Sustained GH release + systemic tissue repair", boost: "Healing" },
+    { partner: "bpc-157", reason: "GH amplification supports tissue repair pathways", boost: "Healing" },
+    { partner: "igf-1 lr3", reason: "Endogenous GH axis + direct IGF-1 for dual anabolic signal", boost: "Growth" },
   ],
   "epithalon": [
     { partner: "ghk-cu", reason: "Telomere protection + tissue renewal", boost: "Longevity" },
     { partner: "ipamorelin", reason: "Circadian rhythm + deep sleep GH pulse", boost: "Sleep" },
     { partner: "foxo4", reason: "Telomerase + senolytic for comprehensive anti-aging", boost: "Longevity" },
+    { partner: "thymalin", reason: "Thymic restoration + telomerase — Russian longevity protocol", boost: "Longevity" },
+    { partner: "dsip", reason: "Sleep architecture + pineal melatonin regulation", boost: "Sleep" },
+    { partner: "ss-31", reason: "Telomere protection + mitochondrial membrane stabilization", boost: "Longevity" },
+    { partner: "nad-precursor", reason: "Telomerase + NAD+ restoration for cellular rejuvenation", boost: "Longevity" },
+    { partner: "glutathione", reason: "Telomere protection + master antioxidant defense", boost: "Longevity" },
   ],
   "semax": [
     { partner: "selank", reason: "Focus + calm — nootropic synergy without jitters", boost: "Cognitive" },
@@ -1047,14 +1069,20 @@ const PEPTIDE_PAIRINGS: Record<string, { partner: string; reason: string; boost:
     { partner: "melatonin", reason: "Deep sleep peptide + circadian hormone", boost: "Sleep" },
     { partner: "epithalon", reason: "Sleep architecture + pineal function", boost: "Longevity" },
     { partner: "selank", reason: "Calm mind + restorative sleep", boost: "Cognitive" },
+    { partner: "ipamorelin", reason: "Delta sleep induction + sleep-phase GH release", boost: "Sleep" },
   ],
   "foxo4": [
     { partner: "epithalon", reason: "Senolytic + telomerase — advanced longevity protocol", boost: "Longevity" },
     { partner: "ss-31", reason: "Cellular cleanup + mitochondrial protection", boost: "Longevity" },
+    { partner: "nad-precursor", reason: "Senescent cell clearance + NAD+ restoration for cellular renewal", boost: "Longevity" },
+    { partner: "glutathione", reason: "Senolytic action + antioxidant defense for cellular health", boost: "Longevity" },
   ],
   "ss-31": [
     { partner: "mots-c", reason: "Dual mitochondrial support peptides", boost: "Longevity" },
     { partner: "foxo4", reason: "Mitochondrial health + senescent cell clearance", boost: "Longevity" },
+    { partner: "epithalon", reason: "Mitochondrial membrane stability + telomere maintenance", boost: "Longevity" },
+    { partner: "nad-precursor", reason: "Electron transport chain optimization + NAD+ restoration", boost: "Longevity" },
+    { partner: "glutathione", reason: "Mitochondrial antioxidant + systemic redox balance", boost: "Longevity" },
   ],
   "pt-141": [
     { partner: "kisspeptin", reason: "MC receptor + GnRH pathway for hormonal balance", boost: "Hormonal" },
@@ -1084,14 +1112,19 @@ const PEPTIDE_PAIRINGS: Record<string, { partner: string; reason: string; boost:
     { partner: "5-amino-1mq", reason: "Fat fragment + metabolic enzyme targeting", boost: "Metabolic" },
     { partner: "mots-c", reason: "Targeted fat loss + mitochondrial energy", boost: "Metabolic" },
     { partner: "cagrilintide", reason: "Complementary metabolic signaling", boost: "Metabolic" },
+    { partner: "rr-a3", reason: "GH fragment lipolysis + triple receptor metabolic control", boost: "Metabolic" },
+    { partner: "ipamorelin", reason: "Targeted fat reduction + GH-driven metabolism", boost: "Metabolic" },
   ],
   "5-amino-1mq": [
     { partner: "aod-9604", reason: "NNMT inhibition + GH fragment for fat metabolism", boost: "Metabolic" },
     { partner: "mots-c", reason: "Enzyme targeting + mitochondrial activation", boost: "Metabolic" },
+    { partner: "rr-a3", reason: "NNMT inhibition + triple metabolic receptor agonism", boost: "Metabolic" },
+    { partner: "nad-precursor", reason: "NNMT inhibition preserves NAD+ levels for cellular energy", boost: "Metabolic" },
   ],
   "sermorelin": [
     { partner: "ipamorelin", reason: "GHRH analog + ghrelin mimetic for synergistic GH release", boost: "Growth" },
     { partner: "cjc-1295", reason: "Complementary GHRH signaling pathways", boost: "Growth" },
+    { partner: "tb-500", reason: "GH secretagogue + systemic tissue repair acceleration", boost: "Healing" },
   ],
   "snap-8": [
     { partner: "ghk-cu", reason: "Expression line reduction + collagen matrix renewal", boost: "Skin" },
@@ -1105,6 +1138,45 @@ const PEPTIDE_PAIRINGS: Record<string, { partner: string; reason: string; boost:
     { partner: "bpc-157", reason: "Muscle growth factor + tissue repair acceleration", boost: "Growth" },
     { partner: "ipamorelin", reason: "Direct IGF-1 + endogenous GH for maximum anabolic research", boost: "Growth" },
     { partner: "tb-500", reason: "Growth signaling + systemic recovery support", boost: "Healing" },
+    { partner: "cjc-1295", reason: "Direct IGF-1 + sustained GHRH for layered anabolic signaling", boost: "Growth" },
+  ],
+  "glutathione": [
+    { partner: "nad-precursor", reason: "Master antioxidant + NAD+ for cellular detox and energy", boost: "Longevity" },
+    { partner: "epithalon", reason: "Redox balance + telomerase for anti-aging defense", boost: "Longevity" },
+    { partner: "bpc-157", reason: "Antioxidant protection + tissue repair support", boost: "Healing" },
+    { partner: "ghk-cu", reason: "Detoxification support + copper-peptide tissue renewal", boost: "Longevity" },
+    { partner: "ss-31", reason: "Systemic redox balance + mitochondrial antioxidant", boost: "Longevity" },
+    { partner: "foxo4", reason: "Antioxidant defense + senescent cell clearance", boost: "Longevity" },
+  ],
+  "nad-precursor": [
+    { partner: "glutathione", reason: "NAD+ restoration + master antioxidant for cellular health", boost: "Longevity" },
+    { partner: "epithalon", reason: "NAD+ salvage pathway + telomerase activation synergy", boost: "Longevity" },
+    { partner: "mots-c", reason: "NAD+ support + mitochondrial biogenesis for energy production", boost: "Longevity" },
+    { partner: "ss-31", reason: "NAD+ restoration + electron transport chain optimization", boost: "Longevity" },
+    { partner: "foxo4", reason: "NAD+ cellular energy + senolytic clearance", boost: "Longevity" },
+    { partner: "5-amino-1mq", reason: "NAD+ preservation via NNMT inhibition synergy", boost: "Metabolic" },
+  ],
+  "hyaluronic-acid": [
+    { partner: "ghk-cu", reason: "Tissue hydration + collagen synthesis for skin rejuvenation", boost: "Skin" },
+    { partner: "bpc-157", reason: "Matrix hydration + vascular tissue repair", boost: "Healing" },
+    { partner: "snap-8", reason: "Dermal volume + expression line reduction", boost: "Skin" },
+    { partner: "glow-peptide-complex", reason: "Skin hydration + multi-peptide rejuvenation", boost: "Skin" },
+  ],
+  "glow-peptide-complex": [
+    { partner: "ghk-cu", reason: "Multi-peptide skin rejuvenation + copper collagen synthesis", boost: "Skin" },
+    { partner: "hyaluronic-acid", reason: "Peptide skin repair + hyaluronic hydration", boost: "Skin" },
+    { partner: "snap-8", reason: "Skin brightening + expression line reduction", boost: "Skin" },
+    { partner: "bpc-157", reason: "Skin rejuvenation + vascular repair support", boost: "Skin" },
+  ],
+  "klow-peptide-complex": [
+    { partner: "bpc-157", reason: "Anti-inflammatory blend + gut lining cytoprotection", boost: "Healing" },
+    { partner: "ghk-cu", reason: "Gut-skin axis modulation + collagen remodeling", boost: "Skin" },
+    { partner: "kpv", reason: "NF-κB inhibition stack for comprehensive inflammation control", boost: "Healing" },
+    { partner: "tb-500", reason: "Tissue regeneration blend + systemic healing support", boost: "Healing" },
+  ],
+  "botulinum-toxin-type-a": [
+    { partner: "snap-8", reason: "Neuromuscular blockade + peptide-based relaxation synergy", boost: "Skin" },
+    { partner: "ghk-cu", reason: "Muscle relaxation + collagen remodeling for skin renewal", boost: "Skin" },
   ],
 };
 
@@ -1440,6 +1512,9 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
         if (shared.length > 0 || hasPairing) {
           const tier: SynergyTier = matchedStack ? getTier(matchedStack.synergyBonus) :
             pairingReason ? "good" : "pathway";
+          const fallbackReason = shared.length > 0
+            ? `Shared ${shared.slice(0, 2).join(" + ")}${shared.length > 2 ? ` + ${shared.length - 2} more` : ""} pathway${shared.length > 1 ? "s" : ""}`
+            : "";
           connections.push({
             from: i,
             to: j,
@@ -1449,7 +1524,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
             synergyScore,
             stackName: matchedStack?.name,
             stackColor: matchedStack?.color,
-            reason: pairingReason || matchedStack?.description,
+            reason: pairingReason || matchedStack?.description || fallbackReason,
           });
         }
       }
@@ -2294,20 +2369,27 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                 boxShadow: "0 0 20px rgba(34,197,94,0.1), inset 0 1px 0 rgba(34,197,94,0.1)",
               }}
             >
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 mb-1">
                 <Zap className="h-3.5 w-3.5 text-[#22c55e]" style={{ filter: "drop-shadow(0 0 4px rgba(34,197,94,0.5))" }} />
                 <span className="text-xs font-bold text-[#22c55e]" style={{ textShadow: "0 0 8px rgba(34,197,94,0.4)" }}>
                   {nodes[conn.from].name} ↔ {nodes[conn.to].name}
                 </span>
               </div>
-              <div className="flex flex-wrap gap-1.5">
-                {conn.pathways.map((p, i) => (
-                  <span key={i} className="text-[11px] px-2 py-1 rounded-full bg-[#22c55e]/10 text-[#4ade80] border border-[#22c55e]/20"
-                    style={{ textShadow: "0 0 6px rgba(34,197,94,0.3)" }}>
-                    {p}{PATHWAY_DESCRIPTIONS[p] ? ` — ${PATHWAY_DESCRIPTIONS[p].slice(0, 60)}` : ""}
-                  </span>
-                ))}
-              </div>
+              {conn.reason && (
+                <p className="text-[12px] text-gray-300 mb-2 pl-5.5 leading-relaxed" style={{ paddingLeft: "22px" }}>
+                  {conn.reason}
+                </p>
+              )}
+              {conn.pathways.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {conn.pathways.map((p, i) => (
+                    <span key={i} className="text-[11px] px-2 py-1 rounded-full bg-[#22c55e]/10 text-[#4ade80] border border-[#22c55e]/20"
+                      style={{ textShadow: "0 0 6px rgba(34,197,94,0.3)" }}>
+                      {p}{PATHWAY_DESCRIPTIONS[p] ? ` — ${PATHWAY_DESCRIPTIONS[p].slice(0, 60)}` : ""}
+                    </span>
+                  ))}
+                </div>
+              )}
             </motion.div>
           );
         })()}
