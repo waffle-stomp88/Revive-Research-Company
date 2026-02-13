@@ -1621,13 +1621,6 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
       <div className="absolute inset-0 pointer-events-none" style={{
         background: "linear-gradient(180deg, transparent 0%, rgba(34,197,94,0.03) 50%, transparent 100%)",
       }} />
-      {/* Edge fade overlays to blend glow lines into background */}
-      <div className="absolute top-0 bottom-0 left-0 w-12 pointer-events-none z-10" style={{
-        background: "linear-gradient(to right, #080b10 0%, transparent 100%)",
-      }} />
-      <div className="absolute top-0 bottom-0 right-0 w-12 pointer-events-none z-10" style={{
-        background: "linear-gradient(to left, #080b10 0%, transparent 100%)",
-      }} />
       <div className="px-4 pt-4 pb-2 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-3">
           <div className="relative">
@@ -1728,8 +1721,18 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
             <feGaussianBlur stdDeviation="8" result="blur" />
             <feMerge><feMergeNode in="blur" /><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
+          <linearGradient id="pm-edge-fade-grad" x1="0" y1="0" x2={svgWidth} y2="0" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="black" />
+            <stop offset="5%" stopColor="white" />
+            <stop offset="95%" stopColor="white" />
+            <stop offset="100%" stopColor="black" />
+          </linearGradient>
+          <mask id="pm-edge-fade" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="-50" y="-50" width={svgWidth + 100} height={svgHeight + 100}>
+            <rect x="-50" y="-50" width={svgWidth + 100} height={svgHeight + 100} fill="url(#pm-edge-fade-grad)" />
+          </mask>
         </defs>
 
+        <g mask="url(#pm-edge-fade)">
         {starfield.map((star, i) => (
           <motion.circle
             key={`star-${i}`}
@@ -2250,6 +2253,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
           </motion.g>
         )}
         </AnimatePresence>
+        </g>
       </svg>
       <AnimatePresence>
         {hasActiveData && activeConnection && (() => {
