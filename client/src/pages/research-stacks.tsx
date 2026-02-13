@@ -1628,9 +1628,16 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
           </div>
           <div>
             <h4 className="font-bold text-white tracking-wide text-[18px]" style={{ textShadow: "0 0 20px rgba(34,197,94,0.3)" }}>SYNERGY PATHWAY MAP</h4>
-            <p className="text-[11px] text-gray-500">
-              {hasActiveData ? "Tap or hover to explore biological connections" : "Select peptides below to visualize their connections"}
-            </p>
+            {hasActiveData ? (
+              <p className="text-[11px] text-[#22c55e]/70 flex items-center gap-1">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse" />
+                Interactive — hover or tap nodes & lines for details
+              </p>
+            ) : (
+              <p className="text-[11px] text-gray-500">
+                Select peptides below to visualize their connections
+              </p>
+            )}
           </div>
         </div>
         {allSharedPathways.length > 0 && (
@@ -1639,6 +1646,10 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
           </Badge>
         )}
       </div>
+      <div className="overflow-hidden" style={{
+        maskImage: "linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%)",
+        WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%)",
+      }}>
       <svg
         width="100%"
         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
@@ -1721,18 +1732,9 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
             <feGaussianBlur stdDeviation="8" result="blur" />
             <feMerge><feMergeNode in="blur" /><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
-          <linearGradient id="pm-edge-fade-grad" x1="0" y1="0" x2={svgWidth} y2="0" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="black" />
-            <stop offset="5%" stopColor="white" />
-            <stop offset="95%" stopColor="white" />
-            <stop offset="100%" stopColor="black" />
-          </linearGradient>
-          <mask id="pm-edge-fade" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="-50" y="-50" width={svgWidth + 100} height={svgHeight + 100}>
-            <rect x="-50" y="-50" width={svgWidth + 100} height={svgHeight + 100} fill="url(#pm-edge-fade-grad)" />
-          </mask>
         </defs>
 
-        <g mask="url(#pm-edge-fade)">
+        <g>
         {starfield.map((star, i) => (
           <motion.circle
             key={`star-${i}`}
@@ -2182,26 +2184,50 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                     transition={{ duration: 0.6, delay: i * 0.12, type: "spring", stiffness: 150 }}
                   />
 
-                  <motion.text
-                    x={node.x}
-                    y={node.y}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    fill={isActive ? "#ffffff" : node.color}
-                    fontSize={node.name.length > 12 ? "9" : node.name.length > 8 ? "10" : "11"}
-                    fontWeight="700"
-                    letterSpacing="0.5"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.4 + i * 0.12 }}
-                    className="pointer-events-none select-none"
-                    style={{ 
-                      filter: isActive ? `drop-shadow(0 0 8px ${node.color})` : `drop-shadow(0 0 3px ${node.color}80)`,
-                      textShadow: isActive ? `0 0 12px ${node.color}` : undefined,
-                    }}
-                  >
-                    {node.name.length > 14 ? node.name.slice(0, 12) + "…" : node.name}
-                  </motion.text>
+                  {(() => {
+                    const displayName = node.name.length > 14 ? node.name.slice(0, 12) + "…" : node.name;
+                    const fontSize = node.name.length > 12 ? 9 : node.name.length > 8 ? 10 : 11;
+                    const pillW = displayName.length * (fontSize * 0.7) + 16;
+                    const pillH = fontSize + 10;
+                    return (
+                      <>
+                        <motion.rect
+                          x={node.x - pillW / 2}
+                          y={node.y - pillH / 2}
+                          width={pillW}
+                          height={pillH}
+                          rx={pillH / 2}
+                          fill="rgba(8,11,16,0.85)"
+                          stroke={node.color}
+                          strokeWidth={0.5}
+                          strokeOpacity={0.3}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.35 + i * 0.12 }}
+                          className="pointer-events-none"
+                        />
+                        <motion.text
+                          x={node.x}
+                          y={node.y}
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                          fill={isActive ? "#ffffff" : node.color}
+                          fontSize={fontSize}
+                          fontWeight="700"
+                          letterSpacing="0.5"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.4 + i * 0.12 }}
+                          className="pointer-events-none select-none"
+                          style={{ 
+                            filter: isActive ? `drop-shadow(0 0 8px ${node.color})` : `drop-shadow(0 0 3px ${node.color}80)`,
+                          }}
+                        >
+                          {displayName}
+                        </motion.text>
+                      </>
+                    );
+                  })()}
                 </g>
               );
             })}
@@ -2255,6 +2281,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
         </AnimatePresence>
         </g>
       </svg>
+      </div>
       <AnimatePresence>
         {hasActiveData && activeConnection && (() => {
           const parts = activeConnection.split("-");
