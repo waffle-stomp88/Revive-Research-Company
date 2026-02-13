@@ -1621,6 +1621,13 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
       <div className="absolute inset-0 pointer-events-none" style={{
         background: "linear-gradient(180deg, transparent 0%, rgba(34,197,94,0.03) 50%, transparent 100%)",
       }} />
+      {/* Edge fade overlays to blend glow lines into background */}
+      <div className="absolute top-0 bottom-0 left-0 w-12 pointer-events-none z-10" style={{
+        background: "linear-gradient(to right, #080b10 0%, transparent 100%)",
+      }} />
+      <div className="absolute top-0 bottom-0 right-0 w-12 pointer-events-none z-10" style={{
+        background: "linear-gradient(to left, #080b10 0%, transparent 100%)",
+      }} />
       <div className="px-4 pt-4 pb-2 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-3">
           <div className="relative">
