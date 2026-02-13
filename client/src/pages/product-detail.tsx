@@ -587,7 +587,7 @@ export default function ProductDetail() {
                 />
               </div>
             ) : (
-              <div className={`relative w-full md:sticky md:top-24 overflow-hidden rounded-lg aspect-[4/3] ${isOutOfStock ? 'border-2 border-red-500' : ''}`}>
+              <div className={`relative w-full md:sticky md:top-24 overflow-hidden rounded-lg aspect-[4/3.4] ${isOutOfStock ? 'border-2 border-red-500' : ''}`}>
                 <ImageLoader 
                   src={product.imageUrl || productImage} 
                   alt={`${product.name} ${selectedDosage} research peptide - COA verified`}
