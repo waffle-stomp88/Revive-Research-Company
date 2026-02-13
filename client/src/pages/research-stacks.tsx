@@ -1595,13 +1595,22 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
     labelPositions[`${orig.type}-${orig.idx}`] = { x: lb.x, y: lb.y };
   });
 
+  const resolvedLabelBoxes: Record<string, LabelBox> = {};
+  resolvedLabels.forEach((lb, i) => {
+    const orig = allLabelBoxes[i];
+    resolvedLabelBoxes[`${orig.type}-${orig.idx}`] = lb;
+  });
+
   const synergyAvoidBoxes: LabelBox[] = [];
   connLabelData.forEach((cl, i) => {
     const conn = connections[cl.connIdx];
     if (cl.hasSynergy && nodes[conn.from] && nodes[conn.to]) {
       const stackLabel = labelPositions[`stack-${i}`];
+      const stackBox = resolvedLabelBoxes[`stack-${i}`];
+      const stackBoxHalf = stackBox ? stackBox.h / 2 : 0;
+      const gap = 10;
       const sx = stackLabel ? stackLabel.x : cl.midX;
-      const sy = stackLabel ? stackLabel.y + 14 : cl.midY + 14;
+      const sy = stackLabel ? stackLabel.y + stackBoxHalf + gap + 6 : cl.midY + 24;
       labelPositions[`synergy-${i}`] = { x: sx, y: sy };
       synergyAvoidBoxes.push({ x: sx, y: sy, w: 65, h: 12, priority: 99 });
     }
