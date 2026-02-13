@@ -1498,15 +1498,15 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
     const tn = nodes[conn.to];
     const midX = (fn.x + tn.x) / 2;
     const midY = (fn.y + tn.y) / 2;
-    const stackNameW = conn.stackName ? (conn.stackName.length * 8 + 32) : 0;
-    connLabelData.push({ connIdx: ci, midX, midY, stackNameW, stackNameH: 22, hasSynergy: conn.synergyScore > 0, hasReason: !!conn.reason && !conn.stackName });
+    const stackNameW = conn.stackName ? (conn.stackName.length * 6 + 20) : 0;
+    connLabelData.push({ connIdx: ci, midX, midY, stackNameW, stackNameH: 16, hasSynergy: conn.synergyScore > 0, hasReason: !!conn.reason && !conn.stackName });
   });
 
   const allLabelBoxes: (LabelBox & { type: string; idx: number })[] = [];
   connLabelData.forEach((cl, i) => {
     const conn = connections[cl.connIdx];
     if (conn.stackName) {
-      allLabelBoxes.push({ x: cl.midX, y: cl.midY - 15, w: cl.stackNameW, h: cl.stackNameH, priority: conn.tier === "legendary" ? 0 : conn.tier === "strong" ? 1 : 2, type: "stack", idx: i });
+      allLabelBoxes.push({ x: cl.midX, y: cl.midY - 12, w: cl.stackNameW, h: cl.stackNameH, priority: conn.tier === "legendary" ? 0 : conn.tier === "strong" ? 1 : 2, type: "stack", idx: i });
     }
     if (cl.hasReason) {
       allLabelBoxes.push({ x: cl.midX, y: cl.midY - 18, w: 120, h: 14, priority: 5, type: "reason", idx: i });
@@ -1531,11 +1531,11 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
       const len = Math.sqrt(dx * dx + dy * dy) || 1;
       const perpX = -dy / len;
       const perpY = dx / len;
-      const offset = conn.stackName ? 16 : 10;
+      const offset = conn.stackName ? 20 : 12;
       const sx = cl.midX + perpX * offset;
       const sy = cl.midY + perpY * offset;
       labelPositions[`synergy-${i}`] = { x: sx, y: sy };
-      synergyAvoidBoxes.push({ x: sx, y: sy, w: 80, h: 14, priority: 99 });
+      synergyAvoidBoxes.push({ x: sx, y: sy, w: 65, h: 12, priority: 99 });
     }
   });
 
@@ -1990,15 +1990,14 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                         transition={{ delay: 0.5 }}
                       />
                       <motion.rect
-                        x={stackPos.x - (conn.stackName.length * 4 + 16)}
-                        y={stackPos.y - 11}
-                        width={(conn.stackName.length * 8 + 32)}
-                        height={22}
-                        rx={11}
+                        x={stackPos.x - (conn.stackName.length * 3 + 10)}
+                        y={stackPos.y - 8}
+                        width={(conn.stackName.length * 6 + 20)}
+                        height={16}
+                        rx={8}
                         fill={isLegendary ? "rgba(30,25,10,0.85)" : isStrong ? "rgba(10,25,30,0.8)" : "rgba(20,20,25,0.75)"}
-                        stroke={isLegendary ? "rgba(251,191,36,0.7)" : isStrong ? "rgba(33,216,255,0.5)" : "rgba(107,114,128,0.4)"}
-                        strokeWidth={1.5}
-                        filter={isLegendary ? "url(#pm-glow-soft)" : undefined}
+                        stroke={isLegendary ? "rgba(251,191,36,0.5)" : isStrong ? "rgba(33,216,255,0.35)" : "rgba(107,114,128,0.3)"}
+                        strokeWidth={0.8}
                         initial={{ opacity: 0, scale: 0.7 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.6, type: "spring", stiffness: 200 }}
@@ -2009,14 +2008,14 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                         textAnchor="middle"
                         dominantBaseline="middle"
                         fill={isLegendary ? "url(#pm-holo-gold)" : isStrong ? "url(#pm-holo-cyan)" : "url(#pm-holo-gray)"}
-                        fontSize="10"
-                        fontWeight="700"
-                        letterSpacing="1"
+                        fontSize="7"
+                        fontWeight="600"
+                        letterSpacing="0.8"
                         initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
+                        animate={{ opacity: 0.85 }}
                         transition={{ delay: 0.7 }}
                         className="pointer-events-none select-none uppercase"
-                        style={{ filter: isLegendary ? "drop-shadow(0 0 6px rgba(251,191,36,0.6))" : isStrong ? "drop-shadow(0 0 4px rgba(33,216,255,0.4))" : undefined }}
+                        style={{ filter: isLegendary ? "drop-shadow(0 0 4px rgba(251,191,36,0.4))" : isStrong ? "drop-shadow(0 0 3px rgba(33,216,255,0.3))" : undefined }}
                       >
                         {conn.stackName}
                       </motion.text>
@@ -2048,13 +2047,13 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                       textAnchor="middle"
                       dominantBaseline="middle"
                       fill={isLegendary ? "#fbbf24" : isStrong ? "#21d8ff" : "#9ca3af"}
-                      fontSize="8"
-                      fontWeight="600"
+                      fontSize="7"
+                      fontWeight="500"
                       initial={{ opacity: 0 }}
-                      animate={{ opacity: isLegendary ? 0.9 : 0.6 }}
+                      animate={{ opacity: isLegendary ? 0.85 : 0.55 }}
                       transition={{ delay: 0.8 }}
                       className="pointer-events-none select-none"
-                      style={isLegendary ? { filter: "drop-shadow(0 0 4px rgba(251,191,36,0.4))" } : undefined}
+                      style={isLegendary ? { filter: "drop-shadow(0 0 3px rgba(251,191,36,0.3))" } : undefined}
                     >
                       {conn.synergyScore}% synergy
                     </motion.text>
