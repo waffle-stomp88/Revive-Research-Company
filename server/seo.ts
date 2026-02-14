@@ -236,16 +236,16 @@ const STATIC_ROUTES: Record<string, PageMeta> = {
 
 async function getProductMeta(slug: string): Promise<PageMeta | null> {
   try {
-    const product = await storage.getProductBySlug(slug);
+    const product = await storage.getProductBySlugWithDisplayPrice(slug);
     if (!product) return null;
 
-    const price = parseFloat(product.price) || 0;
-    const originalPrice = product.originalPrice ? parseFloat(product.originalPrice) : null;
-    const displayPrice = price > 0 ? `$${price.toFixed(2)}` : '';
+    const price = parseFloat(product.displayPrice) || 0;
+    const originalPrice = product.displayOriginalPrice ? parseFloat(product.displayOriginalPrice) : null;
+    const displayPriceStr = price > 0 ? `$${price.toFixed(2)}` : '';
 
     const description = product.description
       ? product.description.replace(/<[^>]*>/g, '').slice(0, 160)
-      : `${product.name} - Premium research compound. ${displayPrice}. Third-party tested with COA. For research use only.`;
+      : `${product.name} - Premium research compound. ${displayPriceStr}. Third-party tested with COA. For research use only.`;
 
     return {
       title: `${product.name} | ${SITE_NAME}`,

@@ -2,7 +2,7 @@ import type { Express } from "express";
 import express from "express";
 import { createServer, type Server } from "http";
 import path from "path";
-import { storage } from "./storage";
+import { storage, resolveDisplayPrice } from "./storage";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
 import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertNewsletterSubscriberSchema, subscriptions, savedStacks, insertSavedStackSchema } from "@shared/schema";
@@ -408,22 +408,29 @@ export async function registerRoutes(
     try {
       const productsWithDosage = await storage.getAllProductsWithDosageStock();
       const enriched = productsWithDosage.map(({ dosageStocks, ...product }) => {
+        const { displayPrice, displayOriginalPrice } = resolveDisplayPrice(product, dosageStocks);
+
         const dosagePrices = dosageStocks
           .filter(ds => ds.price != null && Number(ds.price) > 0)
           .map(ds => Number(ds.price));
         
+        let minPrice: string | undefined;
+        let maxPrice: string | undefined;
         if (dosagePrices.length >= 2) {
-          const minPrice = Math.min(...dosagePrices);
-          const maxPrice = Math.max(...dosagePrices);
-          if (minPrice !== maxPrice) {
-            return { ...product, price: minPrice.toFixed(2), minPrice: minPrice.toFixed(2), maxPrice: maxPrice.toFixed(2) };
+          const min = Math.min(...dosagePrices);
+          const max = Math.max(...dosagePrices);
+          if (min !== max) {
+            minPrice = min.toFixed(2);
+            maxPrice = max.toFixed(2);
           }
-          return { ...product, price: minPrice.toFixed(2) };
         }
-        if (dosagePrices.length === 1) {
-          return { ...product, price: dosagePrices[0].toFixed(2) };
-        }
-        return product;
+
+        return {
+          ...product,
+          price: displayPrice,
+          originalPrice: displayOriginalPrice || product.originalPrice,
+          ...(minPrice && maxPrice ? { minPrice, maxPrice } : {}),
+        };
       });
       res.json(enriched);
     } catch (error) {

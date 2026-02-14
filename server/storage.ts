@@ -337,6 +337,51 @@ export interface IStorage {
   hasVoted(productId: string, visitorId: string): Promise<boolean>;
 }
 
+export function resolveDisplayPrice(
+  product: Product,
+  dosageStocks: ProductDosageStock[]
+): { displayPrice: string; displayOriginalPrice: string | null } {
+  const basePrice = product.price;
+  const baseOriginalPrice = product.originalPrice;
+
+  if (!dosageStocks || dosageStocks.length === 0) {
+    return { displayPrice: basePrice, displayOriginalPrice: baseOriginalPrice };
+  }
+
+  const parseDosageNum = (dosage: string): number => {
+    const match = dosage.match(/(\d+(?:\.\d+)?)/);
+    return match ? parseFloat(match[1]) : Infinity;
+  };
+
+  const sortedStocks = [...dosageStocks].sort(
+    (a, b) => parseDosageNum(a.dosage) - parseDosageNum(b.dosage)
+  );
+
+  const inStockWithPrice = sortedStocks.filter(ds => ds.inStock && ds.price && parseFloat(ds.price) > 0);
+  if (inStockWithPrice.length > 0) {
+    const lowest = inStockWithPrice.reduce((min, ds) =>
+      parseFloat(ds.price!) < parseFloat(min.price!) ? ds : min
+    );
+    return {
+      displayPrice: lowest.price!,
+      displayOriginalPrice: lowest.originalPrice || baseOriginalPrice,
+    };
+  }
+
+  const withPrice = sortedStocks.filter(ds => ds.price && parseFloat(ds.price) > 0);
+  if (withPrice.length > 0) {
+    const lowest = withPrice.reduce((min, ds) =>
+      parseFloat(ds.price!) < parseFloat(min.price!) ? ds : min
+    );
+    return {
+      displayPrice: lowest.price!,
+      displayOriginalPrice: lowest.originalPrice || baseOriginalPrice,
+    };
+  }
+
+  return { displayPrice: basePrice, displayOriginalPrice: baseOriginalPrice };
+}
+
 export class DatabaseStorage implements IStorage {
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
@@ -440,6 +485,24 @@ export class DatabaseStorage implements IStorage {
   async getProductBySlug(slug: string): Promise<Product | undefined> {
     const [product] = await db.select().from(products).where(eq(products.slug, slug));
     return product || undefined;
+  }
+
+  async getProductBySlugWithDisplayPrice(slug: string): Promise<(Product & { displayPrice: string; displayOriginalPrice: string | null }) | undefined> {
+    const product = await this.getProductBySlug(slug);
+    if (!product) return undefined;
+    const dosageStocks = await this.getProductDosageStocks(product.id);
+    const { displayPrice, displayOriginalPrice } = resolveDisplayPrice(product, dosageStocks);
+    return { ...product, displayPrice, displayOriginalPrice };
+  }
+
+  async getAllProductsWithDisplayPrices(): Promise<(Product & { displayPrice: string; displayOriginalPrice: string | null })[]> {
+    const allProducts = await db.select().from(products);
+    const allDosageStocks = await db.select().from(productDosageStock);
+    return allProducts.map(product => {
+      const stocks = allDosageStocks.filter(ds => ds.productId === product.id);
+      const { displayPrice, displayOriginalPrice } = resolveDisplayPrice(product, stocks);
+      return { ...product, displayPrice, displayOriginalPrice };
+    });
   }
 
   async getFeaturedProducts(): Promise<Product[]> {
@@ -1496,12 +1559,15 @@ export class DatabaseStorage implements IStorage {
       results.push(result);
     }
     
-    // Update product-level inStock based on whether ANY dosage is in stock
+    // Update product-level inStock and price based on dosage data
     const anyInStock = results.some(r => r.inStock);
     const totalStock = results.reduce((sum, r) => sum + r.stockAmount, 0);
+    const product = await this.getProduct(productId);
+    const { displayPrice } = resolveDisplayPrice(product!, results);
     await db.update(products).set({ 
       inStock: anyInStock,
-      stockAmount: totalStock
+      stockAmount: totalStock,
+      price: displayPrice,
     }).where(eq(products.id, productId));
     
     return results;
@@ -2079,6 +2145,15 @@ export class DatabaseStorage implements IStorage {
       .set({ price })
       .where(eq(productDosageStock.id, dosageStockId))
       .returning();
+    
+    if (updated) {
+      const product = await this.getProduct(updated.productId);
+      if (product) {
+        const allStocks = await this.getProductDosageStocks(updated.productId);
+        const { displayPrice } = resolveDisplayPrice(product, allStocks);
+        await db.update(products).set({ price: displayPrice }).where(eq(products.id, updated.productId));
+      }
+    }
     
     return updated;
   }
