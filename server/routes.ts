@@ -70,7 +70,85 @@ export async function registerRoutes(
   app.use('/assets', express.static(path.resolve(process.cwd(), 'public/assets')));
   app.use('/assets', express.static(path.resolve(process.cwd(), 'client/public/assets')));
   app.use('/assets', express.static(path.resolve(process.cwd(), 'dist/public/assets')));
-  
+
+  const SITE_URL = "https://reviveresearch.co";
+
+  app.get('/robots.txt', (_req, res) => {
+    res.type('text/plain').send(
+      `User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /admin\nDisallow: /dashboard\nDisallow: /cart\nDisallow: /checkout\n\nSitemap: ${SITE_URL}/sitemap.xml`
+    );
+  });
+
+  app.get('/sitemap.xml', async (_req, res) => {
+    try {
+      const staticUrls = [
+        { loc: '/', priority: '1.0', changefreq: 'daily' },
+        { loc: '/peptides', priority: '0.9', changefreq: 'daily' },
+        { loc: '/shop', priority: '0.9', changefreq: 'daily' },
+        { loc: '/research-stacks', priority: '0.8', changefreq: 'weekly' },
+        { loc: '/bulk-packs', priority: '0.7', changefreq: 'weekly' },
+        { loc: '/contact', priority: '0.6', changefreq: 'monthly' },
+        { loc: '/affiliate', priority: '0.6', changefreq: 'monthly' },
+        { loc: '/academy', priority: '0.7', changefreq: 'weekly' },
+        { loc: '/peptide-research-faq', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/peptide-shipping-and-handling', priority: '0.5', changefreq: 'monthly' },
+        { loc: '/peptide-research-resources', priority: '0.6', changefreq: 'monthly' },
+        { loc: '/coa/verify-certificate-of-analysis', priority: '0.7', changefreq: 'weekly' },
+        { loc: '/coa/batch-testing-archive', priority: '0.6', changefreq: 'weekly' },
+        { loc: '/tools/peptide-reconstitution-calculator', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/about/our-transparency-commitment', priority: '0.5', changefreq: 'monthly' },
+        { loc: '/terms-of-service', priority: '0.3', changefreq: 'yearly' },
+        { loc: '/privacy', priority: '0.3', changefreq: 'yearly' },
+        { loc: '/disclaimer', priority: '0.3', changefreq: 'yearly' },
+        { loc: '/legal', priority: '0.3', changefreq: 'yearly' },
+        { loc: '/guides/peptide-education-center', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/peptide-quality-assurance-process', priority: '0.6', changefreq: 'monthly' },
+        { loc: '/guides/peptide-vendor-ethics-standards', priority: '0.5', changefreq: 'monthly' },
+        { loc: '/guides/peptide-pricing-breakdown', priority: '0.6', changefreq: 'monthly' },
+        { loc: '/guides/peptide-vendor-checklist', priority: '0.6', changefreq: 'monthly' },
+        { loc: '/guides/peptide-handling-troubleshooting', priority: '0.6', changefreq: 'monthly' },
+        { loc: '/guides/peptide-lab-research-archive', priority: '0.5', changefreq: 'weekly' },
+        { loc: '/guides/peptide-package-arrived-warm', priority: '0.5', changefreq: 'monthly' },
+        { loc: '/guides/are-peptide-coas-trustworthy', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/how-batch-testing-works', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/what-research-use-only-means', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/how-to-verify-peptide-quality', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/peptide-purity-explained', priority: '0.7', changefreq: 'monthly' },
+        { loc: '/guides/why-cheap-peptides-are-cheap', priority: '0.7', changefreq: 'monthly' },
+      ];
+
+      const products = await storage.getAllProducts();
+      const articles = await storage.getAllEducationArticles();
+      const today = new Date().toISOString().split('T')[0];
+
+      let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+      xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+
+      for (const url of staticUrls) {
+        xml += `  <url>\n    <loc>${SITE_URL}${url.loc}</loc>\n    <changefreq>${url.changefreq}</changefreq>\n    <priority>${url.priority}</priority>\n    <lastmod>${today}</lastmod>\n  </url>\n`;
+      }
+
+      for (const product of products) {
+        if (product.slug) {
+          xml += `  <url>\n    <loc>${SITE_URL}/peptides/${product.slug}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n    <lastmod>${today}</lastmod>\n  </url>\n`;
+        }
+      }
+
+      for (const article of articles) {
+        if (article.slug) {
+          const mod = article.updatedAt ? new Date(article.updatedAt).toISOString().split('T')[0] : today;
+          xml += `  <url>\n    <loc>${SITE_URL}/guides/${article.slug}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n    <lastmod>${mod}</lastmod>\n  </url>\n`;
+        }
+      }
+
+      xml += `</urlset>`;
+      res.type('application/xml').send(xml);
+    } catch (err) {
+      console.error('Sitemap generation error:', err);
+      res.status(500).send('Error generating sitemap');
+    }
+  });
+
   // Setup authentication
   await setupAuth(app);
 
