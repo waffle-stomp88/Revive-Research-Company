@@ -54,6 +54,17 @@ export function log(message: string, source = "express") {
     next();
   });
 
+  app.use((req, res, next) => {
+    if (req.path === '/products' || req.path === '/products/') {
+      return res.redirect(301, '/peptides');
+    }
+    const productSlugMatch = req.path.match(/^\/products\/(.+)$/);
+    if (productSlugMatch) {
+      return res.redirect(301, `/peptides/${productSlugMatch[1]}`);
+    }
+    next();
+  });
+
   app.use(
     express.json({
       limit: "25mb",

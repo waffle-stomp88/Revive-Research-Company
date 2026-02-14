@@ -470,7 +470,7 @@ export default function CartPage() {
                   );
 
                   const getCartItemHref = () => {
-                    if (!item.bundleId) return `/products/${item.productId}`;
+                    if (!item.bundleId) return `/peptides/${item.productId}`;
                     if (item.dosage === "Research Stack") return `/research-stacks/${item.bundleId}`;
                     return `/bundles/${item.bundleId}`;
                   };

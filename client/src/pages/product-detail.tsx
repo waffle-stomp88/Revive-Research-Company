@@ -555,7 +555,7 @@ export default function ProductDetail() {
       <SEOHead 
         title={seoTitle}
         description={seoDescription}
-        canonicalPath={`/products/${product.id}`}
+        canonicalPath={`/peptides/${product.slug || product.id}`}
       />
       <div className="max-w-7xl mx-auto px-4 pr-6 md:px-8">
         <motion.div

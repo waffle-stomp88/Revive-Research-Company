@@ -108,8 +108,8 @@ function Router() {
         <Route path="/shop" component={ProductsHub} />
         <Route path="/peptides" component={Products} />
         <Route path="/peptides/:id" component={ProductDetail} />
-        <Route path="/products" component={Products} />
-        <Route path="/products/:id" component={ProductDetail} />
+        <Route path="/products">{() => { window.location.replace("/peptides"); return null; }}</Route>
+        <Route path="/products/:id">{({ id }) => { window.location.replace(`/peptides/${id}`); return null; }}</Route>
         <Route path="/bulk-packs" component={BulkPacks} />
         <Route path="/wholesale" component={Wholesale} />
         <Route path="/research-stacks" component={ResearchStacks} />
@@ -190,7 +190,7 @@ function Router() {
         <Route path="/dosage-calculator">{() => { window.location.replace("/tools/peptide-reconstitution-calculator"); return null; }}</Route>
         <Route path="/resources">{() => { window.location.replace("/peptide-research-resources"); return null; }}</Route>
         <Route path="/peptides/retatrutide">{() => { window.location.replace("/peptides/rr-a3"); return null; }}</Route>
-        <Route path="/products/retatrutide">{() => { window.location.replace("/products/rr-a3"); return null; }}</Route>
+        <Route path="/products/retatrutide">{() => { window.location.replace("/peptides/rr-a3"); return null; }}</Route>
         <Route component={NotFound} />
       </Switch>
     </>

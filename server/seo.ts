@@ -47,10 +47,6 @@ const STATIC_ROUTES: Record<string, PageMeta> = {
     title: `Research Peptides | ${SITE_NAME}`,
     description: "Shop premium research peptides with third-party COA verification. BPC-157, TB-500, GHK-Cu, Ipamorelin, and more. Free shipping on orders over $200.",
   },
-  "/products": {
-    title: `Research Peptides | ${SITE_NAME}`,
-    description: "Shop premium research peptides with third-party COA verification. BPC-157, TB-500, GHK-Cu, Ipamorelin, and more. Free shipping on orders over $200.",
-  },
   "/research-stacks": {
     title: `Research Stacks & Custom Bundles | ${SITE_NAME}`,
     description: "Build custom research peptide stacks with real-time synergy analysis. Pre-built stacks like Wolverine Stack (BPC-157 + TB-500) with up to 20% savings.",

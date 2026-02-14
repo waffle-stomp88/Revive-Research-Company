@@ -4581,7 +4581,6 @@ Return ONLY valid JSON in this exact format:
         // Core Commerce Pages
         { url: "/shop", priority: "0.9", changefreq: "weekly" },
         { url: "/peptides", priority: "0.9", changefreq: "weekly" },
-        { url: "/products", priority: "0.9", changefreq: "weekly" },
         { url: "/research-stacks", priority: "0.9", changefreq: "weekly" },
         { url: "/bulk-packs", priority: "0.9", changefreq: "weekly" },
         

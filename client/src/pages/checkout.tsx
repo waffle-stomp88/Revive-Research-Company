@@ -1716,7 +1716,7 @@ export default function Checkout() {
             Please add items to your cart and checkout from there for the best experience.
           </p>
           <div className="space-y-3">
-            <Link href={bundle ? `/bundles/${bundle.id}` : `/products/${product?.id}`}>
+            <Link href={bundle ? `/bundles/${bundle.id}` : `/peptides/${product?.slug || product?.id}`}>
               <Button className="w-full" data-testid="button-back-to-product">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to {bundle ? "Bundle" : "Product"}

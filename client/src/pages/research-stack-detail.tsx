@@ -905,7 +905,7 @@ export default function ResearchStackDetail() {
                   })();
 
                   return (
-                    <Link key={partnerProduct.id} href={`/products/${partnerProduct.slug || partnerProduct.id}`} className="h-full" data-testid={`link-synergy-${partnerProduct.id}`}>
+                    <Link key={partnerProduct.id} href={`/peptides/${partnerProduct.slug || partnerProduct.id}`} className="h-full" data-testid={`link-synergy-${partnerProduct.id}`}>
                       <Card
                         className="p-4 border-[#22c55e]/20 cursor-pointer hover-elevate h-full"
                         data-testid={`card-synergy-${partnerProduct.slug}`}

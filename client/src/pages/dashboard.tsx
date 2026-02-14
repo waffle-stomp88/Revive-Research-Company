@@ -2199,7 +2199,7 @@ export default function Dashboard() {
               </div>
               
               {/* Product Info with Image */}
-              <Link href={`/products/${viewOrderDetails.productId}`}>
+              <Link href={`/peptides/${viewOrderDetails.productId}`}>
                 <div className="p-4 rounded-lg border border-[#E7FB10]/20 bg-gradient-to-br from-[#E7FB10]/5 to-transparent cursor-pointer hover-elevate transition-all">
                   <div className="flex items-start gap-4">
                     {/* Product Image */}
