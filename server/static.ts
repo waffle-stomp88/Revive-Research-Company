@@ -1,7 +1,7 @@
 import express, { type Express } from "express";
 import fs from "fs";
 import path from "path";
-import { getMetaForUrl, injectMetaTags } from "./seo";
+import { getMetaForUrl, getPreRenderedContent, injectMetaTags } from "./seo";
 
 export function serveStatic(app: Express) {
   const distPath = path.resolve(__dirname, "public");
@@ -17,8 +17,11 @@ export function serveStatic(app: Express) {
     try {
       const indexPath = path.resolve(distPath, "index.html");
       let html = await fs.promises.readFile(indexPath, "utf-8");
-      const meta = await getMetaForUrl(req.originalUrl);
-      html = injectMetaTags(html, meta);
+      const [meta, preRendered] = await Promise.all([
+        getMetaForUrl(req.originalUrl),
+        getPreRenderedContent(req.originalUrl),
+      ]);
+      html = injectMetaTags(html, meta, preRendered);
       res.status(200).set({ "Content-Type": "text/html" }).end(html);
     } catch {
       res.sendFile(path.resolve(distPath, "index.html"));

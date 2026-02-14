@@ -2,7 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
-import { getMetaForUrl, injectMetaTags } from "./seo";
+import { getMetaForUrl, getPreRenderedContent, injectMetaTags } from "./seo";
 
 const app = express();
 const httpServer = createServer(app);
@@ -112,8 +112,11 @@ export function log(message: string, source = "express") {
       (res as any).end = function(chunk: any, ...args: any[]) {
         if (chunk && typeof chunk === 'string' && chunk.includes('</head>') && chunk.includes('<div id="root">')) {
           try {
-            getMetaForUrl(req.originalUrl).then(meta => {
-              const modified = injectMetaTags(chunk, meta);
+            Promise.all([
+              getMetaForUrl(req.originalUrl),
+              getPreRenderedContent(req.originalUrl),
+            ]).then(([meta, preRendered]) => {
+              const modified = injectMetaTags(chunk, meta, preRendered);
               originalEnd(modified, ...args);
             }).catch(() => {
               originalEnd(chunk, ...args);

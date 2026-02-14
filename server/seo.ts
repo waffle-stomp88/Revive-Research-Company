@@ -328,7 +328,98 @@ export async function getMetaForUrl(url: string): Promise<PageMeta> {
   };
 }
 
-export function injectMetaTags(html: string, meta: PageMeta): string {
+export async function getPreRenderedContent(url: string): Promise<string> {
+  const cleanUrl = url.split('?')[0].split('#')[0].replace(/\/$/, '') || '/';
+
+  const productMatch = cleanUrl.match(/^\/(peptides|products)\/(.+)$/);
+  if (productMatch) {
+    try {
+      const product = await storage.getProductBySlugWithDisplayPrice(productMatch[2]);
+      if (product) {
+        const price = parseFloat(product.displayPrice) || 0;
+        const priceStr = price > 0 ? `$${price.toFixed(2)}` : '';
+        const desc = product.description ? product.description.replace(/<[^>]*>/g, '').slice(0, 500) : '';
+        const benefits = product.benefits && Array.isArray(product.benefits)
+          ? product.benefits.map((b: string) => `<li>${escapeHtml(b)}</li>`).join('')
+          : '';
+        const availability = product.inStock ? 'In Stock' : 'Out of Stock';
+        const dosages = product.dosageOptions && Array.isArray(product.dosageOptions)
+          ? product.dosageOptions.join(', ')
+          : '';
+
+        return `<article itemscope itemtype="https://schema.org/Product">
+  <header>
+    <h1 itemprop="name">${escapeHtml(product.name)}</h1>
+    <p>${escapeHtml(product.category || 'Research Compound')} — ${escapeHtml(availability)}</p>
+  </header>
+  <section>
+    <div itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+      <span itemprop="price" content="${price.toFixed(2)}">${priceStr}</span>
+      <meta itemprop="priceCurrency" content="USD" />
+      <link itemprop="availability" href="${product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'}" />
+    </div>
+    ${dosages ? `<p>Available dosages: ${escapeHtml(dosages)}</p>` : ''}
+  </section>
+  <section itemprop="description">
+    <h2>Product Description</h2>
+    <p>${escapeHtml(desc)}</p>
+  </section>
+  ${benefits ? `<section><h2>Key Research Areas</h2><ul>${benefits}</ul></section>` : ''}
+  <section>
+    <h2>Quality Assurance</h2>
+    <p>All ${escapeHtml(product.name)} batches are third-party tested with Certificates of Analysis available for verification.</p>
+    <p>For research use only. Not for human consumption.</p>
+  </section>
+  <footer>
+    <p itemprop="brand" itemscope itemtype="https://schema.org/Brand"><span itemprop="name">Revive Research</span></p>
+    <nav><a href="/peptides">Browse All Products</a> | <a href="/coa/verify-certificate-of-analysis">Verify COA</a> | <a href="/contact">Contact Us</a></nav>
+  </footer>
+</article>`;
+      }
+    } catch {}
+  }
+
+  const articleMatch = cleanUrl.match(/^\/guides\/(.+)$/);
+  if (articleMatch) {
+    try {
+      const article = await storage.getEducationArticleBySlug(articleMatch[1]);
+      if (article) {
+        const contentPreview = article.content
+          ? article.content.replace(/^#+ .*/gm, '').replace(/[*_`~\[\]]/g, '').trim().slice(0, 1000)
+          : '';
+
+        return `<article itemscope itemtype="https://schema.org/Article">
+  <header>
+    <h1 itemprop="headline">${escapeHtml(article.title)}</h1>
+    ${article.summary ? `<p itemprop="description">${escapeHtml(article.summary)}</p>` : ''}
+    <span itemprop="author" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="Revive Research" /></span>
+  </header>
+  <section itemprop="articleBody">
+    <p>${escapeHtml(contentPreview)}</p>
+  </section>
+  <footer>
+    <nav><a href="/guides/peptide-education-center">Education Center</a> | <a href="/peptides">Shop Products</a> | <a href="/">Home</a></nav>
+    <p>For research use only. Not for human consumption.</p>
+  </footer>
+</article>`;
+      }
+    } catch {}
+  }
+
+  if (STATIC_ROUTES[cleanUrl]) {
+    const route = STATIC_ROUTES[cleanUrl];
+    return `<main>
+  <h1>${escapeHtml(route.title.replace(` | ${SITE_NAME}`, ''))}</h1>
+  <p>${escapeHtml(route.description)}</p>
+  <nav><a href="/peptides">Shop Products</a> | <a href="/guides/peptide-education-center">Education Center</a> | <a href="/contact">Contact Us</a></nav>
+  <p>Revive Research — Premium research compounds with third-party COA verification.</p>
+</main>`;
+  }
+
+  return '';
+}
+
+export function injectMetaTags(html: string, meta: PageMeta, preRenderedContent?: string): string {
   const escapedTitle = escapeHtml(meta.title);
   const escapedDesc = escapeHtml(meta.description);
   const ogType = meta.ogType || "website";
@@ -377,6 +468,10 @@ export function injectMetaTags(html: string, meta: PageMeta): string {
 
   const injection = `${ogImageTag}\n    ${ogUrlTag}\n    ${canonicalTag}${jsonLdTags ? '\n    ' + jsonLdTags : ''}`;
   html = html.replace('</head>', `    ${injection}\n  </head>`);
+
+  if (preRenderedContent) {
+    html = html.replace('<div id="root"></div>', `<div id="root">${preRenderedContent}</div>`);
+  }
 
   return html;
 }
