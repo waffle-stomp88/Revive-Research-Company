@@ -589,8 +589,8 @@ export default function ProductDetail() {
                 />
               </div>
             ) : (
-              <div className="relative w-full md:sticky md:top-24">
-                <div className={`relative overflow-hidden rounded-lg aspect-[4/3] border-2 ${isOutOfStock ? 'border-red-500' : 'border-transparent'}`}>
+              <div className="relative w-full md:sticky md:top-24 overflow-hidden">
+                <div className="relative overflow-hidden rounded-lg aspect-[4/3]">
                   <ImageLoader 
                     src={product.imageUrl || productImage} 
                     alt={`${product.name} ${selectedDosage} research peptide - COA verified`}
@@ -598,16 +598,19 @@ export default function ProductDetail() {
                     containerClassName="absolute inset-0 bg-gradient-to-br from-muted to-muted/50 overflow-hidden rounded-lg"
                   />
                   {isOutOfStock && (
-                    <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-lg" data-testid="overlay-out-of-stock">
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="absolute w-[150%] h-8 bg-red-600/90 transform -rotate-45 flex items-center justify-center shadow-lg">
-                          <span className="text-white font-display font-bold text-sm uppercase tracking-wider">
-                            Out of Stock
-                          </span>
+                    <>
+                      <div className="absolute inset-0 pointer-events-none z-10 rounded-lg" style={{ boxShadow: 'inset 0 0 0 3px rgba(239, 68, 68, 0.9)' }} />
+                      <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-lg" data-testid="overlay-out-of-stock">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="absolute w-[150%] h-8 bg-red-600/90 transform -rotate-45 flex items-center justify-center shadow-lg">
+                            <span className="text-white font-display font-bold text-sm uppercase tracking-wider">
+                              Out of Stock
+                            </span>
+                          </div>
                         </div>
+                        <div className="absolute inset-0 bg-black/20 rounded-lg" />
                       </div>
-                      <div className="absolute inset-0 bg-black/20 rounded-lg" />
-                    </div>
+                    </>
                   )}
                 </div>
               </div>
@@ -619,7 +622,7 @@ export default function ProductDetail() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.12 }}
-                className="mt-16 hidden md:block"
+                className="mt-20 pt-4 hidden md:block relative z-10 bg-background"
                 data-testid="section-education-desktop"
               >
                 <div className="flex items-center justify-between mb-4">
@@ -674,7 +677,7 @@ export default function ProductDetail() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.14 }}
-                className="mt-8 hidden md:block"
+                className="mt-8 pt-4 hidden md:block relative z-10 bg-background"
                 data-testid="section-usage-desktop"
               >
                 <h3 className="font-display font-semibold text-lg mb-4">Usage Information</h3>
