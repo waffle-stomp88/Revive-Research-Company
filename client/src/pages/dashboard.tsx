@@ -547,10 +547,22 @@ export default function Dashboard() {
     return `#${orderId.slice(-8).toUpperCase()}`;
   };
 
-  const getStatusStep = (status: string | null) => {
-    const steps = ['pending', 'processing', 'shipped', 'delivered'];
-    const idx = steps.indexOf(status || 'pending');
-    return idx >= 0 ? idx : 0;
+  const getStatusStep = (order: any) => {
+    const fulfillment = order.fulfillmentStatus || 'pending';
+    if (fulfillment === 'delivered') return 3;
+    if (order.trackingNumber || fulfillment === 'ready') return 2;
+    if (fulfillment === 'preparing') return 1;
+    if (order.status === 'paid') return 0;
+    return 0;
+  };
+
+  const getCarrierTrackingUrl = (carrier: string, trackingNumber: string) => {
+    const c = carrier.toLowerCase();
+    if (c.includes('usps')) return `https://tools.usps.com/go/TrackConfirmAction?tLabels=${trackingNumber}`;
+    if (c.includes('ups')) return `https://www.ups.com/track?tracknum=${trackingNumber}`;
+    if (c.includes('fedex')) return `https://www.fedex.com/fedextrack/?trknbr=${trackingNumber}`;
+    if (c.includes('dhl')) return `https://www.dhl.com/en/express/tracking.html?AWB=${trackingNumber}`;
+    return `https://www.google.com/search?q=${carrier}+tracking+${trackingNumber}`;
   };
 
   const handleOpenNoteDialog = (note?: { id: string; title: string; content: string }) => {
@@ -1375,7 +1387,7 @@ export default function Dashboard() {
                           {orders.map((order, idx) => {
                             const colors = ['#E7FB10', '#21d8ff', '#9d4edd', '#ec4899', '#f97316'];
                             const color = colors[idx % colors.length];
-                            const statusStep = getStatusStep(order.status);
+                            const statusStep = getStatusStep(order);
                             return (
                               <div key={order.id} className="p-4 rounded-lg border" data-testid={`order-item-${order.id}`}>
                                 {/* Order Header */}
@@ -1409,6 +1421,28 @@ export default function Dashboard() {
                                     </Button>
                                   </div>
                                 </div>
+
+                                {order.trackingNumber && order.carrier && (
+                                  <div className="p-3 rounded-lg bg-[#21d8ff]/5 border border-[#21d8ff]/20 mb-3" data-testid={`tracking-info-${order.id}`}>
+                                    <div className="flex items-center justify-between flex-wrap gap-2">
+                                      <div className="flex items-center gap-2">
+                                        <Truck className="h-4 w-4 text-[#21d8ff]" />
+                                        <span className="text-sm font-medium">{order.carrier}</span>
+                                        <span className="text-sm font-mono text-muted-foreground">{order.trackingNumber}</span>
+                                      </div>
+                                      <a 
+                                        href={getCarrierTrackingUrl(order.carrier, order.trackingNumber)} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        data-testid={`link-track-package-${order.id}`}
+                                      >
+                                        <Button size="sm" variant="outline" className="text-[#21d8ff] border-[#21d8ff]/30">
+                                          Track Package
+                                        </Button>
+                                      </a>
+                                    </div>
+                                  </div>
+                                )}
                                 
                                 {/* Status Timeline */}
                                 <div className="flex items-center gap-1 mt-3 pt-3 border-t border-white/5">

@@ -110,6 +110,7 @@ import {
   UserCircle,
   Calendar,
   Heart,
+  Truck,
 } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { ObjectUploader } from "@/components/ObjectUploader";
@@ -3054,6 +3055,12 @@ function OrdersTab() {
                       <div className="flex items-center gap-1">
                         {getOrderTypeBadge(order.orderType)}
                         {getTestBadge(order.isTest)}
+                        {order.trackingNumber && (
+                          <Badge variant="outline" className="bg-[#21d8ff]/10 text-[#21d8ff] border-[#21d8ff]/30 text-[10px] px-1.5 py-0">
+                            <Truck className="h-2.5 w-2.5 mr-0.5" />
+                            Shipped
+                          </Badge>
+                        )}
                       </div>
                     </div>
                   </TableCell>
@@ -3183,6 +3190,8 @@ function OrderViewDialog({
   const [paymentConfirmed, setPaymentConfirmed] = useState(order?.paymentConfirmed || false);
   const [addressCollected, setAddressCollected] = useState(order?.addressCollected || false);
   const [packed, setPacked] = useState(order?.packed || false);
+  const [trackingNumber, setTrackingNumber] = useState(order?.trackingNumber || "");
+  const [carrier, setCarrier] = useState(order?.carrier || "");
 
   useEffect(() => {
     if (order) {
@@ -3190,6 +3199,8 @@ function OrderViewDialog({
       setPaymentConfirmed(order.paymentConfirmed || false);
       setAddressCollected(order.addressCollected || false);
       setPacked(order.packed || false);
+      setTrackingNumber(order.trackingNumber || "");
+      setCarrier(order.carrier || "");
     }
   }, [order]);
 
@@ -3203,6 +3214,8 @@ function OrderViewDialog({
       addressCollected,
       packed,
       fulfillmentNotes: notes,
+      trackingNumber: trackingNumber || undefined,
+      carrier: carrier || undefined,
     });
   };
 
@@ -3213,7 +3226,9 @@ function OrderViewDialog({
       addressCollected: true,
       packed: true,
       fulfillmentNotes: notes,
-    }, true); // Close dialog after success
+      trackingNumber: trackingNumber || undefined,
+      carrier: carrier || undefined,
+    }, true);
   };
 
   const isPaid = order.status === "paid";
@@ -3329,6 +3344,56 @@ function OrderViewDialog({
                 <label htmlFor="packed" className="text-sm">Order packed</label>
               </div>
             </div>
+          </div>
+
+          <div className="border-t pt-4">
+            <h4 className="font-medium mb-3 flex items-center gap-2">
+              <Truck className="h-4 w-4 text-[#21d8ff]" />
+              Shipping & Tracking
+            </h4>
+            {order.trackingNumber ? (
+              <div className="p-3 rounded-lg bg-[#21d8ff]/5 border border-[#21d8ff]/20 space-y-2">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div>
+                    <p className="text-sm font-medium">{order.carrier}</p>
+                    <p className="text-sm font-mono text-muted-foreground">{order.trackingNumber}</p>
+                  </div>
+                  <Badge className="bg-[#21d8ff]/10 text-[#21d8ff] border-[#21d8ff]/30">Shipped</Badge>
+                </div>
+                {order.shippedAt && (
+                  <p className="text-xs text-muted-foreground">Shipped {new Date(order.shippedAt).toLocaleString()}</p>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <label className="text-sm text-muted-foreground mb-1 block">Carrier</label>
+                    <Select value={carrier} onValueChange={setCarrier}>
+                      <SelectTrigger data-testid="select-carrier">
+                        <SelectValue placeholder="Select carrier" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="USPS">USPS</SelectItem>
+                        <SelectItem value="UPS">UPS</SelectItem>
+                        <SelectItem value="FedEx">FedEx</SelectItem>
+                        <SelectItem value="DHL">DHL</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm text-muted-foreground mb-1 block">Tracking Number</label>
+                    <Input 
+                      placeholder="Enter tracking number"
+                      value={trackingNumber}
+                      onChange={(e) => setTrackingNumber(e.target.value)}
+                      data-testid="input-tracking-number"
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground">Adding tracking info will automatically send a branded shipping notification email to the customer.</p>
+              </div>
+            )}
           </div>
 
           <div className="border-t pt-4">

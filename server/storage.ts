@@ -112,6 +112,8 @@ export interface IStorage {
     paymentConfirmed?: boolean;
     addressCollected?: boolean;
     packed?: boolean;
+    trackingNumber?: string;
+    carrier?: string;
   }): Promise<Order | undefined>;
   updateOrderEmailStatus(id: string, status: string, error?: string): Promise<Order | undefined>;
   
@@ -633,10 +635,15 @@ export class DatabaseStorage implements IStorage {
     isRefunded?: boolean;
     refundAmount?: string;
     refundReason?: string;
+    trackingNumber?: string;
+    carrier?: string;
   }): Promise<Order | undefined> {
     const updateData: any = { ...data };
     if (data.fulfillmentStatus === 'delivered') {
       updateData.fulfilledAt = new Date();
+    }
+    if (data.trackingNumber && !updateData.shippedAt) {
+      updateData.shippedAt = new Date();
     }
     const [order] = await db.update(orders).set(updateData).where(eq(orders.id, id)).returning();
     return order || undefined;

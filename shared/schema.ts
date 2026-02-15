@@ -161,6 +161,10 @@ export const orders = pgTable("orders", {
   fulfillmentNotes: text("fulfillment_notes"),
   fulfilledAt: timestamp("fulfilled_at"),
   fulfilledBy: varchar("fulfilled_by"),
+  // Shipping tracking
+  trackingNumber: text("tracking_number"),
+  carrier: text("carrier"),
+  shippedAt: timestamp("shipped_at"),
   // Fulfillment checklist
   paymentConfirmed: boolean("payment_confirmed").default(false),
   addressCollected: boolean("address_collected").default(true),

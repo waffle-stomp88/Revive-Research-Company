@@ -1910,21 +1910,55 @@ export async function registerRoutes(
   // Admin: Update order fulfillment
   app.patch("/api/admin/orders/:id/fulfillment", isAuthenticated, isAdmin, async (req, res) => {
     try {
-      const { fulfillmentStatus, fulfillmentNotes, paymentConfirmed, addressCollected, packed } = req.body;
+      const { fulfillmentStatus, fulfillmentNotes, paymentConfirmed, addressCollected, packed, trackingNumber, carrier } = req.body;
       const userId = (req.user as any)?.id || (req.user as any)?.claims?.sub;
       
-      const order = await storage.updateOrderFulfillment(req.params.id, {
-        fulfillmentStatus,
+      if (trackingNumber && !carrier) {
+        return res.status(400).json({ error: "Carrier is required when providing a tracking number" });
+      }
+      if (carrier && !trackingNumber) {
+        return res.status(400).json({ error: "Tracking number is required when selecting a carrier" });
+      }
+      
+      const existingOrder = await storage.getOrder(req.params.id);
+      if (!existingOrder) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+      
+      const isNewTracking = trackingNumber && carrier && !existingOrder.trackingNumber;
+      
+      const updateData: any = {
         fulfillmentNotes,
         fulfilledBy: userId,
         paymentConfirmed,
         addressCollected,
         packed,
-      });
+        trackingNumber,
+        carrier,
+      };
+      
+      if (fulfillmentStatus) {
+        updateData.fulfillmentStatus = fulfillmentStatus;
+      } else if (isNewTracking && existingOrder.fulfillmentStatus !== 'delivered') {
+        updateData.fulfillmentStatus = 'ready';
+      }
+      
+      const order = await storage.updateOrderFulfillment(req.params.id, updateData);
       
       if (!order) {
         return res.status(404).json({ error: "Order not found" });
       }
+      
+      if (isNewTracking) {
+        try {
+          const { sendShippedNotificationEmail } = await import('./email');
+          await sendShippedNotificationEmail(order, trackingNumber, carrier);
+          console.log(`[Shipping] Sent shipping notification for order ${order.id} - ${carrier} ${trackingNumber}`);
+        } catch (emailError) {
+          console.error(`[Shipping] Failed to send shipping email for order ${order.id}:`, emailError);
+        }
+      }
+      
       res.json(order);
     } catch (error) {
       console.error("Error updating order fulfillment:", error);
