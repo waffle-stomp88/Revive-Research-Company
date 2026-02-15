@@ -563,7 +563,7 @@ export default function ProductDetail() {
           animate={{ opacity: 1, x: 0 }}
           className="mb-2 md:mb-4"
         >
-          <Link href="/products">
+          <Link href="/peptides">
             <Button variant="ghost" size="sm" className="gap-1.5 -ml-2 md:-ml-4 md:gap-2" data-testid="button-back-products">
               <ArrowLeft className="h-3.5 w-3.5 md:h-4 md:w-4" />
               <span className="hidden md:inline">Back to Products</span>
