@@ -1150,52 +1150,5 @@ export function getSynergyPartners(peptideName: string): { partner: string; stac
 
   uniquePartners.sort((a, b) => b.synergyBonus - a.synergyBonus);
 
-  if (uniquePartners.length >= 3) {
-    return uniquePartners.slice(0, 3);
-  }
-
-  const currentPathway = PEPTIDE_PATHWAYS[resolvedName];
-  if (!currentPathway) {
-    return uniquePartners.slice(0, 3);
-  }
-
-  const existingPartnerNames = new Set(uniquePartners.map(p => p.partner));
-
-  const candidates: { key: string; pathway: PeptidePathway; score: number }[] = [];
-
-  for (const [key, pathway] of Object.entries(PEPTIDE_PATHWAYS)) {
-    if (key === resolvedName) continue;
-    if (existingPartnerNames.has(pathway.name)) continue;
-
-    const sharedSystems = currentPathway.systems.filter(s => pathway.systems.includes(s)).length;
-    const sharedPathways = currentPathway.pathways.filter(p => pathway.pathways.includes(p)).length;
-
-    const overlap = sharedSystems + sharedPathways;
-    if (overlap > 0) {
-      const score = 60 + Math.min(overlap * 8, 20);
-      candidates.push({ key, pathway, score });
-    }
-  }
-
-  candidates.sort((a, b) => b.score - a.score);
-
-  const needed = 3 - uniquePartners.length;
-  for (let i = 0; i < Math.min(needed, candidates.length); i++) {
-    const c = candidates[i];
-    const syntheticStack: KnownStack = {
-      name: "Pathway Match",
-      peptides: [resolvedName, c.key],
-      icon: Zap,
-      color: "#6366f1",
-      description: `Shared biological pathways between ${currentPathway.name} and ${c.pathway.name}`,
-      synergyBonus: c.score,
-    };
-    uniquePartners.push({
-      partner: c.pathway.name,
-      stack: syntheticStack,
-      synergyBonus: c.score,
-    });
-  }
-
   return uniquePartners.slice(0, 3);
 }
