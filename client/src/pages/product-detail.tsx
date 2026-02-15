@@ -589,28 +589,27 @@ export default function ProductDetail() {
                 />
               </div>
             ) : (
-              <div className={`relative w-full md:sticky md:top-24 overflow-hidden rounded-lg aspect-[4/3] ${isOutOfStock ? 'border-2 border-red-500' : ''}`}>
-                <ImageLoader 
-                  src={product.imageUrl || productImage} 
-                  alt={`${product.name} ${selectedDosage} research peptide - COA verified`}
-                  className={`w-full h-full object-cover ${isOutOfStock ? 'opacity-60' : ''}`}
-                  containerClassName="absolute inset-0 bg-gradient-to-br from-muted to-muted/50 overflow-hidden rounded-lg"
-                />
-              {/* Out of Stock Overlay */}
-              {isOutOfStock && (
-                <div className="absolute inset-0 pointer-events-none overflow-hidden" data-testid="overlay-out-of-stock">
-                  {/* Diagonal red stripe */}
-                  <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
-                    <div className="absolute w-[150%] h-8 bg-red-600/90 transform -rotate-45 flex items-center justify-center shadow-lg">
-                      <span className="text-white font-display font-bold text-sm uppercase tracking-wider">
-                        Out of Stock
-                      </span>
+              <div className="relative w-full md:sticky md:top-24">
+                <div className={`relative overflow-hidden rounded-lg aspect-[4/3] ${isOutOfStock ? 'ring-2 ring-red-500' : ''}`}>
+                  <ImageLoader 
+                    src={product.imageUrl || productImage} 
+                    alt={`${product.name} ${selectedDosage} research peptide - COA verified`}
+                    className={`w-full h-full object-cover ${isOutOfStock ? 'opacity-60' : ''}`}
+                    containerClassName="absolute inset-0 bg-gradient-to-br from-muted to-muted/50 overflow-hidden rounded-lg"
+                  />
+                  {isOutOfStock && (
+                    <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-lg" data-testid="overlay-out-of-stock">
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="absolute w-[150%] h-8 bg-red-600/90 transform -rotate-45 flex items-center justify-center shadow-lg">
+                          <span className="text-white font-display font-bold text-sm uppercase tracking-wider">
+                            Out of Stock
+                          </span>
+                        </div>
+                      </div>
+                      <div className="absolute inset-0 bg-black/20 rounded-lg" />
                     </div>
-                  </div>
-                  {/* Subtle dark overlay */}
-                  <div className="absolute inset-0 bg-black/20" />
+                  )}
                 </div>
-              )}
               </div>
             )}
             
