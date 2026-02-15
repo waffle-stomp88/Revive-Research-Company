@@ -622,7 +622,7 @@ export default function ProductDetail() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.12 }}
-                className="mt-20 pt-4 hidden md:block relative z-10 bg-background"
+                className="mt-20 pt-6 hidden md:block relative z-10 bg-background"
                 data-testid="section-education-desktop"
               >
                 <div className="flex items-center justify-between mb-4">
@@ -677,7 +677,7 @@ export default function ProductDetail() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.14 }}
-                className="mt-8 pt-4 hidden md:block relative z-10 bg-background"
+                className="mt-16 pt-6 hidden md:block relative z-10 bg-background"
                 data-testid="section-usage-desktop"
               >
                 <h3 className="font-display font-semibold text-lg mb-4">Usage Information</h3>
