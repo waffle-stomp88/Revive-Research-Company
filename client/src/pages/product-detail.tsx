@@ -1473,8 +1473,8 @@ export default function ProductDetail() {
                     : score >= 85
                     ? { label: "Great", color: "#22c55e", bg: "rgba(34,197,94,0.15)", border: "rgba(34,197,94,0.3)" }
                     : score >= 75
-                    ? { label: "Good", color: "#facc15", bg: "rgba(250,204,21,0.15)", border: "rgba(250,204,21,0.3)" }
-                    : { label: "Basic", color: "#21d8ff", bg: "rgba(33,216,255,0.15)", border: "rgba(33,216,255,0.3)" };
+                    ? { label: "Good", color: "#21d8ff", bg: "rgba(33,216,255,0.15)", border: "rgba(33,216,255,0.3)" }
+                    : { label: "Basic", color: "#f97316", bg: "rgba(249,115,22,0.15)", border: "rgba(249,115,22,0.3)" };
                   const isLegendary = score >= 90;
                   return (
                     <Link key={partnerProduct.id} href={`/peptides/${partnerProduct.slug || partnerProduct.id}`} className="h-full" data-testid={`link-synergy-${partnerProduct.id}`}>
