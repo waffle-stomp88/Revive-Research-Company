@@ -1467,10 +1467,23 @@ export default function ProductDetail() {
                     normalizePeptideName(sp.partner).includes(normalizePeptideName(partnerProduct.name))
                   );
                   const pairingReason = getTopPairingForProduct(product.name, partnerProduct.name);
+                  const score = partnerSynergy?.synergyBonus ?? 0;
+                  const tier = score >= 90
+                    ? { label: "Legendary", color: "#E7FB10", bg: "rgba(231,251,16,0.15)", border: "rgba(231,251,16,0.3)" }
+                    : score >= 85
+                    ? { label: "Great", color: "#22c55e", bg: "rgba(34,197,94,0.15)", border: "rgba(34,197,94,0.3)" }
+                    : score >= 75
+                    ? { label: "Good", color: "#facc15", bg: "rgba(250,204,21,0.15)", border: "rgba(250,204,21,0.3)" }
+                    : { label: "Basic", color: "#21d8ff", bg: "rgba(33,216,255,0.15)", border: "rgba(33,216,255,0.3)" };
+                  const isLegendary = score >= 90;
                   return (
                     <Link key={partnerProduct.id} href={`/peptides/${partnerProduct.slug || partnerProduct.id}`} className="h-full" data-testid={`link-synergy-${partnerProduct.id}`}>
                       <Card 
-                        className="p-4 border-[#22c55e]/20 cursor-pointer hover-elevate h-full"
+                        className="p-4 cursor-pointer hover-elevate h-full transition-shadow duration-300"
+                        style={{
+                          borderColor: tier.border,
+                          ...(isLegendary ? { boxShadow: `0 0 12px ${tier.bg}, 0 0 4px ${tier.bg}` } : {}),
+                        }}
                         data-testid={`card-synergy-${partnerProduct.id}`}
                       >
                         <div className="flex flex-wrap items-start gap-4 h-full">
@@ -1491,11 +1504,16 @@ export default function ProductDetail() {
                             </p>
                             {partnerSynergy && (
                               <Badge 
-                                className="mt-2 text-xs bg-[#22c55e]/20 text-[#22c55e] border-[#22c55e]/30"
+                                className="mt-2 text-xs no-default-hover-elevate no-default-active-elevate"
+                                style={{
+                                  backgroundColor: tier.bg,
+                                  color: tier.color,
+                                  borderColor: tier.border,
+                                }}
                                 data-testid={`badge-synergy-stack-${partnerProduct.id}`}
                               >
                                 <Zap className="h-3 w-3 mr-1" />
-                                {partnerSynergy.stack.name} • {partnerSynergy.synergyBonus}%
+                                {partnerSynergy.stack.name} • {partnerSynergy.synergyBonus}% {tier.label}
                               </Badge>
                             )}
                             {pairingReason && (
