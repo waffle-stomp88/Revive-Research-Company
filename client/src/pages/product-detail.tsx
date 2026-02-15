@@ -589,7 +589,7 @@ export default function ProductDetail() {
                 />
               </div>
             ) : (
-              <div className="relative w-full md:sticky md:top-24">
+              <div className="relative w-full md:sticky md:top-24 z-0">
                 <div className={`relative overflow-hidden rounded-lg aspect-[4/3] ${isOutOfStock ? 'ring-2 ring-red-500' : ''}`}>
                   <ImageLoader 
                     src={product.imageUrl || productImage} 
@@ -674,7 +674,7 @@ export default function ProductDetail() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.14 }}
-                className="mt-8 hidden md:block"
+                className="mt-8 hidden md:block relative z-10 bg-background"
                 data-testid="section-usage-desktop"
               >
                 <h3 className="font-display font-semibold text-lg mb-4">Usage Information</h3>
