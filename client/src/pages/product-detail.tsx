@@ -69,6 +69,7 @@ import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { SEOHead } from "@/components/seo-head";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { getSynergyPartners, normalizePeptideName } from "@/lib/synergy-data";
+import { getTopPairingForProduct } from "@/lib/pairing-intelligence";
 import { Layers, Zap } from "lucide-react";
 
 // Badge priority system - max 2 badges per product
@@ -1465,6 +1466,7 @@ export default function ProductDetail() {
                     normalizePeptideName(partnerProduct.name).includes(normalizePeptideName(sp.partner)) ||
                     normalizePeptideName(sp.partner).includes(normalizePeptideName(partnerProduct.name))
                   );
+                  const pairingReason = getTopPairingForProduct(product.name, partnerProduct.name);
                   return (
                     <Link key={partnerProduct.id} href={`/peptides/${partnerProduct.slug || partnerProduct.id}`} className="h-full" data-testid={`link-synergy-${partnerProduct.id}`}>
                       <Card 
@@ -1496,12 +1498,12 @@ export default function ProductDetail() {
                                 {partnerSynergy.stack.name} • {partnerSynergy.synergyBonus}%
                               </Badge>
                             )}
-                            {partnerSynergy?.stack.description && (
+                            {pairingReason && (
                               <p className="text-xs text-muted-foreground mt-2 line-clamp-2 flex-1" data-testid={`text-pairing-reason-${partnerProduct.id}`}>
-                                {partnerSynergy.stack.description}
+                                {pairingReason.mechanism}
                               </p>
                             )}
-                            {!partnerSynergy?.stack.description && (
+                            {!pairingReason && (
                               <div className="flex-1" />
                             )}
                             <p 
