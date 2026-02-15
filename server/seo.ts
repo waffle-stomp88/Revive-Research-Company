@@ -264,7 +264,8 @@ async function getProductMeta(slug: string): Promise<PageMeta | null> {
         }
       }]
     };
-  } catch {
+  } catch (err) {
+    console.error(`[SEO] Error getting product meta for slug "${slug}":`, err);
     return null;
   }
 }
@@ -293,9 +294,42 @@ async function getArticleMeta(slug: string): Promise<PageMeta | null> {
         "dateModified": article.updatedAt ? new Date(article.updatedAt).toISOString().split('T')[0] : undefined
       }]
     };
-  } catch {
+  } catch (err) {
+    console.error(`[SEO] Error getting article meta for slug "${slug}":`, err);
     return null;
   }
+}
+
+export async function shouldReturn404(url: string): Promise<boolean> {
+  const cleanUrl = url.split('?')[0].split('#')[0].replace(/\/$/, '') || '/';
+
+  if (STATIC_ROUTES[cleanUrl]) return false;
+
+  const productMatch = cleanUrl.match(/^\/(peptides|products)\/(.+)$/);
+  if (productMatch) {
+    try {
+      const product = await storage.getProductBySlugWithDisplayPrice(productMatch[2]);
+      if (!product) return true;
+    } catch (err) {
+      console.error(`[SEO] Error checking product existence for slug "${productMatch[2]}":`, err);
+      return false;
+    }
+    return false;
+  }
+
+  const articleMatch = cleanUrl.match(/^\/guides\/(.+)$/);
+  if (articleMatch) {
+    try {
+      const article = await storage.getEducationArticleBySlug(articleMatch[1]);
+      if (!article) return true;
+    } catch (err) {
+      console.error(`[SEO] Error checking article existence for slug "${articleMatch[1]}":`, err);
+      return false;
+    }
+    return false;
+  }
+
+  return false;
 }
 
 export async function getMetaForUrl(url: string): Promise<PageMeta> {
@@ -372,7 +406,9 @@ export async function getPreRenderedContent(url: string): Promise<string> {
   </footer>
 </article>`;
       }
-    } catch {}
+    } catch (err) {
+      console.error(`[SEO] Error pre-rendering product for slug "${productMatch[2]}":`, err);
+    }
   }
 
   const articleMatch = cleanUrl.match(/^\/guides\/(.+)$/);
@@ -399,7 +435,9 @@ export async function getPreRenderedContent(url: string): Promise<string> {
   </footer>
 </article>`;
       }
-    } catch {}
+    } catch (err) {
+      console.error(`[SEO] Error pre-rendering article for slug "${articleMatch[1]}":`, err);
+    }
   }
 
   if (STATIC_ROUTES[cleanUrl]) {

@@ -500,12 +500,12 @@ export default function ProductDetail() {
       <main className="min-h-screen pt-32 md:pt-40 pb-12 flex items-center justify-center">
         <Card className="p-12 text-center max-w-md">
           <FlaskConical className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-          <h2 className="font-display text-xl font-semibold mb-2">Product Not Found</h2>
+          <h2 className="font-display text-xl font-semibold mb-2">Compound Unavailable</h2>
           <p className="text-muted-foreground mb-6">
-            The product you're looking for doesn't exist or has been removed.
+            This research compound is not currently available. Browse our full catalog below.
           </p>
-          <Link href="/products">
-            <Button>Browse All Products</Button>
+          <Link href="/peptides">
+            <Button data-testid="button-browse-products">Browse All Compounds</Button>
           </Link>
         </Card>
       </main>
