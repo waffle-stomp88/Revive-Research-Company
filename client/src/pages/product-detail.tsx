@@ -193,7 +193,7 @@ export default function ProductDetail() {
   });
 
   // Query for dosage-specific stock information
-  const { data: dosageStocks = [], isLoading: isDosageStocksLoading } = useQuery<ProductDosageStock[]>({
+  const { data: dosageStocks = [], isPending: isDosageStocksLoading } = useQuery<ProductDosageStock[]>({
     queryKey: ["/api/products", productId, "dosage-stocks"],
     enabled: !!productId,
     refetchInterval: 30000,
