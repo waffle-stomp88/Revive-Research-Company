@@ -117,6 +117,16 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
         why: "MOTS-C supports cellular energy production while BPC-157 provides tissue-level protection. Together they cover the energy-repair axis for comprehensive regenerative research.",
         mechanism: "Metabolic regulation + cytoprotective tissue repair",
       },
+      {
+        partner: "Ipamorelin",
+        why: "MOTS-C drives mitochondrial energy production through AMPK activation while Ipamorelin provides selective GH release for IGF-1 mediated growth. Cellular energy + growth hormone amplification.",
+        mechanism: "AMPK mitochondrial metabolism + selective GH/IGF-1 release",
+      },
+      {
+        partner: "Tesamorelin",
+        why: "MOTS-C enhances cellular energy metabolism through AMPK while Tesamorelin targets visceral fat through GHRH-mediated growth hormone release. Metabolic energy + visceral fat targeting.",
+        mechanism: "AMPK metabolic activation + GHRH visceral fat reduction",
+      },
     ],
   },
   "rr-a3": {
@@ -283,6 +293,11 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
         partner: "Thymalin",
         why: "KPV modulates inflammation through alpha-MSH fragment action while Thymalin supports broader immune system function through thymic regeneration.",
         mechanism: "Alpha-MSH anti-inflammatory + thymic immune restoration",
+      },
+      {
+        partner: "Selank",
+        why: "KPV suppresses NF-\u03BAB inflammatory signaling while Selank modulates immune function through its tuftsin-derived structure and provides GABAergic mood stabilization. Anti-inflammatory + immune-mood regulation.",
+        mechanism: "NF-\u03BAB anti-inflammatory + tuftsin immune modulation",
       },
     ],
   },
@@ -479,6 +494,11 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
         partner: "BPC-157",
         why: "LL-37 handles immune defense in the gut while BPC-157 repairs the gut mucosal lining. Defense + repair for the Gut Immune Shield protocol.",
         mechanism: "Gut antimicrobial defense + mucosal lining repair",
+      },
+      {
+        partner: "Thymalin",
+        why: "LL-37 provides direct antimicrobial cathelicidin defense while Thymalin regenerates the thymus gland for T-cell production and adaptive immunity. Innate antimicrobial + thymic immune restoration.",
+        mechanism: "Cathelicidin antimicrobial + thymic T-cell regeneration",
       },
     ],
   },
@@ -729,6 +749,11 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
         why: "ACE-031 blocks myostatin systemically while MGF activates satellite cells locally. Systemic growth inhibition removal + local muscle repair activation.",
         mechanism: "Systemic myostatin block + local satellite cell activation",
       },
+      {
+        partner: "PEG-MGF",
+        why: "ACE-031 removes myostatin inhibition while PEG-MGF provides extended mechano growth factor signaling through PEGylation. Growth brake removal + sustained growth factor delivery.",
+        mechanism: "Myostatin/activin trapping + PEGylated mechano growth signaling",
+      },
     ],
   },
   "aicar": {
@@ -915,6 +940,11 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
         why: "Survodutide manages metabolic hormones while 5-Amino-1MQ inhibits NNMT at the cellular level. Hormonal + enzymatic metabolic control.",
         mechanism: "Incretin metabolic signaling + NNMT enzyme inhibition",
       },
+      {
+        partner: "MOTS-C",
+        why: "Survodutide drives metabolic hormone signaling through dual incretin/glucagon agonism while MOTS-C activates AMPK for mitochondrial energy production. Hormonal metabolic control + cellular energy activation.",
+        mechanism: "Incretin/glucagon agonism + AMPK mitochondrial metabolism",
+      },
     ],
   },
   "ara-290": {
@@ -962,6 +992,11 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
         partner: "PT-141",
         why: "Alprostadil provides peripheral PGE1 vasodilation while PT-141 activates central melanocortin arousal pathways. Peripheral + central mechanisms.",
         mechanism: "Peripheral PGE1 vasodilation + central MC4R activation",
+      },
+      {
+        partner: "TB-500",
+        why: "Alprostadil drives PGE1-mediated vasodilation for blood flow enhancement while TB-500 promotes systemic tissue repair through thymosin beta-4 actin regulation. Vascular dilation + systemic healing.",
+        mechanism: "PGE1 vasodilation + thymosin-mediated tissue repair",
       },
     ],
   },
@@ -1011,6 +1046,11 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
         why: "HMG provides direct gonadotropin stimulation while Gonadorelin maintains natural GnRH pulsatile signaling upstream.",
         mechanism: "Direct gonadotropin + upstream GnRH signaling",
       },
+      {
+        partner: "Kisspeptin-10",
+        why: "HMG provides direct FSH/LH gonadotropin stimulation while Kisspeptin-10 activates GnRH neurons at the top of the HPG axis. Direct gonadotropin + upstream neuroendocrine trigger.",
+        mechanism: "FSH/LH gonadotropin + upstream kisspeptin GnRH activation",
+      },
     ],
   },
   "peg-mgf": {
@@ -1043,6 +1083,11 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
         why: "IGF-DES acts rapidly due to truncation while IGF-1 LR3 provides sustained signaling. Rapid + sustained IGF-1 pathway coverage.",
         mechanism: "Rapid IGF-1 action + extended IGF-1 signaling",
       },
+      {
+        partner: "CJC-1295",
+        why: "IGF-DES provides rapid localized IGF-1 action while CJC-1295 stimulates upstream GH release for sustained endogenous IGF-1 production. Direct rapid + upstream sustained growth factor support.",
+        mechanism: "Rapid truncated IGF-1 + upstream GHRH/IGF-1 axis",
+      },
     ],
   },
   "glow-peptide-complex": {
@@ -1064,6 +1109,11 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
         why: "GLOW provides structural skin repair while Glutathione offers master antioxidant protection, neutralizing oxidative stress that accelerates skin aging. Structural rebuilding + oxidative defense.",
         mechanism: "Multi-peptide skin repair + master antioxidant ROS neutralization",
       },
+      {
+        partner: "GHK-Cu",
+        why: "GLOW's multi-peptide blend provides broad skin regeneration while GHK-Cu adds concentrated copper-peptide collagen and elastin synthesis. Multi-pathway skin repair + focused matrix remodeling.",
+        mechanism: "Multi-peptide skin regeneration + copper collagen synthesis",
+      },
     ],
   },
   "klow-peptide-complex": {
@@ -1074,6 +1124,21 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
         partner: "Ipamorelin",
         why: "KLOW's four-peptide regeneration blend (BPC-157+TB-500+GHK-Cu+KPV) covers inflammation control, tissue repair, and collagen remodeling. Ipamorelin adds selective GH/IGF-1 amplification to accelerate every phase of the recovery process.",
         mechanism: "3-phase regeneration cascade + GH/IGF-1 recovery amplification",
+      },
+      {
+        partner: "GHK-Cu",
+        why: "KLOW already contains GHK-Cu in its blend, but standalone GHK-Cu provides concentrated copper-peptide collagen synthesis to amplify the matrix remodeling phase of KLOW's 3-phase recovery.",
+        mechanism: "Multi-peptide recovery blend + concentrated copper collagen boost",
+      },
+      {
+        partner: "Hyaluronic Acid",
+        why: "KLOW drives tissue regeneration through its four-peptide blend while Hyaluronic Acid provides deep hydration and synovial support. Tissue repair + hydration matrix for comprehensive recovery.",
+        mechanism: "4-peptide tissue regeneration + dermal hydration matrix",
+      },
+      {
+        partner: "GLOW Peptide Complex",
+        why: "KLOW focuses on deep tissue recovery (BPC-157+TB-500+GHK-Cu+KPV) while GLOW targets surface-level skin rejuvenation. Internal repair + external skin renewal.",
+        mechanism: "Deep tissue recovery + surface skin regeneration",
       },
       {
         partner: "Epithalon",
