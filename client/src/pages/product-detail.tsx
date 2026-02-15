@@ -193,7 +193,7 @@ export default function ProductDetail() {
   });
 
   // Query for dosage-specific stock information
-  const { data: dosageStocks = [] } = useQuery<ProductDosageStock[]>({
+  const { data: dosageStocks = [], isLoading: isDosageStocksLoading } = useQuery<ProductDosageStock[]>({
     queryKey: ["/api/products", productId, "dosage-stocks"],
     enabled: !!productId,
     refetchInterval: 30000,
@@ -527,7 +527,9 @@ export default function ProductDetail() {
   const selectedDosageStock = getDosageStockInfo(selectedDosage);
   
   // Unified out-of-stock check - considers dosage-specific stock if available, otherwise falls back to product-level
+  // While dosage stock data is still loading, assume in-stock to prevent a misleading OOS flash
   const isOutOfStock = (() => {
+    if (isDosageStocksLoading) return false;
     // If we have dosage-specific stock info for this dosage, use that
     if (hasDosageStockData && selectedDosageStock) {
       return !selectedDosageStock.inStock || selectedDosageStock.stockAmount <= 0;
@@ -713,8 +715,8 @@ export default function ProductDetail() {
               <Badge variant="secondary" className="text-xs uppercase tracking-wider">
                 {product.category}
               </Badge>
-              {/* Smart badge system - max 2 badges based on priority */}
-              {getProductBadges(product, sellingFastIds).map((badge) => (
+              {/* Smart badge system - max 2 badges based on priority; hidden while dosage stock is loading to prevent OOS flash */}
+              {!isDosageStocksLoading && getProductBadges(product, sellingFastIds).map((badge) => (
                 <Badge key={badge.type} className={`inline-flex items-center gap-1 ${badge.className}`}>
                   {badge.icon && <badge.icon className="h-3 w-3" />}
                   {badge.label}
