@@ -16,7 +16,6 @@ import {
   FileCheck,
   Clock,
   ChevronRight,
-  ChevronDown,
   Beaker,
   Info,
   Shield,
@@ -426,26 +425,6 @@ export default function Education() {
   const [peptideGroupFilter, setPeptideGroupFilter] = useState<string>("all");
   const [generalEdCategoryFilter, setGeneralEdCategoryFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [categoriesCollapsed, setCategoriesCollapsed] = useState(() => {
-    // Start collapsed on mobile (< 768px)
-    return typeof window !== 'undefined' && window.innerWidth < 768;
-  });
-
-  // Handle resize to keep categories expanded on desktop
-  useEffect(() => {
-    const handleResize = () => {
-      const isMobile = window.innerWidth < 1024; // lg breakpoint
-      if (!isMobile) {
-        // Always expanded on desktop
-        setCategoriesCollapsed(false);
-      }
-    };
-    
-    window.addEventListener('resize', handleResize);
-    handleResize(); // Check on mount
-    
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   const { data: articles = [], isLoading } = useQuery<EducationArticle[]>({
     queryKey: ["/api/education"],
@@ -568,19 +547,6 @@ export default function Education() {
     return counts;
   }, [articles]);
 
-  // Calculate article counts per tab
-  const tabCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    EDUCATION_TABS.forEach(tab => {
-      if (tab.id === "trust") {
-        counts[tab.id] = TRUST_GUIDES.length;
-      } else {
-        counts[tab.id] = articles.filter(a => tab.categories.includes(a.category)).length;
-      }
-    });
-    return counts;
-  }, [articles]);
-
   // Get articles for a specific tab
   const getTabArticles = (tabId: string) => {
     const tab = EDUCATION_TABS.find(t => t.id === tabId);
@@ -678,10 +644,6 @@ export default function Education() {
           transition={{ duration: 0.6 }}
           className="text-center mb-8"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ec4899]/10 border border-[#ec4899]/20 mb-4">
-            <BookOpen className="h-4 w-4 text-[#ec4899]" />
-            <span className="text-sm font-medium text-[#ec4899]">Reference Library</span>
-          </div>
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">
             Education Center
           </h1>
@@ -723,16 +685,6 @@ export default function Education() {
                   >
                     <Icon className="h-4 w-4" style={{ color: tab.color }} />
                     <span className="hidden sm:inline">{tab.label}</span>
-                    <Badge 
-                      variant="secondary" 
-                      className="ml-1 text-xs px-1.5 py-0"
-                      style={{
-                        backgroundColor: activeTab === tab.id ? `${tab.color}20` : undefined,
-                        color: activeTab === tab.id ? tab.color : undefined
-                      }}
-                    >
-                      {tabCounts[tab.id] || 0}
-                    </Badge>
                   </TabsTrigger>
                 );
               })}
@@ -1004,134 +956,77 @@ export default function Education() {
               </div>
             ) : (
               <div>
-                {/* Peptide Research Guides Tab - Two Panel Layout */}
+                {/* Peptide Research Guides Tab */}
                 {activeTab === "peptides" ? (
-                  <div className="flex flex-col lg:flex-row gap-6">
-                    {/* Left Panel - Category Navigation */}
-                    <div className="lg:w-64 flex-shrink-0">
-                      <div className="lg:sticky lg:top-28 space-y-2">
-                        <button
-                          onClick={() => setCategoriesCollapsed(!categoriesCollapsed)}
-                          className="lg:pointer-events-none w-full flex items-center justify-between px-2 mb-3 cursor-pointer lg:cursor-default"
-                          data-testid="button-toggle-categories"
-                        >
-                          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                            Research Categories
-                          </h3>
-                          <ChevronDown 
-                            className={`h-4 w-4 text-muted-foreground lg:hidden transition-transform duration-200 ${
-                              categoriesCollapsed ? '-rotate-90' : ''
-                            }`} 
-                          />
-                        </button>
-                        <AnimatePresence initial={false}>
-                          {!categoriesCollapsed && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: 'auto', opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              transition={{ duration: 0.2 }}
-                              className="overflow-hidden"
-                            >
-                        {peptideGroups.map((group) => {
-                          const isActive = peptideGroupFilter === group.id;
-                          const count = peptideGroupCounts[group.id] || 0;
-                          return (
-                            <button
-                              key={group.id}
-                              onClick={() => setPeptideGroupFilter(group.id)}
-                              className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-left transition-all cursor-pointer ${
-                                isActive 
-                                  ? 'bg-card border shadow-sm' 
-                                  : 'hover:bg-muted/50'
-                              }`}
-                              style={{
-                                borderColor: isActive ? `${group.color}40` : 'transparent',
-                                backgroundColor: isActive ? `${group.color}10` : undefined
-                              }}
-                              data-testid={`button-category-${group.id}`}
-                            >
-                              <div className="flex items-center gap-2">
-                                <div 
-                                  className="w-2 h-2 rounded-full"
-                                  style={{ backgroundColor: group.color }}
-                                />
-                                <span className={`text-sm font-medium ${isActive ? 'text-foreground' : 'text-muted-foreground'}`}>
-                                  {group.label}
-                                </span>
-                              </div>
-                              <Badge 
-                                variant="secondary" 
-                                className="text-xs"
-                                style={{
-                                  backgroundColor: isActive ? `${group.color}20` : undefined,
-                                  color: isActive ? group.color : undefined
-                                }}
-                              >
-                                {count}
-                              </Badge>
-                            </button>
-                          );
-                        })}
-
-                        {/* Academy CTA Removed from here */}
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
+                  <div>
+                    {/* Search + Sort Row */}
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                        <input
+                          type="text"
+                          placeholder="Search peptide guides..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          data-testid="input-search-articles"
+                          className="w-full pl-9 pr-10 py-2.5 rounded-lg border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#ec4899] focus:ring-1 focus:ring-[#ec4899]/30 transition-all text-sm"
+                        />
+                        {searchQuery && (
+                          <button
+                            onClick={() => setSearchQuery("")}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                            data-testid="button-clear-search"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        )}
                       </div>
+                      <Select value={peptideSort} onValueChange={(v) => setPeptideSort(v as SortOption)}>
+                        <SelectTrigger className="w-[120px] h-[42px] text-xs" data-testid="select-peptide-sort">
+                          <SelectValue placeholder="Sort" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="a-z"><SortAsc className="h-3 w-3 inline mr-1" /> A-Z</SelectItem>
+                          <SelectItem value="z-a"><SortDesc className="h-3 w-3 inline mr-1" /> Z-A</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
-                    {/* Right Panel - Article Grid */}
-                    <div className="flex-1 min-w-0">
-                      {/* Search Bar */}
-                      <div className="mb-4">
-                        <div className="relative">
-                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                          <input
-                            type="text"
-                            placeholder="Search peptide guides..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            data-testid="input-search-articles"
-                            className="w-full pl-9 pr-10 py-2.5 rounded-lg border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#ec4899] focus:ring-1 focus:ring-[#ec4899]/30 transition-all text-sm"
-                          />
-                          {searchQuery && (
-                            <button
-                              onClick={() => setSearchQuery("")}
-                              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                              data-testid="button-clear-search"
-                            >
-                              <X className="h-4 w-4" />
-                            </button>
-                          )}
-                        </div>
-                      </div>
+                    {/* Category Filter Pills */}
+                    <div className="flex items-center gap-2 mb-5 flex-wrap">
+                      {peptideGroups.map((group) => {
+                        const isActive = peptideGroupFilter === group.id;
+                        return (
+                          <button
+                            key={group.id}
+                            onClick={() => setPeptideGroupFilter(group.id)}
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer border ${
+                              isActive 
+                                ? 'shadow-sm' 
+                                : 'border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground/50'
+                            }`}
+                            style={{
+                              borderColor: isActive ? `${group.color}60` : undefined,
+                              backgroundColor: isActive ? `${group.color}15` : undefined,
+                              color: isActive ? group.color : undefined,
+                            }}
+                            data-testid={`button-category-${group.id}`}
+                          >
+                            <div 
+                              className="w-1.5 h-1.5 rounded-full"
+                              style={{ backgroundColor: group.color }}
+                            />
+                            {group.label}
+                          </button>
+                        );
+                      })}
+                    </div>
 
-                      <div className="text-center mb-8">
-                        <h2 className="text-2xl font-bold">
-                          Peptide <span className="text-[#ec4899]">Research Guides</span>
-                        </h2>
-                        <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
-                          In-depth research profiles for every compound we carry — mechanisms, applications, and published studies.
-                        </p>
-                      </div>
-
-                      <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-                        <p className="text-sm text-muted-foreground">
-                          {filteredArticles.length} research guide{filteredArticles.length !== 1 ? 's' : ''}
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <Select value={peptideSort} onValueChange={(v) => setPeptideSort(v as SortOption)}>
-                            <SelectTrigger className="w-[120px] h-8 text-xs" data-testid="select-peptide-sort">
-                              <SelectValue placeholder="Sort" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="a-z"><SortAsc className="h-3 w-3 inline mr-1" /> A-Z</SelectItem>
-                              <SelectItem value="z-a"><SortDesc className="h-3 w-3 inline mr-1" /> Z-A</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
+                    <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+                      <p className="text-sm text-muted-foreground">
+                        {filteredArticles.length} research guide{filteredArticles.length !== 1 ? 's' : ''}
+                      </p>
+                    </div>
 
                       <div className="grid gap-3 sm:grid-cols-2">
                         {filteredArticles.length > 0 ? (
@@ -1184,100 +1079,69 @@ export default function Education() {
                           </Card>
                         )}
                       </div>
-                    </div>
                   </div>
                 ) : activeTab === "general" ? (
-                  /* General Education Tab - Two Panel Layout */
-                  <div className="flex flex-col lg:flex-row gap-6">
-                    {/* Left Panel - Category Navigation */}
-                    <div className="lg:w-64 flex-shrink-0">
-                      <div className="lg:sticky lg:top-28 space-y-2">
-                        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-2">
-                          Topics
-                        </h3>
-                        {generalEdCategories.map((cat) => {
-                          const isActive = generalEdCategoryFilter === cat.id;
-                          const count = generalEdCategoryCounts[cat.id] || 0;
-                          return (
-                            <button
-                              key={cat.id}
-                              onClick={() => setGeneralEdCategoryFilter(cat.id)}
-                              className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-left transition-all cursor-pointer ${
-                                isActive 
-                                  ? 'bg-card border shadow-sm' 
-                                  : 'hover:bg-muted/50'
-                              }`}
-                              style={{
-                                borderColor: isActive ? `${cat.color}40` : 'transparent',
-                                backgroundColor: isActive ? `${cat.color}10` : undefined
-                              }}
-                              data-testid={`button-category-${cat.id}`}
-                            >
-                              <div className="flex items-center gap-2">
-                                <div 
-                                  className="w-2 h-2 rounded-full"
-                                  style={{ backgroundColor: cat.color }}
-                                />
-                                <span className={`text-sm font-medium ${isActive ? 'text-foreground' : 'text-muted-foreground'}`}>
-                                  {cat.label}
-                                </span>
-                              </div>
-                              <Badge 
-                                variant="secondary" 
-                                className="text-xs"
-                                style={{
-                                  backgroundColor: isActive ? `${cat.color}20` : undefined,
-                                  color: isActive ? cat.color : undefined
-                                }}
-                              >
-                                {count}
-                              </Badge>
-                            </button>
-                          );
-                        })}
+                  /* General Education Tab */
+                  <div>
+                    {/* Search Row */}
+                    <div className="mb-4">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                        <input
+                          type="text"
+                          placeholder="Search education articles..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          data-testid="input-search-articles"
+                          className="w-full pl-9 pr-10 py-2.5 rounded-lg border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#21d8ff] focus:ring-1 focus:ring-[#21d8ff]/30 transition-all text-sm"
+                        />
+                        {searchQuery && (
+                          <button
+                            onClick={() => setSearchQuery("")}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                            data-testid="button-clear-search"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        )}
                       </div>
                     </div>
 
-                    {/* Right Panel - Article Grid */}
-                    <div className="flex-1 min-w-0">
-                      {/* Search Bar */}
-                      <div className="mb-4">
-                        <div className="relative">
-                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                          <input
-                            type="text"
-                            placeholder="Search education articles..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            data-testid="input-search-articles"
-                            className="w-full pl-9 pr-10 py-2.5 rounded-lg border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#21d8ff] focus:ring-1 focus:ring-[#21d8ff]/30 transition-all text-sm"
-                          />
-                          {searchQuery && (
-                            <button
-                              onClick={() => setSearchQuery("")}
-                              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                              data-testid="button-clear-search"
-                            >
-                              <X className="h-4 w-4" />
-                            </button>
-                          )}
-                        </div>
-                      </div>
+                    {/* Category Filter Pills */}
+                    <div className="flex items-center gap-2 mb-5 flex-wrap">
+                      {generalEdCategories.map((cat) => {
+                        const isActive = generalEdCategoryFilter === cat.id;
+                        return (
+                          <button
+                            key={cat.id}
+                            onClick={() => setGeneralEdCategoryFilter(cat.id)}
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer border ${
+                              isActive 
+                                ? 'shadow-sm' 
+                                : 'border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground/50'
+                            }`}
+                            style={{
+                              borderColor: isActive ? `${cat.color}60` : undefined,
+                              backgroundColor: isActive ? `${cat.color}15` : undefined,
+                              color: isActive ? cat.color : undefined,
+                            }}
+                            data-testid={`button-category-${cat.id}`}
+                          >
+                            <div 
+                              className="w-1.5 h-1.5 rounded-full"
+                              style={{ backgroundColor: cat.color }}
+                            />
+                            {cat.label}
+                          </button>
+                        );
+                      })}
+                    </div>
 
-                      <div className="text-center mb-8">
-                        <h2 className="text-2xl font-bold">
-                          General <span className="text-[#21d8ff]">Education Articles</span>
-                        </h2>
-                        <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
-                          Foundational knowledge for responsible research — from reconstitution basics to reading lab reports.
-                        </p>
-                      </div>
-
-                      <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-                        <p className="text-sm text-muted-foreground">
-                          {filteredArticles.length} article{filteredArticles.length !== 1 ? 's' : ''}
-                        </p>
-                      </div>
+                    <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+                      <p className="text-sm text-muted-foreground">
+                        {filteredArticles.length} article{filteredArticles.length !== 1 ? 's' : ''}
+                      </p>
+                    </div>
 
                       <div className="grid gap-3 sm:grid-cols-2">
                         {filteredArticles.length > 0 ? (
@@ -1339,20 +1203,10 @@ export default function Education() {
                           </div>
                         )}
                       </div>
-                    </div>
                   </div>
                 ) : activeTab === "trust" ? (
                   /* Trust & Verification Tab */
                   <div>
-                    <div className="text-center mb-8">
-                      <h2 className="text-2xl font-bold">
-                        Trust & <span className="text-[#f97316]">Verification Guides</span>
-                      </h2>
-                      <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
-                        Honest, no-hype guides to help you evaluate any peptide supplier — including us. Skepticism is healthy.
-                      </p>
-                    </div>
-
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       {TRUST_GUIDES.map((guide) => {
                         const Icon = guide.icon;
@@ -1393,11 +1247,11 @@ export default function Education() {
                     </div>
                   </div>
                 ) : (
-                  /* Lab Guides Tab - Simple List */
+                  /* Lab Guides Tab */
                   <div>
                     {/* Search Bar */}
-                    <div className="mb-6">
-                      <div className="relative max-w-md">
+                    <div className="mb-4">
+                      <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                         <input
                           type="text"
@@ -1408,15 +1262,6 @@ export default function Education() {
                           className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[#22c55e] focus:ring-1 focus:ring-[#22c55e]/30 transition-all text-sm"
                         />
                       </div>
-                    </div>
-
-                    <div className="text-center mb-8">
-                      <h2 className="text-2xl font-bold">
-                        Lab <span className="text-[#22c55e]">Guides</span>
-                      </h2>
-                      <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
-                        Essential safety protocols and best practices for working with research compounds in laboratory settings.
-                      </p>
                     </div>
 
                     <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
