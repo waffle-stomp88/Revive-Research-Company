@@ -261,9 +261,8 @@ const generalEdCategories = [
 ];
 
 // Multi-category articles: complex peptides that appear under multiple research groups
+// Note: GLOW and KLOW are blends/complexes - they only appear in their primary category (Skin & Regeneration)
 const multiCategoryArticles: Record<string, string[]> = {
-  "what-is-glow-peptide-complex": ["skin-regeneration", "tissue-repair", "longevity"],
-  "what-is-klow-peptide-complex": ["tissue-repair", "longevity", "immune"],
 };
 
 type SortOption = "a-z" | "z-a";
@@ -651,10 +650,10 @@ export default function Education() {
             Browse our open reference library for quick lookups on peptide research topics, compounds, and best practices.
           </p>
           <Link href="/academy">
-            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#21d8ff]/10 border border-[#21d8ff]/20 hover-elevate cursor-pointer transition-all" data-testid="link-academy-cta">
+            <div className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-full holographic-pill hover-elevate cursor-pointer transition-all" data-testid="link-academy-cta">
               <GraduationCap className="h-4 w-4 text-[#21d8ff]" />
               <span className="text-sm text-muted-foreground">New to peptides?</span>
-              <span className="text-sm font-medium text-[#21d8ff]">Try the Research Academy</span>
+              <span className="text-sm holo-text">Try the Research Academy</span>
               <ChevronRight className="h-3.5 w-3.5 text-[#21d8ff]" />
             </div>
           </Link>
