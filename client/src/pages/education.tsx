@@ -1137,15 +1137,19 @@ export default function Education() {
                         </div>
                       </div>
 
+                      <div className="text-center mb-8">
+                        <h2 className="text-2xl font-bold">
+                          Peptide <span className="text-[#ec4899]">Research Guides</span>
+                        </h2>
+                        <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
+                          In-depth research profiles for every compound we carry — mechanisms, applications, and published studies.
+                        </p>
+                      </div>
+
                       <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-                        <div>
-                          <h2 className="text-xl font-bold" style={{ color: peptideGroups.find(g => g.id === peptideGroupFilter)?.color || "#ec4899" }}>
-                            {peptideGroupFilter === "all" ? "All Peptide Guides" : peptideGroups.find(g => g.id === peptideGroupFilter)?.label}
-                          </h2>
-                          <p className="text-sm text-muted-foreground">
-                            {filteredArticles.length} research guide{filteredArticles.length !== 1 ? 's' : ''}
-                          </p>
-                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {filteredArticles.length} research guide{filteredArticles.length !== 1 ? 's' : ''}
+                        </p>
                         <div className="flex items-center gap-2">
                           <Select value={peptideSort} onValueChange={(v) => setPeptideSort(v as SortOption)}>
                             <SelectTrigger className="w-[120px] h-8 text-xs" data-testid="select-peptide-sort">
@@ -1290,15 +1294,19 @@ export default function Education() {
                         </div>
                       </div>
 
+                      <div className="text-center mb-8">
+                        <h2 className="text-2xl font-bold">
+                          General <span className="text-[#21d8ff]">Education Articles</span>
+                        </h2>
+                        <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
+                          Foundational knowledge for responsible research — from reconstitution basics to reading lab reports.
+                        </p>
+                      </div>
+
                       <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-                        <div>
-                          <h2 className="text-xl font-bold" style={{ color: generalEdCategories.find(c => c.id === generalEdCategoryFilter)?.color || "#21d8ff" }}>
-                            {generalEdCategoryFilter === "all" ? "All Education Articles" : generalEdCategories.find(c => c.id === generalEdCategoryFilter)?.label}
-                          </h2>
-                          <p className="text-sm text-muted-foreground">
-                            {filteredArticles.length} article{filteredArticles.length !== 1 ? 's' : ''}
-                          </p>
-                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {filteredArticles.length} article{filteredArticles.length !== 1 ? 's' : ''}
+                        </p>
                       </div>
 
                       <div className="grid gap-3 sm:grid-cols-2">
@@ -1432,13 +1440,19 @@ export default function Education() {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between mb-6">
-                      <div>
-                        <h2 className="text-2xl font-bold text-[#22c55e]">Lab Guides</h2>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {filteredArticles.length} guide{filteredArticles.length !== 1 ? 's' : ''} available
-                        </p>
-                      </div>
+                    <div className="text-center mb-8">
+                      <h2 className="text-2xl font-bold">
+                        Lab <span className="text-[#22c55e]">Guides</span>
+                      </h2>
+                      <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
+                        Essential safety protocols and best practices for working with research compounds in laboratory settings.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+                      <p className="text-sm text-muted-foreground">
+                        {filteredArticles.length} guide{filteredArticles.length !== 1 ? 's' : ''} available
+                      </p>
                     </div>
 
                     <div className="grid gap-3">
