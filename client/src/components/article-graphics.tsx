@@ -48,9 +48,53 @@ export function TrustScaleGraphic() {
   return (
     <div ref={ref} className="my-8" data-testid="graphic-trust-scale">
       <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Trust Verification Scale</h3>
-      <Card className="p-6 border-[#21d8ff]/20 bg-[#21d8ff]/5 overflow-visible">
-        <div className="relative h-16 mb-4">
-          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-3 rounded-full overflow-hidden bg-muted">
+      <Card className="p-4 sm:p-6 border-[#21d8ff]/20 bg-[#21d8ff]/5 overflow-visible">
+        <div className="hidden sm:block">
+          <div className="relative h-16 mb-4">
+            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-3 rounded-full overflow-hidden bg-muted">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={isInView ? { width: "100%" } : {}}
+                transition={{ duration: 2, ease: "easeOut" }}
+                className="h-full rounded-full"
+                style={{ background: "linear-gradient(90deg, #ef4444, #f59e0b, #22c55e, #21d8ff)" }}
+              />
+            </div>
+            {levels.map((level, i) => (
+              <motion.div
+                key={level.label}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                transition={{ delay: 0.5 + i * 0.3, type: "spring" }}
+                className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2"
+                style={{ left: `${level.position}%` }}
+              >
+                <div 
+                  className="w-10 h-10 rounded-full flex items-center justify-center border-2"
+                  style={{ backgroundColor: `${level.color}20`, borderColor: level.color }}
+                >
+                  <level.icon className="h-5 w-5" style={{ color: level.color }} />
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-8">
+            {levels.map((level, i) => (
+              <motion.div
+                key={level.label}
+                initial={{ opacity: 0, y: 10 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: 0.8 + i * 0.2 }}
+                className="text-center"
+              >
+                <p className="text-xs font-semibold" style={{ color: level.color }}>{level.label}</p>
+                <p className="text-xs text-muted-foreground mt-1">{level.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+        <div className="sm:hidden space-y-3">
+          <div className="h-2 rounded-full overflow-hidden bg-muted mb-4">
             <motion.div
               initial={{ width: 0 }}
               animate={isInView ? { width: "100%" } : {}}
@@ -62,32 +106,21 @@ export function TrustScaleGraphic() {
           {levels.map((level, i) => (
             <motion.div
               key={level.label}
-              initial={{ opacity: 0, scale: 0 }}
-              animate={isInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ delay: 0.5 + i * 0.3, type: "spring" }}
-              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2"
-              style={{ left: `${level.position}%` }}
+              initial={{ opacity: 0, x: -15 }}
+              animate={isInView ? { opacity: 1, x: 0 } : {}}
+              transition={{ delay: 0.3 + i * 0.15 }}
+              className="flex items-center gap-3"
             >
               <div 
-                className="w-10 h-10 rounded-full flex items-center justify-center border-2"
+                className="w-8 h-8 rounded-full flex items-center justify-center border-2 flex-shrink-0"
                 style={{ backgroundColor: `${level.color}20`, borderColor: level.color }}
               >
-                <level.icon className="h-5 w-5" style={{ color: level.color }} />
+                <level.icon className="h-4 w-4" style={{ color: level.color }} />
               </div>
-            </motion.div>
-          ))}
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-8">
-          {levels.map((level, i) => (
-            <motion.div
-              key={level.label}
-              initial={{ opacity: 0, y: 10 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.8 + i * 0.2 }}
-              className="text-center"
-            >
-              <p className="text-xs font-semibold" style={{ color: level.color }}>{level.label}</p>
-              <p className="text-xs text-muted-foreground mt-1">{level.description}</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold" style={{ color: level.color }}>{level.label}</p>
+                <p className="text-[11px] text-muted-foreground">{level.description}</p>
+              </div>
             </motion.div>
           ))}
         </div>
@@ -113,8 +146,8 @@ export function COAAnatomyDiagram() {
   return (
     <div ref={ref} className="my-8" data-testid="graphic-coa-anatomy">
       <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Anatomy of a COA</h3>
-      <Card className="p-6 border-[#21d8ff]/20 bg-[#21d8ff]/5">
-        <div className="grid md:grid-cols-2 gap-6">
+      <Card className="p-4 sm:p-6 border-[#21d8ff]/20 bg-[#21d8ff]/5">
+        <div className="hidden sm:grid md:grid-cols-2 gap-6">
           <div className="relative">
             <div className="bg-muted/30 rounded-lg p-5 border border-border space-y-3">
               <div className="text-center mb-4">
@@ -171,6 +204,29 @@ export function COAAnatomyDiagram() {
             ))}
           </div>
         </div>
+        <div className="sm:hidden space-y-3">
+          {sections.map((section, i) => (
+            <motion.div
+              key={section.label}
+              initial={{ opacity: 0, y: 10 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.2 + i * 0.1 }}
+              className="flex items-start gap-3 p-3 rounded-lg border border-border/50"
+              style={{ backgroundColor: `${section.color}08` }}
+            >
+              <div 
+                className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 border"
+                style={{ backgroundColor: `${section.color}15`, borderColor: `${section.color}40` }}
+              >
+                <section.icon className="h-3.5 w-3.5" style={{ color: section.color }} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium" style={{ color: section.color }}>{section.label}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{section.description}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </Card>
     </div>
   );
@@ -192,7 +248,7 @@ export function BatchTestingPipeline() {
   return (
     <div ref={ref} className="my-8" data-testid="graphic-batch-pipeline">
       <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Batch Testing Pipeline</h3>
-      <Card className="p-6 border-[#9d4edd]/20 bg-[#9d4edd]/5">
+      <Card className="p-4 sm:p-6 border-[#9d4edd]/20 bg-[#9d4edd]/5">
         <div className="hidden md:flex items-center justify-between relative">
           <div className="absolute top-5 left-8 right-8 h-0.5 bg-muted">
             <motion.div 
@@ -260,9 +316,9 @@ export function CostCalculatorVisual() {
   return (
     <div ref={ref} className="my-8" data-testid="graphic-cost-calculator">
       <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">The Math Behind Testing Every Vial</h3>
-      <Card className="p-6 border-[#f59e0b]/20 bg-[#f59e0b]/5">
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="text-center p-6 rounded-lg bg-background/50 border border-border">
+      <Card className="p-4 sm:p-6 border-[#f59e0b]/20 bg-[#f59e0b]/5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <div className="text-center p-4 sm:p-6 rounded-lg bg-background/50 border border-border">
             <p className="text-xs uppercase tracking-wider text-muted-foreground mb-3">With Batch Testing</p>
             <div className="text-4xl font-bold font-display">
               {isInView && <AnimatedCounter target={50} prefix="$" color="#22c55e" />}
@@ -275,7 +331,7 @@ export function CostCalculatorVisual() {
               <div className="flex justify-between"><span>Operations & margin</span><span>$17-27</span></div>
             </div>
           </div>
-          <div className="text-center p-6 rounded-lg bg-background/50 border border-[#ef4444]/20">
+          <div className="text-center p-4 sm:p-6 rounded-lg bg-background/50 border border-[#ef4444]/20">
             <p className="text-xs uppercase tracking-wider text-muted-foreground mb-3">If Every Vial Were Tested</p>
             <div className="text-4xl font-bold font-display">
               {isInView && <AnimatedCounter target={350} prefix="$" suffix="+" color="#ef4444" />}
@@ -309,10 +365,10 @@ export function RegulatoryPathwayComparison() {
   return (
     <div ref={ref} className="my-8" data-testid="graphic-regulatory-pathway">
       <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Regulatory Pathway Comparison</h3>
-      <Card className="p-6 border-[#22c55e]/20 bg-[#22c55e]/5">
+      <Card className="p-4 sm:p-6 border-[#22c55e]/20 bg-[#22c55e]/5">
         <div className="space-y-6">
           <div>
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-2 flex-wrap gap-1">
               <p className="text-sm font-semibold text-[#f59e0b]">FDA Drug Approval Path</p>
               <p className="text-xs text-muted-foreground">10-15 years</p>
             </div>
@@ -324,20 +380,21 @@ export function RegulatoryPathwayComparison() {
                 className="h-full rounded-full bg-gradient-to-r from-[#f59e0b]/80 to-[#ef4444]/80"
               />
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-xs font-medium text-white drop-shadow">Discovery → Preclinical → Phase I → Phase II → Phase III → FDA Review → Approval</span>
+                <span className="hidden sm:inline text-xs font-medium text-white drop-shadow">Discovery → Preclinical → Phase I → Phase II → Phase III → FDA Review → Approval</span>
+                <span className="sm:hidden text-[10px] font-medium text-white drop-shadow">Discovery → Phase I-III → Approval</span>
               </div>
             </div>
-            <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-3 sm:gap-4 mt-2 text-xs text-muted-foreground flex-wrap">
               <span className="flex items-center gap-1"><DollarSign className="h-3 w-3 text-[#f59e0b]" /> <AnimatedCounter target={1} prefix="$" suffix="B+" color="#f59e0b" /></span>
               <span className="flex items-center gap-1"><Clock className="h-3 w-3 text-[#f59e0b]" /> 10-15 years</span>
-              <span className="flex items-center gap-1"><Users className="h-3 w-3 text-[#f59e0b]" /> Thousands of trial participants</span>
+              <span className="hidden sm:flex items-center gap-1"><Users className="h-3 w-3 text-[#f59e0b]" /> Thousands of trial participants</span>
             </div>
           </div>
           
           <div className="border-t border-border pt-4">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-2 flex-wrap gap-1">
               <p className="text-sm font-semibold text-[#22c55e]">Research Use Only (RUO) Path</p>
-              <p className="text-xs text-muted-foreground">Ongoing quality verification</p>
+              <p className="text-xs text-muted-foreground">Ongoing verification</p>
             </div>
             <div className="relative h-8 bg-muted/30 rounded-full overflow-hidden">
               <motion.div
@@ -346,14 +403,15 @@ export function RegulatoryPathwayComparison() {
                 transition={{ duration: 1.5, ease: "easeOut" }}
                 className="h-full rounded-full bg-gradient-to-r from-[#22c55e]/80 to-[#21d8ff]/80"
               />
-              <div className="absolute inset-0 flex items-center px-4">
-                <span className="text-xs font-medium text-white drop-shadow">Synthesis → Third-Party Testing → COA Documentation → Research Market</span>
+              <div className="absolute inset-0 flex items-center px-3 sm:px-4">
+                <span className="hidden sm:inline text-xs font-medium text-white drop-shadow">Synthesis → Third-Party Testing → COA Documentation → Research Market</span>
+                <span className="sm:hidden text-[10px] font-medium text-white drop-shadow">Synthesis → Testing → COA → Market</span>
               </div>
             </div>
-            <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1"><DollarSign className="h-3 w-3 text-[#22c55e]" /> Testing costs per batch</span>
+            <div className="flex items-center gap-3 sm:gap-4 mt-2 text-xs text-muted-foreground flex-wrap">
+              <span className="flex items-center gap-1"><DollarSign className="h-3 w-3 text-[#22c55e]" /> Per batch cost</span>
               <span className="flex items-center gap-1"><Clock className="h-3 w-3 text-[#22c55e]" /> Weeks per batch</span>
-              <span className="flex items-center gap-1"><FileCheck className="h-3 w-3 text-[#22c55e]" /> Verified documentation</span>
+              <span className="hidden sm:flex items-center gap-1"><FileCheck className="h-3 w-3 text-[#22c55e]" /> Verified documentation</span>
             </div>
           </div>
         </div>
@@ -435,7 +493,7 @@ export function VerificationStepper() {
   return (
     <div ref={ref} className="my-8" data-testid="graphic-verification-stepper">
       <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Your 5-Step Verification Process</h3>
-      <Card className="p-6 border-[#E7FB10]/20 bg-[#E7FB10]/5">
+      <Card className="p-4 sm:p-6 border-[#E7FB10]/20 bg-[#E7FB10]/5">
         <div className="space-y-3">
           {steps.map((step, i) => {
             const isActive = i <= activeStep;
@@ -445,7 +503,7 @@ export function VerificationStepper() {
                 key={step.label}
                 initial={{ opacity: 0.4 }}
                 animate={{ opacity: isActive ? 1 : 0.4 }}
-                className="flex items-center gap-4"
+                className="flex items-center gap-3 sm:gap-4"
               >
                 <motion.div
                   className="w-9 h-9 rounded-full flex items-center justify-center border-2 flex-shrink-0"
@@ -562,11 +620,11 @@ export function HPLCChromatogram() {
   return (
     <div ref={ref} className="my-8" data-testid="graphic-hplc-chromatogram">
       <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Simplified HPLC Chromatogram</h3>
-      <Card className="p-6 border-[#a855f7]/20 bg-[#a855f7]/5">
-        <div className="relative h-64 md:h-72">
-          <div className="absolute bottom-6 left-8 right-4 top-4">
-            <p className="absolute -left-6 top-1/2 -translate-y-1/2 -rotate-90 text-[10px] text-muted-foreground whitespace-nowrap">Signal Intensity</p>
-            <p className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-[10px] text-muted-foreground">Retention Time (minutes)</p>
+      <Card className="p-4 sm:p-6 border-[#a855f7]/20 bg-[#a855f7]/5">
+        <div className="relative h-48 sm:h-64 md:h-72">
+          <div className="absolute bottom-6 left-4 sm:left-8 right-2 sm:right-4 top-4">
+            <p className="absolute -left-3 sm:-left-6 top-1/2 -translate-y-1/2 -rotate-90 text-[9px] sm:text-[10px] text-muted-foreground whitespace-nowrap">Intensity</p>
+            <p className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-[9px] sm:text-[10px] text-muted-foreground">Retention Time (min)</p>
             
             <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
               <line x1="0" y1="100" x2="100" y2="100" stroke="hsl(var(--border))" strokeWidth="0.3" />
@@ -623,7 +681,7 @@ export function PurityComparisonBars() {
   return (
     <div ref={ref} className="my-8" data-testid="graphic-purity-comparison">
       <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Purity Number vs. Trustworthiness</h3>
-      <Card className="p-6 border-[#a855f7]/20 bg-[#a855f7]/5">
+      <Card className="p-4 sm:p-6 border-[#a855f7]/20 bg-[#a855f7]/5">
         <div className="space-y-5">
           {comparisons.map((comp, i) => (
             <motion.div
@@ -632,11 +690,11 @@ export function PurityComparisonBars() {
               animate={isInView ? { opacity: 1, x: 0 } : {}}
               transition={{ delay: 0.3 + i * 0.2 }}
             >
-              <div className="flex items-center justify-between mb-1.5">
+              <div className="flex items-center justify-between mb-1.5 flex-wrap gap-1">
                 <p className="text-sm font-medium">{comp.label}</p>
-                <p className="text-xs text-muted-foreground">{comp.labStatus}</p>
+                <p className="text-[11px] sm:text-xs text-muted-foreground">{comp.labStatus}</p>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-2 sm:gap-3">
                 <div>
                   <p className="text-[10px] text-muted-foreground mb-1">Reported Purity</p>
                   <div className="h-5 bg-muted/30 rounded-full overflow-hidden">
@@ -758,8 +816,8 @@ export function CostBreakdownChart() {
   return (
     <div ref={ref} className="my-8" data-testid="graphic-cost-breakdown">
       <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Where Your Money Goes</h3>
-      <Card className="p-6 border-[#ec4899]/20 bg-[#ec4899]/5">
-        <div className="grid md:grid-cols-2 gap-8">
+      <Card className="p-4 sm:p-6 border-[#ec4899]/20 bg-[#ec4899]/5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
           <DonutChart data={qualityBreakdown} label="Quality Vendor ($50-70)" totalPrice="~$60" />
           <DonutChart data={budgetBreakdown} label="Budget Vendor ($20-30)" totalPrice="~$25" />
         </div>
@@ -796,11 +854,11 @@ export function PriceValueMatrix() {
   return (
     <div ref={ref} className="my-8" data-testid="graphic-price-value">
       <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Price vs. Documentation Quality</h3>
-      <Card className="p-6 border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 via-transparent to-[#E7FB10]/5">
-        <div className="relative" style={{ height: 300 }}>
-          <p className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 text-[10px] text-[#21d8ff]/70 font-medium -rotate-90 whitespace-nowrap">Documentation Quality</p>
+      <Card className="p-4 sm:p-6 border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 via-transparent to-[#E7FB10]/5">
+        <div className="relative" style={{ height: 260 }}>
+          <p className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 text-[9px] sm:text-[10px] text-[#21d8ff]/70 font-medium -rotate-90 whitespace-nowrap">Doc Quality</p>
 
-          <div className="absolute top-2 left-10 right-2 bottom-8">
+          <div className="absolute top-2 left-8 sm:left-10 right-2 bottom-8">
             <div className="absolute inset-0 border-l-2 border-b-2 border-[#21d8ff]/30 rounded-bl-sm">
               {gridLinesH.map((pos) => (
                 <div
@@ -834,7 +892,7 @@ export function PriceValueMatrix() {
                   border: "1px solid rgba(34, 197, 94, 0.2)",
                 }}
               >
-                <p className="text-[10px] font-semibold text-[#22c55e] absolute top-2 right-3 tracking-wide">BEST VALUE</p>
+                <p className="text-[9px] sm:text-[10px] font-semibold text-[#22c55e] absolute top-1 right-1 sm:top-2 sm:right-3 tracking-wide">BEST VALUE</p>
               </div>
 
               <div
@@ -848,7 +906,7 @@ export function PriceValueMatrix() {
                   border: "1px solid rgba(239, 68, 68, 0.2)",
                 }}
               >
-                <p className="text-[10px] font-semibold text-[#ef4444] absolute bottom-2 left-3 tracking-wide">WORST VALUE</p>
+                <p className="text-[9px] sm:text-[10px] font-semibold text-[#ef4444] absolute bottom-1 left-1 sm:bottom-2 sm:left-3 tracking-wide">WORST</p>
               </div>
 
               <div
@@ -862,7 +920,7 @@ export function PriceValueMatrix() {
                   border: "1px dashed rgba(249, 115, 22, 0.15)",
                 }}
               >
-                <p className="text-[10px] font-medium text-[#f97316]/60 absolute bottom-2 right-3 tracking-wide">OVERPAYING</p>
+                <p className="text-[9px] sm:text-[10px] font-medium text-[#f97316]/60 absolute bottom-1 right-1 sm:bottom-2 sm:right-3 tracking-wide">OVERPAY</p>
               </div>
 
               {vendors.map((vendor, i) => {

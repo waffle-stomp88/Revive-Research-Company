@@ -160,8 +160,8 @@ export function EntryArticleLayout({
             </h2>
             <div className="space-y-4">
               {faqs.map((faq, index) => (
-                <Card key={index} className="p-6">
-                  <h3 className="font-semibold text-lg mb-2">{faq.question}</h3>
+                <Card key={index} className="p-4 sm:p-6">
+                  <h3 className="font-semibold text-base sm:text-lg mb-2">{faq.question}</h3>
                   <p className="text-muted-foreground">{faq.answer}</p>
                 </Card>
               ))}
@@ -187,9 +187,9 @@ export function EntryArticleLayout({
               const Icon = cta.icon || ArrowRight;
               return (
                 <Link key={index} href={cta.href}>
-                  <Card className="p-5 hover:border-[#21d8ff]/50 transition-colors cursor-pointer group h-full">
-                    <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-lg bg-[#21d8ff]/10 flex items-center justify-center flex-shrink-0">
+                  <Card className="p-4 sm:p-5 hover:border-[#21d8ff]/50 transition-colors cursor-pointer group h-full">
+                    <div className="flex items-start gap-3 sm:gap-4">
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-[#21d8ff]/10 flex items-center justify-center flex-shrink-0">
                         <Icon className="h-5 w-5 text-[#21d8ff]" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -264,7 +264,7 @@ export function ArticleSection({
         {title}
       </h2>
       {variant !== "default" ? (
-        <Card className={`p-6 ${style.border} ${style.bg}`}>
+        <Card className={`p-4 sm:p-6 ${style.border} ${style.bg}`}>
           <div className="text-muted-foreground leading-relaxed space-y-4">
             {children}
           </div>
