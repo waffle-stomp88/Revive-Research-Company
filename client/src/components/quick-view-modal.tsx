@@ -29,7 +29,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
 
   if (!product) return null;
 
-  const isOutOfStock = !product.inStock || (product.stockAmount !== null && product.stockAmount <= 0);
+  const isOutOfStock = product.inStock === false || (product.stockAmount !== null && product.stockAmount <= 0);
 
   const handleQuantityChange = (delta: number) => {
     setQuantity(prev => Math.max(1, Math.min(10, prev + delta)));

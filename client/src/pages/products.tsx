@@ -83,7 +83,7 @@ function getProductBadges(
   const badges: ProductBadge[] = [];
   
   // Priority 1: Coming Soon (for out of stock items) - Soft gray styling instead of harsh red
-  if (!product.inStock || (product.stockAmount !== null && product.stockAmount <= 0)) {
+  if (product.inStock === false || (product.stockAmount !== null && product.stockAmount <= 0)) {
     badges.push({
       type: "out-of-stock",
       label: "Coming Soon",
@@ -892,7 +892,7 @@ function ProductsComponent() {
                       <Link href={`/peptides/${product.slug || product.id}`} className="h-full block" onClick={savePageState}>
                         {/* Check if product is out of stock (either inStock=false OR stockAmount<=0) */}
                         {(() => {
-                          const isOutOfStock = !product.inStock || (product.stockAmount !== null && product.stockAmount <= 0);
+                          const isOutOfStock = product.inStock === false || (product.stockAmount !== null && product.stockAmount <= 0);
                           return (
                             <Card 
                               className={`group p-2 sm:p-3 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 md:hover:scale-[1.03] md:active:scale-[1.03] relative overflow-hidden ${

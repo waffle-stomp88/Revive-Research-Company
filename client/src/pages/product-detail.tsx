@@ -92,7 +92,7 @@ function getProductBadges(
   const badges: ProductBadge[] = [];
   
   // Priority 1: Out of Stock (highest priority)
-  if (!product.inStock || (product.stockAmount !== null && product.stockAmount <= 0)) {
+  if (product.inStock === false || (product.stockAmount !== null && product.stockAmount <= 0)) {
     badges.push({
       type: "out-of-stock",
       label: "Out of Stock",
@@ -535,7 +535,7 @@ export default function ProductDetail() {
       return !selectedDosageStock.inStock || selectedDosageStock.stockAmount <= 0;
     }
     // Fallback to product-level stock check (for products without dosage-level inventory)
-    return !product.inStock || (product.stockAmount !== null && product.stockAmount !== undefined && product.stockAmount <= 0);
+    return product.inStock === false || (product.stockAmount !== null && product.stockAmount !== undefined && product.stockAmount <= 0);
   })();
   
   // Get display stock amount for selected dosage

@@ -212,7 +212,7 @@ export default function ProductsHub() {
                   <p className="text-lg font-display font-bold text-[#E7FB10]">
                     ${Number(product.price).toFixed(2)}
                   </p>
-                  {!product.inStock && (
+                  {product.inStock === false && (
                     <Badge variant="secondary" className="text-xs mt-2">Out of Stock</Badge>
                   )}
                 </a>
