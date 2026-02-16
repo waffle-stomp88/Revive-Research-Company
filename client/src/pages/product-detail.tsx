@@ -21,6 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
+import { captureEmail } from "@/lib/waitlist-utils";
 import {
   ArrowLeft,
   FlaskConical,
@@ -56,7 +57,8 @@ import {
   Loader2,
   Heart,
   ArrowUp,
-  Check
+  Check,
+  Sparkles
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useMutation } from "@tanstack/react-query";
@@ -276,6 +278,7 @@ export default function ProductDetail() {
     e.preventDefault();
     if (!product || !notifyEmail.trim()) return;
     stockNotifyMutation.mutate({ productId: product.id, email: notifyEmail.trim() });
+    captureEmail(notifyEmail.trim(), "oos", product.id);
   };
 
   // Wishlist functionality
@@ -1097,6 +1100,10 @@ export default function ProductDetail() {
                 <p className="text-[10px] text-muted-foreground mt-3">
                   We'll send you one email when this product is restocked. No spam, ever.
                 </p>
+                <div className="mt-3 flex items-center gap-1.5 text-[10px] text-[#E7FB10]/60">
+                  <Sparkles className="h-3 w-3" />
+                  <span>Launching in 2-3 weeks after third-party testing</span>
+                </div>
               </motion.div>
             )}
 

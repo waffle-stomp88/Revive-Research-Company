@@ -1094,7 +1094,8 @@ export async function registerRoutes(
       }
       const userId = (req as any).userId || null;
       const vote = await storage.voteForProduct(req.params.id, visitorId, userId);
-      res.json(vote);
+      const voteCount = await storage.getVoteCountForProduct(req.params.id);
+      res.json({ ...vote, count: voteCount });
     } catch (error) {
       console.error("Error voting for product:", error);
       res.status(500).json({ error: "Failed to vote" });
@@ -1109,10 +1110,21 @@ export async function registerRoutes(
       }
       const userId = (req as any).userId || undefined;
       const removed = await storage.removeVote(req.params.id, visitorId, userId);
-      res.json({ removed });
+      const voteCount = await storage.getVoteCountForProduct(req.params.id);
+      res.json({ removed, count: voteCount });
     } catch (error) {
       console.error("Error removing vote:", error);
       res.status(500).json({ error: "Failed to remove vote" });
+    }
+  });
+
+  app.get("/api/products/:id/vote-count", async (req, res) => {
+    try {
+      const voteCount = await storage.getVoteCountForProduct(req.params.id);
+      res.json({ count: voteCount });
+    } catch (error) {
+      console.error("Error fetching vote count:", error);
+      res.status(500).json({ error: "Failed to fetch vote count" });
     }
   });
 
@@ -1128,6 +1140,52 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error checking vote:", error);
       res.status(500).json({ error: "Failed to check vote" });
+    }
+  });
+
+  // Waitlist endpoints
+  app.post("/api/waitlist/signup", async (req, res) => {
+    try {
+      const { email, source, productInterest, optsInMarketing } = req.body;
+      if (!email || !source) {
+        return res.status(400).json({ error: "Email and source are required" });
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: "Invalid email format" });
+      }
+      const existing = await storage.getWaitlistSignupByEmail(email.toLowerCase());
+      if (existing) {
+        if (productInterest?.length) {
+          for (const pid of productInterest) {
+            await storage.addProductInterest(email.toLowerCase(), pid);
+          }
+        }
+        const totalCount = await storage.getWaitlistCount();
+        return res.json({ success: true, duplicate: true, foundingMember: existing.foundingMember, totalCount });
+      }
+      const signup = await storage.createWaitlistSignup({
+        email: email.toLowerCase(),
+        source,
+        productInterest: productInterest || null,
+        optsInMarketing: optsInMarketing ?? false,
+      });
+      const totalCount = await storage.getWaitlistCount();
+      res.json({ success: true, foundingMember: signup.foundingMember, totalCount });
+    } catch (error) {
+      console.error("Error creating waitlist signup:", error);
+      res.status(500).json({ error: "Failed to join waitlist" });
+    }
+  });
+
+  app.get("/api/waitlist/count", async (req, res) => {
+    try {
+      const total = await storage.getWaitlistCount();
+      const byProduct = await storage.getWaitlistCountByProduct();
+      res.json({ total, byProduct });
+    } catch (error) {
+      console.error("Error fetching waitlist count:", error);
+      res.status(500).json({ error: "Failed to fetch waitlist count" });
     }
   });
 

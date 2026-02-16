@@ -35,6 +35,8 @@ import {
   type LoginHistory, type InsertLoginHistory,
   type BatchVerificationHistory, type InsertBatchVerificationHistory,
   type ProductVote, type InsertProductVote,
+  type WaitlistSignup, type InsertWaitlistSignup,
+  waitlistSignups,
   priceChangeReasons
 } from "@shared/schema";
 import { db } from "./db";
@@ -336,7 +338,15 @@ export interface IStorage {
   voteForProduct(productId: string, visitorId: string, userId?: string): Promise<ProductVote>;
   removeVote(productId: string, visitorId: string): Promise<boolean>;
   getVoteCounts(): Promise<Array<{ productId: string; count: number }>>;
+  getVoteCountForProduct(productId: string): Promise<number>;
   hasVoted(productId: string, visitorId: string): Promise<boolean>;
+
+  // Waitlist
+  createWaitlistSignup(data: InsertWaitlistSignup): Promise<WaitlistSignup>;
+  getWaitlistSignupByEmail(email: string): Promise<WaitlistSignup | undefined>;
+  getWaitlistCount(): Promise<number>;
+  getWaitlistCountByProduct(): Promise<Record<string, number>>;
+  addProductInterest(email: string, productId: string): Promise<WaitlistSignup | undefined>;
 }
 
 export function resolveDisplayPrice(
@@ -2357,6 +2367,59 @@ export class DatabaseStorage implements IStorage {
     const result = await db.select().from(productVotes)
       .where(and(eq(productVotes.productId, productId), eq(productVotes.visitorId, visitorId)));
     return result.length > 0;
+  }
+
+  async getVoteCountForProduct(productId: string): Promise<number> {
+    const result = await db
+      .select({ count: count() })
+      .from(productVotes)
+      .where(eq(productVotes.productId, productId));
+    return Number(result[0]?.count ?? 0);
+  }
+
+  async createWaitlistSignup(data: InsertWaitlistSignup): Promise<WaitlistSignup> {
+    const totalCount = await this.getWaitlistCount();
+    const isFoundingMember = totalCount < 100;
+    const [signup] = await db.insert(waitlistSignups).values({
+      ...data,
+      foundingMember: isFoundingMember,
+    }).returning();
+    return signup;
+  }
+
+  async getWaitlistSignupByEmail(email: string): Promise<WaitlistSignup | undefined> {
+    const [signup] = await db.select().from(waitlistSignups).where(eq(waitlistSignups.email, email.toLowerCase()));
+    return signup;
+  }
+
+  async getWaitlistCount(): Promise<number> {
+    const result = await db.select({ count: count() }).from(waitlistSignups);
+    return Number(result[0]?.count ?? 0);
+  }
+
+  async getWaitlistCountByProduct(): Promise<Record<string, number>> {
+    const allSignups = await db.select({ productInterest: waitlistSignups.productInterest }).from(waitlistSignups);
+    const counts: Record<string, number> = {};
+    for (const signup of allSignups) {
+      if (signup.productInterest) {
+        for (const pid of signup.productInterest) {
+          counts[pid] = (counts[pid] || 0) + 1;
+        }
+      }
+    }
+    return counts;
+  }
+
+  async addProductInterest(email: string, productId: string): Promise<WaitlistSignup | undefined> {
+    const existing = await this.getWaitlistSignupByEmail(email);
+    if (!existing) return undefined;
+    const currentInterests = existing.productInterest || [];
+    if (currentInterests.includes(productId)) return existing;
+    const [updated] = await db.update(waitlistSignups)
+      .set({ productInterest: [...currentInterests, productId] })
+      .where(eq(waitlistSignups.email, email.toLowerCase()))
+      .returning();
+    return updated;
   }
 }
 

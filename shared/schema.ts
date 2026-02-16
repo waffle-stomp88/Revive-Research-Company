@@ -792,3 +792,17 @@ export const productVotes = pgTable("product_votes", {
 export const insertProductVoteSchema = createInsertSchema(productVotes).omit({ id: true, createdAt: true });
 export type InsertProductVote = z.infer<typeof insertProductVoteSchema>;
 export type ProductVote = typeof productVotes.$inferSelect;
+
+export const waitlistSignups = pgTable("waitlist_signups", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: varchar("email").notNull().unique(),
+  source: varchar("source").notNull(),
+  productInterest: text("product_interest").array(),
+  optsInMarketing: boolean("opts_in_marketing").default(false),
+  foundingMember: boolean("founding_member").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertWaitlistSignupSchema = createInsertSchema(waitlistSignups).omit({ id: true, createdAt: true, foundingMember: true });
+export type InsertWaitlistSignup = z.infer<typeof insertWaitlistSignupSchema>;
+export type WaitlistSignup = typeof waitlistSignups.$inferSelect;
