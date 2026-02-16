@@ -877,7 +877,7 @@ function ProductsComponent() {
                   initial="initial"
                   animate="animate"
                   variants={staggerContainer}
-                  className={`grid gap-6 p-2 -m-2 ${
+                  className={`grid gap-3 sm:gap-6 p-2 -m-2 ${
                     gridColumns === 2 ? "grid-cols-2" :
                     gridColumns === 3 ? "grid-cols-2 md:grid-cols-3" :
                     "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
@@ -895,14 +895,14 @@ function ProductsComponent() {
                           const isOutOfStock = !product.inStock || (product.stockAmount !== null && product.stockAmount <= 0);
                           return (
                             <Card 
-                              className={`group p-3 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 md:hover:scale-[1.03] md:active:scale-[1.03] relative overflow-hidden ${
+                              className={`group p-2 sm:p-3 cursor-pointer transition-all duration-300 h-full flex flex-col border-2 md:hover:scale-[1.03] md:active:scale-[1.03] relative overflow-hidden ${
                                 isOutOfStock
                                   ? "border-red-500/40 opacity-80 md:hover:border-red-500 md:hover:opacity-95 md:hover:shadow-[0_0_30px_rgba(239,68,68,0.5),0_0_60px_rgba(239,68,68,0.2)]"
                                   : "border-[#21d8ff]/40 md:hover:border-[#21d8ff] md:hover:shadow-[0_0_30px_rgba(33,216,255,0.5),0_0_60px_rgba(33,216,255,0.2)]"
                               }`}
                               data-testid={`card-product-${product.id}`}
                             >
-                              <div className="relative aspect-[4/3] mb-3 rounded-md overflow-hidden">
+                              <div className="relative aspect-[5/4] sm:aspect-[4/3] mb-2 sm:mb-3 rounded-md overflow-hidden">
                                 <ImageLoader 
                                   src={product.imageUrl || productImage} 
                                   alt={`${product.name} research peptide - third party lab tested`}
@@ -952,7 +952,7 @@ function ProductsComponent() {
                                 )}
                               </div>
                               <div className="flex-1 flex flex-col min-h-0">
-                                <div className="mb-1 text-center">
+                                <div className="mb-0.5 sm:mb-1 text-center">
                                   {(() => {
                                     const peptideGroup = getPeptideGroup(product.name);
                                     return peptideGroup ? (
@@ -974,14 +974,14 @@ function ProductsComponent() {
                                     );
                                   })()}
                                 </div>
-                                <h3 className="font-display text-[25px] font-black mb-0.5 md:group-hover:text-[#E7FB10] transition-colors line-clamp-2 text-center">
+                                <h3 className="font-display text-[20px] sm:text-[25px] font-black mb-0.5 md:group-hover:text-[#E7FB10] transition-colors line-clamp-2 text-center">
                                   {product.name}
                                 </h3>
-                                <p className="text-[10px] text-muted-foreground/70 mb-1 line-clamp-1 text-center">
+                                <p className="text-[10px] text-muted-foreground/70 mb-0.5 sm:mb-1 line-clamp-1 text-center">
                                   {product.shortDescription}
                                 </p>
                                 <div className="flex items-center justify-center mt-auto gap-1.5">
-                                  <span className="font-display text-[20px] font-bold text-[#E7FB10]">
+                                  <span className="font-display text-[17px] sm:text-[20px] font-bold text-[#E7FB10]">
                                     {product.minPrice && product.maxPrice
                                       ? `$${Number(product.minPrice).toFixed(2)}–$${Number(product.maxPrice).toFixed(2)}`
                                       : `$${Number(product.price).toFixed(2)}`
