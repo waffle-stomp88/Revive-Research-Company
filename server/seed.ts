@@ -1174,59 +1174,6 @@ For questions about this disclaimer, contact: **legal@reviveresearch.co**`
     
     const sampleEducationArticles = [
       {
-        slug: "understanding-peptide-purity",
-        title: "Understanding Peptide Purity: A Comprehensive Guide",
-        category: "basics",
-        summary: "Learn how peptide purity is measured, what affects it, and why it matters for your research outcomes.",
-        content: `# Understanding Peptide Purity
-
-Peptide purity is one of the most critical factors in research applications. This guide explains how purity is measured, what affects it, and why it matters.
-
-## What is Peptide Purity?
-
-Peptide purity refers to the percentage of the target peptide in a sample, excluding impurities such as:
-- Deletion sequences
-- Truncated peptides
-- Oxidized forms
-- Salt content
-- Residual solvents
-
-## Measuring Purity
-
-### HPLC Analysis
-High-Performance Liquid Chromatography (HPLC) is the gold standard for purity assessment:
-- Separates peptides based on hydrophobicity
-- Provides quantitative purity percentage
-- Detects related impurities
-
-### Mass Spectrometry
-Confirms molecular identity and detects:
-- Correct molecular weight
-- Modifications
-- Degradation products
-
-## Purity Grades
-
-| Grade | Purity | Typical Use |
-|-------|--------|-------------|
-| Research | >95% | General research |
-| High Purity | >98% | Sensitive assays |
-| Ultra Pure | >99% | In vivo studies |
-
-## Why Purity Matters
-
-Higher purity ensures:
-- Reproducible results
-- Accurate dose-response
-- Reduced experimental noise
-- Valid conclusions
-
-Always match purity grade to your research requirements.`,
-        readTime: 8,
-        isPublished: true,
-        sortOrder: 1
-      },
-      {
         slug: "reconstitution-101",
         title: "Reconstitution 101: How to Prepare Lyophilized Peptides",
         category: "basics",

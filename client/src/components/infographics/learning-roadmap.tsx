@@ -17,7 +17,7 @@ const courseModules = [
   {
     step: 1,
     title: "Research Use Only",
-    slug: "research-use-only-explained",
+    slug: "what-research-use-only-means",
     description: "Understanding the legal framework",
     icon: BookOpen,
     color: "#E7FB10",

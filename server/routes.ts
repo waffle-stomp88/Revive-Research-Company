@@ -4675,7 +4675,6 @@ Return ONLY valid JSON in this exact format:
         // General Education Articles
         { url: "/guides/ordering-expectations", priority: "0.6", changefreq: "monthly" },
         { url: "/guides/how-to-read-coas", priority: "0.6", changefreq: "monthly" },
-        { url: "/guides/understanding-peptide-purity", priority: "0.6", changefreq: "monthly" },
         { url: "/guides/storage-101", priority: "0.6", changefreq: "monthly" },
         { url: "/guides/lab-safety-guidelines", priority: "0.6", changefreq: "monthly" },
         { url: "/guides/understanding-batches", priority: "0.6", changefreq: "monthly" },

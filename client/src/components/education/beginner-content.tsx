@@ -20,7 +20,6 @@ import {
   Shield
 } from "lucide-react";
 import { 
-  SimplePurityMeter, 
   COASimplified, 
   StorageBasics,
   WhatIsPeptideVisual
@@ -886,42 +885,6 @@ HCG is a well-characterized hormone with decades of research, making it a valuab
   // ==========================================
   // NON-PEPTIDE ARTICLES - Keep the existing ones
   // ==========================================
-
-  "understanding-peptide-purity": {
-    icon: Beaker,
-    iconColor: "#21d8ff",
-    intro: `When you're new to peptide research, one of the first terms you'll encounter is "purity." It sounds technical, but it's actually a straightforward concept that's essential to understand. Think of it like buying gold jewelry - you want to know if it's 24 karat (pure) or mixed with other metals. The same principle applies to research peptides.`,
-    sections: [
-      {
-        title: "What Purity Actually Means",
-        content: `Purity is simply a percentage that tells you how much of your vial is the actual peptide you ordered, versus other stuff that came along during manufacturing. If a peptide is 99% pure, that means 99% of what's in the vial is the exact molecule you wanted, and only 1% is anything else.
-
-That "other stuff" isn't necessarily harmful - it's usually just leftover materials from the manufacturing process, like salts or incomplete peptide chains. But for research purposes, you want as little of it as possible so your experiments produce clear, reliable results.`,
-        visual: () => <SimplePurityMeter />
-      },
-      {
-        title: "How Purity Gets Measured",
-        content: `Scientists measure purity using a technique called HPLC (High-Performance Liquid Chromatography). Don't let the fancy name intimidate you - here's what it does in simple terms:
-
-The machine pushes your peptide sample through a special tube. Different molecules travel through at different speeds based on their size and properties. The machine then counts how much of each type comes out the other end. If 99% of what comes out is your target peptide, that's your purity percentage.
-
-Every legitimate peptide vendor should provide an HPLC test result on the Certificate of Analysis (COA) that comes with your order. This is your proof that the product was actually tested.`
-      },
-      {
-        title: "What Purity Level Do You Need?",
-        content: `Here's a simple guide to help you understand the different purity grades:
-
-**99%+ (Ultra Pure)** - The highest grade available. Best for sensitive research where even tiny impurities could affect results. Premium price, but maximum reliability.
-
-**98%+ (High Purity)** - Excellent quality suitable for most research applications. This is the sweet spot for many researchers - high quality without the ultra-premium cost.
-
-**95-97% (Research Grade)** - Good for general research and initial studies. More affordable, but may have slightly more variability in results.
-
-For most researchers just starting out, 98%+ purity is an excellent choice. It provides great quality without breaking the bank.`
-      }
-    ],
-    takeaway: "Always check the purity percentage on your COA before starting any research. For most applications, look for 98% or higher purity to ensure reliable, reproducible results."
-  },
 
   "reconstitution-101": {
     icon: FlaskConical,

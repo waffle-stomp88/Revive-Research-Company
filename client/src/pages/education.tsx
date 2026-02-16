@@ -52,7 +52,6 @@ import { OrderingJourney } from "@/components/infographics/ordering-journey";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { 
   COAAnatomyDiagram, 
-  HPLCExplainer, 
   StorageTemperatureGuide,
   TelomereVisual,
   GLP1ReceptorComparison,
@@ -100,7 +99,6 @@ import {
 // Articles that are part of the Academy curriculum (for cross-linking)
 const ACADEMY_ARTICLE_SLUGS = [
   "ordering-expectations",
-  "understanding-peptide-purity", 
   "storage-101",
   "reconstitution-101",
   "how-to-read-coas",
@@ -113,7 +111,6 @@ const isAcademyArticle = (slug: string | null) => {
 const articleVisuals: Record<string, () => JSX.Element> = {
   "ordering-expectations": () => <OrderingJourney />,
   "how-to-read-coas": () => <COAAnatomyDiagram />,
-  "understanding-peptide-purity": () => <HPLCExplainer />,
   "storage-101": () => <StorageTemperatureGuide />,
   "what-is-epithalon-peptide": () => <EpithalonTelomeraseVisual />,
   "what-is-rr-a1-peptide": () => <GLP1ReceptorVisual />,
@@ -171,7 +168,7 @@ const EDUCATION_TABS = [
     label: "General Education", 
     icon: BookOpen, 
     color: "#21d8ff",
-    categories: ["basics", "coa-guide", "storage", "glossary"]
+    categories: ["basics", "storage", "glossary"]
   },
   { 
     id: "lab-guides", 
@@ -261,7 +258,6 @@ const peptideGroups = [
 const generalEdCategories = [
   { id: "all", label: "All Articles", color: "#21d8ff" },
   { id: "basics", label: "Research Basics", color: "#21d8ff" },
-  { id: "coa-guide", label: "Understanding COAs", color: "#9d4edd" },
   { id: "storage", label: "Storage & Handling", color: "#f97316" },
   { id: "glossary", label: "Terminology", color: "#22c55e" },
 ];

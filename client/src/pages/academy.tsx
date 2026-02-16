@@ -71,7 +71,7 @@ const CURRICULUM = [
     icon: Building,
     color: "#E7FB10",
     lessons: [
-      { id: "purity-basics", title: "Understanding Purity", articleSlug: "understanding-peptide-purity", xp: 20 },
+      { id: "purity-basics", title: "Understanding Purity", articleSlug: null, xp: 20 },
       { id: "lyophilization", title: "Lyophilization Process", articleSlug: null, xp: 20 },
       { id: "stability", title: "Peptide Stability", articleSlug: "storage-101", xp: 20 },
       { id: "reconstitution", title: "Complete Reconstitution Guide", articleSlug: "reconstitution-101", xp: 25 },
