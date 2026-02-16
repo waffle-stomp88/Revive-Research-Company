@@ -46,8 +46,8 @@ export function TrustScaleGraphic() {
   ];
 
   return (
-    <div ref={ref} className="my-8" data-testid="graphic-trust-scale">
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Trust Verification Scale</h3>
+    <div ref={ref} className="my-6 sm:my-8 not-prose" data-testid="graphic-trust-scale">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 sm:mb-4">Trust Verification Scale</h3>
       <Card className="p-4 sm:p-6 border-[#21d8ff]/20 bg-[#21d8ff]/5 overflow-visible">
         <div className="hidden sm:block">
           <div className="relative h-16 mb-4">
@@ -144,8 +144,8 @@ export function COAAnatomyDiagram() {
   ];
 
   return (
-    <div ref={ref} className="my-8" data-testid="graphic-coa-anatomy">
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Anatomy of a COA</h3>
+    <div ref={ref} className="my-6 sm:my-8 not-prose" data-testid="graphic-coa-anatomy">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 sm:mb-4">Anatomy of a COA</h3>
       <Card className="p-4 sm:p-6 border-[#21d8ff]/20 bg-[#21d8ff]/5">
         <div className="hidden sm:grid md:grid-cols-2 gap-6">
           <div className="relative">
@@ -246,8 +246,8 @@ export function BatchTestingPipeline() {
   ];
 
   return (
-    <div ref={ref} className="my-8" data-testid="graphic-batch-pipeline">
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Batch Testing Pipeline</h3>
+    <div ref={ref} className="my-6 sm:my-8 not-prose" data-testid="graphic-batch-pipeline">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 sm:mb-4">Batch Testing Pipeline</h3>
       <Card className="p-4 sm:p-6 border-[#9d4edd]/20 bg-[#9d4edd]/5">
         <div className="hidden md:flex items-center justify-between relative">
           <div className="absolute top-5 left-8 right-8 h-0.5 bg-muted">
@@ -314,8 +314,8 @@ export function CostCalculatorVisual() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <div ref={ref} className="my-8" data-testid="graphic-cost-calculator">
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">The Math Behind Testing Every Vial</h3>
+    <div ref={ref} className="my-6 sm:my-8 not-prose" data-testid="graphic-cost-calculator">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 sm:mb-4">The Math Behind Testing Every Vial</h3>
       <Card className="p-4 sm:p-6 border-[#f59e0b]/20 bg-[#f59e0b]/5">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <div className="text-center p-4 sm:p-6 rounded-lg bg-background/50 border border-border">
@@ -363,8 +363,8 @@ export function RegulatoryPathwayComparison() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <div ref={ref} className="my-8" data-testid="graphic-regulatory-pathway">
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Regulatory Pathway Comparison</h3>
+    <div ref={ref} className="my-6 sm:my-8 not-prose" data-testid="graphic-regulatory-pathway">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 sm:mb-4">Regulatory Pathway Comparison</h3>
       <Card className="p-4 sm:p-6 border-[#22c55e]/20 bg-[#22c55e]/5">
         <div className="space-y-6">
           <div>
@@ -440,9 +440,9 @@ export function RUOMythsVsReality() {
   ];
 
   return (
-    <div ref={ref} className="my-8" data-testid="graphic-ruo-myths">
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Common Misconceptions</h3>
-      <div className="grid sm:grid-cols-2 gap-4">
+    <div ref={ref} className="my-6 sm:my-8 not-prose" data-testid="graphic-ruo-myths">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 sm:mb-4">Common Misconceptions</h3>
+      <div className="grid sm:grid-cols-2 gap-2.5 sm:gap-4">
         {items.map((item, i) => (
           <motion.div
             key={i}
@@ -450,8 +450,8 @@ export function RUOMythsVsReality() {
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.2 + i * 0.15 }}
           >
-            <Card className="p-5 h-full border-border">
-              <div className="space-y-3">
+            <Card className="p-3.5 sm:p-5 h-full border-border">
+              <div className="space-y-2 sm:space-y-3">
                 <div className="flex items-start gap-2">
                   <X className="h-4 w-4 text-[#ef4444] flex-shrink-0 mt-0.5" />
                   <p className="text-sm text-[#ef4444] line-through">{item.myth}</p>
@@ -491,8 +491,8 @@ export function VerificationStepper() {
   ];
 
   return (
-    <div ref={ref} className="my-8" data-testid="graphic-verification-stepper">
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Your 5-Step Verification Process</h3>
+    <div ref={ref} className="my-6 sm:my-8 not-prose" data-testid="graphic-verification-stepper">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 sm:mb-4">Your 5-Step Verification Process</h3>
       <Card className="p-4 sm:p-6 border-[#E7FB10]/20 bg-[#E7FB10]/5">
         <div className="space-y-3">
           {steps.map((step, i) => {
@@ -557,15 +557,15 @@ export function RedGreenFlags() {
   ];
 
   return (
-    <div ref={ref} className="my-8" data-testid="graphic-red-green-flags">
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Supplier Evaluation at a Glance</h3>
-      <div className="grid md:grid-cols-2 gap-4">
-        <Card className="p-5 border-[#ef4444]/20 bg-[#ef4444]/5">
-          <div className="flex items-center gap-2 mb-4">
+    <div ref={ref} className="my-6 sm:my-8 not-prose" data-testid="graphic-red-green-flags">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 sm:mb-4">Supplier Evaluation at a Glance</h3>
+      <div className="grid md:grid-cols-2 gap-3 sm:gap-4">
+        <Card className="p-4 sm:p-5 border-[#ef4444]/20 bg-[#ef4444]/5">
+          <div className="flex items-center gap-2 mb-3 sm:mb-4">
             <AlertTriangle className="h-5 w-5 text-[#ef4444]" />
             <h4 className="font-semibold text-sm text-[#ef4444]">Warning Signs</h4>
           </div>
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             {redFlags.map((flag, i) => (
               <motion.div
                 key={i}
@@ -580,12 +580,12 @@ export function RedGreenFlags() {
             ))}
           </div>
         </Card>
-        <Card className="p-5 border-[#22c55e]/20 bg-[#22c55e]/5">
-          <div className="flex items-center gap-2 mb-4">
+        <Card className="p-4 sm:p-5 border-[#22c55e]/20 bg-[#22c55e]/5">
+          <div className="flex items-center gap-2 mb-3 sm:mb-4">
             <ShieldCheck className="h-5 w-5 text-[#22c55e]" />
             <h4 className="font-semibold text-sm text-[#22c55e]">Confidence Builders</h4>
           </div>
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             {greenFlags.map((flag, i) => (
               <motion.div
                 key={i}
@@ -618,8 +618,8 @@ export function HPLCChromatogram() {
   ];
 
   return (
-    <div ref={ref} className="my-8" data-testid="graphic-hplc-chromatogram">
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Simplified HPLC Chromatogram</h3>
+    <div ref={ref} className="my-6 sm:my-8 not-prose" data-testid="graphic-hplc-chromatogram">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 sm:mb-4">Simplified HPLC Chromatogram</h3>
       <Card className="p-4 sm:p-6 border-[#a855f7]/20 bg-[#a855f7]/5">
         <div className="relative h-48 sm:h-64 md:h-72">
           <div className="absolute bottom-6 left-4 sm:left-8 right-2 sm:right-4 top-4">
@@ -679,8 +679,8 @@ export function PurityComparisonBars() {
   ];
 
   return (
-    <div ref={ref} className="my-8" data-testid="graphic-purity-comparison">
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Purity Number vs. Trustworthiness</h3>
+    <div ref={ref} className="my-6 sm:my-8 not-prose" data-testid="graphic-purity-comparison">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 sm:mb-4">Purity Number vs. Trustworthiness</h3>
       <Card className="p-4 sm:p-6 border-[#a855f7]/20 bg-[#a855f7]/5">
         <div className="space-y-5">
           {comparisons.map((comp, i) => (
@@ -814,8 +814,8 @@ export function CostBreakdownChart() {
   };
 
   return (
-    <div ref={ref} className="my-8" data-testid="graphic-cost-breakdown">
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Where Your Money Goes</h3>
+    <div ref={ref} className="my-6 sm:my-8 not-prose" data-testid="graphic-cost-breakdown">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 sm:mb-4">Where Your Money Goes</h3>
       <Card className="p-4 sm:p-6 border-[#ec4899]/20 bg-[#ec4899]/5">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
           <DonutChart data={qualityBreakdown} label="Quality Vendor ($50-70)" totalPrice="~$60" />
@@ -852,8 +852,8 @@ export function PriceValueMatrix() {
   const docLabels = ["Low", "", "Mid", "", "High"];
 
   return (
-    <div ref={ref} className="my-8" data-testid="graphic-price-value">
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Price vs. Documentation Quality</h3>
+    <div ref={ref} className="my-6 sm:my-8 not-prose" data-testid="graphic-price-value">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 sm:mb-4">Price vs. Documentation Quality</h3>
       <Card className="p-4 sm:p-6 border-[#21d8ff]/20 bg-gradient-to-br from-[#21d8ff]/5 via-transparent to-[#E7FB10]/5">
         <div className="relative" style={{ height: 260 }}>
           <p className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 text-[9px] sm:text-[10px] text-[#21d8ff]/70 font-medium -rotate-90 whitespace-nowrap">Doc Quality</p>

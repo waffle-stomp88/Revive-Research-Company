@@ -4,6 +4,7 @@ import { SEOHead } from "@/components/seo-head";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ArrowLeft, ArrowRight, FileCheck, BookOpen, Layers, Archive, CheckCircle2 } from "lucide-react";
 import type { ReactNode } from "react";
 import { EmailCapture } from "@/components/email-capture";
@@ -112,13 +113,13 @@ export function EntryArticleLayout({
         <motion.header
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-12"
+          className="mb-8 sm:mb-12"
         >
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4 sm:mb-6"
             style={{ 
               backgroundColor: `${badgeColor}1a`,
               border: `1px solid ${badgeColor}4d`
@@ -130,11 +131,11 @@ export function EntryArticleLayout({
             </span>
           </motion.div>
           
-          <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+          <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 leading-tight">
             {title}
           </h1>
           
-          <div className="text-lg text-muted-foreground leading-relaxed">
+          <div className="text-base sm:text-lg text-muted-foreground leading-relaxed">
             {introText}
           </div>
         </motion.header>
@@ -143,7 +144,7 @@ export function EntryArticleLayout({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="prose prose-lg prose-invert max-w-none mb-16"
+          className="prose prose-invert max-w-none mb-10 sm:mb-16 sm:prose-lg"
         >
           {children}
         </motion.div>
@@ -153,19 +154,23 @@ export function EntryArticleLayout({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mb-16"
+            className="mb-10 sm:mb-16"
           >
-            <h2 className="font-display text-2xl font-bold mb-6">
+            <h2 className="font-display text-xl sm:text-2xl font-bold mb-4 sm:mb-6">
               Frequently Asked Questions
             </h2>
-            <div className="space-y-4">
+            <Accordion type="multiple" className="space-y-2">
               {faqs.map((faq, index) => (
-                <Card key={index} className="p-4 sm:p-6">
-                  <h3 className="font-semibold text-base sm:text-lg mb-2">{faq.question}</h3>
-                  <p className="text-muted-foreground">{faq.answer}</p>
-                </Card>
+                <AccordionItem key={index} value={`faq-${index}`} className="border rounded-md px-4 sm:px-5" data-testid={`faq-item-${index}`}>
+                  <AccordionTrigger className="text-sm sm:text-base font-semibold text-left py-3 sm:py-4 hover:no-underline">
+                    {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-sm text-muted-foreground pb-3 sm:pb-4">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
               ))}
-            </div>
+            </Accordion>
           </motion.section>
         )}
 
@@ -173,12 +178,12 @@ export function EntryArticleLayout({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="border-t border-border pt-12"
+          className="border-t border-border pt-8 sm:pt-12"
         >
-          <h2 className="font-display text-2xl font-bold mb-2">
+          <h2 className="font-display text-xl sm:text-2xl font-bold mb-2">
             Next Steps
           </h2>
-          <p className="text-muted-foreground mb-8">
+          <p className="text-sm sm:text-base text-muted-foreground mb-6 sm:mb-8">
             Continue exploring with confidence. No pressure, no sales tactics — just information.
           </p>
           
@@ -222,7 +227,7 @@ export function EntryArticleLayout({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="mt-16 pt-8 border-t border-border"
+          className="mt-10 sm:mt-16 pt-6 sm:pt-8 border-t border-border"
         >
           <p className="text-sm text-muted-foreground text-center">
             This article is part of the{" "}
@@ -256,21 +261,21 @@ export function ArticleSection({
   const style = colors[variant];
 
   return (
-    <section className="mb-10">
+    <section className="mb-6 sm:mb-10">
       <h2 
-        className="font-display text-xl md:text-2xl font-bold mb-4"
+        className="font-display text-xl md:text-2xl font-bold mb-3 sm:mb-4"
         style={{ color: variant !== "default" ? style.accent : undefined }}
       >
         {title}
       </h2>
       {variant !== "default" ? (
         <Card className={`p-4 sm:p-6 ${style.border} ${style.bg}`}>
-          <div className="text-muted-foreground leading-relaxed space-y-4">
+          <div className="text-muted-foreground leading-relaxed space-y-2 sm:space-y-4">
             {children}
           </div>
         </Card>
       ) : (
-        <div className="text-muted-foreground leading-relaxed space-y-4">
+        <div className="text-muted-foreground leading-relaxed space-y-2 sm:space-y-4">
           {children}
         </div>
       )}
@@ -280,10 +285,10 @@ export function ArticleSection({
 
 export function BulletList({ items, color = "#21d8ff" }: { items: string[]; color?: string }) {
   return (
-    <ul className="space-y-2">
+    <ul className="space-y-1.5 sm:space-y-2">
       {items.map((item, index) => (
-        <li key={index} className="flex items-start gap-3">
-          <CheckCircle2 className="h-5 w-5 flex-shrink-0 mt-0.5" style={{ color }} />
+        <li key={index} className="flex items-start gap-2 sm:gap-3">
+          <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 mt-0.5" style={{ color }} />
           <span>{item}</span>
         </li>
       ))}
