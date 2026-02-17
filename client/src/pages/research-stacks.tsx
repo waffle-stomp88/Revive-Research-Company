@@ -1737,7 +1737,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
           <div>
             <h4 className="font-bold text-white tracking-wide text-[20px]" style={{ textShadow: "0 0 20px rgba(34,197,94,0.3)" }}>SYNERGY PATHWAY MAP</h4>
             {hasActiveData ? (
-              <p className="text-[11px] text-[#22c55e]/70 flex items-center gap-1">
+              <p className="text-[#22c55e]/70 flex items-center gap-1 text-[12px]">
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse" />
                 Interactive — hover or tap nodes & lines for details
               </p>
