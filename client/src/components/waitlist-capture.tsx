@@ -502,7 +502,7 @@ function PreLaunchState({
                 </motion.div>
               </div>
               <div className="min-w-0">
-                <p className="text-sm sm:text-sm text-white font-semibold leading-tight">REVIVE Synergy Engine</p>
+                <p className="text-sm sm:text-sm text-white font-semibold leading-tight">REVIVE Synergy Engine&#8482;</p>
                 <p className="text-xs sm:text-xs text-white/45 leading-snug mt-0.5">Build stacks. See pathway interactions instantly.</p>
               </div>
             </ShimmerCard>
