@@ -107,12 +107,7 @@ function GlowingBadge({ number }: { number: number }) {
         className="h-16 w-16 rounded-full flex items-center justify-center"
         style={{
           background: "linear-gradient(135deg, rgba(231,251,16,0.15), rgba(33,216,255,0.1))",
-          border: "2px solid",
-          borderImage: "linear-gradient(135deg, #E7FB10, #21d8ff) 1",
-          borderRadius: "50%",
-          borderColor: "transparent",
-          outline: "2px solid rgba(231,251,16,0.4)",
-          outlineOffset: "-2px",
+          border: "2px solid rgba(231,251,16,0.4)",
         }}
       >
         <span className="font-display text-2xl bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent">
@@ -494,8 +489,8 @@ function FoundingState({
         <div className="flex items-center gap-4">
           <GlowingBadge number={nextNumber} />
           <div>
-            <h3 className="font-display text-2xl sm:text-3xl text-white leading-none">
-              THIS SPOT IS <span className="bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent">YOURS</span>
+            <h3 className="font-display text-3xl sm:text-4xl text-white leading-none">
+              THIS SPOT IS <span className="bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent">YOURS!</span>
             </h3>
             <p className="text-sm text-white/40 mt-1">Founding Member #{nextNumber} of 50</p>
           </div>
@@ -658,11 +653,13 @@ function FoundingState({
           >
             <motion.div
               initial={{ width: 0 }}
-              animate={{ width: `${progressPercent}%` }}
+              animate={{ width: `${Math.max(progressPercent, 8)}%` }}
               transition={{ duration: 1.2, delay: 0.5, ease: "easeOut" }}
               className="h-full rounded-full relative"
               style={{
-                background: "linear-gradient(90deg, #E7FB10, #21d8ff, #a78bfa)",
+                background: "linear-gradient(90deg, #E7FB10 0%, #21d8ff 50%, #a78bfa 100%)",
+                backgroundSize: "200% 100%",
+                backgroundPosition: "left",
                 boxShadow: "0 0 12px rgba(33,216,255,0.5), 0 0 4px rgba(231,251,16,0.3)",
               }}
             >
