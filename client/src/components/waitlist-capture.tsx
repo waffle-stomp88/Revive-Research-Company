@@ -49,15 +49,17 @@ function HexGrid() {
 function ScanLine() {
   return (
     <motion.div
-      className="absolute left-0 right-0 h-[1px] pointer-events-none z-10"
+      className="absolute left-0 right-0 pointer-events-none z-10"
       style={{
-        background: "linear-gradient(90deg, transparent, rgba(33,216,255,0.3), rgba(231,251,16,0.2), transparent)",
+        height: "2px",
+        background: "linear-gradient(90deg, transparent 5%, rgba(33,216,255,0.6) 30%, rgba(231,251,16,0.5) 50%, rgba(33,216,255,0.6) 70%, transparent 95%)",
+        boxShadow: "0 0 12px rgba(33,216,255,0.3), 0 0 4px rgba(231,251,16,0.2)",
       }}
       animate={{
         top: ["0%", "100%", "0%"],
       }}
       transition={{
-        duration: 6,
+        duration: 5,
         repeat: Infinity,
         ease: "linear",
       }}
