@@ -15,7 +15,7 @@ import { FreeShippingBanner } from "@/components/free-shipping-banner";
 import { ProtectedRoute } from "@/components/protected-route";
 import { initGA } from "@/lib/analytics";
 import { useAnalytics } from "@/hooks/use-analytics";
-import { ExitIntentPopup } from "@/components/waitlist-capture";
+import { FoundingMembersPopup, ExitIntentPopup } from "@/components/waitlist-capture";
 
 import Home from "@/pages/home";
 import Products from "@/pages/products";
@@ -280,6 +280,7 @@ function App() {
                 <Footer className="hidden md:block" />
               </div>
               <MobileBottomNav />
+              <FoundingMembersPopup />
               <ExitIntentPopup />
               <Suspense fallback={null}>
                 <ChatBot />

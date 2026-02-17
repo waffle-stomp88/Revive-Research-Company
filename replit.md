@@ -53,6 +53,7 @@ The platform features an Apple-inspired design with a dark charcoal background (
   - **Popular Stacks**: Displays trending community combinations sorted by save count
 - **Subscription System**: PayPal-based recurring subscriptions with weekly, bi-weekly, and monthly options, offering tiered discounts.
 - **User Experience**: Guest checkout, shop page pagination with in-stock priority, discount code system, and a price transparency system showing price trends.
+- **Pre-Launch Waitlist System**: Founding Members popup (first 50 signups get lifetime locked pricing, 48hr early access, Founding Member badge #1-50). Triggers 7s after age gate dismissal, 7-day cookie suppression. After 50 founding members, popup converts to regular waitlist capture. Exit Intent popup (desktop-only, 30s+ time on site) as secondary capture. OOS product pages also capture to waitlist with product interest tracking. Database: waitlist_signups table with founding_member_number column. API: POST /api/waitlist/signup, GET /api/waitlist/count (returns total, foundingMembers, spotsRemaining).
 - **Analytics**: Google Analytics GA4 integration for tracking page views and custom events.
 - **Account Management**: User and affiliate account deletion feature.
 - **Admin Dashboard**: Consolidated dashboard with streamlined tabs for Overview, Orders, Customers, Contacts, Affiliates, COAs, Products (with Inventory and AI Pricing sub-tabs), Communications (with Stock Notifications and Email Logs sub-tabs), and Settings (with Discount Codes).

@@ -3,7 +3,7 @@ import { trackEvent } from "@/lib/analytics";
 
 const EMAIL_CAPTURED_KEY = "email_captured";
 const EXIT_POPUP_COOKIE = "exit_popup_shown";
-const SCROLL_POPUP_SHOWN_KEY = "scroll_popup_shown_session";
+const FOUNDING_POPUP_COOKIE = "founding_popup_shown";
 const SITE_ENTER_TIME_KEY = "site_enter_time";
 
 export function initSiteEnterTime() {
@@ -49,23 +49,24 @@ export function suppressExitPopup() {
   setCookie(EXIT_POPUP_COOKIE, "1", 7);
 }
 
-export function isScrollPopupShownThisSession(): boolean {
-  return !!sessionStorage.getItem(SCROLL_POPUP_SHOWN_KEY);
+export function isFoundingPopupSuppressed(): boolean {
+  return !!getCookie(FOUNDING_POPUP_COOKIE);
 }
 
-export function markScrollPopupShown() {
-  sessionStorage.setItem(SCROLL_POPUP_SHOWN_KEY, "1");
+export function suppressFoundingPopup() {
+  setCookie(FOUNDING_POPUP_COOKIE, "1", 7);
 }
 
 export function validateEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-export type WaitlistSource = "hero" | "exit" | "scroll" | "oos" | "product";
+export type WaitlistSource = "founding_popup" | "waitlist_popup" | "exit" | "oos" | "product";
 
 interface CaptureResult {
   success: boolean;
   foundingMember: boolean;
+  foundingMemberNumber: number | null;
   duplicate: boolean;
   totalCount: number;
   error?: string;
@@ -78,11 +79,11 @@ export async function captureEmail(
   optsInMarketing: boolean = false
 ): Promise<CaptureResult> {
   if (!validateEmail(email)) {
-    return { success: false, foundingMember: false, duplicate: false, totalCount: 0, error: "Please enter a valid email address." };
+    return { success: false, foundingMember: false, foundingMemberNumber: null, duplicate: false, totalCount: 0, error: "Please enter a valid email address." };
   }
 
   if (isEmailCaptured() && !productId) {
-    return { success: true, foundingMember: false, duplicate: true, totalCount: 0, error: "You're already on the list!" };
+    return { success: true, foundingMember: false, foundingMemberNumber: null, duplicate: true, totalCount: 0, error: "You're already on the list!" };
   }
 
   try {
@@ -100,12 +101,13 @@ export async function captureEmail(
       return {
         success: true,
         foundingMember: data.foundingMember ?? false,
+        foundingMemberNumber: data.foundingMemberNumber ?? null,
         duplicate: data.duplicate ?? false,
         totalCount: data.totalCount ?? 0,
       };
     }
-    return { success: false, foundingMember: false, duplicate: false, totalCount: 0, error: "Something went wrong. Please try again." };
+    return { success: false, foundingMember: false, foundingMemberNumber: null, duplicate: false, totalCount: 0, error: "Something went wrong. Please try again." };
   } catch (err: any) {
-    return { success: false, foundingMember: false, duplicate: false, totalCount: 0, error: "Something went wrong. Please try again." };
+    return { success: false, foundingMember: false, foundingMemberNumber: null, duplicate: false, totalCount: 0, error: "Something went wrong. Please try again." };
   }
 }

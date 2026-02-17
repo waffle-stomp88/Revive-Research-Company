@@ -1162,7 +1162,7 @@ export async function registerRoutes(
           }
         }
         const totalCount = await storage.getWaitlistCount();
-        return res.json({ success: true, duplicate: true, foundingMember: existing.foundingMember, totalCount });
+        return res.json({ success: true, duplicate: true, foundingMember: existing.foundingMember, foundingMemberNumber: existing.foundingMemberNumber, totalCount });
       }
       const signup = await storage.createWaitlistSignup({
         email: email.toLowerCase(),
@@ -1171,7 +1171,7 @@ export async function registerRoutes(
         optsInMarketing: optsInMarketing ?? false,
       });
       const totalCount = await storage.getWaitlistCount();
-      res.json({ success: true, foundingMember: signup.foundingMember, totalCount });
+      res.json({ success: true, foundingMember: signup.foundingMember, foundingMemberNumber: signup.foundingMemberNumber, totalCount });
     } catch (error) {
       console.error("Error creating waitlist signup:", error);
       res.status(500).json({ error: "Failed to join waitlist" });
@@ -1181,8 +1181,9 @@ export async function registerRoutes(
   app.get("/api/waitlist/count", async (req, res) => {
     try {
       const total = await storage.getWaitlistCount();
-      const byProduct = await storage.getWaitlistCountByProduct();
-      res.json({ total, byProduct });
+      const foundingMembers = await storage.getFoundingMemberCount();
+      const spotsRemaining = Math.max(0, 50 - foundingMembers);
+      res.json({ total, foundingMembers, spotsRemaining });
     } catch (error) {
       console.error("Error fetching waitlist count:", error);
       res.status(500).json({ error: "Failed to fetch waitlist count" });

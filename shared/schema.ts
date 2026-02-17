@@ -800,9 +800,10 @@ export const waitlistSignups = pgTable("waitlist_signups", {
   productInterest: text("product_interest").array(),
   optsInMarketing: boolean("opts_in_marketing").default(false),
   foundingMember: boolean("founding_member").default(false),
+  foundingMemberNumber: integer("founding_member_number"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertWaitlistSignupSchema = createInsertSchema(waitlistSignups).omit({ id: true, createdAt: true, foundingMember: true });
+export const insertWaitlistSignupSchema = createInsertSchema(waitlistSignups).omit({ id: true, createdAt: true, foundingMember: true, foundingMemberNumber: true });
 export type InsertWaitlistSignup = z.infer<typeof insertWaitlistSignupSchema>;
 export type WaitlistSignup = typeof waitlistSignups.$inferSelect;
