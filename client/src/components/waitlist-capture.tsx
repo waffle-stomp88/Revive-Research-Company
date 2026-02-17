@@ -723,60 +723,93 @@ export function ExitIntentPopup() {
                 </div>
               ) : (
                 <div className="relative z-10 p-6 flex flex-col gap-4">
-                  <div className="flex items-center gap-2">
-                    <AlertTriangle className="h-5 w-5 text-[#E7FB10] flex-shrink-0" />
-                    <h3 className="font-display text-2xl sm:text-3xl text-white">
+                  <div className="text-center space-y-2">
+                    <motion.div
+                      animate={{
+                        filter: [
+                          "drop-shadow(0 0 4px rgba(231,251,16,0.4))",
+                          "drop-shadow(0 0 12px rgba(231,251,16,0.8))",
+                          "drop-shadow(0 0 4px rgba(231,251,16,0.4))",
+                        ],
+                      }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                      className="inline-block"
+                    >
+                      <AlertTriangle className="h-8 w-8 text-[#E7FB10] mx-auto" />
+                    </motion.div>
+                    <h3 className="font-display text-3xl sm:text-4xl bg-gradient-to-r from-[#E7FB10] via-white to-[#21d8ff] bg-clip-text text-transparent">
                       BEFORE YOU GO
                     </h3>
                   </div>
 
-                  <div className="space-y-1.5">
+                  <div className="space-y-1 text-center">
                     <p className="text-sm text-white/50">You've seen what we're building.</p>
                     <p className="text-sm text-white/50">You know we're different.</p>
-                    <p className="text-sm text-white/70 font-medium">Don't miss our launch.</p>
+                    <p className="text-sm text-[#ff2d9b] font-bold">Don't miss our launch.</p>
                   </div>
 
-                  <form onSubmit={handleSubmit} className="flex flex-col gap-2.5">
-                    <Input
-                      type="email"
-                      placeholder="Enter your email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="bg-black/60 border-white/15 text-white placeholder:text-white/30 focus:border-[#21d8ff]/50 text-sm"
-                      data-testid="input-exit-email"
-                    />
-                    <Button
-                      type="submit"
-                      disabled={loading}
-                      className="no-default-hover-elevate w-full font-bold text-sm uppercase tracking-wide text-black"
-                      style={{
-                        background: "linear-gradient(90deg, #E7FB10, #b8e600)",
-                        border: "1px solid #E7FB10",
-                        boxShadow: "0 0 15px rgba(231,251,16,0.2)",
-                      }}
-                      data-testid="button-exit-submit"
-                    >
-                      {loading ? (
-                        <span className="animate-spin h-5 w-5 border-2 border-black/30 border-t-black rounded-full" />
-                      ) : (
-                        "NOTIFY ME AT LAUNCH"
-                      )}
-                    </Button>
-                    {error && <p className="text-red-400 text-sm text-center">{error}</p>}
-                  </form>
+                  <div
+                    className="rounded-lg p-3.5 space-y-2.5"
+                    style={{
+                      background: "linear-gradient(135deg, rgba(231,251,16,0.04), rgba(33,216,255,0.04))",
+                      border: "1px solid rgba(231,251,16,0.12)",
+                    }}
+                  >
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+                      <Input
+                        type="email"
+                        placeholder="Enter your email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="bg-black/60 border-white/15 text-white placeholder:text-white/30 focus:border-[#21d8ff]/50 text-sm h-10"
+                        data-testid="input-exit-email"
+                      />
+                      <motion.div
+                        animate={{
+                          boxShadow: [
+                            "0 0 15px rgba(231,251,16,0.2), 0 0 30px rgba(33,216,255,0.06)",
+                            "0 0 25px rgba(33,216,255,0.25), 0 0 50px rgba(231,251,16,0.1)",
+                            "0 0 15px rgba(231,251,16,0.2), 0 0 30px rgba(33,216,255,0.06)",
+                          ],
+                        }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                        className="rounded-md"
+                      >
+                        <Button
+                          type="submit"
+                          disabled={loading}
+                          className="no-default-hover-elevate w-full font-bold text-sm uppercase tracking-wide text-black h-10"
+                          style={{
+                            background: "linear-gradient(90deg, #E7FB10, #b8e600)",
+                            border: "1px solid #E7FB10",
+                          }}
+                          data-testid="button-exit-submit"
+                        >
+                          {loading ? (
+                            <span className="animate-spin h-5 w-5 border-2 border-black/30 border-t-black rounded-full" />
+                          ) : (
+                            "NOTIFY ME AT LAUNCH"
+                          )}
+                        </Button>
+                      </motion.div>
+                      {error && <p className="text-red-400 text-sm text-center">{error}</p>}
+                    </form>
+                  </div>
 
-                  <div className="space-y-1.5 pt-1">
-                    <div className="flex items-center gap-2 text-xs text-white/40">
-                      <ArrowRight className="h-3 w-3 text-[#21d8ff] flex-shrink-0" />
-                      <span>QR-verified testing on every batch</span>
+                  <div className="flex items-center justify-center gap-4 pt-1">
+                    <div className="flex items-center gap-1.5 text-xs text-white/40">
+                      <QrCode className="h-3.5 w-3.5 text-[#21d8ff] flex-shrink-0" />
+                      <span>QR-verified COAs</span>
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-white/40">
-                      <ArrowRight className="h-3 w-3 text-[#21d8ff] flex-shrink-0" />
-                      <span>Revive Synergy Engine included</span>
+                    <div className="h-3 w-px bg-white/10" />
+                    <div className="flex items-center gap-1.5 text-xs text-white/40">
+                      <FlaskConical className="h-3.5 w-3.5 text-[#E7FB10] flex-shrink-0" />
+                      <span>Synergy Engine</span>
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-white/40">
-                      <ArrowRight className="h-3 w-3 text-[#E7FB10] flex-shrink-0" />
-                      <span className="text-white/50 italic">Something special for early supporters</span>
+                    <div className="h-3 w-px bg-white/10" />
+                    <div className="flex items-center gap-1.5 text-xs text-white/40">
+                      <GraduationCap className="h-3.5 w-3.5 text-[#a78bfa] flex-shrink-0" />
+                      <span>Academy</span>
                     </div>
                   </div>
 
