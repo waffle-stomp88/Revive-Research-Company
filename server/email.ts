@@ -1468,6 +1468,280 @@ ${getSharedFooterText(email, 'newsletter')}`;
   return { subject, text, html };
 }
 
+// Email template: Pre-Launch Waitlist Confirmation
+function getPreLaunchConfirmationTemplate(email: string): { subject: string; text: string; html: string } {
+  const styles = getEmailBaseStyles();
+
+  const subject = "You're on the list.";
+
+  const text = `
+REVIVE RESEARCH
+You're on the list.
+
+Thanks for signing up. We're building something different — and you'll be the first to know when it's ready.
+
+WHAT WE'RE BUILDING
+--------------------
+
+01 — Revive Research Academy
+Beginner or advanced — structured education built for real researchers.
+
+02 — Revive Synergy Engine
+Build stacks. See pathway interactions instantly.
+
+03 — Trust Nothing. Verify Everything.
+Scan any vial. Real third-party results. Instantly.
+
+We built Revive because researchers deserve better.
+
+We'll notify you the moment we go live.
+Something special is coming for our earliest supporters.
+
+— The Revive Research Team
+${getSharedFooterText(email, 'newsletter')}
+`;
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You're on the list.</title>
+</head>
+<body style="${styles.body}">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0d0d0f;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; background-color: #1a1a1f; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05);">
+          
+          <!-- Header with Logo -->
+          <tr>
+            <td style="background: linear-gradient(180deg, #252529 0%, #1a1a1f 100%); padding: 0; text-align: center;">
+              <div style="height: 4px; background: linear-gradient(90deg, ${styles.primaryColor} 0%, ${styles.accentColor} 50%, #a78bfa 100%);"></div>
+              
+              <div style="padding: 40px 40px 20px 40px;">
+                <a href="https://reviveresearch.co" target="_blank" style="display: inline-block; text-decoration: none;">
+                  <img src="https://reviveresearch.co/assets/email-logo.png" alt="Revive Research" width="280" style="display: block; margin: 0 auto 16px auto; max-width: 280px; height: auto;" />
+                </a>
+                
+                <p style="color: #cccccc; font-size: 11px; letter-spacing: 2px; margin: 0 0 20px 0; text-transform: uppercase;">
+                  Premium Research Compounds
+                </p>
+                
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td style="height: 2px; background: linear-gradient(90deg, transparent 0%, ${styles.accentColor} 20%, #a78bfa 50%, ${styles.primaryColor} 80%, transparent 100%);"></td>
+                  </tr>
+                </table>
+              </div>
+              
+              <!-- Main Headline -->
+              <div style="padding: 30px 40px 40px 40px;">
+                <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto 20px auto;">
+                  <tr>
+                    <td style="background: linear-gradient(135deg, ${styles.primaryColor} 0%, #c4d40d 100%); padding: 2px; border-radius: 100px;">
+                      <table role="presentation" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td style="background: #1a1a1f; padding: 10px 24px; border-radius: 100px;">
+                            <span style="color: ${styles.primaryColor}; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">EARLY ACCESS</span>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+                
+                <h1 style="color: #ffffff; font-size: 38px; font-weight: 800; margin: 0 0 16px 0; letter-spacing: -1px; line-height: 1.1;">
+                  You're on the list.
+                </h1>
+                
+                <p style="color: #cccccc; font-size: 15px; line-height: 1.6; margin: 0;">
+                  Thanks for signing up. We're building something different — and you'll be the first to know when it's ready.
+                </p>
+              </div>
+            </td>
+          </tr>
+          
+          <!-- What We're Building Section -->
+          <tr>
+            <td style="padding: 0 40px 40px 40px;">
+              
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 24px;">
+                <tr>
+                  <td style="text-align: center;">
+                    <span style="color: rgba(255,255,255,0.4); font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">WHAT WE'RE BUILDING</span>
+                  </td>
+                </tr>
+              </table>
+              
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                
+                <!-- Pillar 1: Research Academy -->
+                <tr>
+                  <td style="padding: 8px 0;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: #252529; border: 1px solid rgba(231, 251, 16, 0.2); border-radius: 12px; overflow: hidden;">
+                      <tr>
+                        <td style="padding: 16px 20px; border-left: 3px solid ${styles.primaryColor};">
+                          <table role="presentation" cellspacing="0" cellpadding="0">
+                            <tr>
+                              <td style="width: 44px; vertical-align: top;">
+                                <div style="width: 32px; height: 32px; background: rgba(231, 251, 16, 0.12); border-radius: 8px; text-align: center; line-height: 32px;">
+                                  <span style="font-size: 14px; color: ${styles.primaryColor};">01</span>
+                                </div>
+                              </td>
+                              <td style="vertical-align: top;">
+                                <p style="margin: 0 0 4px 0; font-size: 14px; font-weight: 600; color: #ffffff;">Revive Research Academy</p>
+                                <p style="margin: 0; font-size: 13px; color: #bbbbbb; line-height: 1.5;">Beginner or advanced — structured education built for real researchers.</p>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                
+                <!-- Pillar 2: Synergy Engine -->
+                <tr>
+                  <td style="padding: 8px 0;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: #252529; border: 1px solid rgba(33, 216, 255, 0.2); border-radius: 12px; overflow: hidden;">
+                      <tr>
+                        <td style="padding: 16px 20px; border-left: 3px solid ${styles.accentColor};">
+                          <table role="presentation" cellspacing="0" cellpadding="0">
+                            <tr>
+                              <td style="width: 44px; vertical-align: top;">
+                                <div style="width: 32px; height: 32px; background: rgba(33, 216, 255, 0.15); border-radius: 8px; text-align: center; line-height: 32px;">
+                                  <span style="font-size: 14px; color: ${styles.accentColor};">02</span>
+                                </div>
+                              </td>
+                              <td style="vertical-align: top;">
+                                <p style="margin: 0 0 4px 0; font-size: 14px; font-weight: 600; color: #ffffff;">Revive Synergy Engine</p>
+                                <p style="margin: 0; font-size: 13px; color: #bbbbbb; line-height: 1.5;">Build stacks. See pathway interactions instantly.</p>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                
+                <!-- Pillar 3: Verification -->
+                <tr>
+                  <td style="padding: 8px 0;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: #252529; border: 1px solid rgba(167, 139, 250, 0.2); border-radius: 12px; overflow: hidden;">
+                      <tr>
+                        <td style="padding: 16px 20px; border-left: 3px solid #a78bfa;">
+                          <table role="presentation" cellspacing="0" cellpadding="0">
+                            <tr>
+                              <td style="width: 44px; vertical-align: top;">
+                                <div style="width: 32px; height: 32px; background: rgba(167, 139, 250, 0.15); border-radius: 8px; text-align: center; line-height: 32px;">
+                                  <span style="font-size: 14px; color: #a78bfa;">03</span>
+                                </div>
+                              </td>
+                              <td style="vertical-align: top;">
+                                <p style="margin: 0 0 4px 0; font-size: 14px; font-weight: 600; color: #ffffff;">Trust Nothing. Verify Everything.</p>
+                                <p style="margin: 0; font-size: 13px; color: #bbbbbb; line-height: 1.5;">Scan any vial. Real third-party results. Instantly.</p>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                
+              </table>
+              
+            </td>
+          </tr>
+          
+          <!-- Bold Statement -->
+          <tr>
+            <td style="padding: 0 40px 30px 40px; text-align: center;">
+              <div style="border-top: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 24px 0;">
+                <p style="color: #ff2d9b; font-size: 16px; font-weight: 700; margin: 0; line-height: 1.4;">
+                  We built Revive because researchers deserve better.
+                </p>
+              </div>
+            </td>
+          </tr>
+          
+          <!-- What's Next -->
+          <tr>
+            <td style="padding: 0 40px 40px 40px; text-align: center;">
+              <p style="color: #ffffff; font-size: 15px; font-weight: 600; margin: 0 0 8px 0;">
+                We'll notify you the moment we go live.
+              </p>
+              <p style="color: ${styles.accentColor}; font-size: 14px; font-style: italic; font-weight: 500; margin: 0 0 24px 0;">
+                Something special is coming for our earliest supporters.
+              </p>
+              
+              <table role="presentation" cellspacing="0" cellpadding="0" align="center">
+                <tr>
+                  <td style="background: ${styles.primaryColor}; border-radius: 10px; box-shadow: 0 0 30px rgba(231, 251, 16, 0.5), 0 0 60px rgba(231, 251, 16, 0.25);">
+                    <a href="https://reviveresearch.co/" style="display: inline-block; padding: 16px 40px; font-size: 15px; font-weight: 700; color: #000000; text-decoration: none; letter-spacing: 0.5px;">
+                      Explore the Platform
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          
+          <!-- Footer -->
+          <tr>
+            <td style="background: #252529; padding: 32px 40px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05);">
+              
+              <p style="margin: 0 0 20px 0; font-size: 14px; color: #bbbbbb;">
+                <span style="color: #ffffff; font-weight: 500;">The Revive Research Team</span>
+              </p>
+              
+              ${getSharedFooterHtml(email, 'newsletter')}
+              
+            </td>
+          </tr>
+          
+        </table>
+        
+      </td>
+    </tr>
+  </table>
+  
+</body>
+</html>
+`;
+
+  return { subject, text, html };
+}
+
+export async function sendPreLaunchConfirmationEmail(email: string): Promise<EmailResult> {
+  const template = getPreLaunchConfirmationTemplate(email);
+  
+  const result = await sendEmail({
+    to: email,
+    subject: template.subject,
+    text: template.text,
+    html: template.html,
+    from: 'noreply',
+    replyTo: 'support@reviveresearch.co',
+  });
+
+  if (result.success) {
+    console.log(`[Email] Pre-launch confirmation sent to ${email}`);
+    try {
+      await storage.updateLastEmailSent(email);
+    } catch (err) {
+      console.error(`[Email] Failed to update last email sent for ${email}:`, err);
+    }
+  } else {
+    console.error(`[Email] Failed to send pre-launch confirmation to ${email}:`, result.error);
+  }
+
+  return result;
+}
+
 export async function sendNewsletterWelcomeEmail(email: string): Promise<EmailResult> {
   const template = getNewsletterWelcomeTemplate(email);
   

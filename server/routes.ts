@@ -10,7 +10,7 @@ import { setupAuth, isAuthenticated } from "./auth0Auth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { processProductImage } from "./imageProcessor";
-import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendShippedNotificationEmail, sendNewsletterWelcomeEmail, isEmailConfigured } from "./email";
+import { sendEmail, sendOrderConfirmationEmail, sendAdminOrderNotificationEmail, sendShippedNotificationEmail, sendNewsletterWelcomeEmail, sendPreLaunchConfirmationEmail, isEmailConfigured } from "./email";
 import { sendOrderNotifications, getNotificationStatus } from "./notifications";
 import { 
   createPaypalOrder, 
@@ -1171,6 +1171,13 @@ export async function registerRoutes(
         optsInMarketing: optsInMarketing ?? false,
       });
       const totalCount = await storage.getWaitlistCount();
+      
+      if (isEmailConfigured()) {
+        sendPreLaunchConfirmationEmail(email.toLowerCase()).catch((err) => {
+          console.error("[Waitlist] Failed to send pre-launch confirmation email:", err);
+        });
+      }
+      
       res.json({ success: true, foundingMember: signup.foundingMember, foundingMemberNumber: signup.foundingMemberNumber, totalCount });
     } catch (error) {
       console.error("Error creating waitlist signup:", error);
