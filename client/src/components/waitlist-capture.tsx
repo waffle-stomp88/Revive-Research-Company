@@ -388,10 +388,8 @@ function PreLaunchState({
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         />
       )}
-
       <HexGrid />
       {!isMobile && <ScanLine />}
-
       {!isMobile && (
         <>
           <FloatingParticle color="#E7FB10" delay={0} x="10%" y="15%" size={3} />
@@ -401,7 +399,6 @@ function PreLaunchState({
       )}
       <FloatingParticle color="#21d8ff" delay={2.4} x="8%" y="70%" size={2} />
       <FloatingParticle color="#E7FB10" delay={3.2} x="50%" y="85%" size={2} />
-
       <button
         onClick={handleClose}
         className="absolute top-4 right-4 text-white/30 hover:text-white/60 transition-colors z-20"
@@ -409,7 +406,6 @@ function PreLaunchState({
       >
         <X className="h-5 w-5" />
       </button>
-
       <div className="relative z-10 p-4 sm:p-5 flex flex-col gap-3 sm:gap-3.5">
         <div className="space-y-1 sm:space-y-2 text-center">
           <motion.h3
@@ -434,7 +430,7 @@ function PreLaunchState({
           <p className="text-xs sm:text-sm text-white/50 leading-relaxed">
             Fake COAs. Underdosed vials. Vendors who vanish.
           </p>
-          <p className="text-sm sm:text-base font-bold leading-relaxed text-[#ff2d9b] whitespace-nowrap">
+          <p className="text-sm sm:text-base font-bold leading-relaxed text-[#ff2d9b] whitespace-nowrap text-center">
             We built <span className="text-[#E7FB10]">REVIVE</span> to change all of that.
           </p>
         </motion.div>
