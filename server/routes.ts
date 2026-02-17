@@ -1171,6 +1171,15 @@ export async function registerRoutes(
         optsInMarketing: optsInMarketing ?? false,
       });
       const totalCount = await storage.getWaitlistCount();
+
+      try {
+        await storage.subscribeToNewsletter({
+          email: email.toLowerCase(),
+          source: source || "prelaunch_popup",
+        });
+      } catch (e) {
+        console.error("[Waitlist] Failed to sync to newsletter subscribers:", e);
+      }
       
       if (isEmailConfigured()) {
         sendPreLaunchConfirmationEmail(email.toLowerCase()).catch((err) => {
