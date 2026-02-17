@@ -435,7 +435,7 @@ function PreLaunchState({
             Fake COAs. Underdosed vials. Vendors who vanish.
           </p>
           <p className="text-sm sm:text-base font-bold leading-relaxed text-[#ff2d9b]">
-            We built Revive because researchers deserve better.
+            We built REVIVE because researchers deserve better.
           </p>
         </motion.div>
 
@@ -472,7 +472,7 @@ function PreLaunchState({
                 </motion.div>
               </div>
               <div className="min-w-0">
-                <p className="text-sm sm:text-sm text-white font-semibold leading-tight">Revive Research Academy</p>
+                <p className="text-sm sm:text-sm text-white font-semibold leading-tight">REVIVE Research Academy</p>
                 <p className="text-xs sm:text-xs text-white/45 leading-snug mt-0.5">Beginner or advanced — structured education built for real researchers.</p>
               </div>
             </ShimmerCard>
@@ -502,7 +502,7 @@ function PreLaunchState({
                 </motion.div>
               </div>
               <div className="min-w-0">
-                <p className="text-sm sm:text-sm text-white font-semibold leading-tight">Revive Synergy Engine</p>
+                <p className="text-sm sm:text-sm text-white font-semibold leading-tight">REVIVE Synergy Engine</p>
                 <p className="text-xs sm:text-xs text-white/45 leading-snug mt-0.5">Build stacks. See pathway interactions instantly.</p>
               </div>
             </ShimmerCard>

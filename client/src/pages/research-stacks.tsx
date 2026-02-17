@@ -2930,8 +2930,8 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                         <div className="flex-1 min-w-0">
                           {selectedPeptides.length === 0 ? (
                             <div className="text-center">
-                              <p className="font-display font-bold text-base">Pick a Goal to Start</p>
-                              <p className="text-sm text-muted-foreground mt-1">or select any peptide below</p>
+                              <p className="font-display font-bold text-xl tracking-wide">PICK A GOAL TO START</p>
+                              <p className="text-base text-muted-foreground mt-1">or select any peptide below</p>
                             </div>
                           ) : knownStack ? (
                             <motion.div
