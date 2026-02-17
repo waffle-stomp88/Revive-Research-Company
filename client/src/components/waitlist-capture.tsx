@@ -413,11 +413,11 @@ function PreLaunchState({
                   boxShadow: "0 0 12px rgba(231,251,16,0.15)",
                 }}
               >
-                <QrCode className="h-4.5 w-4.5 text-[#E7FB10]" />
+                <GraduationCap className="h-4.5 w-4.5 text-[#E7FB10]" />
               </div>
               <div className="min-w-0">
-                <p className="text-sm text-white font-semibold leading-tight">QR-Verified COAs</p>
-                <p className="text-xs text-white/45 leading-tight mt-0.5">Scan any vial. See real third-party lab results.</p>
+                <p className="text-sm text-white font-semibold leading-tight">Revive Research Academy</p>
+                <p className="text-xs text-white/45 leading-tight mt-0.5">Beginner or advanced — structured education built for real researchers.</p>
               </div>
             </ShimmerCard>
 
@@ -447,11 +447,11 @@ function PreLaunchState({
                   boxShadow: "0 0 12px rgba(167,139,250,0.15)",
                 }}
               >
-                <GraduationCap className="h-4.5 w-4.5 text-[#a78bfa]" />
+                <QrCode className="h-4.5 w-4.5 text-[#a78bfa]" />
               </div>
               <div className="min-w-0">
-                <p className="text-sm text-white font-semibold leading-tight">Full Education Library</p>
-                <p className="text-xs text-white/45 leading-tight mt-0.5">Research Academy, in-depth articles — beginner to advanced, we've got you covered.</p>
+                <p className="text-sm text-white font-semibold leading-tight">Trust Nothing. Verify Everything.</p>
+                <p className="text-xs text-white/45 leading-tight mt-0.5">Scan any vial. Real third-party results. Instantly.</p>
               </div>
             </ShimmerCard>
           </div>
