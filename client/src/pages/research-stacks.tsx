@@ -1735,7 +1735,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
           </Badge>
         )}
       </div>
-      <div style={{ overflow: "hidden", position: "relative" }}>
+      <div style={{ overflow: "hidden", position: "relative", paddingBottom: "24px" }}>
       <svg
         width="100%"
         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
