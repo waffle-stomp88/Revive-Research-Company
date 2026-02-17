@@ -551,11 +551,11 @@ function PreLaunchState({
               LAUNCHING SOON
             </h4>
             <p className="text-sm sm:text-base text-white/60 leading-snug">
-              Don't watch from the sidelines.
+              Be the first to know when we go live.
             </p>
           </div>
           <p className="text-xs sm:text-sm text-[#21d8ff] font-medium leading-snug text-center">
-            Early access members get first dibs on inventory, exclusive pricing, and founding member perks.
+            First-batch inventory is limited — early notification means first access.
           </p>
           <form onSubmit={handleSubmit} className="flex flex-col gap-2 pt-1">
             <Input
@@ -590,7 +590,7 @@ function PreLaunchState({
                 {loading ? (
                   <span className="animate-spin h-5 w-5 border-2 border-black/30 border-t-black rounded-full" />
                 ) : (
-                  "LOCK IN EARLY ACCESS"
+                  "NOTIFY ME"
                 )}
               </Button>
             </motion.div>
