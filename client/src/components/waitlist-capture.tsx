@@ -539,57 +539,64 @@ function PreLaunchState({
           </div>
         </div>
 
-        <div className="border-t border-white/[0.06] pt-3 sm:pt-4 space-y-1.5 sm:space-y-2">
-          <h4 className="font-display text-lg sm:text-xl bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#a78bfa] bg-clip-text text-transparent">
-            LAUNCHING SOON
-          </h4>
-          <p className="text-xs sm:text-sm text-white/50 leading-relaxed">
-            Be first in line when we open.
+        <div
+          className="relative rounded-lg p-4 sm:p-5 space-y-3"
+          style={{
+            background: "linear-gradient(135deg, rgba(231,251,16,0.04), rgba(33,216,255,0.04), rgba(167,139,250,0.03))",
+            border: "1px solid rgba(231,251,16,0.12)",
+          }}
+        >
+          <div className="space-y-1">
+            <h4 className="font-display text-2xl sm:text-3xl bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#a78bfa] bg-clip-text text-transparent leading-tight">
+              LAUNCHING SOON
+            </h4>
+            <p className="text-sm sm:text-base text-white/60 leading-snug">
+              Don't watch from the sidelines.
+            </p>
+          </div>
+          <p className="text-xs sm:text-sm text-[#21d8ff] font-medium leading-snug">
+            Early access members get first dibs on inventory, exclusive pricing, and founding member perks.
           </p>
-          <p className="text-xs sm:text-sm text-[#21d8ff] italic leading-relaxed font-medium">
-            Something special is waiting for our earliest supporters.
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-          <Input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="bg-black/60 border-white/15 text-white placeholder:text-white/30 focus:border-[#21d8ff]/50 text-sm h-9 sm:h-10"
-            data-testid="input-prelaunch-email"
-          />
-          <motion.div
-            animate={{
-              boxShadow: [
-                "0 0 20px rgba(231,251,16,0.2), 0 0 40px rgba(33,216,255,0.08)",
-                "0 0 30px rgba(33,216,255,0.3), 0 0 60px rgba(231,251,16,0.15)",
-                "0 0 20px rgba(231,251,16,0.2), 0 0 40px rgba(33,216,255,0.08)",
-              ],
-            }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="rounded-md"
-          >
-            <Button
-              type="submit"
-              disabled={loading}
-              className="no-default-hover-elevate w-full font-bold text-xs sm:text-sm uppercase tracking-wide text-black"
-              style={{
-                background: "linear-gradient(90deg, #E7FB10, #b8e600)",
-                border: "1px solid #E7FB10",
+          <form onSubmit={handleSubmit} className="flex flex-col gap-2 pt-1">
+            <Input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="bg-black/60 border-white/15 text-white placeholder:text-white/30 focus:border-[#21d8ff]/50 text-sm h-10 sm:h-11"
+              data-testid="input-prelaunch-email"
+            />
+            <motion.div
+              animate={{
+                boxShadow: [
+                  "0 0 20px rgba(231,251,16,0.2), 0 0 40px rgba(33,216,255,0.08)",
+                  "0 0 30px rgba(33,216,255,0.3), 0 0 60px rgba(231,251,16,0.15)",
+                  "0 0 20px rgba(231,251,16,0.2), 0 0 40px rgba(33,216,255,0.08)",
+                ],
               }}
-              data-testid="button-prelaunch-submit"
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              className="rounded-md"
             >
-              {loading ? (
-                <span className="animate-spin h-5 w-5 border-2 border-black/30 border-t-black rounded-full" />
-              ) : (
-                "GET EARLY ACCESS"
-              )}
-            </Button>
-          </motion.div>
-          {error && <p className="text-red-400 text-xs sm:text-sm text-center">{error}</p>}
-        </form>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="no-default-hover-elevate w-full font-bold text-sm sm:text-base uppercase tracking-wide text-black h-10 sm:h-11"
+                style={{
+                  background: "linear-gradient(90deg, #E7FB10, #b8e600)",
+                  border: "1px solid #E7FB10",
+                }}
+                data-testid="button-prelaunch-submit"
+              >
+                {loading ? (
+                  <span className="animate-spin h-5 w-5 border-2 border-black/30 border-t-black rounded-full" />
+                ) : (
+                  "LOCK IN EARLY ACCESS"
+                )}
+              </Button>
+            </motion.div>
+            {error && <p className="text-red-400 text-xs sm:text-sm text-center">{error}</p>}
+          </form>
+        </div>
 
         <button
           onClick={handleClose}
