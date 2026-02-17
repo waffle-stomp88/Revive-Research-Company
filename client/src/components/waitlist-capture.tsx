@@ -448,23 +448,29 @@ function PreLaunchState({
           </div>
           <div className="grid grid-cols-1 gap-1.5 sm:gap-2">
             <ShimmerCard delay={0.3} accentColor="#E7FB10">
-              <motion.div
+              <div
                 className="h-8 w-8 sm:h-9 sm:w-9 rounded-md flex items-center justify-center flex-shrink-0"
                 style={{
                   background: "rgba(231,251,16,0.1)",
                   border: "1px solid rgba(231,251,16,0.25)",
+                  boxShadow: "0 0 12px rgba(231,251,16,0.15)",
                 }}
-                animate={{
-                  boxShadow: [
-                    "0 0 8px rgba(231,251,16,0.1)",
-                    "0 0 20px rgba(231,251,16,0.35)",
-                    "0 0 8px rgba(231,251,16,0.1)",
-                  ],
-                }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
               >
-                <GraduationCap className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-[#E7FB10]" />
-              </motion.div>
+                <motion.div
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    rotate: [0, -8, 8, 0],
+                    filter: [
+                      "drop-shadow(0 0 2px rgba(231,251,16,0.3))",
+                      "drop-shadow(0 0 8px rgba(231,251,16,0.7))",
+                      "drop-shadow(0 0 2px rgba(231,251,16,0.3))",
+                    ],
+                  }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                >
+                  <GraduationCap className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-[#E7FB10]" />
+                </motion.div>
+              </div>
               <div className="min-w-0">
                 <p className="text-xs sm:text-sm text-white font-semibold leading-tight">Revive Research Academy</p>
                 <p className="text-[11px] sm:text-xs text-white/45 leading-tight mt-0.5">Beginner or advanced — structured education built for real researchers.</p>
@@ -472,23 +478,29 @@ function PreLaunchState({
             </ShimmerCard>
 
             <ShimmerCard delay={0.45} accentColor="#21d8ff">
-              <motion.div
+              <div
                 className="h-8 w-8 sm:h-9 sm:w-9 rounded-md flex items-center justify-center flex-shrink-0"
                 style={{
                   background: "rgba(33,216,255,0.1)",
                   border: "1px solid rgba(33,216,255,0.25)",
+                  boxShadow: "0 0 12px rgba(33,216,255,0.15)",
                 }}
-                animate={{
-                  boxShadow: [
-                    "0 0 8px rgba(33,216,255,0.1)",
-                    "0 0 20px rgba(33,216,255,0.35)",
-                    "0 0 8px rgba(33,216,255,0.1)",
-                  ],
-                }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
               >
-                <FlaskConical className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-[#21d8ff]" />
-              </motion.div>
+                <motion.div
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    rotate: [0, 10, -6, 0],
+                    filter: [
+                      "drop-shadow(0 0 2px rgba(33,216,255,0.3))",
+                      "drop-shadow(0 0 8px rgba(33,216,255,0.7))",
+                      "drop-shadow(0 0 2px rgba(33,216,255,0.3))",
+                    ],
+                  }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
+                >
+                  <FlaskConical className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-[#21d8ff]" />
+                </motion.div>
+              </div>
               <div className="min-w-0">
                 <p className="text-xs sm:text-sm text-white font-semibold leading-tight">Revive Synergy Engine</p>
                 <p className="text-[11px] sm:text-xs text-white/45 leading-tight mt-0.5">Build stacks. See pathway interactions instantly.</p>
@@ -496,23 +508,29 @@ function PreLaunchState({
             </ShimmerCard>
 
             <ShimmerCard delay={0.6} accentColor="#a78bfa">
-              <motion.div
+              <div
                 className="h-8 w-8 sm:h-9 sm:w-9 rounded-md flex items-center justify-center flex-shrink-0"
                 style={{
                   background: "rgba(167,139,250,0.1)",
                   border: "1px solid rgba(167,139,250,0.25)",
+                  boxShadow: "0 0 12px rgba(167,139,250,0.15)",
                 }}
-                animate={{
-                  boxShadow: [
-                    "0 0 8px rgba(167,139,250,0.1)",
-                    "0 0 20px rgba(167,139,250,0.35)",
-                    "0 0 8px rgba(167,139,250,0.1)",
-                  ],
-                }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 1.3 }}
               >
-                <QrCode className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-[#a78bfa]" />
-              </motion.div>
+                <motion.div
+                  animate={{
+                    scale: [1, 1.15, 1],
+                    rotate: [0, -6, 10, 0],
+                    filter: [
+                      "drop-shadow(0 0 2px rgba(167,139,250,0.3))",
+                      "drop-shadow(0 0 8px rgba(167,139,250,0.7))",
+                      "drop-shadow(0 0 2px rgba(167,139,250,0.3))",
+                    ],
+                  }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.9 }}
+                >
+                  <QrCode className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-[#a78bfa]" />
+                </motion.div>
+              </div>
               <div className="min-w-0">
                 <p className="text-xs sm:text-sm text-white font-semibold leading-tight">Trust Nothing. Verify Everything.</p>
                 <p className="text-[11px] sm:text-xs text-white/45 leading-tight mt-0.5">Scan any vial. Real third-party results. Instantly.</p>
