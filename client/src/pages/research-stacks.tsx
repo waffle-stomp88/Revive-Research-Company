@@ -1542,26 +1542,28 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
   const resolveCollisions = (labels: LabelBox[]): LabelBox[] => {
     const sorted = [...labels].sort((a, b) => a.priority - b.priority);
     const placed: LabelBox[] = [];
+    const pad = 6;
 
     const overlaps = (a: LabelBox, b: LabelBox): boolean => {
-      return !(a.x + a.w / 2 < b.x - b.w / 2 || a.x - a.w / 2 > b.x + b.w / 2 ||
-               a.y + a.h / 2 < b.y - b.h / 2 || a.y - a.h / 2 > b.y + b.h / 2);
+      return !(a.x + a.w / 2 + pad < b.x - b.w / 2 || a.x - a.w / 2 - pad > b.x + b.w / 2 ||
+               a.y + a.h / 2 + pad < b.y - b.h / 2 || a.y - a.h / 2 - pad > b.y + b.h / 2);
     };
 
     for (const label of sorted) {
       let adjusted = { ...label };
       let attempts = 0;
-      const maxAttempts = 20;
+      const maxAttempts = 36;
+      const directions = 8;
       while (attempts < maxAttempts) {
         const hasCollision = placed.some(p => overlaps(adjusted, p));
         if (!hasCollision) break;
-        const ring = Math.ceil((attempts + 1) / 4);
-        const step = ring * 22;
-        const angle = (attempts % 4) * (Math.PI / 2);
+        const ring = Math.floor(attempts / directions) + 1;
+        const step = ring * 26;
+        const angle = (attempts % directions) * (2 * Math.PI / directions);
         adjusted = { ...adjusted, x: label.x + Math.cos(angle) * step, y: label.y + Math.sin(angle) * step };
         attempts++;
       }
-      const margin = 20;
+      const margin = 15;
       adjusted.x = Math.max(margin + adjusted.w / 2, Math.min(svgWidth - margin - adjusted.w / 2, adjusted.x));
       adjusted.y = Math.max(margin + adjusted.h / 2, Math.min(svgHeight - margin - adjusted.h / 2, adjusted.y));
       placed.push(adjusted);
@@ -1639,17 +1641,25 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
     });
   });
 
+  const nodeObstacles: LabelBox[] = nodes.map(n => ({
+    x: n.x,
+    y: n.y,
+    w: 70,
+    h: 70,
+    priority: -1,
+  }));
+
   const pwLabelBoxes: (LabelBox & { idx: number })[] = allPathwayNodes.map((pn, i) => ({
     x: pn.x,
     y: pn.y,
-    w: Math.min(90, pn.name.length * 7 + 16),
-    h: 26,
+    w: Math.min(100, pn.name.length * 7.5 + 20),
+    h: 28,
     priority: 10 + i,
     idx: i,
   }));
-  const allBoxesForPw = [...resolvedLabels, ...synergyAvoidBoxes, ...pwLabelBoxes.map(b => ({ ...b, type: "pw", idx: b.idx }))];
+  const allBoxesForPw = [...resolvedLabels, ...synergyAvoidBoxes, ...nodeObstacles, ...pwLabelBoxes.map(b => ({ ...b, type: "pw", idx: b.idx }))];
   const resolvedPwLabels = resolveCollisions(allBoxesForPw);
-  const pwPositions = resolvedPwLabels.slice(resolvedLabels.length + synergyAvoidBoxes.length);
+  const pwPositions = resolvedPwLabels.slice(resolvedLabels.length + synergyAvoidBoxes.length + nodeObstacles.length);
   pwPositions.forEach((lb, i) => {
     if (i < allPathwayNodes.length) {
       allPathwayNodes[i].x = lb.x;
