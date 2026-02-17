@@ -504,7 +504,10 @@ function PreLaunchState({
               <div className="min-w-0">
                 <p className="text-sm sm:text-sm text-white font-semibold leading-tight">REVIVE Synergy Engine&#8482;</p>
                 <p className="text-xs sm:text-xs text-white/45 leading-snug mt-0.5">Build stacks. See pathway interactions instantly.</p>
-                <p className="text-[10px] text-white/30 mt-0.5 sm:hidden">Full experience on desktop only</p>
+                <div className="flex items-center gap-1 mt-0.5 sm:hidden">
+                  <Monitor className="h-3 w-3 text-[#21d8ff]" />
+                  <span className="text-[10px] font-semibold text-[#21d8ff]">Full experience on desktop only</span>
+                </div>
               </div>
             </ShimmerCard>
 
