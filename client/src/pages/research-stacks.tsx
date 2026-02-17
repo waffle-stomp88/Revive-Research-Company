@@ -2366,110 +2366,112 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
         </AnimatePresence>
       </svg>
       </div>
-      <AnimatePresence>
-        {hasActiveData && activeConnection && (() => {
-          const parts = activeConnection.split("-");
-          const fromIdx = parseInt(parts[0]);
-          const toIdx = parseInt(parts[1]);
-          const conn = connections.find(c => c.from === fromIdx && c.to === toIdx);
-          if (!conn) return null;
-          return (
-            <motion.div
-              key="conn-info"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              className="mx-4 mb-4 p-3 rounded-lg border backdrop-blur-sm"
-              style={{
-                background: "linear-gradient(135deg, rgba(34,197,94,0.08), rgba(13,17,23,0.95))",
-                borderColor: "rgba(34,197,94,0.3)",
-                boxShadow: "0 0 20px rgba(34,197,94,0.1), inset 0 1px 0 rgba(34,197,94,0.1)",
-              }}
-            >
-              <div className="flex items-center gap-2 mb-1">
-                <Zap className="h-3.5 w-3.5 text-[#22c55e]" style={{ filter: "drop-shadow(0 0 4px rgba(34,197,94,0.5))" }} />
-                <span className="text-xs font-bold text-[#22c55e]" style={{ textShadow: "0 0 8px rgba(34,197,94,0.4)" }}>
-                  {nodes[conn.from].name} ↔ {nodes[conn.to].name}
-                </span>
-              </div>
-              {conn.reason && (
-                <p className="text-[12px] text-gray-300 mb-2 pl-5.5 leading-relaxed" style={{ paddingLeft: "22px" }}>
-                  {conn.reason}
-                </p>
-              )}
-              {conn.pathways.length > 0 && (
+      <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ zIndex: 10 }}>
+        <AnimatePresence>
+          {hasActiveData && activeConnection && (() => {
+            const parts = activeConnection.split("-");
+            const fromIdx = parseInt(parts[0]);
+            const toIdx = parseInt(parts[1]);
+            const conn = connections.find(c => c.from === fromIdx && c.to === toIdx);
+            if (!conn) return null;
+            return (
+              <motion.div
+                key="conn-info"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                className="mx-4 mb-8 p-3 rounded-lg border backdrop-blur-md pointer-events-auto"
+                style={{
+                  background: "linear-gradient(135deg, rgba(34,197,94,0.12), rgba(13,17,23,0.97))",
+                  borderColor: "rgba(34,197,94,0.3)",
+                  boxShadow: "0 0 20px rgba(34,197,94,0.1), inset 0 1px 0 rgba(34,197,94,0.1)",
+                }}
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <Zap className="h-3.5 w-3.5 text-[#22c55e]" style={{ filter: "drop-shadow(0 0 4px rgba(34,197,94,0.5))" }} />
+                  <span className="text-xs font-bold text-[#22c55e]" style={{ textShadow: "0 0 8px rgba(34,197,94,0.4)" }}>
+                    {nodes[conn.from].name} ↔ {nodes[conn.to].name}
+                  </span>
+                </div>
+                {conn.reason && (
+                  <p className="text-[12px] text-gray-300 mb-2 pl-5.5 leading-relaxed" style={{ paddingLeft: "22px" }}>
+                    {conn.reason}
+                  </p>
+                )}
+                {conn.pathways.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {conn.pathways.map((p, i) => (
+                      <span key={i} className="text-[11px] px-2 py-1 rounded-full bg-[#22c55e]/10 text-[#4ade80] border border-[#22c55e]/20"
+                        style={{ textShadow: "0 0 6px rgba(34,197,94,0.3)" }}>
+                        {p}{PATHWAY_DESCRIPTIONS[p] ? ` — ${PATHWAY_DESCRIPTIONS[p].slice(0, 60)}` : ""}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            );
+          })()}
+
+          {hasActiveData && activeNode && !activeConnection && (() => {
+            const node = nodes.find(n => n.name === activeNode);
+            if (!node) return null;
+            const connCount = connections.filter(c => nodes[c.from].name === activeNode || nodes[c.to].name === activeNode).length;
+            return (
+              <motion.div
+                key="node-info"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                className="mx-4 mb-8 p-3 rounded-lg border backdrop-blur-md pointer-events-auto"
+                style={{
+                  background: `linear-gradient(135deg, ${node.color}12, rgba(13,17,23,0.97))`,
+                  borderColor: `${node.color}30`,
+                  boxShadow: `0 0 20px ${node.color}10, inset 0 1px 0 ${node.color}10`,
+                }}
+              >
+                <div className="flex items-center gap-2 mb-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: node.color, boxShadow: `0 0 8px ${node.color}` }} />
+                  <span className="text-sm font-bold" style={{ color: node.color, textShadow: `0 0 8px ${node.color}60` }}>
+                    {node.name}
+                  </span>
+                  <span className="text-[11px] text-gray-500 ml-1">
+                    {connCount} connection{connCount !== 1 ? "s" : ""} · {node.systems.join(", ")}
+                  </span>
+                </div>
                 <div className="flex flex-wrap gap-1.5">
-                  {conn.pathways.map((p, i) => (
-                    <span key={i} className="text-[11px] px-2 py-1 rounded-full bg-[#22c55e]/10 text-[#4ade80] border border-[#22c55e]/20"
-                      style={{ textShadow: "0 0 6px rgba(34,197,94,0.3)" }}>
-                      {p}{PATHWAY_DESCRIPTIONS[p] ? ` — ${PATHWAY_DESCRIPTIONS[p].slice(0, 60)}` : ""}
+                  {node.pathways.map((p, i) => (
+                    <span key={i} className="text-[11px] px-2 py-1 rounded-full border"
+                      style={{ backgroundColor: `${node.color}10`, color: node.color, borderColor: `${node.color}25` }}>
+                      {p}
                     </span>
                   ))}
                 </div>
-              )}
-            </motion.div>
-          );
-        })()}
-
-        {hasActiveData && activeNode && !activeConnection && (() => {
-          const node = nodes.find(n => n.name === activeNode);
-          if (!node) return null;
-          const connCount = connections.filter(c => nodes[c.from].name === activeNode || nodes[c.to].name === activeNode).length;
-          return (
-            <motion.div
-              key="node-info"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              className="mx-4 mb-4 p-3 rounded-lg border backdrop-blur-sm"
-              style={{
-                background: `linear-gradient(135deg, ${node.color}08, rgba(13,17,23,0.95))`,
-                borderColor: `${node.color}30`,
-                boxShadow: `0 0 20px ${node.color}10, inset 0 1px 0 ${node.color}10`,
-              }}
-            >
-              <div className="flex items-center gap-2 mb-1.5">
-                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: node.color, boxShadow: `0 0 8px ${node.color}` }} />
-                <span className="text-sm font-bold" style={{ color: node.color, textShadow: `0 0 8px ${node.color}60` }}>
-                  {node.name}
-                </span>
-                <span className="text-[11px] text-gray-500 ml-1">
-                  {connCount} connection{connCount !== 1 ? "s" : ""} · {node.systems.join(", ")}
-                </span>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {node.pathways.map((p, i) => (
-                  <span key={i} className="text-[11px] px-2 py-1 rounded-full border"
-                    style={{ backgroundColor: `${node.color}10`, color: node.color, borderColor: `${node.color}25` }}>
-                    {p}
-                  </span>
-                ))}
-              </div>
-            </motion.div>
-          );
-        })()}
-      </AnimatePresence>
-      {hasActiveData && !activeNode && !activeConnection && allSharedPathways.length > 0 && (
-        <div className="px-4 pb-4">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-gray-500 font-medium text-[14px]">Shared pathways:</span>
-            {allSharedPathways.map((pathway, i) => (
-              <Tooltip key={i}>
-                <TooltipTrigger asChild>
-                  <Badge className="text-[13px] bg-[#22c55e]/10 text-[#22c55e] border-[#22c55e]/20 cursor-help"
-                    style={{ textShadow: "0 0 6px rgba(34,197,94,0.3)" }}>
-                    {pathway}
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-[220px] text-center bg-[#0d1117] border-[#22c55e]/30">
-                  <p className="text-xs">{PATHWAY_DESCRIPTIONS[pathway] || "Shared biological pathway"}</p>
-                </TooltipContent>
-              </Tooltip>
-            ))}
+              </motion.div>
+            );
+          })()}
+        </AnimatePresence>
+        {hasActiveData && !activeNode && !activeConnection && allSharedPathways.length > 0 && (
+          <div className="px-4 pb-8 pointer-events-auto">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-gray-500 font-medium text-[14px]">Shared pathways:</span>
+              {allSharedPathways.map((pathway, i) => (
+                <Tooltip key={i}>
+                  <TooltipTrigger asChild>
+                    <Badge className="text-[13px] bg-[#22c55e]/10 text-[#22c55e] border-[#22c55e]/20 cursor-help pointer-events-auto"
+                      style={{ textShadow: "0 0 6px rgba(34,197,94,0.3)" }}>
+                      {pathway}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-[220px] text-center bg-[#0d1117] border-[#22c55e]/30">
+                    <p className="text-xs">{PATHWAY_DESCRIPTIONS[pathway] || "Shared biological pathway"}</p>
+                  </TooltipContent>
+                </Tooltip>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
-      <div className="absolute bottom-2 right-3 flex items-center gap-1.5 opacity-70">
+        )}
+      </div>
+      <div className="absolute bottom-2 right-3 flex items-center gap-1.5 opacity-70" style={{ zIndex: 11 }}>
         <Zap className="h-3 w-3 text-[#22c55e]" style={{ filter: "drop-shadow(0 0 4px rgba(34,197,94,0.5))" }} />
         <span className="text-[10px] text-[#22c55e]/80 tracking-wide font-medium">
           Powered by Revive Synergy Engine&#8482;
