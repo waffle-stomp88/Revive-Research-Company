@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -1412,15 +1412,34 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
   }));
 
   const ghostNodes = [
-    { x: 200, y: centerY - 20, color: "#22c55e", label: "?" },
-    { x: 450, y: centerY + 15, color: "#21d8ff", label: "?" },
-    { x: 700, y: centerY - 10, color: "#a855f7", label: "?" },
+    { x: 130, y: centerY - 30, color: "#22c55e", label: "?" },
+    { x: 330, y: centerY + 25, color: "#21d8ff", label: "?" },
+    { x: 530, y: centerY - 15, color: "#a855f7", label: "?" },
+    { x: 700, y: centerY + 20, color: "#22c55e", label: "?" },
+    { x: 820, y: centerY - 25, color: "#21d8ff", label: "?" },
   ];
 
   const ghostConnections = [
     { from: 0, to: 1 },
     { from: 1, to: 2 },
+    { from: 2, to: 3 },
+    { from: 3, to: 4 },
+    { from: 0, to: 2 },
+    { from: 1, to: 3 },
+    { from: 2, to: 4 },
   ];
+
+  const ghostParticles = useMemo(() => Array.from({ length: 18 }, (_, i) => ({
+    x: Math.random() * svgWidth,
+    y: Math.random() * svgHeight,
+    r: 0.6 + Math.random() * 1.2,
+    dur: 8 + Math.random() * 12,
+    dx: (Math.random() - 0.5) * 120,
+    dy: (Math.random() - 0.5) * 60,
+    opacity: 0.15 + Math.random() * 0.25,
+    delay: Math.random() * 5,
+    color: ["#22c55e", "#21d8ff", "#a855f7"][i % 3],
+  })), [svgWidth, svgHeight]);
 
   const nodes = hasActiveData ? peptideData.map((p, i) => {
     const count = peptideData.length;
@@ -1844,55 +1863,103 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
             {ghostConnections.map((gc, i) => {
               const fn = ghostNodes[gc.from];
               const tn = ghostNodes[gc.to];
+              const mixColor = fn.color;
               return (
-                <motion.line
-                  key={`ghost-conn-${i}`}
-                  x1={fn.x} y1={fn.y} x2={tn.x} y2={tn.y}
-                  stroke="rgba(255,255,255,0.06)"
-                  strokeWidth={1}
-                  strokeDasharray="8,12"
-                  animate={{ opacity: [0.3, 0.6, 0.3] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 1.5 }}
-                />
+                <g key={`ghost-conn-${i}`}>
+                  <motion.line
+                    x1={fn.x} y1={fn.y} x2={tn.x} y2={tn.y}
+                    stroke={mixColor}
+                    strokeWidth={0.8}
+                    strokeOpacity={0.06}
+                    strokeDasharray="4,10"
+                    animate={{ strokeOpacity: [0.03, 0.08, 0.03] }}
+                    transition={{ duration: 4 + i * 0.5, repeat: Infinity, ease: "easeInOut", delay: i * 0.8 }}
+                  />
+                  {[0, 1].map(pi => {
+                    const dur = 3 + i * 0.4;
+                    const delay = pi * (dur / 2) + i * 0.6;
+                    return (
+                      <motion.circle
+                        key={`ghost-pulse-${i}-${pi}`}
+                        r={1.5}
+                        fill={mixColor}
+                        className="pointer-events-none"
+                        animate={{
+                          cx: [fn.x, tn.x],
+                          cy: [fn.y, tn.y],
+                          opacity: [0, 0.5, 0.5, 0],
+                        }}
+                        transition={{
+                          duration: dur,
+                          delay,
+                          repeat: Infinity,
+                          ease: "linear",
+                          times: [0, 0.15, 0.85, 1],
+                        }}
+                      />
+                    );
+                  })}
+                </g>
               );
             })}
+
+            {ghostParticles.map((p, i) => (
+              <motion.circle
+                key={`ghost-micro-${i}`}
+                r={p.r}
+                fill={p.color}
+                className="pointer-events-none"
+                animate={{
+                  cx: [p.x, p.x + p.dx, p.x - p.dx * 0.5, p.x],
+                  cy: [p.y, p.y + p.dy, p.y - p.dy * 0.3, p.y],
+                  opacity: [0, p.opacity, p.opacity * 0.6, 0],
+                }}
+                transition={{
+                  duration: p.dur,
+                  delay: p.delay,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
+            ))}
 
             {ghostNodes.map((gn, i) => (
               <g key={`ghost-${i}`}>
                 <motion.circle
-                  cx={gn.x} cy={gn.y} r={40}
+                  cx={gn.x} cy={gn.y} r={35}
                   fill={`url(#pm-ghost-glow-${i})`}
-                  animate={{ opacity: [0.3, 0.6, 0.3] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.7 }}
+                  animate={{ opacity: [0.2, 0.5, 0.2] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.6 }}
                 />
                 <motion.circle
-                  cx={gn.x} cy={gn.y} r={24}
+                  cx={gn.x} cy={gn.y} r={20}
                   fill="none"
                   stroke={gn.color}
-                  strokeWidth={0.5}
-                  strokeDasharray="6,8"
-                  animate={{ opacity: [0.08, 0.2, 0.08], rotate: 360 }}
-                  transition={{ opacity: { duration: 3, repeat: Infinity }, rotate: { duration: 25, repeat: Infinity, ease: "linear" } }}
+                  strokeWidth={0.6}
+                  strokeDasharray="4,6"
+                  animate={{ opacity: [0.06, 0.18, 0.06], rotate: 360 }}
+                  transition={{ opacity: { duration: 3, repeat: Infinity }, rotate: { duration: 20 + i * 5, repeat: Infinity, ease: "linear" } }}
                   style={{ transformOrigin: `${gn.x}px ${gn.y}px` }}
                 />
                 <motion.circle
-                  cx={gn.x} cy={gn.y} r={18}
-                  fill="rgba(255,255,255,0.02)"
+                  cx={gn.x} cy={gn.y} r={14}
+                  fill="rgba(255,255,255,0.015)"
                   stroke={gn.color}
-                  strokeWidth={0.8}
-                  strokeOpacity={0.15}
-                  animate={{ opacity: [0.3, 0.6, 0.3] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: i * 0.5 }}
+                  strokeWidth={0.6}
+                  strokeOpacity={0.12}
+                  animate={{ opacity: [0.2, 0.5, 0.2], scale: [0.95, 1.05, 0.95] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: i * 0.4 }}
+                  style={{ transformOrigin: `${gn.x}px ${gn.y}px` }}
                 />
                 <motion.text
                   x={gn.x} y={gn.y + 1}
                   textAnchor="middle"
                   dominantBaseline="middle"
                   fill={gn.color}
-                  fontSize="14"
+                  fontSize="12"
                   fontWeight="300"
-                  animate={{ opacity: [0.15, 0.35, 0.15] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: i * 0.5 }}
+                  animate={{ opacity: [0.1, 0.3, 0.1] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: i * 0.4 }}
                   className="pointer-events-none select-none"
                 >
                   {gn.label}
@@ -1909,8 +1976,8 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
               fontWeight="700"
               letterSpacing="1"
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1, delay: 0.3 }}
+              animate={{ opacity: [0.7, 1, 0.7] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
               className="pointer-events-none select-none"
               style={{ textShadow: "0 0 20px rgba(33,216,255,0.6), 0 0 40px rgba(33,216,255,0.3), 0 0 60px rgba(33,216,255,0.15)" }}
             >
@@ -1921,20 +1988,20 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
               x={centerX} y={centerY - 28}
               textAnchor="middle"
               dominantBaseline="middle"
-              fill="rgba(255,255,255,0.7)"
+              fill="rgba(255,255,255,0.6)"
               fontSize="12"
               fontWeight="400"
               letterSpacing="0.3"
               initial={{ opacity: 0 }}
-              animate={{ opacity: 0.75 }}
-              transition={{ duration: 1, delay: 0.6 }}
+              animate={{ opacity: [0.5, 0.75, 0.5] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
               className="pointer-events-none select-none"
             >
               Discover how compounds interact through shared mechanisms
             </motion.text>
 
             <motion.g
-              animate={{ opacity: [0.3, 0.6, 0.3] }}
+              animate={{ y: [0, 6, 0], opacity: [0.3, 0.7, 0.3] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 1 }}
             >
               <line
@@ -1943,7 +2010,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                 stroke="#22c55e"
                 strokeWidth={1.5}
                 strokeLinecap="round"
-                strokeOpacity={0.5}
+                strokeOpacity={0.6}
               />
               <path
                 d={`M${centerX - 6} ${centerY + 44} L${centerX} ${centerY + 52} L${centerX + 6} ${centerY + 44}`}
@@ -1952,7 +2019,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                 strokeWidth={1.5}
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeOpacity={0.5}
+                strokeOpacity={0.6}
               />
             </motion.g>
           </motion.g>
