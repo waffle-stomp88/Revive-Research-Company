@@ -5,6 +5,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { X, Check, ArrowRight, GraduationCap, FlaskConical, QrCode, AlertTriangle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+function useIsMobile(breakpoint = 640) {
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < breakpoint : false
+  );
+  useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    setIsMobile(mql.matches);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, [breakpoint]);
+  return isMobile;
+}
+
 import {
   captureEmail,
   isEmailCaptured,
@@ -190,6 +204,7 @@ export function FoundingMembersPopup() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] flex items-center justify-center p-4"
+          style={{ WebkitBackdropFilter: "blur(12px)" }}
           data-testid="modal-prelaunch-capture"
           onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
         >
@@ -198,7 +213,7 @@ export function FoundingMembersPopup() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.88, y: 50 }}
             transition={{ type: "spring", damping: 18, stiffness: 250 }}
-            style={{ width: "min(460px, calc(100vw - 32px))", maxHeight: "90vh", overflowY: "auto" }}
+            style={{ width: "min(460px, calc(100vw - 32px))", maxHeight: "90vh", overflowY: "auto", transform: "translateZ(0)", WebkitOverflowScrolling: "touch" }}
           >
             {success ? (
               <SuccessState handleClose={handleClose} />
@@ -220,26 +235,38 @@ export function FoundingMembersPopup() {
 }
 
 function SuccessState({ handleClose }: { handleClose: () => void }) {
+  const isMobile = useIsMobile();
+
   return (
-    <Card className="relative overflow-hidden border-0 bg-[#0a0a0e]">
-      <motion.div
-        className="absolute inset-0 rounded-md"
-        animate={{
-          boxShadow: [
-            "inset 0 0 0 2px rgba(231,251,16,0.3), 0 0 40px rgba(33,216,255,0.15), 0 0 80px rgba(231,251,16,0.1)",
-            "inset 0 0 0 2px rgba(33,216,255,0.5), 0 0 60px rgba(231,251,16,0.3), 0 0 120px rgba(33,216,255,0.15)",
-            "inset 0 0 0 2px rgba(231,251,16,0.3), 0 0 40px rgba(33,216,255,0.15), 0 0 80px rgba(231,251,16,0.1)",
-          ],
-        }}
-        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-      />
+    <Card className="relative overflow-hidden border-0 bg-[#0a0a0e]" style={{ transform: "translateZ(0)", willChange: "transform" }}>
+      {isMobile ? (
+        <div
+          className="absolute inset-0 rounded-md"
+          style={{
+            border: "2px solid rgba(33,216,255,0.35)",
+            boxShadow: "0 0 40px rgba(33,216,255,0.15), 0 0 80px rgba(231,251,16,0.1)",
+          }}
+        />
+      ) : (
+        <motion.div
+          className="absolute inset-0 rounded-md"
+          animate={{
+            boxShadow: [
+              "inset 0 0 0 2px rgba(231,251,16,0.3), 0 0 40px rgba(33,216,255,0.15), 0 0 80px rgba(231,251,16,0.1)",
+              "inset 0 0 0 2px rgba(33,216,255,0.5), 0 0 60px rgba(231,251,16,0.3), 0 0 120px rgba(33,216,255,0.15)",
+              "inset 0 0 0 2px rgba(231,251,16,0.3), 0 0 40px rgba(33,216,255,0.15), 0 0 80px rgba(231,251,16,0.1)",
+            ],
+          }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        />
+      )}
       <HexGrid />
       <FloatingParticle color="#E7FB10" delay={0} x="15%" y="20%" size={4} />
       <FloatingParticle color="#21d8ff" delay={0.5} x="80%" y="30%" size={3} />
-      <FloatingParticle color="#a78bfa" delay={1} x="60%" y="70%" size={3} />
-      <FloatingParticle color="#E7FB10" delay={1.5} x="25%" y="75%" size={2} />
+      {!isMobile && <FloatingParticle color="#a78bfa" delay={1} x="60%" y="70%" size={3} />}
+      {!isMobile && <FloatingParticle color="#E7FB10" delay={1.5} x="25%" y="75%" size={2} />}
 
-      <div className="relative z-10 flex flex-col items-center text-center gap-5 p-8">
+      <div className="relative z-10 flex flex-col items-center text-center gap-5 p-6 sm:p-8">
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -335,27 +362,43 @@ function PreLaunchState({
   handleSubmit: (e?: React.FormEvent) => void;
   handleClose: () => void;
 }) {
+  const isMobile = useIsMobile();
+
   return (
-    <Card className="relative overflow-hidden border-0 bg-[#0a0a0e]">
-      <motion.div
-        className="absolute inset-0 rounded-md"
-        animate={{
-          boxShadow: [
-            "inset 0 0 0 1px rgba(231,251,16,0.15), inset 0 0 0 2px rgba(33,216,255,0.08), 0 0 30px rgba(231,251,16,0.08), 0 0 60px rgba(33,216,255,0.05)",
-            "inset 0 0 0 1px rgba(33,216,255,0.4), inset 0 0 0 2px rgba(231,251,16,0.15), 0 0 50px rgba(33,216,255,0.15), 0 0 100px rgba(231,251,16,0.08)",
-            "inset 0 0 0 1px rgba(167,139,250,0.25), inset 0 0 0 2px rgba(33,216,255,0.1), 0 0 40px rgba(167,139,250,0.1), 0 0 80px rgba(33,216,255,0.06)",
-            "inset 0 0 0 1px rgba(231,251,16,0.15), inset 0 0 0 2px rgba(33,216,255,0.08), 0 0 30px rgba(231,251,16,0.08), 0 0 60px rgba(33,216,255,0.05)",
-          ],
-        }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-      />
+    <Card className="relative overflow-hidden border-0 bg-[#0a0a0e]" style={{ transform: "translateZ(0)", willChange: "transform" }}>
+      {isMobile ? (
+        <div
+          className="absolute inset-0 rounded-md"
+          style={{
+            border: "1px solid rgba(33,216,255,0.25)",
+            boxShadow: "0 0 30px rgba(33,216,255,0.08), 0 0 60px rgba(231,251,16,0.05)",
+          }}
+        />
+      ) : (
+        <motion.div
+          className="absolute inset-0 rounded-md"
+          animate={{
+            boxShadow: [
+              "inset 0 0 0 1px rgba(231,251,16,0.15), inset 0 0 0 2px rgba(33,216,255,0.08), 0 0 30px rgba(231,251,16,0.08), 0 0 60px rgba(33,216,255,0.05)",
+              "inset 0 0 0 1px rgba(33,216,255,0.4), inset 0 0 0 2px rgba(231,251,16,0.15), 0 0 50px rgba(33,216,255,0.15), 0 0 100px rgba(231,251,16,0.08)",
+              "inset 0 0 0 1px rgba(167,139,250,0.25), inset 0 0 0 2px rgba(33,216,255,0.1), 0 0 40px rgba(167,139,250,0.1), 0 0 80px rgba(33,216,255,0.06)",
+              "inset 0 0 0 1px rgba(231,251,16,0.15), inset 0 0 0 2px rgba(33,216,255,0.08), 0 0 30px rgba(231,251,16,0.08), 0 0 60px rgba(33,216,255,0.05)",
+            ],
+          }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        />
+      )}
 
       <HexGrid />
-      <ScanLine />
+      {!isMobile && <ScanLine />}
 
-      <FloatingParticle color="#E7FB10" delay={0} x="10%" y="15%" size={3} />
-      <FloatingParticle color="#21d8ff" delay={0.8} x="85%" y="25%" size={4} />
-      <FloatingParticle color="#a78bfa" delay={1.6} x="90%" y="60%" size={3} />
+      {!isMobile && (
+        <>
+          <FloatingParticle color="#E7FB10" delay={0} x="10%" y="15%" size={3} />
+          <FloatingParticle color="#21d8ff" delay={0.8} x="85%" y="25%" size={4} />
+          <FloatingParticle color="#a78bfa" delay={1.6} x="90%" y="60%" size={3} />
+        </>
+      )}
       <FloatingParticle color="#21d8ff" delay={2.4} x="8%" y="70%" size={2} />
       <FloatingParticle color="#E7FB10" delay={3.2} x="50%" y="85%" size={2} />
 
@@ -368,12 +411,12 @@ function PreLaunchState({
       </button>
 
       <div className="relative z-10 p-4 sm:p-6 flex flex-col gap-3 sm:gap-5">
-        <div className="space-y-1 sm:space-y-2">
+        <div className="space-y-1 sm:space-y-2 text-center">
           <motion.h3
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="font-display text-2xl sm:text-4xl text-white leading-tight"
+            className="font-display text-3xl sm:text-5xl text-white leading-tight"
           >
             We know why you're <span className="bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent">here.</span>
           </motion.h3>
