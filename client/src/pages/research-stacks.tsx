@@ -1735,7 +1735,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
             <Zap className="h-5 w-5 text-[#22c55e]" style={{ filter: "drop-shadow(0 0 6px rgba(34,197,94,0.6))" }} />
           </div>
           <div>
-            <h4 className="font-bold text-white tracking-wide text-[18px]" style={{ textShadow: "0 0 20px rgba(34,197,94,0.3)" }}>SYNERGY PATHWAY MAP</h4>
+            <h4 className="font-bold text-white tracking-wide text-[20px]" style={{ textShadow: "0 0 20px rgba(34,197,94,0.3)" }}>SYNERGY PATHWAY MAP</h4>
             {hasActiveData ? (
               <p className="text-[11px] text-[#22c55e]/70 flex items-center gap-1">
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse" />
@@ -2816,7 +2816,6 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
           </Card>
         </div>
       )}
-
       {/* Two Column Layout: Peptides Left, Build Panel Right */}
       <div className="grid grid-cols-1 lg:grid-cols-[65%_1fr] gap-6">
         {/* Left Column: Peptide Selection */}
@@ -3546,7 +3545,6 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
           );
         })()}
       </AnimatePresence>
-
       {/* Spacer for sticky bottom bar + mobile synergy bar + mobile nav */}
       <div className={`${selectedPeptides.length >= 2 ? "h-52" : "h-36"} md:h-20`} />
       {/* ====== STICKY BOTTOM CART BAR ====== */}
