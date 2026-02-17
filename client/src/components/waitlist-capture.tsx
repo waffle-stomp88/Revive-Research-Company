@@ -112,9 +112,14 @@ function GlowingBadge({ number }: { number: number }) {
           border: "2px solid rgba(231,251,16,0.4)",
         }}
       >
-        <span className="font-display text-2xl bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent">
+        <motion.span
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: [0, 1.3, 1], opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.6, ease: "easeOut" }}
+          className="font-display text-3xl bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent"
+        >
           #{number}
-        </span>
+        </motion.span>
       </motion.div>
       <motion.div
         className="absolute inset-0 rounded-full"
@@ -721,7 +726,7 @@ function FoundingState({
           className="text-xs text-white/25 hover:text-white/45 transition-colors cursor-pointer text-center"
           data-testid="button-founding-skip"
         >
-          Maybe later
+          Maybe later <span className="text-white/15">(I'll pay full price)</span>
         </button>
       </div>
     </Card>
