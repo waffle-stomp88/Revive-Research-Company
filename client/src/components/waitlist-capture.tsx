@@ -429,7 +429,7 @@ function PreLaunchState({
           className="space-y-0.5 sm:space-y-1"
         >
           <p className="text-xs sm:text-sm text-white/50 leading-relaxed">
-            You've been burned before.
+            You've been burned before. Your trust is gone.
           </p>
           <p className="text-xs sm:text-sm text-white/50 leading-relaxed">
             Fake COAs. Underdosed vials. Vendors who vanish.
