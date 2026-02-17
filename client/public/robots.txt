@@ -19,7 +19,14 @@ Disallow: /cart
 Disallow: /checkout
 Disallow: /order-confirmation
 
-# Disallow API and system routes
+# Allow public API routes needed for page rendering
+Allow: /api/education
+Allow: /api/peptides
+Allow: /api/products
+Allow: /api/coas
+Allow: /api/waitlist/count
+
+# Disallow all other API and system routes
 Disallow: /api/
 
 # Sitemap location

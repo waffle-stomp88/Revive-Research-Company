@@ -7,11 +7,18 @@ import logoUrl from "@assets/Revive_PNG_1766012118069.png";
 
 const AGE_VERIFIED_KEY = "revive-research-age-verified";
 
+function isSearchBot(): boolean {
+  if (typeof window !== "undefined" && (window as any).__IS_BOT__) return true;
+  if (typeof navigator === "undefined") return false;
+  return /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebot|ia_archiver|semrushbot|ahrefsbot|mj12bot|dotbot|rogerbot|seznambot|google-inspectiontool|google web preview|mediapartners-google|adsbot-google|apis-google|feedfetcher-google/i.test(navigator.userAgent);
+}
+
 export function AgeVerificationModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [agreed, setAgreed] = useState(false);
 
   useEffect(() => {
+    if (isSearchBot()) return;
     const verified = sessionStorage.getItem(AGE_VERIFIED_KEY);
     if (!verified) {
       setIsOpen(true);

@@ -2,6 +2,7 @@ import express, { type Express } from "express";
 import fs from "fs";
 import path from "path";
 import { getMetaForUrl, getPreRenderedContent, injectMetaTags, shouldReturn404 } from "./seo";
+import { isSearchBot } from "./bot-detect";
 
 export function serveStatic(app: Express) {
   const distPath = path.resolve(__dirname, "public");
@@ -26,6 +27,11 @@ export function serveStatic(app: Express) {
         getPreRenderedContent(req.originalUrl),
       ]);
       html = injectMetaTags(html, meta, preRendered);
+
+      if (isSearchBot(req.headers["user-agent"])) {
+        html = html.replace("<head>", `<head><script>window.__IS_BOT__=true;</script>`);
+      }
+
       res.status(statusCode).set({ "Content-Type": "text/html" }).end(html);
     } catch {
       res.sendFile(path.resolve(distPath, "index.html"));
