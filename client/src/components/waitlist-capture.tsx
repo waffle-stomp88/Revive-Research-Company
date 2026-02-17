@@ -90,7 +90,7 @@ function ShimmerCard({ children, delay = 0, accentColor }: { children: React.Rea
       initial={{ x: -15, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ delay, type: "spring", damping: 20 }}
-      className="relative flex items-center gap-3 p-3 rounded-md overflow-hidden"
+      className="relative flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-md overflow-hidden"
       style={{
         background: `linear-gradient(135deg, ${accentColor}08, transparent)`,
         border: `1px solid ${accentColor}20`,
@@ -367,13 +367,13 @@ function PreLaunchState({
         <X className="h-5 w-5" />
       </button>
 
-      <div className="relative z-10 p-6 flex flex-col gap-5">
-        <div className="space-y-2">
+      <div className="relative z-10 p-4 sm:p-6 flex flex-col gap-3 sm:gap-5">
+        <div className="space-y-1 sm:space-y-2">
           <motion.h3
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="font-display text-3xl sm:text-4xl text-white leading-tight"
+            className="font-display text-2xl sm:text-4xl text-white leading-tight"
           >
             We know why you're <span className="bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent">here.</span>
           </motion.h3>
@@ -383,99 +383,99 @@ function PreLaunchState({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="space-y-1"
+          className="space-y-0.5 sm:space-y-1"
         >
-          <p className="text-sm text-white/50 leading-relaxed">
+          <p className="text-xs sm:text-sm text-white/50 leading-relaxed">
             You've been burned before.
           </p>
-          <p className="text-sm text-white/50 leading-relaxed">
+          <p className="text-xs sm:text-sm text-white/50 leading-relaxed">
             Fake COAs. Underdosed vials. Vendors who vanish.
           </p>
-          <p className="text-base font-bold leading-relaxed text-[#ff2d9b]">
+          <p className="text-sm sm:text-base font-bold leading-relaxed text-[#ff2d9b]">
             We built Revive because researchers deserve better.
           </p>
         </motion.div>
 
-        <div className="space-y-2.5">
+        <div className="space-y-1.5 sm:space-y-2.5">
           <div className="flex items-center justify-between gap-2 flex-wrap">
-            <span className="text-xs uppercase tracking-widest font-semibold bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent">
+            <span className="text-[10px] sm:text-xs uppercase tracking-widest font-semibold bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent">
               What we actually built
             </span>
-            <span className="text-xs text-white/25 italic">live on this site</span>
+            <span className="text-[10px] sm:text-xs text-white/25 italic">live on this site</span>
           </div>
-          <div className="grid grid-cols-1 gap-2">
+          <div className="grid grid-cols-1 gap-1.5 sm:gap-2">
             <ShimmerCard delay={0.3} accentColor="#E7FB10">
               <div
-                className="h-9 w-9 rounded-md flex items-center justify-center flex-shrink-0"
+                className="h-8 w-8 sm:h-9 sm:w-9 rounded-md flex items-center justify-center flex-shrink-0"
                 style={{
                   background: "rgba(231,251,16,0.1)",
                   border: "1px solid rgba(231,251,16,0.25)",
                   boxShadow: "0 0 12px rgba(231,251,16,0.15)",
                 }}
               >
-                <GraduationCap className="h-4.5 w-4.5 text-[#E7FB10]" />
+                <GraduationCap className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-[#E7FB10]" />
               </div>
               <div className="min-w-0">
-                <p className="text-sm text-white font-semibold leading-tight">Revive Research Academy</p>
-                <p className="text-xs text-white/45 leading-tight mt-0.5">Beginner or advanced — structured education built for real researchers.</p>
+                <p className="text-xs sm:text-sm text-white font-semibold leading-tight">Revive Research Academy</p>
+                <p className="text-[11px] sm:text-xs text-white/45 leading-tight mt-0.5">Beginner or advanced — structured education built for real researchers.</p>
               </div>
             </ShimmerCard>
 
             <ShimmerCard delay={0.45} accentColor="#21d8ff">
               <div
-                className="h-9 w-9 rounded-md flex items-center justify-center flex-shrink-0"
+                className="h-8 w-8 sm:h-9 sm:w-9 rounded-md flex items-center justify-center flex-shrink-0"
                 style={{
                   background: "rgba(33,216,255,0.1)",
                   border: "1px solid rgba(33,216,255,0.25)",
                   boxShadow: "0 0 12px rgba(33,216,255,0.15)",
                 }}
               >
-                <FlaskConical className="h-4.5 w-4.5 text-[#21d8ff]" />
+                <FlaskConical className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-[#21d8ff]" />
               </div>
               <div className="min-w-0">
-                <p className="text-sm text-white font-semibold leading-tight">Revive Synergy Engine</p>
-                <p className="text-xs text-white/45 leading-tight mt-0.5">Build stacks. See pathway interactions instantly.</p>
+                <p className="text-xs sm:text-sm text-white font-semibold leading-tight">Revive Synergy Engine</p>
+                <p className="text-[11px] sm:text-xs text-white/45 leading-tight mt-0.5">Build stacks. See pathway interactions instantly.</p>
               </div>
             </ShimmerCard>
 
             <ShimmerCard delay={0.6} accentColor="#a78bfa">
               <div
-                className="h-9 w-9 rounded-md flex items-center justify-center flex-shrink-0"
+                className="h-8 w-8 sm:h-9 sm:w-9 rounded-md flex items-center justify-center flex-shrink-0"
                 style={{
                   background: "rgba(167,139,250,0.1)",
                   border: "1px solid rgba(167,139,250,0.25)",
                   boxShadow: "0 0 12px rgba(167,139,250,0.15)",
                 }}
               >
-                <QrCode className="h-4.5 w-4.5 text-[#a78bfa]" />
+                <QrCode className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-[#a78bfa]" />
               </div>
               <div className="min-w-0">
-                <p className="text-sm text-white font-semibold leading-tight">Trust Nothing. Verify Everything.</p>
-                <p className="text-xs text-white/45 leading-tight mt-0.5">Scan any vial. Real third-party results. Instantly.</p>
+                <p className="text-xs sm:text-sm text-white font-semibold leading-tight">Trust Nothing. Verify Everything.</p>
+                <p className="text-[11px] sm:text-xs text-white/45 leading-tight mt-0.5">Scan any vial. Real third-party results. Instantly.</p>
               </div>
             </ShimmerCard>
           </div>
         </div>
 
-        <div className="border-t border-white/[0.06] pt-4 space-y-2">
-          <h4 className="font-display text-xl bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#a78bfa] bg-clip-text text-transparent">
+        <div className="border-t border-white/[0.06] pt-3 sm:pt-4 space-y-1.5 sm:space-y-2">
+          <h4 className="font-display text-lg sm:text-xl bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#a78bfa] bg-clip-text text-transparent">
             LAUNCHING SOON
           </h4>
-          <p className="text-sm text-white/50 leading-relaxed">
+          <p className="text-xs sm:text-sm text-white/50 leading-relaxed">
             Be first in line when we open.
           </p>
-          <p className="text-sm text-[#21d8ff] italic leading-relaxed font-medium">
+          <p className="text-xs sm:text-sm text-[#21d8ff] italic leading-relaxed font-medium">
             Something special is waiting for our earliest supporters.
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-2.5">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-2">
           <Input
             type="email"
             placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="bg-black/60 border-white/15 text-white placeholder:text-white/30 focus:border-[#21d8ff]/50 text-sm"
+            className="bg-black/60 border-white/15 text-white placeholder:text-white/30 focus:border-[#21d8ff]/50 text-sm h-9 sm:h-10"
             data-testid="input-prelaunch-email"
           />
           <motion.div
@@ -492,7 +492,7 @@ function PreLaunchState({
             <Button
               type="submit"
               disabled={loading}
-              className="no-default-hover-elevate w-full font-bold text-sm uppercase tracking-wide text-black"
+              className="no-default-hover-elevate w-full font-bold text-xs sm:text-sm uppercase tracking-wide text-black"
               style={{
                 background: "linear-gradient(90deg, #E7FB10, #b8e600)",
                 border: "1px solid #E7FB10",
@@ -506,7 +506,7 @@ function PreLaunchState({
               )}
             </Button>
           </motion.div>
-          {error && <p className="text-red-400 text-sm text-center">{error}</p>}
+          {error && <p className="text-red-400 text-xs sm:text-sm text-center">{error}</p>}
         </form>
 
         <button
