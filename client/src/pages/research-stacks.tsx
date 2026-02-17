@@ -2456,7 +2456,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
           </div>
         </div>
       )}
-      <div className="absolute bottom-2 right-3 flex items-center gap-1.5 opacity-40 hover:opacity-70 transition-opacity">
+      <div className="absolute bottom-2 right-3 flex items-center gap-1.5 opacity-70">
         <Zap className="h-3 w-3 text-[#22c55e]" style={{ filter: "drop-shadow(0 0 4px rgba(34,197,94,0.5))" }} />
         <span className="text-[10px] text-[#22c55e]/80 tracking-wide font-medium">
           Powered by Revive Synergy Engine&#8482;
