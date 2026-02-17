@@ -51,15 +51,15 @@ function ScanLine() {
     <motion.div
       className="absolute left-0 right-0 pointer-events-none z-10"
       style={{
-        height: "2px",
-        background: "linear-gradient(90deg, transparent 5%, rgba(33,216,255,0.6) 30%, rgba(231,251,16,0.5) 50%, rgba(33,216,255,0.6) 70%, transparent 95%)",
-        boxShadow: "0 0 12px rgba(33,216,255,0.3), 0 0 4px rgba(231,251,16,0.2)",
+        height: "1px",
+        background: "linear-gradient(90deg, transparent 10%, rgba(33,216,255,0.45) 35%, rgba(231,251,16,0.3) 50%, rgba(33,216,255,0.45) 65%, transparent 90%)",
+        boxShadow: "0 0 6px rgba(33,216,255,0.15)",
       }}
       animate={{
         top: ["0%", "100%", "0%"],
       }}
       transition={{
-        duration: 5,
+        duration: 6,
         repeat: Infinity,
         ease: "linear",
       }}
