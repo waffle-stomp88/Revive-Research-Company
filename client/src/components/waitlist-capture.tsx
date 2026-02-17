@@ -464,7 +464,7 @@ function PreLaunchState({
           <p className="text-sm text-white/50 leading-relaxed">
             Be first in line when we open.
           </p>
-          <p className="text-sm text-white/40 italic leading-relaxed">
+          <p className="text-sm text-[#21d8ff] italic leading-relaxed font-medium">
             Something special is waiting for our earliest supporters.
           </p>
         </div>
