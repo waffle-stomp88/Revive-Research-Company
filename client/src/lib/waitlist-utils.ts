@@ -61,7 +61,7 @@ export function validateEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-export type WaitlistSource = "founding_popup" | "waitlist_popup" | "exit" | "oos" | "product";
+export type WaitlistSource = "founding_popup" | "waitlist_popup" | "prelaunch_popup" | "exit" | "exit_intent" | "oos" | "product";
 
 interface CaptureResult {
   success: boolean;

@@ -2378,13 +2378,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createWaitlistSignup(data: InsertWaitlistSignup): Promise<WaitlistSignup> {
-    const foundingCount = await this.getFoundingMemberCount();
-    const isFoundingMember = foundingCount < 50;
-    const foundingNumber = isFoundingMember ? foundingCount + 1 : null;
     const [signup] = await db.insert(waitlistSignups).values({
       ...data,
-      foundingMember: isFoundingMember,
-      foundingMemberNumber: foundingNumber,
+      foundingMember: false,
+      foundingMemberNumber: null,
     }).returning();
     return signup;
   }
