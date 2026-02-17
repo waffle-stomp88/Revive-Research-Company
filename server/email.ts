@@ -1492,10 +1492,10 @@ Build stacks. See pathway interactions instantly.
 03 — Trust Nothing. Verify Everything.
 Scan any vial. Real third-party results. Instantly.
 
-We built Revive because researchers deserve better.
+Peptides aren't the differentiator. We are.
+EVERY VIAL. EVERY BATCH. EVERY SINGLE TIME.
 
-We'll notify you the moment we go live.
-Something special is coming for our earliest supporters.
+You'll be the first to know when we go live.
 
 — The Revive Research Team
 ${getSharedFooterText(email, 'newsletter')}
@@ -1660,9 +1660,12 @@ ${getSharedFooterText(email, 'newsletter')}
           <!-- Bold Statement -->
           <tr>
             <td style="padding: 0 40px 30px 40px; text-align: center;">
-              <div style="border-top: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 24px 0;">
-                <p style="color: #ff2d9b; font-size: 16px; font-weight: 700; margin: 0; line-height: 1.4;">
-                  We built Revive because researchers deserve better.
+              <div style="border-top: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 28px 0;">
+                <p style="color: #ff2d9b; font-size: 18px; font-weight: 700; margin: 0 0 16px 0; line-height: 1.4; letter-spacing: 0.3px;">
+                  Peptides aren't the differentiator. We are.
+                </p>
+                <p style="color: #888888; font-size: 13px; font-weight: 500; margin: 0; line-height: 1.4; letter-spacing: 1px; text-transform: uppercase;">
+                  Every vial. Every batch. Every single time.
                 </p>
               </div>
             </td>
@@ -1671,11 +1674,8 @@ ${getSharedFooterText(email, 'newsletter')}
           <!-- What's Next -->
           <tr>
             <td style="padding: 0 40px 40px 40px; text-align: center;">
-              <p style="color: #ffffff; font-size: 15px; font-weight: 600; margin: 0 0 8px 0;">
-                We'll notify you the moment we go live.
-              </p>
-              <p style="color: ${styles.accentColor}; font-size: 14px; font-style: italic; font-weight: 500; margin: 0 0 24px 0;">
-                Something special is coming for our earliest supporters.
+              <p style="color: ${styles.accentColor}; font-size: 14px; font-weight: 500; margin: 0 0 24px 0;">
+                You'll be the first to know when we go live.
               </p>
               
               <table role="presentation" cellspacing="0" cellpadding="0" align="center">
