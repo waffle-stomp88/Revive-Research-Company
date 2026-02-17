@@ -23,7 +23,6 @@ import { TestingPipelineVisual } from "@/components/home/testing-pipeline-visual
 import { WhyResearchersChooseUs } from "@/components/home/why-researchers-choose-us";
 import { StackBuilderTeaser } from "@/components/home/stack-builder-teaser";
 import MistBackground from "@/components/home/mist-background";
-import { WaitlistHeroBanner } from "@/components/waitlist-capture";
 
 function HeroSection() {
   const { scrollY } = useScroll();
@@ -429,7 +428,6 @@ export default function Home() {
     <main>
       <SEOHead title="Home" description="Shop third-party tested peptides for scientific research. GMP-certified compounds with Certificates of Analysis. Free shipping over $200." canonicalPath="/" />
       <HeroSection />
-      <WaitlistHeroBanner />
       {/* MolecularDNAVisual - hidden on mobile for performance */}
       <div className="hidden md:block">
         <MolecularDNAVisual />
