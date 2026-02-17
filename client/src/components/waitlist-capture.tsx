@@ -574,8 +574,10 @@ function PreLaunchState({
                   "0 0 20px rgba(231,251,16,0.2), 0 0 40px rgba(33,216,255,0.08)",
                 ],
               }}
+              whileHover={{ scale: 1.03, boxShadow: "0 0 35px rgba(231,251,16,0.5), 0 0 70px rgba(231,251,16,0.2)" }}
+              whileTap={{ scale: 0.97 }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className="rounded-md"
+              className="rounded-md cursor-pointer"
             >
               <Button
                 type="submit"
@@ -772,8 +774,10 @@ export function ExitIntentPopup() {
                             "0 0 15px rgba(231,251,16,0.2), 0 0 30px rgba(33,216,255,0.06)",
                           ],
                         }}
+                        whileHover={{ scale: 1.03, boxShadow: "0 0 35px rgba(231,251,16,0.5), 0 0 70px rgba(231,251,16,0.2)" }}
+                        whileTap={{ scale: 0.97 }}
                         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                        className="rounded-md"
+                        className="rounded-md cursor-pointer"
                       >
                         <Button
                           type="submit"
