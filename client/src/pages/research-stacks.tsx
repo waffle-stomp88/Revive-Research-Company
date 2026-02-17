@@ -2877,7 +2877,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
               return (
                 <>
                   {/* Synergy Ring Visualization */}
-                  <Card className={`border-2 bg-gradient-to-br from-[#1a1a1f] to-[#0f0f12] overflow-hidden ${selectedPeptides.length === 0 ? "border-[#a78bfa]/60 animate-pulse" : "border-[#9d4edd]/40"}`} style={selectedPeptides.length === 0 ? { boxShadow: "0 0 18px rgba(167,139,250,0.35), 0 0 40px rgba(167,139,250,0.15), inset 0 0 12px rgba(167,139,250,0.08)" } : undefined} data-testid="card-synergy-ring">
+                  <Card className={`border-2 bg-gradient-to-br from-[#1a1a1f] to-[#0f0f12] overflow-hidden ${selectedPeptides.length === 0 ? "border-[#a78bfa]/60" : "border-[#9d4edd]/40"}`} style={selectedPeptides.length === 0 ? { boxShadow: "0 0 18px rgba(167,139,250,0.35), 0 0 40px rgba(167,139,250,0.15), inset 0 0 12px rgba(167,139,250,0.08)", animation: "glowPulse 2s ease-in-out infinite" } : undefined} data-testid="card-synergy-ring">
                     <div className="p-3 sm:p-5">
                       <div className="flex items-center gap-3 sm:gap-5">
                         {/* Animated Synergy Ring */}
