@@ -2036,20 +2036,11 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                   />
 
                   {Array.from({ length: particleCount }).map((_, pi) => {
-                    const delay = pi * ((isLegendary ? 2.5 : 3) / particleCount);
-                    const pColor = isLegendary ? (conn.stackColor || tierColor) : isStrong ? tierColor : fn.color;
                     const dur = isLegendary ? 2.5 : 3;
+                    const delay = pi * (dur / particleCount);
+                    const pColor = isLegendary ? (conn.stackColor || tierColor) : isStrong ? tierColor : tierColor || fn.color;
                     const pRadius = isLegendary ? 2.5 : isActive ? 3 : 1.5;
-                    const steps = 60;
-                    const positions = Array.from({ length: steps + 1 }, (_, s) => {
-                      const t = s / steps;
-                      return `${fn.x + (tn.x - fn.x) * t},${fn.y + (tn.y - fn.y) * t}`;
-                    });
-                    const opacitySteps = Array.from({ length: steps + 1 }, (_, s) => {
-                      const t = s / steps;
-                      const peak = isLegendary ? 0.9 : (isActive ? 0.9 : 0.4);
-                      return t < 0.15 ? (peak * t / 0.15).toFixed(2) : t > 0.85 ? (peak * (1 - t) / 0.15).toFixed(2) : peak.toFixed(2);
-                    });
+                    const peakOpacity = isLegendary ? 0.9 : (isActive ? 0.9 : 0.4);
                     return (
                       <motion.circle
                         key={`particle-${key}-${pi}`}
@@ -2057,18 +2048,17 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                         fill={pColor}
                         filter={isLegendary || isActive ? "url(#pm-glow-soft)" : undefined}
                         className="pointer-events-none"
-                        initial={{ cx: fn.x, cy: fn.y, opacity: 0 }}
                         animate={{
-                          cx: positions.map(p => parseFloat(p.split(",")[0])),
-                          cy: positions.map(p => parseFloat(p.split(",")[1])),
-                          opacity: opacitySteps.map(Number),
+                          cx: [fn.x, fn.x, tn.x, tn.x],
+                          cy: [fn.y, fn.y, tn.y, tn.y],
+                          opacity: [0, peakOpacity, peakOpacity, 0],
                         }}
                         transition={{
                           duration: dur,
                           delay,
                           repeat: Infinity,
                           ease: "linear",
-                          times: Array.from({ length: steps + 1 }, (_, s) => s / steps),
+                          times: [0, 0.1, 0.9, 1],
                         }}
                       />
                     );
