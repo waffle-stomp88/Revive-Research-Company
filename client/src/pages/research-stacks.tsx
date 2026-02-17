@@ -2797,7 +2797,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                 </div>
               </div>
               <p className="text-xs text-white/70 leading-relaxed">
-                Watch your peptides connect through <span className="text-[#21d8ff]">shared biological pathways</span> in real-time. See synergy scores, pathway visualizations, smart stack recommendations, and discover how compounds interact at the molecular level.
+                See an <span className="text-[#21d8ff]">interactive pathway visualization map</span> — watch animated connections form between your selected peptides, revealing shared biological mechanisms with glowing network nodes and real-time particle effects.
               </p>
               <div className="flex items-center gap-2 pt-1">
                 <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-[#21d8ff]/10 border border-[#21d8ff]/20">
@@ -3496,7 +3496,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
       </div>
       {/* ====== MOBILE FLOATING SYNERGY BAR ====== */}
       <AnimatePresence>
-        {selectedPeptides.length >= 2 && (() => {
+        {selectedPeptides.length >= 2 && !cartExpanded && (() => {
           const peptideNames = selectedPeptides.map(p => p.name);
           const synergyScore = calculateSynergyScore(peptideNames);
           const knownStack = checkKnownStack(peptideNames);
