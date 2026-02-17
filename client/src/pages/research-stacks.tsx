@@ -2006,7 +2006,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
             </motion.text>
 
             <motion.g
-              animate={{ y: [0, 10, 0], opacity: [0.5, 1, 0.5] }}
+              animate={{ y: [0, 6, 0], opacity: [0.5, 1, 0.5] }}
               transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
             >
               <line
