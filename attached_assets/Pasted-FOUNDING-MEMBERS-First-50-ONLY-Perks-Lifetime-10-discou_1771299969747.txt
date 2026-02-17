@@ -1,0 +1,211 @@
+FOUNDING MEMBERS: First 50 ONLY
+Perks:
+
+Lifetime 10% discount
+Locked-in pricing (immune to price increases)
+48hr early access to new compounds
+Priority support
+Founding Member badge (#1-50)
+
+After 50:
+
+Popup changes to regular waitlist
+"Founding Members sold out. Join waitlist for launch."
+Still capture emails, just no special perks
+Shows social proof ("All 50 spots claimed!")
+
+Clean. Simple. Scarce.
+
+THE FINAL REPLIT PROMPT
+Build a popup that appears 7 seconds after the age gate.
+
+This is THE main email capture. First 50 signups = Founding Members with locked pricing. After 50 = regular waitlist.
+
+═══════════════════════════════════════════
+
+TRIGGER:
+- 7 seconds after user passes age gate
+- Only if they haven't signed up (check localStorage 'email_captured')
+- Only once per 7 days (cookie: 'founding_popup_shown')
+- Desktop AND mobile
+- Close button (X) in top-right
+
+═══════════════════════════════════════════
+
+DESIGN:
+- Full modal overlay (dark semi-transparent background)
+- Centered card (600px max-width desktop, full-screen mobile)
+- Dark background with yellow glowing border
+- Smooth fade-in animation
+- Mobile: scrollable if content overflows
+
+═══════════════════════════════════════════
+
+COPY (When 0-49 have signed up):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+We know why you're here.
+You've been burned before.
+Fake COAs. Underdosed vials. Vendors who vanish.
+You spend hours on PubMed researching synergies
+because you can't find a vendor you actually trust.
+We built Revive because we were tired of the same shit.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+HERE'S WHAT'S DIFFERENT:
+→ QR-scan any vial. See the actual third-party test results.
+No fake PDFs. No trust required.
+→ Interactive Synergy Map shows you what works together.
+No more 3-hour PubMed rabbit holes.
+→ Every batch documented. Every claim verifiable.
+We put our reputation on the blockchain.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+LAUNCHING SOON
+We're only taking 50 Founding Members. Ever.
+What that actually means:
+✓ You lock in our launch prices. Forever.
+When we raise prices, you still pay today's rates.
+✓ You get 48hrs early access to every new compound.
+Before the public. Before the rush.
+✓ You're not customer #4,847. You're Founding Member #[X].
+We'll actually remember your name.
+After 50, this never happens again.
+[EMAIL INPUT - large, prominent]
+[BECOME FOUNDING MEMBER #[X+1]] ← Big yellow button
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ Only [X]/50 spots left
+Once we hit 50, this closes forever.
+[Maybe later - I'll pay full price] ← Small gray link
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+═══════════════════════════════════════════
+
+COPY (When 50+ have signed up):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FOUNDING MEMBER PROGRAM CLOSED
+All 50 spots have been claimed.
+You can still join the waitlist to get notified when we launch:
+→ QR-verifiable third-party testing
+→ Interactive Synergy Map tool
+→ Batch documentation on every vial
+[EMAIL INPUT]
+[JOIN LAUNCH WAITLIST]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Standard pricing applies.
+(Locked Founding Member rates sold out)
+[Maybe later]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+═══════════════════════════════════════════
+
+DYNAMIC ELEMENTS:
+
+1. LIVE COUNTER ([X]/50):
+   - Pull from database: SELECT COUNT(*) FROM waitlist WHERE founding_member = true
+   - Display remaining: 50 - count
+   - Update urgency messaging at thresholds:
+     * 40-49: "Only [X] spots left"
+     * 30-39: "Only [X] Founding Member spots remaining"  
+     * 20-29: "Less than half available - [X]/50 left"
+     * 10-19: "🔥 Only [X] spots left!"
+     * 5-9: "⚠️ FINAL [X] SPOTS"
+     * 1-4: "🚨 LAST [X] SPOTS - Closes forever at 50"
+
+2. FOUNDING MEMBER NUMBER:
+   - Button shows what number they'll be
+   - Example: If 23 signed up, button says "BECOME FOUNDING MEMBER #24"
+
+3. POPUP VERSION:
+   - If count < 50: Show Founding Member version
+   - If count >= 50: Show waitlist version
+
+═══════════════════════════════════════════
+
+BEHAVIOR:
+
+ON SUBMIT (0-49 signups):
+- Validate email
+- Check current count
+- If still < 50:
+  * Insert with founding_member = true
+  * founding_member_number = current_count + 1
+  * Show success:
+✓ YOU'RE IN!
+
+You're Founding Member #[X] of 50
+
+Your locked pricing is secured.
+We'll email you when we launch.
+
+[Explore the platform →]
+- If count just hit 50:
+  * Insert with founding_member = false
+  * Show waitlist success message
+- Store in localStorage: 'email_captured' = email
+- Auto-close after 3 seconds
+- Track: 'founding_member_signup' or 'waitlist_signup'
+
+ON SUBMIT (50+ signups):
+- Validate email
+- Insert with founding_member = false
+- Show success:
+✓ YOU'RE ON THE WAITLIST
+We'll notify you when we launch.
+[Explore the platform →]
+- Store in localStorage
+- Auto-close after 3 seconds
+
+ON SKIP:
+- Set cookie: 'founding_popup_shown' for 7 days
+- Close popup
+- Track: 'popup_skipped'
+
+ON CLOSE (X):
+- Same as skip
+
+═══════════════════════════════════════════
+
+DATABASE:
+
+waitlist table:
+- id (serial)
+- email (unique)
+- founding_member (boolean)
+- founding_member_number (integer, 1-50 or null)
+- source (varchar) - 'founding_popup' or 'waitlist_popup'
+- created_at (timestamp)
+
+═══════════════════════════════════════════
+
+API ENDPOINTS:
+
+POST /api/waitlist/signup
+- Accept: { email }
+- Check current founding member count
+- If < 50: founding_member = true, assign number
+- If >= 50: founding_member = false
+- Return: { success, founding_member, founding_member_number, total_count }
+
+GET /api/waitlist/count
+- Return: { total, founding_members, spots_remaining }
+
+═══════════════════════════════════════════
+
+STYLING:
+- Match existing dark aesthetic with neon yellow
+- Email input: Large, dark background, white text, yellow border on focus
+- Button: Bright yellow (#d4ff00), dark text, hover glow
+- Skip link: Small (12px), gray, bottom of card
+- Counter text: Yellow/orange, slightly larger (18px)
+- Mobile: Full-screen, still scrollable
+- Close X: Top-right, white, hover yellow
+
+═══════════════════════════════════════════
+
+Build this with:
+✓ Real scarcity (50 only)
+✓ Dynamic messaging (changes at 50)
+✓ Live counter
+✓ Emotional copy
+✓ Strong CTA
+
+This is the main email capture mechanism.
+Make it count.
