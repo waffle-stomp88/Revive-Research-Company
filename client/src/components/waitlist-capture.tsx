@@ -391,7 +391,7 @@ function PreLaunchState({
           <p className="text-sm text-white/50 leading-relaxed">
             Fake COAs. Underdosed vials. Vendors who vanish.
           </p>
-          <p className="text-base font-bold leading-relaxed bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#a78bfa] bg-clip-text text-transparent">
+          <p className="text-base font-bold leading-relaxed text-white">
             We built Revive because researchers deserve better.
           </p>
         </motion.div>
