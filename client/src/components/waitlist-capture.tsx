@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { X, Check, ArrowRight, Shield, FlaskConical, QrCode, AlertTriangle } from "lucide-react";
+import { X, Check, ArrowRight, GraduationCap, FlaskConical, QrCode, AlertTriangle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import {
   captureEmail,
@@ -447,11 +447,11 @@ function PreLaunchState({
                   boxShadow: "0 0 12px rgba(167,139,250,0.15)",
                 }}
               >
-                <Shield className="h-4.5 w-4.5 text-[#a78bfa]" />
+                <GraduationCap className="h-4.5 w-4.5 text-[#a78bfa]" />
               </div>
               <div className="min-w-0">
-                <p className="text-sm text-white font-semibold leading-tight">Batch-Level Tracking</p>
-                <p className="text-xs text-white/45 leading-tight mt-0.5">Every vial traced. Every batch documented.</p>
+                <p className="text-sm text-white font-semibold leading-tight">Full Education Library</p>
+                <p className="text-xs text-white/45 leading-tight mt-0.5">Research Academy, in-depth articles — beginner to advanced, we've got you covered.</p>
               </div>
             </ShimmerCard>
           </div>
