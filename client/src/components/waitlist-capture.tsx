@@ -546,7 +546,7 @@ function PreLaunchState({
             border: "1px solid rgba(231,251,16,0.12)",
           }}
         >
-          <div className="space-y-1">
+          <div className="space-y-1 text-center">
             <h4 className="font-display text-2xl sm:text-3xl bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#a78bfa] bg-clip-text text-transparent leading-tight">
               LAUNCHING SOON
             </h4>
@@ -554,7 +554,7 @@ function PreLaunchState({
               Don't watch from the sidelines.
             </p>
           </div>
-          <p className="text-xs sm:text-sm text-[#21d8ff] font-medium leading-snug">
+          <p className="text-xs sm:text-sm text-[#21d8ff] font-medium leading-snug text-center">
             Early access members get first dibs on inventory, exclusive pricing, and founding member perks.
           </p>
           <form onSubmit={handleSubmit} className="flex flex-col gap-2 pt-1">
