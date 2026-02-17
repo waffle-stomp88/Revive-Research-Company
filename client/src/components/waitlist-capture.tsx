@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { X, Check, ArrowRight, GraduationCap, FlaskConical, QrCode, AlertTriangle } from "lucide-react";
+import { X, Check, ArrowRight, GraduationCap, FlaskConical, QrCode, AlertTriangle, Monitor } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 function useIsMobile(breakpoint = 640) {
   const [isMobile, setIsMobile] = useState(() =>
@@ -503,7 +503,13 @@ function PreLaunchState({
               </div>
               <div className="min-w-0">
                 <p className="text-sm sm:text-sm text-white font-semibold leading-tight">REVIVE Synergy Engine&#8482;</p>
-                <p className="text-xs sm:text-xs text-white/45 leading-snug mt-0.5">Build stacks. See pathway interactions instantly.</p>
+                <p className="text-xs sm:text-xs text-white/45 leading-snug mt-0.5 sm:hidden">Build custom stacks and watch peptides connect through shared biological pathways in real-time. Synergy scoring, pathway maps, and smart recommendations.</p>
+                <p className="text-xs sm:text-xs text-white/45 leading-snug mt-0.5 hidden sm:block">Build stacks. See pathway interactions instantly.</p>
+                <div className="flex items-center gap-1 mt-1 sm:hidden">
+                  <Monitor className="h-3 w-3 text-[#21d8ff]" />
+                  <span className="text-[10px] font-semibold text-[#21d8ff]">Desktop experience</span>
+                  <span className="text-[10px] text-white/30">— visit on a computer</span>
+                </div>
               </div>
             </ShimmerCard>
 
