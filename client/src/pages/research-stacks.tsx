@@ -1791,6 +1791,11 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
               <stop offset="100%" stopColor={gn.color} stopOpacity={0} />
             </radialGradient>
           ))}
+          <radialGradient id="pm-arrow-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#22c55e" stopOpacity={0.25} />
+            <stop offset="60%" stopColor="#22c55e" stopOpacity={0.08} />
+            <stop offset="100%" stopColor="#22c55e" stopOpacity={0} />
+          </radialGradient>
           <filter id="pm-glow-soft">
             <feGaussianBlur stdDeviation="3" result="blur" />
             <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
@@ -2001,25 +2006,38 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
             </motion.text>
 
             <motion.g
-              animate={{ y: [0, 6, 0], opacity: [0.3, 0.7, 0.3] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              animate={{ y: [0, 10, 0], opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
             >
               <line
-                x1={centerX} y1={centerY + 30}
-                x2={centerX} y2={centerY + 50}
+                x1={centerX} y1={centerY + 20}
+                x2={centerX} y2={centerY + 60}
                 stroke="#22c55e"
-                strokeWidth={1.5}
+                strokeWidth={2.5}
                 strokeLinecap="round"
-                strokeOpacity={0.6}
               />
               <path
-                d={`M${centerX - 6} ${centerY + 44} L${centerX} ${centerY + 52} L${centerX + 6} ${centerY + 44}`}
+                d={`M${centerX - 12} ${centerY + 50} L${centerX} ${centerY + 66} L${centerX + 12} ${centerY + 50}`}
                 fill="none"
                 stroke="#22c55e"
-                strokeWidth={1.5}
+                strokeWidth={2.5}
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeOpacity={0.6}
+              />
+              <circle
+                cx={centerX} cy={centerY + 66}
+                r={18}
+                fill="none"
+                stroke="#22c55e"
+                strokeWidth={0}
+                opacity={0}
+              />
+              <motion.circle
+                cx={centerX} cy={centerY + 43}
+                r={28}
+                fill="url(#pm-arrow-glow)"
+                animate={{ opacity: [0.3, 0.6, 0.3] }}
+                transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
               />
             </motion.g>
           </motion.g>
