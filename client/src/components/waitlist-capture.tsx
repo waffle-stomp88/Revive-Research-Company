@@ -574,7 +574,7 @@ function PreLaunchState({
                   "0 0 20px rgba(231,251,16,0.2), 0 0 40px rgba(33,216,255,0.08)",
                 ],
               }}
-              whileHover={{ scale: 1.02, boxShadow: "0 0 40px rgba(231,251,16,0.6), 0 0 80px rgba(231,251,16,0.25)" }}
+              whileHover={{ scale: 1.02, boxShadow: "0 0 28px rgba(231,251,16,0.4), 0 0 56px rgba(231,251,16,0.15)" }}
               whileTap={{ scale: 1.0 }}
               className="rounded-md cursor-pointer"
             >
@@ -773,7 +773,7 @@ export function ExitIntentPopup() {
                             "0 0 15px rgba(231,251,16,0.2), 0 0 30px rgba(33,216,255,0.06)",
                           ],
                         }}
-                        whileHover={{ scale: 1.02, boxShadow: "0 0 40px rgba(231,251,16,0.6), 0 0 80px rgba(231,251,16,0.25)" }}
+                        whileHover={{ scale: 1.02, boxShadow: "0 0 28px rgba(231,251,16,0.4), 0 0 56px rgba(231,251,16,0.15)" }}
                         whileTap={{ scale: 1.0 }}
                         className="rounded-md cursor-pointer"
                       >
