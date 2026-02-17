@@ -104,7 +104,7 @@ function ShimmerCard({ children, delay = 0, accentColor }: { children: React.Rea
       initial={{ x: -15, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ delay, type: "spring", damping: 20 }}
-      className="relative flex items-center gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-lg overflow-hidden"
+      className="relative flex items-center gap-3 sm:gap-3 p-3.5 sm:p-3 rounded-lg overflow-hidden"
       style={{
         background: `linear-gradient(135deg, ${accentColor}08, transparent)`,
         border: `1px solid ${accentColor}20`,
@@ -213,7 +213,7 @@ export function FoundingMembersPopup() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.88, y: 50 }}
             transition={{ type: "spring", damping: 18, stiffness: 250 }}
-            style={{ width: "min(460px, calc(100vw - 32px))", maxHeight: "90vh", overflowY: "auto", transform: "translateZ(0)", WebkitOverflowScrolling: "touch" }}
+            style={{ width: "min(420px, calc(100vw - 32px))", maxHeight: "90vh", overflowY: "auto", transform: "translateZ(0)", WebkitOverflowScrolling: "touch" }}
           >
             {success ? (
               <SuccessState handleClose={handleClose} />
@@ -410,13 +410,13 @@ function PreLaunchState({
         <X className="h-5 w-5" />
       </button>
 
-      <div className="relative z-10 p-4 sm:p-6 flex flex-col gap-3 sm:gap-5">
+      <div className="relative z-10 p-4 sm:p-5 flex flex-col gap-3 sm:gap-3.5">
         <div className="space-y-1 sm:space-y-2 text-center">
           <motion.h3
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="font-display text-3xl sm:text-5xl text-white leading-tight"
+            className="font-display text-3xl sm:text-4xl text-white leading-tight"
           >
             We know why you're <span className="bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent">here.</span>
           </motion.h3>
@@ -449,7 +449,7 @@ function PreLaunchState({
           <div className="grid grid-cols-1 gap-2.5 sm:gap-3">
             <ShimmerCard delay={0.3} accentColor="#E7FB10">
               <div
-                className="h-11 w-11 sm:h-12 sm:w-12 rounded-lg flex items-center justify-center flex-shrink-0"
+                className="h-11 w-11 sm:h-10 sm:w-10 rounded-lg flex items-center justify-center flex-shrink-0"
                 style={{
                   background: "rgba(231,251,16,0.1)",
                   border: "1px solid rgba(231,251,16,0.3)",
@@ -468,7 +468,7 @@ function PreLaunchState({
                   }}
                   transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
                 >
-                  <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6 text-[#E7FB10]" />
+                  <GraduationCap className="h-5 w-5 sm:h-5 sm:w-5 text-[#E7FB10]" />
                 </motion.div>
               </div>
               <div className="min-w-0">
@@ -479,7 +479,7 @@ function PreLaunchState({
 
             <ShimmerCard delay={0.45} accentColor="#21d8ff">
               <div
-                className="h-11 w-11 sm:h-12 sm:w-12 rounded-lg flex items-center justify-center flex-shrink-0"
+                className="h-11 w-11 sm:h-10 sm:w-10 rounded-lg flex items-center justify-center flex-shrink-0"
                 style={{
                   background: "rgba(33,216,255,0.1)",
                   border: "1px solid rgba(33,216,255,0.3)",
@@ -498,7 +498,7 @@ function PreLaunchState({
                   }}
                   transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
                 >
-                  <FlaskConical className="h-5 w-5 sm:h-6 sm:w-6 text-[#21d8ff]" />
+                  <FlaskConical className="h-5 w-5 sm:h-5 sm:w-5 text-[#21d8ff]" />
                 </motion.div>
               </div>
               <div className="min-w-0">
@@ -509,7 +509,7 @@ function PreLaunchState({
 
             <ShimmerCard delay={0.6} accentColor="#a78bfa">
               <div
-                className="h-11 w-11 sm:h-12 sm:w-12 rounded-lg flex items-center justify-center flex-shrink-0"
+                className="h-11 w-11 sm:h-10 sm:w-10 rounded-lg flex items-center justify-center flex-shrink-0"
                 style={{
                   background: "rgba(167,139,250,0.1)",
                   border: "1px solid rgba(167,139,250,0.3)",
@@ -528,7 +528,7 @@ function PreLaunchState({
                   }}
                   transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.9 }}
                 >
-                  <QrCode className="h-5 w-5 sm:h-6 sm:w-6 text-[#a78bfa]" />
+                  <QrCode className="h-5 w-5 sm:h-5 sm:w-5 text-[#a78bfa]" />
                 </motion.div>
               </div>
               <div className="min-w-0">
@@ -540,14 +540,14 @@ function PreLaunchState({
         </div>
 
         <div
-          className="relative rounded-lg p-4 sm:p-5 space-y-3"
+          className="relative rounded-lg p-4 sm:p-4 space-y-2.5 sm:space-y-2"
           style={{
             background: "linear-gradient(135deg, rgba(231,251,16,0.04), rgba(33,216,255,0.04), rgba(167,139,250,0.03))",
             border: "1px solid rgba(231,251,16,0.12)",
           }}
         >
           <div className="space-y-1 text-center">
-            <h4 className="font-display text-2xl sm:text-3xl bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#a78bfa] bg-clip-text text-transparent leading-tight">
+            <h4 className="font-display text-2xl sm:text-2xl bg-gradient-to-r from-[#E7FB10] via-[#21d8ff] to-[#a78bfa] bg-clip-text text-transparent leading-tight">
               LAUNCHING SOON
             </h4>
             <p className="text-sm sm:text-base text-white/60 leading-snug">
