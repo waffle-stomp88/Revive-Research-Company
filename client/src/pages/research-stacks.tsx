@@ -1797,7 +1797,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
             <stop offset="100%" stopColor="#22c55e" stopOpacity={0} />
           </radialGradient>
           <filter id="pm-glow-soft">
-            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feGaussianBlur stdDeviation="2" result="blur" />
             <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
           <linearGradient id="pm-holo-gold" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2={svgWidth} y2="0">
@@ -1831,16 +1831,16 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
             <animateTransform attributeName="gradientTransform" type="translate" values={`-${svgWidth} 0; ${svgWidth} 0; ${svgWidth} 0`} keyTimes="0; 0.7; 1" dur="3s" repeatCount="indefinite" />
           </linearGradient>
           <filter id="pm-glow-strong">
-            <feGaussianBlur stdDeviation="6" result="blur" />
+            <feGaussianBlur stdDeviation="3" result="blur" />
             <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
           <filter id="pm-glow-line">
-            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feGaussianBlur stdDeviation="2" result="blur" />
             <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
           <filter id="pm-glow-legendary">
-            <feGaussianBlur stdDeviation="8" result="blur" />
-            <feMerge><feMergeNode in="blur" /><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
         </defs>
 
