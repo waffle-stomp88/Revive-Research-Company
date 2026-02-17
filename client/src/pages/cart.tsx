@@ -361,7 +361,7 @@ export default function CartPage() {
                           data-testid={`cart-item-image-${item.productId}`}
                         >
                           <img
-                            src={productImage}
+                            src={item.image || productImage}
                             alt={`${item.name} ${item.dosage} research peptide`}
                             className="w-full h-full object-contain p-1"
                           />

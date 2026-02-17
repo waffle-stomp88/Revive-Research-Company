@@ -181,7 +181,7 @@ export default function Checkout() {
         price: price,
         quantity: 1,
         dosage: selectedSize,
-        image: productImage,
+        image: bacWater.imageUrl || productImage,
       });
       if (!added) {
         toast({ title: "Out of Stock", description: `${bacWater.name} (${selectedSize}) is out of stock.`, variant: "destructive" });
@@ -1298,7 +1298,7 @@ export default function Checkout() {
                       <div key={`${item.productId}-${item.dosage}-${item.isSubscription ? 'sub' : 'one'}`} className="flex gap-3 md:gap-4">
                         <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-muted to-muted/50 rounded-md flex items-center justify-center flex-shrink-0 overflow-hidden relative">
                           <img 
-                            src={productImage} 
+                            src={item.image || productImage} 
                             alt={`${item.name} ${item.dosage} research peptide`}
                             className="w-full h-full object-contain p-1"
                           />
