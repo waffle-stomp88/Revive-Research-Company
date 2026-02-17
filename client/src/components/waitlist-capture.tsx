@@ -643,7 +643,7 @@ function FoundingState({
             <span className="text-sm text-[#21d8ff] font-display">{50 - spotsRemaining}/50</span>
           </div>
           <div
-            className="h-2 rounded-full bg-white/[0.06] overflow-hidden"
+            className="h-2 rounded-full bg-white/[0.06] overflow-hidden relative"
             role="progressbar"
             aria-valuenow={50 - spotsRemaining}
             aria-valuemin={0}
@@ -655,23 +655,22 @@ function FoundingState({
               initial={{ width: 0 }}
               animate={{ width: `${Math.max(progressPercent, 8)}%` }}
               transition={{ duration: 1.2, delay: 0.5, ease: "easeOut" }}
-              className="h-full rounded-full relative"
+              className="h-full rounded-full"
               style={{
                 background: "linear-gradient(90deg, #E7FB10 0%, #21d8ff 50%, #a78bfa 100%)",
                 backgroundSize: "200% 100%",
                 backgroundPosition: "left",
                 boxShadow: "0 0 12px rgba(33,216,255,0.5), 0 0 4px rgba(231,251,16,0.3)",
               }}
-            >
-              <motion.div
-                className="absolute inset-0 rounded-full"
-                style={{
-                  background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
-                }}
-                animate={{ x: ["-100%", "200%"] }}
-                transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2, ease: "easeInOut" }}
-              />
-            </motion.div>
+            />
+            <motion.div
+              className="absolute top-0 bottom-0 w-[30%] rounded-full pointer-events-none"
+              style={{
+                background: "linear-gradient(90deg, transparent, rgba(33,216,255,0.25), rgba(231,251,16,0.15), transparent)",
+              }}
+              animate={{ left: ["-30%", "100%"] }}
+              transition={{ duration: 2, repeat: Infinity, repeatDelay: 1.5, ease: "easeInOut" }}
+            />
           </div>
         </div>
 
