@@ -1551,16 +1551,18 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
     for (const label of sorted) {
       let adjusted = { ...label };
       let attempts = 0;
-      const maxAttempts = 12;
+      const maxAttempts = 20;
       while (attempts < maxAttempts) {
         const hasCollision = placed.some(p => overlaps(adjusted, p));
         if (!hasCollision) break;
-        const direction = attempts % 2 === 0 ? -1 : 1;
-        const step = Math.ceil((attempts + 1) / 2) * 18;
-        adjusted = { ...adjusted, y: label.y + direction * step };
+        const ring = Math.ceil((attempts + 1) / 4);
+        const step = ring * 22;
+        const angle = (attempts % 4) * (Math.PI / 2);
+        adjusted = { ...adjusted, x: label.x + Math.cos(angle) * step, y: label.y + Math.sin(angle) * step };
         attempts++;
       }
       const margin = 20;
+      adjusted.x = Math.max(margin + adjusted.w / 2, Math.min(svgWidth - margin - adjusted.w / 2, adjusted.x));
       adjusted.y = Math.max(margin + adjusted.h / 2, Math.min(svgHeight - margin - adjusted.h / 2, adjusted.y));
       placed.push(adjusted);
     }
@@ -1629,7 +1631,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
       const t = (pi + 1) / (conn.pathways.length + 1);
       const midX = fromNode.x + dx * t;
       const midY = fromNode.y + dy * t;
-      const perpDist = 45 + pi * 22;
+      const perpDist = 50 + pi * 30;
       const side = pi % 2 === 0 ? 1 : -1;
       const px = midX + perpNormX * perpDist * side;
       const py = midY + perpNormY * perpDist * side;
@@ -1641,7 +1643,7 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
     x: pn.x,
     y: pn.y,
     w: Math.min(90, pn.name.length * 7 + 16),
-    h: 20,
+    h: 26,
     priority: 10 + i,
     idx: i,
   }));
