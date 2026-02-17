@@ -1,0 +1,107 @@
+NEW POPUP PROMPT FOR REPLIT
+Update the founding member popup completely.
+
+We're moving FM status to purchase-based at launch.
+Pre-launch popup should capture emails ONLY.
+No FM perks revealed yet.
+
+═══════════════════════════════════════════
+
+REMOVE ENTIRELY:
+- Founding Member number (#8 of 50)
+- FM perks section (locked pricing, 48hr access, badge)
+- Scarcity counter (X/50 spots left)
+- Progress bar
+- "BECOME FOUNDING MEMBER #[X]" button text
+- All founding member language
+
+═══════════════════════════════════════════
+
+NEW POPUP DESIGN:
+
+TRIGGER: Same as before
+- 7 seconds after age gate
+- Only if localStorage 'email_captured' empty
+- Once per 7 days (cookie)
+- Desktop AND mobile
+
+COPY:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+We know why you're here.
+You've been burned before.
+Fake COAs. Underdosed vials. Vendors who vanish.
+We built Revive because we were
+tired of the same shit.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHAT WE ACTUALLY BUILT:
+[QR icon] QR-Verified COAs
+Scan any vial. See real third-party lab results.
+[Flask icon] Revive Synergy Engine
+Build stacks. See pathway interactions instantly.
+[Shield icon] Batch-Level Tracking
+Every vial traced. Every batch documented.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+LAUNCHING SOON
+Be first in line when we open.
+Something special is waiting for
+our earliest supporters.
+[EMAIL INPUT]
+[GET EARLY ACCESS] ← Yellow button
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[Maybe later] ← Small gray link
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+═══════════════════════════════════════════
+
+SUCCESS MESSAGE (after email submitted):
+✓ YOU'RE ON THE LIST
+We'll reach out when we launch.
+Something special is coming for
+our earliest supporters.
+Stay tuned.
+[Explore the platform →]
+
+═══════════════════════════════════════════
+
+EXIT INTENT POPUP - also update:
+
+COPY:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ BEFORE YOU GO
+You've seen what we're building.
+You know we're different.
+Don't miss our launch.
+[EMAIL INPUT]
+[NOTIFY ME AT LAUNCH] ← Yellow button
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+→ QR-verified testing on every batch
+→ Revive Synergy Engine included
+→ Something special for early supporters
+[Maybe later] ← Small gray link
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+═══════════════════════════════════════════
+
+DATABASE:
+- Keep existing waitlist table
+- Remove founding_member tracking for now
+- Just capture: email, source, created_at
+- founding_member column stays but defaults to FALSE
+- Will be updated at launch when purchases come in
+
+═══════════════════════════════════════════
+
+KEY PHRASE TO KEEP EVERYWHERE:
+"Something special is waiting for our earliest supporters"
+
+This:
+- Teases FM program without revealing it
+- Creates curiosity
+- Rewards people for signing up
+- Sets expectation without commitment
+
+═══════════════════════════════════════════
+
+Build this simpler, cleaner version.
+Email capture only.
+FM reveal happens at launch.
