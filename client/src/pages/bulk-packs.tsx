@@ -5,12 +5,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
 import { CategoryTabs } from "@/components/category-tabs";
 import { ImageLoader } from "@/components/image-loader";
-import { ArrowRight, ChevronDown, ShoppingCart, Sparkles, TrendingDown, Crown } from "lucide-react";
+import { ArrowRight, ChevronDown, ShoppingCart, Sparkles, TrendingDown, Crown, Check } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EarlyAccessModal } from "@/components/early-access-modal";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 
@@ -33,10 +35,37 @@ function calcBulk(price: string | number, quantity: number, discount: number) {
 
 export default function BulkPacks() {
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const { addToCart } = useCart();
+  const { toast } = useToast();
 
   const { data: products, isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
+
+  const handleAddBulk = async (product: Product, tierQuantity: number, tierDiscount: number, tierLabel: string, tierColor: string) => {
+    const bulk = calcBulk(product.price, tierQuantity, tierDiscount);
+    const success = await addToCart({
+      productId: String(product.id),
+      name: `${product.name} (${tierLabel})`,
+      price: bulk.discounted,
+      originalPrice: bulk.total,
+      quantity: 1,
+      dosage: (product.dosageOptions && product.dosageOptions.length > 0) ? product.dosageOptions[0] : "default",
+      image: product.imageUrl || undefined,
+    });
+    if (success) {
+      toast({
+        title: "Added to Cart",
+        description: `${product.name} ${tierLabel} — $${fmt(bulk.discounted)}`,
+      });
+    } else {
+      toast({
+        title: "Out of Stock",
+        description: `${product.name} is currently unavailable.`,
+        variant: "destructive",
+      });
+    }
+  };
 
   const inStockProducts = useMemo(() => {
     if (!products) return [];
@@ -153,13 +182,23 @@ export default function BulkPacks() {
                   <div className="px-5 py-4 text-xs text-muted-foreground uppercase tracking-widest font-semibold flex items-center">
                     Product
                   </div>
-                  {bulkTiers.map((tier) => (
+                  {bulkTiers.map((tier) => {
+                    const isPopular = "popular" in tier && tier.popular;
+                    return (
                     <div
                       key={tier.quantity}
                       className="px-3 py-4 text-center relative"
                       style={{
-                        borderLeft: "1px solid rgba(255, 255, 255, 0.04)",
-                        background: `linear-gradient(180deg, ${tier.color}08 0%, transparent 100%)`,
+                        borderLeft: isPopular
+                          ? `1px solid ${tier.color}25`
+                          : "1px solid rgba(255, 255, 255, 0.04)",
+                        borderRight: isPopular ? `1px solid ${tier.color}15` : undefined,
+                        background: isPopular
+                          ? `linear-gradient(180deg, ${tier.color}18 0%, ${tier.color}06 100%)`
+                          : `linear-gradient(180deg, ${tier.color}08 0%, transparent 100%)`,
+                        boxShadow: isPopular
+                          ? `inset 0 0 40px ${tier.color}0a, 0 0 20px ${tier.color}08`
+                          : undefined,
                       }}
                     >
                       <div className="flex items-center justify-center gap-2 flex-wrap">
@@ -201,7 +240,8 @@ export default function BulkPacks() {
                         }}
                       />
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {isLoading ? (
@@ -267,16 +307,20 @@ export default function BulkPacks() {
 
                           {bulkTiers.map((tier) => {
                             const bulk = calcBulk(product.price, tier.quantity, tier.discount);
+                            const isPopular = "popular" in tier && tier.popular;
                             return (
-                              <Link
+                              <button
                                 key={tier.quantity}
-                                href={`/peptides/${product.slug || product.id}?bulk=${tier.quantity}`}
+                                onClick={() => handleAddBulk(product, tier.quantity, tier.discount, tier.label, tier.color)}
                                 className="px-4 py-4 flex items-center justify-center gap-3 group/tier cursor-pointer transition-colors duration-200 hover-elevate"
                                 style={{
                                   borderLeft: "1px solid rgba(255, 255, 255, 0.04)",
-                                  background: `linear-gradient(180deg, ${tier.color}06 0%, transparent 100%)`,
+                                  background: isPopular
+                                    ? `linear-gradient(180deg, ${tier.color}12 0%, ${tier.color}04 100%)`
+                                    : `linear-gradient(180deg, ${tier.color}06 0%, transparent 100%)`,
+                                  ...(isPopular ? { boxShadow: `inset 0 0 30px ${tier.color}08, 0 0 15px ${tier.color}06` } : {}),
                                 }}
-                                aria-label={`View ${product.name} ${tier.label} for $${fmt(bulk.discounted)}`}
+                                aria-label={`Add ${product.name} ${tier.label} to cart for $${fmt(bulk.discounted)}`}
                                 data-testid={`button-add-${product.id}-${tier.quantity}`}
                               >
                                 <div className="text-center">
@@ -305,7 +349,7 @@ export default function BulkPacks() {
                                   className="h-5 w-5 flex-shrink-0 opacity-25 group-hover/tier:opacity-100 transition-opacity duration-200"
                                   style={{ color: tier.color }}
                                 />
-                              </Link>
+                              </button>
                             );
                           })}
                         </motion.div>
@@ -333,7 +377,7 @@ export default function BulkPacks() {
               ) : (
                 <AnimatePresence mode="popLayout">
                   {filteredProducts.map((product, idx) => (
-                    <MobileProductCard key={product.id} product={product} index={idx} />
+                    <MobileProductCard key={product.id} product={product} index={idx} onAddBulk={handleAddBulk} />
                   ))}
                 </AnimatePresence>
               )}
@@ -409,7 +453,7 @@ export default function BulkPacks() {
   );
 }
 
-function MobileProductCard({ product, index }: { product: Product; index: number }) {
+function MobileProductCard({ product, index, onAddBulk }: { product: Product; index: number; onAddBulk: (product: Product, tierQuantity: number, tierDiscount: number, tierLabel: string, tierColor: string) => void }) {
   const [expanded, setExpanded] = useState(false);
   const basePrice = typeof product.price === "string" ? parseFloat(product.price) : product.price;
 
@@ -480,21 +524,26 @@ function MobileProductCard({ product, index }: { product: Product; index: number
               <div className="px-4 pb-4 grid grid-cols-3 gap-2.5">
                 {bulkTiers.map((tier) => {
                   const bulk = calcBulk(product.price, tier.quantity, tier.discount);
+                  const isPopular = "popular" in tier && tier.popular;
                   return (
-                    <Link
+                    <button
                       key={tier.quantity}
-                      href={`/peptides/${product.slug || product.id}?bulk=${tier.quantity}`}
-                      data-testid={`link-tier-${product.id}-${tier.quantity}`}
+                      onClick={() => onAddBulk(product, tier.quantity, tier.discount, tier.label, tier.color)}
+                      data-testid={`button-mobile-add-${product.id}-${tier.quantity}`}
+                      className="text-left"
                     >
                       <div
                         className="rounded-md px-2 py-3 text-center relative hover-elevate"
                         style={{
-                          border: `1px solid ${tier.color}30`,
-                          background: `linear-gradient(180deg, ${tier.color}0a 0%, ${tier.color}04 100%)`,
+                          border: isPopular ? `1px solid ${tier.color}50` : `1px solid ${tier.color}30`,
+                          background: isPopular
+                            ? `linear-gradient(180deg, ${tier.color}15 0%, ${tier.color}08 100%)`
+                            : `linear-gradient(180deg, ${tier.color}0a 0%, ${tier.color}04 100%)`,
+                          ...(isPopular ? { boxShadow: `0 0 12px ${tier.color}15, inset 0 0 20px ${tier.color}08` } : {}),
                         }}
                         data-testid={`card-tier-${product.id}-${tier.quantity}`}
                       >
-                        {"popular" in tier && tier.popular && (
+                        {isPopular && (
                           <div
                             className="absolute -top-2 left-1/2 -translate-x-1/2 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider whitespace-nowrap"
                             style={{
@@ -531,7 +580,7 @@ function MobileProductCard({ product, index }: { product: Product; index: number
                           Save ${fmt(bulk.savings)}
                         </div>
                       </div>
-                    </Link>
+                    </button>
                   );
                 })}
               </div>
