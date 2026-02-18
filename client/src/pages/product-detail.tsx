@@ -364,14 +364,17 @@ export default function ProductDetail() {
   }, [product, dosageStocks]);
 
   // Redirect UUID URLs to slug URLs for SEO
+  // Use replaceState to update the URL bar without affecting navigation history,
+  // so back button returns to the originating page (e.g. bulk-packs) instead of skipping it.
+  // The product data is already loaded, so wouter route state desync is not a concern.
   useEffect(() => {
     if (product?.slug && params.id !== product.slug) {
       const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.id || "");
       if (isUUID) {
-        setLocation(`/peptides/${product.slug}`, { replace: true });
+        window.history.replaceState(null, "", `/peptides/${product.slug}`);
       }
     }
-  }, [product, params.id, setLocation]);
+  }, [product, params.id]);
 
   // Track recently viewed products
   useEffect(() => {
