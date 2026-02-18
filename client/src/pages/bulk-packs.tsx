@@ -205,7 +205,8 @@ export default function BulkPacks() {
                               <Link
                                 key={tier.quantity}
                                 href={`/peptides/${product.slug || product.id}?bulk=${tier.quantity}`}
-                                className="border-l border-border/20 px-3 py-2.5 flex items-center justify-center gap-3 group/tier cursor-pointer hover:bg-muted/30 transition-colors"
+                                className="border-l border-border/20 px-3 py-2.5 flex items-center justify-center gap-2 group/tier cursor-pointer hover:bg-muted/30 transition-colors"
+                                aria-label={`View ${product.name} ${tier.label} for $${fmt(bulk.discounted)}`}
                                 data-testid={`button-add-${product.id}-${tier.quantity}`}
                               >
                                 <div className="text-center">
@@ -218,7 +219,7 @@ export default function BulkPacks() {
                                   </div>
                                 </div>
                                 <ShoppingCart
-                                  className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover/tier:opacity-100 transition-opacity flex-shrink-0"
+                                  className="h-3 w-3 flex-shrink-0 opacity-40 group-hover/tier:opacity-100 transition-opacity"
                                   style={{ color: tier.color }}
                                 />
                               </Link>
