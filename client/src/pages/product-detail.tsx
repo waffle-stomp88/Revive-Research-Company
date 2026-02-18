@@ -335,33 +335,35 @@ export default function ProductDetail() {
 
   const isInWishlist = wishlistStatus?.isInWishlist ?? false;
 
-  // Set default dosage to lowest in-stock option
+  // Set default dosage to lowest in-stock option — only once dosage stock data arrives.
+  // We intentionally do NOT set a dosage before stock data loads to avoid flashing
+  // an OOS dosage (e.g. BPC-157's dosageOptions[0] is 15mg which is OOS).
+  // The default "10mg" from useState is safe because the product is already known
+  // to be in-stock from the shop page — the full OOS treatment only applies
+  // at the product level (product.inStock === false).
+  const [hasSetInitialDosage, setHasSetInitialDosage] = useState(false);
   useEffect(() => {
-    if (product?.dosageOptions && product.dosageOptions.length > 0 && dosageStocks.length > 0) {
-      // Parse dosage to numeric value for sorting (e.g., "10mg" → 10)
-      const parseDosage = (dosage: string): number => {
-        const match = dosage.match(/(\d+(?:\.\d+)?)/);
-        return match ? parseFloat(match[1]) : 0;
-      };
-      
-      // Sort dosages by numeric value (lowest first)
-      const sortedDosages = [...product.dosageOptions].sort(
-        (a, b) => parseDosage(a) - parseDosage(b)
-      );
-      
-      // Find lowest dosage that's in stock
-      const lowestInStock = sortedDosages.find(dosage => {
-        const stockInfo = dosageStocks.find(ds => ds.dosage === dosage);
-        return stockInfo && stockInfo.stockAmount > 0;
-      });
-      
-      // Use lowest in-stock, or fall back to first dosage if none in stock
-      setSelectedDosage(lowestInStock || sortedDosages[0]);
-    } else if (product?.dosageOptions && product.dosageOptions.length > 0) {
-      // Fallback if dosageStocks hasn't loaded yet - use first option
-      setSelectedDosage(product.dosageOptions[0]);
-    }
-  }, [product, dosageStocks]);
+    if (hasSetInitialDosage) return;
+    if (!product?.dosageOptions || product.dosageOptions.length === 0) return;
+    if (dosageStocks.length === 0) return;
+
+    const parseDosage = (dosage: string): number => {
+      const match = dosage.match(/(\d+(?:\.\d+)?)/);
+      return match ? parseFloat(match[1]) : 0;
+    };
+
+    const sortedDosages = [...product.dosageOptions].sort(
+      (a, b) => parseDosage(a) - parseDosage(b)
+    );
+
+    const lowestInStock = sortedDosages.find(dosage => {
+      const stockInfo = dosageStocks.find(ds => ds.dosage === dosage);
+      return stockInfo && stockInfo.stockAmount > 0;
+    });
+
+    setSelectedDosage(lowestInStock || sortedDosages[0]);
+    setHasSetInitialDosage(true);
+  }, [product, dosageStocks, hasSetInitialDosage]);
 
   // Redirect UUID URLs to slug URLs for SEO
   // Use replaceState to update the URL bar without affecting navigation history,
@@ -532,16 +534,19 @@ export default function ProductDetail() {
   // Get current selected dosage stock info
   const selectedDosageStock = getDosageStockInfo(selectedDosage);
   
-  // Unified out-of-stock check - considers dosage-specific stock if available, otherwise falls back to product-level
-  // While dosage stock data is still loading, assume in-stock to prevent a misleading OOS flash
+  // Out-of-stock check: trust the product-level inStock flag first.
+  // If the product itself is OOS, show full OOS treatment immediately (no loading needed).
+  // If the product is in-stock, only mark OOS when dosage stock data has loaded AND
+  // the currently selected dosage is specifically out of stock.
+  // This prevents any OOS flash while dosage data is loading.
+  const isProductLevelOOS = product.inStock === false || (product.stockAmount !== null && product.stockAmount !== undefined && product.stockAmount <= 0);
   const isOutOfStock = (() => {
-    if (isDosageStocksLoading) return false;
-    // If we have dosage-specific stock info for this dosage, use that
-    if (hasDosageStockData && selectedDosageStock) {
+    if (isProductLevelOOS) return true;
+    if (isDosageStocksLoading || !hasDosageStockData) return false;
+    if (selectedDosageStock) {
       return !selectedDosageStock.inStock || selectedDosageStock.stockAmount <= 0;
     }
-    // Fallback to product-level stock check (for products without dosage-level inventory)
-    return product.inStock === false || (product.stockAmount !== null && product.stockAmount !== undefined && product.stockAmount <= 0);
+    return false;
   })();
   
   // Get display stock amount for selected dosage
