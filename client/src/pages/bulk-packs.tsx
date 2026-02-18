@@ -72,14 +72,14 @@ export default function BulkPacks() {
               <CategoryTabs />
             </div>
 
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E7FB10]/10 border border-[#E7FB10]/30 mb-3">
-              <TrendingDown className="h-3.5 w-3.5 text-[#E7FB10]" />
-              <span className="text-xs font-medium text-[#E7FB10]">Volume Pricing</span>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#E7FB10]/10 border border-[#E7FB10]/30 mb-4">
+              <TrendingDown className="h-4 w-4 text-[#E7FB10]" />
+              <span className="text-sm font-medium text-[#E7FB10]">Volume Pricing</span>
             </div>
-            <h1 className="font-display text-3xl md:text-4xl font-bold mb-2">
+            <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">
               Bulk Packs
             </h1>
-            <p className="text-muted-foreground max-w-xl mx-auto text-sm">
+            <p className="text-muted-foreground max-w-xl mx-auto">
               Compare volume discounts at a glance. The more you buy, the more you save.
             </p>
           </motion.div>
@@ -123,25 +123,27 @@ export default function BulkPacks() {
             {/* Desktop table */}
             <div className="hidden md:block">
               <Card className="overflow-hidden border border-border/60">
-                {/* Header row */}
-                <div className="grid grid-cols-[1fr_repeat(3,minmax(140px,1fr))] border-b border-border/40 bg-muted/30">
-                  <div className="px-4 py-2.5 text-[11px] text-muted-foreground uppercase tracking-wider font-medium">
+                <div className="grid grid-cols-[1.2fr_repeat(3,1fr)] border-b border-border/40 bg-muted/30">
+                  <div className="px-5 py-3 text-xs text-muted-foreground uppercase tracking-wider font-semibold">
                     Product
                   </div>
                   {bulkTiers.map((tier) => (
                     <div
                       key={tier.quantity}
-                      className="px-2 py-2.5 text-center border-l border-border/30"
+                      className="px-3 py-3 text-center border-l border-border/30"
                     >
-                      <div className="flex items-center justify-center gap-1.5">
+                      <div className="flex items-center justify-center gap-2">
                         {"popular" in tier && tier.popular && (
-                          <Sparkles className="h-2.5 w-2.5 text-[#E7FB10]" />
+                          <Sparkles className="h-3.5 w-3.5 text-[#E7FB10]" />
                         )}
-                        <span className="text-[11px] uppercase tracking-wider font-bold" style={{ color: tier.color }}>
+                        <span className="text-xs uppercase tracking-wider font-bold" style={{ color: tier.color }}>
                           {tier.label}
                         </span>
-                        <span className="text-[9px] font-semibold px-1.5 py-0 rounded-full" style={{ backgroundColor: `${tier.color}15`, color: tier.color }}>
-                          {tier.discount}%
+                        <span
+                          className="text-[11px] font-bold px-2 py-0.5 rounded-full"
+                          style={{ backgroundColor: `${tier.color}18`, color: tier.color }}
+                        >
+                          {tier.discount}% off
                         </span>
                       </div>
                     </div>
@@ -151,17 +153,17 @@ export default function BulkPacks() {
                 {isLoading ? (
                   <div>
                     {[...Array(5)].map((_, i) => (
-                      <div key={i} className="grid grid-cols-[1fr_repeat(3,minmax(140px,1fr))] border-b border-border/20 px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          <Skeleton className="h-10 w-10 rounded-md flex-shrink-0" />
-                          <div className="space-y-1.5">
-                            <Skeleton className="h-3.5 w-28" />
-                            <Skeleton className="h-3 w-16" />
+                      <div key={i} className="grid grid-cols-[1.2fr_repeat(3,1fr)] border-b border-border/20 px-5 py-4">
+                        <div className="flex items-center gap-4">
+                          <Skeleton className="h-12 w-12 rounded-md flex-shrink-0" />
+                          <div className="space-y-2">
+                            <Skeleton className="h-4 w-32" />
+                            <Skeleton className="h-3.5 w-20" />
                           </div>
                         </div>
-                        <Skeleton className="h-6 w-24 mx-auto" />
-                        <Skeleton className="h-6 w-24 mx-auto" />
-                        <Skeleton className="h-6 w-24 mx-auto" />
+                        <Skeleton className="h-8 w-28 mx-auto" />
+                        <Skeleton className="h-8 w-28 mx-auto" />
+                        <Skeleton className="h-8 w-28 mx-auto" />
                       </div>
                     ))}
                   </div>
@@ -172,16 +174,16 @@ export default function BulkPacks() {
                       return (
                         <div
                           key={product.id}
-                          className={`grid grid-cols-[1fr_repeat(3,minmax(140px,1fr))] items-center transition-colors duration-150 hover:bg-muted/20 ${
+                          className={`grid grid-cols-[1.2fr_repeat(3,1fr)] items-center transition-colors duration-150 hover:bg-muted/20 ${
                             idx < filteredProducts.length - 1 ? "border-b border-border/20" : ""
                           }`}
                           data-testid={`row-bulk-product-${product.id}`}
                         >
                           <Link
                             href={`/peptides/${product.slug || product.id}`}
-                            className="flex items-center gap-3 px-4 py-2.5 group"
+                            className="flex items-center gap-4 px-5 py-3 group"
                           >
-                            <div className="h-10 w-10 rounded-md overflow-hidden flex-shrink-0 bg-muted/50">
+                            <div className="h-12 w-12 rounded-md overflow-hidden flex-shrink-0 bg-muted/50">
                               <ImageLoader
                                 src={product.imageUrl || productImage}
                                 alt={product.name}
@@ -190,11 +192,11 @@ export default function BulkPacks() {
                               />
                             </div>
                             <div className="min-w-0">
-                              <h3 className="font-display font-bold text-[13px] leading-tight group-hover:text-[#21d8ff] transition-colors truncate">
+                              <h3 className="font-display font-bold text-base leading-tight group-hover:text-[#21d8ff] transition-colors truncate">
                                 {product.name}
                               </h3>
-                              <span className="text-[11px] text-muted-foreground">
-                                ${fmt(basePrice)}/ea
+                              <span className="text-sm text-muted-foreground">
+                                ${fmt(basePrice)} / vial
                               </span>
                             </div>
                           </Link>
@@ -205,21 +207,21 @@ export default function BulkPacks() {
                               <Link
                                 key={tier.quantity}
                                 href={`/peptides/${product.slug || product.id}?bulk=${tier.quantity}`}
-                                className="border-l border-border/20 px-3 py-2.5 flex items-center justify-center gap-2 group/tier cursor-pointer hover:bg-muted/30 transition-colors"
+                                className="border-l border-border/20 px-4 py-3 flex items-center justify-center gap-3 group/tier cursor-pointer hover:bg-muted/30 transition-colors"
                                 aria-label={`View ${product.name} ${tier.label} for $${fmt(bulk.discounted)}`}
                                 data-testid={`button-add-${product.id}-${tier.quantity}`}
                               >
                                 <div className="text-center">
-                                  <span className="font-display font-bold text-sm" style={{ color: tier.color }}>
+                                  <span className="font-display font-bold text-lg" style={{ color: tier.color }}>
                                     ${fmt(bulk.discounted)}
                                   </span>
-                                  <div className="flex items-center justify-center gap-1">
-                                    <span className="text-[10px] text-muted-foreground line-through">${fmt(bulk.total)}</span>
-                                    <span className="text-[10px] text-green-500 font-medium">-${fmt(bulk.savings)}</span>
+                                  <div className="flex items-center justify-center gap-1.5 mt-0.5">
+                                    <span className="text-xs text-muted-foreground line-through">${fmt(bulk.total)}</span>
+                                    <span className="text-xs text-green-500 font-semibold">-${fmt(bulk.savings)}</span>
                                   </div>
                                 </div>
                                 <ShoppingCart
-                                  className="h-3 w-3 flex-shrink-0 opacity-40 group-hover/tier:opacity-100 transition-opacity"
+                                  className="h-4 w-4 flex-shrink-0 opacity-30 group-hover/tier:opacity-100 transition-opacity"
                                   style={{ color: tier.color }}
                                 />
                               </Link>
@@ -237,12 +239,12 @@ export default function BulkPacks() {
             <div className="md:hidden space-y-2">
               {isLoading ? (
                 [...Array(4)].map((_, i) => (
-                  <Card key={i} className="p-3">
+                  <Card key={i} className="p-4">
                     <div className="flex items-center gap-3">
-                      <Skeleton className="h-10 w-10 rounded-md flex-shrink-0" />
-                      <div className="space-y-1.5 flex-1">
-                        <Skeleton className="h-3.5 w-3/4" />
-                        <Skeleton className="h-3 w-1/2" />
+                      <Skeleton className="h-12 w-12 rounded-md flex-shrink-0" />
+                      <div className="space-y-2 flex-1">
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-3.5 w-1/2" />
                       </div>
                     </div>
                   </Card>
@@ -259,7 +261,7 @@ export default function BulkPacks() {
 
           {!isLoading && filteredProducts.length === 0 && (
             <Card className="p-6 text-center mt-4">
-              <p className="text-muted-foreground text-sm">No products available in this category.</p>
+              <p className="text-muted-foreground">No products available in this category.</p>
             </Card>
           )}
 
@@ -269,26 +271,26 @@ export default function BulkPacks() {
             transition={{ delay: 0.3 }}
             className="mt-8"
           >
-            <Card className="p-5 bg-gradient-to-br from-muted/50 to-background border border-[#21d8ff]/20">
+            <Card className="p-6 bg-gradient-to-br from-muted/50 to-background border border-[#21d8ff]/20">
               <div className="flex flex-col md:flex-row items-center gap-4">
                 <div className="flex-1 text-center md:text-left">
-                  <h3 className="font-display text-lg font-bold mb-1">Need Even Larger Quantities?</h3>
-                  <p className="text-muted-foreground text-sm">
+                  <h3 className="font-display text-xl font-bold mb-1">Need Even Larger Quantities?</h3>
+                  <p className="text-muted-foreground">
                     For clinics, research facilities, or resellers ordering 50+ vials, check out our Wholesale Program.
                   </p>
                 </div>
                 <Link href="/wholesale">
-                  <Button variant="outline" size="sm" className="border-[#21d8ff] text-[#21d8ff]">
+                  <Button variant="outline" className="border-[#21d8ff] text-[#21d8ff]">
                     Explore Wholesale
-                    <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+                    <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
                 </Link>
               </div>
             </Card>
           </motion.div>
 
-          <div className="mt-8 p-3 border border-red-500/30 rounded-md bg-red-500/5">
-            <p className="text-[11px] text-red-400/80 text-center animate-pulse-subtle">
+          <div className="mt-8 p-4 border border-red-500/30 rounded-md bg-red-500/5">
+            <p className="text-xs text-red-400/80 text-center animate-pulse-subtle">
               <strong>Research Use Only:</strong> All products are sold exclusively for legitimate research purposes.
               Not for human consumption. By purchasing, you confirm you are 21+ and understand this policy.
             </p>
@@ -317,11 +319,11 @@ function MobileProductCard({ product, index }: { product: Product; index: number
       >
         <button
           onClick={() => setExpanded(!expanded)}
-          className="w-full px-3 py-2.5 flex items-center gap-3 text-left"
+          className="w-full px-4 py-3 flex items-center gap-3 text-left"
           aria-expanded={expanded}
           data-testid={`button-expand-${product.id}`}
         >
-          <div className="h-10 w-10 rounded-md overflow-hidden flex-shrink-0 bg-muted/50">
+          <div className="h-12 w-12 rounded-md overflow-hidden flex-shrink-0 bg-muted/50">
             <ImageLoader
               src={product.imageUrl || productImage}
               alt={product.name}
@@ -330,15 +332,15 @@ function MobileProductCard({ product, index }: { product: Product; index: number
             />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-display font-bold text-[13px] truncate">{product.name}</h3>
-            <p className="text-[11px] text-muted-foreground">${fmt(basePrice)}/ea</p>
+            <h3 className="font-display font-bold text-base truncate">{product.name}</h3>
+            <p className="text-sm text-muted-foreground">${fmt(basePrice)} / vial</p>
           </div>
-          <div className="flex items-center gap-1.5 flex-shrink-0">
-            <Badge className="bg-green-500/15 text-green-500 border-green-500/30 text-[10px]">
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <Badge className="bg-green-500/15 text-green-500 border-green-500/30 text-xs">
               Up to 20% off
             </Badge>
             <ChevronDown
-              className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${expanded ? "rotate-180" : ""}`}
+              className={`h-4 w-4 text-muted-foreground transition-transform ${expanded ? "rotate-180" : ""}`}
             />
           </div>
         </button>
@@ -352,7 +354,7 @@ function MobileProductCard({ product, index }: { product: Product; index: number
               transition={{ duration: 0.2 }}
               className="overflow-hidden"
             >
-              <div className="px-3 pb-3 grid grid-cols-3 gap-1.5">
+              <div className="px-4 pb-4 grid grid-cols-3 gap-2">
                 {bulkTiers.map((tier) => {
                   const bulk = calcBulk(product.price, tier.quantity, tier.discount);
                   return (
@@ -361,26 +363,26 @@ function MobileProductCard({ product, index }: { product: Product; index: number
                       href={`/peptides/${product.slug || product.id}?bulk=${tier.quantity}`}
                     >
                       <div
-                        className="rounded-md px-2 py-2 text-center border"
+                        className="rounded-md px-2 py-3 text-center border"
                         style={{
                           borderColor: `${tier.color}25`,
                           background: `${tier.color}06`,
                         }}
                         data-testid={`card-tier-${product.id}-${tier.quantity}`}
                       >
-                        <div className="text-[9px] uppercase tracking-wider font-bold" style={{ color: tier.color }}>
+                        <div className="text-[11px] uppercase tracking-wider font-bold" style={{ color: tier.color }}>
                           {tier.label}
                           {"popular" in tier && tier.popular && (
-                            <Sparkles className="h-2 w-2 inline ml-0.5 -mt-0.5" />
+                            <Sparkles className="h-2.5 w-2.5 inline ml-0.5 -mt-0.5" />
                           )}
                         </div>
-                        <div className="font-display font-bold text-sm leading-tight mt-0.5" style={{ color: tier.color }}>
+                        <div className="font-display font-bold text-base leading-tight mt-1" style={{ color: tier.color }}>
                           ${fmt(bulk.discounted)}
                         </div>
-                        <div className="text-[9px] text-muted-foreground line-through leading-tight">
+                        <div className="text-[11px] text-muted-foreground line-through leading-tight mt-0.5">
                           ${fmt(bulk.total)}
                         </div>
-                        <div className="text-[9px] text-green-500 font-medium leading-tight">
+                        <div className="text-[11px] text-green-500 font-semibold leading-tight">
                           Save ${fmt(bulk.savings)}
                         </div>
                       </div>
