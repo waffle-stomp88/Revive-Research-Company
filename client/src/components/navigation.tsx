@@ -482,11 +482,13 @@ export function Navigation() {
                     ) : (
                       <>
                         <div className="max-h-64 overflow-y-auto scrollbar-hide">
-                          {regularItems.slice(0, 3).map((item) => (
+                          {regularItems.slice(0, 3).map((item) => {
+                            const itemKey = `${item.productId}-${item.dosage}${item.packSize ? `-pack${item.packSize}` : ''}`;
+                            return (
                             <div 
-                              key={`${item.productId}-${item.dosage}`} 
+                              key={itemKey} 
                               className="flex items-center gap-3 p-3 border-b border-border/50 last:border-0"
-                              onMouseEnter={() => setHoveredCartItem(`${item.productId}-${item.dosage}`)}
+                              onMouseEnter={() => setHoveredCartItem(itemKey)}
                               onMouseLeave={() => setHoveredCartItem(null)}
                             >
                               <div className="w-10 h-10 rounded-lg bg-muted/50 flex-shrink-0 overflow-hidden border border-border/50">
@@ -499,17 +501,20 @@ export function Navigation() {
                                 )}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium truncate">{item.name}</p>
+                                <p className="text-sm font-medium truncate">
+                                  {item.name}
+                                  {item.packSize && <span className="text-[#E7FB10] ml-1 text-xs">({item.packSize}-Pack)</span>}
+                                </p>
                                 <p className="text-xs text-muted-foreground">
                                   {item.dosage} × {item.quantity}
                                 </p>
                               </div>
-                              {hoveredCartItem === `${item.productId}-${item.dosage}` ? (
+                              {hoveredCartItem === itemKey ? (
                                 <Button
                                   variant="ghost"
                                   size="sm"
                                   className="text-red-400 hover:text-red-500 hover:bg-red-500/10 h-auto"
-                                  onClick={() => removeFromCart(item.productId, item.dosage)}
+                                  onClick={() => removeFromCart(item.productId, item.dosage, item.packSize)}
                                   data-testid={`button-remove-cart-item-${item.productId}`}
                                 >
                                   <Trash2 className="h-4 w-4" />
@@ -520,7 +525,8 @@ export function Navigation() {
                                 </p>
                               )}
                             </div>
-                          ))}
+                          );
+                          })}
                           {bundleItems.slice(0, 2).map((bundle) => {
                             const bundleKey = `bundle-${bundle.bundleId}`;
                             return (

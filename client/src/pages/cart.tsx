@@ -373,6 +373,15 @@ export default function CartPage() {
                             <h3 className="font-display font-bold text-xl md:text-2xl" data-testid={`cart-item-name-${item.productId}`}>
                               {item.name}
                             </h3>
+                            {item.packSize && (
+                              <Badge 
+                                className="bg-[#E7FB10]/20 text-[#E7FB10] border-[#E7FB10]/30 gap-1 text-[10px] px-1.5 py-0"
+                                data-testid={`badge-pack-${item.productId}-${item.packSize}`}
+                              >
+                                <Package className="h-2.5 w-2.5" />
+                                {item.packSize}-Pack
+                              </Badge>
+                            )}
                             {item.isSubscription && (
                               <Badge 
                                 className="bg-[#21d8ff]/20 text-[#21d8ff] border-[#21d8ff]/30 gap-1 text-[10px] px-1.5 py-0"
@@ -422,7 +431,7 @@ export default function CartPage() {
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                removeFromCart(item.productId, item.dosage);
+                                removeFromCart(item.productId, item.dosage, item.packSize);
                               }}
                               data-testid={`button-remove-${item.productId}`}
                             >
@@ -441,7 +450,7 @@ export default function CartPage() {
                               className="h-7 w-7 p-0"
                               onClick={(e) => {
                                 e.preventDefault();
-                                updateQuantity(item.productId, item.dosage, item.quantity - 1);
+                                updateQuantity(item.productId, item.dosage, item.quantity - 1, item.packSize);
                               }}
                               data-testid={`button-decrease-${item.productId}`}
                             >
@@ -456,7 +465,7 @@ export default function CartPage() {
                               className="h-7 w-7 p-0"
                               onClick={(e) => {
                                 e.preventDefault();
-                                updateQuantity(item.productId, item.dosage, item.quantity + 1);
+                                updateQuantity(item.productId, item.dosage, item.quantity + 1, item.packSize);
                               }}
                               disabled={item.quantity >= 10}
                               data-testid={`button-increase-${item.productId}`}

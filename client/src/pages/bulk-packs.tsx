@@ -46,12 +46,13 @@ export default function BulkPacks() {
     const bulk = calcBulk(product.price, tierQuantity, tierDiscount);
     const success = await addToCart({
       productId: String(product.id),
-      name: `${product.name} (${tierLabel})`,
+      name: product.name,
       price: bulk.discounted,
       originalPrice: bulk.total,
       quantity: 1,
       dosage: (product.dosageOptions && product.dosageOptions.length > 0) ? product.dosageOptions[0] : "default",
       image: product.imageUrl || undefined,
+      packSize: tierQuantity,
     });
     if (success) {
       toast({

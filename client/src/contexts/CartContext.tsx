@@ -12,14 +12,15 @@ export interface CartItem {
   isBundle?: boolean;
   isSubscription?: boolean;
   subscriptionInterval?: "weekly" | "biweekly" | "monthly";
+  packSize?: number;
 }
 
 interface CartContextType {
   items: CartItem[];
   addToCart: (item: CartItem) => Promise<boolean>;
-  removeFromCart: (productId: string, dosage: string) => void;
+  removeFromCart: (productId: string, dosage: string, packSize?: number) => void;
   removeBundleFromCart: (bundleId: string) => void;
-  updateQuantity: (productId: string, dosage: string, quantity: number) => void;
+  updateQuantity: (productId: string, dosage: string, quantity: number, packSize?: number) => void;
   clearCart: () => void;
   getItemCount: () => number;
   getSubtotal: () => number;
@@ -83,7 +84,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         (i) => {
           const sameSubscriptionType = i.isSubscription === item.isSubscription && 
             i.subscriptionInterval === item.subscriptionInterval;
-          return i.productId === item.productId && i.dosage === item.dosage && sameSubscriptionType;
+          const samePackSize = (i.packSize || undefined) === (item.packSize || undefined);
+          return i.productId === item.productId && i.dosage === item.dosage && sameSubscriptionType && samePackSize;
         }
       );
 
@@ -98,9 +100,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return true;
   }, []);
 
-  const removeFromCart = (productId: string, dosage: string) => {
+  const removeFromCart = (productId: string, dosage: string, packSize?: number) => {
     setItems((prev) =>
-      prev.filter((i) => !(i.productId === productId && i.dosage === dosage))
+      prev.filter((i) => !(i.productId === productId && i.dosage === dosage && (i.packSize || undefined) === (packSize || undefined)))
     );
   };
 
@@ -108,15 +110,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) => prev.filter((i) => i.bundleId !== bundleId));
   };
 
-  const updateQuantity = (productId: string, dosage: string, quantity: number) => {
+  const updateQuantity = (productId: string, dosage: string, quantity: number, packSize?: number) => {
     if (quantity <= 0) {
-      removeFromCart(productId, dosage);
+      removeFromCart(productId, dosage, packSize);
       return;
     }
 
     setItems((prev) =>
       prev.map((i) =>
-        i.productId === productId && i.dosage === dosage
+        i.productId === productId && i.dosage === dosage && (i.packSize || undefined) === (packSize || undefined)
           ? { ...i, quantity }
           : i
       )

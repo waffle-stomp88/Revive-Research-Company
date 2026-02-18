@@ -1295,7 +1295,7 @@ export default function Checkout() {
                   {/* Item list */}
                   <div className="space-y-3 md:space-y-4 mb-4 md:mb-6">
                     {cartItems.map((item) => (
-                      <div key={`${item.productId}-${item.dosage}-${item.isSubscription ? 'sub' : 'one'}`} className="flex gap-3 md:gap-4">
+                      <div key={`${item.productId}-${item.dosage}-${item.isSubscription ? 'sub' : 'one'}${item.packSize ? `-pack${item.packSize}` : ''}`} className="flex gap-3 md:gap-4">
                         <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-muted to-muted/50 rounded-md flex items-center justify-center flex-shrink-0 overflow-hidden relative">
                           <img 
                             src={item.image || productImage} 
@@ -1312,6 +1312,7 @@ export default function Checkout() {
                           <div>
                             <h3 className="font-display font-semibold text-sm truncate">
                               {item.name}
+                              {item.packSize && <span className="text-[#E7FB10] ml-1 text-xs">({item.packSize}-Pack)</span>}
                             </h3>
                             <p className="text-xs text-muted-foreground">
                               {item.dosage} × {item.quantity}
