@@ -424,10 +424,10 @@ function PreLaunchState({
           transition={{ delay: 0.2 }}
           className="space-y-0.5 sm:space-y-1"
         >
-          <p className="text-xs sm:text-sm text-white/50 leading-relaxed">
+          <p className="text-xs sm:text-sm text-white/50 leading-relaxed text-center">
             You've been burned before. Your trust is gone.
           </p>
-          <p className="text-xs sm:text-sm text-white/50 leading-relaxed">
+          <p className="text-xs sm:text-sm text-white/50 leading-relaxed text-center">
             Fake COAs. Underdosed vials. Vendors who vanish.
           </p>
           <p className="text-sm sm:text-base font-bold leading-relaxed text-[#ff2d9b] whitespace-nowrap text-center">
