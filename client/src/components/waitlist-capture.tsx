@@ -437,9 +437,7 @@ function PreLaunchState({
 
         <div className="space-y-2 sm:space-y-3">
           <div className="flex items-center justify-between gap-2 flex-wrap">
-            <span className="text-xs sm:text-sm uppercase tracking-widest font-semibold bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent">
-              What we actually built
-            </span>
+            <span className="text-xs sm:text-sm uppercase tracking-widest font-semibold bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent text-center">Why us?</span>
             <span className="text-[10px] sm:text-xs text-white/25 italic">live on this site</span>
           </div>
           <div className="grid grid-cols-1 gap-2.5 sm:gap-2">
