@@ -1075,6 +1075,17 @@ export async function registerRoutes(
     }
   });
 
+  // Get all products with dosage stock information (public endpoint for bulk packs page)
+  app.get("/api/products-with-stock", async (req, res) => {
+    try {
+      const productsWithStock = await storage.getAllProductsWithDosageStock();
+      res.json(productsWithStock);
+    } catch (error) {
+      console.error("Error fetching products with stock:", error);
+      res.status(500).json({ error: "Failed to fetch products with stock" });
+    }
+  });
+
   // Get dosage stock information for a product (public endpoint)
   app.get("/api/products/:id/dosage-stocks", async (req, res) => {
     try {

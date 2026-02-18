@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
 import { CategoryTabs } from "@/components/category-tabs";
 import { ImageLoader } from "@/components/image-loader";
-import { ArrowRight, ChevronDown, ShoppingCart, Sparkles, TrendingDown, Crown, Check } from "lucide-react";
+import { ArrowRight, ShoppingCart, Sparkles, TrendingDown, Crown, Package } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,75 +13,93 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { EarlyAccessModal } from "@/components/early-access-modal";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
-import type { Product } from "@shared/schema";
+import type { ProductWithDosageStock } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 
 const bulkTiers = [
   { quantity: 3, discount: 10, label: "3-Pack", color: "#21d8ff" },
   { quantity: 5, discount: 15, label: "5-Pack", color: "#E7FB10", popular: true },
   { quantity: 10, discount: 20, label: "10-Pack", color: "#a78bfa" },
-];
+] as const;
 
 function fmt(n: number) {
   return n.toFixed(2);
 }
 
-function calcBulk(price: string | number, quantity: number, discount: number) {
-  const num = typeof price === "string" ? parseFloat(price) : price;
-  const total = num * quantity;
+function calcBulk(price: number, quantity: number, discount: number) {
+  const total = price * quantity;
   const discounted = total * (1 - discount / 100);
   return { total, discounted, savings: total - discounted, perUnit: discounted / quantity };
 }
 
+interface PackItem {
+  productId: string;
+  productName: string;
+  productSlug: string | null;
+  productImage: string | null;
+  dosage: string;
+  unitPrice: number;
+  category: string;
+}
+
 export default function BulkPacks() {
-  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [activeTier, setActiveTier] = useState(1);
   const { addToCart } = useCart();
   const { toast } = useToast();
 
-  const { data: products, isLoading } = useQuery<Product[]>({
-    queryKey: ["/api/products"],
+  const { data: productsWithStock, isLoading } = useQuery<ProductWithDosageStock[]>({
+    queryKey: ["/api/products-with-stock"],
   });
 
-  const handleAddBulk = async (product: Product, tierQuantity: number, tierDiscount: number, tierLabel: string, tierColor: string) => {
-    const bulk = calcBulk(product.price, tierQuantity, tierDiscount);
+  const packItems = useMemo((): PackItem[] => {
+    if (!productsWithStock) return [];
+    const items: PackItem[] = [];
+    for (const product of productsWithStock) {
+      if (!product.inStock || product.category === "Research Stacks" || product.category === "Supplies") continue;
+      for (const ds of product.dosageStocks) {
+        if (!ds.inStock || ds.stockAmount <= 0) continue;
+        const unitPrice = ds.price ? parseFloat(ds.price) : (typeof product.price === "string" ? parseFloat(product.price) : product.price);
+        items.push({
+          productId: String(product.id),
+          productName: product.name,
+          productSlug: product.slug,
+          productImage: product.imageUrl,
+          dosage: ds.dosage,
+          unitPrice,
+          category: product.category,
+        });
+      }
+    }
+    return items.sort((a, b) => a.productName.localeCompare(b.productName));
+  }, [productsWithStock]);
+
+  const tier = bulkTiers[activeTier];
+
+  const handleAddBulk = async (item: PackItem) => {
+    const bulk = calcBulk(item.unitPrice, tier.quantity, tier.discount);
     const success = await addToCart({
-      productId: String(product.id),
-      name: product.name,
+      productId: item.productId,
+      name: item.productName,
       price: bulk.discounted,
       originalPrice: bulk.total,
       quantity: 1,
-      dosage: (product.dosageOptions && product.dosageOptions.length > 0) ? product.dosageOptions[0] : "default",
-      image: product.imageUrl || undefined,
-      packSize: tierQuantity,
+      dosage: item.dosage,
+      image: item.productImage || undefined,
+      packSize: tier.quantity,
     });
     if (success) {
       toast({
         title: "Added to Cart",
-        description: `${product.name} ${tierLabel} — $${fmt(bulk.discounted)}`,
+        description: `${item.productName} ${item.dosage} ${tier.label} — $${fmt(bulk.discounted)}`,
       });
     } else {
       toast({
         title: "Out of Stock",
-        description: `${product.name} is currently unavailable.`,
+        description: `${item.productName} (${item.dosage}) is currently unavailable.`,
         variant: "destructive",
       });
     }
   };
-
-  const inStockProducts = useMemo(() => {
-    if (!products) return [];
-    return products.filter(p => p.inStock && p.category !== "Research Stacks");
-  }, [products]);
-
-  const categories = useMemo(() => {
-    const cats = new Set(inStockProducts.map(p => p.category));
-    return Array.from(cats).sort();
-  }, [inStockProducts]);
-
-  const filteredProducts = useMemo(() => {
-    if (categoryFilter === "all") return inStockProducts;
-    return inStockProducts.filter(p => p.category === categoryFilter);
-  }, [inStockProducts, categoryFilter]);
 
   return (
     <>
@@ -89,7 +107,7 @@ export default function BulkPacks() {
       <main className="min-h-screen pt-32 md:pt-40 pb-24">
         <SEOHead
           title="Bulk Packs - Volume Pricing"
-          description="Save up to 20% on research peptides with volume pricing. Compare 3-pack, 5-pack, and 10-pack discounts side by side."
+          description="Save up to 20% on research peptides with volume pricing. Choose 3-pack, 5-pack, or 10-pack bulk bundles."
           canonicalPath="/bulk-packs"
         />
         <div className="max-w-5xl mx-auto px-4 md:px-6">
@@ -123,274 +141,233 @@ export default function BulkPacks() {
               Bulk Packs
             </h1>
             <p className="text-muted-foreground max-w-xl mx-auto text-base">
-              Compare volume discounts at a glance. The more you buy, the more you save.
+              Premium research compounds at volume pricing. Select your pack size and add to cart.
             </p>
           </motion.div>
 
-          {categories.length > 1 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.1 }}
-              className="flex items-center justify-center gap-2 mb-8"
-            >
-              <Button
-                variant={categoryFilter === "all" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setCategoryFilter("all")}
-                className={categoryFilter === "all" ? "bg-[#E7FB10] text-black border-[#E7FB10]" : ""}
-                data-testid="button-filter-all"
-              >
-                All ({inStockProducts.length})
-              </Button>
-              {categories.map(cat => (
-                <Button
-                  key={cat}
-                  variant={categoryFilter === cat ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setCategoryFilter(cat)}
-                  className={categoryFilter === cat ? "bg-[#E7FB10] text-black border-[#E7FB10]" : ""}
-                  data-testid={`button-filter-${cat.toLowerCase()}`}
-                >
-                  {cat} ({inStockProducts.filter(p => p.category === cat).length})
-                </Button>
-              ))}
-            </motion.div>
-          )}
-
+          {/* Tier Tabs */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="flex items-center justify-center gap-2 md:gap-3 mb-8"
           >
-            {/* Desktop table */}
-            <div className="hidden md:block">
-              <Card
-                className="overflow-hidden"
-                style={{
-                  border: "1px solid rgba(255, 255, 255, 0.08)",
-                  boxShadow: "0 0 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.03)",
-                }}
-              >
-                {/* Header row */}
-                <div
-                  className="grid grid-cols-[1.2fr_repeat(3,1fr)]"
+            {bulkTiers.map((t, idx) => {
+              const isActive = activeTier === idx;
+              const isPopular = "popular" in t && t.popular;
+              return (
+                <button
+                  key={t.quantity}
+                  onClick={() => setActiveTier(idx)}
+                  className="relative px-5 md:px-7 py-3 md:py-3.5 rounded-md transition-all duration-300 text-center"
                   style={{
-                    borderBottom: "1px solid rgba(255, 255, 255, 0.06)",
-                    background: "linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%)",
+                    background: isActive
+                      ? `linear-gradient(135deg, ${t.color}25, ${t.color}10)`
+                      : "rgba(255, 255, 255, 0.03)",
+                    border: isActive
+                      ? `1.5px solid ${t.color}80`
+                      : "1.5px solid rgba(255, 255, 255, 0.08)",
+                    boxShadow: isActive
+                      ? `0 0 25px ${t.color}15, inset 0 0 20px ${t.color}08`
+                      : "none",
                   }}
+                  data-testid={`tab-tier-${t.quantity}`}
                 >
-                  <div className="px-5 py-4 text-xs text-muted-foreground uppercase tracking-widest font-semibold flex items-center">
-                    Product
-                  </div>
-                  {bulkTiers.map((tier) => {
-                    const isPopular = "popular" in tier && tier.popular;
-                    return (
+                  <span
+                    className="font-display font-bold text-sm md:text-base block"
+                    style={{ color: isActive ? t.color : "rgba(255, 255, 255, 0.5)" }}
+                  >
+                    {t.label}
+                  </span>
+                  <span
+                    className="text-xs font-semibold block mt-0.5"
+                    style={{ color: isActive ? "#4ade80" : "rgba(255, 255, 255, 0.3)" }}
+                  >
+                    Save {t.discount}%
+                  </span>
+                  {isPopular && (
                     <div
-                      key={tier.quantity}
-                      className="px-3 py-4 text-center relative"
+                      className="absolute -top-2.5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider whitespace-nowrap"
                       style={{
-                        borderLeft: isPopular
-                          ? `1px solid ${tier.color}25`
-                          : "1px solid rgba(255, 255, 255, 0.04)",
-                        borderRight: isPopular ? `1px solid ${tier.color}15` : undefined,
-                        background: isPopular
-                          ? `linear-gradient(180deg, ${tier.color}18 0%, ${tier.color}06 100%)`
-                          : `linear-gradient(180deg, ${tier.color}08 0%, transparent 100%)`,
-                        boxShadow: isPopular
-                          ? `inset 0 0 40px ${tier.color}0a, 0 0 20px ${tier.color}08`
-                          : undefined,
+                        background: "linear-gradient(135deg, rgba(231, 251, 16, 0.9), rgba(231, 251, 16, 0.7))",
+                        color: "#000",
+                        boxShadow: "0 0 12px rgba(231, 251, 16, 0.3)",
                       }}
                     >
-                      <div className="flex items-center justify-center gap-2 flex-wrap">
-                        <span className="text-sm uppercase tracking-wider font-bold" style={{ color: tier.color }} data-testid={`text-tier-label-${tier.quantity}`}>
-                          {tier.label}
-                        </span>
-                        <span
-                          className="text-xs font-bold px-2.5 py-0.5 rounded-full"
-                          style={{
-                            backgroundColor: `${tier.color}20`,
-                            color: tier.color,
-                            boxShadow: `0 0 8px ${tier.color}15`,
-                          }}
-                          data-testid={`text-tier-discount-${tier.quantity}`}
-                        >
-                          {tier.discount}% off
-                        </span>
-                      </div>
-                      {"popular" in tier && tier.popular && (
-                        <div className="flex items-center justify-center gap-1 mt-1.5">
-                          <div
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
-                            style={{
-                              background: "linear-gradient(135deg, rgba(231, 251, 16, 0.2), rgba(231, 251, 16, 0.08))",
-                              color: "#E7FB10",
-                              border: "1px solid rgba(231, 251, 16, 0.3)",
-                              boxShadow: "0 0 12px rgba(231, 251, 16, 0.15)",
-                            }}
-                          >
-                            <Sparkles className="h-2.5 w-2.5" />
-                            Most Popular
-                          </div>
-                        </div>
-                      )}
-                      <div
-                        className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-2/3 rounded-full"
-                        style={{
-                          background: `linear-gradient(90deg, transparent, ${tier.color}60, transparent)`,
-                        }}
-                      />
+                      <Sparkles className="h-2.5 w-2.5" />
+                      Best Value
                     </div>
+                  )}
+                </button>
+              );
+            })}
+          </motion.div>
+
+          {/* Pack Cards Grid */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTier}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.2 }}
+            >
+              {isLoading ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {[...Array(6)].map((_, i) => (
+                    <Card key={i} className="p-5">
+                      <div className="flex items-center gap-3 mb-4">
+                        <Skeleton className="h-14 w-14 rounded-md flex-shrink-0" />
+                        <div className="space-y-2 flex-1">
+                          <Skeleton className="h-4 w-3/4" />
+                          <Skeleton className="h-3 w-1/2" />
+                        </div>
+                      </div>
+                      <Skeleton className="h-8 w-full mb-3" />
+                      <Skeleton className="h-9 w-full" />
+                    </Card>
+                  ))}
+                </div>
+              ) : packItems.length === 0 ? (
+                <Card className="p-8 text-center">
+                  <Package className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+                  <p className="text-muted-foreground">No bulk packs available at this time.</p>
+                </Card>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {packItems.map((item, idx) => {
+                    const bulk = calcBulk(item.unitPrice, tier.quantity, tier.discount);
+                    return (
+                      <motion.div
+                        key={`${item.productId}-${item.dosage}`}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.05 }}
+                      >
+                        <Card
+                          className="overflow-visible group relative"
+                          style={{
+                            border: "1px solid rgba(255, 255, 255, 0.08)",
+                            boxShadow: "0 2px 16px rgba(0, 0, 0, 0.25)",
+                            transition: "border-color 0.3s, box-shadow 0.3s",
+                          }}
+                          data-testid={`card-pack-${item.productId}-${item.dosage}`}
+                        >
+                          <div className="p-5">
+                            {/* Product header */}
+                            <div className="flex items-center gap-3 mb-4">
+                              <Link
+                                href={`/peptides/${item.productSlug || item.productId}`}
+                                className="flex-shrink-0"
+                                data-testid={`link-product-${item.productId}`}
+                              >
+                                <div
+                                  className="h-14 w-14 rounded-md overflow-hidden ring-1 ring-white/10"
+                                  style={{ boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)" }}
+                                >
+                                  <ImageLoader
+                                    src={item.productImage || productImage}
+                                    alt={item.productName}
+                                    className="w-full h-full object-cover"
+                                    containerClassName="relative w-full h-full bg-muted overflow-hidden rounded-md"
+                                  />
+                                </div>
+                              </Link>
+                              <div className="min-w-0 flex-1">
+                                <Link
+                                  href={`/peptides/${item.productSlug || item.productId}`}
+                                  data-testid={`link-product-name-${item.productId}`}
+                                >
+                                  <h3
+                                    className="font-display font-bold text-base leading-tight text-[#21d8ff] truncate"
+                                    data-testid={`text-product-name-${item.productId}-${item.dosage}`}
+                                  >
+                                    {item.productName}
+                                  </h3>
+                                </Link>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <Badge
+                                    className="text-[10px] px-1.5 py-0 bg-white/5 border-white/10 text-white/70"
+                                    data-testid={`badge-dosage-${item.productId}-${item.dosage}`}
+                                  >
+                                    {item.dosage}
+                                  </Badge>
+                                  <span className="text-xs text-muted-foreground">
+                                    ${fmt(item.unitPrice)} / vial
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Pricing section */}
+                            <div
+                              className="rounded-md p-3 mb-4"
+                              style={{
+                                background: `linear-gradient(135deg, ${tier.color}08, ${tier.color}04)`,
+                                border: `1px solid ${tier.color}15`,
+                              }}
+                            >
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <div className="flex items-baseline gap-2">
+                                    <span
+                                      className="font-display font-bold text-2xl"
+                                      style={{ color: tier.color, textShadow: `0 0 20px ${tier.color}30` }}
+                                      data-testid={`text-pack-price-${item.productId}-${item.dosage}`}
+                                    >
+                                      ${fmt(bulk.discounted)}
+                                    </span>
+                                    <span
+                                      className="text-sm text-muted-foreground/60 line-through"
+                                      data-testid={`text-original-price-${item.productId}-${item.dosage}`}
+                                    >
+                                      ${fmt(bulk.total)}
+                                    </span>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground mt-0.5">
+                                    ${fmt(bulk.perUnit)} per vial
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <span
+                                    className="text-sm font-bold block"
+                                    style={{ color: "#4ade80" }}
+                                    data-testid={`text-savings-${item.productId}-${item.dosage}`}
+                                  >
+                                    Save ${fmt(bulk.savings)}
+                                  </span>
+                                  <span className="text-[10px] font-semibold" style={{ color: tier.color }}>
+                                    {tier.discount}% off
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Add to Cart button */}
+                            <Button
+                              className="w-full gap-2 font-semibold"
+                              style={{
+                                background: `linear-gradient(135deg, ${tier.color}dd, ${tier.color}aa)`,
+                                color: "#000",
+                                border: `1px solid ${tier.color}`,
+                              }}
+                              onClick={() => handleAddBulk(item)}
+                              data-testid={`button-add-pack-${item.productId}-${item.dosage}`}
+                            >
+                              <ShoppingCart className="h-4 w-4" />
+                              Add {tier.label} to Cart
+                            </Button>
+                          </div>
+                        </Card>
+                      </motion.div>
                     );
                   })}
                 </div>
-
-                {isLoading ? (
-                  <div>
-                    {[...Array(5)].map((_, i) => (
-                      <div key={i} className="grid grid-cols-[1.2fr_repeat(3,1fr)] border-b border-border/20 px-5 py-4">
-                        <div className="flex items-center gap-4">
-                          <Skeleton className="h-12 w-12 rounded-md flex-shrink-0" />
-                          <div className="space-y-2">
-                            <Skeleton className="h-4 w-32" />
-                            <Skeleton className="h-3.5 w-20" />
-                          </div>
-                        </div>
-                        <Skeleton className="h-8 w-28 mx-auto" />
-                        <Skeleton className="h-8 w-28 mx-auto" />
-                        <Skeleton className="h-8 w-28 mx-auto" />
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div>
-                    {filteredProducts.map((product, idx) => {
-                      const basePrice = typeof product.price === "string" ? parseFloat(product.price) : product.price;
-                      return (
-                        <motion.div
-                          key={product.id}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: idx * 0.04 }}
-                          className={`grid grid-cols-[1.2fr_repeat(3,1fr)] items-center group/row transition-all duration-200 ${
-                            idx < filteredProducts.length - 1 ? "" : ""
-                          }`}
-                          style={{
-                            borderBottom: idx < filteredProducts.length - 1 ? "1px solid rgba(255, 255, 255, 0.04)" : "none",
-                          }}
-                          data-testid={`row-bulk-product-${product.id}`}
-                        >
-                          <Link
-                            href={`/peptides/${product.slug || product.id}`}
-                            className="flex items-center gap-4 px-5 py-4 hover-elevate"
-                            data-testid={`link-product-${product.id}`}
-                          >
-                            <div
-                              className="h-12 w-12 rounded-md overflow-hidden flex-shrink-0 ring-1 ring-white/10"
-                              style={{ boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)" }}
-                            >
-                              <ImageLoader
-                                src={product.imageUrl || productImage}
-                                alt={product.name}
-                                className="w-full h-full object-cover"
-                                containerClassName="relative w-full h-full bg-muted overflow-hidden rounded-md"
-                              />
-                            </div>
-                            <div className="min-w-0">
-                              <h3 className="font-display font-bold text-base leading-tight text-[#21d8ff] truncate" data-testid={`text-product-name-${product.id}`}>
-                                {product.name}
-                              </h3>
-                              <span className="text-sm text-muted-foreground" data-testid={`text-base-price-${product.id}`}>
-                                ${fmt(basePrice)} / vial
-                              </span>
-                            </div>
-                          </Link>
-
-                          {bulkTiers.map((tier) => {
-                            const bulk = calcBulk(product.price, tier.quantity, tier.discount);
-                            const isPopular = "popular" in tier && tier.popular;
-                            return (
-                              <button
-                                key={tier.quantity}
-                                onClick={() => handleAddBulk(product, tier.quantity, tier.discount, tier.label, tier.color)}
-                                className="px-4 py-4 flex items-center justify-center gap-3 group/tier cursor-pointer transition-colors duration-200 hover-elevate"
-                                style={{
-                                  borderLeft: "1px solid rgba(255, 255, 255, 0.04)",
-                                  background: isPopular
-                                    ? `linear-gradient(180deg, ${tier.color}12 0%, ${tier.color}04 100%)`
-                                    : `linear-gradient(180deg, ${tier.color}06 0%, transparent 100%)`,
-                                  ...(isPopular ? { boxShadow: `inset 0 0 30px ${tier.color}08, 0 0 15px ${tier.color}06` } : {}),
-                                }}
-                                aria-label={`Add ${product.name} ${tier.label} to cart for $${fmt(bulk.discounted)}`}
-                                data-testid={`button-add-${product.id}-${tier.quantity}`}
-                              >
-                                <div className="text-center">
-                                  <span
-                                    className="font-display font-bold text-lg block"
-                                    style={{
-                                      color: tier.color,
-                                      textShadow: `0 0 20px ${tier.color}30`,
-                                    }}
-                                    data-testid={`text-price-${product.id}-${tier.quantity}`}
-                                  >
-                                    ${fmt(bulk.discounted)}
-                                  </span>
-                                  <div className="flex items-center justify-center gap-1.5 mt-0.5">
-                                    <span className="text-xs text-muted-foreground/70 line-through" data-testid={`text-original-${product.id}-${tier.quantity}`}>${fmt(bulk.total)}</span>
-                                    <span
-                                      className="text-xs font-bold"
-                                      style={{ color: "#4ade80", textShadow: "0 0 8px rgba(74, 222, 128, 0.2)" }}
-                                      data-testid={`text-savings-${product.id}-${tier.quantity}`}
-                                    >
-                                      -${fmt(bulk.savings)}
-                                    </span>
-                                  </div>
-                                </div>
-                                <ShoppingCart
-                                  className="h-5 w-5 flex-shrink-0 opacity-25 group-hover/tier:opacity-100 transition-opacity duration-200"
-                                  style={{ color: tier.color }}
-                                />
-                              </button>
-                            );
-                          })}
-                        </motion.div>
-                      );
-                    })}
-                  </div>
-                )}
-              </Card>
-            </div>
-
-            {/* Mobile list */}
-            <div className="md:hidden space-y-3">
-              {isLoading ? (
-                [...Array(4)].map((_, i) => (
-                  <Card key={i} className="p-4">
-                    <div className="flex items-center gap-3">
-                      <Skeleton className="h-12 w-12 rounded-md flex-shrink-0" />
-                      <div className="space-y-2 flex-1">
-                        <Skeleton className="h-4 w-3/4" />
-                        <Skeleton className="h-3.5 w-1/2" />
-                      </div>
-                    </div>
-                  </Card>
-                ))
-              ) : (
-                <AnimatePresence mode="popLayout">
-                  {filteredProducts.map((product, idx) => (
-                    <MobileProductCard key={product.id} product={product} index={idx} onAddBulk={handleAddBulk} />
-                  ))}
-                </AnimatePresence>
               )}
-            </div>
-          </motion.div>
+            </motion.div>
+          </AnimatePresence>
 
-          {!isLoading && filteredProducts.length === 0 && (
-            <Card className="p-6 text-center mt-4">
-              <p className="text-muted-foreground">No products available in this category.</p>
-            </Card>
-          )}
-
+          {/* Wholesale CTA */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -436,6 +413,7 @@ export default function BulkPacks() {
             </Card>
           </motion.div>
 
+          {/* RUO Disclaimer */}
           <div
             className="mt-8 p-4 rounded-md"
             style={{
@@ -451,144 +429,5 @@ export default function BulkPacks() {
         </div>
       </main>
     </>
-  );
-}
-
-function MobileProductCard({ product, index, onAddBulk }: { product: Product; index: number; onAddBulk: (product: Product, tierQuantity: number, tierDiscount: number, tierLabel: string, tierColor: string) => void }) {
-  const [expanded, setExpanded] = useState(false);
-  const basePrice = typeof product.price === "string" ? parseFloat(product.price) : product.price;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      transition={{ delay: index * 0.03 }}
-      layout
-    >
-      <Card
-        className="overflow-visible"
-        style={{
-          border: "1px solid rgba(255, 255, 255, 0.08)",
-          boxShadow: "0 2px 12px rgba(0, 0, 0, 0.2)",
-        }}
-        data-testid={`card-bulk-mobile-${product.id}`}
-      >
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="w-full px-4 py-3.5 flex items-center gap-3 text-left"
-          aria-expanded={expanded}
-          data-testid={`button-expand-${product.id}`}
-        >
-          <div
-            className="h-12 w-12 rounded-md overflow-hidden flex-shrink-0 ring-1 ring-white/10"
-            style={{ boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)" }}
-          >
-            <ImageLoader
-              src={product.imageUrl || productImage}
-              alt={product.name}
-              className="w-full h-full object-cover"
-              containerClassName="relative w-full h-full bg-muted overflow-hidden rounded-md"
-            />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="font-display font-bold text-base truncate" data-testid={`text-mobile-name-${product.id}`}>{product.name}</h3>
-            <p className="text-sm text-muted-foreground" data-testid={`text-mobile-price-${product.id}`}>${fmt(basePrice)} / vial</p>
-          </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <Badge
-              className="text-xs border"
-              style={{
-                backgroundColor: "rgba(74, 222, 128, 0.1)",
-                color: "#4ade80",
-                borderColor: "rgba(74, 222, 128, 0.25)",
-              }}
-              data-testid={`badge-discount-${product.id}`}
-            >
-              Up to 20% off
-            </Badge>
-            <ChevronDown
-              className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
-            />
-          </div>
-        </button>
-
-        <AnimatePresence>
-          {expanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="overflow-hidden"
-            >
-              <div className="px-4 pb-4 grid grid-cols-3 gap-2.5">
-                {bulkTiers.map((tier) => {
-                  const bulk = calcBulk(product.price, tier.quantity, tier.discount);
-                  const isPopular = "popular" in tier && tier.popular;
-                  return (
-                    <button
-                      key={tier.quantity}
-                      onClick={() => onAddBulk(product, tier.quantity, tier.discount, tier.label, tier.color)}
-                      data-testid={`button-mobile-add-${product.id}-${tier.quantity}`}
-                      className="text-left"
-                    >
-                      <div
-                        className="rounded-md px-2 py-3 text-center relative hover-elevate"
-                        style={{
-                          border: isPopular ? `1px solid ${tier.color}50` : `1px solid ${tier.color}30`,
-                          background: isPopular
-                            ? `linear-gradient(180deg, ${tier.color}15 0%, ${tier.color}08 100%)`
-                            : `linear-gradient(180deg, ${tier.color}0a 0%, ${tier.color}04 100%)`,
-                          ...(isPopular ? { boxShadow: `0 0 12px ${tier.color}15, inset 0 0 20px ${tier.color}08` } : {}),
-                        }}
-                        data-testid={`card-tier-${product.id}-${tier.quantity}`}
-                      >
-                        {isPopular && (
-                          <div
-                            className="absolute -top-2 left-1/2 -translate-x-1/2 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider whitespace-nowrap"
-                            style={{
-                              background: "linear-gradient(135deg, rgba(231, 251, 16, 0.25), rgba(231, 251, 16, 0.1))",
-                              color: "#E7FB10",
-                              border: "1px solid rgba(231, 251, 16, 0.3)",
-                            }}
-                          >
-                            <Sparkles className="h-2 w-2" />
-                            Popular
-                          </div>
-                        )}
-                        <div
-                          className="text-[11px] uppercase tracking-wider font-bold"
-                          style={{ color: tier.color }}
-                        >
-                          {tier.label}
-                        </div>
-                        <div
-                          className="font-display font-bold text-base leading-tight mt-1"
-                          style={{ color: tier.color, textShadow: `0 0 12px ${tier.color}25` }}
-                          data-testid={`text-mobile-tier-price-${product.id}-${tier.quantity}`}
-                        >
-                          ${fmt(bulk.discounted)}
-                        </div>
-                        <div className="text-[11px] text-muted-foreground/60 line-through leading-tight mt-0.5" data-testid={`text-mobile-tier-original-${product.id}-${tier.quantity}`}>
-                          ${fmt(bulk.total)}
-                        </div>
-                        <div
-                          className="text-[11px] font-bold leading-tight"
-                          style={{ color: "#4ade80" }}
-                          data-testid={`text-mobile-tier-savings-${product.id}-${tier.quantity}`}
-                        >
-                          Save ${fmt(bulk.savings)}
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </Card>
-    </motion.div>
   );
 }
