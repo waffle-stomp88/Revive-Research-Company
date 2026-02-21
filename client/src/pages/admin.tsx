@@ -2197,9 +2197,11 @@ function CoasTab() {
         results.push(`${field.label}: ${val}`);
       }
     }
+    const selectedProduct = products?.find(p => p.id === values.productId);
     const { results: _results, testHplcPurity, testMassSpec, testSterility, testEndotoxins, testAminoAcid, testPeptideContent, testAppearance, testTfaContent, testWaterContent, testSolubility, ...rest } = values;
     const data = {
       ...rest,
+      productName: selectedProduct?.name || values.productName,
       results,
       imageUrl: coaImageUrl || null,
     };
@@ -2241,64 +2243,49 @@ function CoasTab() {
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="productId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Product</FormLabel>
-                        <Select onValueChange={(value) => {
-                          field.onChange(value);
-                          const product = products?.find(p => p.id === value);
-                          if (product) {
-                            form.setValue("productName", product.name);
-                            const mfgId = getMfgIdForProduct(product.name);
-                            if (mfgId) {
-                              const now = new Date();
-                              const existingBatches = allCoas?.map(c => c.batchNumber) || [];
-                              const nextCycle = getNextCycleLetter(existingBatches, mfgId, now.getFullYear(), now.getMonth() + 1);
-                              const suggested = generateBatchNumber(mfgId, now.getFullYear(), now.getMonth() + 1, nextCycle);
-                              form.setValue("batchNumber", suggested);
-                            } else {
-                              const allIds = getAllMfgIdsForProduct(product.name);
-                              if (allIds.length > 1) {
-                                form.setValue("batchNumber", "");
-                              }
+                <FormField
+                  control={form.control}
+                  name="productId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Product</FormLabel>
+                      <Select onValueChange={(value) => {
+                        field.onChange(value);
+                        const product = products?.find(p => p.id === value);
+                        if (product) {
+                          form.setValue("productName", product.name);
+                          const mfgId = getMfgIdForProduct(product.name);
+                          if (mfgId) {
+                            const now = new Date();
+                            const existingBatches = allCoas?.map(c => c.batchNumber) || [];
+                            const nextCycle = getNextCycleLetter(existingBatches, mfgId, now.getFullYear(), now.getMonth() + 1);
+                            const suggested = generateBatchNumber(mfgId, now.getFullYear(), now.getMonth() + 1, nextCycle);
+                            form.setValue("batchNumber", suggested);
+                          } else {
+                            const allIds = getAllMfgIdsForProduct(product.name);
+                            if (allIds.length > 1) {
+                              form.setValue("batchNumber", "");
                             }
                           }
-                        }} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger data-testid="select-coa-product">
-                              <SelectValue placeholder="Select product" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {products?.map((product) => (
-                              <SelectItem key={product.id} value={product.id}>
-                                {product.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="productName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Product Name</FormLabel>
+                        }
+                      }} defaultValue={field.value}>
                         <FormControl>
-                          <Input {...field} data-testid="input-coa-product-name" />
+                          <SelectTrigger data-testid="select-coa-product">
+                            <SelectValue placeholder="Select product" />
+                          </SelectTrigger>
                         </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                        <SelectContent>
+                          {products?.map((product) => (
+                            <SelectItem key={product.id} value={product.id}>
+                              {product.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="batchNumber"
