@@ -105,12 +105,31 @@ export default function CoaVerification() {
   const parseResults = (results: string[] | null): TestResult[] => {
     if (!results) return [];
     return results.map((result) => {
-      const parts = result.split("|");
+      if (result.includes("|")) {
+        const parts = result.split("|");
+        return {
+          compound: parts[0] || "Unknown",
+          specification: parts[1] || "N/A",
+          result: parts[2] || "N/A",
+          status: parts[3] === "pass" ? "pass" : "fail",
+        };
+      }
+      const colonIndex = result.indexOf(":");
+      if (colonIndex > 0) {
+        const label = result.substring(0, colonIndex).trim();
+        const value = result.substring(colonIndex + 1).trim();
+        return {
+          compound: label,
+          specification: "—",
+          result: value,
+          status: "pass" as const,
+        };
+      }
       return {
-        compound: parts[0] || "Unknown",
-        specification: parts[1] || "N/A",
-        result: parts[2] || "N/A",
-        status: parts[3] === "pass" ? "pass" : "fail",
+        compound: result,
+        specification: "—",
+        result: "—",
+        status: "pass" as const,
       };
     });
   };

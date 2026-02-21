@@ -11,7 +11,7 @@ interface ObjectUploaderProps {
     method: "PUT";
     url: string;
   }>;
-  onComplete?: (result: { successful: Array<{ uploadURL?: string }> }) => void;
+  onComplete?: (result: { successful: Array<{ uploadURL?: string; fileType?: string }> }) => void;
   buttonClassName?: string;
   buttonVariant?: "default" | "outline" | "secondary" | "ghost" | "destructive";
   buttonSize?: "default" | "sm" | "lg" | "icon";
@@ -85,7 +85,7 @@ export function ObjectUploader({
       const uploadURL = url.split("?")[0];
 
       onComplete?.({
-        successful: [{ uploadURL }],
+        successful: [{ uploadURL, fileType: file.type }],
       });
     } catch (error) {
       console.error("Upload error:", error);

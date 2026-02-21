@@ -151,8 +151,31 @@ const productFormSchema = insertProductSchema.extend({
 
 type ProductFormValues = z.infer<typeof productFormSchema>;
 
+const COA_TEST_FIELDS = [
+  { key: "hplcPurity", label: "HPLC Purity", placeholder: "e.g. 99.2%" },
+  { key: "massSpec", label: "Mass Spectrometry (MS)", placeholder: "e.g. Confirmed" },
+  { key: "sterility", label: "Sterility", placeholder: "e.g. Pass" },
+  { key: "endotoxins", label: "Endotoxins", placeholder: "e.g. <0.5 EU/mg" },
+  { key: "aminoAcid", label: "Amino Acid Analysis", placeholder: "e.g. Consistent" },
+  { key: "peptideContent", label: "Peptide Content", placeholder: "e.g. 85.3%" },
+  { key: "appearance", label: "Appearance", placeholder: "e.g. White lyophilized powder" },
+  { key: "tfaContent", label: "TFA Content", placeholder: "e.g. <1%" },
+  { key: "waterContent", label: "Water Content", placeholder: "e.g. <5%" },
+  { key: "solubility", label: "Solubility", placeholder: "e.g. Freely soluble" },
+] as const;
+
 const coaFormSchema = insertCoaSchema.extend({
   results: z.string().optional(),
+  testHplcPurity: z.string().optional(),
+  testMassSpec: z.string().optional(),
+  testSterility: z.string().optional(),
+  testEndotoxins: z.string().optional(),
+  testAminoAcid: z.string().optional(),
+  testPeptideContent: z.string().optional(),
+  testAppearance: z.string().optional(),
+  testTfaContent: z.string().optional(),
+  testWaterContent: z.string().optional(),
+  testSolubility: z.string().optional(),
   publiclyVisible: z.boolean().default(true),
   notes: z.string().optional(),
 });
@@ -1974,6 +1997,7 @@ function CoasTab() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCoa, setEditingCoa] = useState<Coa | null>(null);
   const [coaImageUrl, setCoaImageUrl] = useState<string | null>(null);
+  const [coaIsPdf, setCoaIsPdf] = useState(false);
   const [isUploadingCoaImage, setIsUploadingCoaImage] = useState(false);
   const { toast } = useToast();
 
@@ -2003,6 +2027,16 @@ function CoasTab() {
       labName: "",
       verified: true,
       results: "",
+      testHplcPurity: "",
+      testMassSpec: "",
+      testSterility: "",
+      testEndotoxins: "",
+      testAminoAcid: "",
+      testPeptideContent: "",
+      testAppearance: "",
+      testTfaContent: "",
+      testWaterContent: "",
+      testSolubility: "",
       publiclyVisible: true,
       notes: "",
     },
@@ -2059,6 +2093,23 @@ function CoasTab() {
     if (coa) {
       setEditingCoa(coa);
       setCoaImageUrl(coa.imageUrl || null);
+      const url = (coa.imageUrl || "").toLowerCase();
+      const isImage = /\.(jpg|jpeg|png|gif|webp|svg|bmp)(\?|$)/.test(url);
+      setCoaIsPdf(!isImage && !!coa.imageUrl);
+      const parsedTests: Record<string, string> = {};
+      if (coa.results) {
+        for (const result of coa.results) {
+          const [key, ...valueParts] = result.split(":");
+          const label = key?.trim() || "";
+          const value = valueParts.join(":").trim();
+          const matchedField = COA_TEST_FIELDS.find(
+            (f) => f.label.toLowerCase() === label.toLowerCase()
+          );
+          if (matchedField) {
+            parsedTests[`test${matchedField.key.charAt(0).toUpperCase() + matchedField.key.slice(1)}`] = value;
+          }
+        }
+      }
       form.reset({
         batchNumber: coa.batchNumber,
         productId: coa.productId,
@@ -2068,13 +2119,24 @@ function CoasTab() {
         purity: coa.purity,
         labName: coa.labName,
         verified: coa.verified ?? true,
-        results: coa.results?.join(", ") || "",
+        results: "",
+        testHplcPurity: parsedTests.testHplcPurity || "",
+        testMassSpec: parsedTests.testMassSpec || "",
+        testSterility: parsedTests.testSterility || "",
+        testEndotoxins: parsedTests.testEndotoxins || "",
+        testAminoAcid: parsedTests.testAminoAcid || "",
+        testPeptideContent: parsedTests.testPeptideContent || "",
+        testAppearance: parsedTests.testAppearance || "",
+        testTfaContent: parsedTests.testTfaContent || "",
+        testWaterContent: parsedTests.testWaterContent || "",
+        testSolubility: parsedTests.testSolubility || "",
         publiclyVisible: coa.publiclyVisible ?? true,
         notes: coa.notes || "",
       });
     } else {
       setEditingCoa(null);
       setCoaImageUrl(null);
+      setCoaIsPdf(false);
       form.reset();
     }
     setIsDialogOpen(true);
@@ -2097,16 +2159,18 @@ function CoasTab() {
       if (result.successful && result.successful.length > 0) {
         const uploadedFile = result.successful[0];
         const uploadURL = uploadedFile.uploadURL;
+        const fileType = uploadedFile.fileType || "";
         
         const response = await apiRequest("PUT", "/api/objects/finalize", { uploadURL });
         const { objectPath } = await response.json();
         
         setCoaImageUrl(objectPath);
+        setCoaIsPdf(fileType === "application/pdf");
         toast({ title: "COA document uploaded successfully" });
       }
     } catch (error) {
       console.error("Failed to finalize upload:", error);
-      toast({ title: "Failed to upload COA image", variant: "destructive" });
+      toast({ title: "Failed to upload COA document", variant: "destructive" });
     } finally {
       setIsUploadingCoaImage(false);
     }
@@ -2121,12 +2185,22 @@ function CoasTab() {
       }
     }
     setCoaImageUrl(null);
+    setCoaIsPdf(false);
   };
 
   const onSubmit = (values: CoaFormValues) => {
+    const results: string[] = [];
+    for (const field of COA_TEST_FIELDS) {
+      const fieldKey = `test${field.key.charAt(0).toUpperCase() + field.key.slice(1)}` as keyof CoaFormValues;
+      const val = (values[fieldKey] as string)?.trim();
+      if (val) {
+        results.push(`${field.label}: ${val}`);
+      }
+    }
+    const { results: _results, testHplcPurity, testMassSpec, testSterility, testEndotoxins, testAminoAcid, testPeptideContent, testAppearance, testTfaContent, testWaterContent, testSolubility, ...rest } = values;
     const data = {
-      ...values,
-      results: values.results ? values.results.split(",").map((r) => r.trim()).filter(Boolean) : [],
+      ...rest,
+      results,
       imageUrl: coaImageUrl || null,
     };
 
@@ -2318,19 +2392,35 @@ function CoasTab() {
                     )}
                   />
                 </div>
-                <FormField
-                  control={form.control}
-                  name="results"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Test Results (comma-separated)</FormLabel>
-                      <FormControl>
-                        <Textarea {...field} rows={2} placeholder="HPLC Analysis: Pass, Mass Spectrometry: Confirmed, Sterility: Pass" data-testid="input-coa-results" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="space-y-3">
+                  <Label>Test Results</Label>
+                  <p className="text-xs text-muted-foreground">Fill in only the tests performed. Empty fields will not be displayed.</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {COA_TEST_FIELDS.map((testField) => {
+                      const fieldName = `test${testField.key.charAt(0).toUpperCase() + testField.key.slice(1)}` as keyof CoaFormValues;
+                      return (
+                        <FormField
+                          key={testField.key}
+                          control={form.control}
+                          name={fieldName}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-xs">{testField.label}</FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  value={(field.value as string) || ""}
+                                  placeholder={testField.placeholder}
+                                  data-testid={`input-coa-test-${testField.key}`}
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
@@ -2421,11 +2511,13 @@ function CoasTab() {
                   {coaImageUrl ? (
                     <div className="flex items-center gap-4">
                       <div className="relative">
-                        {coaImageUrl.toLowerCase().endsWith(".pdf") ? (
-                          <div className="w-24 h-24 rounded-md border bg-muted/50 flex flex-col items-center justify-center gap-1">
-                            <FileCheck className="h-8 w-8 text-[#E7FB10]" />
-                            <span className="text-[10px] text-muted-foreground font-medium">PDF</span>
-                          </div>
+                        {coaIsPdf ? (
+                          <a href={coaImageUrl} target="_blank" rel="noopener noreferrer" className="block">
+                            <div className="w-24 h-24 rounded-md border bg-muted/50 flex flex-col items-center justify-center gap-1 hover:border-[#E7FB10]/50 transition-colors cursor-pointer">
+                              <FileCheck className="h-8 w-8 text-[#E7FB10]" />
+                              <span className="text-[10px] text-muted-foreground font-medium">PDF</span>
+                            </div>
+                          </a>
                         ) : (
                           <img
                             src={coaImageUrl}
