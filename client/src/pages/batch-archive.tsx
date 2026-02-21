@@ -153,9 +153,9 @@ export default function BatchArchive() {
                           <Calendar className="h-3 w-3" />
                           {new Date(coa.testDate).toLocaleDateString()}
                         </div>
-                        {coa.documentUrl && (
+                        {coa.imageUrl && (
                           <a 
-                            href={coa.documentUrl} 
+                            href={coa.imageUrl} 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="flex items-center gap-1 text-green-500 hover:underline"
@@ -201,9 +201,9 @@ export default function BatchArchive() {
                           <Calendar className="h-3 w-3" />
                           {new Date(coa.testDate).toLocaleDateString()}
                         </div>
-                        {coa.documentUrl && (
+                        {coa.imageUrl && (
                           <a 
-                            href={coa.documentUrl} 
+                            href={coa.imageUrl} 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="flex items-center gap-1 text-[#9d4edd] hover:underline"

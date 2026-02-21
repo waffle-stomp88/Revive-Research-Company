@@ -393,7 +393,7 @@ export default function CoaLibrary() {
                                   data-testid={`button-download-coa-${coa.batchNumber}`}
                                 >
                                   <Download className="h-4 w-4 mr-1" />
-                                  COA Image
+                                  {coa.imageUrl.toLowerCase().endsWith(".pdf") ? "View PDF" : "View Document"}
                                 </Button>
                               </a>
                             )}

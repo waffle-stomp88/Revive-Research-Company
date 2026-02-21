@@ -2102,7 +2102,7 @@ function CoasTab() {
         const { objectPath } = await response.json();
         
         setCoaImageUrl(objectPath);
-        toast({ title: "COA image uploaded successfully" });
+        toast({ title: "COA document uploaded successfully" });
       }
     } catch (error) {
       console.error("Failed to finalize upload:", error);
@@ -2417,16 +2417,23 @@ function CoasTab() {
                 />
                 
                 <div className="space-y-2">
-                  <Label>COA Document Image</Label>
-                  <div className="flex items-center gap-4">
-                    {coaImageUrl ? (
+                  <Label>COA Document</Label>
+                  {coaImageUrl ? (
+                    <div className="flex items-center gap-4">
                       <div className="relative">
-                        <img
-                          src={coaImageUrl}
-                          alt="COA Document"
-                          className="w-24 h-24 object-cover rounded-md border"
-                          data-testid="img-coa-preview"
-                        />
+                        {coaImageUrl.toLowerCase().endsWith(".pdf") ? (
+                          <div className="w-24 h-24 rounded-md border bg-muted/50 flex flex-col items-center justify-center gap-1">
+                            <FileCheck className="h-8 w-8 text-[#E7FB10]" />
+                            <span className="text-[10px] text-muted-foreground font-medium">PDF</span>
+                          </div>
+                        ) : (
+                          <img
+                            src={coaImageUrl}
+                            alt="COA Document"
+                            className="w-24 h-24 object-cover rounded-md border"
+                            data-testid="img-coa-preview"
+                          />
+                        )}
                         <Button
                           type="button"
                           variant="destructive"
@@ -2438,31 +2445,42 @@ function CoasTab() {
                           <X className="h-3 w-3" />
                         </Button>
                       </div>
-                    ) : (
-                      <div className="w-24 h-24 border-2 border-dashed rounded-md flex items-center justify-center bg-muted/50">
-                        <FileCheck className="h-8 w-8 text-muted-foreground" />
-                      </div>
-                    )}
+                      <ObjectUploader
+                        onGetUploadParameters={handleCoaImageUpload}
+                        onComplete={handleCoaImageComplete}
+                        allowedFileTypes={["image/*", "application/pdf"]}
+                        buttonVariant="outline"
+                        buttonSize="sm"
+                        disabled={isUploadingCoaImage}
+                      >
+                        {isUploadingCoaImage ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="h-4 w-4 mr-2" />
+                            Replace Document
+                          </>
+                        )}
+                      </ObjectUploader>
+                    </div>
+                  ) : (
                     <ObjectUploader
                       onGetUploadParameters={handleCoaImageUpload}
                       onComplete={handleCoaImageComplete}
+                      allowedFileTypes={["image/*", "application/pdf"]}
                       buttonVariant="outline"
                       buttonSize="sm"
                       disabled={isUploadingCoaImage}
+                      showDropZone
+                      dropZoneLabel="Drag & drop your COA (PDF or image), or"
                     >
-                      {isUploadingCoaImage ? (
-                        <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Uploading...
-                        </>
-                      ) : (
-                        <>
-                          <Upload className="h-4 w-4 mr-2" />
-                          {coaImageUrl ? "Change Image" : "Upload Image"}
-                        </>
-                      )}
+                      <Upload className="h-4 w-4 mr-2" />
+                      Browse Files
                     </ObjectUploader>
-                  </div>
+                  )}
                 </div>
                 
                 <DialogFooter>
