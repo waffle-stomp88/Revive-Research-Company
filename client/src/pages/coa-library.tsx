@@ -387,7 +387,19 @@ export default function CoaLibrary() {
                             </div>
                           </div>
 
-                          <div className="flex gap-2">
+                          <div className="flex flex-wrap gap-2">
+                            {coa.labVerificationUrl && (
+                              <a href={coa.labVerificationUrl} target="_blank" rel="noopener noreferrer">
+                                <Button
+                                  size="sm"
+                                  className="bg-[#9d4edd] text-white"
+                                  data-testid={`button-verify-lab-${coa.batchNumber}`}
+                                >
+                                  <ExternalLink className="h-4 w-4 mr-1" />
+                                  Verify with Lab
+                                </Button>
+                              </a>
+                            )}
                             <Link href={`/coa?batch=${coa.batchNumber}`}>
                               <Button
                                 variant="outline"

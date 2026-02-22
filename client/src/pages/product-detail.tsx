@@ -1431,6 +1431,12 @@ export default function ProductDetail() {
                           </Badge>
                         )}
                       </div>
+                      {batch.coas[0].labVerificationUrl && (
+                        <a href={batch.coas[0].labVerificationUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-[#9d4edd] hover:underline mt-1" data-testid={`link-verify-lab-${batch.batchNumber}`}>
+                          <ExternalLink className="h-3 w-3" />
+                          Verify with Lab
+                        </a>
+                      )}
                     </div>
                   )}
                 </Card>

@@ -164,6 +164,8 @@ const COA_TEST_FIELDS = [
   { key: "solubility", label: "Solubility", placeholder: "e.g. Freely soluble" },
 ] as const;
 
+const DEFAULT_LAB_VERIFICATION_URL = "https://freedomdiagnosticstesting.com/search-for-your-coa-based-on-the-unique-accession-number/";
+
 const coaFormSchema = insertCoaSchema.extend({
   results: z.string().optional(),
   testHplcPurity: z.string().optional(),
@@ -2037,6 +2039,7 @@ function CoasTab() {
       testTfaContent: "",
       testWaterContent: "",
       testSolubility: "",
+      labVerificationUrl: DEFAULT_LAB_VERIFICATION_URL,
       publiclyVisible: true,
       notes: "",
     },
@@ -2130,6 +2133,7 @@ function CoasTab() {
         testTfaContent: parsedTests.testTfaContent || "",
         testWaterContent: parsedTests.testWaterContent || "",
         testSolubility: parsedTests.testSolubility || "",
+        labVerificationUrl: coa.labVerificationUrl || DEFAULT_LAB_VERIFICATION_URL,
         publiclyVisible: coa.publiclyVisible ?? true,
         notes: coa.notes || "",
       });
@@ -2137,7 +2141,30 @@ function CoasTab() {
       setEditingCoa(null);
       setCoaImageUrl(null);
       setCoaIsPdf(false);
-      form.reset();
+      form.reset({
+        batchNumber: "",
+        productId: "",
+        productName: "",
+        testDate: "",
+        expirationDate: "",
+        purity: "",
+        labName: "",
+        verified: true,
+        results: "",
+        testHplcPurity: "",
+        testMassSpec: "",
+        testSterility: "",
+        testEndotoxins: "",
+        testAminoAcid: "",
+        testPeptideContent: "",
+        testAppearance: "",
+        testTfaContent: "",
+        testWaterContent: "",
+        testSolubility: "",
+        labVerificationUrl: DEFAULT_LAB_VERIFICATION_URL,
+        publiclyVisible: true,
+        notes: "",
+      });
     }
     setIsDialogOpen(true);
   };
@@ -2431,32 +2458,36 @@ function CoasTab() {
                   />
                 </div>
                 
-                {/* Read-only Public URL */}
-                {form.watch("batchNumber") && (
-                  <div className="space-y-2">
-                    <Label className="text-muted-foreground">Public URL</Label>
-                    <div className="flex items-center gap-2">
-                      <Input 
-                        value={`/coa/${form.watch("batchNumber")}`}
-                        readOnly
-                        className="bg-muted font-mono text-sm"
-                        data-testid="input-coa-public-url"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={() => {
-                          navigator.clipboard.writeText(`${window.location.origin}/coa/${form.watch("batchNumber")}`);
-                          toast({ title: "URL copied to clipboard" });
-                        }}
-                        data-testid="button-copy-coa-url"
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                )}
+                <FormField
+                  control={form.control}
+                  name="labVerificationUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Lab Verification URL</FormLabel>
+                      <div className="flex items-center gap-2">
+                        <FormControl>
+                          <Input {...field} value={field.value || ""} placeholder="https://..." className="font-mono text-sm" data-testid="input-coa-lab-url" />
+                        </FormControl>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => {
+                            navigator.clipboard.writeText(field.value || "");
+                            toast({ title: "Lab URL copied to clipboard" });
+                          }}
+                          data-testid="button-copy-lab-url"
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Third-party lab verification page. Defaults to Freedom Diagnostics.
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 
                 {/* Internal Notes (Admin-only) */}
                 <FormField

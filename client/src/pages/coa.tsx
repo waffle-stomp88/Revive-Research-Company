@@ -357,6 +357,14 @@ export default function CoaVerification() {
                   </div>
 
                   <div className="mt-8 flex flex-col sm:flex-row gap-4">
+                    {searchedCoa.labVerificationUrl && (
+                      <a href={searchedCoa.labVerificationUrl} target="_blank" rel="noopener noreferrer">
+                        <Button className="gap-2 bg-[#9d4edd] text-white" data-testid="button-verify-with-lab">
+                          <ExternalLink className="h-4 w-4" />
+                          Verify with Lab
+                        </Button>
+                      </a>
+                    )}
                     <Button variant="outline" className="gap-2" data-testid="button-download-coa">
                       <Download className="h-4 w-4" />
                       Download PDF
