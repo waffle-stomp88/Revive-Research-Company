@@ -2120,7 +2120,7 @@ function CoasTab() {
         labName: coa.labName,
         verified: coa.verified ?? true,
         results: "",
-        testHplcPurity: parsedTests.testHplcPurity || "",
+        testHplcPurity: parsedTests.testHplcPurity || coa.purity || "",
         testMassSpec: parsedTests.testMassSpec || "",
         testSterility: parsedTests.testSterility || "",
         testEndotoxins: parsedTests.testEndotoxins || "",
@@ -2198,10 +2198,13 @@ function CoasTab() {
       }
     }
     const selectedProduct = products?.find(p => p.id === values.productId);
+    const hplcPurityValue = values.testHplcPurity?.trim() || "";
+    const derivedPurity = hplcPurityValue || values.purity || "";
     const { results: _results, testHplcPurity, testMassSpec, testSterility, testEndotoxins, testAminoAcid, testPeptideContent, testAppearance, testTfaContent, testWaterContent, testSolubility, ...rest } = values;
     const data = {
       ...rest,
       productName: selectedProduct?.name || values.productName,
+      purity: derivedPurity,
       results,
       imageUrl: coaImageUrl || null,
     };
@@ -2351,34 +2354,19 @@ function CoasTab() {
                     )}
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="purity"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Purity</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="e.g., 99.2%" data-testid="input-coa-purity" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="labName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Lab Name</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="e.g., Analytical Labs Inc." data-testid="input-coa-lab" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="labName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Lab Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="e.g., Analytical Labs Inc." data-testid="input-coa-lab" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <div className="space-y-3">
                   <Label>Test Results</Label>
                   <p className="text-xs text-muted-foreground">Fill in only the tests performed. Empty fields will not be displayed.</p>
