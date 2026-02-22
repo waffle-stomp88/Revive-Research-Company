@@ -4954,12 +4954,19 @@ function LaunchSubscribersTab() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge 
-                        variant={sub.status === "subscribed" ? "default" : "secondary"} 
-                        className={`text-[10px] px-2 py-0 h-5 font-bold uppercase tracking-wider ${sub.status === "unsubscribed" ? "bg-red-500/10 text-red-400 border-red-500/20" : ""}`}
-                      >
-                        {sub.status}
-                      </Badge>
+                      <div className="flex flex-col gap-0.5">
+                        <Badge 
+                          variant={sub.status === "subscribed" ? "default" : "secondary"} 
+                          className={`text-[10px] px-2 py-0 h-5 font-bold uppercase tracking-wider w-fit ${sub.status === "unsubscribed" ? "bg-red-500/10 text-red-400 border-red-500/20" : ""}`}
+                        >
+                          {sub.status}
+                        </Badge>
+                        {sub.status === "unsubscribed" && sub.unsubscribeReason && (
+                          <span className="text-[10px] text-red-400/60 italic" data-testid={`text-unsub-reason-${sub.id}`}>
+                            {sub.unsubscribeReason}
+                          </span>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">
                       {new Date(sub.createdAt).toLocaleDateString("en-US", {
