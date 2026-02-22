@@ -188,6 +188,12 @@ export default function ProductDetail() {
     enabled: !!productId,
   });
 
+  // Query COAs directly by product ID (always shows even without batch records)
+  const { data: productCoas = [] } = useQuery<Coa[]>({
+    queryKey: ["/api/products", productId, "coas"],
+    enabled: !!productId,
+  });
+
   // Query for related education articles
   const { data: relatedArticles = [] } = useQuery<EducationArticle[]>({
     queryKey: ["/api/products", productId, "education"],
@@ -1360,8 +1366,8 @@ export default function ProductDetail() {
           </motion.section>
         )}
 
-        {/* Batch & COA Section */}
-        {batchesWithCoas.length > 0 && (
+        {/* COA Section - shows latest COAs directly */}
+        {productCoas.length > 0 && (
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1372,7 +1378,7 @@ export default function ProductDetail() {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <FileCheck className="h-6 w-6 text-[#9d4edd]" />
-                <h2 className="font-display text-2xl font-bold">Recent Batches & COAs</h2>
+                <h2 className="font-display text-2xl font-bold">Certificates of Analysis</h2>
               </div>
               <Link href="/coa-library">
                 <Button variant="outline" size="sm" className="border-[#9d4edd]/30 hover:border-[#9d4edd]" data-testid="link-view-all-coas">
@@ -1383,31 +1389,34 @@ export default function ProductDetail() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {batchesWithCoas.slice(0, 4).map((batch) => (
+              {productCoas.slice(0, 4).map((coa) => (
                 <Card 
-                  key={batch.id} 
+                  key={coa.id} 
                   className="p-4 border-[#9d4edd]/20 hover:border-[#9d4edd]/40 transition-colors"
-                  data-testid={`card-batch-${batch.id}`}
+                  data-testid={`card-coa-${coa.id}`}
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-mono font-bold text-sm">{batch.batchNumber}</span>
-                        <Badge className="bg-green-500/20 text-green-400 text-xs">Verified</Badge>
+                        <span className="font-mono font-bold text-sm">{coa.batchNumber}</span>
+                        {coa.dosage && (
+                          <Badge variant="outline" className="text-xs border-[#9d4edd]/30">{coa.dosage}</Badge>
+                        )}
+                        {coa.verified && (
+                          <Badge className="bg-green-500/20 text-green-400 text-xs">Verified</Badge>
+                        )}
                       </div>
-                      {batch.manufactureDate && (
-                        <p className="text-xs text-muted-foreground flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          Manufactured: {new Date(batch.manufactureDate).toLocaleDateString()}
-                        </p>
-                      )}
+                      <p className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Calendar className="h-3 w-3" />
+                        Tested: {coa.testDate}
+                      </p>
                     </div>
-                    <Link href={`/batch?batch=${batch.batchNumber}`}>
+                    <Link href={`/batch?batch=${coa.batchNumber}`}>
                       <Button 
                         variant="outline" 
                         size="sm" 
                         className="border-2 border-[#9d4edd] text-[#9d4edd] font-semibold hover:bg-[#9d4edd]/10 hover:border-[#9d4edd] h-9 gap-2 px-3" 
-                        data-testid={`button-verify-batch-${batch.id}`}
+                        data-testid={`button-verify-coa-${coa.id}`}
                       >
                         <Eye className="h-4 w-4" />
                         Verify
@@ -1415,30 +1424,23 @@ export default function ProductDetail() {
                     </Link>
                   </div>
 
-                  {batch.coas && batch.coas.length > 0 && (
-                    <div className="space-y-2">
-                      <p className="text-xs font-medium text-muted-foreground">Test Results:</p>
-                      <div className="flex flex-wrap gap-2">
-                        <Badge variant="outline" className="text-xs border-[#9d4edd]/30">
-                          Purity: {batch.coas[0].purity}
-                        </Badge>
-                        <Badge variant="outline" className="text-xs border-[#9d4edd]/30">
-                          Lab: {batch.coas[0].labName}
-                        </Badge>
-                        {batch.coas[0].verified && (
-                          <Badge className="bg-green-500/20 text-green-400 text-xs">
-                            Verified
-                          </Badge>
-                        )}
-                      </div>
-                      {batch.coas[0].labVerificationUrl && (
-                        <a href={batch.coas[0].labVerificationUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-[#9d4edd] hover:underline mt-1" data-testid={`link-verify-lab-${batch.batchNumber}`}>
-                          <ExternalLink className="h-3 w-3" />
-                          Verify with Lab
-                        </a>
-                      )}
+                  <div className="space-y-2">
+                    <p className="text-xs font-medium text-muted-foreground">Test Results:</p>
+                    <div className="flex flex-wrap gap-2">
+                      <Badge variant="outline" className="text-xs border-[#9d4edd]/30">
+                        Purity: {coa.purity}
+                      </Badge>
+                      <Badge variant="outline" className="text-xs border-[#9d4edd]/30">
+                        Lab: {coa.labName}
+                      </Badge>
                     </div>
-                  )}
+                    {coa.labVerificationUrl && (
+                      <a href={coa.labVerificationUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-[#9d4edd] hover:underline mt-1" data-testid={`link-verify-lab-${coa.batchNumber}`}>
+                        <ExternalLink className="h-3 w-3" />
+                        Verify with Lab
+                      </a>
+                    )}
+                  </div>
                 </Card>
               ))}
             </div>

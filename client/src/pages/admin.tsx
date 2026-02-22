@@ -111,6 +111,8 @@ import {
   Calendar,
   Heart,
   Truck,
+  Archive,
+  ArchiveRestore,
 } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { ObjectUploader } from "@/components/ObjectUploader";
@@ -2002,10 +2004,16 @@ function CoasTab() {
   const [coaImageUrl, setCoaImageUrl] = useState<string | null>(null);
   const [coaIsPdf, setCoaIsPdf] = useState(false);
   const [isUploadingCoaImage, setIsUploadingCoaImage] = useState(false);
+  const [showArchived, setShowArchived] = useState(false);
   const { toast } = useToast();
 
   const { data: allCoas, isLoading } = useQuery<Coa[]>({
-    queryKey: ["/api/admin/coas"],
+    queryKey: ["/api/admin/coas", { includeArchived: showArchived }],
+    queryFn: async () => {
+      const res = await fetch(`/api/admin/coas?includeArchived=${showArchived}`);
+      if (!res.ok) throw new Error("Failed to fetch COAs");
+      return res.json();
+    },
   });
 
   // Use ProductWithDosageStock for accurate inventory status (matches Inventory tab)
@@ -2096,6 +2104,34 @@ function CoasTab() {
     },
     onError: () => {
       toast({ title: "Failed to delete COA", variant: "destructive" });
+    },
+  });
+
+  const archiveMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest("PATCH", `/api/admin/coas/${id}/archive`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/coas"] });
+      toast({ title: "COA archived successfully" });
+    },
+    onError: () => {
+      toast({ title: "Failed to archive COA", variant: "destructive" });
+    },
+  });
+
+  const unarchiveMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest("PATCH", `/api/admin/coas/${id}`, { archived: false });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/coas"] });
+      toast({ title: "COA restored from archive" });
+    },
+    onError: () => {
+      toast({ title: "Failed to restore COA", variant: "destructive" });
     },
   });
 
@@ -2276,8 +2312,19 @@ function CoasTab() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Certificates of Analysis ({allCoas?.length || 0})</h2>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-4">
+          <h2 className="text-xl font-semibold">Certificates of Analysis ({allCoas?.filter(c => !c.archived).length || 0})</h2>
+          <Button 
+            variant={showArchived ? "secondary" : "outline"} 
+            size="sm" 
+            onClick={() => setShowArchived(!showArchived)}
+            data-testid="button-toggle-archived-coas"
+          >
+            <Archive className="h-4 w-4 mr-1" />
+            {showArchived ? "Hide Archived" : "Show Archived"}
+          </Button>
+        </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={() => handleOpenDialog()} data-testid="button-add-coa">
@@ -2744,17 +2791,47 @@ function CoasTab() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {coa.verified ? (
-                      <Badge variant="secondary">Verified</Badge>
-                    ) : (
-                      <Badge variant="destructive">Unverified</Badge>
-                    )}
+                    <div className="flex flex-wrap gap-1">
+                      {coa.archived ? (
+                        <Badge variant="outline" className="border-orange-500/50 text-orange-500" data-testid={`badge-coa-archived-${coa.id}`}>
+                          <Archive className="h-3 w-3 mr-1" />
+                          Archived
+                        </Badge>
+                      ) : coa.verified ? (
+                        <Badge variant="secondary">Verified</Badge>
+                      ) : (
+                        <Badge variant="destructive">Unverified</Badge>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(coa)} data-testid={`button-edit-coa-${coa.id}`}>
-                        <Pencil className="h-4 w-4" />
-                      </Button>
+                    <div className="flex justify-end gap-1">
+                      {!coa.archived && (
+                        <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(coa)} data-testid={`button-edit-coa-${coa.id}`}>
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      )}
+                      {coa.archived ? (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => unarchiveMutation.mutate(coa.id)}
+                          disabled={unarchiveMutation.isPending}
+                          data-testid={`button-restore-coa-${coa.id}`}
+                        >
+                          <ArchiveRestore className="h-4 w-4 text-green-500" />
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => archiveMutation.mutate(coa.id)}
+                          disabled={archiveMutation.isPending}
+                          data-testid={`button-archive-coa-${coa.id}`}
+                        >
+                          <Archive className="h-4 w-4 text-orange-500" />
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="icon"

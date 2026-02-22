@@ -1057,6 +1057,17 @@ export async function registerRoutes(
     }
   });
 
+  // Get COAs for a specific product (public, non-archived only)
+  app.get("/api/products/:id/coas", async (req, res) => {
+    try {
+      const productCoas = await storage.getCoasByProductId(req.params.id);
+      res.json(productCoas.filter(c => c.publiclyVisible !== false));
+    } catch (error) {
+      console.error("Error fetching product COAs:", error);
+      res.status(500).json({ error: "Failed to fetch product COAs" });
+    }
+  });
+
   // Get batches with COAs for a product
   app.get("/api/products/:id/batches", async (req, res) => {
     try {
@@ -2435,10 +2446,11 @@ export async function registerRoutes(
     }
   });
 
-  // Admin: Get all COAs
+  // Admin: Get all COAs (supports ?includeArchived=true)
   app.get("/api/admin/coas", isAuthenticated, isAdmin, async (req, res) => {
     try {
-      const allCoas = await storage.getAllCoas();
+      const includeArchived = req.query.includeArchived === "true";
+      const allCoas = await storage.getAllCoas(includeArchived);
       res.json(allCoas);
     } catch (error) {
       console.error("Error fetching COAs:", error);
@@ -2446,10 +2458,24 @@ export async function registerRoutes(
     }
   });
 
-  // Admin: Create COA
+  // Admin: Create COA (auto-creates batch record if needed)
   app.post("/api/admin/coas", isAuthenticated, isAdmin, async (req, res) => {
     try {
       const validatedData = insertCoaSchema.parse(req.body);
+      
+      if (validatedData.batchNumber) {
+        const existingBatches = await storage.getProductBatches(validatedData.productId);
+        const batchExists = existingBatches.some(b => b.batchNumber === validatedData.batchNumber);
+        if (!batchExists) {
+          await storage.createBatch({
+            batchNumber: validatedData.batchNumber,
+            productId: validatedData.productId,
+            manufactureDate: new Date(validatedData.testDate),
+            status: "released",
+          });
+        }
+      }
+      
       const coa = await storage.createCoa(validatedData);
       res.status(201).json(coa);
     } catch (error) {
@@ -2472,6 +2498,20 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error updating COA:", error);
       res.status(500).json({ error: "Failed to update COA" });
+    }
+  });
+
+  // Admin: Archive COA
+  app.patch("/api/admin/coas/:id/archive", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const coa = await storage.archiveCoa(req.params.id);
+      if (!coa) {
+        return res.status(404).json({ error: "COA not found" });
+      }
+      res.json(coa);
+    } catch (error) {
+      console.error("Error archiving COA:", error);
+      res.status(500).json({ error: "Failed to archive COA" });
     }
   });
 

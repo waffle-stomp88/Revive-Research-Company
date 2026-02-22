@@ -40,7 +40,7 @@ import {
   priceChangeReasons
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, ilike, or, desc, sql, gte, and, lt, count, sum } from "drizzle-orm";
+import { eq, ilike, or, desc, sql, gte, and, lt, count, sum, isNull } from "drizzle-orm";
 
 export interface DashboardMetrics {
   totalRevenue: number;
@@ -94,9 +94,11 @@ export interface IStorage {
   searchProducts(query: string): Promise<Product[]>;
   
   getCoaByBatchNumber(batchNumber: string): Promise<Coa | undefined>;
-  getAllCoas(): Promise<Coa[]>;
+  getAllCoas(includeArchived?: boolean): Promise<Coa[]>;
+  getCoasByProductId(productId: string, includeArchived?: boolean): Promise<Coa[]>;
   createCoa(coa: InsertCoa): Promise<Coa>;
   updateCoa(id: string, coa: Partial<InsertCoa>): Promise<Coa | undefined>;
+  archiveCoa(id: string): Promise<Coa | undefined>;
   deleteCoa(id: string): Promise<boolean>;
   
   createOrder(order: InsertOrder): Promise<Order>;
@@ -579,17 +581,45 @@ export class DatabaseStorage implements IStorage {
     return coa || undefined;
   }
 
-  async getAllCoas(): Promise<Coa[]> {
-    return db.select().from(coas);
+  async getAllCoas(includeArchived: boolean = false): Promise<Coa[]> {
+    if (includeArchived) {
+      return db.select().from(coas).orderBy(desc(coas.testDate));
+    }
+    return db.select().from(coas).where(eq(coas.archived, false)).orderBy(desc(coas.testDate));
+  }
+
+  async getCoasByProductId(productId: string, includeArchived: boolean = false): Promise<Coa[]> {
+    if (includeArchived) {
+      return db.select().from(coas).where(eq(coas.productId, productId)).orderBy(desc(coas.testDate));
+    }
+    return db.select().from(coas).where(
+      and(eq(coas.productId, productId), eq(coas.archived, false))
+    ).orderBy(desc(coas.testDate));
   }
 
   async createCoa(insertCoa: InsertCoa): Promise<Coa> {
+    const conditions = [
+      eq(coas.productId, insertCoa.productId),
+      eq(coas.archived, false)
+    ];
+    if (insertCoa.dosage) {
+      conditions.push(eq(coas.dosage, insertCoa.dosage));
+    } else {
+      conditions.push(or(isNull(coas.dosage), eq(coas.dosage, ''))!);
+    }
+    await db.update(coas).set({ archived: true }).where(and(...conditions));
+    
     const [coa] = await db.insert(coas).values(insertCoa).returning();
     return coa;
   }
 
   async updateCoa(id: string, coaData: Partial<InsertCoa>): Promise<Coa | undefined> {
     const [coa] = await db.update(coas).set(coaData).where(eq(coas.id, id)).returning();
+    return coa || undefined;
+  }
+
+  async archiveCoa(id: string): Promise<Coa | undefined> {
+    const [coa] = await db.update(coas).set({ archived: true }).where(eq(coas.id, id)).returning();
     return coa || undefined;
   }
 
@@ -1297,17 +1327,13 @@ export class DatabaseStorage implements IStorage {
   
   // COA Library search implementation
   async searchCoas(filters: { productId?: string; batchNumber?: string; testType?: string }): Promise<Coa[]> {
-    const conditions = [];
+    const conditions = [eq(coas.archived, false)];
     
     if (filters.productId) {
       conditions.push(eq(coas.productId, filters.productId));
     }
     if (filters.batchNumber) {
       conditions.push(ilike(coas.batchNumber, `%${filters.batchNumber}%`));
-    }
-    
-    if (conditions.length === 0) {
-      return db.select().from(coas).orderBy(desc(coas.testDate));
     }
     
     return db.select().from(coas).where(and(...conditions)).orderBy(desc(coas.testDate));
