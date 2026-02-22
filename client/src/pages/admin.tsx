@@ -157,7 +157,7 @@ const COA_TEST_FIELDS = [
   { key: "sterility", label: "Sterility", placeholder: "e.g. Pass" },
   { key: "endotoxins", label: "Endotoxins", placeholder: "e.g. <0.5 EU/mg" },
   { key: "aminoAcid", label: "Amino Acid Analysis", placeholder: "e.g. Consistent" },
-  { key: "peptideContent", label: "Peptide Content", placeholder: "e.g. 85.3%" },
+  { key: "peptideContent", label: "Peptide Content", placeholder: "e.g. 12.83" },
   { key: "appearance", label: "Appearance", placeholder: "e.g. White lyophilized powder" },
   { key: "tfaContent", label: "TFA Content", placeholder: "e.g. <1%" },
   { key: "waterContent", label: "Water Content", placeholder: "e.g. <5%" },
@@ -167,6 +167,7 @@ const COA_TEST_FIELDS = [
 const DEFAULT_LAB_VERIFICATION_URL = "https://freedomdiagnosticstesting.com/search-for-your-coa-based-on-the-unique-accession-number/";
 
 const coaFormSchema = insertCoaSchema.extend({
+  dosage: z.string().optional(),
   results: z.string().optional(),
   testHplcPurity: z.string().optional(),
   testMassSpec: z.string().optional(),
@@ -2023,6 +2024,7 @@ function CoasTab() {
       batchNumber: "",
       productId: "",
       productName: "",
+      dosage: "",
       testDate: "",
       expirationDate: "",
       purity: "",
@@ -2044,6 +2046,11 @@ function CoasTab() {
       notes: "",
     },
   });
+
+  const selectedProductId = form.watch("productId");
+  const selectedDosage = form.watch("dosage");
+  const selectedProduct = products?.find(p => p.id === selectedProductId);
+  const dosageOptions = selectedProduct?.dosageOptions || [];
 
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -2117,6 +2124,7 @@ function CoasTab() {
         batchNumber: coa.batchNumber,
         productId: coa.productId,
         productName: coa.productName,
+        dosage: coa.dosage || "",
         testDate: coa.testDate,
         expirationDate: coa.expirationDate,
         purity: coa.purity,
@@ -2145,6 +2153,7 @@ function CoasTab() {
         batchNumber: "",
         productId: "",
         productName: "",
+        dosage: "",
         testDate: "",
         expirationDate: "",
         purity: "",
@@ -2219,18 +2228,30 @@ function CoasTab() {
     const results: string[] = [];
     for (const field of COA_TEST_FIELDS) {
       const fieldKey = `test${field.key.charAt(0).toUpperCase() + field.key.slice(1)}` as keyof CoaFormValues;
-      const val = (values[fieldKey] as string)?.trim();
+      let val = (values[fieldKey] as string)?.trim();
+      if (val && field.key === "peptideContent") {
+        const mgNum = parseFloat(val.replace(/[^\d.]/g, ""));
+        const dosageStr = values.dosage || "";
+        const dosageNum = parseFloat(dosageStr.replace(/[^\d.]/g, ""));
+        if (!isNaN(mgNum) && !isNaN(dosageNum) && dosageNum > 0) {
+          const pct = ((mgNum / dosageNum) * 100).toFixed(1);
+          val = `${mgNum}mg (${pct}%)`;
+        } else if (!isNaN(mgNum)) {
+          val = `${mgNum}mg`;
+        }
+      }
       if (val) {
         results.push(`${field.label}: ${val}`);
       }
     }
-    const selectedProduct = products?.find(p => p.id === values.productId);
+    const selectedProd = products?.find(p => p.id === values.productId);
     const hplcPurityValue = values.testHplcPurity?.trim() || "";
     const derivedPurity = hplcPurityValue || values.purity || "";
     const { results: _results, testHplcPurity, testMassSpec, testSterility, testEndotoxins, testAminoAcid, testPeptideContent, testAppearance, testTfaContent, testWaterContent, testSolubility, ...rest } = values;
     const data = {
       ...rest,
-      productName: selectedProduct?.name || values.productName,
+      productName: selectedProd?.name || values.productName,
+      dosage: values.dosage || null,
       purity: derivedPurity,
       results,
       imageUrl: coaImageUrl || null,
@@ -2284,6 +2305,12 @@ function CoasTab() {
                         const product = products?.find(p => p.id === value);
                         if (product) {
                           form.setValue("productName", product.name);
+                          const opts = product.dosageOptions || [];
+                          if (opts.length === 1) {
+                            form.setValue("dosage", opts[0]);
+                          } else {
+                            form.setValue("dosage", "");
+                          }
                           const mfgId = getMfgIdForProduct(product.name);
                           if (mfgId) {
                             const now = new Date();
@@ -2316,6 +2343,32 @@ function CoasTab() {
                     </FormItem>
                   )}
                 />
+                {dosageOptions.length > 0 && (
+                  <FormField
+                    control={form.control}
+                    name="dosage"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Dosage / Size</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value || ""} value={field.value || ""}>
+                          <FormControl>
+                            <SelectTrigger data-testid="select-coa-dosage">
+                              <SelectValue placeholder="Select dosage" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {dosageOptions.map((d) => (
+                              <SelectItem key={d} value={d}>
+                                {d}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
                 <FormField
                   control={form.control}
                   name="batchNumber"
@@ -2400,24 +2453,46 @@ function CoasTab() {
                   <div className="grid grid-cols-2 gap-3">
                     {COA_TEST_FIELDS.map((testField) => {
                       const fieldName = `test${testField.key.charAt(0).toUpperCase() + testField.key.slice(1)}` as keyof CoaFormValues;
+                      const isPeptideContent = testField.key === "peptideContent";
                       return (
                         <FormField
                           key={testField.key}
                           control={form.control}
                           name={fieldName}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-xs">{testField.label}</FormLabel>
-                              <FormControl>
-                                <Input
-                                  {...field}
-                                  value={(field.value as string) || ""}
-                                  placeholder={testField.placeholder}
-                                  data-testid={`input-coa-test-${testField.key}`}
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
+                          render={({ field }) => {
+                            const rawVal = (field.value as string) || "";
+                            let pctPreview = "";
+                            if (isPeptideContent && rawVal) {
+                              const mgNum = parseFloat(rawVal.replace(/[^\d.]/g, ""));
+                              const dosageNum = parseFloat((selectedDosage || "").replace(/[^\d.]/g, ""));
+                              if (!isNaN(mgNum) && !isNaN(dosageNum) && dosageNum > 0) {
+                                pctPreview = `${mgNum}mg (${((mgNum / dosageNum) * 100).toFixed(1)}%)`;
+                              } else if (!isNaN(mgNum)) {
+                                pctPreview = `${mgNum}mg`;
+                              }
+                            }
+                            return (
+                              <FormItem>
+                                <FormLabel className="text-xs">
+                                  {testField.label}
+                                  {isPeptideContent && <span className="text-muted-foreground ml-1">(mg)</span>}
+                                </FormLabel>
+                                <FormControl>
+                                  <Input
+                                    {...field}
+                                    value={rawVal}
+                                    placeholder={testField.placeholder}
+                                    data-testid={`input-coa-test-${testField.key}`}
+                                  />
+                                </FormControl>
+                                {isPeptideContent && pctPreview && (
+                                  <p className="text-xs text-[#21d8ff]" data-testid="text-peptide-content-preview">
+                                    {pctPreview}
+                                  </p>
+                                )}
+                              </FormItem>
+                            );
+                          }}
                         />
                       );
                     })}
@@ -2635,7 +2710,10 @@ function CoasTab() {
               return (
                 <TableRow key={coa.id} data-testid={`row-coa-${coa.id}`}>
                   <TableCell className="font-mono">{coa.batchNumber}</TableCell>
-                  <TableCell>{coa.productName}</TableCell>
+                  <TableCell>
+                    {coa.productName}
+                    {coa.dosage && <span className="text-muted-foreground ml-1">({coa.dosage})</span>}
+                  </TableCell>
                   <TableCell>{coa.purity}</TableCell>
                   <TableCell>{coa.labName}</TableCell>
                   <TableCell>

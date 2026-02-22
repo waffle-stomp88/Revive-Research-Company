@@ -246,6 +246,7 @@ export default function CoaVerification() {
                       <div>
                         <h3 className="font-display text-xl font-semibold" data-testid="text-coa-product-name">
                           {searchedCoa.productName}
+                          {searchedCoa.dosage && <span className="text-muted-foreground ml-2 text-base font-normal">({searchedCoa.dosage})</span>}
                         </h3>
                         <p className="font-mono text-sm text-muted-foreground" data-testid="text-coa-batch-number">
                           Batch: {searchedCoa.batchNumber}

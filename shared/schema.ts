@@ -118,6 +118,7 @@ export const coas = pgTable("coas", {
   batchNumber: text("batch_number").notNull().unique(),
   productId: varchar("product_id").notNull(),
   productName: text("product_name").notNull(),
+  dosage: text("dosage"),
   testDate: text("test_date").notNull(),
   expirationDate: text("expiration_date").notNull(),
   purity: text("purity").notNull(),

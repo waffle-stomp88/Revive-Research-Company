@@ -348,6 +348,7 @@ export default function CoaLibrary() {
                             <div className="flex items-center gap-2 mb-2">
                               <h3 className="font-display text-xl font-bold">
                                 {getProductName(coa.productId)}
+                                {coa.dosage && <span className="text-muted-foreground ml-2 text-base font-normal">({coa.dosage})</span>}
                               </h3>
                               <Badge
                                 className={
