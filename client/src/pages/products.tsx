@@ -182,6 +182,7 @@ interface ProductsPageState {
   selectedCategory: string;
   peptideGroupFilter: string;
   priceRange: [number, number];
+  currentPage: number;
   scrollY: number;
 }
 
@@ -223,29 +224,37 @@ function ProductsComponent() {
   
   // Display controls state - items per page and grid columns
   const itemsPerPage = 12; // Fixed at 12 items per page
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState<number>(savedState?.currentPage ?? 1);
   const [gridColumns, setGridColumns] = useState<2 | 3 | 4>(4);
 
   const dealsRef = useRef<HTMLDivElement>(null);
   const bundlesRef = useRef<HTMLDivElement>(null);
   const productsRef = useRef<HTMLDivElement>(null);
   const bulkRef = useRef<HTMLDivElement>(null);
+  const isRestoringStateRef = useRef(!!savedState);
 
-  // Restore scroll position after component mounts and clear saved state
+  const { data: products, isLoading, error } = useQuery<ProductWithPriceRange[]>({
+    queryKey: ["/api/products"],
+    refetchInterval: 30000,
+  });
+
+  // Restore scroll position after products have loaded and DOM is rendered
   useEffect(() => {
-    if (savedState && !stateRestored) {
-      // Use requestAnimationFrame to ensure DOM is ready
+    if (savedState && !stateRestored && !isLoading && products) {
       requestAnimationFrame(() => {
-        if (savedState.scrollY > 0) {
-          window.scrollTo(0, savedState.scrollY);
-        }
-        setStateRestored(true);
-        // Clear both sessionStorage and the in-memory state
-        sessionStorage.removeItem(PRODUCTS_STATE_KEY);
-        setSavedState(null);
+        requestAnimationFrame(() => {
+          if (savedState.scrollY > 0) {
+            window.scrollTo(0, savedState.scrollY);
+          }
+          setStateRestored(true);
+          isRestoringStateRef.current = false;
+          priceRangeInitializedRef.current = true;
+          sessionStorage.removeItem(PRODUCTS_STATE_KEY);
+          setSavedState(null);
+        });
       });
     }
-  }, [savedState, stateRestored]);
+  }, [savedState, stateRestored, isLoading, products]);
 
   // Function to save current state before navigating to a product
   const savePageState = () => {
@@ -256,15 +265,11 @@ function ProductsComponent() {
       selectedCategory,
       peptideGroupFilter,
       priceRange,
+      currentPage,
       scrollY: window.scrollY,
     };
     sessionStorage.setItem(PRODUCTS_STATE_KEY, JSON.stringify(state));
   };
-
-  const { data: products, isLoading, error } = useQuery<ProductWithPriceRange[]>({
-    queryKey: ["/api/products"],
-    refetchInterval: 30000,
-  });
 
   // Query for selling fast products (5+ orders in last 7 days)
   const { data: sellingFastIds = [] } = useQuery<string[]>({
@@ -378,9 +383,10 @@ function ProductsComponent() {
     };
   }, [products]);
 
+  const priceRangeInitializedRef = useRef(!!savedState);
   useEffect(() => {
-    // Only reset price range if we don't have a saved state (avoids overwriting restored filter)
-    if (products && products.length > 0 && !savedState?.priceRange) {
+    if (priceRangeInitializedRef.current) return;
+    if (products && products.length > 0) {
       const excludedCategories = ["Research Stacks"];
       const displayedProducts = products.filter(p => !excludedCategories.includes(p.category));
       if (displayedProducts.length === 0) return;
@@ -389,7 +395,7 @@ function ProductsComponent() {
       const max = Math.ceil(Math.max(...prices));
       setPriceRange([min, max]);
     }
-  }, [products, savedState]);
+  }, [products]);
 
   const categoryStats = useMemo(() => {
     if (!products) return {};
@@ -496,8 +502,9 @@ function ProductsComponent() {
     return filteredAndSortedProducts.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredAndSortedProducts, currentPage, itemsPerPage]);
 
-  // Reset to page 1 when filters change
+  // Reset to page 1 when filters change, but skip while restoring saved state
   useEffect(() => {
+    if (isRestoringStateRef.current) return;
     setCurrentPage(1);
   }, [searchQuery, sortBy, stockFilter, selectedCategory, peptideGroupFilter, priceRange]);
 
