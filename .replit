@@ -52,3 +52,6 @@ SES_SMTP_PORT = "587"
 SES_FROM_EMAIL = "orders@reviveresearch.co"
 ADMIN_EMAIL = "admin@reviveresearch.co"
 AWS_REGION = "us-east-2"
+
+[userenv.development]
+PORT = "5000"
