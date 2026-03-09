@@ -36,9 +36,9 @@ export function log(message: string, source = "express") {
     const host = req.get('host') || '';
     const proto = req.get('x-forwarded-proto') || req.protocol;
     
-    // Only apply redirects for production custom domains, not Replit dev domains
-    const isReplitDev = host.includes('.replit.dev') || host.includes('.repl.co') || host.includes('localhost');
-    if (isReplitDev) {
+    // Skip redirects for Replit domains, localhost, and internal healthchecks
+    const isInternal = host.includes('.replit.dev') || host.includes('.repl.co') || host.includes('.replit.app') || host.includes('localhost') || !host.includes('.');
+    if (isInternal) {
       return next();
     }
     
@@ -47,11 +47,8 @@ export function log(message: string, source = "express") {
     const isHttp = proto !== 'https';
     
     if (isWww || isHttp) {
-      // Build canonical URL
       const canonicalHost = host.replace(/^www\./, '');
       const canonicalUrl = `https://${canonicalHost}${req.originalUrl}`;
-      
-      // 301 permanent redirect
       return res.redirect(301, canonicalUrl);
     }
     
