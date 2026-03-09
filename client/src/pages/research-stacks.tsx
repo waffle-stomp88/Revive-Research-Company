@@ -366,14 +366,6 @@ const KNOWN_STACKS: KnownStack[] = [
     description: "Anti-inflammatory healing blend + copper peptide collagen remodeling — repair-to-renewal pipeline",
     synergyBonus: 86,
   },
-  {
-    name: "Anti-Wrinkle",
-    peptides: ["botulinum-toxin-type-a", "snap-8"],
-    icon: Sparkles,
-    color: "#ec4899",
-    description: "Neuromuscular relaxation + SNARE complex modulation — complementary expression line reduction",
-    synergyBonus: 87,
-  },
 ];
 
 // Peptide pathway data for connections
@@ -534,12 +526,6 @@ const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
     mechanisms: ["NAD+ level restoration", "Sirtuin-dependent DNA repair", "Mitochondrial enzyme support"],
     systems: ["Longevity", "Metabolic", "Recovery"],
   },
-  "botulinum-toxin-type-a": {
-    name: "Botulinum Toxin Type A",
-    pathways: ["SNARE Complex", "Neuromuscular Modulation", "Acetylcholine Inhibition"],
-    mechanisms: ["Neurotransmitter release block", "Muscle relaxation", "Wrinkle reduction"],
-    systems: ["Skin", "Cosmetic"],
-  },
   "dsip": {
     name: "DSIP",
     pathways: ["GABA", "Serotonin", "Sleep Architecture"],
@@ -610,12 +596,6 @@ const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
     name: "HCG",
     pathways: ["LH Receptor", "Testosterone Stimulation", "Leydig Cell Activation"],
     mechanisms: ["LH mimetic", "Intratesticular testosterone", "Fertility support"],
-    systems: ["Hormonal", "Recovery"],
-  },
-  "hmg": {
-    name: "HMG",
-    pathways: ["FSH Signaling", "LH Signaling", "Gonadal Stimulation"],
-    mechanisms: ["Combined FSH/LH activity", "Spermatogenesis support", "Follicle stimulation"],
     systems: ["Hormonal", "Recovery"],
   },
   "hexarelin": {
@@ -1174,10 +1154,6 @@ const PEPTIDE_PAIRINGS: Record<string, { partner: string; reason: string; boost:
     { partner: "kpv", reason: "NF-κB inhibition stack for comprehensive inflammation control", boost: "Healing" },
     { partner: "tb-500", reason: "Tissue regeneration blend + systemic healing support", boost: "Healing" },
   ],
-  "botulinum-toxin-type-a": [
-    { partner: "snap-8", reason: "Neuromuscular blockade + peptide-based relaxation synergy", boost: "Skin" },
-    { partner: "ghk-cu", reason: "Muscle relaxation + collagen remodeling for skin renewal", boost: "Skin" },
-  ],
 };
 
 // Get general pairing recommendations for selected peptides
@@ -1304,7 +1280,6 @@ const peptideCategories: Record<string, { label: string; color: string; icon: ty
   "adipotide": [{ label: "Metabolic", color: "#E7FB10", icon: Zap }],
   "alprostadil": [{ label: "Vascular", color: "#ef4444", icon: Heart }],
   "ara-290": [{ label: "Healing", color: "#22c55e", icon: Heart }],
-  "botulinum": [{ label: "Cosmetic", color: "#ec4899", icon: Sparkles }],
   "cagrilintide": [{ label: "Metabolic", color: "#E7FB10", icon: Zap }],
   "cerebrolysin": [{ label: "Cognitive", color: "#21d8ff", icon: Brain }],
   "dsip": [{ label: "Sleep", color: "#8b5cf6", icon: Moon }],
@@ -1315,7 +1290,6 @@ const peptideCategories: Record<string, { label: string; color: string; icon: ty
   "glutathione": [{ label: "Longevity", color: "#a855f7", icon: Shield }],
   "gonadorelin": [{ label: "Hormonal", color: "#f59e0b", icon: Activity }],
   "hcg": [{ label: "Hormonal", color: "#f59e0b", icon: Activity }],
-  "hmg": [{ label: "Hormonal", color: "#f59e0b", icon: Activity }],
   "hexarelin": [{ label: "Growth", color: "#f59e0b", icon: Zap }],
   "hyaluronic": [{ label: "Skin", color: "#ec4899", icon: Sparkles }],
   "igf-1": [{ label: "Growth", color: "#f59e0b", icon: Dumbbell }],

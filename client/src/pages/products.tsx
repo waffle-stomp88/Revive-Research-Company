@@ -156,8 +156,8 @@ const peptideGroups = [
   { id: "tissue-repair", label: "Tissue Repair", color: "#22c55e", names: ["bpc-157", "tb-500", "ll-37", "ara-290", "klow"] },
   { id: "skin-regeneration", label: "Skin & Regeneration", color: "#ec4899", names: ["ghk-cu", "glow", "snap-8", "hyaluronic", "melanotan"] },
   { id: "longevity", label: "Longevity & Cellular", color: "#9d4edd", names: ["epithalon", "mots-c", "nad+", "foxo4-dri", "ss-31", "glutathione", "pnc-27"] },
-  { id: "cognitive", label: "Cognitive / Neuro", color: "#f97316", names: ["semax", "selank", "dsip", "cerebrolysin", "pinealon", "melatonin", "botulinum"] },
-  { id: "hormonal", label: "Hormonal", color: "#a855f7", names: ["hcg", "hmg", "gonadorelin", "oxytocin", "kisspeptin", "pt-141", "triptorelin", "alprostadil"] },
+  { id: "cognitive", label: "Cognitive / Neuro", color: "#f97316", names: ["semax", "selank", "dsip", "cerebrolysin", "pinealon", "melatonin"] },
+  { id: "hormonal", label: "Hormonal", color: "#a855f7", names: ["hcg", "gonadorelin", "oxytocin", "kisspeptin", "pt-141", "triptorelin", "alprostadil"] },
   { id: "immune", label: "Immune / Thymic", color: "#14b8a6", names: ["thymosin alpha-1", "thymalin", "vip", "kpv"] },
 ];
 

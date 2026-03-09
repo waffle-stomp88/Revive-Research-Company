@@ -1032,27 +1032,6 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
       },
     ],
   },
-  "hmg": {
-    name: "HMG",
-    slug: "hmg",
-    topPairings: [
-      {
-        partner: "HCG",
-        why: "HMG provides combined FSH + LH gonadotropin stimulation while HCG adds LH mimetic support. Comprehensive gonadotropin coverage for fertility research.",
-        mechanism: "Combined FSH/LH stimulation + LH mimetic support",
-      },
-      {
-        partner: "Gonadorelin",
-        why: "HMG provides direct gonadotropin stimulation while Gonadorelin maintains natural GnRH pulsatile signaling upstream.",
-        mechanism: "Direct gonadotropin + upstream GnRH signaling",
-      },
-      {
-        partner: "Kisspeptin-10",
-        why: "HMG provides direct FSH/LH gonadotropin stimulation while Kisspeptin-10 activates GnRH neurons at the top of the HPG axis. Direct gonadotropin + upstream neuroendocrine trigger.",
-        mechanism: "FSH/LH gonadotropin + upstream kisspeptin GnRH activation",
-      },
-    ],
-  },
   "peg-mgf": {
     name: "PEG-MGF",
     slug: "peg-mgf",
@@ -1196,27 +1175,6 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
         partner: "Glutathione",
         why: "NAD+ Precursor supports cellular energy and repair enzymes while Glutathione provides master antioxidant defense. Energy production generates ROS — Glutathione neutralizes it. Essential pairing for cellular health.",
         mechanism: "NAD+ energy metabolism + master antioxidant ROS defense",
-      },
-    ],
-  },
-  "botulinum-toxin-type-a": {
-    name: "Botulinum Toxin Type A",
-    slug: "botulinum-toxin-type-a",
-    topPairings: [
-      {
-        partner: "GHK-Cu",
-        why: "Botulinum Toxin Type A relaxes targeted muscles to reduce dynamic wrinkles while GHK-Cu rebuilds the underlying collagen and elastin matrix. Surface muscle relaxation + deep structural remodeling for comprehensive aesthetic research.",
-        mechanism: "Neuromuscular acetylcholine blockade + copper-peptide collagen synthesis",
-      },
-      {
-        partner: "Snap-8",
-        why: "Both target expression lines through neuromuscular mechanisms but through different pathways. Botulinum Toxin blocks acetylcholine release at the neuromuscular junction while Snap-8 inhibits the SNARE complex. Dual-pathway wrinkle research.",
-        mechanism: "Acetylcholine release blockade + SNARE complex inhibition",
-      },
-      {
-        partner: "Hyaluronic Acid",
-        why: "Botulinum Toxin relaxes dynamic wrinkles while Hyaluronic Acid provides volumetric hydration and tissue plumping. Muscle relaxation + dermal volume restoration for complementary aesthetic approaches.",
-        mechanism: "Neuromuscular relaxation + dermal hydration volumization",
       },
     ],
   },

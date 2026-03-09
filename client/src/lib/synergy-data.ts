@@ -307,10 +307,10 @@ export const KNOWN_STACKS: KnownStack[] = [
   },
   {
     name: "Fertility Combo",
-    peptides: ["hcg", "hmg", "gonadorelin"],
+    peptides: ["hcg", "gonadorelin"],
     icon: CircleDot,
     color: "#a855f7",
-    description: "LH + FSH stimulation + GnRH support for complete fertility optimization",
+    description: "LH stimulation + GnRH support for fertility optimization",
     synergyBonus: 87,
   },
   {
@@ -539,10 +539,10 @@ export const KNOWN_STACKS: KnownStack[] = [
   },
   {
     name: "Male Fertility",
-    peptides: ["hcg", "kisspeptin-10", "hmg"],
+    peptides: ["hcg", "kisspeptin-10"],
     icon: CircleDot,
     color: "#9333ea",
-    description: "LH support + kisspeptin GnRH trigger + FSH/LH gonadotropin combo",
+    description: "LH support + kisspeptin GnRH trigger for fertility research",
     synergyBonus: 86,
   },
   {
@@ -568,14 +568,6 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: "#0891b2",
     description: "Anti-inflammatory neuropeptide + immune system modulator",
     synergyBonus: 80,
-  },
-  {
-    name: "Botox Alternative",
-    peptides: ["botulinum-toxin-type-a", "snap-8"],
-    icon: Sparkles,
-    color: "#ec4899",
-    description: "Neuromuscular junction blockade + SNARE complex inhibition",
-    synergyBonus: 81,
   },
   {
     name: "Ultimate Anti-Aging Skin",
@@ -680,14 +672,6 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: "#65a30d",
     description: "AMPK direct activator + NNMT enzyme inhibitor for metabolic reprogramming",
     synergyBonus: 82,
-  },
-  {
-    name: "Cosmetic Neuromodulator",
-    peptides: ["botulinum-toxin-type-a", "hyaluronic-acid"],
-    icon: Sparkles,
-    color: "#f472b6",
-    description: "Neuromuscular relaxation + tissue hydration for aesthetic research",
-    synergyBonus: 80,
   },
   {
     name: "GHRP-6 Amplifier",
@@ -882,12 +866,6 @@ export const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
     mechanisms: ["Tissue-protective EPO signaling", "Anti-inflammatory", "Nerve regeneration"],
     systems: ["Neuroprotection", "Healing", "Recovery"],
   },
-  "botulinum-toxin-type-a": {
-    name: "Botulinum Toxin Type A",
-    pathways: ["SNARE Complex", "Neuromuscular Junction"],
-    mechanisms: ["Acetylcholine release inhibition", "Muscle paralysis", "Wrinkle reduction"],
-    systems: ["Skin", "Anti-Aging", "Muscle"],
-  },
   "cagrilintide": {
     name: "Cagrilintide",
     pathways: ["Amylin Receptor", "Satiety Signaling"],
@@ -941,12 +919,6 @@ export const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
     pathways: ["LH Receptor", "HPG Axis"],
     mechanisms: ["LH mimetic action", "Testosterone stimulation", "Leydig cell support"],
     systems: ["Hormonal", "Fertility", "Recovery"],
-  },
-  "hmg": {
-    name: "HMG",
-    pathways: ["FSH/LH Combined", "Gonadotropin"],
-    mechanisms: ["Dual FSH + LH stimulation", "Spermatogenesis support", "Ovarian stimulation"],
-    systems: ["Fertility", "Hormonal", "Recovery"],
   },
   "hexarelin": {
     name: "Hexarelin",
