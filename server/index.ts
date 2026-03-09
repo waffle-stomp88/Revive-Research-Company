@@ -36,8 +36,9 @@ export function log(message: string, source = "express") {
     const host = req.get('host') || '';
     const proto = req.get('x-forwarded-proto') || req.protocol;
     
-    // Skip redirects for Replit domains, localhost, and internal healthchecks
-    const isInternal = host.includes('.replit.dev') || host.includes('.repl.co') || host.includes('.replit.app') || host.includes('localhost') || !host.includes('.');
+    // Skip redirects for Replit domains, localhost, IP addresses, and internal healthchecks
+    const hostWithoutPort = host.split(':')[0];
+    const isInternal = host.includes('.replit.dev') || host.includes('.repl.co') || host.includes('.replit.app') || host.includes('localhost') || !host.includes('.') || /^\d+\.\d+\.\d+\.\d+$/.test(hostWithoutPort);
     if (isInternal) {
       return next();
     }
