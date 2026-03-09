@@ -26,6 +26,10 @@ export function log(message: string, source = "express") {
 
 (async () => {
 
+  app.get("/health", (_req, res) => {
+    res.status(200).send("ok");
+  });
+
   // Canonical domain redirect middleware for production
   // Redirects www and http traffic to https://reviveresearch.co
   app.use((req, res, next) => {
