@@ -351,6 +351,7 @@ export default function ProductDetail() {
   useEffect(() => {
     if (hasSetInitialDosage) return;
     if (!product?.dosageOptions || product.dosageOptions.length === 0) return;
+    if (dosageStocks.length === 0) return;
 
     const parseDosage = (dosage: string): number => {
       const match = dosage.match(/(\d+(?:\.\d+)?)/);
@@ -361,15 +362,11 @@ export default function ProductDetail() {
       (a, b) => parseDosage(a) - parseDosage(b)
     );
 
-    if (dosageStocks.length > 0) {
-      const lowestInStock = sortedDosages.find(dosage => {
-        const stockInfo = dosageStocks.find(ds => ds.dosage === dosage);
-        return stockInfo && stockInfo.stockAmount > 0;
-      });
-      setSelectedDosage(lowestInStock || sortedDosages[0]);
-    } else {
-      setSelectedDosage(sortedDosages[0]);
-    }
+    const lowestInStock = sortedDosages.find(dosage => {
+      const stockInfo = dosageStocks.find(ds => ds.dosage === dosage);
+      return stockInfo && stockInfo.stockAmount > 0;
+    });
+    setSelectedDosage(lowestInStock || sortedDosages[0]);
     setHasSetInitialDosage(true);
   }, [product, dosageStocks, hasSetInitialDosage]);
 
