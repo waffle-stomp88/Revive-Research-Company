@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { TrendingUp, TrendingDown, Minus, Clock } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "wouter";
 import type { PriceTrend } from "@shared/schema";
 
 interface PriceTrendBadgeProps {
@@ -51,10 +52,10 @@ export function PriceTrendBadge({ productId, className = "", variant = "default"
               <div className="text-sm text-neutral-400">
                 No price adjustments in the past 30 days
               </div>
-              <div className="text-xs text-[#21d8ff]/70 flex items-center gap-1">
+              <Link href="/guides/peptide-pricing-breakdown" className="text-xs text-[#21d8ff]/70 flex items-center gap-1 hover:text-[#21d8ff] transition-colors" onClick={(e: React.MouseEvent) => e.stopPropagation()} data-testid="link-pricing-transparency">
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#21d8ff]" />
                 Radical pricing transparency
-              </div>
+              </Link>
             </div>
           </TooltipContent>
         </Tooltip>
@@ -91,10 +92,10 @@ export function PriceTrendBadge({ productId, className = "", variant = "default"
             <div className="text-xs text-neutral-500 pt-1 border-t border-neutral-700">
               We maintain stable, transparent pricing
             </div>
-            <div className="text-xs text-[#21d8ff]/70 flex items-center gap-1">
+            <Link href="/guides/peptide-pricing-breakdown" className="text-xs text-[#21d8ff]/70 flex items-center gap-1 hover:text-[#21d8ff] transition-colors" onClick={(e: React.MouseEvent) => e.stopPropagation()} data-testid="link-pricing-transparency">
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#21d8ff]" />
               Radical pricing transparency
-            </div>
+            </Link>
           </div>
         </TooltipContent>
       </Tooltip>
@@ -222,10 +223,10 @@ function PriceTrendTooltipContent({ trend, timeAgo, isDecrease, showDetails = fa
         Changed {timeAgo} • 30-day price lock in effect
       </div>
       
-      <div className="text-xs text-[#21d8ff]/70 flex items-center gap-1">
+      <Link href="/guides/peptide-pricing-breakdown" className="text-xs text-[#21d8ff]/70 flex items-center gap-1 hover:text-[#21d8ff] transition-colors" onClick={(e: React.MouseEvent) => e.stopPropagation()} data-testid="link-pricing-transparency">
         <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#21d8ff]" />
         Radical pricing transparency
-      </div>
+      </Link>
     </div>
   );
 }
