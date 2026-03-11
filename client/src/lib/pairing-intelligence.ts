@@ -448,11 +448,6 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
         why: "DSIP directly induces delta sleep while Epithalon regulates melatonin through pineal gland stimulation. Both target sleep but through different mechanisms: direct sleep induction vs. circadian regulation.",
         mechanism: "Direct sleep induction + pineal melatonin regulation",
       },
-      {
-        partner: "Melatonin",
-        why: "DSIP provides peptide-based sleep induction while Melatonin supports circadian rhythm signaling. Complementary sleep support through different receptor systems.",
-        mechanism: "Delta sleep peptide + MT1/MT2 circadian signaling",
-      },
     ],
   },
   "thymalin": {
@@ -606,11 +601,6 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
         why: "PT-141 activates MC4R for central nervous system arousal while Melanotan II activates both MC1R and MC4R for broader melanocortin effects including tanning and libido enhancement.",
         mechanism: "Selective MC4R arousal + broad melanocortin activation",
       },
-      {
-        partner: "Alprostadil",
-        why: "PT-141 works through central melanocortin arousal pathways while Alprostadil provides peripheral PGE1 vasodilation. Central + peripheral mechanisms for comprehensive research.",
-        mechanism: "Central melanocortin arousal + peripheral PGE1 vasodilation",
-      },
     ],
   },
   "melanotan-ii": {
@@ -655,30 +645,9 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
     slug: "gonadorelin",
     topPairings: [
       {
-        partner: "HCG",
-        why: "Gonadorelin provides pulsatile GnRH stimulation to maintain natural LH/FSH production while HCG acts as an LH mimetic for direct testicular stimulation.",
-        mechanism: "Pulsatile GnRH stimulation + direct LH mimetic action",
-      },
-      {
         partner: "Kisspeptin-10",
         why: "Kisspeptin-10 triggers GnRH neurons upstream while Gonadorelin acts as GnRH itself. Upstream trigger + direct GnRH for comprehensive HPG axis research.",
         mechanism: "Upstream kisspeptin GnRH trigger + direct GnRH action",
-      },
-    ],
-  },
-  "hcg": {
-    name: "HCG",
-    slug: "hcg",
-    topPairings: [
-      {
-        partner: "Gonadorelin",
-        why: "HCG mimics LH for direct Leydig cell stimulation while Gonadorelin provides GnRH pulses to maintain natural pituitary function. Direct stimulation + natural axis maintenance.",
-        mechanism: "LH mimetic + pulsatile GnRH maintenance",
-      },
-      {
-        partner: "Kisspeptin-10",
-        why: "HCG provides direct gonadal stimulation while Kisspeptin-10 activates the hypothalamic GnRH neurons upstream. Direct + upstream hormonal axis support.",
-        mechanism: "Direct gonadal LH + upstream GnRH neuron activation",
       },
     ],
   },
@@ -823,27 +792,6 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
         why: "Pinealon provides pineal-derived neuroprotection while Semax upregulates BDNF for cognitive performance. Neuroprotection + cognitive enhancement.",
         mechanism: "Pineal neuroprotection + BDNF cognitive amplification",
       },
-      {
-        partner: "Melatonin",
-        why: "Pinealon regulates pineal gland function at the gene level while Melatonin acts directly on MT1/MT2 receptors. Upstream gene regulation + direct receptor activation.",
-        mechanism: "Pineal gene regulation + direct melatonin receptor binding",
-      },
-    ],
-  },
-  "melatonin": {
-    name: "Melatonin",
-    slug: "melatonin",
-    topPairings: [
-      {
-        partner: "DSIP",
-        why: "Melatonin signals the circadian system through MT1/MT2 receptors while DSIP directly induces delta-wave deep sleep. Circadian timing + sleep depth optimization.",
-        mechanism: "MT1/MT2 circadian signaling + delta sleep induction",
-      },
-      {
-        partner: "Pinealon",
-        why: "Melatonin provides direct receptor activation while Pinealon supports the pineal gland at the gene level. Direct action + upstream support for comprehensive circadian research.",
-        mechanism: "Direct melatonin receptor action + pineal gene regulation",
-      },
     ],
   },
   "slu-pp-332": {
@@ -870,11 +818,6 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
         partner: "Gonadorelin",
         why: "Kisspeptin-10 activates GnRH neurons upstream while Gonadorelin acts as GnRH directly. Sequential HPG axis stimulation from trigger to signal.",
         mechanism: "GnRH neuron trigger + direct GnRH action",
-      },
-      {
-        partner: "HCG",
-        why: "Kisspeptin-10 stimulates the top of the HPG axis while HCG directly mimics LH at the gonadal level. Full axis coverage from brain to gonad.",
-        mechanism: "Upstream kisspeptin trigger + downstream LH mimetic",
       },
     ],
   },
@@ -947,22 +890,6 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
       },
     ],
   },
-  "ara-290": {
-    name: "Ara-290",
-    slug: "ara-290",
-    topPairings: [
-      {
-        partner: "BPC-157",
-        why: "Ara-290 activates the innate repair receptor for EPO-derived tissue protection and nerve regeneration while BPC-157 provides systemic tissue healing. Neuroprotection + tissue repair.",
-        mechanism: "Innate repair receptor activation + cytoprotective healing",
-      },
-      {
-        partner: "Cerebrolysin",
-        why: "Ara-290 provides EPO-derived neuroprotection through innate repair receptors while Cerebrolysin offers multi-peptide neurotrophic support. Dual neuroprotective pathways.",
-        mechanism: "Innate repair receptor + broad neurotrophic factor support",
-      },
-    ],
-  },
   "adipotide": {
     name: "Adipotide",
     slug: "adipotide",
@@ -979,43 +906,6 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
       },
     ],
   },
-  "alprostadil": {
-    name: "Alprostadil",
-    slug: "alprostadil",
-    topPairings: [
-      {
-        partner: "BPC-157",
-        why: "Alprostadil provides PGE1-mediated vasodilation while BPC-157 promotes angiogenesis and tissue repair. Vasodilation + vascular repair for circulation research.",
-        mechanism: "PGE1 vasodilation + angiogenic tissue repair",
-      },
-      {
-        partner: "PT-141",
-        why: "Alprostadil provides peripheral PGE1 vasodilation while PT-141 activates central melanocortin arousal pathways. Peripheral + central mechanisms.",
-        mechanism: "Peripheral PGE1 vasodilation + central MC4R activation",
-      },
-      {
-        partner: "TB-500",
-        why: "Alprostadil drives PGE1-mediated vasodilation for blood flow enhancement while TB-500 promotes systemic tissue repair through thymosin beta-4 actin regulation. Vascular dilation + systemic healing.",
-        mechanism: "PGE1 vasodilation + thymosin-mediated tissue repair",
-      },
-    ],
-  },
-  "pnc-27": {
-    name: "PNC-27",
-    slug: "pnc-27",
-    topPairings: [
-      {
-        partner: "FOXO4-DRI",
-        why: "PNC-27 targets cancer cells through HDM-2 binding for membrane disruption while FOXO4-DRI clears senescent cells through p53 pathway disruption. Targeted cell destruction + senescent cell clearance.",
-        mechanism: "HDM-2 tumor disruption + FOXO4/p53 senolytic action",
-      },
-      {
-        partner: "Thymosin Alpha-1",
-        why: "PNC-27 provides targeted cellular disruption while Thymosin Alpha-1 activates the immune system for surveillance. Direct targeting + immune surveillance support.",
-        mechanism: "HDM-2 targeted peptide + immune cell activation",
-      },
-    ],
-  },
   "triptorelin": {
     name: "Triptorelin",
     slug: "triptorelin",
@@ -1024,11 +914,6 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
         partner: "Gonadorelin",
         why: "Triptorelin provides a GnRH agonist reset (initial surge then desensitization) while Gonadorelin maintains pulsatile GnRH for ongoing HPG axis support.",
         mechanism: "GnRH agonist hormonal reset + pulsatile GnRH maintenance",
-      },
-      {
-        partner: "HCG",
-        why: "Triptorelin resets the HPG axis through GnRH receptor desensitization while HCG maintains testicular stimulation through LH mimetic action. Reset + maintenance protocol.",
-        mechanism: "GnRH axis reset + LH mimetic testicular support",
       },
     ],
   },
@@ -1110,11 +995,6 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
         mechanism: "Multi-peptide recovery blend + concentrated copper collagen boost",
       },
       {
-        partner: "Hyaluronic Acid",
-        why: "KLOW drives tissue regeneration through its four-peptide blend while Hyaluronic Acid provides deep hydration and synovial support. Tissue repair + hydration matrix for comprehensive recovery.",
-        mechanism: "4-peptide tissue regeneration + dermal hydration matrix",
-      },
-      {
         partner: "GLOW Peptide Complex",
         why: "KLOW focuses on deep tissue recovery (BPC-157+TB-500+GHK-Cu+KPV) while GLOW targets surface-level skin rejuvenation. Internal repair + external skin renewal.",
         mechanism: "Deep tissue recovery + surface skin regeneration",
@@ -1131,24 +1011,45 @@ export const PAIRING_INTELLIGENCE: Record<string, CompoundPairings> = {
       },
     ],
   },
-  "hyaluronic-acid": {
-    name: "Hyaluronic Acid",
-    slug: "hyaluronic-acid",
+  "rr-a1": {
+    name: "RR-A1",
+    slug: "rr-a1",
     topPairings: [
       {
-        partner: "GHK-Cu",
-        why: "Hyaluronic acid provides deep tissue hydration and synovial fluid support while GHK-Cu drives copper-dependent collagen and elastin synthesis. Hydration matrix + structural protein rebuilding for comprehensive joint and skin health.",
-        mechanism: "Tissue hydration matrix + copper-peptide collagen synthesis",
+        partner: "BPC-157",
+        why: "RR-A1 activates GLP-1 receptor pathways for metabolic regulation while BPC-157 provides gut cytoprotection and mucosal healing. Metabolic signaling + GI support.",
+        mechanism: "GLP-1 receptor agonism + VEGF-driven gut healing",
       },
+      {
+        partner: "MOTS-C",
+        why: "RR-A1 provides GLP-1 receptor-mediated metabolic control while MOTS-C activates AMPK for mitochondrial biogenesis. Receptor-level + cellular-level metabolic optimization.",
+        mechanism: "GLP-1 agonism + AMPK mitochondrial activation",
+      },
+      {
+        partner: "AOD-9604",
+        why: "RR-A1 modulates appetite and glucose metabolism through GLP-1 while AOD-9604 directly targets fat cells through beta-3 adrenergic stimulation. Central + peripheral fat metabolism.",
+        mechanism: "GLP-1 appetite regulation + HGH fragment lipolysis",
+      },
+    ],
+  },
+  "rr-a2": {
+    name: "RR-A2",
+    slug: "rr-a2",
+    topPairings: [
       {
         partner: "BPC-157",
-        why: "Hyaluronic acid restores synovial fluid viscosity and tissue hydration while BPC-157 repairs connective tissue through VEGF-driven angiogenesis. Joint lubrication + vascular tissue healing.",
-        mechanism: "Synovial fluid restoration + VEGF angiogenic tissue repair",
+        why: "RR-A2 dual GLP-1/GIP agonism provides enhanced metabolic signaling while BPC-157 supports GI integrity during research protocols. Dual receptor activation + gut protection.",
+        mechanism: "Dual GLP-1/GIP agonism + VEGF-driven gut healing",
       },
       {
-        partner: "GLOW Peptide Complex",
-        why: "Hyaluronic acid provides deep moisture retention at the dermal level while GLOW's multi-peptide blend drives collagen regeneration and vascular repair. Hydration + multi-layer skin rejuvenation.",
-        mechanism: "Dermal hydration retention + multi-peptide skin regeneration",
+        partner: "Tesamorelin",
+        why: "RR-A2 provides dual incretin receptor activation while Tesamorelin targets visceral fat through GHRH-mediated GH release. Metabolic signaling + targeted fat reduction.",
+        mechanism: "Dual receptor metabolic control + visceral fat-targeting GHRH",
+      },
+      {
+        partner: "AOD-9604",
+        why: "RR-A2 activates both GLP-1 and GIP pathways for comprehensive metabolic regulation while AOD-9604 provides direct lipolytic action. Dual receptor + direct fat targeting.",
+        mechanism: "Dual incretin agonism + HGH fragment lipolysis",
       },
     ],
   },

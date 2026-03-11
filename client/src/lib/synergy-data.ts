@@ -1,4 +1,4 @@
-import { Zap, Sparkles, Rocket, Heart, Activity, Brain, Crown, Moon, Shield, Dumbbell, Flame, Target, RefreshCw, Leaf, Pill, Eye, Syringe, Droplets, Sun, Wind, CircleDot, Crosshair, Scan, LucideIcon } from "lucide-react";
+import { Zap, Sparkles, Rocket, Heart, Activity, Brain, Crown, Moon, Shield, Dumbbell, Flame, Target, RefreshCw, Leaf, Pill, Eye, Sun, Wind, Crosshair, LucideIcon } from "lucide-react";
 
 export interface KnownStack {
   name: string;
@@ -210,28 +210,12 @@ export const KNOWN_STACKS: KnownStack[] = [
     synergyBonus: 88,
   },
   {
-    name: "Hormonal Balance",
-    peptides: ["hcg", "gonadorelin"],
-    icon: Activity,
-    color: "#7c3aed",
-    description: "LH mimetic + GnRH pulsatile stimulation for endogenous testosterone",
-    synergyBonus: 84,
-  },
-  {
     name: "Anti-Wrinkle Complex",
     peptides: ["snap-8", "ghk-cu"],
     icon: Sparkles,
     color: "#f472b6",
     description: "Neuromuscular relaxation + copper-peptide collagen remodeling",
     synergyBonus: 83,
-  },
-  {
-    name: "Sleep Optimization",
-    peptides: ["pinealon", "dsip", "melatonin"],
-    icon: Moon,
-    color: "#4f46e5",
-    description: "Pineal gland peptide + delta sleep inducer + circadian hormone",
-    synergyBonus: 86,
   },
   {
     name: "GH Secretagogue Duo",
@@ -266,14 +250,6 @@ export const KNOWN_STACKS: KnownStack[] = [
     synergyBonus: 89,
   },
   {
-    name: "Joint Repair",
-    peptides: ["bpc-157", "hyaluronic-acid"],
-    icon: RefreshCw,
-    color: "#0d9488",
-    description: "Connective tissue healing + synovial fluid restoration for joint health",
-    synergyBonus: 82,
-  },
-  {
     name: "Neuroprotective Stack",
     peptides: ["cerebrolysin", "pinealon"],
     icon: Brain,
@@ -290,28 +266,12 @@ export const KNOWN_STACKS: KnownStack[] = [
     synergyBonus: 85,
   },
   {
-    name: "Skin Renewal",
-    peptides: ["ghk-cu", "hyaluronic-acid", "glow-peptide-complex"],
-    icon: Sparkles,
-    color: "#ec4899",
-    description: "Copper collagen synthesis + hydration matrix + glow enhancement",
-    synergyBonus: 84,
-  },
-  {
     name: "Fertility Support",
     peptides: ["kisspeptin-10", "gonadorelin"],
     icon: Heart,
     color: "#db2777",
     description: "Kisspeptin GnRH triggering + direct GnRH pulsatile stimulation",
     synergyBonus: 85,
-  },
-  {
-    name: "Fertility Combo",
-    peptides: ["hcg", "gonadorelin"],
-    icon: CircleDot,
-    color: "#a855f7",
-    description: "LH stimulation + GnRH support for fertility optimization",
-    synergyBonus: 87,
   },
   {
     name: "Weight Management Pro",
@@ -394,30 +354,6 @@ export const KNOWN_STACKS: KnownStack[] = [
     synergyBonus: 80,
   },
   {
-    name: "Vascular Health",
-    peptides: ["alprostadil", "bpc-157"],
-    icon: Heart,
-    color: "#e11d48",
-    description: "PGE1 vasodilation + angiogenic tissue repair for circulation",
-    synergyBonus: 81,
-  },
-  {
-    name: "Nerve Repair",
-    peptides: ["ara-290", "bpc-157"],
-    icon: Zap,
-    color: "#059669",
-    description: "EPO-derived neuroprotection + systemic tissue healing",
-    synergyBonus: 83,
-  },
-  {
-    name: "Neuropathy Relief",
-    peptides: ["ara-290", "cerebrolysin"],
-    icon: Brain,
-    color: "#7c3aed",
-    description: "Innate repair receptor activation + neurotrophic factor support",
-    synergyBonus: 82,
-  },
-  {
     name: "Immune Sentinel",
     peptides: ["ll-37", "thymosin-alpha-1"],
     icon: Shield,
@@ -440,14 +376,6 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: "#0d9488",
     description: "Antimicrobial defense + gut anti-inflammatory + mucosal healing",
     synergyBonus: 88,
-  },
-  {
-    name: "Anti-Cancer Research",
-    peptides: ["pnc-27", "foxo4-dri"],
-    icon: Crosshair,
-    color: "#7f1d1d",
-    description: "HDM-2 binding tumor disruption + senescent cell apoptosis induction",
-    synergyBonus: 82,
   },
   {
     name: "Senolytic Protocol",
@@ -538,22 +466,6 @@ export const KNOWN_STACKS: KnownStack[] = [
     synergyBonus: 83,
   },
   {
-    name: "Male Fertility",
-    peptides: ["hcg", "kisspeptin-10"],
-    icon: CircleDot,
-    color: "#9333ea",
-    description: "LH support + kisspeptin GnRH trigger for fertility research",
-    synergyBonus: 86,
-  },
-  {
-    name: "PCT Support",
-    peptides: ["hcg", "triptorelin"],
-    icon: RefreshCw,
-    color: "#7c3aed",
-    description: "LH mimetic maintenance + GnRH reset for post-cycle recovery",
-    synergyBonus: 81,
-  },
-  {
     name: "VIP Gut-Brain",
     peptides: ["vip", "bpc-157"],
     icon: Pill,
@@ -576,22 +488,6 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: "#f472b6",
     description: "Wrinkle relaxation + collagen remodeling + radiance complex",
     synergyBonus: 85,
-  },
-  {
-    name: "KLOW Skin Combo",
-    peptides: ["klow-peptide-complex", "ghk-cu", "hyaluronic-acid"],
-    icon: Droplets,
-    color: "#ec4899",
-    description: "Targeted skin complex + copper peptide renewal + deep hydration",
-    synergyBonus: 83,
-  },
-  {
-    name: "Melatonin Sleep Plus",
-    peptides: ["melatonin", "dsip"],
-    icon: Moon,
-    color: "#4338ca",
-    description: "Circadian hormone + delta sleep inducing peptide for deep rest",
-    synergyBonus: 84,
   },
   {
     name: "Cagrilintide Metabolic",
@@ -624,30 +520,6 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: "#9f1239",
     description: "Fat vasculature disruption + NNMT enzyme inhibition",
     synergyBonus: 79,
-  },
-  {
-    name: "Alprostadil Circulation",
-    peptides: ["alprostadil", "tb-500"],
-    icon: Heart,
-    color: "#dc2626",
-    description: "PGE1 vasodilation + thymosin-derived vascular repair",
-    synergyBonus: 80,
-  },
-  {
-    name: "Sexual Wellness",
-    peptides: ["pt-141", "alprostadil"],
-    icon: Heart,
-    color: "#e11d48",
-    description: "Central melanocortin arousal + peripheral vasodilation",
-    synergyBonus: 83,
-  },
-  {
-    name: "PNC-27 Research",
-    peptides: ["pnc-27", "thymosin-alpha-1"],
-    icon: Scan,
-    color: "#7f1d1d",
-    description: "HDM-2 targeted peptide + immune activation for research",
-    synergyBonus: 78,
   },
   {
     name: "Pinealon Focus",
@@ -737,6 +609,46 @@ export const KNOWN_STACKS: KnownStack[] = [
     description: "NAD+ supports energy metabolism and sirtuin repair while Glutathione neutralizes the ROS generated — essential energy + antioxidant pairing",
     synergyBonus: 83,
   },
+  {
+    name: "GLP-1 Metabolic",
+    peptides: ["rr-a1", "bpc-157"],
+    icon: RefreshCw,
+    color: "#10b981",
+    description: "Single GLP-1 receptor agonism + gut cytoprotection for metabolic research",
+    synergyBonus: 86,
+  },
+  {
+    name: "Dual Agonist Stack",
+    peptides: ["rr-a2", "bpc-157"],
+    icon: Target,
+    color: "#16a34a",
+    description: "Dual GLP-1/GIP receptor agonism + gut healing support for metabolic research",
+    synergyBonus: 87,
+  },
+  {
+    name: "RR Complete",
+    peptides: ["rr-a1", "rr-a3"],
+    icon: Crown,
+    color: "#eab308",
+    description: "Single + triple receptor agonists for comprehensive metabolic pathway research",
+    synergyBonus: 83,
+  },
+  {
+    name: "Dual Fat Loss",
+    peptides: ["rr-a2", "aod-9604"],
+    icon: Flame,
+    color: "#f97316",
+    description: "Dual receptor metabolic agonist + HGH fragment lipolysis",
+    synergyBonus: 84,
+  },
+  {
+    name: "Weight Management",
+    peptides: ["cagrilintide", "rr-a1"],
+    icon: Target,
+    color: "#15803d",
+    description: "Amylin analog appetite control + single GLP-1 receptor agonist",
+    synergyBonus: 85,
+  },
 ];
 
 export const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
@@ -763,6 +675,18 @@ export const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
     pathways: ["AMPK Activation", "Mitochondrial Biogenesis"],
     mechanisms: ["PGC-1α pathway", "Metabolic regulation", "Energy production"],
     systems: ["Metabolic", "Energy", "Longevity"],
+  },
+  "rr-a1": {
+    name: "RR-A1",
+    pathways: ["Incretin", "GLP-1"],
+    mechanisms: ["GLP-1 receptor agonist", "Glucose metabolism", "Appetite regulation"],
+    systems: ["Metabolic", "Weight", "Fat Loss"],
+  },
+  "rr-a2": {
+    name: "RR-A2",
+    pathways: ["Incretin", "GIP", "GLP-1"],
+    mechanisms: ["Dual receptor agonist", "Enhanced insulin sensitivity", "Lipid metabolism"],
+    systems: ["Metabolic", "Weight", "Fat Loss"],
   },
   "rr-a3": {
     name: "RR-A3",
@@ -854,18 +778,6 @@ export const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
     mechanisms: ["Fat vasculature apoptosis", "White adipose targeting", "Blood vessel disruption"],
     systems: ["Fat Loss", "Weight", "Metabolic"],
   },
-  "alprostadil": {
-    name: "Alprostadil",
-    pathways: ["PGE1", "cAMP Signaling"],
-    mechanisms: ["Smooth muscle relaxation", "Vasodilation", "Platelet inhibition"],
-    systems: ["Sexual Health", "Heart", "Healing"],
-  },
-  "ara-290": {
-    name: "Ara-290",
-    pathways: ["Innate Repair Receptor", "EPO-derived"],
-    mechanisms: ["Tissue-protective EPO signaling", "Anti-inflammatory", "Nerve regeneration"],
-    systems: ["Neuroprotection", "Healing", "Recovery"],
-  },
   "cagrilintide": {
     name: "Cagrilintide",
     pathways: ["Amylin Receptor", "Satiety Signaling"],
@@ -914,23 +826,11 @@ export const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
     mechanisms: ["Pulsatile LH/FSH release", "Gonadotropin stimulation", "Fertility support"],
     systems: ["Hormonal", "Fertility", "Recovery"],
   },
-  "hcg": {
-    name: "HCG",
-    pathways: ["LH Receptor", "HPG Axis"],
-    mechanisms: ["LH mimetic action", "Testosterone stimulation", "Leydig cell support"],
-    systems: ["Hormonal", "Fertility", "Recovery"],
-  },
   "hexarelin": {
     name: "Hexarelin",
     pathways: ["GHRP", "Ghrelin Receptor"],
     mechanisms: ["Strong GH secretagogue", "Cardioprotective effects", "IGF-1 stimulation"],
     systems: ["Growth", "Heart", "Recovery"],
-  },
-  "hyaluronic-acid": {
-    name: "Hyaluronic Acid",
-    pathways: ["Extracellular Matrix", "CD44 Receptor"],
-    mechanisms: ["Water retention in tissues", "Joint lubrication", "Skin hydration"],
-    systems: ["Skin", "Joints", "Anti-Aging"],
   },
   "igf-1-lr3": {
     name: "IGF-1 LR3",
@@ -986,12 +886,6 @@ export const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
     mechanisms: ["Non-selective melanocortin agonist", "Tanning response", "Libido enhancement"],
     systems: ["Skin", "Sexual Health", "Fat Loss"],
   },
-  "melatonin": {
-    name: "Melatonin",
-    pathways: ["MT1/MT2 Receptor", "Circadian Rhythm"],
-    mechanisms: ["Sleep-wake cycle regulation", "Antioxidant", "Immune modulation"],
-    systems: ["Sleep", "Immunity", "Anti-Aging"],
-  },
   "nad-precursor": {
     name: "NAD+ Precursor",
     pathways: ["NAD+ Salvage", "Sirtuin Activation", "PARP DNA Repair"],
@@ -1009,12 +903,6 @@ export const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
     pathways: ["IGF-1 Splice Variant", "PEGylated Delivery"],
     mechanisms: ["Extended mechano growth signaling", "Systemic muscle repair", "Satellite cell recruitment"],
     systems: ["Muscle", "Recovery", "Growth"],
-  },
-  "pnc-27": {
-    name: "PNC-27",
-    pathways: ["HDM-2 Binding", "p53 Pathway"],
-    mechanisms: ["Tumor cell membrane disruption", "Selective cancer cell targeting", "Necrosis induction"],
-    systems: ["Immunity", "Recovery", "Longevity"],
   },
   "pt-141": {
     name: "PT-141",

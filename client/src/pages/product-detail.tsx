@@ -808,6 +808,20 @@ export default function ProductDetail() {
                       })}
                     </SelectContent>
                   </Select>
+                  {(() => {
+                    const blendCompositions: Record<string, string> = {
+                      "glow-peptide-complex": "TB-500 10mg + BPC-157 10mg + GHK-Cu 50mg",
+                      "klow-peptide-complex": "TB-500 10mg + BPC-157 10mg + GHK-Cu 50mg + KPV 10mg",
+                      "bpc-157-tb-500-stack": "BPC-157 + TB-500 equal ratio blend",
+                      "cag-sema-blend": "Cagrilintide + Semaglutide blend",
+                    };
+                    const composition = product.slug ? blendCompositions[product.slug] : null;
+                    return composition ? (
+                      <p className="text-xs text-muted-foreground mt-1.5" data-testid="text-blend-composition">
+                        {composition}
+                      </p>
+                    ) : null;
+                  })()}
                 </div>
               )}
 
@@ -1551,7 +1565,12 @@ export default function ProductDetail() {
                               className="text-sm font-bold text-[#E7FB10] mt-2 mt-auto"
                               data-testid={`text-synergy-price-${partnerProduct.id}`}
                             >
-                              ${Number(partnerProduct.price).toFixed(2)}
+                              {(() => {
+                                const displayPrice = Number(partnerProduct.price) > 0 
+                                  ? Number(partnerProduct.price) 
+                                  : (partnerProduct as any).minPrice ? Number((partnerProduct as any).minPrice) : 0;
+                                return displayPrice > 0 ? <>From ${displayPrice.toFixed(2)}</> : null;
+                              })()}
                             </p>
                           </div>
                         </div>

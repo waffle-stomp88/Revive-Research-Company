@@ -20,7 +20,8 @@ The platform features an Apple-inspired design with a dark charcoal background (
 - **Notification System**: Unified email and SMS notifications via Amazon SES (SMTP) and Amazon SNS.
 
 ### Feature Specifications
-- **Product Presentation**: Tiered navigation, interactive 3D model viewer with AR capability, "Research Stacks" (product bundles), and "Sale of the Week" promotions.
+- **Product Presentation**: Tiered navigation, interactive 3D model viewer with AR capability, "Research Stacks" (product bundles), and "Sale of the Week" promotions. Per-dosage pricing from `product_dosage_stock` table drives price ranges on cards and exact prices in dosage dropdowns. Blend products (GLOW, KLOW, BPC+TB, Cag+Sema) show composition subtitles below the dosage selector.
+  - **GLP-1 Compliance**: RR-A1, RR-A2, RR-A3 are the only products with naming restrictions. NO compound names (Semaglutide, Tirzepatide, Retatrutide) in any crawlable text, meta titles, descriptions, or structured data. Use mechanism language only. No compound-name URLs (/peptides/semaglutide etc.) exist on the domain.
 - **Compliance & Security**: 21+ age verification gate, authentication-protected pages (Research Stacks, Bulk Packs, Research Academy), and a non-dismissible RUO reminder on the checkout page. Prominent legal disclaimers and compliance pages.
 - **Shipping & Returns**: Free shipping on orders over $200, flat rate otherwise. No refunds policy.
 - **Affiliate Program**: Two-tier commission structure (10% direct + 10% customer discount, 10% team override), 30-day cookie window, $100 minimum payout, monthly payouts, with application and dashboard features.
