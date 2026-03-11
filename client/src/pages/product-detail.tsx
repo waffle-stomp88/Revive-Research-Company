@@ -754,11 +754,6 @@ export default function ProductDetail() {
                 <span className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10]" data-testid="text-product-price">
                   ${getBasePrice().toFixed(2)}
                 </span>
-                {selectedDosage !== "10mg" && (
-                  <Badge variant="outline" className="text-xs">
-                    +{((getDosageMultiplier() - 1) * 100).toFixed(0)}% for {selectedDosage}
-                  </Badge>
-                )}
                 <PriceTrendBadge productId={product.id} />
               </div>
             </div>
