@@ -393,6 +393,47 @@ const renderMarkdown = (content: string) => {
     .replace(/^(?!\s*<)/gm, '<p class="mb-2 text-sm leading-relaxed">'); // Skip lines starting with HTML tags (with optional whitespace)
 };
 
+const PUBMED_SEARCH_TERMS: Record<string, string> = {
+  "what-is-glow-peptide-complex": "GHK-Cu collagen peptide skin rejuvenation",
+  "what-is-klow-peptide-complex": "BPC-157 anti-inflammatory tissue repair peptide",
+  "what-is-ghk-cu-peptide": "GHK-Cu copper peptide",
+  "what-is-bpc-157-peptide": "BPC-157 body protection compound",
+  "what-is-tb-500-peptide": "TB-500 thymosin beta-4",
+  "what-is-5-amino-1mq-peptide": "5-amino-1MQ NNMT inhibitor",
+  "what-is-cjc-1295-peptide": "CJC-1295 GHRH analog",
+  "what-is-igf-1-lr3-peptide": "IGF-1 LR3 growth factor",
+  "what-is-pt-141-bremelanotide-peptide": "PT-141 bremelanotide melanocortin",
+  "what-is-nad-precursor": "NAD+ nicotinamide riboside",
+  "what-is-slu-pp-332-peptide": "SLU-PP-332 ERR agonist",
+  "what-is-aod-9604-peptide": "AOD-9604 lipolytic peptide",
+  "what-is-mots-c-peptide": "MOTS-c mitochondrial peptide",
+  "what-is-dsip-peptide": "DSIP delta sleep-inducing peptide",
+  "what-is-hcg-peptide": "HCG human chorionic gonadotropin",
+  "what-is-rr-a1-peptide": "GLP-1 receptor agonist peptide",
+  "what-is-rr-a2-peptide": "GLP-1 GIP dual receptor agonist",
+  "what-is-rr-a3-peptide": "GLP-1 GIP glucagon triple agonist",
+  "what-is-epithalon-peptide": "Epithalon telomerase activation",
+  "what-is-ipamorelin-peptide": "Ipamorelin growth hormone secretagogue",
+  "what-is-tesamorelin-peptide": "Tesamorelin GHRH analog",
+  "what-is-semax-peptide": "Semax ACTH neuropeptide",
+  "what-is-selank-peptide": "Selank tuftsin anxiolytic peptide",
+  "what-is-melanotan-peptide": "Melanotan melanocortin peptide",
+  "what-is-kisspeptin-peptide": "Kisspeptin neuroendocrine",
+  "what-is-dihexa-peptide": "Dihexa cognitive peptide HGF",
+  "what-is-thymosin-alpha-1-peptide": "Thymosin alpha-1 immune modulation",
+  "what-is-thymulin-peptide": "Thymulin thymic hormone zinc",
+  "what-is-glutathione": "Glutathione antioxidant",
+  "what-is-vitamin-b12": "Vitamin B12 cobalamin",
+};
+
+const getPubMedSearchTerm = (slug: string, _title: string): string => {
+  return PUBMED_SEARCH_TERMS[slug] ||
+    (slug.replace('what-is-', '').replace(/-peptide$/, ''))
+      .split('-')
+      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+};
+
 type ArticleMode = "deep-dive" | "quick-breakdown";
 
 export default function Education() {
@@ -766,13 +807,10 @@ export default function Education() {
                               onModeChange={setArticleMode} 
                             />
                             {articleMode === "quick-breakdown" && <BeginnerBadge />}
-                            {article.category === "peptides" && article.slug?.startsWith('what-is-') && !article.slug?.includes('complex') && (
+                            {article.category === "peptides" && article.slug?.startsWith('what-is-') && (
                               <a 
                                 href={`https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(
-                                  (article.slug?.replace('what-is-', '').replace(/-peptide$/, '') || article.title)
-                                    .split('-')
-                                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                                    .join('-')
+                                  getPubMedSearchTerm(article.slug || "", article.title)
                                 )}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
