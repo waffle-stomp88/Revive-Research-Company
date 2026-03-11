@@ -984,7 +984,7 @@ function ProductsComponent() {
                                 <h3 className="font-display text-[29px] font-black mb-0.5 md:group-hover:text-[#E7FB10] transition-colors line-clamp-2 text-center">
                                   {product.name}
                                 </h3>
-                                <p className="text-[10px] text-muted-foreground/70 mb-0.5 sm:mb-1 line-clamp-1 text-center">
+                                <p className="text-muted-foreground/70 mb-0.5 sm:mb-1 line-clamp-1 text-center text-[11px]">
                                   {product.shortDescription}
                                 </p>
                                 <div className="flex items-center justify-center mt-auto gap-1.5">
