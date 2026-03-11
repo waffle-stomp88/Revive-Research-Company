@@ -7,9 +7,6 @@ export interface Bundle {
   icon: LucideIcon;
   description: string;
   products: string[];
-  originalPrice: number;
-  bundlePrice: number;
-  savings: number;
   color: "cyan" | "yellow";
   benefits?: string[];
 }
@@ -22,9 +19,6 @@ export const BUNDLES: Bundle[] = [
     icon: Zap,
     description: "BPC-157 + TB-500 combination for tissue repair mechanism research. The most popular peptide research stack worldwide.",
     products: ["BPC-157", "TB-500"],
-    originalPrice: 100.98,
-    bundlePrice: 85.99,
-    savings: 15,
     color: "cyan",
     benefits: [
       "Tissue repair mechanism research",
@@ -40,9 +34,6 @@ export const BUNDLES: Bundle[] = [
     icon: Timer,
     description: "Epithalon + GHK-Cu + NAD+ for comprehensive cellular mechanism and telomere research applications.",
     products: ["Epithalon", "GHK-Cu", "NAD+ Precursor"],
-    originalPrice: 145.97,
-    bundlePrice: 123.99,
-    savings: 15,
     color: "yellow",
     benefits: [
       "Telomerase activation research",
@@ -58,9 +49,6 @@ export const BUNDLES: Bundle[] = [
     icon: Flame,
     description: "CJC-1295 + Ipamorelin for growth hormone secretagogue mechanism research. Ideal for endocrine pathway studies.",
     products: ["CJC-1295", "Ipamorelin"],
-    originalPrice: 92.98,
-    bundlePrice: 78.99,
-    savings: 15,
     color: "cyan",
     benefits: [
       "GH secretagogue research",
@@ -76,9 +64,6 @@ export const BUNDLES: Bundle[] = [
     icon: Heart,
     description: "BPC-157 + TB-500 + GHK-Cu for comprehensive tissue mechanism and collagen synthesis research.",
     products: ["BPC-157", "TB-500", "GHK-Cu"],
-    originalPrice: 155.97,
-    bundlePrice: 132.99,
-    savings: 15,
     color: "yellow",
     benefits: [
       "Multi-pathway tissue research",

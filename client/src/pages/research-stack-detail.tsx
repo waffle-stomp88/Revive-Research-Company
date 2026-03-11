@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRoute, Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
+import { STACK_COMPONENTS, buildPriceLookup, calculateStackPricing } from "@/lib/stack-pricing";
 import { SEOHead } from "@/components/seo-head";
 import {
   ArrowLeft, FlaskConical, ShoppingCart, Sparkles, AlertTriangle, Package, GraduationCap, Shield, FileCheck, Truck, RefreshCw, ShoppingBag, Repeat, CheckCircle, Minus, Plus, BookOpen, ChevronRight, ChevronDown
@@ -42,8 +43,6 @@ interface ResearchStack {
   color: string;
   badge?: string;
   badgeColor?: string;
-  retailValue: number;
-  stackPrice: number;
   synergy: SynergyCopy;
 }
 
@@ -88,8 +87,6 @@ const researchStacksData: Record<string, ResearchStack> = {
     color: "#22c55e",
     badge: "Most Popular",
     badgeColor: "#E7FB10",
-    retailValue: 100.98,
-    stackPrice: 85.99,
     synergy: {
       beginner: "BPC-157 helps cells repair faster while TB-500 helps the body build new blood vessels to deliver nutrients. Together, they create a 'repair + rebuild' combination that researchers find works better than either compound alone.",
       expert: "BPC-157 upregulates growth hormone receptors and VEGF expression while TB-500 (Thymosin Beta-4) promotes actin polymerization and angiogenesis. The dual-pathway activation creates synergistic tissue regeneration signaling through complementary GH/IGF-1 axis and cytoskeletal remodeling mechanisms."
@@ -126,8 +123,6 @@ const researchStacksData: Record<string, ResearchStack> = {
     color: "#E7FB10",
     badge: "Hot Research",
     badgeColor: "#ef4444",
-    retailValue: 149.98,
-    stackPrice: 127.99,
     synergy: {
       beginner: "MOTS-C helps cells produce energy more efficiently at the mitochondrial level, while RR-A3 signals the body to use stored fat for fuel. Together, they target metabolism from two different angles—one at the cellular power plant, one at the hormonal control center.",
       expert: "MOTS-C activates AMPK pathways and enhances mitochondrial biogenesis, while RR-A3 acts as a triple agonist (Incretin/GIP/Glucagon receptors) modulating metabolic signaling. This creates multi-target metabolic pathway activation: mitochondrial efficiency + peripheral insulin sensitivity + hepatic gluconeogenesis modulation."
@@ -162,8 +157,6 @@ const researchStacksData: Record<string, ResearchStack> = {
     ],
     icon: "Sparkles",
     color: "#a855f7",
-    retailValue: 97.98,
-    stackPrice: 82.99,
     synergy: {
       beginner: "Epithalon works on the 'aging clock' inside your cells by supporting telomere maintenance—the protective caps on your DNA. GHK-Cu is a copper peptide that helps cells rebuild and renew tissue. Together, they target aging from two angles: protecting your DNA's integrity and keeping tissue renewal active.",
       expert: "Epithalon activates telomerase reverse transcriptase, extending telomere length and delaying replicative senescence. GHK-Cu modulates 4,000+ genes involved in tissue remodeling, upregulating collagen synthesis, decorin, and metalloproteinases while suppressing inflammatory cytokines. The combination creates synergistic anti-aging signaling: telomere protection (Epithalon) + extracellular matrix restoration and gene expression reset (GHK-Cu)."
@@ -200,8 +193,6 @@ const researchStacksData: Record<string, ResearchStack> = {
     color: "#21d8ff",
     badge: "Top Nootropic",
     badgeColor: "#21d8ff",
-    retailValue: 59.98,
-    stackPrice: 50.99,
     synergy: {
       beginner: "Semax is a brain-boosting peptide that helps sharpen focus and supports the growth of new neural connections. Selank promotes a calm, clear-headed state by reducing stress signals without causing drowsiness. Together, they create a 'focused calm'—enhanced mental clarity without the jitters or anxiety.",
       expert: "Semax (ACTH 4-10 analog) upregulates BDNF and NGF expression, enhancing neuroplasticity and cognitive processing speed. Selank (tuftsin analog) modulates GABAergic neurotransmission and reduces IL-6 levels, providing anxiolytic effects through immune-neuroendocrine cross-talk. The dual-pathway activation—neurotrophic enhancement (Semax) + anxiolytic neuroprotection (Selank)—creates complementary cognitive optimization without receptor competition."
@@ -236,8 +227,6 @@ const researchStacksData: Record<string, ResearchStack> = {
     ],
     icon: "Leaf",
     color: "#ec4899",
-    retailValue: 105.98,
-    stackPrice: 89.99,
     synergy: {
       beginner: "GHK-Cu directly stimulates collagen production and skin cell turnover, while BPC-157 supports the blood vessel growth needed to deliver nutrients to healing tissue. Together, they work on both the 'building blocks' and the 'supply chain' for skin and tissue research.",
       expert: "GHK-Cu upregulates collagen I, III, and elastin synthesis while modulating TGF-β signaling for controlled tissue remodeling. BPC-157 enhances angiogenesis via VEGF upregulation and provides cytoprotection. The combination creates synergistic dermal pathway activation: structural protein synthesis (GHK-Cu) + vascularization and tissue protection (BPC-157)."
@@ -276,8 +265,6 @@ const researchStacksData: Record<string, ResearchStack> = {
     color: "#f59e0b",
     badge: "Premium",
     badgeColor: "#f59e0b",
-    retailValue: 200.97,
-    stackPrice: 169.99,
     synergy: {
       beginner: "This triple stack covers three major research areas: RR-A3 for metabolic hormone signaling, MOTS-C for cellular energy production, and BPC-157 for tissue repair. It's designed for advanced researchers who want to study how these different systems interact and influence each other.",
       expert: "This triple-compound stack enables multi-pathway investigation: RR-A3 (Incretin/GIP/GCGR triple agonist) for metabolic and hepatic signaling, MOTS-C for mitochondrial biogenesis and AMPK activation, and BPC-157 for tissue regeneration via NO/GH pathways. The combination allows researchers to study cross-talk between metabolic, energetic, and regenerative signaling cascades in a single protocol."
@@ -297,6 +284,15 @@ export default function ResearchStackDetail() {
   const { data: allProducts } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
+
+  const { data: productsWithStock } = useQuery<any[]>({
+    queryKey: ["/api/products-with-stock"],
+  });
+
+  const priceLookup = useMemo(() => {
+    if (!productsWithStock) return new Map<string, number>();
+    return buildPriceLookup(productsWithStock);
+  }, [productsWithStock]);
 
   if (!match || !params?.id) {
     return null;
@@ -321,7 +317,9 @@ export default function ResearchStackDetail() {
     );
   }
 
-  const getBasePrice = () => stack.stackPrice;
+  const pricing = calculateStackPricing(params.id, priceLookup);
+  const pricingReady = pricing !== null;
+  const getBasePrice = () => pricing?.stackPrice ?? 0;
 
   const getSelectedDiscount = () => {
     if (purchaseType === "one-time") return 0;
@@ -544,7 +542,7 @@ export default function ResearchStackDetail() {
                   ${getBasePrice().toFixed(2)}
                 </span>
                 <span className="text-lg text-muted-foreground line-through" data-testid="text-stack-retail-value">
-                  ${stack.retailValue.toFixed(2)}
+                  ${pricing?.retailValue.toFixed(2) ?? "—"}
                 </span>
               </div>
             </div>
@@ -677,6 +675,7 @@ export default function ResearchStackDetail() {
                 variant="outline"
                 className="flex-1 font-display gap-2 border-2 md:hover:border-[#21d8ff] md:hover:text-[#21d8ff] md:hover:shadow-[0_0_15px_rgba(33,216,255,0.3)] transition-all duration-300"
                 onClick={handleAddToCart}
+                disabled={!pricingReady}
                 data-testid="button-add-to-cart"
               >
                 <ShoppingBag className="h-5 w-5" />
@@ -690,6 +689,7 @@ export default function ResearchStackDetail() {
                     : "bg-[#E7FB10] border-[#E7FB10] md:hover:bg-[#E7FB10]/90 shadow-[0_0_20px_rgba(231,251,16,0.4)] md:hover:shadow-[0_0_40px_rgba(231,251,16,0.6)]"
                 }`}
                 onClick={handleBuyNow}
+                disabled={!pricingReady}
                 data-testid="button-buy-now"
               >
                 {purchaseType === "subscription" ? (

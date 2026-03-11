@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Link, useParams, useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -27,6 +28,7 @@ import {
 } from "lucide-react";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { BUNDLES } from "@/lib/bundles";
+import { BUNDLE_COMPONENTS, STACK_DISCOUNT, buildPriceLookup, calculateStackPricing } from "@/lib/stack-pricing";
 
 type PurchaseType = "one-time" | "subscription";
 type SubscriptionInterval = "weekly" | "biweekly" | "monthly";
@@ -48,6 +50,22 @@ export default function BundleDetail() {
 
   const bundle = BUNDLES.find(b => b.id === params.id);
 
+  const { data: productsWithStock } = useQuery<any[]>({
+    queryKey: ["/api/products-with-stock"],
+  });
+
+  const priceLookup = useMemo(() => {
+    if (!productsWithStock) return new Map<string, number>();
+    return buildPriceLookup(productsWithStock);
+  }, [productsWithStock]);
+
+  const bundlePricing = useMemo(() => {
+    if (!bundle) return null;
+    return calculateStackPricing(bundle.id, priceLookup, BUNDLE_COMPONENTS);
+  }, [bundle, priceLookup]);
+
+  const pricingReady = bundlePricing !== null;
+
   const handleQuantityChange = (delta: number) => {
     setQuantity(prev => Math.max(1, Math.min(10, prev + delta)));
   };
@@ -59,8 +77,7 @@ export default function BundleDetail() {
   };
 
   const getBasePrice = () => {
-    if (!bundle) return 0;
-    return bundle.bundlePrice;
+    return bundlePricing?.stackPrice ?? 0;
   };
 
   const getDiscountedPrice = () => {
@@ -80,7 +97,7 @@ export default function BundleDetail() {
         bundleId: bundle.id,
         name: bundle.name,
         price: getDiscountedPrice(),
-        originalPrice: bundle.originalPrice,
+        originalPrice: bundlePricing?.retailValue ?? 0,
         quantity,
         dosage: "Bundle",
         isBundle: true,
@@ -97,7 +114,7 @@ export default function BundleDetail() {
         bundleId: bundle.id,
         name: bundle.name,
         price: getDiscountedPrice(),
-        originalPrice: bundle.originalPrice,
+        originalPrice: bundlePricing?.retailValue ?? 0,
         quantity,
         dosage: "Bundle",
         isBundle: true,
@@ -139,7 +156,7 @@ export default function BundleDetail() {
     <main className="min-h-screen pt-32 md:pt-40 pb-12">
       <SEOHead 
         title={`${bundle.name} | Research Bundle`}
-        description={bundle.tagline || `${bundle.name} - Premium research peptide bundle with ${bundle.savings}% savings. Contains ${bundle.products.join(", ")}.`}
+        description={bundle.tagline || `${bundle.name} - Premium research peptide bundle with ${Math.round(STACK_DISCOUNT * 100)}% savings. Contains ${bundle.products.join(", ")}.`}
         canonicalPath={`/bundles/${bundle.id}`}
       />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
@@ -185,7 +202,7 @@ export default function BundleDetail() {
                 Bundle
               </Badge>
               <Badge className="bg-green-500/20 text-green-400 border-green-500/30 glow-pulse">
-                Save {bundle.savings}%
+                Save {Math.round(STACK_DISCOUNT * 100)}%
               </Badge>
             </div>
 
@@ -202,7 +219,7 @@ export default function BundleDetail() {
                 ${getDiscountedPrice().toFixed(2)}
               </span>
               <span className="text-lg text-muted-foreground line-through">
-                ${bundle.originalPrice.toFixed(2)}
+                ${bundlePricing?.retailValue.toFixed(2) ?? "—"}
               </span>
               {getSelectedDiscount() > 0 && (
                 <Badge variant="outline" className="text-xs">
@@ -338,6 +355,7 @@ export default function BundleDetail() {
                 variant="outline"
                 className="flex-1 font-display gap-2 border-2"
                 onClick={handleAddToCart}
+                disabled={!pricingReady}
                 data-testid="button-add-to-cart"
               >
                 <ShoppingBag className="h-5 w-5" />
@@ -351,6 +369,7 @@ export default function BundleDetail() {
                     : "bg-[#E7FB10] border-[#E7FB10] md:hover:bg-[#E7FB10]/90 shadow-[0_0_20px_rgba(231,251,16,0.4)] md:hover:shadow-[0_0_40px_rgba(231,251,16,0.6)]"
                 }`}
                 onClick={handleBuyNow}
+                disabled={!pricingReady}
                 data-testid="button-buy-now"
               >
                 {purchaseType === "subscription" ? (
