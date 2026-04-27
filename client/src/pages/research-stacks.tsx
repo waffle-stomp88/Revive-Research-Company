@@ -21,6 +21,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import type { Product, SavedStack } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
+import {
+  detectPathwayOverlaps,
+  findOverlapForPair,
+} from "@/lib/pathway-overlaps";
+import { PathwayOverlapCard } from "@/components/pathway-overlap-card";
 
 interface SynergyCopy {
   beginner: string;
@@ -1261,7 +1266,7 @@ const getPeptideCategories = (productName: string) => {
 
 // Custom Stack Builder Component
 interface PathwayMapProps {
-  selectedPeptides: { name: string }[];
+  selectedPeptides: { name: string; slug?: string | null }[];
 }
 
 function PathwayMap({ selectedPeptides }: PathwayMapProps) {
@@ -1276,9 +1281,24 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
   const peptideData = selectedPeptides
     .map(p => {
       const pathway = getPeptidePathway(p.name);
-      return pathway ? { ...pathway, originalName: p.name } : null;
+      return pathway
+        ? { ...pathway, originalName: p.name, slug: p.slug ?? null }
+        : null;
     })
-    .filter((p): p is PeptidePathway & { originalName: string } => p !== null);
+    .filter(
+      (p): p is PeptidePathway & { originalName: string; slug: string | null } =>
+        p !== null,
+    );
+
+  const triggeredOverlaps = useMemo(
+    () =>
+      detectPathwayOverlaps(
+        selectedPeptides
+          .map((p) => p.slug)
+          .filter((s): s is string => Boolean(s)),
+      ),
+    [selectedPeptides],
+  );
 
   const hasActiveData = peptideData.length >= 1;
 
@@ -1963,6 +1983,12 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
               const isGood = conn.tier === "good";
               const hasTier = isLegendary || isStrong || isGood;
 
+              const fromSlug = peptideData[conn.from]?.slug ?? null;
+              const toSlug = peptideData[conn.to]?.slug ?? null;
+              const overlapMatch = findOverlapForPair(fromSlug, toSlug, triggeredOverlaps);
+              const isOverlap = !!overlapMatch;
+              const OVERLAP_AMBER = "#f59e0b";
+
               const baseW = isLegendary ? 3 : isStrong ? 2.5 : isGood ? 2 : 1 + (conn.strength / maxStrength) * 2;
               const particleCount = isLegendary ? 6 : isStrong ? 4 : Math.max(2, Math.min(5, conn.strength));
               const rawMidX = (fn.x + tn.x) / 2;
@@ -1973,8 +1999,8 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
               const reasonPos = labelPositions[`reason-${ci}`];
 
               return (
-                <g key={key}>
-                  {isLegendary && (
+                <g key={key} data-testid={isOverlap ? `overlap-line-${overlapMatch!.cluster.receptorKey}-${conn.from}-${conn.to}` : undefined}>
+                  {isLegendary && !isOverlap && (
                     <motion.line
                       x1={fn.x} y1={fn.y} x2={tn.x} y2={tn.y}
                       stroke={conn.stackColor || tierColor}
@@ -1989,18 +2015,18 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
 
                   <motion.line
                     x1={fn.x} y1={fn.y} x2={tn.x} y2={tn.y}
-                    stroke={hasTier ? tierColor : `url(#pm-grad-${conn.from}-${conn.to})`}
-                    strokeWidth={isActive ? baseW + 2 : baseW}
+                    stroke={isOverlap ? OVERLAP_AMBER : (hasTier ? tierColor : `url(#pm-grad-${conn.from}-${conn.to})`)}
+                    strokeWidth={isOverlap ? (isActive ? 2.5 : 2) : (isActive ? baseW + 2 : baseW)}
                     strokeLinecap="round"
-                    strokeOpacity={isLegendary ? 0.85 : isStrong ? 0.6 : isGood ? 0.4 : (isActive ? 0.9 : 0.25)}
-                    strokeDasharray={isGood ? "8,6" : undefined}
-                    filter={isLegendary ? "url(#pm-glow-legendary)" : (isActive || isStrong) ? "url(#pm-glow-line)" : undefined}
+                    strokeOpacity={isOverlap ? (isActive ? 0.85 : 0.6) : (isLegendary ? 0.85 : isStrong ? 0.6 : isGood ? 0.4 : (isActive ? 0.9 : 0.25))}
+                    strokeDasharray={isOverlap ? "6,5" : (isGood ? "8,6" : undefined)}
+                    filter={isOverlap ? undefined : (isLegendary ? "url(#pm-glow-legendary)" : (isActive || isStrong) ? "url(#pm-glow-line)" : undefined)}
                     initial={{ pathLength: 0 }}
                     animate={{ pathLength: 1 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
                   />
 
-                  {(isActive || isLegendary) && (
+                  {!isOverlap && (isActive || isLegendary) && (
                     <motion.line
                       x1={fn.x} y1={fn.y} x2={tn.x} y2={tn.y}
                       stroke={hasTier ? tierColor : `url(#pm-grad-${conn.from}-${conn.to})`}
@@ -2023,7 +2049,34 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                     className="cursor-pointer"
                   />
 
-                  {Array.from({ length: particleCount }).map((_, pi) => {
+                  {isOverlap && isActive && (
+                    <g pointerEvents="none">
+                      <rect
+                        x={rawMidX - 78}
+                        y={rawMidY - 22}
+                        width={156}
+                        height={16}
+                        rx={4}
+                        fill="rgba(20,16,8,0.92)"
+                        stroke="rgba(245,158,11,0.45)"
+                        strokeWidth={0.8}
+                      />
+                      <text
+                        x={rawMidX}
+                        y={rawMidY - 11}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        fill="#fbbf24"
+                        fontSize="8"
+                        fontWeight="600"
+                        letterSpacing="0.5"
+                      >
+                        Shared {overlapMatch!.cluster.receptor.split(/\s+/).slice(0, 3).join(" ")} — see card
+                      </text>
+                    </g>
+                  )}
+
+                  {!isOverlap && Array.from({ length: particleCount }).map((_, pi) => {
                     const dur = isLegendary ? 2.5 : 3;
                     const delay = pi * (dur / particleCount);
                     const pColor = isLegendary ? (conn.stackColor || tierColor) : isStrong ? tierColor : tierColor || fn.color;
@@ -2908,6 +2961,11 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
               const recommendation = getStackRecommendation(peptideNames);
               const sharedPathways = findSharedPathways(peptideNames);
               const activeSystems = getActiveSystems(peptideNames);
+              const pathwayOverlaps = detectPathwayOverlaps(
+                selectedPeptides
+                  .map((p) => p.slug)
+                  .filter((s): s is string => Boolean(s)),
+              );
               
               return (
                 <>
@@ -3045,6 +3103,10 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                       )}
                     </div>
                   </Card>
+                  {/* ====== PATHWAY OVERLAP DETECTION ====== */}
+                  {pathwayOverlaps.length > 0 && (
+                    <PathwayOverlapCard overlaps={pathwayOverlaps} />
+                  )}
                   {/* ====== GOAL-BASED STARTERS (empty state, desktop only - mobile version is above grid) ====== */}
                   {selectedPeptides.length === 0 && products && (
                     <Card className="hidden lg:block border-[#2a2a32] bg-[#1a1a1f]/50" data-testid="card-goal-starters">

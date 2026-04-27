@@ -991,9 +991,90 @@ export const PATHWAY_OVERLAPS: OverlapCluster[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Convenience accessors (data-only — detection / selection logic intentionally
-// excluded from this module and deferred to the downstream UI task).
+// Convenience accessors
 // ---------------------------------------------------------------------------
 
 /** All slugs covered by this dataset (catalog peptides + nad-precursor). */
 export const PATHWAY_DATASET_SLUGS: string[] = Object.keys(PEPTIDE_RECEPTORS);
+
+// ---------------------------------------------------------------------------
+// Detection logic — receptor-system overlap among the user's selection.
+// ---------------------------------------------------------------------------
+
+export interface TriggeredOverlap {
+  /** The cluster definition (receptor name, citations, copy). */
+  cluster: OverlapCluster;
+  /** Selected peptides that engage this receptor. Always 2+ when triggered. */
+  matchedPeptides: Array<{ slug: string; name: string }>;
+}
+
+const looseSlug = (s: string): string => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+/**
+ * Resolve a selected slug (or product slug) to the canonical key in
+ * PEPTIDE_RECEPTORS. Returns null if the selection is not in the dataset.
+ */
+export function resolveDatasetSlug(slug: string | null | undefined): string | null {
+  if (!slug) return null;
+  if (PEPTIDE_RECEPTORS[slug]) return slug;
+  const norm = looseSlug(slug);
+  for (const key of Object.keys(PEPTIDE_RECEPTORS)) {
+    if (looseSlug(key) === norm) return key;
+  }
+  return null;
+}
+
+/**
+ * Detect every receptor-system overlap triggered by the current selection.
+ * Returns one entry per receptor cluster that has 2+ selected agonists.
+ *
+ * Synergy / overlap disambiguation: this function intentionally only flags
+ * shared receptor binding. Combinations the synergy engine celebrates as
+ * complementary (e.g., GHRH analog + GHRP) hit different receptors and are
+ * therefore never returned here.
+ */
+export function detectPathwayOverlaps(selectedSlugs: string[]): TriggeredOverlap[] {
+  const resolvedSlugs = Array.from(
+    new Set(
+      selectedSlugs
+        .map(resolveDatasetSlug)
+        .filter((s): s is string => Boolean(s)),
+    ),
+  );
+  if (resolvedSlugs.length < 2) return [];
+
+  const triggered: TriggeredOverlap[] = [];
+  for (const cluster of PATHWAY_OVERLAPS) {
+    const matchedSlugs = cluster.agonistSlugs.filter((s) => resolvedSlugs.includes(s));
+    if (matchedSlugs.length >= 2) {
+      triggered.push({
+        cluster,
+        matchedPeptides: matchedSlugs.map((s) => ({
+          slug: s,
+          name: PEPTIDE_RECEPTORS[s]?.name ?? s,
+        })),
+      });
+    }
+  }
+  return triggered;
+}
+
+/**
+ * Helper for the connection graph — given two product slugs, returns the
+ * triggered overlap entry that links them (or null when the pair is not part
+ * of any triggered cluster).
+ */
+export function findOverlapForPair(
+  slugA: string | null | undefined,
+  slugB: string | null | undefined,
+  triggered: TriggeredOverlap[],
+): TriggeredOverlap | null {
+  const a = resolveDatasetSlug(slugA);
+  const b = resolveDatasetSlug(slugB);
+  if (!a || !b || a === b) return null;
+  for (const t of triggered) {
+    const slugs = t.cluster.agonistSlugs;
+    if (slugs.includes(a) && slugs.includes(b)) return t;
+  }
+  return null;
+}
