@@ -132,6 +132,36 @@ const researchStacks: ResearchStack[] = [
       expert: "This triple-compound stack enables multi-pathway investigation: RR-A3 (Incretin/GIP/GCGR triple agonist) for metabolic and hepatic signaling, MOTS-C for mitochondrial biogenesis and AMPK activation, and BPC-157 for tissue regeneration via NO/GH pathways. The combination allows researchers to study cross-talk between metabolic, energetic, and regenerative signaling cascades in a single protocol."
     }
   },
+  {
+    id: "ghrh-analog-stack",
+    name: "GHRH Analog Receptor Stack",
+    subtitle: "Dual GHRHR Agonist Research Bundle",
+    description: "Study receptor saturation and competitive occupancy dynamics by pairing two structurally distinct GHRH analogs that engage the same pituitary GHRH receptor (GHRHR).",
+    peptides: ["CJC-1295 (No DAC)", "Sermorelin"],
+    icon: FlaskConical,
+    color: "#6366f1",
+    badge: "Receptor Study",
+    badgeColor: "#6366f1",
+    synergy: {
+      beginner: "Both CJC-1295 (No DAC) and Sermorelin work by activating the same receptor in the pituitary gland to trigger GH release. One acts quickly and clears fast; the other lasts longer. Pairing them lets researchers study what happens when two compounds compete for the same docking site — a classic receptor occupancy experiment.",
+      expert: "CJC-1295 (No DAC) and Sermorelin are both GHRHR agonists targeting the same Gs-coupled GPCR in the pituitary somatotrophs. Their differing receptor kinetics — rapid clearance (Sermorelin, t½ ~10–20 min) versus extended plasma stability (CJC-1295, t½ ~30 min) — create a tractable model for studying competitive receptor occupancy, desensitization dynamics, and the relationship between pulsatile vs. sustained GHRHR activation on GH secretion amplitude."
+    }
+  },
+  {
+    id: "ghsr-secretagogue-stack",
+    name: "GHSR1a Secretagogue Stack",
+    subtitle: "Dual Ghrelin Receptor Research Bundle",
+    description: "Investigate receptor selectivity differences by combining two structurally distinct GHSR1a agonists — Ipamorelin and GHRP-2 — on the same ghrelin receptor pathway.",
+    peptides: ["Ipamorelin", "GHRP-2"],
+    icon: FlaskConical,
+    color: "#0ea5e9",
+    badge: "Selectivity Study",
+    badgeColor: "#0ea5e9",
+    synergy: {
+      beginner: "Ipamorelin and GHRP-2 both trigger GH release by activating the same ghrelin receptor. The key difference researchers study is selectivity — Ipamorelin is considered 'cleaner' with fewer side signals, while GHRP-2 is more potent but activates more hormonal pathways. Pairing them reveals how two compounds on the same receptor can still produce meaningfully different research outcomes.",
+      expert: "Ipamorelin and GHRP-2 are both full agonists at GHSR1a (Gs-coupled), yet demonstrate divergent downstream endocrine profiles: Ipamorelin shows high receptor selectivity with minimal cortisol/prolactin co-stimulation, while GHRP-2 produces dose-dependent cortisol and prolactin responses alongside GH release. This same-receptor but different-selectivity model enables investigation of biased agonism concepts and off-target endocrine signaling without confounders from a second receptor pathway."
+    }
+  },
 ];
 
 type StackTab = "pre-built" | "custom";

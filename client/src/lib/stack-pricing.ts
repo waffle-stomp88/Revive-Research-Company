@@ -32,6 +32,14 @@ export const STACK_COMPONENTS: Record<string, StackComponent[]> = {
     { slug: "mots-c", dosage: "10mg", name: "MOTS-C" },
     { slug: "bpc-157", dosage: "10mg", name: "BPC-157" },
   ],
+  "ghrh-analog-stack": [
+    { slug: "cjc-1295-no-dac", dosage: "2mg", name: "CJC-1295 (No DAC)" },
+    { slug: "sermorelin", dosage: "5mg", name: "Sermorelin" },
+  ],
+  "ghsr-secretagogue-stack": [
+    { slug: "ipamorelin", dosage: "5mg", name: "Ipamorelin" },
+    { slug: "ghrp-2", dosage: "5mg", name: "GHRP-2" },
+  ],
 };
 
 export const BUNDLE_COMPONENTS: Record<string, StackComponent[]> = {
