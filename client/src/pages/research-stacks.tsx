@@ -4289,6 +4289,18 @@ function ResearchStacks() {
                       {stack.description}
                     </p>
 
+                    <div className="rounded-md bg-white/[0.04] border border-white/[0.07] px-3 py-2.5">
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <Zap className="h-3 w-3 shrink-0" style={{ color: stack.color }} />
+                        <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: stack.color }}>
+                          Why it works
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2" data-testid={`text-synergy-teaser-${stack.id}`}>
+                        {stack.synergy.beginner}
+                      </p>
+                    </div>
+
                     <div className="flex items-end justify-between pt-2 border-t border-[#2a2a32]">
                       <div className="space-y-1">
                         {(() => {
