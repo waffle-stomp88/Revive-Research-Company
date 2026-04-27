@@ -4700,6 +4700,7 @@ Return ONLY valid JSON in this exact format:
         peptideIds: original.peptideIds,
         peptideNames: original.peptideNames,
         shareCode: newShareCode,
+        sourceShareCode: original.shareCode ?? shareCode,
         isPublic: false,
         synergyScore: original.synergyScore ?? 0,
       }).returning();

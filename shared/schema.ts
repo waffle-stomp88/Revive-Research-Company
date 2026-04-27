@@ -774,6 +774,7 @@ export const savedStacks = pgTable("saved_stacks", {
   peptideIds: text("peptide_ids").array().notNull(),
   peptideNames: text("peptide_names").array().notNull(),
   shareCode: varchar("share_code").unique(),
+  sourceShareCode: varchar("source_share_code"),
   isPublic: boolean("is_public").default(false),
   saveCount: integer("save_count").default(0),
   synergyScore: integer("synergy_score").default(0),
