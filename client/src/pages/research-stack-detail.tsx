@@ -46,6 +46,7 @@ interface ResearchStack {
   badge?: string;
   badgeColor?: string;
   synergy: SynergyCopy;
+  intentionalOverlap?: boolean;
 }
 
 type PurchaseType = "one-time" | "subscription";
@@ -265,6 +266,7 @@ const researchStacksData: Record<string, ResearchStack> = {
     color: "#6366f1",
     badge: "Receptor Study",
     badgeColor: "#6366f1",
+    intentionalOverlap: true,
     synergy: {
       beginner: "Both CJC-1295 (No DAC) and Sermorelin work by activating the same receptor in the pituitary gland to trigger GH release. One acts quickly and clears fast; the other lasts longer. Pairing them lets researchers study what happens when two compounds compete for the same docking site — a classic receptor occupancy experiment.",
       expert: "CJC-1295 (No DAC) and Sermorelin are both GHRHR agonists targeting the same Gs-coupled GPCR in the pituitary somatotrophs. Their differing receptor kinetics — rapid clearance (Sermorelin, t½ ~10–20 min) versus extended plasma stability (CJC-1295, t½ ~30 min) — create a tractable model for studying competitive receptor occupancy, desensitization dynamics, and the relationship between pulsatile vs. sustained GHRHR activation on GH secretion amplitude."
@@ -337,6 +339,7 @@ const researchStacksData: Record<string, ResearchStack> = {
     color: "#0ea5e9",
     badge: "Selectivity Study",
     badgeColor: "#0ea5e9",
+    intentionalOverlap: true,
     synergy: {
       beginner: "Ipamorelin and GHRP-2 both trigger GH release by activating the same ghrelin receptor. The key difference researchers study is selectivity — Ipamorelin is considered 'cleaner' with fewer side signals, while GHRP-2 is more potent but activates more hormonal pathways. Pairing them reveals how two compounds on the same receptor can still produce meaningfully different research outcomes.",
       expert: "Ipamorelin and GHRP-2 are both full agonists at GHSR1a (Gs-coupled), yet demonstrate divergent downstream endocrine profiles: Ipamorelin shows high receptor selectivity with minimal cortisol/prolactin co-stimulation, while GHRP-2 produces dose-dependent cortisol and prolactin responses alongside GH release. This same-receptor but different-selectivity model enables investigation of biased agonism concepts and off-target endocrine signaling without confounders from a second receptor pathway."
@@ -961,7 +964,7 @@ export default function ResearchStackDetail() {
 
             {pathwayOverlaps.length > 0 && (
               <div id="pathway-overlap" className="mb-6" data-testid="section-pathway-overlap-detail">
-                <PathwayOverlapCard overlaps={pathwayOverlaps} />
+                <PathwayOverlapCard overlaps={pathwayOverlaps} intentional={stack.intentionalOverlap} />
               </div>
             )}
 

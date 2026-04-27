@@ -6,14 +6,22 @@ import type { Citation, TriggeredOverlap } from "@/lib/pathway-overlaps";
 
 interface PathwayOverlapCardProps {
   overlaps: TriggeredOverlap[];
+  intentional?: boolean;
 }
 
-const STATIC_SHADOW =
+const AMBER_STATIC_SHADOW =
   "0 0 24px rgba(245,158,11,0.18), inset 0 0 12px rgba(245,158,11,0.06)";
-const FLARE_SHADOW =
+const AMBER_FLARE_SHADOW =
   "0 0 40px rgba(245,158,11,0.45), inset 0 0 14px rgba(245,158,11,0.10)";
-const PULSE_SHADOW =
+const AMBER_PULSE_SHADOW =
   "0 0 36px rgba(245,158,11,0.55), inset 0 0 14px rgba(245,158,11,0.10)";
+
+const SKY_STATIC_SHADOW =
+  "0 0 24px rgba(14,165,233,0.18), inset 0 0 12px rgba(14,165,233,0.06)";
+const SKY_FLARE_SHADOW =
+  "0 0 40px rgba(14,165,233,0.45), inset 0 0 14px rgba(14,165,233,0.10)";
+const SKY_PULSE_SHADOW =
+  "0 0 36px rgba(14,165,233,0.55), inset 0 0 14px rgba(14,165,233,0.10)";
 
 function citationSourceLabel(c: Citation): string {
   return c.type === "PMID" ? "PubMed" : "IUPHAR";
@@ -23,9 +31,13 @@ function citationDomId(c: Citation): string {
   return `${c.type.toLowerCase()}-${c.id}`;
 }
 
-export function PathwayOverlapCard({ overlaps }: PathwayOverlapCardProps) {
+export function PathwayOverlapCard({ overlaps, intentional = false }: PathwayOverlapCardProps) {
   const controls = useAnimationControls();
   const hasMountedRef = useRef(false);
+
+  const STATIC_SHADOW = intentional ? SKY_STATIC_SHADOW : AMBER_STATIC_SHADOW;
+  const FLARE_SHADOW = intentional ? SKY_FLARE_SHADOW : AMBER_FLARE_SHADOW;
+  const PULSE_SHADOW = intentional ? SKY_PULSE_SHADOW : AMBER_PULSE_SHADOW;
 
   useEffect(() => {
     let cancelled = false;
@@ -34,7 +46,9 @@ export function PathwayOverlapCard({ overlaps }: PathwayOverlapCardProps) {
         opacity: 1,
         y: 0,
         boxShadow: [
-          "0 0 0px rgba(245,158,11,0)",
+          intentional
+            ? "0 0 0px rgba(14,165,233,0)"
+            : "0 0 0px rgba(245,158,11,0)",
           FLARE_SHADOW,
           STATIC_SHADOW,
         ],
@@ -52,7 +66,7 @@ export function PathwayOverlapCard({ overlaps }: PathwayOverlapCardProps) {
     return () => {
       cancelled = true;
     };
-  }, [controls]);
+  }, [controls, intentional]);
 
   useEffect(() => {
     const handler = () => {
@@ -65,9 +79,135 @@ export function PathwayOverlapCard({ overlaps }: PathwayOverlapCardProps) {
     window.addEventListener("pathway-overlap-highlight", handler);
     return () =>
       window.removeEventListener("pathway-overlap-highlight", handler);
-  }, [controls]);
+  }, [controls, STATIC_SHADOW, PULSE_SHADOW]);
 
   if (overlaps.length === 0) return null;
+
+  if (intentional) {
+    return (
+      <motion.div
+        id="pathway-overlap-card"
+        initial={{
+          opacity: 0,
+          y: 12,
+          boxShadow: "0 0 0px rgba(14,165,233,0)",
+        }}
+        animate={controls}
+        data-testid="card-pathway-overlap"
+        className="rounded-xl border-[2.5px] border-sky-500/55 bg-gradient-to-br from-[#0f1a2a] to-[#0a1020]"
+      >
+        <div className="p-4 space-y-4">
+          <div className="flex items-center gap-2">
+            <GitMerge
+              className="h-[18px] w-[18px] text-sky-400"
+              style={{ filter: "drop-shadow(0 0 6px rgba(14,165,233,0.55))" }}
+            />
+            <span
+              className="text-sm font-bold tracking-wide text-sky-200"
+              style={{ textShadow: "0 0 16px rgba(14,165,233,0.35)" }}
+              data-testid="text-pathway-overlap-title"
+            >
+              RECEPTOR COMPETITION STUDY
+            </span>
+            <span className="text-[11px] text-sky-300/80 ml-auto font-medium">
+              {overlaps.length} receptor system{overlaps.length > 1 ? "s" : ""}
+            </span>
+          </div>
+
+          <p className="text-[11px] text-muted-foreground leading-relaxed">
+            These compounds intentionally target the same receptor. The overlap
+            is the research design — enabling comparative occupancy, selectivity,
+            and binding kinetics studies at a single well-characterized pathway.
+          </p>
+
+          <div className="space-y-3">
+            {overlaps.map((overlap) => {
+              const { cluster, matchedPeptides } = overlap;
+              const clusterId = cluster.receptorKey;
+              return (
+                <div
+                  key={clusterId}
+                  className="rounded-md border border-sky-500/20 bg-[#0f1a2a]/60 p-3 space-y-2"
+                  data-testid={`overlap-cluster-${clusterId}`}
+                >
+                  <div className="flex items-start justify-between gap-2 flex-wrap">
+                    <span
+                      className="text-[11px] font-semibold text-sky-200 min-w-0"
+                      data-testid={`text-overlap-receptor-${clusterId}`}
+                    >
+                      {cluster.receptor}
+                    </span>
+                    <div
+                      className="flex flex-wrap items-center gap-1"
+                      data-testid={`list-overlap-peptides-${clusterId}`}
+                    >
+                      {matchedPeptides.map((p) => (
+                        <span
+                          key={p.slug}
+                          className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-sky-500/15 text-sky-200 border border-sky-500/25"
+                          data-testid={`chip-overlap-peptide-${clusterId}-${p.slug}`}
+                        >
+                          {p.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <p
+                    className="text-[11px] text-gray-300 leading-relaxed"
+                    data-testid={`text-overlap-mechanism-${clusterId}`}
+                  >
+                    {cluster.mechanismSummary}
+                  </p>
+
+                  {cluster.cardCopy && cluster.cardCopy !== cluster.mechanismSummary && (
+                    <p
+                      className="text-[11px] text-muted-foreground leading-relaxed"
+                      data-testid={`text-overlap-cardcopy-${clusterId}`}
+                    >
+                      {cluster.cardCopy}
+                    </p>
+                  )}
+
+                  <div
+                    className="flex flex-wrap items-center gap-1.5 pt-1"
+                    data-testid={`list-overlap-citations-${clusterId}`}
+                  >
+                    {cluster.citations.slice(0, 3).map((cite) => {
+                      const label = citationSourceLabel(cite);
+                      const domId = citationDomId(cite);
+                      return (
+                        <Tooltip key={domId}>
+                          <TooltipTrigger asChild>
+                            <a
+                              href={cite.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-sky-500/10 text-sky-300 border border-sky-500/20 hover-elevate active-elevate-2"
+                              data-testid={`link-overlap-citation-${clusterId}-${domId}`}
+                            >
+                              <span>{label}</span>
+                              <ExternalLink className="h-2.5 w-2.5" />
+                            </a>
+                          </TooltipTrigger>
+                          <TooltipContent
+                            side="top"
+                            className="max-w-[260px] bg-[#1a1a1f] border-[#2a2a32]"
+                          >
+                            <p className="text-[11px]">{cite.label}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
