@@ -1447,7 +1447,6 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                       transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     />
                   )}
-
                   <motion.line
                     x1={fn.x} y1={fn.y} x2={tn.x} y2={tn.y}
                     stroke={isOverlap ? OVERLAP_AMBER : (hasTier ? tierColor : `url(#pm-grad-${conn.from}-${conn.to})`)}
@@ -1460,7 +1459,6 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                     animate={{ pathLength: 1 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
                   />
-
                   {!isOverlap && (isActive || isLegendary) && (
                     <motion.line
                       x1={fn.x} y1={fn.y} x2={tn.x} y2={tn.y}
@@ -1473,7 +1471,6 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                       animate={{ opacity: 1 }}
                     />
                   )}
-
                   <line
                     x1={fn.x} y1={fn.y} x2={tn.x} y2={tn.y}
                     stroke="transparent"
@@ -1483,7 +1480,6 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                     onClick={() => handleConnectionClick(key)}
                     className="cursor-pointer"
                   />
-
                   {isOverlap && isActive && (
                     <g pointerEvents="none">
                       <rect
@@ -1510,7 +1506,6 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                       </text>
                     </g>
                   )}
-
                   {!isOverlap && Array.from({ length: particleCount }).map((_, pi) => {
                     const dur = isLegendary ? 2.5 : 3;
                     const delay = pi * (dur / particleCount);
@@ -1539,7 +1534,6 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                       />
                     );
                   })}
-
                   {conn.stackName && stackPos && (
                     <g>
                       <motion.line
@@ -1583,7 +1577,6 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                       </motion.text>
                     </g>
                   )}
-
                   {!conn.stackName && conn.reason && (isActive || isLegendary) && reasonPos && (
                     <motion.text
                       x={reasonPos.x}
@@ -1601,7 +1594,6 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
                       {conn.reason.length > 50 ? conn.reason.slice(0, 48) + "…" : conn.reason}
                     </motion.text>
                   )}
-
                   {conn.synergyScore > 0 && synergyPos && (
                     <motion.text
                       x={synergyPos.x}
@@ -2194,7 +2186,6 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
       <div className="hidden md:block">
         <PathwayMap selectedPeptides={selectedPeptides} />
       </div>
-
       <div className="md:hidden" data-testid="mobile-synergy-teaser">
         <Card className="border-[#2a2a32] bg-[#1a1a1f]/80 overflow-hidden">
           <div className="relative p-5">
@@ -2225,7 +2216,6 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
           </div>
         </Card>
       </div>
-
       {/* Mobile-only Goal Starters - shown above grid so new users see it first */}
       {selectedPeptides.length === 0 && products && (
         <div className="lg:hidden">
@@ -3731,7 +3721,7 @@ function ResearchStacks() {
                       >
                         {stack.subtitle}
                       </p>
-                      <h3 className="font-display text-lg font-bold text-white leading-tight">
+                      <h3 className="font-display font-bold text-white text-[25px] text-center">
                         {stack.name}
                       </h3>
                     </div>
