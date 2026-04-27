@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
 import { STACK_COMPONENTS, buildPriceLookup, calculateStackPricing } from "@/lib/stack-pricing";
 import { CategoryTabs } from "@/components/category-tabs";
-import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, X, Check, ShoppingCart, Beaker, Brain, Target, Rocket, Activity, Moon, Dumbbell, Timer, Save, Share2, Trash2, Copy, Users, LucideIcon, Search, AlertCircle, ChevronUp, Monitor } from "lucide-react";
+import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, X, Check, ShoppingCart, Beaker, Brain, Target, Rocket, Activity, Moon, Dumbbell, Timer, Save, Share2, Trash2, Copy, Users, LucideIcon, Search, AlertCircle, ChevronUp, Monitor, GitMerge } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -3340,13 +3340,47 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                               </AccordionTrigger>
                               <AccordionContent>
                                 <div className="space-y-2 max-h-[200px] overflow-y-auto">
-                                  {savedStacks.slice(0, 5).map((stack) => (
+                                  {savedStacks.slice(0, 5).map((stack) => {
+                                    const stackProductSlugs = (stack.peptideIds || [])
+                                      .map((id) => products?.find((p) => p.id === id)?.slug ?? null)
+                                      .filter((s): s is string => Boolean(s));
+                                    const stackOverlaps = detectPathwayOverlaps(stackProductSlugs);
+                                    return (
                                     <div 
                                       key={stack.id}
                                       className="flex items-center justify-between p-2 rounded-lg bg-[#0f0f12] border border-[#2a2a32] hover:border-[#21d8ff]/40 transition-colors"
+                                      data-testid={`saved-stack-item-${stack.id}`}
                                     >
                                       <div className="flex-1 min-w-0">
-                                        <p className="font-medium text-sm truncate">{stack.name}</p>
+                                        <div className="flex items-center gap-1.5 min-w-0">
+                                          <p className="font-medium text-sm truncate">{stack.name}</p>
+                                          {stackOverlaps.length > 0 && (
+                                            <Tooltip>
+                                              <TooltipTrigger asChild>
+                                                <span
+                                                  className="inline-flex items-center gap-0.5 shrink-0 px-1 py-0.5 rounded text-[9px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30"
+                                                  data-testid={`badge-saved-stack-overlap-${stack.id}`}
+                                                >
+                                                  <GitMerge className="h-2.5 w-2.5" />
+                                                  <span>
+                                                    {stackOverlaps.length} overlap{stackOverlaps.length > 1 ? "s" : ""}
+                                                  </span>
+                                                </span>
+                                              </TooltipTrigger>
+                                              <TooltipContent
+                                                side="top"
+                                                className="max-w-[260px] bg-[#1a1a1f] border-[#2a2a32]"
+                                              >
+                                                <p className="text-[11px] font-semibold text-amber-200 mb-1">
+                                                  Pathway overlap detected
+                                                </p>
+                                                <p className="text-[11px] text-muted-foreground">
+                                                  Selected compounds engage the same receptor system: {stackOverlaps.map((o) => o.cluster.receptor).join(", ")}.
+                                                </p>
+                                              </TooltipContent>
+                                            </Tooltip>
+                                          )}
+                                        </div>
                                         <p className="text-xs text-muted-foreground truncate">
                                           {stack.peptideNames?.join(' + ')}
                                         </p>
@@ -3391,7 +3425,8 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                         </Button>
                                       </div>
                                     </div>
-                                  ))}
+                                    );
+                                  })}
                                 </div>
                               </AccordionContent>
                             </AccordionItem>
@@ -3664,6 +3699,11 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                           const knownStack = checkKnownStack(peptideNames);
                           const sharedPathways = findSharedPathways(peptideNames);
                           const activeSystems = getActiveSystems(peptideNames);
+                          const mobilePathwayOverlaps = detectPathwayOverlaps(
+                            selectedPeptides
+                              .map((p) => p.slug)
+                              .filter((s): s is string => Boolean(s)),
+                          );
                           const synergyColor = knownStack ? knownStack.color : synergyScore > 70 ? "#22c55e" : synergyScore > 50 ? "#E7FB10" : "#21d8ff";
                           return (
                             <div className="lg:hidden space-y-2 pt-2 border-t border-[#2a2a32]" data-testid="mobile-synergy-summary">
@@ -3715,6 +3755,11 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                       {pathway}
                                     </Badge>
                                   ))}
+                                </div>
+                              )}
+                              {mobilePathwayOverlaps.length > 0 && (
+                                <div className="pt-1" data-testid="mobile-pathway-overlap-wrapper">
+                                  <PathwayOverlapCard overlaps={mobilePathwayOverlaps} />
                                 </div>
                               )}
                             </div>
