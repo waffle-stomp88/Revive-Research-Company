@@ -19,6 +19,8 @@ import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { getSynergyPartners, normalizePeptideName } from "@/lib/synergy-data";
 import { getTopPairingForProduct } from "@/lib/pairing-intelligence";
+import { detectPathwayOverlaps, resolveDatasetSlug } from "@/lib/pathway-overlaps";
+import { PathwayOverlapCard } from "@/components/pathway-overlap-card";
 import { Layers, Zap } from "lucide-react";
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
@@ -319,6 +321,12 @@ export default function ResearchStackDetail() {
 
   const pricing = calculateStackPricing(params.id, priceLookup);
   const pricingReady = pricing !== null;
+
+  const pathwayOverlaps = detectPathwayOverlaps(
+    stack.peptides
+      .map(p => resolveDatasetSlug(p.name))
+      .filter((s): s is string => Boolean(s))
+  );
   const getBasePrice = () => pricing?.stackPrice ?? 0;
 
   const getSelectedDiscount = () => {
@@ -799,6 +807,12 @@ export default function ResearchStackDetail() {
                     </li>
                   ))}
                 </ul>
+              </div>
+            )}
+
+            {pathwayOverlaps.length > 0 && (
+              <div className="mb-6" data-testid="section-pathway-overlap-detail">
+                <PathwayOverlapCard overlaps={pathwayOverlaps} />
               </div>
             )}
 
