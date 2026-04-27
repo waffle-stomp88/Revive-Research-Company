@@ -43,6 +43,7 @@ interface ResearchStack {
   badge?: string;
   badgeColor?: string;
   synergy: SynergyCopy;
+  intentionalOverlap?: boolean;
 }
 
 const researchStacks: ResearchStack[] = [
@@ -142,6 +143,7 @@ const researchStacks: ResearchStack[] = [
     color: "#6366f1",
     badge: "Receptor Study",
     badgeColor: "#6366f1",
+    intentionalOverlap: true,
     synergy: {
       beginner: "Both CJC-1295 (No DAC) and Sermorelin work by activating the same receptor in the pituitary gland to trigger GH release. One acts quickly and clears fast; the other lasts longer. Pairing them lets researchers study what happens when two compounds compete for the same docking site — a classic receptor occupancy experiment.",
       expert: "CJC-1295 (No DAC) and Sermorelin are both GHRHR agonists targeting the same Gs-coupled GPCR in the pituitary somatotrophs. Their differing receptor kinetics — rapid clearance (Sermorelin, t½ ~10–20 min) versus extended plasma stability (CJC-1295, t½ ~30 min) — create a tractable model for studying competitive receptor occupancy, desensitization dynamics, and the relationship between pulsatile vs. sustained GHRHR activation on GH secretion amplitude."
@@ -157,6 +159,7 @@ const researchStacks: ResearchStack[] = [
     color: "#0ea5e9",
     badge: "Selectivity Study",
     badgeColor: "#0ea5e9",
+    intentionalOverlap: true,
     synergy: {
       beginner: "Ipamorelin and GHRP-2 both trigger GH release by activating the same ghrelin receptor. The key difference researchers study is selectivity — Ipamorelin is considered 'cleaner' with fewer side signals, while GHRP-2 is more potent but activates more hormonal pathways. Pairing them reveals how two compounds on the same receptor can still produce meaningfully different research outcomes.",
       expert: "Ipamorelin and GHRP-2 are both full agonists at GHSR1a (Gs-coupled), yet demonstrate divergent downstream endocrine profiles: Ipamorelin shows high receptor selectivity with minimal cortisol/prolactin co-stimulation, while GHRP-2 produces dose-dependent cortisol and prolactin responses alongside GH release. This same-receptor but different-selectivity model enables investigation of biased agonism concepts and off-target endocrine signaling without confounders from a second receptor pathway."
@@ -4280,23 +4283,43 @@ function ResearchStacks() {
                         </Badge>
                       ))}
                       {prebuiltOverlaps.length > 0 && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span
-                              className="inline-flex items-center gap-0.5 shrink-0 px-1 py-0.5 rounded text-[9px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30"
-                              data-testid={`badge-prebuilt-overlap-${stack.id}`}
-                            >
-                              <GitMerge className="h-2.5 w-2.5" />
-                              <span>{prebuiltOverlaps.length} overlap{prebuiltOverlaps.length > 1 ? "s" : ""}</span>
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="max-w-[260px] bg-[#1a1a1f] border-[#2a2a32]">
-                            <p className="text-[11px] font-semibold text-amber-200 mb-1">Pathway overlap detected</p>
-                            <p className="text-[11px] text-muted-foreground">
-                              Selected compounds engage the same receptor system: {prebuiltOverlaps.map((o) => o.cluster.receptor).join(", ")}.
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
+                        stack.intentionalOverlap ? (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span
+                                className="inline-flex items-center gap-0.5 shrink-0 px-1 py-0.5 rounded text-[9px] font-semibold bg-sky-500/15 text-sky-300 border border-sky-500/30"
+                                data-testid={`badge-prebuilt-overlap-${stack.id}`}
+                              >
+                                <GitMerge className="h-2.5 w-2.5" />
+                                <span>Receptor competition</span>
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-[260px] bg-[#1a1a1f] border-[#2a2a32]">
+                              <p className="text-[11px] font-semibold text-sky-300 mb-1">Receptor competition study</p>
+                              <p className="text-[11px] text-muted-foreground">
+                                Shared receptor occupancy ({prebuiltOverlaps.map((o) => o.cluster.receptor).join(", ")}) is the intended research design — not an accidental overlap.
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        ) : (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span
+                                className="inline-flex items-center gap-0.5 shrink-0 px-1 py-0.5 rounded text-[9px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30"
+                                data-testid={`badge-prebuilt-overlap-${stack.id}`}
+                              >
+                                <GitMerge className="h-2.5 w-2.5" />
+                                <span>{prebuiltOverlaps.length} overlap{prebuiltOverlaps.length > 1 ? "s" : ""}</span>
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-[260px] bg-[#1a1a1f] border-[#2a2a32]">
+                              <p className="text-[11px] font-semibold text-amber-200 mb-1">Pathway overlap detected</p>
+                              <p className="text-[11px] text-muted-foreground">
+                                Selected compounds engage the same receptor system: {prebuiltOverlaps.map((o) => o.cluster.receptor).join(", ")}.
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        )
                       )}
                     </div>
 
