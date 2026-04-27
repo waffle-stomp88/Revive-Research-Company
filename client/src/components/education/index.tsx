@@ -23,6 +23,7 @@ export { IpamorelinSelectivityVisual } from "./ipamorelin-selectivity-visual";
 export { CJC1295AlbuminVisual } from "./cjc1295-albumin-visual";
 export { TesomorelinPulseVisual } from "./tesamorelin-pulse-visual";
 export { IGF1SignalingVisual } from "./igf1-signaling-visual";
+export { IGF1LR3StructureVisual } from "./igf1-lr3-structure-visual";
 export { IGFDESBindingVisual } from "./igfdes-binding-visual";
 export { SemaxNeuralVisual } from "./semax-neural-visual";
 export { HCGHormonalVisual } from "./hcg-hormonal-visual";
