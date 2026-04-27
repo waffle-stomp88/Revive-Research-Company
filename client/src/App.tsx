@@ -55,6 +55,7 @@ import ProductsHub from "@/pages/products-hub";
 import DosageCalculator from "@/pages/dosage-calculator";
 import ResearchStacks from "@/pages/research-stacks";
 import ResearchStackDetail from "@/pages/research-stack-detail";
+import StackShare from "@/pages/stack-share";
 import Academy from "@/pages/academy";
 import DevLogin from "@/pages/dev-login";
 import Unsubscribe from "@/pages/unsubscribe";
@@ -115,6 +116,7 @@ function Router() {
         <Route path="/wholesale" component={Wholesale} />
         <Route path="/research-stacks" component={ResearchStacks} />
         <Route path="/research-stacks/:id" component={ResearchStackDetail} />
+        <Route path="/stacks/:shareCode" component={StackShare} />
         <Route path="/bundles/:id" component={BundleDetail} />
         <Route path="/cart" component={Cart} />
         <Route path="/checkout" component={Checkout} />

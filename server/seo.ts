@@ -1,4 +1,7 @@
 import { storage } from "./storage";
+import { db } from "./db";
+import { savedStacks } from "@shared/schema";
+import { eq } from "drizzle-orm";
 
 const SITE_NAME = "Revive Research Company";
 const SITE_URL = "https://reviveresearch.co";
@@ -349,6 +352,32 @@ export async function getMetaForUrl(url: string): Promise<PageMeta> {
   if (articleMatch) {
     const meta = await getArticleMeta(articleMatch[1]);
     if (meta) return { ...meta, canonicalUrl: `${SITE_URL}${cleanUrl}` };
+  }
+
+  const stackMatch = cleanUrl.match(/^\/stacks\/([A-Za-z0-9]{6,12})$/);
+  if (stackMatch) {
+    const shareCode = stackMatch[1];
+    try {
+      const [stack] = await db.select().from(savedStacks).where(eq(savedStacks.shareCode, shareCode));
+      if (stack && stack.isPublic) {
+        const sanitizeName = (n: string) => n.replace(/\s*\([^)]*\)/g, '').trim();
+        const sanitizedNames = stack.peptideNames.map(sanitizeName);
+        const peptideCount = sanitizedNames.length;
+        const nameList = sanitizedNames.join(", ");
+        const title = `${stack.name} — Research Stack | Revive Research`;
+        const synergyScore = stack.synergyScore ?? 0;
+        const description = `${peptideCount}-compound research stack with ${synergyScore}% synergy score: ${nameList}. Explore receptor pathway data at Revive Research.`;
+        return {
+          title,
+          description,
+          ogType: "article",
+          ogImage: `${SITE_URL}/api/stack-preview/${shareCode}.png`,
+          canonicalUrl: `${SITE_URL}/stacks/${shareCode}`,
+        };
+      }
+    } catch (err) {
+      console.error(`[SEO] Error fetching stack for shareCode "${shareCode}":`, err);
+    }
   }
 
   return {

@@ -2602,6 +2602,7 @@ function GuidanceAccordion({ autoOpen, selectedCount, children }: { autoOpen: st
 function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTemplateApplied }: CustomStackBuilderProps) {
   const [selectedPeptides, setSelectedPeptides] = useState<Product[]>([]);
   const [stackName, setStackName] = useState("");
+  const [isPublicStack, setIsPublicStack] = useState(true);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [cartExpanded, setCartExpanded] = useState(false);
   const [showSavedStacks, setShowSavedStacks] = useState(false);
@@ -2629,7 +2630,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
 
   // Save stack mutation
   const saveStackMutation = useMutation({
-    mutationFn: async (data: { name: string; peptideIds: string[]; peptideNames: string[]; isPublic: boolean }): Promise<SavedStack> => {
+    mutationFn: async (data: { name: string; peptideIds: string[]; peptideNames: string[]; isPublic: boolean; synergyScore: number }): Promise<SavedStack> => {
       const res = await fetch("/api/saved-stacks", { 
         method: "POST", 
         headers: { "Content-Type": "application/json" },
@@ -2643,12 +2644,13 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
       queryClient.invalidateQueries({ queryKey: ["/api/saved-stacks"] });
       setShowSaveDialog(false);
       setStackName("");
-      const shareUrl = `${window.location.origin}/research-stacks?share=${saved.shareCode}`;
-      navigator.clipboard.writeText(shareUrl);
-      toast({
-        title: "Stack Saved!",
-        description: "Share link copied to clipboard!",
-      });
+      setIsPublicStack(true);
+      if (saved.isPublic && saved.shareCode) {
+        navigate(`/stacks/${saved.shareCode}`);
+      } else {
+        toast({ title: "Stack Saved!", description: "Your stack is saved privately. Manage it from your dashboard." });
+        navigate("/dashboard?tab=stacks");
+      }
     },
     onError: () => {
       toast({ title: "Failed to save stack", variant: "destructive" });
@@ -2704,6 +2706,28 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
         });
     }
   }, [products, toast]);
+
+  // Restore pending save stack after login redirect
+  useEffect(() => {
+    if (!isAuthenticated || !products || products.length === 0) return;
+    const params = new URLSearchParams(window.location.search);
+    if (!params.get('openSave')) return;
+    const pending = localStorage.getItem('pending-save-stack');
+    if (!pending) return;
+    try {
+      const ids: string[] = JSON.parse(pending);
+      const matched = ids.map(id => products.find(p => p.id === id)).filter(Boolean) as Product[];
+      if (matched.length >= 2) {
+        setSelectedPeptides(matched);
+        const systems = getActiveSystems(matched.map(p => p.name));
+        const systemLabel = systems.length > 0 ? systems[0].charAt(0).toUpperCase() + systems[0].slice(1) : "Custom";
+        setStackName(`${systemLabel} Research Stack`);
+        setTimeout(() => setShowSaveDialog(true), 400);
+      }
+    } catch { /* ignore parse errors */ }
+    localStorage.removeItem('pending-save-stack');
+    window.history.replaceState({}, '', window.location.pathname);
+  }, [isAuthenticated, products]);
 
   // Apply template peptides when provided
   useEffect(() => {
@@ -3709,6 +3733,33 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
               {selectedPeptides.length >= 2 && (
                 <span className="hidden sm:inline font-display text-lg font-bold text-[#E7FB10]">${getRetailTotal().toFixed(2)}</span>
               )}
+              {selectedPeptides.length >= 2 && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!isAuthenticated) {
+                      localStorage.setItem('pending-save-stack', JSON.stringify(selectedPeptides.map(p => p.id)));
+                      login('/research-stacks?openSave=true');
+                      return;
+                    }
+                    const systems = getActiveSystems(selectedPeptides.map(p => p.name));
+                    const systemLabel = systems.length > 0
+                      ? systems[0].charAt(0).toUpperCase() + systems[0].slice(1)
+                      : "Custom";
+                    if (!stackName) setStackName(`${systemLabel} Research Stack`);
+                    setCartExpanded(true);
+                    setShowSaveDialog(true);
+                  }}
+                  className="border-[#21d8ff]/40 text-[#21d8ff] text-xs sm:text-sm"
+                  data-testid="button-save-stack"
+                >
+                  <Save className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Save Stack</span>
+                  <span className="sm:hidden">Save</span>
+                </Button>
+              )}
               {(() => {
                 const hasOutOfStock = selectedPeptides.some(p => !p.inStock);
                 const notEnough = selectedPeptides.length < 2;
@@ -3862,19 +3913,29 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                         {selectedPeptides.length >= 2 && (
                           <div className="flex items-center justify-between flex-wrap gap-3 pt-2 border-t border-[#2a2a32]">
                             <div className="flex gap-2">
-                              <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+                              <Dialog open={showSaveDialog} onOpenChange={(open) => {
+                                  setShowSaveDialog(open);
+                                  if (open && !stackName) {
+                                    const systems = getActiveSystems(selectedPeptides.map(p => p.name));
+                                    const systemLabel = systems.length > 0
+                                      ? systems[0].charAt(0).toUpperCase() + systems[0].slice(1)
+                                      : "Custom";
+                                    setStackName(`${systemLabel} Research Stack`);
+                                  }
+                                }}>
                                 <DialogTrigger asChild>
                                   <Button
                                     variant="outline"
                                     className="border-[#21d8ff]/40 text-[#21d8ff] hover:bg-[#21d8ff]/10"
                                     onClick={() => {
                                       if (!isAuthenticated) {
-                                        login();
+                                        localStorage.setItem('pending-save-stack', JSON.stringify(selectedPeptides.map(p => p.id)));
+                                        login('/research-stacks?openSave=true');
                                         return;
                                       }
                                       setShowSaveDialog(true);
                                     }}
-                                    data-testid="button-save-stack"
+                                    data-testid="button-save-stack-expanded"
                                   >
                                     <Save className="h-4 w-4 mr-2" />
                                     Save Stack
@@ -3906,6 +3967,22 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                         ))}
                                       </div>
                                     </div>
+                                    <div className="flex items-center justify-between rounded-lg border border-[#2a2a32] bg-[#0f0f12] px-4 py-3">
+                                      <div>
+                                        <p className="text-sm font-medium text-white">Public link</p>
+                                        <p className="text-xs text-muted-foreground">Anyone with the link can view this stack</p>
+                                      </div>
+                                      <button
+                                        type="button"
+                                        role="switch"
+                                        aria-checked={isPublicStack}
+                                        onClick={() => setIsPublicStack(v => !v)}
+                                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${isPublicStack ? "bg-[#21d8ff]" : "bg-[#2a2a32]"}`}
+                                        data-testid="toggle-is-public"
+                                      >
+                                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isPublicStack ? "translate-x-6" : "translate-x-1"}`} />
+                                      </button>
+                                    </div>
                                     <Button
                                       onClick={() => {
                                         if (!stackName.trim()) {
@@ -3915,15 +3992,16 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                         saveStackMutation.mutate({
                                           name: stackName,
                                           peptideIds: selectedPeptides.map(p => p.id),
-                                          peptideNames: selectedPeptides.map(p => p.name),
-                                          isPublic: true
+                                          peptideNames: selectedPeptides.map(p => p.name.replace(/\s*\([^)]*\)/g, '').trim()),
+                                          isPublic: isPublicStack,
+                                          synergyScore: calculateSynergyScore(selectedPeptides.map(p => p.name)),
                                         });
                                       }}
                                       disabled={saveStackMutation.isPending}
                                       className="w-full bg-[#21d8ff] text-black hover:bg-[#21d8ff]/90"
                                       data-testid="button-confirm-save"
                                     >
-                                      {saveStackMutation.isPending ? "Saving..." : "Save & Get Share Link"}
+                                      {saveStackMutation.isPending ? "Saving..." : "Save & View Share Page"}
                                     </Button>
                                   </div>
                                 </DialogContent>

@@ -4,7 +4,7 @@ import { createServer, type Server } from "http";
 import path from "path";
 import { storage, resolveDisplayPrice } from "./storage";
 import { db } from "./db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertNewsletterSubscriberSchema, subscriptions, savedStacks, insertSavedStackSchema } from "@shared/schema";
 import { setupAuth, isAuthenticated } from "./auth0Auth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
@@ -4608,7 +4608,7 @@ Return ONLY valid JSON in this exact format:
   app.post("/api/saved-stacks", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const { name, peptideIds, peptideNames, isPublic } = req.body;
+      const { name, peptideIds, peptideNames, isPublic, synergyScore } = req.body;
       
       if (!name || !peptideIds?.length || !peptideNames?.length) {
         return res.status(400).json({ error: "Name and peptides are required" });
@@ -4627,6 +4627,7 @@ Return ONLY valid JSON in this exact format:
         peptideNames,
         shareCode,
         isPublic: isPublic || false,
+        synergyScore: typeof synergyScore === "number" ? Math.round(synergyScore) : 0,
       }).returning();
       
       res.json(saved);
@@ -4650,14 +4651,14 @@ Return ONLY valid JSON in this exact format:
     }
   });
 
-  // Get a stack by share code (public endpoint)
+  // Get a stack by share code (public endpoint — only returns public stacks)
   app.get("/api/saved-stacks/share/:code", async (req, res) => {
     try {
       const { code } = req.params;
       const [stack] = await db.select().from(savedStacks)
         .where(eq(savedStacks.shareCode, code));
       
-      if (!stack) {
+      if (!stack || !stack.isPublic) {
         return res.status(404).json({ error: "Stack not found" });
       }
       
@@ -4670,6 +4671,71 @@ Return ONLY valid JSON in this exact format:
     } catch (error) {
       console.error("Error fetching shared stack:", error);
       res.status(500).json({ error: "Failed to fetch stack" });
+    }
+  });
+
+  // Fork/save a shared stack to the authenticated user's own collection
+  app.post("/api/saved-stacks/fork/:shareCode", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { shareCode } = req.params;
+      const [original] = await db.select().from(savedStacks)
+        .where(eq(savedStacks.shareCode, shareCode));
+      if (!original || (!original.isPublic && original.userId !== userId)) {
+        return res.status(404).json({ error: "Stack not found" });
+      }
+      // If this stack already belongs to the user, don't duplicate it
+      if (original.userId === userId) {
+        return res.json({ alreadyOwned: true, shareCode: original.shareCode });
+      }
+      const newShareCode = (() => {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+        let c = '';
+        for (let i = 0; i < 8; i++) c += chars.charAt(Math.floor(Math.random() * chars.length));
+        return c;
+      })();
+      const [saved] = await db.insert(savedStacks).values({
+        userId,
+        name: original.name,
+        peptideIds: original.peptideIds,
+        peptideNames: original.peptideNames,
+        shareCode: newShareCode,
+        isPublic: false,
+        synergyScore: original.synergyScore ?? 0,
+      }).returning();
+      // Increment save count on original
+      await db.update(savedStacks)
+        .set({ saveCount: sql`${savedStacks.saveCount} + 1` })
+        .where(eq(savedStacks.id, original.id));
+      res.json({ shareCode: saved.shareCode, name: saved.name });
+    } catch (error) {
+      console.error("Error forking stack:", error);
+      res.status(500).json({ error: "Failed to save stack to collection" });
+    }
+  });
+
+  // Toggle public/private visibility for a saved stack
+  app.patch("/api/saved-stacks/:id/visibility", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id } = req.params;
+      const { isPublic } = req.body;
+      if (typeof isPublic !== "boolean") {
+        return res.status(400).json({ error: "isPublic must be a boolean" });
+      }
+      const [stack] = await db.select().from(savedStacks)
+        .where(eq(savedStacks.id, id));
+      if (!stack || stack.userId !== userId) {
+        return res.status(404).json({ error: "Stack not found" });
+      }
+      const [updated] = await db.update(savedStacks)
+        .set({ isPublic })
+        .where(eq(savedStacks.id, id))
+        .returning();
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating stack visibility:", error);
+      res.status(500).json({ error: "Failed to update stack visibility" });
     }
   });
 
@@ -4691,6 +4757,68 @@ Return ONLY valid JSON in this exact format:
     } catch (error) {
       console.error("Error deleting stack:", error);
       res.status(500).json({ error: "Failed to delete stack" });
+    }
+  });
+
+  // OG preview image for shared stacks — GET /api/stack-preview/:shareCode.png
+  app.get("/api/stack-preview/:shareCode.png", async (req, res) => {
+    try {
+      const { shareCode } = req.params;
+      const [stack] = await db.select().from(savedStacks)
+        .where(eq(savedStacks.shareCode, shareCode));
+
+      if (!stack || !stack.isPublic) return res.status(404).send("Not found");
+
+      const sanitizeName = (n: string) => n.replace(/\s*\([^)]*\)/g, '').trim();
+      const peptideList = (stack.peptideNames || []).slice(0, 4).map(sanitizeName);
+      const peptideCount = peptideList.length;
+
+      // Build a 1200×630 SVG preview card
+      const escapeXml = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const stackNameSafe = escapeXml(stack.name.slice(0, 40));
+      const score = stack.synergyScore ?? 0;
+      const scoreColor = score >= 80 ? "#E7FB10" : score >= 60 ? "#21d8ff" : "#6b7280";
+      const peptideLines = peptideList.map((n, i) =>
+        `<text x="60" y="${300 + i * 44}" fill="#e5e7eb" font-size="20" font-weight="500">${i + 1}. ${escapeXml(n)}</text>`
+      ).join("\n");
+
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630">
+        <defs>
+          <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#0f0f12"/>
+            <stop offset="100%" stop-color="#1a1a1f"/>
+          </linearGradient>
+        </defs>
+        <rect width="1200" height="630" fill="url(#bg)"/>
+        <rect x="0" y="0" width="6" height="630" fill="#21d8ff"/>
+        <!-- Header -->
+        <text x="60" y="70" fill="#ffffff" font-size="22" font-weight="700" font-family="system-ui, sans-serif" letter-spacing="2">REVIVE RESEARCH</text>
+        <text x="60" y="100" fill="#6b7280" font-size="14" font-family="monospace" letter-spacing="1">reviveresearch.co/stacks/${shareCode}</text>
+        <!-- Divider -->
+        <line x1="60" y1="130" x2="1140" y2="130" stroke="#2a2a32" stroke-width="1"/>
+        <!-- Stack name -->
+        <text x="60" y="200" fill="#ffffff" font-size="38" font-weight="800" font-family="system-ui, sans-serif">${stackNameSafe}</text>
+        <text x="60" y="240" fill="#6b7280" font-size="18" font-family="system-ui, sans-serif">${peptideCount} research compound${peptideCount !== 1 ? "s" : ""}</text>
+        <!-- Synergy score badge -->
+        <rect x="60" y="258" width="160" height="30" rx="6" fill="${scoreColor}20"/>
+        <text x="140" y="278" fill="${scoreColor}" font-size="14" font-weight="700" font-family="system-ui, sans-serif" text-anchor="middle">Synergy: ${score}%</text>
+        <!-- Peptide list -->
+        ${peptideLines}
+        <!-- Footer -->
+        <line x1="60" y1="590" x2="1140" y2="590" stroke="#1e1e24" stroke-width="1"/>
+        <text x="60" y="615" fill="#4b5563" font-size="13" font-family="monospace">reviveresearch.co · For research use only</text>
+        <text x="1140" y="615" fill="#4b5563" font-size="13" font-family="monospace" text-anchor="end">${shareCode}</text>
+      </svg>`;
+
+      const sharp = (await import("sharp")).default;
+      const png = await sharp(Buffer.from(svg)).png().toBuffer();
+
+      res.set("Content-Type", "image/png");
+      res.set("Cache-Control", "public, max-age=86400, s-maxage=86400");
+      res.send(png);
+    } catch (error) {
+      console.error("Error generating stack preview:", error);
+      res.status(500).send("Error generating preview");
     }
   });
 

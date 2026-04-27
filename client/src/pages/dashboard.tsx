@@ -70,7 +70,7 @@ import {
   Brain,
   Copy,
 } from "lucide-react";
-import type { Order, Product, Coa, ResearchPhase, ResearchTitle } from "@shared/schema";
+import type { Order, Product, Coa, ResearchPhase, ResearchTitle, SavedStack } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { CompoundFinder } from "@/components/compound-finder";
 
@@ -128,7 +128,11 @@ export default function Dashboard() {
   const { user, isLoading: authLoading, isAuthenticated, logout } = useAuth();
   const { toast } = useToast();
   const { addToCart } = useCart();
-  const [activeTab, setActiveTab] = useState("general");
+  const [activeTab, setActiveTab] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get("tab");
+    return ["general", "orders", "stacks", "education", "settings"].includes(tab || "") ? tab! : "general";
+  });
   const [viewOrderDetails, setViewOrderDetails] = useState<Order | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [addressEditDialogOpen, setAddressEditDialogOpen] = useState(false);
@@ -280,6 +284,38 @@ export default function Dashboard() {
   }>>({
     queryKey: ["/api/login-history"],
     enabled: isAuthenticated,
+  });
+
+  const { data: savedStacks, isLoading: savedStacksLoading } = useQuery<SavedStack[]>({
+    queryKey: ["/api/saved-stacks"],
+    enabled: isAuthenticated,
+  });
+
+  const deleteStackMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/saved-stacks/${id}`, { method: "DELETE", credentials: "include" });
+      if (!res.ok) throw new Error("Failed to delete");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/saved-stacks"] });
+      toast({ title: "Stack deleted" });
+    },
+    onError: () => {
+      toast({ title: "Failed to delete stack", variant: "destructive" });
+    },
+  });
+
+  const toggleStackVisibilityMutation = useMutation({
+    mutationFn: async ({ id, isPublic }: { id: string; isPublic: boolean }) => {
+      return apiRequest("PATCH", `/api/saved-stacks/${id}/visibility`, { isPublic });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/saved-stacks"] });
+    },
+    onError: () => {
+      toast({ title: "Failed to update visibility", variant: "destructive" });
+    },
   });
 
   const claimGraduateRewardMutation = useMutation({
@@ -760,10 +796,10 @@ export default function Dashboard() {
               </div>
             </motion.div>
 
-            {/* 4-Tab Layout */}
+            {/* 5-Tab Layout */}
             <motion.div variants={itemVariants}>
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-4 mb-6">
+                <TabsList className="grid w-full grid-cols-5 mb-6">
                   <TabsTrigger value="general" className="gap-2" data-testid="tab-general">
                     <Home className="h-4 w-4" />
                     <span className="hidden sm:inline">General</span>
@@ -771,6 +807,10 @@ export default function Dashboard() {
                   <TabsTrigger value="orders" className="gap-2" data-testid="tab-orders">
                     <ShoppingBag className="h-4 w-4" />
                     <span className="hidden sm:inline">Orders</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="stacks" className="gap-2" data-testid="tab-stacks">
+                    <FlaskConical className="h-4 w-4" />
+                    <span className="hidden sm:inline">Stacks</span>
                   </TabsTrigger>
                   <TabsTrigger value="education" className="gap-2" data-testid="tab-education">
                     <GraduationCap className="h-4 w-4" />
@@ -1475,6 +1515,120 @@ export default function Dashboard() {
                     </CardContent>
                   </Card>
 
+                </TabsContent>
+
+                {/* Stacks Tab */}
+                <TabsContent value="stacks" className="space-y-6">
+                  <Card className="border-[#2a2a32]">
+                    <CardHeader>
+                      <div className="flex items-center justify-between flex-wrap gap-3">
+                        <div>
+                          <CardTitle className="flex items-center gap-2">
+                            <FlaskConical className="h-5 w-5 text-[#21d8ff]" />
+                            Saved Stacks
+                          </CardTitle>
+                          <CardDescription>Research stacks saved from the builder</CardDescription>
+                        </div>
+                        <Link href="/research-stacks">
+                          <Button variant="outline" size="sm" className="border-[#21d8ff]/40 text-[#21d8ff]" data-testid="button-build-stack">
+                            <Plus className="h-4 w-4 mr-2" />
+                            Build a Stack
+                          </Button>
+                        </Link>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      {savedStacksLoading ? (
+                        <div className="space-y-3">
+                          {[1, 2, 3].map(i => (
+                            <Skeleton key={i} className="h-16 w-full" />
+                          ))}
+                        </div>
+                      ) : !savedStacks || savedStacks.length === 0 ? (
+                        <div className="text-center py-12 space-y-3" data-testid="empty-stacks">
+                          <FlaskConical className="h-10 w-10 text-muted-foreground/30 mx-auto" />
+                          <p className="text-sm font-medium text-muted-foreground">No saved stacks yet</p>
+                          <p className="text-xs text-muted-foreground/70 max-w-xs mx-auto">
+                            Build a custom research stack and save it to share with your research community.
+                          </p>
+                          <Link href="/research-stacks">
+                            <Button variant="outline" size="sm" className="border-[#21d8ff]/40 text-[#21d8ff] mt-2" data-testid="button-go-build">
+                              Build a Custom Stack
+                              <ChevronRight className="h-4 w-4 ml-1" />
+                            </Button>
+                          </Link>
+                        </div>
+                      ) : (
+                        <div className="space-y-3" data-testid="list-saved-stacks">
+                          {savedStacks.map((stack) => (
+                            <div
+                              key={stack.id}
+                              className="flex items-center justify-between gap-3 p-4 rounded-lg border border-[#2a2a32] bg-[#0f0f12]"
+                              data-testid={`row-stack-${stack.id}`}
+                            >
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div className="w-8 h-8 rounded-lg bg-[#21d8ff]/10 border border-[#21d8ff]/20 flex items-center justify-center flex-shrink-0">
+                                  <FlaskConical className="h-4 w-4 text-[#21d8ff]" />
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="text-sm font-medium text-white truncate" data-testid={`text-stack-name-${stack.id}`}>{stack.name}</p>
+                                  <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                                    <span className="text-xs text-muted-foreground">{(stack.peptideNames || []).length} compound{(stack.peptideNames || []).length !== 1 ? "s" : ""}</span>
+                                    <Badge
+                                      variant="outline"
+                                      className={`text-[10px] ${stack.isPublic ? "border-green-500/40 text-green-400" : "border-[#2a2a32] text-muted-foreground"}`}
+                                      data-testid={`badge-visibility-${stack.id}`}
+                                    >
+                                      {stack.isPublic ? "Public" : "Private"}
+                                    </Badge>
+                                    {stack.createdAt && (
+                                      <span className="text-[10px] text-muted-foreground/60">
+                                        {new Date(stack.createdAt).toLocaleDateString()}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => toggleStackVisibilityMutation.mutate({ id: stack.id, isPublic: !stack.isPublic })}
+                                  disabled={toggleStackVisibilityMutation.isPending}
+                                  className={`text-xs ${stack.isPublic ? "border-green-500/30 text-green-400" : "border-[#2a2a32] text-muted-foreground"}`}
+                                  data-testid={`button-toggle-visibility-${stack.id}`}
+                                >
+                                  {stack.isPublic ? "Public" : "Private"}
+                                </Button>
+                                {stack.shareCode && stack.isPublic && (
+                                  <Link href={`/stacks/${stack.shareCode}`}>
+                                    <Button variant="outline" size="sm" className="border-[#2a2a32] text-muted-foreground text-xs" data-testid={`button-open-stack-${stack.id}`}>
+                                      <ExternalLink className="h-3.5 w-3.5 mr-1" />
+                                      Open
+                                    </Button>
+                                  </Link>
+                                )}
+                                <Button
+                                  variant="outline"
+                                  size="icon"
+                                  className="border-red-500/20 text-red-400"
+                                  onClick={() => {
+                                    if (confirm(`Delete "${stack.name}"? This action cannot be undone.`)) {
+                                      deleteStackMutation.mutate(stack.id);
+                                    }
+                                  }}
+                                  disabled={deleteStackMutation.isPending}
+                                  data-testid={`button-delete-stack-${stack.id}`}
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
                 </TabsContent>
 
                 {/* Education Tab */}

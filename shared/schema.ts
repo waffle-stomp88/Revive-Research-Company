@@ -776,6 +776,7 @@ export const savedStacks = pgTable("saved_stacks", {
   shareCode: varchar("share_code").unique(),
   isPublic: boolean("is_public").default(false),
   saveCount: integer("save_count").default(0),
+  synergyScore: integer("synergy_score").default(0),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
