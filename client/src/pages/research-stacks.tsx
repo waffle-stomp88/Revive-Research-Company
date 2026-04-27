@@ -174,7 +174,8 @@ const researchStacks: ResearchStack[] = [
     icon: Dumbbell,
     color: "#f97316",
     badge: "Receptor Study",
-    badgeColor: "#f97316",
+    badgeColor: "#0ea5e9",
+    intentionalOverlap: true,
     synergy: {
       beginner: "IGF-1 LR3 and IGF-DES both activate the same IGF-1 receptor — the key growth factor receptor driving anabolic and muscle-repair signaling. LR3 stays active longer in the body because it avoids the proteins that normally mop up IGF-1 quickly. DES binds the receptor more tightly but clears faster. Together they let researchers study what happens when two variants of the same hormone engage the same receptor with different binding strength and duration.",
       expert: "IGF-1 LR3 (Long-Arg3) and IGF-DES (Des(1-3)-IGF-1) are both IGF-1R full agonists that circumvent insulin-like growth factor binding protein (IGFBP) sequestration by distinct structural mechanisms — LR3 via an arginine substitution at position 3 that reduces IGFBP-3 affinity ~500-fold, and DES via N-terminal truncation that sterically disrupts IGFBP interaction. Pairing them creates a tractable IGF-1R occupancy model: the prolonged plasma bioavailability of LR3 against the enhanced receptor-binding affinity of DES, enabling study of occupancy kinetics and downstream PI3K/Akt/mTOR pathway activation across structurally differentiated IGF-1R agonists."
