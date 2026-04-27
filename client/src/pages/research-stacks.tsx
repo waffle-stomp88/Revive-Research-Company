@@ -26,11 +26,8 @@ import {
   findOverlapForPair,
 } from "@/lib/pathway-overlaps";
 import { PathwayOverlapCard } from "@/components/pathway-overlap-card";
-
-interface SynergyCopy {
-  beginner: string;
-  expert: string;
-}
+import { RESEARCH_STACKS_DATA } from "@/data/research-stacks";
+import type { SynergyCopy, StackIconName } from "@/data/research-stacks";
 
 interface ResearchStack {
   id: string;
@@ -46,142 +43,30 @@ interface ResearchStack {
   intentionalOverlap?: boolean;
 }
 
-const researchStacks: ResearchStack[] = [
-  {
-    id: "recovery-tissue-stack",
-    name: "Recovery + Tissue Mechanisms Stack",
-    subtitle: "Dual Pathway Tissue Stack",
-    description: "This stack combines two of the most extensively researched compounds for tissue mechanism pathways. Ideal for researchers studying synergistic repair signaling and cellular regeneration models.",
-    peptides: ["BPC-157", "TB-500"],
-    icon: Heart,
-    color: "#22c55e",
-    badge: "Most Popular",
-    badgeColor: "#E7FB10",
-    synergy: {
-      beginner: "BPC-157 helps cells repair faster while TB-500 helps the body build new blood vessels to deliver nutrients. Together, they create a 'repair + rebuild' combination that researchers find works better than either compound alone.",
-      expert: "BPC-157 upregulates growth hormone receptors and VEGF expression while TB-500 (Thymosin Beta-4) promotes actin polymerization and angiogenesis. The dual-pathway activation creates synergistic tissue regeneration signaling through complementary GH/IGF-1 axis and cytoskeletal remodeling mechanisms."
-    }
-  },
-  {
-    id: "metabolic-pathway-stack",
-    name: "Metabolic Pathway Research Stack",
-    subtitle: "Triple-Pathway Research Bundle",
-    description: "Explore incretin signaling and mitochondrial function pathways with this comprehensive metabolic research combination. Features compounds targeting multiple energy regulation mechanisms.",
-    peptides: ["MOTS-C", "RR-A3"],
-    icon: Zap,
-    color: "#E7FB10",
-    badge: "Hot Research",
-    badgeColor: "#ef4444",
-    synergy: {
-      beginner: "MOTS-C helps cells produce energy more efficiently at the mitochondrial level, while RR-A3 signals the body to use stored fat for fuel. Together, they target metabolism from two different angles—one at the cellular power plant, one at the hormonal control center.",
-      expert: "MOTS-C activates AMPK pathways and enhances mitochondrial biogenesis, while RR-A3 acts as a triple agonist (Incretin/GIP/Glucagon receptors) modulating metabolic signaling. This creates multi-target metabolic pathway activation: mitochondrial efficiency + peripheral insulin sensitivity + hepatic gluconeogenesis modulation."
-    }
-  },
-  {
-    id: "longevity-protocol-stack",
-    name: "Longevity Protocol Stack",
-    subtitle: "Anti-Aging Research Bundle",
-    description: "Explore two of the most compelling anti-aging research compounds together. This stack pairs telomerase-activating mechanisms with copper peptide tissue renewal for comprehensive cellular longevity research.",
-    peptides: ["Epithalon", "GHK-Cu"],
-    icon: Sparkles,
-    color: "#a855f7",
-    synergy: {
-      beginner: "Epithalon works on the 'aging clock' inside your cells by supporting telomere maintenance—the protective caps on your DNA. GHK-Cu is a copper peptide that helps cells rebuild and renew tissue. Together, they target aging from two angles: protecting your DNA's integrity and keeping tissue renewal active.",
-      expert: "Epithalon activates telomerase reverse transcriptase, extending telomere length and delaying replicative senescence. GHK-Cu modulates 4,000+ genes involved in tissue remodeling, upregulating collagen synthesis, decorin, and metalloproteinases while suppressing inflammatory cytokines. The combination creates synergistic anti-aging signaling: telomere protection (Epithalon) + extracellular matrix restoration and gene expression reset (GHK-Cu)."
-    }
-  },
-  {
-    id: "cognitive-edge-stack",
-    name: "Cognitive Edge Stack",
-    subtitle: "Nootropic Research Duo",
-    description: "The gold-standard nootropic research pairing. Semax and Selank target complementary cognitive pathways—one enhancing focus and BDNF expression, the other promoting calm clarity through anxiolytic mechanisms. Widely studied for neuroprotective synergy.",
-    peptides: ["Semax", "Selank"],
-    icon: Brain,
-    color: "#21d8ff",
-    badge: "Top Nootropic",
-    badgeColor: "#21d8ff",
-    synergy: {
-      beginner: "Semax is a brain-boosting peptide that helps sharpen focus and supports the growth of new neural connections. Selank promotes a calm, clear-headed state by reducing stress signals without causing drowsiness. Together, they create a 'focused calm'—enhanced mental clarity without the jitters or anxiety.",
-      expert: "Semax (ACTH 4-10 analog) upregulates BDNF and NGF expression, enhancing neuroplasticity and cognitive processing speed. Selank (tuftsin analog) modulates GABAergic neurotransmission and reduces IL-6 levels, providing anxiolytic effects through immune-neuroendocrine cross-talk. The dual-pathway activation—neurotrophic enhancement (Semax) + anxiolytic neuroprotection (Selank)—creates complementary cognitive optimization without receptor competition."
-    }
-  },
-  {
-    id: "collagen-skin-stack",
-    name: "Collagen & Skin Pathway Stack",
-    subtitle: "Dermal Research Bundle",
-    description: "Study collagen synthesis pathways and dermal tissue mechanisms. This combination targets complementary wound healing and structural protein research applications.",
-    peptides: ["GHK-Cu", "BPC-157"],
-    icon: Leaf,
-    color: "#ec4899",
-    synergy: {
-      beginner: "GHK-Cu directly stimulates collagen production and skin cell turnover, while BPC-157 supports the blood vessel growth needed to deliver nutrients to healing tissue. Together, they work on both the 'building blocks' and the 'supply chain' for skin and tissue research.",
-      expert: "GHK-Cu upregulates collagen I, III, and elastin synthesis while modulating TGF-β signaling for controlled tissue remodeling. BPC-157 enhances angiogenesis via VEGF upregulation and provides cytoprotection. The combination creates synergistic dermal pathway activation: structural protein synthesis (GHK-Cu) + vascularization and tissue protection (BPC-157)."
-    }
-  },
-  {
-    id: "elite-triple-stack",
-    name: "Elite Pathway Triple Stack",
-    subtitle: "Advanced Multi-Mechanism Bundle",
-    description: "Our most comprehensive research stack covering three major mechanism categories: incretin signaling, mitochondrial pathways, and tissue repair models. For advanced research programs requiring multi-target investigation.",
-    peptides: ["RR-A3", "MOTS-C", "BPC-157"],
-    icon: Crown,
-    color: "#f59e0b",
-    badge: "Premium",
-    badgeColor: "#f59e0b",
-    synergy: {
-      beginner: "This triple stack covers three major research areas: RR-A3 for metabolic hormone signaling, MOTS-C for cellular energy production, and BPC-157 for tissue repair. It's designed for advanced researchers who want to study how these different systems interact and influence each other.",
-      expert: "This triple-compound stack enables multi-pathway investigation: RR-A3 (Incretin/GIP/GCGR triple agonist) for metabolic and hepatic signaling, MOTS-C for mitochondrial biogenesis and AMPK activation, and BPC-157 for tissue regeneration via NO/GH pathways. The combination allows researchers to study cross-talk between metabolic, energetic, and regenerative signaling cascades in a single protocol."
-    }
-  },
-  {
-    id: "ghrh-analog-stack",
-    name: "GHRH Analog Receptor Stack",
-    subtitle: "Dual GHRHR Agonist Research Bundle",
-    description: "Study receptor saturation and competitive occupancy dynamics by pairing two structurally distinct GHRH analogs that engage the same pituitary GHRH receptor (GHRHR).",
-    peptides: ["CJC-1295 (No DAC)", "Sermorelin"],
-    icon: FlaskConical,
-    color: "#6366f1",
-    badge: "Receptor Study",
-    badgeColor: "#6366f1",
-    intentionalOverlap: true,
-    synergy: {
-      beginner: "Both CJC-1295 (No DAC) and Sermorelin work by activating the same receptor in the pituitary gland to trigger GH release. One acts quickly and clears fast; the other lasts longer. Pairing them lets researchers study what happens when two compounds compete for the same docking site — a classic receptor occupancy experiment.",
-      expert: "CJC-1295 (No DAC) and Sermorelin are both GHRHR agonists targeting the same Gs-coupled GPCR in the pituitary somatotrophs. Their differing receptor kinetics — rapid clearance (Sermorelin, t½ ~10–20 min) versus extended plasma stability (CJC-1295, t½ ~30 min) — create a tractable model for studying competitive receptor occupancy, desensitization dynamics, and the relationship between pulsatile vs. sustained GHRHR activation on GH secretion amplitude."
-    }
-  },
-  {
-    id: "ghsr-secretagogue-stack",
-    name: "GHSR1a Secretagogue Stack",
-    subtitle: "Dual Ghrelin Receptor Research Bundle",
-    description: "Investigate receptor selectivity differences by combining two structurally distinct GHSR1a agonists — Ipamorelin and GHRP-2 — on the same ghrelin receptor pathway.",
-    peptides: ["Ipamorelin", "GHRP-2"],
-    icon: FlaskConical,
-    color: "#0ea5e9",
-    badge: "Selectivity Study",
-    badgeColor: "#0ea5e9",
-    intentionalOverlap: true,
-    synergy: {
-      beginner: "Ipamorelin and GHRP-2 both trigger GH release by activating the same ghrelin receptor. The key difference researchers study is selectivity — Ipamorelin is considered 'cleaner' with fewer side signals, while GHRP-2 is more potent but activates more hormonal pathways. Pairing them reveals how two compounds on the same receptor can still produce meaningfully different research outcomes.",
-      expert: "Ipamorelin and GHRP-2 are both full agonists at GHSR1a (Gs-coupled), yet demonstrate divergent downstream endocrine profiles: Ipamorelin shows high receptor selectivity with minimal cortisol/prolactin co-stimulation, while GHRP-2 produces dose-dependent cortisol and prolactin responses alongside GH release. This same-receptor but different-selectivity model enables investigation of biased agonism concepts and off-target endocrine signaling without confounders from a second receptor pathway."
-    }
-  },
-  {
-    id: "igf1r-anabolic-stack",
-    name: "IGF-1R Anabolic Pathway Stack",
-    subtitle: "Dual IGF-1R Agonist Research Bundle",
-    description: "Study anabolic signaling and IGF-1R occupancy dynamics by pairing two structurally distinct IGF-1 receptor analogs with complementary pharmacokinetic profiles.",
-    peptides: ["IGF-1 LR3", "IGF-DES"],
-    icon: Dumbbell,
-    color: "#f97316",
-    badge: "Receptor Study",
-    badgeColor: "#0ea5e9",
-    intentionalOverlap: true,
-    synergy: {
-      beginner: "IGF-1 LR3 and IGF-DES both activate the same IGF-1 receptor — the key growth factor receptor driving anabolic and muscle-repair signaling. LR3 stays active longer in the body because it avoids the proteins that normally mop up IGF-1 quickly. DES binds the receptor more tightly but clears faster. Together they let researchers study what happens when two variants of the same hormone engage the same receptor with different binding strength and duration.",
-      expert: "IGF-1 LR3 (Long-Arg3) and IGF-DES (Des(1-3)-IGF-1) are both IGF-1R full agonists that circumvent insulin-like growth factor binding protein (IGFBP) sequestration by distinct structural mechanisms — LR3 via an arginine substitution at position 3 that reduces IGFBP-3 affinity ~500-fold, and DES via N-terminal truncation that sterically disrupts IGFBP interaction. Pairing them creates a tractable IGF-1R occupancy model: the prolonged plasma bioavailability of LR3 against the enhanced receptor-binding affinity of DES, enabling study of occupancy kinetics and downstream PI3K/Akt/mTOR pathway activation across structurally differentiated IGF-1R agonists."
-    }
-  },
-];
+const STACK_ICON_MAP: Record<StackIconName, typeof FlaskConical> = {
+  Heart,
+  Zap,
+  Sparkles,
+  Brain,
+  Leaf,
+  Crown,
+  FlaskConical,
+  Dumbbell,
+};
+
+const researchStacks: ResearchStack[] = RESEARCH_STACKS_DATA.map((s) => ({
+  id: s.id,
+  name: s.name,
+  subtitle: s.subtitle,
+  description: s.description,
+  peptides: s.peptides.map((p) => p.name),
+  icon: STACK_ICON_MAP[s.iconName] ?? FlaskConical,
+  color: s.color,
+  badge: s.badge,
+  badgeColor: s.badgeColor,
+  synergy: s.synergy,
+  intentionalOverlap: s.intentionalOverlap,
+}));
 
 type StackTab = "pre-built" | "custom";
 
