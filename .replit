@@ -55,3 +55,7 @@ AWS_REGION = "us-east-2"
 
 [userenv.development]
 PORT = "5000"
+
+[postMerge]
+path = "scripts/post-merge.sh"
+timeoutMs = 20000
