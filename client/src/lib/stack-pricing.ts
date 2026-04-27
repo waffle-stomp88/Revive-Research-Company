@@ -42,7 +42,7 @@ export const STACK_COMPONENTS: Record<string, StackComponent[]> = {
   ],
   "igf1r-anabolic-stack": [
     { slug: "igf-1-lr3", dosage: "1mg", name: "IGF-1 LR3" },
-    { slug: "igf-des", dosage: "1mg", name: "IGF-DES" },
+    { slug: "igf-des", dosage: "2mg", name: "IGF-DES" },
   ],
 };
 

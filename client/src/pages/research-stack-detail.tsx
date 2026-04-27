@@ -960,7 +960,7 @@ export default function ResearchStackDetail() {
             </div>
 
             {pathwayOverlaps.length > 0 && (
-              <div className="mb-6" data-testid="section-pathway-overlap-detail">
+              <div id="pathway-overlap" className="mb-6" data-testid="section-pathway-overlap-detail">
                 <PathwayOverlapCard overlaps={pathwayOverlaps} />
               </div>
             )}
