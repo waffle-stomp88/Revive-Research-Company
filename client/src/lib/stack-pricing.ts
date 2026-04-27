@@ -40,6 +40,10 @@ export const STACK_COMPONENTS: Record<string, StackComponent[]> = {
     { slug: "ipamorelin", dosage: "5mg", name: "Ipamorelin" },
     { slug: "ghrp-2", dosage: "5mg", name: "GHRP-2" },
   ],
+  "igf1r-anabolic-stack": [
+    { slug: "igf-1-lr3", dosage: "1mg", name: "IGF-1 LR3" },
+    { slug: "igf-des", dosage: "1mg", name: "IGF-DES" },
+  ],
 };
 
 export const BUNDLE_COMPONENTS: Record<string, StackComponent[]> = {

@@ -162,6 +162,21 @@ const researchStacks: ResearchStack[] = [
       expert: "Ipamorelin and GHRP-2 are both full agonists at GHSR1a (Gs-coupled), yet demonstrate divergent downstream endocrine profiles: Ipamorelin shows high receptor selectivity with minimal cortisol/prolactin co-stimulation, while GHRP-2 produces dose-dependent cortisol and prolactin responses alongside GH release. This same-receptor but different-selectivity model enables investigation of biased agonism concepts and off-target endocrine signaling without confounders from a second receptor pathway."
     }
   },
+  {
+    id: "igf1r-anabolic-stack",
+    name: "IGF-1R Anabolic Pathway Stack",
+    subtitle: "Dual IGF-1R Agonist Research Bundle",
+    description: "Study anabolic signaling and IGF-1R occupancy dynamics by pairing two structurally distinct IGF-1 receptor analogs with complementary pharmacokinetic profiles.",
+    peptides: ["IGF-1 LR3", "IGF-DES"],
+    icon: Dumbbell,
+    color: "#f97316",
+    badge: "Receptor Study",
+    badgeColor: "#f97316",
+    synergy: {
+      beginner: "IGF-1 LR3 and IGF-DES both activate the same IGF-1 receptor — the key growth factor receptor driving anabolic and muscle-repair signaling. LR3 stays active longer in the body because it avoids the proteins that normally mop up IGF-1 quickly. DES binds the receptor more tightly but clears faster. Together they let researchers study what happens when two variants of the same hormone engage the same receptor with different binding strength and duration.",
+      expert: "IGF-1 LR3 (Long-Arg3) and IGF-DES (Des(1-3)-IGF-1) are both IGF-1R full agonists that circumvent insulin-like growth factor binding protein (IGFBP) sequestration by distinct structural mechanisms — LR3 via an arginine substitution at position 3 that reduces IGFBP-3 affinity ~500-fold, and DES via N-terminal truncation that sterically disrupts IGFBP interaction. Pairing them creates a tractable IGF-1R occupancy model: the prolonged plasma bioavailability of LR3 against the enhanced receptor-binding affinity of DES, enabling study of occupancy kinetics and downstream PI3K/Akt/mTOR pathway activation across structurally differentiated IGF-1R agonists."
+    }
+  },
 ];
 
 type StackTab = "pre-built" | "custom";

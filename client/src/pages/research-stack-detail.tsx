@@ -270,6 +270,42 @@ const researchStacksData: Record<string, ResearchStack> = {
       expert: "CJC-1295 (No DAC) and Sermorelin are both GHRHR agonists targeting the same Gs-coupled GPCR in the pituitary somatotrophs. Their differing receptor kinetics — rapid clearance (Sermorelin, t½ ~10–20 min) versus extended plasma stability (CJC-1295, t½ ~30 min) — create a tractable model for studying competitive receptor occupancy, desensitization dynamics, and the relationship between pulsatile vs. sustained GHRHR activation on GH secretion amplitude."
     }
   },
+  "igf1r-anabolic-stack": {
+    id: "igf1r-anabolic-stack",
+    name: "IGF-1R Anabolic Pathway Stack",
+    subtitle: "Dual IGF-1R Agonist Research Bundle",
+    description: "Study anabolic signaling and receptor occupancy dynamics by pairing two structurally distinct IGF-1 receptor analogs.",
+    longDescription: "IGF-1 LR3 and IGF-DES are both analogs of insulin-like growth factor 1 (IGF-1) that engage the IGF-1 receptor (IGF-1R), but with distinct structural and pharmacokinetic profiles. IGF-1 LR3 is a long-arginine-3 extended variant with reduced insulin-like binding protein (IGFBP) affinity, resulting in prolonged circulating bioavailability. IGF-DES is a truncated des(1-3) variant with enhanced IGF-1R binding affinity relative to native IGF-1, attributed to its reduced IGFBP interaction and altered N-terminal structure. Pairing them creates a controlled same-receptor model for studying IGF-1R occupancy dynamics, differential IGFBP interaction, and how distinct structural modifications on the same native growth factor translate to divergent receptor binding kinetics and downstream anabolic signaling.",
+    peptides: [
+      { name: "IGF-1 LR3", description: "Long-arginine-3 IGF-1 analog with reduced IGFBP affinity; studied for extended IGF-1R engagement and anabolic pathway research" },
+      { name: "IGF-DES", description: "Des(1-3) IGF-1 truncation variant with enhanced IGF-1R binding affinity; used in comparative anabolic signaling and receptor occupancy research" },
+    ],
+    keyBenefits: [
+      "IGF-1R occupancy dynamics research",
+      "Comparative IGFBP interaction profiling",
+      "Anabolic pathway activation studies",
+      "Receptor binding kinetics modeling across IGF-1 variants",
+    ],
+    researchApplications: [
+      "IGF-1R competitive binding and occupancy studies",
+      "Anabolic signaling cascade investigation",
+      "IGFBP interaction and bioavailability research",
+      "IGF-1 analog receptor kinetics comparison",
+    ],
+    storageGuide: "Store at 2-8°C (36-46°F). Both peptides are sensitive to temperature variation and should be protected from light. Reconstitute with bacteriostatic water and use within recommended timeframes.",
+    educationLinks: [
+      { peptideName: "IGF-1 LR3", articleUrl: "/guides/what-is-igf-1-lr3-peptide", articleTitle: "IGF-1 LR3: Extended-Half-Life IGF-1R Analog Research" },
+      { peptideName: "IGF-DES", articleUrl: "/guides/what-is-igf-des-peptide", articleTitle: "IGF-DES: Truncated IGF-1 Analog and Receptor Binding Research" },
+    ],
+    icon: "FlaskConical",
+    color: "#f97316",
+    badge: "Receptor Study",
+    badgeColor: "#f97316",
+    synergy: {
+      beginner: "IGF-1 LR3 and IGF-DES both activate the same IGF-1 receptor — the key growth factor receptor driving anabolic and muscle-repair signaling. LR3 stays active longer in the body because it avoids the proteins that normally mop up IGF-1 quickly. DES binds the receptor more tightly but clears faster. Together they let researchers study what happens when two variants of the same hormone engage the same receptor with different binding strength and duration.",
+      expert: "IGF-1 LR3 (Long-Arg3) and IGF-DES (Des(1-3)-IGF-1) are both IGF-1R full agonists that circumvent insulin-like growth factor binding protein (IGFBP) sequestration by distinct structural mechanisms — LR3 via an arginine substitution at position 3 that reduces IGFBP-3 affinity ~500-fold, and DES via N-terminal truncation that sterically disrupts IGFBP interaction. Pairing them creates a tractable IGF-1R occupancy model: the prolonged plasma bioavailability of LR3 (reduced IGFBP clearance) against the enhanced receptor-binding affinity of DES, enabling study of occupancy kinetics, receptor internalization dynamics, and downstream PI3K/Akt/mTOR pathway activation across structurally differentiated IGF-1R agonists."
+    }
+  },
   "ghsr-secretagogue-stack": {
     id: "ghsr-secretagogue-stack",
     name: "GHSR1a Secretagogue Stack",
