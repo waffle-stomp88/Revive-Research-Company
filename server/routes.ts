@@ -4779,6 +4779,7 @@ Return ONLY valid JSON in this exact format:
         { url: "/guides/what-is-epithalon-peptide", priority: "0.7", changefreq: "monthly" },
         { url: "/guides/what-is-mots-c-peptide", priority: "0.7", changefreq: "monthly" },
         { url: "/guides/what-is-igf-1-lr3-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-igf-des-peptide", priority: "0.7", changefreq: "monthly" },
         { url: "/guides/what-is-semax-peptide", priority: "0.7", changefreq: "monthly" },
         { url: "/guides/what-is-hcg-peptide", priority: "0.7", changefreq: "monthly" },
         { url: "/guides/what-is-nad-precursor", priority: "0.7", changefreq: "monthly" },

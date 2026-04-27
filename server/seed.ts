@@ -1,4 +1,5 @@
 import { db } from "./db";
+import { eq } from "drizzle-orm";
 import { products, coas, legalDocuments, educationArticles } from "@shared/schema";
 
 const sampleProducts = [
@@ -1669,6 +1670,170 @@ The amount of peptide obtained after synthesis and purification.`,
     
     await db.insert(educationArticles).values(sampleEducationArticles);
     console.log("Inserted " + sampleEducationArticles.length + " education articles");
+  }
+
+  // Ensure IGF-1 LR3 article exists (upsert for both fresh and existing databases)
+  const igfLr3Article = await db.select({ id: educationArticles.id }).from(educationArticles).where(eq(educationArticles.slug, "what-is-igf-1-lr3-peptide"));
+  if (igfLr3Article.length === 0) {
+    console.log("Inserting IGF-1 LR3 education article...");
+    await db.insert(educationArticles).values({
+      slug: "what-is-igf-1-lr3-peptide",
+      title: "IGF-1 LR3: Extended Growth Factor Research Guide",
+      category: "peptides",
+      summary: "Understanding IGF-1 LR3, the modified insulin-like growth factor with extended half-life for muscle research.",
+      content: `# IGF-1 LR3: Extended Growth Factor Research Guide
+
+IGF-1 LR3 (Insulin-Like Growth Factor-1 Long Arginine 3) is a synthetic modified analog of natural IGF-1 with enhanced properties for research applications.
+
+## Molecular Structure
+
+**Composition:** 83 amino acids (~9.1 kDa molecular weight)
+
+**Key Modifications:**
+- 13 additional amino acids added to N-terminal
+- Arginine substitution at position 3 (replacing glutamic acid)
+- These changes prevent binding to IGF-binding proteins (IGFBPs)
+
+**Extended Half-Life:** 20-30 hours (vs. minutes for natural IGF-1) — remains active up to 120x longer than standard IGF-1.
+
+## Mechanisms for Muscle Research
+
+### Primary Signaling Pathways
+- **PI3K/Akt/mTOR signaling:** Drives protein synthesis and growth
+- **MAPK pathway:** Influences cell proliferation and differentiation
+- **Satellite cell activation:** Muscle stem cells for repair and new fiber creation
+
+### Dual Growth Mechanism
+Research shows IGF-1 LR3 may affect both:
+1. **Hyperplasia:** Creation of new muscle cells
+2. **Hypertrophy:** Increased size of existing muscle fibers
+3. **Mitogenesis:** Development of new muscle fibers
+
+## Research Benefits
+
+| Area | Observed Effects |
+|------|------------------|
+| Muscle Development | Satellite cell proliferation and differentiation |
+| Recovery | Accelerated tissue repair and regeneration |
+| Fat Metabolism | Enhanced lipolysis and nutrient partitioning |
+| Protein Synthesis | Activation of anabolic pathways |
+| Glucose Metabolism | Enhanced glucose uptake in muscle cells |
+
+## Differences from Natural IGF-1
+
+| Factor | Natural IGF-1 | IGF-1 LR3 |
+|--------|---------------|-----------|
+| Half-life | Minutes | 20-30 hours |
+| IGFBP Binding | High (limits activity) | Low (remains free) |
+| Bioavailability | Limited | Dramatically enhanced |
+| Duration of effects | Short | Nearly 24 hours |
+
+## Research Considerations
+
+### Important Notes
+- Highly potent compound requiring careful dosing protocols
+- May affect glucose metabolism (hypoglycemia risk in research)
+- Receptor desensitization possible with continuous use
+- Often studied in cycles with rest periods
+
+### Storage Guidelines
+- Lyophilized: Stable for 3-4 months at proper temperature
+- After reconstitution: Must be refrigerated
+- Typical forms: 1mg vials for research applications
+
+**Note:** This compound is for research purposes only and is not approved for therapeutic use.`,
+      readTimeMinutes: 7,
+      relatedProductIds: ["c02b3c60-2954-4567-944a-707007f54e87"],
+      sortOrder: 20,
+      isPublished: true,
+    });
+    console.log("Inserted IGF-1 LR3 education article");
+  }
+
+  // Ensure IGF-DES article exists (upsert for both fresh and existing databases)
+  const igfDesArticle = await db.select({ id: educationArticles.id }).from(educationArticles).where(eq(educationArticles.slug, "what-is-igf-des-peptide"));
+  if (igfDesArticle.length === 0) {
+    console.log("Inserting IGF-DES education article...");
+    await db.insert(educationArticles).values({
+      slug: "what-is-igf-des-peptide",
+      title: "IGF-DES: Truncated IGF-1 Analog and Receptor Binding Research Guide",
+      category: "peptides",
+      summary: "Understanding IGF-DES (Des(1-3)-IGF-1), the N-terminal truncated IGF-1 variant with enhanced receptor-binding affinity and reduced IGFBP interaction for anabolic pathway research.",
+      content: `# IGF-DES: Truncated IGF-1 Analog and Receptor Binding Research Guide
+
+IGF-DES (Des(1-3)-IGF-1) is a naturally occurring N-terminal truncated variant of insulin-like growth factor 1 (IGF-1) that exhibits enhanced receptor-binding affinity compared to native IGF-1, making it a highly studied compound in growth factor and anabolic signaling research.
+
+## Molecular Structure
+
+**Composition:** 67 amino acids (~7.4 kDa molecular weight) — three N-terminal amino acids (Gly-Pro-Glu) removed relative to native IGF-1.
+
+**Key Structural Features:**
+- N-terminal truncation eliminates the first three amino acid residues (des(1-3))
+- Altered N-terminal domain disrupts IGFBP (insulin-like growth factor binding protein) interaction
+- Preserved C-domain and A-domain maintain full IGF-1R binding epitopes
+- Enhanced receptor affinity relative to both native IGF-1 and IGF-1 LR3
+
+**IGFBP Interaction:** Significantly reduced binding to IGFBP-1, -2, and -3 due to N-terminal truncation, resulting in higher free peptide fraction in biological assays.
+
+## Mechanism of Action
+
+### IGF-1 Receptor (IGF-1R) Engagement
+IGF-DES binds the IGF-1 receptor with approximately 2-10x greater affinity than native IGF-1, depending on assay conditions. The N-terminal truncation removes a domain that normally contacts IGFBPs but also slightly modifies receptor interaction geometry, favoring direct IGF-1R engagement.
+
+### Primary Signaling Pathways
+- **PI3K/Akt/mTOR axis:** Core anabolic signaling for protein synthesis and cell growth
+- **MAPK/ERK pathway:** Cell proliferation, differentiation, and mitogenic signaling
+- **Insulin receptor cross-reactivity:** Moderate IR binding (lower than native IGF-1) due to structural changes
+
+### IGFBP Circumvention Mechanism
+Unlike native IGF-1 (which is ~99% bound to IGFBPs in physiological conditions), IGF-DES's truncated N-terminus sterically disrupts the IGFBP binding interface. This produces a compound with dramatically higher bioactive fraction available for IGF-1R engagement at any given concentration.
+
+## Comparison with Native IGF-1 and IGF-1 LR3
+
+| Parameter | Native IGF-1 | IGF-1 LR3 | IGF-DES |
+|-----------|-------------|-----------|---------|
+| Molecular Weight | ~7.6 kDa | ~9.1 kDa | ~7.4 kDa |
+| IGF-1R Binding Affinity | Reference | Similar to native | 2-10x greater |
+| IGFBP Affinity | High | ~500x reduced | Significantly reduced |
+| Half-life | Minutes | 20-30 hours | Short (minutes) |
+| IGFBP Mechanism | Full binding | Arg3 substitution | N-terminal truncation |
+| Bioactive Fraction | Low (~1%) | High | High |
+
+## Research Applications
+
+### IGF-1R Occupancy Studies
+IGF-DES is extensively used to study receptor occupancy dynamics due to its high binding affinity. Researchers pair it with longer-acting IGF-1 analogs (such as IGF-1 LR3) to create comparative models of receptor engagement across different kinetic profiles.
+
+### Anabolic Signaling Research
+The compound's enhanced affinity and IGFBP bypass make it valuable for:
+- Downstream PI3K/Akt/mTOR pathway activation research
+- Satellite cell activation and muscle fiber formation studies
+- Protein synthesis rate modeling
+
+### Comparative Binding Kinetics
+IGF-DES allows researchers to isolate the contribution of IGFBP interaction vs. intrinsic receptor affinity in IGF-1 signaling — a mechanistically important distinction from IGF-1 LR3 (which reduces IGFBP affinity via arginine substitution rather than truncation).
+
+## Key Research Considerations
+
+### Important Notes
+- Rapid clearance profile (short half-life) contrasts sharply with IGF-1 LR3 — useful for studying time-dependent receptor activation windows
+- High IGF-1R affinity means dose-response relationships can differ substantially from native IGF-1
+- Cross-reactivity with insulin receptor is lower than native IGF-1 but should be considered in metabolic research designs
+- Receptor desensitization and downregulation dynamics are an active area of study
+
+### Storage Guidelines
+- Lyophilized powder: Stable for 3-4 months at -20°C; up to 4 weeks at 2-8°C
+- After reconstitution: Refrigerate at 2-8°C; use within 2-4 weeks
+- Avoid repeated freeze-thaw cycles
+- Standard research presentation: 1mg vials
+
+**Note:** IGF-DES is for research purposes only and is not approved for therapeutic use in humans.`,
+      readTimeMinutes: 8,
+      relatedProductIds: ["93aa097a-c055-4452-b5b0-05648af50a51"],
+      sortOrder: 46,
+      isPublished: true,
+    });
+    console.log("Inserted IGF-DES education article");
   }
 }
 

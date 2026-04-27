@@ -731,6 +731,56 @@ The enhanced properties of IGF-1 LR3 make it particularly useful when researcher
     takeaway: "IGF-1 LR3 is a modified version of IGF-1 (a growth factor your liver makes in response to growth hormone). The modifications prevent it from binding to carrier proteins, making more available to interact with receptors."
   },
 
+  "what-is-igf-des-peptide": {
+    icon: Dna,
+    iconColor: "#22c55e",
+    intro: `IGF-DES — short for Des(1-3)-IGF-1 — is a naturally occurring truncated form of IGF-1 (Insulin-like Growth Factor 1). Its three N-terminal amino acids are missing, and this small structural change has a big effect: IGF-DES binds to the IGF-1 receptor more tightly than regular IGF-1, while largely avoiding the carrier proteins that normally limit IGF-1's activity.`,
+    sections: [
+      {
+        title: "What 'Des(1-3)' Means",
+        content: `The name tells you exactly what's different about this molecule:
+
+**Des(1-3)** means the first three amino acids (positions 1, 2, and 3) have been removed from the native IGF-1 sequence.
+
+**The Impact of Truncation:**
+- The removed amino acids happen to be part of the region that binds to IGF binding proteins (IGFBPs)
+- Without this region, the molecule is far less "captured" by IGFBPs in the bloodstream
+- More of the peptide remains free to interact directly with the IGF-1 receptor (IGF-1R)
+
+**A Naturally Occurring Variant:** Unlike many synthetic peptide analogs, IGF-DES has been found in human tissues, particularly in the brain and gut, where it may serve local signaling roles.`
+      },
+      {
+        title: "How It Differs from IGF-1 LR3",
+        content: `Both IGF-DES and IGF-1 LR3 reduce IGFBP binding, but through different mechanisms:
+
+**IGF-1 LR3 Approach:**
+- Adds 13 extra amino acids + changes one amino acid (arginine at position 3)
+- Results in very long half-life (~20-30 hours) — stays active much longer
+- Good for studying sustained, systemic IGF-1 signaling
+
+**IGF-DES Approach:**
+- Removes 3 amino acids from the front of the molecule
+- Results in shorter half-life (clears faster, similar to native IGF-1)
+- Binds the IGF-1 receptor with higher affinity than native IGF-1
+
+**Research Pairing:** Together, IGF-DES and IGF-1 LR3 create a useful comparison model — one compound that stays active longer (LR3) and one that binds the receptor more tightly but clears faster (DES).`
+      },
+      {
+        title: "Research Applications",
+        content: `Scientists use IGF-DES to study several aspects of IGF-1 biology:
+
+**Receptor Binding Studies** - Its high IGF-1R affinity makes it valuable for understanding receptor occupancy and activation kinetics.
+
+**IGFBP Independence Research** - IGF-DES helps researchers study what happens when IGF-1 signaling is freed from binding protein regulation.
+
+**Anabolic Pathway Modeling** - IGF-DES activates the PI3K/Akt/mTOR signaling cascade, a central driver of protein synthesis and cellular growth, making it useful for studying anabolic signaling in muscle biology research.
+
+**Comparative Kinetics** - Pairing IGF-DES (fast-acting, high affinity) with IGF-1 LR3 (slow-acting, prolonged) lets researchers study how timing and duration of receptor activation affect downstream biological responses.`
+      }
+    ],
+    takeaway: "IGF-DES is a naturally occurring truncated form of IGF-1 that binds its receptor more tightly than regular IGF-1 while bypassing the carrier proteins that normally limit IGF-1's activity. Its short half-life and high receptor affinity make it a useful research tool for studying fast-acting IGF-1 receptor activation."
+  },
+
   "what-is-mots-c-peptide": {
     icon: Flame,
     iconColor: "#f97316",
