@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRoute, Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
@@ -282,6 +282,11 @@ export default function ResearchStackDetail() {
   const [quantity, setQuantity] = useState(1);
   const [purchaseType, setPurchaseType] = useState<PurchaseType>("one-time");
   const [subscriptionInterval, setSubscriptionInterval] = useState<SubscriptionInterval>("monthly");
+  const [synergyLevel, setSynergyLevel] = useState<"beginner" | "expert">("beginner");
+
+  useEffect(() => {
+    setSynergyLevel("beginner");
+  }, [params?.id]);
 
   const { data: allProducts } = useQuery<Product[]>({
     queryKey: ["/api/products"],
@@ -809,6 +814,42 @@ export default function ResearchStackDetail() {
                 </ul>
               </div>
             )}
+
+            <div className="mb-8" data-testid="section-synergy-explanation">
+              <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+                <div className="flex items-center gap-2">
+                  <Zap className="h-5 w-5" style={{ color: stack.color }} />
+                  <h3 className="font-display font-semibold text-lg">Why These Peptides Work Together</h3>
+                </div>
+                <div role="group" aria-label="Synergy explanation level" className="flex items-center gap-1 p-0.5 rounded-md border border-border bg-muted/30">
+                  <Button
+                    aria-pressed={synergyLevel === "beginner"}
+                    variant="ghost"
+                    size="sm"
+                    className={`h-7 px-3 text-xs rounded-sm transition-colors ${synergyLevel === "beginner" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground"}`}
+                    onClick={() => setSynergyLevel("beginner")}
+                    data-testid="button-synergy-beginner"
+                  >
+                    Overview
+                  </Button>
+                  <Button
+                    aria-pressed={synergyLevel === "expert"}
+                    variant="ghost"
+                    size="sm"
+                    className={`h-7 px-3 text-xs rounded-sm transition-colors ${synergyLevel === "expert" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground"}`}
+                    onClick={() => setSynergyLevel("expert")}
+                    data-testid="button-synergy-expert"
+                  >
+                    Mechanistic
+                  </Button>
+                </div>
+              </div>
+              <Card className="p-4 border-border/60" data-testid="card-synergy-content">
+                <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-synergy-copy">
+                  {synergyLevel === "beginner" ? stack.synergy.beginner : stack.synergy.expert}
+                </p>
+              </Card>
+            </div>
 
             {pathwayOverlaps.length > 0 && (
               <div className="mb-6" data-testid="section-pathway-overlap-detail">
