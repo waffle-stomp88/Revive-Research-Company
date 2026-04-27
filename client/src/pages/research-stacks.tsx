@@ -3463,7 +3463,9 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                               </AccordionTrigger>
                               <AccordionContent>
                                 <div className="space-y-2">
-                                  {popularStacks.slice(0, 3).map((combo, i) => (
+                                  {popularStacks.slice(0, 3).map((combo, i) => {
+                                    const comboOverlaps = detectPathwayOverlaps(combo.peptideNames);
+                                    return (
                                     <div 
                                       key={i}
                                       className="flex items-center justify-between p-2 rounded-lg bg-[#0f0f12] border border-[#2a2a32] cursor-pointer hover:border-[#E7FB10]/40 transition-colors"
@@ -3479,14 +3481,36 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                         }
                                       }}
                                     >
-                                      <p className="text-xs text-muted-foreground truncate flex-1">
-                                        {combo.peptideNames.join(' + ')}
-                                      </p>
-                                      <Badge variant="outline" className="text-[10px] ml-2">
+                                      <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                                        <p className="text-xs text-muted-foreground truncate">
+                                          {combo.peptideNames.join(' + ')}
+                                        </p>
+                                        {comboOverlaps.length > 0 && (
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <span
+                                                className="inline-flex items-center gap-0.5 shrink-0 px-1 py-0.5 rounded text-[9px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30"
+                                                data-testid={`badge-popular-combo-overlap-${i}`}
+                                              >
+                                                <GitMerge className="h-2.5 w-2.5" />
+                                                <span>{comboOverlaps.length} overlap{comboOverlaps.length > 1 ? "s" : ""}</span>
+                                              </span>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="top" className="max-w-[260px] bg-[#1a1a1f] border-[#2a2a32]">
+                                              <p className="text-[11px] font-semibold text-amber-200 mb-1">Pathway overlap detected</p>
+                                              <p className="text-[11px] text-muted-foreground">
+                                                Selected compounds engage the same receptor system: {comboOverlaps.map((o) => o.cluster.receptor).join(", ")}.
+                                              </p>
+                                            </TooltipContent>
+                                          </Tooltip>
+                                        )}
+                                      </div>
+                                      <Badge variant="outline" className="text-[10px] ml-2 shrink-0">
                                         {combo.count}x built
                                       </Badge>
                                     </div>
-                                  ))}
+                                    );
+                                  })}
                                 </div>
                               </AccordionContent>
                             </AccordionItem>
@@ -4107,6 +4131,7 @@ function ResearchStacks() {
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {researchStacks.map((stack, index) => {
             const Icon = stack.icon;
+            const prebuiltOverlaps = detectPathwayOverlaps(stack.peptides);
 
             return (
               <motion.div
@@ -4198,7 +4223,7 @@ function ResearchStacks() {
                       </h3>
                     </div>
 
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-1.5 items-center">
                       {stack.peptides.map((peptide) => (
                         <Badge
                           key={peptide}
@@ -4209,6 +4234,25 @@ function ResearchStacks() {
                           {peptide}
                         </Badge>
                       ))}
+                      {prebuiltOverlaps.length > 0 && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span
+                              className="inline-flex items-center gap-0.5 shrink-0 px-1 py-0.5 rounded text-[9px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30"
+                              data-testid={`badge-prebuilt-overlap-${stack.id}`}
+                            >
+                              <GitMerge className="h-2.5 w-2.5" />
+                              <span>{prebuiltOverlaps.length} overlap{prebuiltOverlaps.length > 1 ? "s" : ""}</span>
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-[260px] bg-[#1a1a1f] border-[#2a2a32]">
+                            <p className="text-[11px] font-semibold text-amber-200 mb-1">Pathway overlap detected</p>
+                            <p className="text-[11px] text-muted-foreground">
+                              Selected compounds engage the same receptor system: {prebuiltOverlaps.map((o) => o.cluster.receptor).join(", ")}.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
                     </div>
 
                     <p className="text-sm text-muted-foreground line-clamp-3">
