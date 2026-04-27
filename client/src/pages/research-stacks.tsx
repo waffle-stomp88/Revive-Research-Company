@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
 import { STACK_COMPONENTS, buildPriceLookup, calculateStackPricing } from "@/lib/stack-pricing";
 import { CategoryTabs } from "@/components/category-tabs";
-import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, X, Check, ShoppingCart, Beaker, Brain, Target, Rocket, Activity, Moon, Dumbbell, Timer, Save, Share2, Trash2, Copy, Users, LucideIcon, Search, AlertCircle, ChevronUp, Monitor, GitMerge } from "lucide-react";
+import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, X, Check, ShoppingCart, Beaker, Brain, Target, Rocket, Activity, Moon, Dumbbell, Timer, Save, Share2, Trash2, Copy, Users, LucideIcon, Search, AlertCircle, ChevronUp, ChevronDown, Monitor, GitMerge } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -1652,15 +1652,15 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
       <div className="absolute inset-0 pointer-events-none" style={{
         background: "linear-gradient(180deg, transparent 0%, rgba(34,197,94,0.03) 50%, transparent 100%)",
       }} />
-      <div className="px-4 pt-4 pb-2 flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-3">
+      <div className="px-4 pt-2.5 pb-1.5 flex items-center justify-between flex-wrap gap-2">
+        <div className="flex items-center gap-2.5">
           <div className="relative">
-            <Zap className="h-5 w-5 text-[#22c55e]" style={{ filter: "drop-shadow(0 0 6px rgba(34,197,94,0.6))" }} />
+            <Zap className="h-4 w-4 text-[#22c55e]" style={{ filter: "drop-shadow(0 0 6px rgba(34,197,94,0.6))" }} />
           </div>
-          <div>
-            <h4 className="font-bold text-white tracking-wide text-[20px]" style={{ textShadow: "0 0 20px rgba(34,197,94,0.3)" }}>SYNERGY PATHWAY MAP</h4>
+          <div className="leading-tight">
+            <h4 className="font-bold text-white tracking-wide text-[15px]" style={{ textShadow: "0 0 20px rgba(34,197,94,0.3)" }}>SYNERGY PATHWAY MAP</h4>
             {hasActiveData ? (
-              <p className="text-[#22c55e]/70 flex items-center gap-1 text-[12px]">
+              <p className="text-[#22c55e]/70 flex items-center gap-1 text-[11px]">
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse" />
                 Interactive — hover or tap nodes & lines for details
               </p>
@@ -1672,17 +1672,17 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
           </div>
         </div>
         {allSharedPathways.length > 0 && (
-          <Badge className="text-[16px] bg-[#22c55e]/15 text-[#22c55e] border-[#22c55e]/30" style={{ boxShadow: "0 0 8px rgba(34,197,94,0.2)" }}>
+          <Badge className="text-[12px] bg-[#22c55e]/15 text-[#22c55e] border-[#22c55e]/30" style={{ boxShadow: "0 0 8px rgba(34,197,94,0.2)" }}>
             {allSharedPathways.length} shared pathway{allSharedPathways.length !== 1 ? "s" : ""}
           </Badge>
         )}
       </div>
-      <div style={{ overflow: "hidden", position: "relative", paddingBottom: "24px" }}>
+      <div style={{ overflow: "hidden", position: "relative", paddingBottom: "12px" }}>
       <svg
         width="100%"
         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
         preserveAspectRatio="xMidYMid meet"
-        style={{ minHeight: "260px", display: "block" }}
+        style={{ minHeight: "180px", display: "block" }}
       >
         <defs>
           {connections.map(conn => {
@@ -3087,6 +3087,26 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                               <p className="font-display font-bold text-base">Great Pick!</p>
                               <p className="text-sm text-muted-foreground mt-1">Add 1 more to see synergy</p>
                             </div>
+                          )}
+
+                          {pathwayOverlaps.length > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const el = document.getElementById("pathway-overlap-card");
+                                if (el) {
+                                  el.scrollIntoView({ behavior: "smooth", block: "center" });
+                                  window.dispatchEvent(new CustomEvent("pathway-overlap-highlight"));
+                                }
+                              }}
+                              className="mt-2 inline-flex items-center gap-1 rounded px-2 py-0.5 text-[11px] font-medium bg-amber-500/15 text-amber-300 border border-amber-500/30 hover-elevate active-elevate-2"
+                              data-testid="chip-overlap-cue"
+                            >
+                              <span>
+                                {pathwayOverlaps.length} receptor overlap{pathwayOverlaps.length > 1 ? "s" : ""}
+                              </span>
+                              <ChevronDown className="h-3 w-3" />
+                            </button>
                           )}
                         </div>
                       </div>
