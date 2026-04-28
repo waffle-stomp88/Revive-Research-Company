@@ -114,12 +114,38 @@ const PK_ZOOM_PRESETS: { label: string; minutes: number }[] = [
   { label: "7 d",  minutes: 10080 },
 ];
 
+const PK_ZOOM_STORAGE_KEY = "pk-zoom-range";
+
+function readStoredZoom(): number | null {
+  try {
+    const raw = localStorage.getItem(PK_ZOOM_STORAGE_KEY);
+    if (raw === null || raw === "auto") return null;
+    const n = Number(raw);
+    return Number.isFinite(n) ? n : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredZoom(value: number | null): void {
+  try {
+    localStorage.setItem(PK_ZOOM_STORAGE_KEY, value === null ? "auto" : String(value));
+  } catch {
+    // ignore
+  }
+}
+
 function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
-  const [selectedRange, setSelectedRange] = useState<number | null>(null);
+  const [selectedRange, setSelectedRange] = useState<number | null>(readStoredZoom);
+
+  function handleRangeChange(value: number | null) {
+    writeStoredZoom(value);
+    setSelectedRange(value);
+  }
 
   const peptideKey = peptides.map(p => p.name).join("|");
   useEffect(() => {
-    setSelectedRange(null);
+    setSelectedRange(readStoredZoom());
   }, [peptideKey]);
 
   const entries = peptides.map((p, i) => ({
@@ -168,7 +194,7 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
                     ? "bg-white/15 text-white"
                     : "text-white/40 hover:text-white/70"
                 }`}
-                onClick={() => setSelectedRange(null)}
+                onClick={() => handleRangeChange(null)}
                 data-testid="pk-zoom-auto"
                 aria-pressed={selectedRange === null}
               >
@@ -182,7 +208,7 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
                       ? "bg-white/15 text-white"
                       : "text-white/40 hover:text-white/70"
                   }`}
-                  onClick={() => setSelectedRange(preset.minutes)}
+                  onClick={() => handleRangeChange(preset.minutes)}
                   data-testid={`pk-zoom-${preset.label.replace(/\s/g, "").toLowerCase()}`}
                   aria-pressed={selectedRange === preset.minutes}
                 >
