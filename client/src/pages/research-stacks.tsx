@@ -31,6 +31,7 @@ import type { SynergyCopy, StackIconName } from "@/data/research-stacks";
 import { getSystemIcon } from "@/data/body-systems";
 import { getHalfLifeBySlug, getHalfLifeByName } from "@/data/pharmacokinetics";
 import type { HalfLifeEntry } from "@/data/pharmacokinetics";
+import { isNonSCRoute, pkMidpoint, computeXMax, buildPKCurve, ptsToD } from "@/lib/pk-curve";
 import { KNOWN_STACKS } from "@/data/known-stacks";
 import type { KnownStack } from "@/data/known-stacks";
 import { PEPTIDE_PATHWAYS } from "@/data/peptide-pathways";
@@ -3421,58 +3422,6 @@ const MINI_CHART = {
 
 const MINI_PK_COLORS = ["#21d8ff", "#E7FB10", "#22c55e", "#f59e0b", "#a855f7"];
 
-function miniIsNonSCRoute(route: string): boolean {
-  return route.toLowerCase() !== "subcutaneous";
-}
-
-function miniPkMidpoint(pk: HalfLifeEntry): number | null {
-  if (pk.halfLifeMin !== undefined && pk.halfLifeMax !== undefined) return (pk.halfLifeMin + pk.halfLifeMax) / 2;
-  if (pk.halfLifeMin !== undefined) return pk.halfLifeMin;
-  if (pk.halfLifeMax !== undefined) return pk.halfLifeMax;
-  return null;
-}
-
-function miniComputeXMax(pks: HalfLifeEntry[]): number {
-  const mids = pks.map(miniPkMidpoint).filter((v): v is number => v !== null && v > 0);
-  if (mids.length === 0) return 1440;
-  const minM = Math.min(...mids);
-  const maxM = Math.max(...mids);
-  if (mids.length >= 2 && maxM / minM > 30) return Math.min(10 * minM, 4320);
-  return Math.min(5 * maxM, 7200);
-}
-
-function miniBuildCurve(halfLifeMidMin: number | null, xMaxMin: number): { x: number; y: number }[] {
-  const N = 120;
-  const effHL = halfLifeMidMin === null ? xMaxMin * 80 : halfLifeMidMin;
-  const ke = Math.log(2) / effHL;
-  const kaFloor = Math.log(2) / (0.08 * xMaxMin);
-  const ka = Math.max(ke * 10, kaFloor);
-  const safeKa = ka === ke ? ka * 1.0001 : ka;
-  const raw: number[] = [];
-  for (let i = 0; i <= N; i++) {
-    const t = (i / N) * xMaxMin;
-    const v = (Math.exp(-ke * t) - Math.exp(-safeKa * t)) / (safeKa - ke);
-    raw.push(Math.max(0, v));
-  }
-  const maxV = Math.max(...raw, 1e-9);
-  return raw.map((v, i) => ({
-    x: MINI_CHART.x0 + (i / N) * MINI_CHART.plotW,
-    y: MINI_CHART.y0 + MINI_CHART.plotH * (1 - v / maxV),
-  }));
-}
-
-function miniPtsToD(pts: { x: number; y: number }[]): string {
-  if (!pts.length) return "";
-  let d = `M ${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
-  for (let i = 1; i < pts.length - 1; i++) {
-    const cx = (pts[i].x + pts[i + 1].x) / 2;
-    const cy = (pts[i].y + pts[i + 1].y) / 2;
-    d += ` Q ${pts[i].x.toFixed(1)},${pts[i].y.toFixed(1)} ${cx.toFixed(1)},${cy.toFixed(1)}`;
-  }
-  const last = pts[pts.length - 1];
-  d += ` L ${last.x.toFixed(1)},${last.y.toFixed(1)}`;
-  return d;
-}
 
 function MiniPKChart({ peptideNames, stackId }: { peptideNames: string[]; stackId: string }) {
   const entries = peptideNames.map((name, i) => ({
@@ -3484,14 +3433,14 @@ function MiniPKChart({ peptideNames, stackId }: { peptideNames: string[]; stackI
   const pksWithData = entries.map(e => e.pk).filter((pk): pk is HalfLifeEntry => pk !== undefined);
   if (pksWithData.length === 0) return null;
 
-  const xMaxMin = miniComputeXMax(pksWithData);
-  const hasNonSC = pksWithData.some(pk => miniIsNonSCRoute(pk.route));
+  const xMaxMin = computeXMax(pksWithData).xMaxMin;
+  const hasNonSC = pksWithData.some(pk => isNonSCRoute(pk.route));
 
   const curves = entries.flatMap(({ name, pk, color }) => {
     if (!pk) return [];
-    const mid = miniPkMidpoint(pk);
-    const pts = miniBuildCurve(mid, xMaxMin);
-    return [{ name, pk, color, d: miniPtsToD(pts), isNonSC: miniIsNonSCRoute(pk.route) }];
+    const mid = pkMidpoint(pk);
+    const pts = buildPKCurve(mid, xMaxMin, MINI_CHART, 120);
+    return [{ name, pk, color, d: ptsToD(pts), isNonSC: isNonSCRoute(pk.route) }];
   });
 
   if (curves.length === 0) return null;

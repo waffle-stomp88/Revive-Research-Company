@@ -29,6 +29,7 @@ import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { RESEARCH_STACKS_BY_ID } from "@/data/research-stacks";
 import type { StackPeptide } from "@/data/research-stacks";
 import type { HalfLifeEntry } from "@/data/pharmacokinetics";
+import { isNonSCRoute, pkMidpoint, computeXMax, buildPKCurve, ptsToD } from "@/lib/pk-curve";
 
 // ─── Pharmacokinetics Chart ───────────────────────────────────────────────────
 
@@ -40,10 +41,6 @@ function routeAbbrev(route: string): string {
   if (r === "oral") return "Oral";
   if (r === "topical") return "Topical";
   return route;
-}
-
-function isNonSCRoute(route: string): boolean {
-  return route.toLowerCase() !== "subcutaneous";
 }
 
 const PK_CURVE_COLORS = ["#21d8ff", "#E7FB10", "#22c55e", "#f59e0b", "#a855f7"];
@@ -58,58 +55,6 @@ const CHART = {
   get x1() { return this.vbW - this.pR; },
   get y1() { return this.vbH - this.pB; },
 };
-
-function pkMidpoint(pk: HalfLifeEntry): number | null {
-  if (pk.halfLifeMin !== undefined && pk.halfLifeMax !== undefined) return (pk.halfLifeMin + pk.halfLifeMax) / 2;
-  if (pk.halfLifeMin !== undefined) return pk.halfLifeMin;
-  if (pk.halfLifeMax !== undefined) return pk.halfLifeMax;
-  return null;
-}
-
-function computeXMax(pks: HalfLifeEntry[]): { xMaxMin: number; shortFocus: boolean } {
-  const mids = pks.map(pkMidpoint).filter((v): v is number => v !== null && v > 0);
-  if (mids.length === 0) return { xMaxMin: 1440, shortFocus: false };
-  const minM = Math.min(...mids);
-  const maxM = Math.max(...mids);
-  if (mids.length >= 2 && maxM / minM > 30) {
-    return { xMaxMin: Math.min(10 * minM, 4320), shortFocus: true };
-  }
-  return { xMaxMin: Math.min(5 * maxM, 7200), shortFocus: false };
-}
-
-function buildPKCurve(halfLifeMidMin: number | null, xMaxMin: number): { x: number; y: number }[] {
-  const N = 240;
-  const effHL = halfLifeMidMin === null ? xMaxMin * 80 : halfLifeMidMin;
-  const ke = Math.log(2) / effHL;
-  const kaFloor = Math.log(2) / (0.08 * xMaxMin);
-  const ka = Math.max(ke * 10, kaFloor);
-  const safeKa = ka === ke ? ka * 1.0001 : ka;
-
-  const raw: number[] = [];
-  for (let i = 0; i <= N; i++) {
-    const t = (i / N) * xMaxMin;
-    const v = (Math.exp(-ke * t) - Math.exp(-safeKa * t)) / (safeKa - ke);
-    raw.push(Math.max(0, v));
-  }
-  const maxV = Math.max(...raw, 1e-9);
-  return raw.map((v, i) => ({
-    x: CHART.x0 + (i / N) * CHART.plotW,
-    y: CHART.y0 + CHART.plotH * (1 - v / maxV),
-  }));
-}
-
-function ptsToD(pts: { x: number; y: number }[]): string {
-  if (!pts.length) return "";
-  let d = `M ${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
-  for (let i = 1; i < pts.length - 1; i++) {
-    const cx = (pts[i].x + pts[i + 1].x) / 2;
-    const cy = (pts[i].y + pts[i + 1].y) / 2;
-    d += ` Q ${pts[i].x.toFixed(1)},${pts[i].y.toFixed(1)} ${cx.toFixed(1)},${cy.toFixed(1)}`;
-  }
-  const last = pts[pts.length - 1];
-  d += ` L ${last.x.toFixed(1)},${last.y.toFixed(1)}`;
-  return d;
-}
 
 function ptsToAreaD(pts: { x: number; y: number }[]): string {
   const c = ptsToD(pts);
@@ -230,7 +175,7 @@ function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPeptide[]
   const curves = entries.map(({ peptide, pk, color }) => {
     if (!pk) return null;
     const mid = pkMidpoint(pk);
-    const pts = buildPKCurve(mid, xMaxMin);
+    const pts = buildPKCurve(mid, xMaxMin, CHART);
     const lastY = pts[pts.length - 1].y;
     const isExtended = mid === null || mid > xMaxMin * 0.5;
     const halfLifeXFrac = mid !== null && mid <= xMaxMin ? mid / xMaxMin : null;
