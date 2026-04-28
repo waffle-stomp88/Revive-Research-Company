@@ -7307,6 +7307,7 @@ interface DeadLinkHit {
 
 function DeadLinksTab() {
   const { toast } = useToast();
+  const [clearConfirmOpen, setClearConfirmOpen] = useState(false);
   const { data: hits = [], isLoading, refetch } = useQuery<DeadLinkHit[]>({
     queryKey: ["/api/dead-links"],
   });
@@ -7346,16 +7347,35 @@ function DeadLinksTab() {
           </CardDescription>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="default"
-            disabled={hits.length === 0 || clearAllMutation.isPending}
-            onClick={() => clearAllMutation.mutate()}
-            data-testid="button-clear-all-dead-links"
-          >
-            <Trash2 className="h-4 w-4 mr-2" />
-            Clear all
-          </Button>
+          <AlertDialog open={clearConfirmOpen} onOpenChange={setClearConfirmOpen}>
+            <Button
+              variant="outline"
+              size="default"
+              disabled={hits.length === 0 || clearAllMutation.isPending}
+              onClick={() => setClearConfirmOpen(true)}
+              data-testid="button-clear-all-dead-links"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Clear all
+            </Button>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Clear all dead-link records?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete all {hits.length} dead-link record{hits.length !== 1 ? "s" : ""}. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel data-testid="button-cancel-clear-dead-links">Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  data-testid="button-confirm-clear-dead-links"
+                  onClick={() => clearAllMutation.mutate()}
+                >
+                  Clear all
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           <Button
             variant="outline"
             size="default"
