@@ -122,8 +122,8 @@ function run() {
 
   // MiniPKChart testids live in the extracted component file
   const miniPkChartSrc = readFile("client/src/components/mini-pk-chart.tsx");
-  // Detail-page PK chart key lives in the detail page component
-  const detailPageSrc = readFile("client/src/pages/research-stack-detail.tsx");
+  // Detail-page PK chart key now lives in the shared pharmacokinetics-chart component
+  const detailPageSrc = readFile("client/src/components/pharmacokinetics-chart.tsx");
 
   console.log("PK Chart Key Audit");
   console.log("=".repeat(70));
@@ -148,12 +148,12 @@ function run() {
     allPassed = false;
   }
 
-  // ── Check 3: pk-line-style-key static testid present in detail page ─────────
+  // ── Check 3: pk-line-style-key static testid present in shared chart component ─
   const detailLineStyleKeyPattern = /data-testid="pk-line-style-key"/;
   if (detailLineStyleKeyPattern.test(detailPageSrc)) {
-    console.log("  ✓  data-testid=\"pk-line-style-key\" attribute found in research-stack-detail.tsx");
+    console.log("  ✓  data-testid=\"pk-line-style-key\" attribute found in pharmacokinetics-chart.tsx");
   } else {
-    console.error("  ✗  MISSING: data-testid=\"pk-line-style-key\" attribute not found in research-stack-detail.tsx");
+    console.error("  ✗  MISSING: data-testid=\"pk-line-style-key\" attribute not found in pharmacokinetics-chart.tsx");
     console.error("     The detail-page line-style key element may have been refactored or the testid removed.");
     allPassed = false;
   }
