@@ -17,9 +17,10 @@
  *   node scripts/verify-pk-citations.cjs path/to/file.ts          # scan specific file(s) only
  *   node scripts/verify-pk-citations.cjs --json
  *   node scripts/verify-pk-citations.cjs --json --output report.json
+ *   node scripts/verify-pk-citations.cjs --discover               # list files with PMIDs, then exit (no API calls)
  *
  * Exit code:
- *   0  — all PMIDs verified
+ *   0  — all PMIDs verified (or --discover completed successfully)
  *   1  — one or more PMIDs failed
  */
 
@@ -34,6 +35,7 @@ const DEFAULT_SCAN_ROOT = path.join(REPO_ROOT, "client/src");
 const PMID_PATTERN = /pmid\(\s*"(\d+)"/;
 
 const EMIT_JSON = process.argv.includes("--json");
+const DISCOVER_ONLY = process.argv.includes("--discover");
 const OUTPUT_INDEX = process.argv.indexOf("--output");
 const OUTPUT_FILE = OUTPUT_INDEX !== -1 ? process.argv[OUTPUT_INDEX + 1] : null;
 const RATE_LIMIT_MS = 350; // PubMed eutils: max 3 requests/second
@@ -163,6 +165,27 @@ function extractPmids(src) {
 
 async function main() {
   const targetFiles = resolveTargetFiles();
+
+  // --discover: print which files would be scanned and how many PMIDs each
+  // contains, then exit without making any API calls.
+  if (DISCOVER_ONLY) {
+    if (targetFiles.length === 0) {
+      console.log("No files with pmid(...) calls found under client/src/");
+      process.exit(0);
+    }
+    let totalPmids = 0;
+    console.log("\nFiles with embedded PMIDs:\n");
+    for (const filePath of targetFiles) {
+      const src = fs.readFileSync(filePath, "utf8");
+      const pmids = extractPmids(src);
+      totalPmids += pmids.length;
+      console.log(
+        `  ${path.relative(REPO_ROOT, filePath)}: ${pmids.length} PMID(s)`
+      );
+    }
+    console.log(`\nTotal: ${targetFiles.length} file(s), ${totalPmids} unique-per-file PMID(s)`);
+    process.exit(0);
+  }
 
   // Build a map of { filePath -> pmid[] }
   const fileMap = new Map();
