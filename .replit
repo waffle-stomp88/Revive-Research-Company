@@ -45,6 +45,10 @@ args = "pk-chart-key-e2e"
 task = "workflow.run"
 args = "zoom-preference"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "pk-catalog-coverage"
+
 [[workflows.workflow]]
 name = "Start application"
 author = "agent"
@@ -97,6 +101,17 @@ args = "node --require tsx/cjs scripts/test-zoom-preference.cjs"
 
 [workflows.workflow.metadata]
 outputType = "console"
+
+[[workflows.workflow]]
+name = "pk-catalog-coverage"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node scripts/audit-pk-catalog.cjs"
+
+[workflows.workflow.metadata]
+isValidation = true
 
 [agent]
 integrations = ["javascript_mem_db:1.0.0", "javascript_database:1.0.0", "javascript_log_in_with_replit:1.0.0", "javascript_object_storage:1.0.0", "javascript_openai_ai_integrations:1.0.0", "javascript_paypal:1.0.0"]
