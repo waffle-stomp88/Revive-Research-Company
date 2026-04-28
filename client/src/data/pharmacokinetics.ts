@@ -51,6 +51,12 @@ const pmid = (id: string, label: string): Citation => ({
 // the stack is flagged as having meaningfully mismatched kinetics.
 export const PK_MISMATCH_RATIO = 10;
 
+// Chart visibility thresholds. A compound's midpoint half-life must fall within
+// the range [xMaxMin / PK_VISIBLE_LOWER_RATIO, xMaxMin * PK_VISIBLE_UPPER_RATIO]
+// to be considered "meaningfully visible" in the active zoom window.
+export const PK_VISIBLE_LOWER_RATIO = 20;
+export const PK_VISIBLE_UPPER_RATIO = 5;
+
 // ─── Dataset ──────────────────────────────────────────────────────────────────
 export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
   {

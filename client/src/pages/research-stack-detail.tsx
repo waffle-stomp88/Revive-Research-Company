@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { getHalfLifeByName, hasKineticMismatch } from "@/data/pharmacokinetics";
+import { getHalfLifeByName, hasKineticMismatch, PK_VISIBLE_LOWER_RATIO, PK_VISIBLE_UPPER_RATIO } from "@/data/pharmacokinetics";
 import { ImageLoader } from "@/components/image-loader";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
@@ -128,12 +128,6 @@ const PK_ZOOM_PRESETS: { label: string; minutes: number }[] = [
   { label: "7 d",  minutes: 10080 },
 ];
 
-// Thresholds that define whether a compound's kinetics are "meaningfully visible"
-// within the active zoom window. Compounds outside these bounds either decay to
-// near-zero before the window ends (too fast) or appear essentially flat (too slow).
-const PK_VISIBLE_LOWER_RATIO = 20;  // mid must be >= xMaxMin / PK_VISIBLE_LOWER_RATIO
-const PK_VISIBLE_UPPER_RATIO = 5;   // mid must be <= xMaxMin * PK_VISIBLE_UPPER_RATIO
-
 const PK_ZOOM_STORAGE_KEY = "pk-zoom-range";
 
 function readStoredZoom(): number | null {
@@ -203,7 +197,7 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
 
   // Zoom-aware mismatch: only flag a kinetic difference when both fast and slow
   // compounds are meaningfully visible in the active zoom window.
-  // Thresholds are set by PK_VISIBLE_LOWER_RATIO / PK_VISIBLE_UPPER_RATIO above.
+  // Thresholds are defined in pharmacokinetics.ts as PK_VISIBLE_LOWER_RATIO / PK_VISIBLE_UPPER_RATIO.
   const visiblePks = definedPks.filter((pk) => {
     const mid = pkMidpoint(pk);
     if (mid === null) return false;
