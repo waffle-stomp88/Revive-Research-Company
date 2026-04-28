@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link, useParams, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
@@ -29,6 +29,7 @@ import {
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { BUNDLES } from "@/lib/bundles";
 import { BUNDLE_COMPONENTS, STACK_DISCOUNT, buildPriceLookup, calculateStackPricing } from "@/lib/stack-pricing";
+import { flagRetiredContent, RETIRED_BUNDLE_SLUGS } from "@/lib/retired-redirects";
 
 type PurchaseType = "one-time" | "subscription";
 type SubscriptionInterval = "weekly" | "biweekly" | "monthly";
@@ -49,6 +50,13 @@ export default function BundleDetail() {
   const [subscriptionInterval, setSubscriptionInterval] = useState<SubscriptionInterval>("monthly");
 
   const bundle = BUNDLES.find(b => b.id === params.id);
+
+  useEffect(() => {
+    if (params.id && RETIRED_BUNDLE_SLUGS.includes(params.id)) {
+      flagRetiredContent("bundle", params.id);
+      setLocation("/peptides");
+    }
+  }, [params.id]);
 
   const { data: productsWithStock } = useQuery<any[]>({
     queryKey: ["/api/products-with-stock"],
@@ -132,21 +140,15 @@ export default function BundleDetail() {
     }
   };
 
+  useEffect(() => {
+    if (!bundle && params.id && !RETIRED_BUNDLE_SLUGS.includes(params.id)) {
+      flagRetiredContent("bundle", params.id);
+      setLocation("/peptides");
+    }
+  }, [bundle, params.id]);
+
   if (!bundle) {
-    return (
-      <main className="min-h-screen pt-32 md:pt-40 pb-12 flex items-center justify-center">
-        <Card className="p-12 text-center max-w-md">
-          <FlaskConical className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-          <h2 className="font-display text-xl font-semibold mb-2">Bundle Not Found</h2>
-          <p className="text-muted-foreground mb-6">
-            The bundle you're looking for doesn't exist or has been removed.
-          </p>
-          <Link href="/products">
-            <Button>Browse All Products</Button>
-          </Link>
-        </Card>
-      </main>
-    );
+    return null;
   }
 
   const BundleIcon = bundle.icon;

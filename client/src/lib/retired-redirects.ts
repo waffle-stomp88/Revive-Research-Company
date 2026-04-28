@@ -2,7 +2,7 @@ import { trackEvent } from "./analytics";
 
 const STORAGE_KEY_PREFIX = "retired-redirect";
 
-export type RetiredContentType = "product" | "guide";
+export type RetiredContentType = "product" | "guide" | "bundle";
 
 export function flagRetiredContent(type: RetiredContentType, slug?: string): void {
   sessionStorage.setItem(`${STORAGE_KEY_PREFIX}-${type}`, "1");
@@ -28,3 +28,5 @@ export function consumeRetiredFlag(type: RetiredContentType): boolean {
 export const RETIRED_PRODUCT_SLUGS: string[] = [];
 
 export const RETIRED_GUIDE_SLUGS: string[] = [];
+
+export const RETIRED_BUNDLE_SLUGS: string[] = [];

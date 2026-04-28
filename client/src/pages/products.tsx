@@ -239,12 +239,17 @@ function ProductsComponent() {
     refetchInterval: 30000,
   });
 
-  // Show toast when redirected from a retired product URL
+  // Show toast when redirected from a retired product or bundle URL
   useEffect(() => {
     if (consumeRetiredFlag("product")) {
       toast({
         title: "Product Unavailable",
         description: "That product is no longer available. Browse our current catalog below.",
+      });
+    } else if (consumeRetiredFlag("bundle")) {
+      toast({
+        title: "Bundle Unavailable",
+        description: "That bundle is no longer available. Browse our current catalog below.",
       });
     }
   }, []);
