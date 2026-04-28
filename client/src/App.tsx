@@ -86,14 +86,24 @@ function ScrollManager() {
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
+    const flush = () => {
+      clearTimeout(timer);
+      sessionStorage.setItem('scroll:' + location, String(window.scrollY));
+    };
     const save = () => {
       clearTimeout(timer);
-      timer = setTimeout(() => {
-        sessionStorage.setItem('scroll:' + location, String(window.scrollY));
-      }, 100);
+      timer = setTimeout(flush, 100);
     };
     window.addEventListener('scroll', save, { passive: true });
-    return () => { window.removeEventListener('scroll', save); clearTimeout(timer); };
+    window.addEventListener('pagehide', flush);
+    const handleVisibilityChange = () => { if (document.visibilityState === 'hidden') flush(); };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      window.removeEventListener('scroll', save);
+      window.removeEventListener('pagehide', flush);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      flush();
+    };
   }, [location]);
 
   useEffect(() => {
