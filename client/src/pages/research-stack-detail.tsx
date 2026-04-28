@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { STACK_COMPONENTS, buildPriceLookup, calculateStackPricing } from "@/lib/stack-pricing";
 import { SEOHead } from "@/components/seo-head";
 import {
-  ArrowLeft, FlaskConical, ShoppingCart, Sparkles, AlertTriangle, Package, GraduationCap, Shield, FileCheck, Truck, RefreshCw, ShoppingBag, Repeat, CheckCircle, Minus, Plus, BookOpen, ChevronRight, ChevronDown, Clock, Info
+  ArrowLeft, FlaskConical, ShoppingCart, Sparkles, AlertTriangle, Package, GraduationCap, Shield, FileCheck, Truck, RefreshCw, ShoppingBag, Repeat, CheckCircle, Minus, Plus, BookOpen, ChevronRight, ChevronDown, Clock, Info, Lock
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -156,6 +156,7 @@ function writeStoredZoom(value: number | null): void {
 function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
   const [selectedRange, setSelectedRange] = useState<number | null>(readStoredZoom);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const [pinnedIdx, setPinnedIdx] = useState<number | null>(null);
   const [tooltip, setTooltip] = useState<{ clientX: number; clientY: number; label: string; halfLife: string } | null>(null);
   const chartWrapRef = useRef<HTMLDivElement>(null);
 
@@ -167,6 +168,7 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
   const peptideKey = peptides.map(p => p.name).join("|");
   useEffect(() => {
     setSelectedRange(readStoredZoom());
+    setPinnedIdx(null);
   }, [peptideKey]);
 
   const entries = peptides.map((p, i) => ({
@@ -220,15 +222,17 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
   const hasNonSC = pksWithData.some(pk => isNonSCRoute(pk.route));
   const clipId = "pk-clip-" + peptides.map(p => toTestSlug(p.name)).join("-");
 
+  const effectiveIdx = pinnedIdx ?? hoveredIdx;
+
   const curveOpacity = useCallback((idx: number) => {
-    if (hoveredIdx === null) return 1;
-    return idx === hoveredIdx ? 1 : 0.12;
-  }, [hoveredIdx]);
+    if (effectiveIdx === null) return 1;
+    return idx === effectiveIdx ? 1 : 0.12;
+  }, [effectiveIdx]);
 
   const markerOpacity = useCallback((idx: number) => {
-    if (hoveredIdx === null) return 1;
-    return idx === hoveredIdx ? 1 : 0.06;
-  }, [hoveredIdx]);
+    if (effectiveIdx === null) return 1;
+    return idx === effectiveIdx ? 1 : 0.06;
+  }, [effectiveIdx]);
 
   const handleCurveHover = useCallback((idx: number, e: React.MouseEvent) => {
     const c = curves[idx];
@@ -253,6 +257,12 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
     setTooltip(null);
   }, []);
 
+  const handleCurveClick = useCallback((idx: number) => {
+    const c = curves[idx];
+    if (!c) return;
+    setPinnedIdx(prev => prev === idx ? null : idx);
+  }, [curves]);
+
   const handleLegendEnter = useCallback((idx: number, e?: React.MouseEvent | React.FocusEvent) => {
     const c = curves[idx];
     if (!c) return;
@@ -274,6 +284,12 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
     setHoveredIdx(null);
     setTooltip(null);
   }, []);
+
+  const handleLegendClick = useCallback((idx: number) => {
+    const c = curves[idx];
+    if (!c) return;
+    setPinnedIdx(prev => prev === idx ? null : idx);
+  }, [curves]);
 
   return (
     <div className="mb-8" data-testid="section-compounds">
@@ -432,7 +448,7 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
                 ))}
               </g>
 
-              {/* Invisible wide hit-areas for curve hover — rendered on top */}
+              {/* Invisible wide hit-areas for curve hover/click — rendered on top */}
               <g clipPath={`url(#${clipId})`}>
                 {curves.map((c, idx) => c && (
                   <path
@@ -444,15 +460,18 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeDasharray={isNonSCRoute(c.pk.route) ? "7 4" : undefined}
-                    style={{ cursor: "crosshair" }}
+                    style={{ cursor: "pointer" }}
                     onMouseEnter={e => handleCurveHover(idx, e)}
                     onMouseMove={e => handleCurveMove(idx, e)}
                     onMouseLeave={handleCurveLeave}
-                    role="img"
-                    aria-label={`${c.peptide.name} plasma concentration curve, t½ ${c.pk.halfLifeLabel}`}
+                    onClick={() => handleCurveClick(idx)}
+                    role="button"
+                    aria-label={`${c.peptide.name} plasma concentration curve, t½ ${c.pk.halfLifeLabel}${pinnedIdx === idx ? " (pinned)" : ""}`}
+                    aria-pressed={pinnedIdx === idx}
                     tabIndex={0}
                     onFocus={() => handleLegendEnter(idx)}
                     onBlur={handleCurveLeave}
+                    onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleCurveClick(idx); } }}
                   />
                 ))}
               </g>
@@ -503,6 +522,11 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
 
         {/* Legend */}
         <div className="p-3 pt-2 space-y-3">
+          {hasCurves && (
+            <p className="text-[10px] text-muted-foreground/50 mb-1 select-none" data-testid="text-pin-hint">
+              {pinnedIdx !== null ? "Click the highlighted row to unpin" : "Click a curve or row to pin the highlight"}
+            </p>
+          )}
           {curves.map((c, i) => {
             if (!c) {
               const missing = entries[i];
@@ -513,26 +537,30 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
                 </div>
               );
             }
-            const isActive = hoveredIdx === i;
-            const isDimmed = hoveredIdx !== null && !isActive;
+            const isPinned = pinnedIdx === i;
+            const isActive = effectiveIdx === i;
+            const isDimmed = effectiveIdx !== null && !isActive;
             return (
               <div
                 key={c.peptide.name}
-                className="flex flex-col gap-1 rounded-md px-1.5 py-1 -mx-1.5 cursor-default"
+                className="flex flex-col gap-1 rounded-md px-1.5 py-1 -mx-1.5 cursor-pointer select-none"
                 style={{
                   opacity: isDimmed ? 0.3 : 1,
                   transition: "opacity 0.18s ease",
-                  outline: isActive ? `1px solid ${c.color}30` : "1px solid transparent",
-                  background: isActive ? `${c.color}08` : "transparent",
+                  outline: isActive ? `1px solid ${c.color}${isPinned ? "60" : "30"}` : "1px solid transparent",
+                  background: isActive ? `${c.color}${isPinned ? "14" : "08"}` : "transparent",
                 }}
                 onMouseEnter={e => handleLegendEnter(i, e)}
                 onMouseMove={e => handleLegendMove(i, e)}
                 onMouseLeave={handleLegendLeave}
+                onClick={() => handleLegendClick(i)}
                 onFocus={e => handleLegendEnter(i, e)}
                 onBlur={handleLegendLeave}
+                onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleLegendClick(i); } }}
                 tabIndex={0}
-                role="listitem"
-                aria-label={`${c.peptide.name}, half-life ${c.pk.halfLifeLabel}`}
+                role="button"
+                aria-pressed={isPinned}
+                aria-label={`${c.peptide.name}, half-life ${c.pk.halfLifeLabel}${isPinned ? " (pinned)" : ""}`}
                 data-testid={`legend-row-${toTestSlug(c.peptide.name)}`}
               >
                 <div className="flex flex-wrap items-center gap-2">
@@ -540,7 +568,7 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
                     className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                     style={{
                       backgroundColor: c.color,
-                      boxShadow: isActive ? `0 0 10px ${c.color}` : `0 0 7px ${c.color}`,
+                      boxShadow: isActive ? `0 0 ${isPinned ? "14px" : "10px"} ${c.color}` : `0 0 7px ${c.color}`,
                       transition: "box-shadow 0.18s ease",
                     }}
                   />
@@ -550,6 +578,14 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
                     </svg>
                   )}
                   <span className="text-sm font-medium">{c.peptide.name}</span>
+                  {isPinned && (
+                    <Lock
+                      className="h-3 w-3 flex-shrink-0"
+                      style={{ color: c.color, opacity: 0.85 }}
+                      aria-hidden="true"
+                      data-testid={`icon-pinned-${toTestSlug(c.peptide.name)}`}
+                    />
+                  )}
                   <span
                     className="text-[10px] font-medium px-1.5 py-px rounded"
                     style={{ backgroundColor: `${c.color}18`, color: c.color, border: `1px solid ${c.color}30` }}
@@ -564,6 +600,7 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
                         style={{ borderColor: `${c.color}45`, backgroundColor: `${c.color}18`, color: c.color }}
                         data-testid={`chip-halflife-${toTestSlug(c.peptide.name)}`}
                         aria-label={`Pharmacokinetic half-life data for ${c.peptide.name}`}
+                        onClick={e => e.stopPropagation()}
                       >
                         <Clock className="h-3 w-3" />
                         <span>t½ {c.pk.halfLifeLabel}</span>
