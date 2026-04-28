@@ -128,6 +128,12 @@ const PK_ZOOM_PRESETS: { label: string; minutes: number }[] = [
   { label: "7 d",  minutes: 10080 },
 ];
 
+// Thresholds that define whether a compound's kinetics are "meaningfully visible"
+// within the active zoom window. Compounds outside these bounds either decay to
+// near-zero before the window ends (too fast) or appear essentially flat (too slow).
+const PK_VISIBLE_LOWER_RATIO = 20;  // mid must be >= xMaxMin / PK_VISIBLE_LOWER_RATIO
+const PK_VISIBLE_UPPER_RATIO = 5;   // mid must be <= xMaxMin * PK_VISIBLE_UPPER_RATIO
+
 const PK_ZOOM_STORAGE_KEY = "pk-zoom-range";
 
 function readStoredZoom(): number | null {
@@ -194,7 +200,24 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
   });
 
   const definedPks = pksWithData;
-  const showMismatch = hasKineticMismatch(definedPks);
+
+  // Zoom-aware mismatch: only flag a kinetic difference when both fast and slow
+  // compounds are meaningfully visible in the active zoom window.
+  // Thresholds are set by PK_VISIBLE_LOWER_RATIO / PK_VISIBLE_UPPER_RATIO above.
+  const visiblePks = definedPks.filter((pk) => {
+    const mid = pkMidpoint(pk);
+    if (mid === null) return false;
+    return mid >= xMaxMin / PK_VISIBLE_LOWER_RATIO && mid <= xMaxMin * PK_VISIBLE_UPPER_RATIO;
+  });
+  // Require at least 2 meaningful compounds in the window; if only one side of the
+  // mismatch is visible, suppress the warning rather than mislead the researcher.
+  const showMismatch = visiblePks.length >= 2 ? hasKineticMismatch(visiblePks) : false;
+
+  // Compounds whose half-life exceeds the zoom window (they reach < 50 % decay within view).
+  const beyondViewNames = definedPks
+    .filter((pk) => { const mid = pkMidpoint(pk); return mid !== null && mid > xMaxMin; })
+    .map((pk) => pk.name);
+
   const hasCurves = curves.some(Boolean);
   const clipId = "pk-clip-" + peptides.map(p => toTestSlug(p.name)).join("-");
 
@@ -553,6 +576,15 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
             <Info className="h-3.5 w-3.5 text-muted-foreground mt-0.5 flex-shrink-0" />
             <p className="text-xs text-muted-foreground leading-relaxed">
               Kinetic profiles differ — researchers may account for peak timing in experimental design.
+              {beyondViewNames.length > 0 && (
+                <span className="block mt-0.5">
+                  {beyondViewNames.length === 1
+                    ? `${beyondViewNames[0]} extends beyond the current view.`
+                    : beyondViewNames.length === 2
+                      ? `${beyondViewNames[0]} and ${beyondViewNames[1]} extend beyond the current view.`
+                      : `${beyondViewNames.slice(0, -1).join(", ")}, and ${beyondViewNames[beyondViewNames.length - 1]} extend beyond the current view.`}
+                </span>
+              )}
             </p>
           </div>
         )}
