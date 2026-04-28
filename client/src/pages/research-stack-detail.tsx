@@ -128,11 +128,11 @@ const PK_ZOOM_PRESETS: { label: string; minutes: number }[] = [
   { label: "7 d",  minutes: 10080 },
 ];
 
-const PK_ZOOM_STORAGE_KEY = "pk-zoom-range";
+const PK_ZOOM_STORAGE_KEY_PREFIX = "pk-zoom-range:";
 
-function readStoredZoom(): number | null {
+function readStoredZoom(stackId: string): number | null {
   try {
-    const raw = localStorage.getItem(PK_ZOOM_STORAGE_KEY);
+    const raw = localStorage.getItem(PK_ZOOM_STORAGE_KEY_PREFIX + stackId);
     if (raw === null || raw === "auto") return null;
     const n = Number(raw);
     return Number.isFinite(n) ? n : null;
@@ -141,20 +141,20 @@ function readStoredZoom(): number | null {
   }
 }
 
-function writeStoredZoom(value: number | null): void {
+function writeStoredZoom(stackId: string, value: number | null): void {
   try {
     if (value === null) {
-      localStorage.removeItem(PK_ZOOM_STORAGE_KEY);
+      localStorage.removeItem(PK_ZOOM_STORAGE_KEY_PREFIX + stackId);
     } else {
-      localStorage.setItem(PK_ZOOM_STORAGE_KEY, String(value));
+      localStorage.setItem(PK_ZOOM_STORAGE_KEY_PREFIX + stackId, String(value));
     }
   } catch {
     // ignore
   }
 }
 
-function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
-  const [selectedRange, setSelectedRange] = useState<number | null>(readStoredZoom);
+function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPeptide[]; stackId: string }) {
+  const [selectedRange, setSelectedRange] = useState<number | null>(() => readStoredZoom(stackId));
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [pinnedIdx, setPinnedIdx] = useState<number | null>(null);
   const [tooltip, setTooltip] = useState<{ clientX: number; clientY: number; label: string; halfLife: string; concentration: number; timeDisp: string } | null>(null);
@@ -163,15 +163,15 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
   const svgRef = useRef<SVGSVGElement>(null);
 
   function handleRangeChange(value: number | null) {
-    writeStoredZoom(value);
+    writeStoredZoom(stackId, value);
     setSelectedRange(value);
   }
 
   const peptideKey = peptides.map(p => p.name).join("|");
   useEffect(() => {
-    setSelectedRange(readStoredZoom());
+    setSelectedRange(readStoredZoom(stackId));
     setPinnedIdx(null);
-  }, [peptideKey]);
+  }, [peptideKey, stackId]);
 
   const entries = peptides.map((p, i) => ({
     peptide: p,
@@ -1261,7 +1261,7 @@ export default function ResearchStackDetail() {
               </div>
             )}
 
-            <PharmacokineticsChart peptides={stack.peptides} />
+            <PharmacokineticsChart peptides={stack.peptides} stackId={params.id} />
 
             <div className="mb-8" data-testid="section-synergy-explanation">
               <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
