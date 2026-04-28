@@ -7306,8 +7306,21 @@ interface DeadLinkHit {
 }
 
 function DeadLinksTab() {
+  const { toast } = useToast();
   const { data: hits = [], isLoading, refetch } = useQuery<DeadLinkHit[]>({
     queryKey: ["/api/dead-links"],
+  });
+
+  const dismissMutation = useMutation({
+    mutationFn: ({ type, slug }: { type: string; slug: string }) =>
+      apiRequest("DELETE", `/api/dead-links/${type}/${slug}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/dead-links"] });
+      toast({ title: "Record dismissed", description: "The dead-link record has been removed." });
+    },
+    onError: () => {
+      toast({ title: "Dismiss failed", description: "Could not remove the record. Please try again.", variant: "destructive" });
+    },
   });
 
   return (
@@ -7352,6 +7365,7 @@ function DeadLinksTab() {
               <TableHead>Slug / ID</TableHead>
               <TableHead className="text-right">Hits</TableHead>
               <TableHead>Last Seen</TableHead>
+              <TableHead className="w-16"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -7370,6 +7384,18 @@ function DeadLinksTab() {
                 </TableCell>
                 <TableCell className="text-muted-foreground text-sm">
                   {new Date(hit.lastSeenAt).toLocaleString()}
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    disabled={dismissMutation.isPending}
+                    onClick={() => dismissMutation.mutate({ type: hit.type, slug: hit.slug })}
+                    data-testid={`button-dismiss-dead-link-${hit.type}-${hit.slug}`}
+                    title="Dismiss this record"
+                  >
+                    <Trash2 className="h-4 w-4 text-muted-foreground" />
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}

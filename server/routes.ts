@@ -5040,5 +5040,29 @@ Return ONLY valid JSON in this exact format:
     }
   });
 
+  app.delete("/api/dead-links/:type/:slug", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const user = userId ? await storage.getUser(userId) : null;
+      if (!user?.isAdmin) {
+        return res.status(403).json({ error: "Admin only" });
+      }
+      const { type, slug } = req.params;
+      if (!type || !["product", "guide"].includes(type)) {
+        return res.status(400).json({ error: "Invalid type" });
+      }
+      if (!isValidSlug(slug)) {
+        return res.status(400).json({ error: "Invalid slug" });
+      }
+      const key = `${type}:${slug.toLowerCase()}`;
+      const existed = deadLinkHits.has(key);
+      deadLinkHits.delete(key);
+      return res.json({ ok: true, existed });
+    } catch (error) {
+      console.error("Error dismissing dead link:", error);
+      return res.status(500).json({ error: "Failed to dismiss dead link" });
+    }
+  });
+
   return httpServer;
 }
