@@ -674,18 +674,37 @@ function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPeptide[]
         {showMismatch && (
           <div className="mx-3 mb-3 flex items-start gap-2 p-2.5 rounded-md bg-muted/20 border border-border/30">
             <Info className="h-3.5 w-3.5 text-muted-foreground mt-0.5 flex-shrink-0" />
-            <p className="text-xs text-muted-foreground leading-relaxed">
+            <div className="text-xs text-muted-foreground leading-relaxed">
               Kinetic profiles differ — researchers may account for peak timing in experimental design.
               {beyondViewNames.length > 0 && (
-                <span className="block mt-0.5">
-                  {beyondViewNames.length === 1
-                    ? `${beyondViewNames[0]} extends beyond the current view.`
-                    : beyondViewNames.length === 2
-                      ? `${beyondViewNames[0]} and ${beyondViewNames[1]} extend beyond the current view.`
-                      : `${beyondViewNames.slice(0, -1).join(", ")}, and ${beyondViewNames[beyondViewNames.length - 1]} extend beyond the current view.`}
-                </span>
+                <div className="flex items-center mt-0.5">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button
+                        data-testid="button-beyond-view-info"
+                        className="inline-flex items-center gap-1 text-left text-muted-foreground hover:text-foreground transition-colors"
+                        aria-label="What does extends beyond the current view mean?"
+                      >
+                        <span>
+                          {beyondViewNames.length === 1
+                            ? `${beyondViewNames[0]} extends beyond the current view.`
+                            : beyondViewNames.length === 2
+                              ? `${beyondViewNames[0]} and ${beyondViewNames[1]} extend beyond the current view.`
+                              : `${beyondViewNames.slice(0, -1).join(", ")}, and ${beyondViewNames[beyondViewNames.length - 1]} extend beyond the current view.`}
+                        </span>
+                        <Info className="h-3 w-3 flex-shrink-0" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-72 text-xs" side="top" align="start">
+                      <p className="font-medium text-foreground mb-1">Extends beyond the current view</p>
+                      <p className="text-muted-foreground leading-relaxed">
+                        This compound has not yet reached its 50% decay point (t½) within the selected time window. Its full peak-to-trough profile extends past the right edge of the chart, so the curve's descent is not visible here. Widen the time range to see the complete kinetic profile.
+                      </p>
+                    </PopoverContent>
+                  </Popover>
+                </div>
               )}
-            </p>
+            </div>
           </div>
         )}
       </Card>
