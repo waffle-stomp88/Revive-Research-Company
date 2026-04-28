@@ -157,8 +157,10 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
   const [selectedRange, setSelectedRange] = useState<number | null>(readStoredZoom);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [pinnedIdx, setPinnedIdx] = useState<number | null>(null);
-  const [tooltip, setTooltip] = useState<{ clientX: number; clientY: number; label: string; halfLife: string } | null>(null);
+  const [tooltip, setTooltip] = useState<{ clientX: number; clientY: number; label: string; halfLife: string; concentration: number; timeDisp: string } | null>(null);
+  const [crosshairSvgX, setCrosshairSvgX] = useState<number | null>(null);
   const chartWrapRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
 
   function handleRangeChange(value: number | null) {
     writeStoredZoom(value);
@@ -234,27 +236,66 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
     return idx === effectiveIdx ? 1 : 0.06;
   }, [effectiveIdx]);
 
+  const getCrosshairData = useCallback((idx: number, e: React.MouseEvent) => {
+    const c = curves[idx];
+    if (!c || !svgRef.current) return null;
+    const rect = svgRef.current.getBoundingClientRect();
+    const svgX = Math.max(CHART.x0, Math.min(CHART.x1,
+      ((e.clientX - rect.left) / rect.width) * CHART.vbW
+    ));
+    const frac = (svgX - CHART.x0) / CHART.plotW;
+    const N = c.pts.length - 1;
+    const rawIdx = frac * N;
+    const lo = Math.max(0, Math.floor(rawIdx));
+    const hi = Math.min(N, Math.ceil(rawIdx));
+    const t = rawIdx - lo;
+    const yLo = c.pts[lo].y;
+    const yHi = c.pts[hi].y;
+    const yInterp = yLo + (yHi - yLo) * t;
+    const concentration = Math.max(0, Math.min(1, 1 - (yInterp - CHART.y0) / CHART.plotH));
+    const timeMin = frac * xMaxMin;
+    const timeDisp = useHours
+      ? `${(timeMin / 60).toFixed(1)} h`
+      : `${Math.round(timeMin)} min`;
+    return { svgX, concentration, timeDisp };
+  }, [curves, xMaxMin, useHours]);
+
   const handleCurveHover = useCallback((idx: number, e: React.MouseEvent) => {
     const c = curves[idx];
     if (!c) return;
     setHoveredIdx(idx);
+    const crosshair = getCrosshairData(idx, e);
+    setCrosshairSvgX(crosshair?.svgX ?? null);
     setTooltip({
       clientX: e.clientX,
       clientY: e.clientY,
       label: c.peptide.name,
       halfLife: c.pk.halfLifeLabel,
+      concentration: crosshair?.concentration ?? 0,
+      timeDisp: crosshair?.timeDisp ?? "",
     });
-  }, [curves]);
+  }, [curves, getCrosshairData]);
 
   const handleCurveMove = useCallback((idx: number, e: React.MouseEvent) => {
     const c = curves[idx];
     if (!c) return;
-    setTooltip(prev => prev ? { ...prev, clientX: e.clientX, clientY: e.clientY } : prev);
-  }, [curves]);
+    const crosshair = getCrosshairData(idx, e);
+    if (crosshair) {
+      setCrosshairSvgX(crosshair.svgX);
+      setTooltip(prev => prev ? {
+        ...prev,
+        clientX: e.clientX,
+        clientY: e.clientY,
+        concentration: crosshair.concentration,
+        timeDisp: crosshair.timeDisp,
+      } : prev);
+    }
+  }, [curves, getCrosshairData]);
 
   const handleCurveLeave = useCallback(() => {
     setHoveredIdx(null);
     setTooltip(null);
+    setCrosshairSvgX(null);
   }, []);
 
   const handleCurveClick = useCallback((idx: number) => {
@@ -270,19 +311,20 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
     const clientX = (e as React.MouseEvent)?.clientX ?? 0;
     const clientY = (e as React.MouseEvent)?.clientY ?? 0;
     if (clientX || clientY) {
-      setTooltip({ clientX, clientY, label: c.peptide.name, halfLife: c.pk.halfLifeLabel });
+      setTooltip({ clientX, clientY, label: c.peptide.name, halfLife: c.pk.halfLifeLabel, concentration: -1, timeDisp: "" });
     }
   }, [curves]);
 
   const handleLegendMove = useCallback((idx: number, e: React.MouseEvent) => {
     const c = curves[idx];
     if (!c) return;
-    setTooltip({ clientX: e.clientX, clientY: e.clientY, label: c.peptide.name, halfLife: c.pk.halfLifeLabel });
+    setTooltip({ clientX: e.clientX, clientY: e.clientY, label: c.peptide.name, halfLife: c.pk.halfLifeLabel, concentration: -1, timeDisp: "" });
   }, [curves]);
 
   const handleLegendLeave = useCallback(() => {
     setHoveredIdx(null);
     setTooltip(null);
+    setCrosshairSvgX(null);
   }, []);
 
   const handleLegendClick = useCallback((idx: number) => {
@@ -351,6 +393,7 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
               </div>
             )}
             <svg
+              ref={svgRef}
               viewBox={`0 0 ${CHART.vbW} ${CHART.vbH}`}
               className="w-full"
               style={{ maxHeight: 200 }}
@@ -476,6 +519,19 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
                 ))}
               </g>
 
+              {/* Vertical crosshair line */}
+              {crosshairSvgX !== null && hoveredIdx !== null && (
+                <line
+                  x1={crosshairSvgX} y1={CHART.y0}
+                  x2={crosshairSvgX} y2={CHART.y1}
+                  stroke={curves[hoveredIdx]?.color ?? "#fff"}
+                  strokeOpacity="0.55"
+                  strokeWidth="1"
+                  strokeDasharray="3 3"
+                  pointerEvents="none"
+                />
+              )}
+
               {/* Continuation arrows for extended curves */}
               {curves.map((c, idx) => c && c.isExtended && (
                 <text key={`arr-${c.peptide.name}`}
@@ -514,7 +570,10 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
                 role="tooltip"
               >
                 <span className="block font-semibold">{tooltip.label}</span>
-                <span className="block opacity-70">t½ {tooltip.halfLife}</span>
+                {tooltip.concentration >= 0 && (
+                  <span className="block opacity-80 tabular-nums">~{Math.round(tooltip.concentration * 100)}% at {tooltip.timeDisp}</span>
+                )}
+                <span className="block opacity-50 text-[10px] mt-0.5">t½ {tooltip.halfLife}</span>
               </div>
             )}
           </div>
