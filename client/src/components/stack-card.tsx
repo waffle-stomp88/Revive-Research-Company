@@ -1,15 +1,7 @@
 import { forwardRef } from "react";
-import { GitMerge, Heart, Zap, Target, Brain, Sparkles, Crown } from "lucide-react";
+import { GitMerge } from "lucide-react";
 import type { TriggeredOverlap } from "@/lib/pathway-overlaps";
-
-const BODY_SYSTEMS = [
-  { id: "healing", name: "Healing", icon: Heart, color: "#22c55e" },
-  { id: "metabolic", name: "Metabolic", icon: Zap, color: "#E7FB10" },
-  { id: "growth", name: "Growth", icon: Target, color: "#f59e0b" },
-  { id: "cognitive", name: "Cognitive", icon: Brain, color: "#21d8ff" },
-  { id: "skin", name: "Skin", icon: Sparkles, color: "#ec4899" },
-  { id: "longevity", name: "Longevity", icon: Crown, color: "#a855f7" },
-];
+import { BODY_SYSTEMS } from "@/data/body-systems";
 
 function synergyRingColor(score: number): string {
   if (score >= 88) return "#E7FB10";
