@@ -2842,17 +2842,33 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                       >
                                         <div className="flex items-center gap-1.5 flex-1 min-w-0">
                                           {comboKnownStack && (
-                                            <span
-                                              className="inline-flex items-center shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold tracking-wide border"
-                                              style={{
-                                                color: comboKnownStack.color,
-                                                borderColor: `${comboKnownStack.color}50`,
-                                                backgroundColor: `${comboKnownStack.color}18`,
-                                              }}
-                                              data-testid={`badge-popular-combo-stack-name-${i}`}
-                                            >
-                                              {comboKnownStack.name}
-                                            </span>
+                                            comboKnownStack.detailPageId ? (
+                                              <Link
+                                                href={`/research-stacks/${comboKnownStack.detailPageId}`}
+                                                onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                                                className="inline-flex items-center shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold tracking-wide border"
+                                                style={{
+                                                  color: comboKnownStack.color,
+                                                  borderColor: `${comboKnownStack.color}50`,
+                                                  backgroundColor: `${comboKnownStack.color}18`,
+                                                }}
+                                                data-testid={`badge-popular-combo-stack-name-${i}`}
+                                              >
+                                                {comboKnownStack.name}
+                                              </Link>
+                                            ) : (
+                                              <span
+                                                className="inline-flex items-center shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold tracking-wide border"
+                                                style={{
+                                                  color: comboKnownStack.color,
+                                                  borderColor: `${comboKnownStack.color}50`,
+                                                  backgroundColor: `${comboKnownStack.color}18`,
+                                                }}
+                                                data-testid={`badge-popular-combo-stack-name-${i}`}
+                                              >
+                                                {comboKnownStack.name}
+                                              </span>
+                                            )
                                           )}
                                           <p className="text-xs text-muted-foreground truncate">
                                             {combo.peptideNames.join(' + ')}
