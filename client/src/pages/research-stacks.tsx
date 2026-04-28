@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
 import { STACK_COMPONENTS, buildPriceLookup, calculateStackPricing } from "@/lib/stack-pricing";
 import { CategoryTabs } from "@/components/category-tabs";
-import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, X, Check, ShoppingCart, Beaker, Brain, Target, Rocket, Activity, Moon, Dumbbell, Timer, Save, Share2, Trash2, Copy, Users, LucideIcon, Search, AlertCircle, ChevronUp, ChevronDown, Monitor, GitMerge } from "lucide-react";
+import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, X, Check, ShoppingCart, Beaker, Brain, Target, Rocket, Activity, Moon, Dumbbell, Timer, Save, Share2, Trash2, Copy, Users, LucideIcon, Search, AlertCircle, ChevronUp, ChevronDown, Monitor, GitMerge, Clock } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +29,7 @@ import { PathwayOverlapCard } from "@/components/pathway-overlap-card";
 import { RESEARCH_STACKS_DATA } from "@/data/research-stacks";
 import type { SynergyCopy, StackIconName } from "@/data/research-stacks";
 import { getSystemIcon } from "@/data/body-systems";
+import { getHalfLifeBySlug, getHalfLifeByName } from "@/data/pharmacokinetics";
 import { KNOWN_STACKS } from "@/data/known-stacks";
 import type { KnownStack } from "@/data/known-stacks";
 import { PEPTIDE_PATHWAYS } from "@/data/peptide-pathways";
@@ -3085,22 +3086,41 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           {selectedPeptides.map(peptide => {
                             const isOOS = !peptide.inStock;
+                            const pkEntry = peptide.slug
+                              ? getHalfLifeBySlug(peptide.slug) ?? getHalfLifeByName(peptide.name)
+                              : getHalfLifeByName(peptide.name);
+                            const builderSlug = (peptide.slug || peptide.name)
+                              .toLowerCase()
+                              .replace(/[^a-z0-9]+/g, "-")
+                              .replace(/^-|-$/g, "");
                             return (
                               <div 
                                 key={peptide.id}
-                                className={`flex items-center justify-between p-2 rounded-lg ${isOOS ? 'bg-red-500/10 border border-red-500/30' : 'bg-[#21d8ff]/5 border border-[#21d8ff]/20'}`}
+                                className={`flex items-start justify-between p-2 rounded-lg ${isOOS ? 'bg-red-500/10 border border-red-500/30' : 'bg-[#21d8ff]/5 border border-[#21d8ff]/20'}`}
                               >
-                                <div className="flex items-center gap-2">
-                                  <span className={`font-medium text-sm ${isOOS ? 'text-red-300/80' : ''}`}>
-                                    {peptide.name.replace(/\s*\([^)]*\)/g, '')}
-                                  </span>
-                                  {isOOS && (
-                                    <Badge variant="outline" className="text-xs border-red-500/40 text-red-400 no-default-hover-elevate no-default-active-elevate" data-testid={`badge-oos-${peptide.id}`}>
-                                      OOS
-                                    </Badge>
+                                <div className="flex flex-col gap-1 min-w-0">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className={`font-medium text-sm ${isOOS ? 'text-red-300/80' : ''}`}>
+                                      {peptide.name.replace(/\s*\([^)]*\)/g, '')}
+                                    </span>
+                                    {isOOS && (
+                                      <Badge variant="outline" className="text-xs border-red-500/40 text-red-400 no-default-hover-elevate no-default-active-elevate" data-testid={`badge-oos-${peptide.id}`}>
+                                        OOS
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  {pkEntry && (
+                                    <span
+                                      className="inline-flex items-center gap-1 w-fit px-1.5 py-0.5 rounded-full text-[10px] font-medium border border-[#21d8ff]/30 bg-[#21d8ff]/10 text-[#21d8ff]"
+                                      title={`Documented plasma half-life: ${pkEntry.halfLifeLabel} (${pkEntry.route})`}
+                                      data-testid={`chip-halflife-builder-${builderSlug}`}
+                                    >
+                                      <Clock className="h-2.5 w-2.5" />
+                                      t&#189; {pkEntry.halfLifeLabel}
+                                    </span>
                                   )}
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 shrink-0 ml-2">
                                   <span className={`text-sm ${isOOS ? 'line-through text-red-400/50' : 'text-muted-foreground'}`}>${peptide.price}</span>
                                   <Button
                                     size="icon"

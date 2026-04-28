@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { STACK_COMPONENTS, buildPriceLookup, calculateStackPricing } from "@/lib/stack-pricing";
 import { SEOHead } from "@/components/seo-head";
 import {
-  ArrowLeft, FlaskConical, ShoppingCart, Sparkles, AlertTriangle, Package, GraduationCap, Shield, FileCheck, Truck, RefreshCw, ShoppingBag, Repeat, CheckCircle, Minus, Plus, BookOpen, ChevronRight, ChevronDown
+  ArrowLeft, FlaskConical, ShoppingCart, Sparkles, AlertTriangle, Package, GraduationCap, Shield, FileCheck, Truck, RefreshCw, ShoppingBag, Repeat, CheckCircle, Minus, Plus, BookOpen, ChevronRight, ChevronDown, Clock, Info
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { getHalfLifeByName, hasKineticMismatch } from "@/data/pharmacokinetics";
 import { ImageLoader } from "@/components/image-loader";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
@@ -25,6 +27,296 @@ import { Layers, Zap } from "lucide-react";
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { RESEARCH_STACKS_BY_ID } from "@/data/research-stacks";
+import type { StackPeptide } from "@/data/research-stacks";
+import type { HalfLifeEntry } from "@/data/pharmacokinetics";
+
+// ─── Pharmacokinetics Chart ───────────────────────────────────────────────────
+
+const PK_CURVE_COLORS = ["#21d8ff", "#E7FB10", "#22c55e", "#f59e0b", "#a855f7"];
+
+const CHART = {
+  vbW: 500, vbH: 195,
+  pT: 14, pR: 28, pB: 46, pL: 44,
+  get plotW() { return this.vbW - this.pL - this.pR; },
+  get plotH() { return this.vbH - this.pT - this.pB; },
+  get x0() { return this.pL; },
+  get y0() { return this.pT; },
+  get x1() { return this.vbW - this.pR; },
+  get y1() { return this.vbH - this.pB; },
+};
+
+function pkMidpoint(pk: HalfLifeEntry): number | null {
+  if (pk.halfLifeMin !== undefined && pk.halfLifeMax !== undefined) return (pk.halfLifeMin + pk.halfLifeMax) / 2;
+  if (pk.halfLifeMin !== undefined) return pk.halfLifeMin;
+  if (pk.halfLifeMax !== undefined) return pk.halfLifeMax;
+  return null;
+}
+
+function computeXMax(pks: HalfLifeEntry[]): { xMaxMin: number; shortFocus: boolean } {
+  const mids = pks.map(pkMidpoint).filter((v): v is number => v !== null && v > 0);
+  if (mids.length === 0) return { xMaxMin: 1440, shortFocus: false };
+  const minM = Math.min(...mids);
+  const maxM = Math.max(...mids);
+  if (mids.length >= 2 && maxM / minM > 30) {
+    return { xMaxMin: Math.min(10 * minM, 4320), shortFocus: true };
+  }
+  return { xMaxMin: Math.min(5 * maxM, 7200), shortFocus: false };
+}
+
+function buildPKCurve(halfLifeMidMin: number | null, xMaxMin: number): { x: number; y: number }[] {
+  const N = 240;
+  const effHL = halfLifeMidMin === null ? xMaxMin * 80 : halfLifeMidMin;
+  const ke = Math.log(2) / effHL;
+  const kaFloor = Math.log(2) / (0.08 * xMaxMin);
+  const ka = Math.max(ke * 10, kaFloor);
+  const safeKa = ka === ke ? ka * 1.0001 : ka;
+
+  const raw: number[] = [];
+  for (let i = 0; i <= N; i++) {
+    const t = (i / N) * xMaxMin;
+    const v = (Math.exp(-ke * t) - Math.exp(-safeKa * t)) / (safeKa - ke);
+    raw.push(Math.max(0, v));
+  }
+  const maxV = Math.max(...raw, 1e-9);
+  return raw.map((v, i) => ({
+    x: CHART.x0 + (i / N) * CHART.plotW,
+    y: CHART.y0 + CHART.plotH * (1 - v / maxV),
+  }));
+}
+
+function ptsToD(pts: { x: number; y: number }[]): string {
+  if (!pts.length) return "";
+  let d = `M ${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
+  for (let i = 1; i < pts.length - 1; i++) {
+    const cx = (pts[i].x + pts[i + 1].x) / 2;
+    const cy = (pts[i].y + pts[i + 1].y) / 2;
+    d += ` Q ${pts[i].x.toFixed(1)},${pts[i].y.toFixed(1)} ${cx.toFixed(1)},${cy.toFixed(1)}`;
+  }
+  const last = pts[pts.length - 1];
+  d += ` L ${last.x.toFixed(1)},${last.y.toFixed(1)}`;
+  return d;
+}
+
+function ptsToAreaD(pts: { x: number; y: number }[]): string {
+  const c = ptsToD(pts);
+  const f = pts[0], l = pts[pts.length - 1];
+  return `${c} L ${l.x.toFixed(1)},${CHART.y1.toFixed(1)} L ${f.x.toFixed(1)},${CHART.y1.toFixed(1)} Z`;
+}
+
+function toTestSlug(name: string) {
+  return name.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+}
+
+function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
+  const entries = peptides.map((p, i) => ({
+    peptide: p,
+    pk: getHalfLifeByName(p.name),
+    color: PK_CURVE_COLORS[i % PK_CURVE_COLORS.length],
+  }));
+
+  const pksWithData = entries.map(e => e.pk).filter((pk): pk is HalfLifeEntry => pk !== undefined);
+  const { xMaxMin, shortFocus } = computeXMax(pksWithData);
+  const useHours = xMaxMin >= 120;
+  const xMaxDisp = useHours ? xMaxMin / 60 : xMaxMin;
+
+  const xTicks = [0, 0.25, 0.5, 0.75, 1].map(f => {
+    const val = f * xMaxDisp;
+    return { frac: f, label: useHours ? (val < 10 ? val.toFixed(1) : Math.round(val).toString()) : Math.round(val).toString() };
+  });
+
+  const curves = entries.map(({ peptide, pk, color }) => {
+    if (!pk) return null;
+    const mid = pkMidpoint(pk);
+    const pts = buildPKCurve(mid, xMaxMin);
+    const lastY = pts[pts.length - 1].y;
+    const isExtended = mid === null || mid > xMaxMin * 0.5;
+    const halfLifeXFrac = mid !== null && mid <= xMaxMin ? mid / xMaxMin : null;
+    return { peptide, pk, color, pts, isExtended, halfLifeXFrac, lastY, curveD: ptsToD(pts), areaD: ptsToAreaD(pts) };
+  });
+
+  const definedPks = pksWithData;
+  const showMismatch = hasKineticMismatch(definedPks);
+  const hasCurves = curves.some(Boolean);
+  const clipId = "pk-clip-" + peptides.map(p => toTestSlug(p.name)).join("-");
+
+  return (
+    <div className="mb-8" data-testid="section-compounds">
+      <h3 className="font-display font-semibold text-lg mb-3">Compounds in this Stack</h3>
+      <Card className="border-border/40 bg-[#07070b] overflow-hidden">
+        {hasCurves && (
+          <div className="p-3 pb-0">
+            <svg
+              viewBox={`0 0 ${CHART.vbW} ${CHART.vbH}`}
+              className="w-full"
+              style={{ maxHeight: 200 }}
+              role="img"
+              aria-label="Plasma concentration–time curves for compounds in this stack"
+            >
+              <defs>
+                <clipPath id={clipId}>
+                  <rect x={CHART.x0} y={CHART.y0} width={CHART.plotW} height={CHART.plotH + 1} />
+                </clipPath>
+                {curves.map(c => c && (
+                  <linearGradient key={`g-${toTestSlug(c.peptide.name)}`} id={`g-${toTestSlug(c.peptide.name)}`} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={c.color} stopOpacity="0.22" />
+                    <stop offset="100%" stopColor={c.color} stopOpacity="0" />
+                  </linearGradient>
+                ))}
+              </defs>
+
+              {/* Grid */}
+              {[0.25, 0.5, 0.75].map((f, i) => (
+                <line key={i} x1={CHART.x0} y1={CHART.y0 + f * CHART.plotH} x2={CHART.x1} y2={CHART.y0 + f * CHART.plotH}
+                  stroke="#fff" strokeOpacity="0.05" strokeWidth="1" />
+              ))}
+
+              {/* Axes */}
+              <line x1={CHART.x0} y1={CHART.y0} x2={CHART.x0} y2={CHART.y1} stroke="#fff" strokeOpacity="0.12" strokeWidth="1" />
+              <line x1={CHART.x0} y1={CHART.y1} x2={CHART.x1} y2={CHART.y1} stroke="#fff" strokeOpacity="0.12" strokeWidth="1" />
+
+              {/* Y-axis ticks */}
+              {[["100%", 0], ["50%", 0.5], ["0%", 1]].map(([lbl, f]) => (
+                <g key={String(f)}>
+                  <line x1={CHART.x0 - 3} y1={CHART.y0 + Number(f) * CHART.plotH} x2={CHART.x0} y2={CHART.y0 + Number(f) * CHART.plotH}
+                    stroke="#fff" strokeOpacity="0.15" strokeWidth="1" />
+                  <text x={CHART.x0 - 5} y={CHART.y0 + Number(f) * CHART.plotH + 3} textAnchor="end" fontSize="8" fill="#fff" fillOpacity="0.3">{lbl}</text>
+                </g>
+              ))}
+
+              {/* Y-axis label */}
+              <text x={9} y={CHART.y0 + CHART.plotH / 2} textAnchor="middle" fontSize="8" fill="#fff" fillOpacity="0.25"
+                transform={`rotate(-90,9,${CHART.y0 + CHART.plotH / 2})`}>Relative C</text>
+
+              {/* Area fills */}
+              <g clipPath={`url(#${clipId})`}>
+                {curves.map(c => c && (
+                  <path key={`a-${c.peptide.name}`} d={c.areaD} fill={`url(#g-${toTestSlug(c.peptide.name)})`} />
+                ))}
+              </g>
+
+              {/* t½ vertical markers */}
+              {curves.map(c => c && c.halfLifeXFrac !== null && (
+                <g key={`m-${c.peptide.name}`}>
+                  <line
+                    x1={CHART.x0 + c.halfLifeXFrac * CHART.plotW} y1={CHART.y0}
+                    x2={CHART.x0 + c.halfLifeXFrac * CHART.plotW} y2={CHART.y1}
+                    stroke={c.color} strokeOpacity="0.25" strokeWidth="1" strokeDasharray="3 3"
+                  />
+                  <text x={CHART.x0 + c.halfLifeXFrac * CHART.plotW} y={CHART.y1 + 11}
+                    textAnchor="middle" fontSize="7.5" fill={c.color} fillOpacity="0.6">t½</text>
+                </g>
+              ))}
+
+              {/* Animated curve strokes */}
+              <g clipPath={`url(#${clipId})`}>
+                {curves.map((c, idx) => c && (
+                  <motion.path
+                    key={`s-${c.peptide.name}`}
+                    d={c.curveD}
+                    fill="none"
+                    stroke={c.color}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={{ pathLength: 1, opacity: 1 }}
+                    transition={{ duration: 1.4, delay: idx * 0.25, ease: "easeOut" }}
+                    style={{ filter: `drop-shadow(0 0 5px ${c.color}90)` }}
+                  />
+                ))}
+              </g>
+
+              {/* Continuation arrows for extended curves */}
+              {curves.map(c => c && c.isExtended && (
+                <text key={`arr-${c.peptide.name}`}
+                  x={CHART.x1 + 3} y={c.lastY + 1}
+                  fontSize="11" fill={c.color} fillOpacity="0.7">›</text>
+              ))}
+
+              {/* X-axis tick labels */}
+              {xTicks.map((t, i) => (
+                <text key={i} x={CHART.x0 + t.frac * CHART.plotW} y={CHART.y1 + 20}
+                  textAnchor="middle" fontSize="9" fill="#fff" fillOpacity="0.35">{t.label}</text>
+              ))}
+
+              {/* X-axis unit */}
+              <text x={CHART.x0 + CHART.plotW / 2} y={CHART.vbH - 3}
+                textAnchor="middle" fontSize="8" fill="#fff" fillOpacity="0.22">
+                Time ({useHours ? "hours" : "min"})
+              </text>
+            </svg>
+          </div>
+        )}
+
+        {/* Legend */}
+        <div className="p-3 pt-2 space-y-3">
+          {curves.map((c, i) => {
+            if (!c) {
+              const missing = entries[i];
+              return (
+                <div key={missing.peptide.name} className="flex flex-col gap-0.5">
+                  <span className="text-sm font-medium">{missing.peptide.name}</span>
+                  <p className="text-xs text-muted-foreground">{missing.peptide.description}</p>
+                </div>
+              );
+            }
+            return (
+              <div key={c.peptide.name} className="flex flex-col gap-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: c.color, boxShadow: `0 0 7px ${c.color}` }} />
+                  <span className="text-sm font-medium">{c.peptide.name}</span>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border cursor-pointer"
+                        style={{ borderColor: `${c.color}45`, backgroundColor: `${c.color}18`, color: c.color }}
+                        data-testid={`chip-halflife-${toTestSlug(c.peptide.name)}`}
+                        aria-label={`Pharmacokinetic half-life data for ${c.peptide.name}`}
+                      >
+                        <Clock className="h-3 w-3" />
+                        <span>t½ {c.pk.halfLifeLabel}</span>
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80 p-4" side="top" align="start">
+                      <div className="space-y-2">
+                        <p className="text-sm font-semibold">Plasma half-life: {c.pk.halfLifeLabel} ({c.pk.route})</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">{c.pk.pkContext}</p>
+                        {c.pk.note && <p className="text-[11px] text-muted-foreground/80 italic">{c.pk.note}</p>}
+                        <div className="pt-1 border-t border-border/40">
+                          <p className="text-[10px] text-muted-foreground mb-1">Primary citation:</p>
+                          {c.pk.citations.map((cit, j) => (
+                            <a key={j} href={cit.url} target="_blank" rel="noopener noreferrer"
+                              className="text-[11px] text-[#21d8ff] hover:underline block">{cit.label}</a>
+                          ))}
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                  {c.isExtended && (
+                    <span className="text-[10px] text-muted-foreground/60 italic">curve extends beyond chart</span>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground pl-[18px]">{c.peptide.description}</p>
+              </div>
+            );
+          })}
+        </div>
+
+        {showMismatch && (
+          <div className="mx-3 mb-3 flex items-start gap-2 p-2.5 rounded-md bg-muted/20 border border-border/30">
+            <Info className="h-3.5 w-3.5 text-muted-foreground mt-0.5 flex-shrink-0" />
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Kinetic profiles differ — researchers may account for peak timing in experimental design.
+            </p>
+          </div>
+        )}
+      </Card>
+    </div>
+  );
+}
+
+// ─── End Pharmacokinetics Chart ───────────────────────────────────────────────
 
 type PurchaseType = "one-time" | "subscription";
 type SubscriptionInterval = "weekly" | "biweekly" | "monthly";
@@ -572,6 +864,8 @@ export default function ResearchStackDetail() {
                 </ul>
               </div>
             )}
+
+            <PharmacokineticsChart peptides={stack.peptides} />
 
             <div className="mb-8" data-testid="section-synergy-explanation">
               <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
