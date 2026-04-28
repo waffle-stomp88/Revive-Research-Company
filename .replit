@@ -37,6 +37,10 @@ args = "pk-coverage"
 task = "workflow.run"
 args = "pk-chart-key"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "pk-chart-key-e2e"
+
 [[workflows.workflow]]
 name = "Start application"
 author = "agent"
@@ -67,6 +71,17 @@ isValidation = true
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "node scripts/audit-pk-chart-key.cjs && npx vitest run tests/pk-chart-key.test.tsx"
+
+[[workflows.workflow]]
+name = "pk-chart-key-e2e"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "sh scripts/run-pk-chart-e2e.sh"
+
+[workflows.workflow.metadata]
+isValidation = true
 
 [agent]
 integrations = ["javascript_mem_db:1.0.0", "javascript_database:1.0.0", "javascript_log_in_with_replit:1.0.0", "javascript_object_storage:1.0.0", "javascript_openai_ai_integrations:1.0.0", "javascript_paypal:1.0.0"]
