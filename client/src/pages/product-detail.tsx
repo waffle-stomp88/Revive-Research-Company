@@ -40,7 +40,6 @@ import {
   TrendingUp,
   Star,
   User,
-  CheckCircle2,
   Thermometer,
   Snowflake,
   Eye,
@@ -1375,53 +1374,6 @@ export default function ProductDetail() {
         </Card>
 
         {/* === PREMIUM PILOT SECTIONS (BPC-157 only) === */}
-
-        {/* Compound Quick Stats Strip */}
-        {isPremiumPilot && (() => {
-          const pkEntry = getHalfLifeByName(product.name);
-          const latestPurity = productCoas[0]?.purity;
-          const formAppearance = storageProfile?.powderAppearance || "Lyophilized powder";
-          return (
-            <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3" data-testid="strip-compound-stats">
-              <Card className="p-4 flex items-start gap-3">
-                <div className="p-2 rounded-md bg-[#21d8ff]/10 flex-shrink-0">
-                  <Clock className="h-4 w-4 text-[#21d8ff]" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-0.5">Half-life</p>
-                  <p className="font-bold text-sm">{pkEntry?.halfLifeLabel ?? "—"}</p>
-                </div>
-              </Card>
-              <Card className="p-4 flex items-start gap-3">
-                <div className="p-2 rounded-md bg-[#21d8ff]/10 flex-shrink-0">
-                  <FlaskConical className="h-4 w-4 text-[#21d8ff]" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-0.5">Route</p>
-                  <p className="font-bold text-sm">{pkEntry?.route ?? "—"}</p>
-                </div>
-              </Card>
-              <Card className="p-4 flex items-start gap-3">
-                <div className="p-2 rounded-md bg-[#21d8ff]/10 flex-shrink-0">
-                  <CheckCircle2 className="h-4 w-4 text-[#21d8ff]" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-0.5">Latest Purity</p>
-                  <p className="font-bold text-sm">{latestPurity ?? "—"}</p>
-                </div>
-              </Card>
-              <Card className="p-4 flex items-start gap-3">
-                <div className="p-2 rounded-md bg-[#21d8ff]/10 flex-shrink-0">
-                  <Beaker className="h-4 w-4 text-[#21d8ff]" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-0.5">Form</p>
-                  <p className="font-bold text-sm">{formAppearance}</p>
-                </div>
-              </Card>
-            </div>
-          );
-        })()}
 
         {/* Molecular Identity Section */}
         {isPremiumPilot && (() => {
