@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { STACK_COMPONENTS, buildPriceLookup, calculateStackPricing } from "@/lib/stack-pricing";
 import { SEOHead } from "@/components/seo-head";
 import {
-  ArrowLeft, FlaskConical, ShoppingCart, Sparkles, AlertTriangle, Package, GraduationCap, Shield, FileCheck, Truck, RefreshCw, ShoppingBag, Repeat, CheckCircle, Minus, Plus, BookOpen, ChevronRight, ChevronDown, Clock, Info, Lock
+  ArrowLeft, FlaskConical, ShoppingCart, Sparkles, AlertTriangle, Package, GraduationCap, Shield, FileCheck, Truck, RefreshCw, ShoppingBag, Repeat, CheckCircle, Minus, Plus, BookOpen, ChevronRight, ChevronDown, Clock, Info, Lock, ExternalLink
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { getHalfLifeByName, hasKineticMismatch, PK_VISIBLE_LOWER_RATIO, PK_VISIBLE_UPPER_RATIO } from "@/data/pharmacokinetics";
 import { ImageLoader } from "@/components/image-loader";
 import { useCart } from "@/contexts/CartContext";
@@ -41,6 +42,18 @@ function routeAbbrev(route: string): string {
   if (r === "oral") return "Oral";
   if (r === "topical") return "Topical";
   return route;
+}
+
+const ROUTE_LABELS: Record<string, string> = {
+  subcutaneous: "Subcutaneous — injected just under the skin",
+  intravenous:  "Intravenous — administered directly into a vein",
+  intranasal:   "Intranasal — administered through the nasal passage",
+  oral:         "Oral — taken by mouth",
+  topical:      "Topical — applied directly to the skin",
+};
+
+function routeLabel(route: string): string {
+  return ROUTE_LABELS[route.toLowerCase()] ?? route.charAt(0).toUpperCase() + route.slice(1);
 }
 
 const PK_CURVE_COLORS = ["#21d8ff", "#E7FB10", "#22c55e", "#f59e0b", "#a855f7"];
@@ -626,13 +639,20 @@ function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPeptide[]
                       data-testid={`icon-pinned-${toTestSlug(c.peptide.name)}`}
                     />
                   )}
-                  <span
-                    className="text-[10px] font-medium px-1.5 py-px rounded"
-                    style={{ backgroundColor: `${c.color}18`, color: c.color, border: `1px solid ${c.color}30` }}
-                    data-testid={`badge-route-${toTestSlug(c.peptide.name)}`}
-                  >
-                    {routeAbbrev(c.pk.route)}
-                  </span>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span
+                        className="text-[10px] font-medium px-1.5 py-px rounded cursor-default"
+                        style={{ backgroundColor: `${c.color}18`, color: c.color, border: `1px solid ${c.color}30` }}
+                        data-testid={`badge-route-${toTestSlug(c.peptide.name)}`}
+                      >
+                        {routeAbbrev(c.pk.route)}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">
+                      <p className="text-xs">{routeLabel(c.pk.route)}</p>
+                    </TooltipContent>
+                  </Tooltip>
                   <Popover>
                     <PopoverTrigger asChild>
                       <button
@@ -644,6 +664,7 @@ function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPeptide[]
                       >
                         <Clock className="h-3 w-3" />
                         <span>t½ {c.pk.halfLifeLabel}</span>
+                        <ExternalLink className="h-2.5 w-2.5 opacity-60 ml-0.5" />
                       </button>
                     </PopoverTrigger>
                     <PopoverContent className="w-80 p-4" side="top" align="start">
