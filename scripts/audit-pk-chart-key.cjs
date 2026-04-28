@@ -2,14 +2,19 @@
 /**
  * PK Chart Key Audit — scripts/audit-pk-chart-key.cjs
  *
- * Verifies two things that prevent the listing-page mini PK chart and its
- * SC / Other-route line-style key from silently breaking:
+ * Verifies three things that prevent the listing-page mini PK chart, the
+ * detail-page PK chart, and their SC / Other-route line-style keys from
+ * silently breaking:
  *
  *   1. SOURCE CHECK — The data-testid attributes for mini-pk-chart-{stackId}
- *      and pk-line-style-key-{stackId} are still present in research-stacks.tsx.
+ *      and pk-line-style-key-{stackId} are still present in mini-pk-chart.tsx.
  *      A component refactor that drops these testids will be caught here.
  *
- *   2. DATA CHECK — At least one pre-built research stack contains a compound
+ *   2. SOURCE CHECK — The static data-testid="pk-line-style-key" attribute is
+ *      still present in research-stack-detail.tsx. A refactor of the detail
+ *      page that removes the testid will be caught here.
+ *
+ *   3. DATA CHECK — At least one pre-built research stack contains a compound
  *      whose PK route is NOT "subcutaneous". This guarantees the line-style key
  *      (dashed = Other route) has real data that would actually cause it to render.
  *      Removing the PK entry for Semax/Selank (or any other non-SC compound
@@ -117,6 +122,8 @@ function run() {
 
   // MiniPKChart testids live in the extracted component file
   const miniPkChartSrc = readFile("client/src/components/mini-pk-chart.tsx");
+  // Detail-page PK chart key lives in the detail page component
+  const detailPageSrc = readFile("client/src/pages/research-stack-detail.tsx");
 
   console.log("PK Chart Key Audit");
   console.log("=".repeat(70));
@@ -141,7 +148,17 @@ function run() {
     allPassed = false;
   }
 
-  // ── Check 3: at least one pre-built stack has a non-SC compound ────────────
+  // ── Check 3: pk-line-style-key static testid present in detail page ─────────
+  const detailLineStyleKeyPattern = /data-testid="pk-line-style-key"/;
+  if (detailLineStyleKeyPattern.test(detailPageSrc)) {
+    console.log("  ✓  data-testid=\"pk-line-style-key\" attribute found in research-stack-detail.tsx");
+  } else {
+    console.error("  ✗  MISSING: data-testid=\"pk-line-style-key\" attribute not found in research-stack-detail.tsx");
+    console.error("     The detail-page line-style key element may have been refactored or the testid removed.");
+    allPassed = false;
+  }
+
+  // ── Check 4: at least one pre-built stack has a non-SC compound ────────────
   const pkEntries = extractPkEntries(pkSrc);
   if (pkEntries.size === 0) {
     console.error("  ✗  ERROR: No PK entries extracted from pharmacokinetics.ts — parser may be broken.");
