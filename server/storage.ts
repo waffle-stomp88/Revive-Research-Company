@@ -3,6 +3,7 @@ import {
   batches, productStorageProfiles, legalDocuments, faqEntries, educationArticles, coaGlossaryTerms, stockNotifications, discountCodes, newsletterSubscribers,
   productDosageStock, priceHistory, academyProgress, emailEvents, wishlists, userResearchProfiles, productBehavioralMetrics,
   savedAddresses, notificationPreferences, researchNotes, loginHistory, batchVerificationHistory, productVotes,
+  deadLinkHits,
   type User, type UpsertUser,
   type Product, type InsertProduct,
   type ProductDosageStock, type InsertProductDosageStock, type ProductWithDosageStock,
@@ -36,6 +37,7 @@ import {
   type BatchVerificationHistory, type InsertBatchVerificationHistory,
   type ProductVote, type InsertProductVote,
   type WaitlistSignup, type InsertWaitlistSignup,
+  type DeadLinkHit,
   waitlistSignups,
   priceChangeReasons
 } from "@shared/schema";
@@ -349,6 +351,12 @@ export interface IStorage {
   getWaitlistCount(): Promise<number>;
   getWaitlistCountByProduct(): Promise<Record<string, number>>;
   addProductInterest(email: string, productId: string): Promise<WaitlistSignup | undefined>;
+
+  // Dead-link hits
+  upsertDeadLinkHit(type: string, slug: string): Promise<void>;
+  getAllDeadLinkHits(): Promise<DeadLinkHit[]>;
+  deleteDeadLinkHit(type: string, slug: string): Promise<boolean>;
+  clearAllDeadLinkHits(): Promise<number>;
 }
 
 export function resolveDisplayPrice(
@@ -2450,6 +2458,41 @@ export class DatabaseStorage implements IStorage {
       .where(eq(waitlistSignups.email, email.toLowerCase()))
       .returning();
     return updated;
+  }
+
+  async upsertDeadLinkHit(type: string, slug: string): Promise<void> {
+    const normalized = slug.toLowerCase();
+    // Single atomic statement: always increment existing entries; only insert new
+    // entries if the total unique slug count is under the cap to prevent unbounded growth.
+    await db.execute(sql`
+      INSERT INTO dead_link_hits (id, type, slug, count, last_seen_at)
+      SELECT gen_random_uuid(), ${type}, ${normalized}, 1, now()
+      WHERE (
+        EXISTS (SELECT 1 FROM dead_link_hits WHERE type = ${type} AND slug = ${normalized})
+        OR (SELECT COUNT(*) FROM dead_link_hits) < 500
+      )
+      ON CONFLICT (type, slug) DO UPDATE SET
+        count = dead_link_hits.count + 1,
+        last_seen_at = now()
+    `);
+  }
+
+  async getAllDeadLinkHits(): Promise<DeadLinkHit[]> {
+    return db.select().from(deadLinkHits).orderBy(desc(deadLinkHits.count));
+  }
+
+  async deleteDeadLinkHit(type: string, slug: string): Promise<boolean> {
+    const normalized = slug.toLowerCase();
+    const result = await db
+      .delete(deadLinkHits)
+      .where(and(eq(deadLinkHits.type, type), eq(deadLinkHits.slug, normalized)))
+      .returning({ id: deadLinkHits.id });
+    return result.length > 0;
+  }
+
+  async clearAllDeadLinkHits(): Promise<number> {
+    const result = await db.delete(deadLinkHits).returning({ id: deadLinkHits.id });
+    return result.length;
   }
 }
 

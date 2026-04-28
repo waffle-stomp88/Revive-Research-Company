@@ -59,33 +59,15 @@ function generateBasicReferralCode(fullName: string): string {
 const TIER1_COMMISSION_RATE = 0.10;
 const TIER2_COMMISSION_RATE = 0.10;
 
-// In-memory dead-link hit tracker (type -> slug -> count)
-interface DeadLinkHit {
-  type: "product" | "guide";
-  slug: string;
-  count: number;
-  lastSeenAt: string;
-}
-const deadLinkHits = new Map<string, DeadLinkHit>();
-
 // Only URL-safe characters: letters, digits, hyphens, underscores, dots
 const SLUG_PATTERN = /^[a-zA-Z0-9_\-\.]{1,200}$/;
-const DEAD_LINK_MAP_MAX = 500;
 
 function isValidSlug(slug: string): boolean {
   return SLUG_PATTERN.test(slug);
 }
 
-function recordDeadLink(type: "product" | "guide", slug: string): void {
-  const normalized = slug.toLowerCase();
-  const key = `${type}:${normalized}`;
-  const existing = deadLinkHits.get(key);
-  if (existing) {
-    existing.count += 1;
-    existing.lastSeenAt = new Date().toISOString();
-  } else if (deadLinkHits.size < DEAD_LINK_MAP_MAX) {
-    deadLinkHits.set(key, { type, slug: normalized, count: 1, lastSeenAt: new Date().toISOString() });
-  }
+async function recordDeadLink(type: "product" | "guide", slug: string): Promise<void> {
+  await storage.upsertDeadLinkHit(type, slug);
 }
 
 export async function registerRoutes(
@@ -5016,7 +4998,7 @@ Return ONLY valid JSON in this exact format:
       if (!isValidSlug(rawSlug)) {
         return res.status(400).json({ error: "Invalid slug" });
       }
-      recordDeadLink(type as "product" | "guide", rawSlug);
+      await recordDeadLink(type as "product" | "guide", rawSlug);
       return res.json({ ok: true });
     } catch (error) {
       console.error("Error recording dead link:", error);
@@ -5031,8 +5013,7 @@ Return ONLY valid JSON in this exact format:
       if (!user?.isAdmin) {
         return res.status(403).json({ error: "Admin only" });
       }
-      const hits = Array.from(deadLinkHits.values())
-        .sort((a, b) => b.count - a.count);
+      const hits = await storage.getAllDeadLinkHits();
       return res.json(hits);
     } catch (error) {
       console.error("Error fetching dead links:", error);
@@ -5047,9 +5028,8 @@ Return ONLY valid JSON in this exact format:
       if (!user?.isAdmin) {
         return res.status(403).json({ error: "Admin only" });
       }
-      const count = deadLinkHits.size;
-      deadLinkHits.clear();
-      return res.json({ ok: true, cleared: count });
+      const cleared = await storage.clearAllDeadLinkHits();
+      return res.json({ ok: true, cleared });
     } catch (error) {
       console.error("Error clearing dead links:", error);
       return res.status(500).json({ error: "Failed to clear dead links" });
@@ -5070,9 +5050,7 @@ Return ONLY valid JSON in this exact format:
       if (!isValidSlug(slug)) {
         return res.status(400).json({ error: "Invalid slug" });
       }
-      const key = `${type}:${slug.toLowerCase()}`;
-      const existed = deadLinkHits.has(key);
-      deadLinkHits.delete(key);
+      const existed = await storage.deleteDeadLinkHit(type as "product" | "guide", slug);
       return res.json({ ok: true, existed });
     } catch (error) {
       console.error("Error dismissing dead link:", error);

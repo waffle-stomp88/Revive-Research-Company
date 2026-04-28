@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, integer, boolean, decimal, timestamp, index, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, integer, boolean, decimal, timestamp, index, jsonb, unique } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -812,3 +812,22 @@ export const waitlistSignups = pgTable("waitlist_signups", {
 export const insertWaitlistSignupSchema = createInsertSchema(waitlistSignups).omit({ id: true, createdAt: true, foundingMember: true, foundingMemberNumber: true });
 export type InsertWaitlistSignup = z.infer<typeof insertWaitlistSignupSchema>;
 export type WaitlistSignup = typeof waitlistSignups.$inferSelect;
+
+// Dead-link hit tracking table
+export const deadLinkHits = pgTable(
+  "dead_link_hits",
+  {
+    id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+    type: varchar("type", { length: 20 }).notNull(),
+    slug: text("slug").notNull(),
+    count: integer("count").notNull().default(1),
+    lastSeenAt: timestamp("last_seen_at").defaultNow().notNull(),
+  },
+  (table) => [
+    unique("uq_dead_link_hits_type_slug").on(table.type, table.slug),
+  ],
+);
+
+export const insertDeadLinkHitSchema = createInsertSchema(deadLinkHits).omit({ id: true });
+export type InsertDeadLinkHit = z.infer<typeof insertDeadLinkHitSchema>;
+export type DeadLinkHit = typeof deadLinkHits.$inferSelect;
