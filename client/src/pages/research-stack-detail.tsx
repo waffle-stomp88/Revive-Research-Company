@@ -107,7 +107,21 @@ function toTestSlug(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
 }
 
+const PK_ZOOM_PRESETS: { label: string; minutes: number }[] = [
+  { label: "1 h",  minutes: 60 },
+  { label: "6 h",  minutes: 360 },
+  { label: "24 h", minutes: 1440 },
+  { label: "7 d",  minutes: 10080 },
+];
+
 function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
+  const [selectedRange, setSelectedRange] = useState<number | null>(null);
+
+  const peptideKey = peptides.map(p => p.name).join("|");
+  useEffect(() => {
+    setSelectedRange(null);
+  }, [peptideKey]);
+
   const entries = peptides.map((p, i) => ({
     peptide: p,
     pk: getHalfLifeByName(p.name),
@@ -115,7 +129,9 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
   }));
 
   const pksWithData = entries.map(e => e.pk).filter((pk): pk is HalfLifeEntry => pk !== undefined);
-  const { xMaxMin, shortFocus } = computeXMax(pksWithData);
+  const { xMaxMin: autoXMaxMin, shortFocus } = computeXMax(pksWithData);
+  const xMaxMin = selectedRange ?? autoXMaxMin;
+
   const useHours = xMaxMin >= 120;
   const xMaxDisp = useHours ? xMaxMin / 60 : xMaxMin;
 
@@ -145,6 +161,35 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
       <Card className="border-border/40 bg-[#07070b] overflow-hidden">
         {hasCurves && (
           <div className="p-3 pb-0">
+            <div className="flex items-center justify-end gap-1 mb-2" data-testid="pk-zoom-controls">
+              <button
+                className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors ${
+                  selectedRange === null
+                    ? "bg-white/15 text-white"
+                    : "text-white/40 hover:text-white/70"
+                }`}
+                onClick={() => setSelectedRange(null)}
+                data-testid="pk-zoom-auto"
+                aria-pressed={selectedRange === null}
+              >
+                Auto
+              </button>
+              {PK_ZOOM_PRESETS.map(preset => (
+                <button
+                  key={preset.label}
+                  className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors ${
+                    selectedRange === preset.minutes
+                      ? "bg-white/15 text-white"
+                      : "text-white/40 hover:text-white/70"
+                  }`}
+                  onClick={() => setSelectedRange(preset.minutes)}
+                  data-testid={`pk-zoom-${preset.label.replace(/\s/g, "").toLowerCase()}`}
+                  aria-pressed={selectedRange === preset.minutes}
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
             <svg
               viewBox={`0 0 ${CHART.vbW} ${CHART.vbH}`}
               className="w-full"
