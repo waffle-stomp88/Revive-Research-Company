@@ -16,6 +16,18 @@ export interface StackPeptide {
 
 export type StackIconName = "Heart" | "Zap" | "Sparkles" | "Brain" | "Leaf" | "Crown" | "FlaskConical" | "Dumbbell";
 
+export type StackCategory = "Recovery" | "Cognitive" | "Metabolic" | "GH Axis" | "Longevity" | "Skin" | "Immune";
+
+export const STACK_CATEGORIES: StackCategory[] = [
+  "Recovery",
+  "Cognitive",
+  "Metabolic",
+  "GH Axis",
+  "Longevity",
+  "Skin",
+  "Immune",
+];
+
 export interface ResearchStackData {
   id: string;
   name: string;
@@ -33,11 +45,13 @@ export interface ResearchStackData {
   badgeColor?: string;
   synergy: SynergyCopy;
   intentionalOverlap?: boolean;
+  category: StackCategory;
 }
 
 export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
   {
     id: "recovery-tissue-stack",
+    category: "Recovery",
     name: "Recovery + Tissue Mechanisms Stack",
     subtitle: "Dual Pathway Tissue Stack",
     description: "This stack combines two of the most extensively researched compounds for tissue mechanism pathways. Ideal for researchers studying synergistic repair signaling and cellular regeneration models.",
@@ -74,6 +88,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
   },
   {
     id: "metabolic-pathway-stack",
+    category: "Metabolic",
     name: "Metabolic Pathway Research Stack",
     subtitle: "Triple-Pathway Research Bundle",
     description: "Explore incretin signaling and mitochondrial function pathways with this comprehensive metabolic research combination. Features compounds targeting multiple energy regulation mechanisms.",
@@ -110,6 +125,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
   },
   {
     id: "cognitive-edge-stack",
+    category: "Cognitive",
     name: "Cognitive Edge Stack",
     subtitle: "Nootropic Research Duo",
     description: "The gold-standard nootropic research pairing. Semax and Selank target complementary cognitive pathways—one enhancing focus and BDNF expression, the other promoting calm clarity through anxiolytic mechanisms. Widely studied for neuroprotective synergy.",
@@ -146,6 +162,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
   },
   {
     id: "igf1r-anabolic-stack",
+    category: "GH Axis",
     name: "IGF-1R Anabolic Pathway Stack",
     subtitle: "Dual IGF-1R Agonist Research Bundle",
     description: "Study anabolic signaling and IGF-1R occupancy dynamics by pairing two structurally distinct IGF-1 receptor analogs with complementary pharmacokinetic profiles.",
@@ -186,6 +203,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
 
   {
     id: "glow-protocol",
+    category: "Skin",
     name: "Glow Protocol",
     subtitle: "Triple Skin Rejuvenation Stack",
     description: "Combines collagen synthesis, angiogenesis, and tissue repair pathways in one comprehensive skin research stack. Studies three distinct mechanisms for dermal regeneration simultaneously.",
@@ -223,6 +241,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
 
   {
     id: "gh-amplifier",
+    category: "GH Axis",
     name: "GH Amplifier",
     subtitle: "GHRP + GHRH Synergy Stack",
     description: "The classic growth hormone research duo. Ipamorelin and CJC-1295 activate complementary receptors — GHSR and GHRHR — to produce synergistic GH pulse amplification that neither compound achieves alone.",
@@ -260,6 +279,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
 
   {
     id: "recovery-plus",
+    category: "Recovery",
     name: "Recovery+",
     subtitle: "Collagen Synthesis and Tissue Protection Stack",
     description: "A focused two-compound pairing that combines BPC-157's cytoprotective and vascular repair signaling with GHK-Cu's direct collagen matrix stimulation. Studied for complementary tissue regeneration mechanisms.",
@@ -295,6 +315,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
 
   {
     id: "longevity-protocol",
+    category: "Longevity",
     name: "Longevity Protocol",
     subtitle: "Telomere Extension and Collagen Regeneration Stack",
     description: "Pairs Epithalon's telomerase activation with GHK-Cu's collagen matrix regeneration for a dual-pathway cellular aging research model. Studies how telomere biology and extracellular matrix maintenance interact.",
@@ -330,6 +351,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
 
   {
     id: "deep-sleep",
+    category: "Longevity",
     name: "Deep Sleep",
     subtitle: "Circadian Rhythm and GH Pulse Optimization Stack",
     description: "Combines Epithalon's pineal-axis modulation with Ipamorelin's selective GH secretagogue activity to study circadian sleep architecture and nocturnal growth hormone release in research models.",
@@ -365,6 +387,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
 
   {
     id: "total-regen",
+    category: "Recovery",
     name: "Total Regen",
     subtitle: "Complete Tissue Recovery Research Stack",
     description: "Three-compound recovery model combining local tissue repair, systemic regeneration, and GH axis support. Studies the interaction of BPC-157, TB-500, and Ipamorelin across complementary regenerative pathways.",
@@ -404,6 +427,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
 
   {
     id: "lean-mass",
+    category: "GH Axis",
     name: "Lean Mass",
     subtitle: "GH Amplification and Metabolic Enhancement Stack",
     description: "Three-compound research model targeting growth hormone axis output and cellular metabolic efficiency. Studies CJC-1295, Ipamorelin, and MOTS-C as a combined anabolic and metabolic signaling system.",
@@ -441,6 +465,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
 
   {
     id: "klow-stack",
+    category: "Recovery",
     name: "KLOW Stack",
     subtitle: "3-Phase Anti-Inflammatory Regeneration Stack",
     description: "A four-compound research model designed around a sequential inflammation-repair-remodel cascade. KPV clears inflammatory signaling, BPC-157 and TB-500 repair tissue, and GHK-Cu remodels the collagen matrix.",
@@ -480,6 +505,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
 
   {
     id: "immune-shield",
+    category: "Immune",
     name: "Immune Shield",
     subtitle: "Adaptive Immunity and Antimicrobial Defense Stack",
     description: "A dual-layer immune research model combining Thymosin Alpha-1's adaptive immunity modulation with LL-37's innate antimicrobial and immunomodulatory activity. Studies complementary arms of the immune system.",
@@ -515,6 +541,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
 
   {
     id: "gut-restore",
+    category: "Recovery",
     name: "Gut Restore",
     subtitle: "Gut Lining Repair and NF-κB Inhibition Stack",
     description: "Targets gut barrier restoration from two mechanistic directions. BPC-157 drives mucosal repair and VEGF-mediated gut vascularization, while KPV inhibits NF-κB inflammatory signaling to resolve intestinal inflammation.",
@@ -550,6 +577,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
 
   {
     id: "neuro-stack",
+    category: "Cognitive",
     name: "Neuro Stack",
     subtitle: "BDNF Upregulation and Neurotrophic Factor Stack",
     description: "A neuroprotective research pairing combining Semax's BDNF/NGF upregulation with Cerebrolysin's neurotrophic factor complex. Studies complementary mechanisms of neurotrophin delivery and neuroprotective signaling.",
@@ -585,6 +613,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
 
   {
     id: "fat-burner",
+    category: "Metabolic",
     name: "Fat Burner",
     subtitle: "Complementary Fat Metabolism Pathway Stack",
     description: "A two-compound metabolic research model targeting fat metabolism through distinct mechanisms. AOD-9604 activates GH fragment lipolytic signaling, while 5-Amino-1MQ inhibits NNMT enzyme activity to modulate the methionine cycle and fat metabolism.",
@@ -620,6 +649,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
 
   {
     id: "gh-max",
+    category: "GH Axis",
     name: "GH Max",
     subtitle: "Triple GHRH and GHRP Stimulation Stack",
     description: "A triple-compound GH axis research model combining two GHRH class analogs with one GHSR agonist. Studies maximum growth hormone axis stimulation through multi-receptor convergence and pharmacokinetic diversity.",
@@ -659,6 +689,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
 
   {
     id: "skin-renewal",
+    category: "Skin",
     name: "Skin Renewal",
     subtitle: "Collagen Matrix Remodeling and Expression Line Reduction Stack",
     description: "An advanced dermatological research pairing combining GHK-Cu's broad collagen matrix remodeling activity with SNAP-8's SNARE complex inhibition for expression line reduction. Studies two distinct anti-aging skin mechanisms.",
@@ -694,6 +725,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
 
   {
     id: "longevity-plus",
+    category: "Longevity",
     name: "Longevity+",
     subtitle: "Telomerase Activation and Thymic Immune Restoration Stack",
     description: "Combines Epithalon's telomerase-based cellular rejuvenation with Thymalin's thymic peptide immune restoration. Studies two hallmarks of aging — telomere attrition and thymic involution — simultaneously.",
@@ -729,6 +761,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
 
   {
     id: "performance-stack",
+    category: "GH Axis",
     name: "Performance",
     subtitle: "Direct IGF-1R Activation and Tissue Repair Stack",
     description: "Combines IGF-1 LR3's direct muscle-fiber IGF-1 receptor engagement with BPC-157's tissue repair and vascular signaling. Studies anabolic IGF-1R signaling alongside cytoprotective repair mechanisms in athletic tissue research models.",
@@ -764,6 +797,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
 
   {
     id: "nad-mito-stack",
+    category: "Longevity",
     name: "NAD+ Mito Stack",
     subtitle: "NAD+ Restoration and Cardiolipin Stabilization Stack",
     description: "A dual mitochondrial rescue research model combining NAD+ precursor-mediated sirtuin and PARP activation with SS-31's cardiolipin-targeted mitochondrial membrane stabilization.",
@@ -801,6 +835,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
 
   {
     id: "cellular-longevity",
+    category: "Longevity",
     name: "Cellular Longevity",
     subtitle: "NAD+ Sirtuin Activation and Telomerase Extension Stack",
     description: "A two-hallmark aging research model combining NAD+ precursor-driven sirtuin activation with Epithalon's telomerase-mediated telomere maintenance. Studies NAD+ metabolism and telomere biology as complementary aging pathways.",
@@ -836,6 +871,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
 
   {
     id: "nad-energy-stack",
+    category: "Metabolic",
     name: "NAD+ Energy",
     subtitle: "NAD+ Salvage Pathway and AMPK Mitochondrial Biogenesis Stack",
     description: "A cellular energy amplification research model combining NAD+ precursor-driven salvage pathway activation with MOTS-C's AMPK-mediated mitochondrial biogenesis. Studies two complementary approaches to mitochondrial energy production.",
@@ -871,6 +907,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
 
   {
     id: "cellular-defense",
+    category: "Longevity",
     name: "Cellular Defense",
     subtitle: "NAD+ DNA Repair and Antioxidant Defense Stack",
     description: "A dual cellular protection research model combining NAD+ precursor-driven PARP1 DNA repair with Glutathione's role as the master intracellular antioxidant. Studies two complementary cellular damage defense systems.",
@@ -906,6 +943,7 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
 
   {
     id: "regen-glow",
+    category: "Skin",
     name: "Regen Glow",
     subtitle: "Anti-Inflammatory Healing and Collagen Remodeling Stack",
     description: "Combines the KLOW Peptide Complex's multi-constituent anti-inflammatory and repair activity with GHK-Cu's copper peptide collagen matrix remodeling. Studies a repair-to-renewal pipeline across inflammation resolution and structural remodeling.",

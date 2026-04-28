@@ -26,8 +26,8 @@ import {
   findOverlapForPair,
 } from "@/lib/pathway-overlaps";
 import { PathwayOverlapCard } from "@/components/pathway-overlap-card";
-import { RESEARCH_STACKS_DATA } from "@/data/research-stacks";
-import type { SynergyCopy, StackIconName } from "@/data/research-stacks";
+import { RESEARCH_STACKS_DATA, STACK_CATEGORIES } from "@/data/research-stacks";
+import type { SynergyCopy, StackIconName, StackCategory } from "@/data/research-stacks";
 import { getSystemIcon } from "@/data/body-systems";
 import { getHalfLifeBySlug, getHalfLifeByName } from "@/data/pharmacokinetics";
 import type { HalfLifeEntry } from "@/data/pharmacokinetics";
@@ -51,6 +51,7 @@ interface ResearchStack {
   badgeColor?: string;
   synergy: SynergyCopy;
   intentionalOverlap?: boolean;
+  category: StackCategory;
 }
 
 const STACK_ICON_MAP: Record<StackIconName, typeof FlaskConical> = {
@@ -76,6 +77,7 @@ const researchStacks: ResearchStack[] = RESEARCH_STACKS_DATA.map((s) => ({
   badgeColor: s.badgeColor,
   synergy: s.synergy,
   intentionalOverlap: s.intentionalOverlap,
+  category: s.category,
 }));
 
 type StackTab = "pre-built" | "custom";
@@ -3506,6 +3508,7 @@ function MiniPKChart({ peptideNames, stackId }: { peptideNames: string[]; stackI
 
 function ResearchStacks() {
   const [activeTab, setActiveTab] = useState<StackTab>("pre-built");
+  const [activeCategory, setActiveCategory] = useState<StackCategory | "All">("All");
   const [templatePeptideNames, setTemplatePeptideNames] = useState<string[]>([]);
   const { toast } = useToast();
 
@@ -3665,8 +3668,32 @@ function ResearchStacks() {
               exit={{ opacity: 0, x: 20 }}
               transition={{ duration: 0.2 }}
             >
+              {/* Category Filter */}
+              <div className="flex flex-wrap justify-center gap-2 mb-8">
+                {(["All" as const, ...STACK_CATEGORIES]).map((cat) => {
+                  const count = cat === "All" ? researchStacks.length : researchStacks.filter((s) => s.category === cat).length;
+                  const isActive = activeCategory === cat;
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => setActiveCategory(cat)}
+                      data-testid={`filter-category-${cat.toLowerCase().replace(" ", "-")}`}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5 ${
+                        isActive
+                          ? "bg-[#a855f7] text-white shadow-[0_0_16px_rgba(168,85,247,0.4)]"
+                          : "bg-[#1a1a1f] border border-[#2a2a32] text-muted-foreground hover:text-white hover:border-[#a855f7]/40"
+                      }`}
+                    >
+                      {cat}
+                      <span className={`text-xs px-1.5 py-0.5 rounded-full ${isActive ? "bg-white/20 text-white" : "bg-[#2a2a32] text-muted-foreground"}`}>
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
               <div className="grid md:grid-cols-2 gap-6">
-          {researchStacks.map((stack, index) => {
+          {researchStacks.filter((s) => activeCategory === "All" || s.category === activeCategory).map((stack, index) => {
             const Icon = stack.icon;
             const prebuiltOverlaps = detectPathwayOverlaps(stack.peptides);
 
