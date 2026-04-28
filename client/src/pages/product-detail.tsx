@@ -71,7 +71,7 @@ import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { SEOHead } from "@/components/seo-head";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { PharmacokineticsChart } from "@/components/pharmacokinetics-chart";
-import { getHalfLifeByName } from "@/data/pharmacokinetics";
+import { getHalfLifeByName, COMBO_STACK_CONSTITUENTS } from "@/data/pharmacokinetics";
 import { getSynergyPartners, normalizePeptideName } from "@/lib/synergy-data";
 import { getTopPairingForProduct } from "@/lib/pairing-intelligence";
 import { Layers, Zap } from "lucide-react";
@@ -1634,9 +1634,19 @@ export default function ProductDetail() {
 
         {/* Plasma Concentration Profile Section */}
         {(() => {
-          const hasPkData = !!getHalfLifeByName(product.name);
-          if (!hasPkData) return null;
-          const pkPeptides = [{ name: product.name, description: product.description || "" }];
+          // For recognized combo stacks, show individual curves for each constituent
+          // compound (matching research-stack detail page behaviour). For single
+          // products, fall back to the composite / single entry as before.
+          const constituentNames = product.slug ? COMBO_STACK_CONSTITUENTS[product.slug] : undefined;
+          let pkPeptides: { name: string; description: string }[];
+          if (constituentNames) {
+            // Only render the chart if every constituent has PK data
+            if (!constituentNames.every((n) => !!getHalfLifeByName(n))) return null;
+            pkPeptides = constituentNames.map((n) => ({ name: n, description: "" }));
+          } else {
+            if (!getHalfLifeByName(product.name)) return null;
+            pkPeptides = [{ name: product.name, description: product.description || "" }];
+          }
           return (
             <motion.section
               initial={{ opacity: 0, y: 20 }}

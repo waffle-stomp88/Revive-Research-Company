@@ -948,6 +948,22 @@ export function getHalfLifeBySlug(slug: string): HalfLifeEntry | undefined {
   return undefined;
 }
 
+/**
+ * Maps combo-stack product slugs to their constituent compound display names.
+ * Used by product detail pages to render individual per-compound PK curves
+ * instead of a single composite entry, matching the behavior on research
+ * stack detail pages.
+ *
+ * Each name in the array must resolve to a HalfLifeEntry via getHalfLifeByName.
+ * - "RR-A1" is the compliance-safe identifier for the selective GLP-1 RA class
+ *   (semaglutide PK data stored under this slug per the dataset compliance policy).
+ */
+export const COMBO_STACK_CONSTITUENTS: Record<string, string[]> = {
+  "bpc-157-tb-500-stack": ["BPC-157", "TB-500"],
+  "cjc-1295-ipamorelin-stack": ["CJC-1295 (No DAC)", "Ipamorelin"],
+  "cag-sema-blend": ["Cagrilintide", "RR-A1"],
+};
+
 export function hasKineticMismatch(entries: HalfLifeEntry[]): boolean {
   const defined = entries.filter((e) => e.halfLifeMin !== undefined || e.halfLifeMax !== undefined);
   if (defined.length < 2) return false;
