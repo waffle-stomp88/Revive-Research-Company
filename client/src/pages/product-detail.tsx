@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link, useParams, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -168,7 +168,9 @@ export default function ProductDetail() {
   const [notifyEmail, setNotifyEmail] = useState("");
   const [notifySuccess, setNotifySuccess] = useState(false);
   const [isEducationOpen, setIsEducationOpen] = useState(false);
-  const [isPkChartOpen, setIsPkChartOpen] = useState(params.id === "bpc-157");
+  const twoColumnRef = useRef<HTMLDivElement>(null);
+  const [showStickyPurchase, setShowStickyPurchase] = useState(false);
+  const [quickAddSuccess, setQuickAddSuccess] = useState<Record<string, boolean>>({});
 
   const { data: product, isLoading, error } = useQuery<Product>({
     queryKey: ["/api/products", params.id],
@@ -413,6 +415,26 @@ export default function ProductDetail() {
     }
   }, [productId]);
 
+  const isPremiumPilot = product?.slug === "bpc-157";
+
+  // Feature 1: Sticky desktop purchase bar — scroll handler
+  useEffect(() => {
+    const productInStock = product?.inStock !== false &&
+      (product?.stockAmount === null || product?.stockAmount === undefined || (product?.stockAmount ?? 0) > 0);
+    if (!isPremiumPilot || !productInStock) {
+      setShowStickyPurchase(false);
+      return;
+    }
+    const handleScroll = () => {
+      if (!twoColumnRef.current) return;
+      const threshold = twoColumnRef.current.offsetTop + twoColumnRef.current.offsetHeight;
+      setShowStickyPurchase(window.scrollY > threshold);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isPremiumPilot, product]);
+
   const handleQuantityChange = (delta: number) => {
     setQuantity(prev => Math.max(1, Math.min(10, prev + delta)));
   };
@@ -514,6 +536,41 @@ export default function ProductDetail() {
     }
   };
 
+  // Feature 3: Quick-add synergy partner to cart
+  const handleQuickAddSynergy = async (partnerProduct: Product, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const sortedDosages = [...(partnerProduct.dosageOptions || [])].sort((a, b) => {
+      const num = (d: string) => parseFloat(d.match(/(\d+(?:\.\d+)?)/)?.[1] || "0");
+      return num(a) - num(b);
+    });
+    const lowestDosage = sortedDosages[0] || "10mg";
+    // Align with display price logic: prefer product price, then minPrice fallback
+    const rawPrice = Number(partnerProduct.price) > 0
+      ? Number(partnerProduct.price)
+      : (partnerProduct as any).minPrice ? Number((partnerProduct as any).minPrice) : 0;
+    const added = await addToCart({
+      productId: partnerProduct.id,
+      name: partnerProduct.name,
+      price: rawPrice,
+      quantity: 1,
+      dosage: lowestDosage,
+      image: partnerProduct.imageUrl || productImage,
+    });
+    if (!added) {
+      toast({
+        title: "Out of Stock",
+        description: `${partnerProduct.name} (${lowestDosage}) is currently out of stock.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    setQuickAddSuccess(prev => ({ ...prev, [partnerProduct.id]: true }));
+    setTimeout(() => {
+      setQuickAddSuccess(prev => ({ ...prev, [partnerProduct.id]: false }));
+    }, 2000);
+  };
+
   if (isLoading) {
     return (
       <main className="min-h-screen pt-32 md:pt-40 pb-12">
@@ -549,7 +606,6 @@ export default function ProductDetail() {
   }
 
   const benefits = product.benefits || [];
-  const isPremiumPilot = product.slug === "bpc-157";
 
   // Helper function to get stock info for a specific dosage
   const getDosageStockInfo = (dosage: string) => {
@@ -614,7 +670,7 @@ export default function ProductDetail() {
           </Link>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start">
+        <div ref={twoColumnRef} className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1415,153 +1471,101 @@ export default function ProductDetail() {
           );
         })()}
 
-        {/* PK Chart - moved above Storage for isPremiumPilot */}
+        {/* PK Chart - premium panel, always open, above Storage */}
         {isPremiumPilot && (() => {
           const hasPkData = !!getHalfLifeByName(product.name);
           if (!hasPkData) return null;
           const pkPeptides = [{ name: product.name, description: product.description || "" }];
           return (
-            <>
-              <div className="mt-12 mb-6 flex items-center gap-4">
-                <div className="flex-1 h-px bg-border" />
-                <span className="text-xs text-muted-foreground/50 uppercase tracking-widest font-medium">Plasma Kinetics</span>
-                <div className="flex-1 h-px bg-border" />
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.13 }}
+              className="mt-8 rounded-xl border border-[#21d8ff]/20 bg-gradient-to-br from-[#0d1a2a] to-[#0a0f1a] overflow-hidden"
+              data-testid="section-pk-chart"
+            >
+              <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-[#21d8ff]/10">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-[#21d8ff]/10">
+                    <Clock className="h-5 w-5 text-[#21d8ff]" />
+                  </div>
+                  <div>
+                    <h2 className="font-display text-lg font-bold text-white">Plasma Concentration Profile</h2>
+                    <p className="text-xs text-[#21d8ff]/60 mt-0.5">Published pharmacokinetic data · primary literature</p>
+                  </div>
+                </div>
+                <Badge className="text-xs no-default-hover-elevate no-default-active-elevate bg-[#21d8ff]/10 text-[#21d8ff] border border-[#21d8ff]/20">
+                  PK Data
+                </Badge>
               </div>
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.13 }}
-                data-testid="section-pk-chart"
-              >
-                <Collapsible open={isPkChartOpen} onOpenChange={setIsPkChartOpen}>
-                  <CollapsibleTrigger asChild>
-                    <button
-                      className="flex items-center gap-3 mb-4 w-full text-left"
-                      data-testid="button-toggle-pk-chart"
-                    >
-                      <Clock className="h-6 w-6 text-[#21d8ff] flex-shrink-0" />
-                      <h2 className="font-display text-2xl font-bold flex-1">Plasma Concentration Profile</h2>
-                      <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${isPkChartOpen ? "rotate-180" : ""}`} />
-                    </button>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Published plasma concentration–time profile based on peer-reviewed primary literature.
-                    </p>
-                    <PharmacokineticsChart
-                      peptides={pkPeptides}
-                      stackId={product.slug || product.id.toString()}
-                    />
-                  </CollapsibleContent>
-                </Collapsible>
-              </motion.section>
-            </>
+              <div className="px-2 pb-4 pt-2">
+                <PharmacokineticsChart
+                  peptides={pkPeptides}
+                  stackId={product.slug || product.id.toString()}
+                />
+              </div>
+            </motion.section>
           );
         })()}
-
-        {isPremiumPilot && (
-          <div className="mt-12 mb-6 flex items-center gap-4">
-            <div className="flex-1 h-px bg-border" />
-            <span className="text-xs text-muted-foreground/50 uppercase tracking-widest font-medium">Storage &amp; Stability</span>
-            <div className="flex-1 h-px bg-border" />
-          </div>
-        )}
 
         {/* Storage & Stability Section */}
         {storageProfile && (
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.15 }}
-            className={isPremiumPilot ? "" : "mt-12"}
+            transition={{ duration: 0.4, delay: 0.17 }}
+            className="mt-8"
             data-testid="section-storage"
           >
-            <div className="flex items-center gap-3 mb-6">
-              <Thermometer className="h-6 w-6 text-[#9d4edd]" />
-              <h2 className="font-display text-2xl font-bold">Storage & Stability</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card className="p-4 border-[#9d4edd]/20 hover:border-[#9d4edd]/40 transition-colors" data-testid="card-storage-temp">
-                <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-lg bg-[#9d4edd]/10">
-                    <Snowflake className="h-5 w-5 text-[#9d4edd]" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1">Storage Temperature (Dry)</p>
-                    <p className="font-bold">{storageProfile.storageTempDry || "Refrigerated"}</p>
-                    {storageProfile.storageTempReconstituted && (
-                      <p className="text-xs text-muted-foreground mt-1">Reconstituted: {storageProfile.storageTempReconstituted}</p>
-                    )}
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-4 border-[#9d4edd]/20 hover:border-[#9d4edd]/40 transition-colors" data-testid="card-stability">
-                <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-lg bg-[#9d4edd]/10">
-                    <Clock className="h-5 w-5 text-[#9d4edd]" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1">Stability Window</p>
-                    <p className="font-bold">{storageProfile.stabilityWindowDry || "24 months"}</p>
-                    {storageProfile.stabilityWindowReconstituted && (
-                      <p className="text-xs text-muted-foreground mt-1">After reconstitution: {storageProfile.stabilityWindowReconstituted}</p>
-                    )}
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-4 border-[#9d4edd]/20 hover:border-[#9d4edd]/40 transition-colors" data-testid="card-light-sensitive">
-                <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-lg bg-[#9d4edd]/10">
-                    <Eye className="h-5 w-5 text-[#9d4edd]" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1">Light Sensitivity</p>
-                    <p className="font-bold">{storageProfile.lightSensitivity || "Protect from light"}</p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-4 border-[#9d4edd]/20 hover:border-[#9d4edd]/40 transition-colors" data-testid="card-form">
-                <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-lg bg-[#9d4edd]/10">
-                    <Beaker className="h-5 w-5 text-[#9d4edd]" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1">Appearance</p>
-                    <p className="font-bold">{storageProfile.powderAppearance || "White lyophilized powder"}</p>
-                  </div>
-                </div>
-              </Card>
-            </div>
-
-            {storageProfile.handlingInstructions && (
-              <Card className="mt-4 p-4 border-[#9d4edd]/20 bg-[#9d4edd]/5" data-testid="card-handling-notes">
-                <p className="text-sm text-muted-foreground">
-                  <span className="font-medium text-foreground">Handling Instructions: </span>
-                  {storageProfile.handlingInstructions}
-                </p>
-              </Card>
-            )}
-
-            {/* Storage Education Link */}
-            <div className="mt-6 flex items-center justify-between p-4 rounded-lg border border-[#9d4edd]/20 bg-gradient-to-r from-[#9d4edd]/5 to-transparent">
-              <div className="flex items-center gap-3">
-                <GraduationCap className="h-5 w-5 text-[#9d4edd]" />
-                <div>
-                  <p className="text-sm font-medium">New to peptide storage?</p>
-                  <p className="text-xs text-muted-foreground">Our guide covers everything you need to know</p>
-                </div>
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <div className="flex items-center gap-2">
+                <Thermometer className="h-4 w-4 text-[#9d4edd]" />
+                <h2 className="font-display text-base font-semibold tracking-wide uppercase text-muted-foreground">Storage & Stability</h2>
               </div>
               <Link href="/guides/storage-101">
-                <Button variant="outline" size="sm" className="border-[#9d4edd]/30 hover:border-[#9d4edd] gap-2" data-testid="link-storage-guide">
-                  Storage 101
-                  <ChevronRight className="h-4 w-4" />
+                <Button variant="ghost" size="sm" className="text-xs gap-1 text-muted-foreground" data-testid="link-storage-guide">
+                  Storage 101 <ChevronRight className="h-3 w-3" />
                 </Button>
               </Link>
             </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border border border-border rounded-lg overflow-hidden" data-testid="card-storage-temp">
+              <div className="flex items-center gap-3 px-4 py-3">
+                <Snowflake className="h-4 w-4 text-[#9d4edd] flex-shrink-0" />
+                <div>
+                  <p className="text-xs text-muted-foreground">Temperature</p>
+                  <p className="text-sm font-semibold">{storageProfile.storageTempDry || "Refrigerated"}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 px-4 py-3" data-testid="card-stability">
+                <Clock className="h-4 w-4 text-[#9d4edd] flex-shrink-0" />
+                <div>
+                  <p className="text-xs text-muted-foreground">Stability</p>
+                  <p className="text-sm font-semibold">{storageProfile.stabilityWindowDry || "24 months"}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 px-4 py-3" data-testid="card-light-sensitive">
+                <Eye className="h-4 w-4 text-[#9d4edd] flex-shrink-0" />
+                <div>
+                  <p className="text-xs text-muted-foreground">Light</p>
+                  <p className="text-sm font-semibold">{storageProfile.lightSensitivity || "Protect"}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 px-4 py-3" data-testid="card-form">
+                <Beaker className="h-4 w-4 text-[#9d4edd] flex-shrink-0" />
+                <div>
+                  <p className="text-xs text-muted-foreground">Form</p>
+                  <p className="text-sm font-semibold">{storageProfile.powderAppearance || "Lyophilized"}</p>
+                </div>
+              </div>
+            </div>
+
+            {storageProfile.handlingInstructions && (
+              <p className="mt-2 text-xs text-muted-foreground px-1" data-testid="card-handling-notes">
+                <span className="font-medium text-foreground/70">Note: </span>
+                {storageProfile.handlingInstructions}
+              </p>
+            )}
           </motion.section>
         )}
 
@@ -1579,7 +1583,7 @@ export default function ProductDetail() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.18 }}
-            className={isPremiumPilot ? "" : "mt-12"}
+            className="mt-8"
             data-testid="section-batches"
           >
             <div className="flex items-center justify-between mb-6">
@@ -1594,6 +1598,52 @@ export default function ProductDetail() {
                 </Button>
               </Link>
             </div>
+
+            {/* Feature 4: Purity timeline sparkline */}
+            {(() => {
+              if (!isPremiumPilot) return null;
+              const parsePurity = (p: string) => parseFloat((p || "").replace(/[^0-9.]/g, ""));
+              const parseTestDate = (d: string) => { const dt = new Date(d || ""); return isNaN(dt.getTime()) ? null : dt; };
+              const timelineData = productCoas
+                .map(coa => ({ date: parseTestDate(coa.testDate || ""), purity: parsePurity(coa.purity || "") }))
+                .filter((d): d is { date: Date; purity: number } => d.date !== null && !isNaN(d.purity) && d.purity > 0)
+                .sort((a, b) => a.date.getTime() - b.date.getTime());
+              if (timelineData.length < 2) return null;
+              const minPurity = Math.min(...timelineData.map(d => d.purity));
+              const maxPurity = Math.max(...timelineData.map(d => d.purity));
+              const yMin = Math.min(minPurity - 1, 95);
+              const yMax = Math.max(maxPurity + 0.5, 100);
+              const yRange = yMax - yMin;
+              const W = 300, H = 48, padX = 10, padY = 6;
+              const toX = (i: number) => padX + (i / (timelineData.length - 1)) * (W - padX * 2);
+              const toY = (p: number) => H - padY - ((p - yMin) / yRange) * (H - padY * 2);
+              const points = timelineData.map((d, i) => `${toX(i)},${toY(d.purity)}`).join(" ");
+              const last = timelineData[timelineData.length - 1];
+              const lastX = toX(timelineData.length - 1);
+              const lastY = toY(last.purity);
+              return (
+                <div className="mb-6 p-4 rounded-lg border border-[#9d4edd]/20 bg-[#9d4edd]/5" data-testid="chart-purity-timeline">
+                  <p className="text-xs text-muted-foreground mb-2 font-medium">Purity over time</p>
+                  <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ maxHeight: 48 }}>
+                    <polyline
+                      points={points}
+                      fill="none"
+                      stroke="#9d4edd"
+                      strokeWidth="2"
+                      strokeLinejoin="round"
+                      strokeLinecap="round"
+                    />
+                    <circle cx={lastX} cy={lastY} r="4" fill="#9d4edd" />
+                    <text x={lastX + 6} y={lastY + 4} fontSize="9" fill="#9d4edd" fontFamily="monospace">
+                      {last.purity.toFixed(1)}%
+                    </text>
+                  </svg>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Consistent purity across {timelineData.length} batches
+                  </p>
+                </div>
+              );
+            })()}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {productCoas.slice(0, 4).map((coa) => (
@@ -1685,7 +1735,7 @@ export default function ProductDetail() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
-              className="mt-12"
+              className="mt-8"
               data-testid="section-synergy"
             >
               <div className="flex flex-wrap items-center gap-3 mb-6">
@@ -1762,17 +1812,35 @@ export default function ProductDetail() {
                             {!pairingReason && (
                               <div className="flex-1" />
                             )}
-                            <p 
-                              className="text-sm font-bold text-[#E7FB10] mt-2 mt-auto"
-                              data-testid={`text-synergy-price-${partnerProduct.id}`}
-                            >
-                              {(() => {
-                                const displayPrice = Number(partnerProduct.price) > 0 
-                                  ? Number(partnerProduct.price) 
-                                  : (partnerProduct as any).minPrice ? Number((partnerProduct as any).minPrice) : 0;
-                                return displayPrice > 0 ? <>From ${displayPrice.toFixed(2)}</> : null;
-                              })()}
-                            </p>
+                            <div className="flex items-center justify-between mt-2 mt-auto gap-2">
+                              <p 
+                                className="text-sm font-bold text-[#E7FB10]"
+                                data-testid={`text-synergy-price-${partnerProduct.id}`}
+                              >
+                                {(() => {
+                                  const displayPrice = Number(partnerProduct.price) > 0 
+                                    ? Number(partnerProduct.price) 
+                                    : (partnerProduct as any).minPrice ? Number((partnerProduct as any).minPrice) : 0;
+                                  return displayPrice > 0 ? <>From ${displayPrice.toFixed(2)}</> : null;
+                                })()}
+                              </p>
+                              {isPremiumPilot && partnerProduct.inStock !== false && (partnerProduct.stockAmount === null || partnerProduct.stockAmount === undefined || partnerProduct.stockAmount > 0) && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={(e) => handleQuickAddSynergy(partnerProduct, e)}
+                                  className="flex-shrink-0 gap-1"
+                                  data-testid={`button-quick-add-synergy-${partnerProduct.id}`}
+                                >
+                                  {quickAddSuccess[partnerProduct.id] ? (
+                                    <Check className="h-3 w-3" />
+                                  ) : (
+                                    <ShoppingBag className="h-3 w-3" />
+                                  )}
+                                  {quickAddSuccess[partnerProduct.id] ? "Added" : "+ Add"}
+                                </Button>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </Card>
@@ -1841,27 +1909,17 @@ export default function ProductDetail() {
               className="mt-12"
               data-testid="section-pk-chart"
             >
-              <Collapsible open={isPkChartOpen} onOpenChange={setIsPkChartOpen}>
-                <CollapsibleTrigger asChild>
-                  <button
-                    className="flex items-center gap-3 mb-4 w-full text-left"
-                    data-testid="button-toggle-pk-chart"
-                  >
-                    <Clock className="h-6 w-6 text-[#21d8ff] flex-shrink-0" />
-                    <h2 className="font-display text-2xl font-bold flex-1">Plasma Concentration Profile</h2>
-                    <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${isPkChartOpen ? "rotate-180" : ""}`} />
-                  </button>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Published pharmacokinetic profile based on primary literature.
-                  </p>
-                  <PharmacokineticsChart
-                    peptides={pkPeptides}
-                    stackId={product.slug || product.id.toString()}
-                  />
-                </CollapsibleContent>
-              </Collapsible>
+              <div className="flex items-center gap-3 mb-4">
+                <Clock className="h-6 w-6 text-[#21d8ff] flex-shrink-0" />
+                <h2 className="font-display text-2xl font-bold flex-1">Plasma Concentration Profile</h2>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                Published pharmacokinetic profile based on primary literature.
+              </p>
+              <PharmacokineticsChart
+                peptides={pkPeptides}
+                stackId={product.slug || product.id.toString()}
+              />
             </motion.section>
           );
         })()}
@@ -1870,6 +1928,36 @@ export default function ProductDetail() {
       
       {/* Recently Viewed Sidebar */}
       <RecentlyViewed currentProductId={productId} variant="sidebar" />
+
+      {/* Feature 1: Sticky Desktop Purchase Bar */}
+      <AnimatePresence>
+        {isPremiumPilot && showStickyPurchase && !isOutOfStock && (
+          <motion.div
+            initial={{ y: -80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -80, opacity: 0 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="hidden md:block fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border"
+            data-testid="sticky-purchase-bar-desktop"
+          >
+            <div className="max-w-7xl mx-auto px-8 py-2 flex items-center justify-between gap-4 flex-wrap">
+              <p className="font-display font-bold truncate max-w-xs">{product.name}</p>
+              <div className="flex items-center gap-4 flex-wrap">
+                <span className="text-sm text-muted-foreground">{selectedDosage}</span>
+                <span className="font-bold text-[#E7FB10]">${getBasePrice().toFixed(2)}</span>
+                <Button
+                  onClick={handleAddToCart}
+                  className="bg-[#E7FB10] text-black font-display gap-2 shadow-[0_0_15px_rgba(231,251,16,0.4)]"
+                  data-testid="button-sticky-purchase-add-to-cart"
+                >
+                  <ShoppingBag className="h-4 w-4" />
+                  Add to Cart
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Sticky Mobile Add-to-Cart Bar */}
       {product && !isOutOfStock && (
