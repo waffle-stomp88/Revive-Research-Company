@@ -387,6 +387,23 @@ function nameToSlug(name: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
+/**
+ * Audit log — known-stacks.ts slug coverage (last verified: 2026-04-28)
+ *
+ * All 24 unique peptide slugs from client/src/data/known-stacks.ts resolve to a
+ * PEPTIDE_HALF_LIVES entry via this map. No description-only fallbacks exist for
+ * any known-stack peptide. Slugs that share a name with their PK slug are listed
+ * here explicitly so future audits can rely on this map as a single source of truth
+ * rather than the fallback HALF_LIFE_MAP direct-key lookup.
+ *
+ * To run a fresh audit:
+ *   node scripts/audit-pk-coverage.cjs
+ *
+ * When adding a new slug to known-stacks.ts:
+ *   1. Add a HalfLifeEntry to PEPTIDE_HALF_LIVES, OR
+ *   2. Add a mapping here to an existing entry, OR
+ *   3. Leave a comment explaining why the slug is intentionally non-chartable.
+ */
 const NAME_SLUG_OVERRIDES: Record<string, string> = {
   "cjc-1295-no-dac": "cjc-1295-no-dac",
   "cjc-1295": "cjc-1295-no-dac",
@@ -408,6 +425,17 @@ const NAME_SLUG_OVERRIDES: Record<string, string> = {
   "pt-141": "pt-141",
   "nad-precursor": "nad-precursor",
   "klow-peptide-complex": "klow-peptide-complex",
+  "ipamorelin": "ipamorelin",
+  "semax": "semax",
+  "selank": "selank",
+  "epithalon": "epithalon",
+  "sermorelin": "sermorelin",
+  "kpv": "kpv",
+  "cerebrolysin": "cerebrolysin",
+  "thymalin": "thymalin",
+  "glutathione": "glutathione",
+  "hexarelin": "hexarelin",
+  "tesamorelin": "tesamorelin",
 };
 
 export function getHalfLifeByName(displayName: string): HalfLifeEntry | undefined {
