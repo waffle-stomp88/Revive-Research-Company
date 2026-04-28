@@ -8,25 +8,22 @@ import {
   Lightbulb,
   ArrowLeft,
   ArrowRight,
-  Flame,
-  Heart,
-  Brain,
-  Sparkles,
   Dumbbell,
   Moon,
   Shield,
-  Leaf,
+  Target,
   FlaskConical,
   Beaker,
-  Target,
   RotateCcw,
   ShoppingCart,
   ChevronRight,
   Zap,
   Clock,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import type { Product } from "@shared/schema";
 import { getPairingReasons } from "@/lib/pairing-intelligence";
+import { BODY_SYSTEMS, getSystemIcon } from "@/data/body-systems";
 
 interface CompoundFinderProps {
   products: Product[];
@@ -45,15 +42,18 @@ interface QuizAnswers {
   budget?: BudgetRange;
 }
 
-const goalOptions: { value: ResearchGoal; label: string; subtitle: string; icon: typeof Heart }[] = [
-  { value: "healing", label: "Healing & Recovery", subtitle: "Tissue repair, injury recovery", icon: Heart },
-  { value: "cognitive", label: "Cognitive Enhancement", subtitle: "Focus, memory, mental clarity", icon: Brain },
-  { value: "longevity", label: "Anti-Aging & Longevity", subtitle: "Slow aging, cellular health", icon: Sparkles },
-  { value: "performance", label: "Muscle & Performance", subtitle: "Growth, strength, endurance", icon: Dumbbell },
-  { value: "skin", label: "Skin & Regeneration", subtitle: "Collagen, skin health, repair", icon: Leaf },
-  { value: "immune", label: "Immune Support", subtitle: "Immune function, defense", icon: Shield },
-  { value: "metabolic", label: "Fat Loss & Metabolism", subtitle: "Metabolic health, weight management", icon: Flame },
-  { value: "sleep", label: "Sleep & Relaxation", subtitle: "Better sleep, reduce stress", icon: Moon },
+const defaultIcon = BODY_SYSTEMS.find(s => s.id === "cognitive")!.icon;
+const bs = (id: string): LucideIcon => getSystemIcon(id) ?? defaultIcon;
+
+const goalOptions: { value: ResearchGoal; label: string; subtitle: string; icon: LucideIcon }[] = [
+  { value: "healing",     label: "Healing & Recovery",      subtitle: "Tissue repair, injury recovery",           icon: bs("healing") },
+  { value: "cognitive",   label: "Cognitive Enhancement",   subtitle: "Focus, memory, mental clarity",            icon: bs("cognitive") },
+  { value: "longevity",   label: "Anti-Aging & Longevity",  subtitle: "Slow aging, cellular health",              icon: bs("longevity") },
+  { value: "performance", label: "Muscle & Performance",    subtitle: "Growth, strength, endurance",              icon: Dumbbell },
+  { value: "skin",        label: "Skin & Regeneration",     subtitle: "Collagen, skin health, repair",            icon: bs("skin") },
+  { value: "immune",      label: "Immune Support",          subtitle: "Immune function, defense",                 icon: Shield },
+  { value: "metabolic",   label: "Fat Loss & Metabolism",   subtitle: "Metabolic health, weight management",      icon: bs("metabolic") },
+  { value: "sleep",       label: "Sleep & Relaxation",      subtitle: "Better sleep, reduce stress",              icon: Moon },
 ];
 
 const experienceOptions: { value: ExperienceLevel; label: string; subtitle: string }[] = [

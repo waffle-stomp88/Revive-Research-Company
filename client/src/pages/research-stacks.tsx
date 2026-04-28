@@ -33,7 +33,7 @@ import type { KnownStack } from "@/data/known-stacks";
 import { PEPTIDE_PATHWAYS } from "@/data/peptide-pathways";
 import type { PeptidePathway } from "@/data/peptide-pathways";
 import { PATHWAY_DESCRIPTIONS } from "@/data/pathway-descriptions";
-import { BODY_SYSTEMS } from "@/data/body-systems";
+import { BODY_SYSTEMS, getSystemColor } from "@/data/body-systems";
 
 interface ResearchStack {
   id: string;
@@ -626,23 +626,12 @@ function PathwayMap({ selectedPeptides }: PathwayMapProps) {
 
   const hasActiveData = peptideData.length >= 1;
 
-  const SYSTEM_COLORS: Record<string, string> = {
-    healing: "#22c55e", gut: "#22c55e", joints: "#22c55e",
-    metabolic: "#E7FB10", energy: "#E7FB10", weight: "#E7FB10",
-    growth: "#f59e0b", muscle: "#f59e0b",
-    cognitive: "#21d8ff", focus: "#21d8ff", neuroprotection: "#21d8ff", mood: "#21d8ff",
-    skin: "#ec4899", cosmetic: "#ec4899", hair: "#ec4899",
-    longevity: "#a855f7", sleep: "#8b5cf6",
-    immune: "#34d399", recovery: "#60a5fa",
-    hormonal: "#f59e0b", heart: "#ef4444", vascular: "#ef4444",
-  };
-
   const getPrimaryColor = (systems: string[]) => {
     for (const s of systems) {
-      const c = SYSTEM_COLORS[s.toLowerCase()];
-      if (c) return c;
+      const color = getSystemColor(s);
+      if (color) return color;
     }
-    return "#21d8ff";
+    return BODY_SYSTEMS.find(bs => bs.id === "cognitive")?.color ?? "#21d8ff";
   };
 
   const svgWidth = 900;
