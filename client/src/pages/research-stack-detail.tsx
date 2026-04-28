@@ -128,7 +128,8 @@ const PK_ZOOM_PRESETS: { label: string; minutes: number }[] = [
   { label: "7 d",  minutes: 10080 },
 ];
 
-const PK_ZOOM_STORAGE_KEY_PREFIX = "pk-zoom-range:";
+const PK_ZOOM_STORAGE_KEY_PREFIX = "pk-zoom-range-";
+const PK_PIN_STORAGE_PREFIX = "pk-pin-";
 
 function readStoredZoom(stackId: string): number | null {
   try {
@@ -153,10 +154,35 @@ function writeStoredZoom(stackId: string, value: number | null): void {
   }
 }
 
+function readStoredPin(stackId: string): string | null {
+  try {
+    return sessionStorage.getItem(PK_PIN_STORAGE_PREFIX + stackId);
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredPin(stackId: string, name: string | null): void {
+  try {
+    if (name === null) {
+      sessionStorage.removeItem(PK_PIN_STORAGE_PREFIX + stackId);
+    } else {
+      sessionStorage.setItem(PK_PIN_STORAGE_PREFIX + stackId, name);
+    }
+  } catch {
+    // ignore
+  }
+}
+
 function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPeptide[]; stackId: string }) {
   const [selectedRange, setSelectedRange] = useState<number | null>(() => readStoredZoom(stackId));
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
-  const [pinnedIdx, setPinnedIdx] = useState<number | null>(null);
+  const [pinnedIdx, setPinnedIdx] = useState<number | null>(() => {
+    const storedName = readStoredPin(stackId);
+    if (storedName === null) return null;
+    const idx = peptides.findIndex(p => p.name === storedName);
+    return idx >= 0 ? idx : null;
+  });
   const [tooltip, setTooltip] = useState<{ clientX: number; clientY: number; label: string; halfLife: string; concentration: number; timeDisp: string } | null>(null);
   const [crosshairSvgX, setCrosshairSvgX] = useState<number | null>(null);
   const chartWrapRef = useRef<HTMLDivElement>(null);
@@ -171,7 +197,17 @@ function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPeptide[]
   useEffect(() => {
     setSelectedRange(readStoredZoom(stackId));
     setPinnedIdx(null);
+    writeStoredPin(stackId, null);
   }, [peptideKey, stackId]);
+
+  useEffect(() => {
+    if (pinnedIdx === null) {
+      writeStoredPin(stackId, null);
+    } else {
+      const name = peptides[pinnedIdx]?.name ?? null;
+      writeStoredPin(stackId, name);
+    }
+  }, [pinnedIdx, stackId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const entries = peptides.map((p, i) => ({
     peptide: p,
@@ -1261,7 +1297,7 @@ export default function ResearchStackDetail() {
               </div>
             )}
 
-            <PharmacokineticsChart peptides={stack.peptides} stackId={params.id} />
+            <PharmacokineticsChart peptides={stack.peptides} stackId={stack.id} />
 
             <div className="mb-8" data-testid="section-synergy-explanation">
               <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
