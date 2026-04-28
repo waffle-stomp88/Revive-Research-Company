@@ -32,6 +32,20 @@ import type { HalfLifeEntry } from "@/data/pharmacokinetics";
 
 // ─── Pharmacokinetics Chart ───────────────────────────────────────────────────
 
+function routeAbbrev(route: string): string {
+  const r = route.toLowerCase();
+  if (r === "subcutaneous") return "SC";
+  if (r === "intravenous") return "IV";
+  if (r === "intranasal") return "IN";
+  if (r === "oral") return "Oral";
+  if (r === "topical") return "Topical";
+  return route;
+}
+
+function isNonSCRoute(route: string): boolean {
+  return route.toLowerCase() !== "subcutaneous";
+}
+
 const PK_CURVE_COLORS = ["#21d8ff", "#E7FB10", "#22c55e", "#f59e0b", "#a855f7"];
 
 const CHART = {
@@ -289,6 +303,7 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
+                    strokeDasharray={isNonSCRoute(c.pk.route) ? "7 4" : undefined}
                     initial={{ pathLength: 0, opacity: 0 }}
                     animate={{ pathLength: 1, opacity: 1 }}
                     transition={{ duration: 1.4, delay: idx * 0.25, ease: "easeOut" }}
@@ -334,9 +349,23 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
             return (
               <div key={c.peptide.name} className="flex flex-col gap-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: c.color, boxShadow: `0 0 7px ${c.color}` }} />
+                  <div
+                    className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: c.color, boxShadow: `0 0 7px ${c.color}` }}
+                  />
+                  {isNonSCRoute(c.pk.route) && (
+                    <svg width="14" height="4" viewBox="0 0 14 4" aria-hidden="true" className="flex-shrink-0">
+                      <line x1="0" y1="2" x2="14" y2="2" stroke={c.color} strokeWidth="2" strokeDasharray="4 2.5" strokeLinecap="round" />
+                    </svg>
+                  )}
                   <span className="text-sm font-medium">{c.peptide.name}</span>
+                  <span
+                    className="text-[10px] font-medium px-1.5 py-px rounded"
+                    style={{ backgroundColor: `${c.color}18`, color: c.color, border: `1px solid ${c.color}30` }}
+                    data-testid={`badge-route-${toTestSlug(c.peptide.name)}`}
+                  >
+                    {routeAbbrev(c.pk.route)}
+                  </span>
                   <Popover>
                     <PopoverTrigger asChild>
                       <button
