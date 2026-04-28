@@ -2,29 +2,27 @@
 /**
  * PK Catalog Coverage Audit — scripts/audit-pk-catalog.cjs
  *
- * Verifies that every product in the live product catalog has a corresponding
- * entry in pharmacokinetics.ts (either via PEPTIDE_HALF_LIVES directly or via
+ * Verifies that every product in the catalog has a corresponding entry in
+ * pharmacokinetics.ts (either via PEPTIDE_HALF_LIVES directly or via
  * NAME_SLUG_OVERRIDES). This guards against new products being silently added
  * to the catalog without a PK chart entry.
  *
- * Unlike audit-pk-coverage.cjs (which checks known-stacks.ts), this script
- * queries the running API so it always reflects the full, up-to-date catalog.
+ * Product slugs are read directly from server/seed.ts using the same
+ * name-to-slug logic that createProduct() applies in server/storage.ts,
+ * so the check is server-independent and safe to run in CI without a
+ * running application server.
  *
  * Usage:
  *   node scripts/audit-pk-catalog.cjs
  *
- * Prerequisites:
- *   The application server must be running on localhost:5000.
- *
  * Exit codes:
  *   0 — all product slugs are covered (or intentionally skipped)
  *   1 — one or more product slugs have no PK entry
- *   2 — a setup error occurred (API unreachable, parser broken, etc.)
+ *   2 — a setup error occurred (file unreadable, parser broken, etc.)
  */
 
 const fs = require("fs");
 const path = require("path");
-const http = require("http");
 
 const ROOT = path.resolve(__dirname, "..");
 
@@ -43,36 +41,64 @@ function readFile(relPath) {
   return fs.readFileSync(path.join(ROOT, relPath), "utf8");
 }
 
-function fetchProducts() {
-  return new Promise((resolve, reject) => {
-    const req = http.get("http://localhost:5000/api/products", (res) => {
-      if (res.statusCode !== 200) {
-        reject(new Error(`API returned status ${res.statusCode}`));
-        return;
-      }
-      let data = "";
-      res.on("data", (chunk) => (data += chunk));
-      res.on("end", () => {
-        try {
-          resolve(JSON.parse(data));
-        } catch (e) {
-          reject(new Error(`Failed to parse API response: ${e.message}`));
-        }
-      });
-    });
-    req.on("error", (e) => {
-      reject(
-        new Error(
-          `Could not reach the API at http://localhost:5000/api/products. ` +
-            `Is the application server running? (${e.message})`
-        )
-      );
-    });
-    req.setTimeout(10000, () => {
-      req.destroy();
-      reject(new Error("API request timed out after 10 s"));
-    });
-  });
+/**
+ * Derive a slug from a product name using the same logic as createProduct()
+ * in server/storage.ts:
+ *   .toLowerCase()
+ *   .replace(/[^a-z0-9\s\-]/g, '')
+ *   .replace(/\s+/g, '-')
+ *   .replace(/-+/g, '-')
+ */
+function nameToSlug(name) {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+/**
+ * Parse the sampleProducts array from server/seed.ts and return an array of
+ * { name, slug } objects.  Products that define an explicit slug field use
+ * that value directly; others have their slug derived from their name.
+ */
+function readProductsFromSeed(src) {
+  // Isolate the sampleProducts literal (everything between `= [` and the
+  // first `];` that closes it).
+  const blockMatch = src.match(/const\s+sampleProducts\s*=\s*\[([\s\S]*?)\];/);
+  if (!blockMatch) {
+    throw new Error(
+      "Could not locate the sampleProducts array in server/seed.ts. " +
+        "Has the file format changed?"
+    );
+  }
+
+  const block = blockMatch[1];
+  const products = [];
+
+  // Split on object boundaries — each product starts with `{` and contains
+  // name/slug fields.  We scan for `name:` occurrences and for any sibling
+  // `slug:` field within the same object block.
+  //
+  // Strategy: find all top-level `{...}` objects in the block, then extract
+  // name and (optional) slug from each.
+  const objectPattern = /\{([\s\S]*?)\}/g;
+  let match;
+  while ((match = objectPattern.exec(block)) !== null) {
+    const obj = match[1];
+
+    const nameMatch = obj.match(/\bname:\s*"([^"]+)"/);
+    if (!nameMatch) continue; // Not a product object (e.g. nested benefit strings)
+
+    const name = nameMatch[1];
+
+    const slugMatch = obj.match(/\bslug:\s*"([^"]+)"/);
+    const slug = slugMatch ? slugMatch[1] : nameToSlug(name);
+
+    products.push({ name, slug });
+  }
+
+  return products;
 }
 
 function extractPkSlugs(src) {
@@ -99,7 +125,7 @@ function extractOverrides(src) {
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
-async function run() {
+function run() {
   // Load pharmacokinetics data
   const pkSrc = readFile("client/src/data/pharmacokinetics.ts");
 
@@ -114,18 +140,27 @@ async function run() {
 
   const overrides = extractOverrides(pkSrc);
 
-  // Fetch the live product catalog
-  let products;
+  // Read the product catalog directly from the seed file
+  let seedSrc;
   try {
-    products = await fetchProducts();
+    seedSrc = readFile("server/seed.ts");
+  } catch (err) {
+    console.error(`ERROR: Could not read server/seed.ts — ${err.message}`);
+    process.exit(2);
+  }
+
+  let catalogProducts;
+  try {
+    catalogProducts = readProductsFromSeed(seedSrc);
   } catch (err) {
     console.error(`ERROR: ${err.message}`);
     process.exit(2);
   }
 
-  if (!Array.isArray(products) || products.length === 0) {
+  if (catalogProducts.length === 0) {
     console.error(
-      "ERROR: API returned no products — the response format may have changed."
+      "ERROR: No products extracted from server/seed.ts — the parser may be broken " +
+        "or the sampleProducts array is empty."
     );
     process.exit(2);
   }
@@ -135,14 +170,13 @@ async function run() {
   const skipped = [];
   const missing = [];
 
-  for (const product of [...products].sort((a, b) =>
-    (a.slug || "").localeCompare(b.slug || "")
+  for (const product of [...catalogProducts].sort((a, b) =>
+    a.slug.localeCompare(b.slug)
   )) {
-    const slug = product.slug;
-    if (!slug) continue;
+    const { slug, name } = product;
 
     if (PK_SKIP_LIST.has(slug)) {
-      skipped.push({ slug, name: product.name });
+      skipped.push({ slug, name });
       continue;
     }
 
@@ -150,14 +184,14 @@ async function run() {
     const found = pkSlugs.has(resolved);
 
     if (found) {
-      covered.push({ slug, name: product.name, resolved, viaOverride: overrides.has(slug) });
+      covered.push({ slug, name, resolved, viaOverride: overrides.has(slug) });
     } else {
-      missing.push({ slug, name: product.name, resolved });
+      missing.push({ slug, name, resolved });
     }
   }
 
   // Print report
-  console.log("PK Catalog Coverage Audit — live product API");
+  console.log("PK Catalog Coverage Audit — seed catalog (server-independent)");
   console.log("=".repeat(70));
 
   covered.forEach(({ slug, name, resolved, viaOverride }) => {
@@ -195,19 +229,15 @@ async function run() {
     );
     process.exit(1);
   } else {
-    const total = covered.length + skipped.length;
     console.log(
       `\n  All ${covered.length} cataloged peptide/compound slugs are covered` +
         (skipped.length > 0
           ? ` (${skipped.length} non-peptide slug(s) intentionally skipped).`
           : ".")
     );
-    console.log(`  Total products checked: ${total}`);
+    console.log(`  Total products checked: ${covered.length + skipped.length}`);
     process.exit(0);
   }
 }
 
-run().catch((err) => {
-  console.error(`FATAL: ${err.message}`);
-  process.exit(2);
-});
+run();
