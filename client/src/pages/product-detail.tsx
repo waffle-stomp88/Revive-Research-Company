@@ -73,6 +73,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { getSynergyPartners, normalizePeptideName } from "@/lib/synergy-data";
 import { getTopPairingForProduct } from "@/lib/pairing-intelligence";
 import { Layers, Zap } from "lucide-react";
+import { flagRetiredContent, RETIRED_PRODUCT_SLUGS } from "@/lib/retired-redirects";
 
 // Badge priority system - max 2 badges per product
 // Priority: Out of Stock > Low Stock > Selling Fast > Featured
@@ -382,6 +383,23 @@ export default function ProductDetail() {
       }
     }
   }, [product, params.id]);
+
+  // Graceful retirement handling: redirect to listing when product is not found.
+  // Triggers immediately for known retired slugs, or after the query settles
+  // for a genuine 404 response. Transient network errors are not treated as retirement.
+  useEffect(() => {
+    if (params.id && RETIRED_PRODUCT_SLUGS.includes(params.id)) {
+      flagRetiredContent("product");
+      setLocation("/peptides");
+      return;
+    }
+    if (isLoading) return;
+    const is404 = error instanceof Error && error.message.startsWith("404:");
+    if (is404 || (!error && !product)) {
+      flagRetiredContent("product");
+      setLocation("/peptides");
+    }
+  }, [isLoading, error, product, params.id]);
 
   // Track recently viewed products
   useEffect(() => {

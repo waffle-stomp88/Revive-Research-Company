@@ -46,6 +46,8 @@ import { ArticleModeToggle, BeginnerBadge } from "@/components/education/article
 import { BeginnerArticleContent, WhatIsPeptideSection, hasQuickBreakdown } from "@/components/education/beginner-content";
 import { getPairingReasons } from "@/lib/pairing-intelligence";
 import type { EducationArticle, Product } from "@shared/schema";
+import { useToast } from "@/hooks/use-toast";
+import { flagRetiredContent, consumeRetiredFlag, RETIRED_GUIDE_SLUGS } from "@/lib/retired-redirects";
 import { OrderingJourney } from "@/components/infographics/ordering-journey";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { 
@@ -442,6 +444,17 @@ type ArticleMode = "deep-dive" | "quick-breakdown";
 export default function Education() {
   const params = useParams<{ slug?: string }>();
   const [location] = useLocation();
+  const { toast } = useToast();
+
+  // Show toast when redirected from a retired guide URL
+  useEffect(() => {
+    if (consumeRetiredFlag("guide")) {
+      toast({
+        title: "Guide Unavailable",
+        description: "That guide is no longer available. Browse our current educational resources below.",
+      });
+    }
+  }, []);
   
   // Parse tab from URL query parameter (with SSR guard)
   const getTabFromUrl = () => {
@@ -532,14 +545,25 @@ export default function Education() {
     return directMatch ? [directMatch] : [];
   };
 
-  // Handle URL-based article opening
+  // Handle URL-based article opening.
+  // Immediately redirect known retired slugs; otherwise wait for articles to load
+  // before deciding whether to open an article or redirect as unavailable.
   useEffect(() => {
-    if (params.slug && articles.length > 0) {
+    if (!params.slug) return;
+    if (RETIRED_GUIDE_SLUGS.includes(params.slug)) {
+      flagRetiredContent("guide");
+      setLocation("/guides/peptide-education-center");
+      return;
+    }
+    if (articles.length > 0) {
       const article = articles.find(a => a.slug === params.slug);
       if (article) {
         setExpandedArticle(article.id);
         setActiveCategory(article.category);
         setArticleMode("quick-breakdown");
+      } else {
+        flagRetiredContent("guide");
+        setLocation("/guides/peptide-education-center");
       }
     }
   }, [params.slug, articles]);

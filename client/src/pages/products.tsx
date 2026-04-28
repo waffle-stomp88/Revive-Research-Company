@@ -62,6 +62,7 @@ import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { BUNDLES } from "@/lib/bundles";
 import { SEOHead } from "@/components/seo-head";
 import { CategoryTabs } from "@/components/category-tabs";
+import { consumeRetiredFlag } from "@/lib/retired-redirects";
 
 // Badge priority system - max 2 badges per product
 // Priority: Out of Stock > Low Stock > Selling Fast > Featured
@@ -237,6 +238,16 @@ function ProductsComponent() {
     queryKey: ["/api/products"],
     refetchInterval: 30000,
   });
+
+  // Show toast when redirected from a retired product URL
+  useEffect(() => {
+    if (consumeRetiredFlag("product")) {
+      toast({
+        title: "Product Unavailable",
+        description: "That product is no longer available. Browse our current catalog below.",
+      });
+    }
+  }, []);
 
   // Restore scroll position after products have loaded and DOM is rendered
   useEffect(() => {
