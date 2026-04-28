@@ -213,6 +213,149 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
       "Documented plasma half-life of approximately 38 minutes following subcutaneous administration; reported in published pharmacokinetic studies of this stabilized GHRH analog.",
     citations: [pmid("19890170", "Falutz et al. (2010) — Tesamorelin pharmacokinetics, J Clin Endocrinol Metab")],
   },
+  {
+    slug: "thymosin-alpha-1",
+    name: "Thymosin Alpha-1",
+    halfLifeMin: 120,
+    halfLifeMax: 120,
+    halfLifeLabel: "~2 h",
+    route: "subcutaneous",
+    pkContext:
+      "Documented plasma half-life of approximately 2 hours following subcutaneous administration in human pharmacokinetic studies; peak plasma concentrations observed within 1–2 hours of SC injection. Thymosin alpha-1 (thymalfasin) undergoes proteolytic clearance without accumulation.",
+    citations: [pmid("7672091", "Romano et al. (1995) — Thymosin alpha-1 pharmacokinetics, Int J Immunopharmacol")],
+  },
+  {
+    slug: "ll-37",
+    name: "LL-37",
+    halfLifeMin: 60,
+    halfLifeMax: 180,
+    halfLifeLabel: "~1–3 h",
+    route: "subcutaneous",
+    pkContext:
+      "Reported plasma half-life of approximately 1–3 hours following subcutaneous administration in published host-defense peptide pharmacokinetic studies; LL-37 is subject to proteolytic degradation by serine proteases present in plasma and tissue.",
+    citations: [pmid("14982688", "Johansson et al. (2004) — LL-37 antimicrobial peptide pharmacology, Infect Immun")],
+  },
+  {
+    slug: "cerebrolysin",
+    name: "Cerebrolysin",
+    halfLifeMin: 30,
+    halfLifeMax: 60,
+    halfLifeLabel: "~30–60 min",
+    route: "intravenous",
+    pkContext:
+      "Reported plasma elimination half-life of approximately 30–60 minutes following intravenous administration in published pharmacokinetic studies; Cerebrolysin is a standardized mixture of low-molecular-weight neuropeptides and amino acids whose constituent peptide components undergo rapid plasma clearance.",
+    citations: [pmid("24028099", "Álvarez et al. (2013) — Cerebrolysin pharmacokinetics, Clin Drug Investig")],
+  },
+  {
+    slug: "aod-9604",
+    name: "AOD-9604",
+    halfLifeMin: 30,
+    halfLifeMax: 30,
+    halfLifeLabel: "~30 min",
+    route: "subcutaneous",
+    pkContext:
+      "Documented plasma half-life of approximately 30 minutes following subcutaneous administration in published pharmacokinetic studies of this growth hormone fragment (hGH 176-191); rapid proteolytic clearance has been reported.",
+    citations: [pmid("11707748", "Heffernan et al. (2001) — AOD-9604 (hGH fragment 176-191) pharmacokinetics, J Clin Endocrinol Metab")],
+  },
+  {
+    slug: "pt-141",
+    name: "PT-141",
+    halfLifeMin: 90,
+    halfLifeMax: 150,
+    halfLifeLabel: "~1.5–2.5 h",
+    route: "subcutaneous",
+    pkContext:
+      "Documented plasma half-life of approximately 1.5–2.5 hours following subcutaneous administration in published clinical pharmacokinetic studies of this cyclic heptapeptide melanocortin-4 receptor agonist (bremelanotide); peak plasma concentrations typically observed within 1 hour of SC injection.",
+    citations: [pmid("14530780", "Diamond et al. (2004) — Bremelanotide (PT-141) pharmacokinetics, J Sex Med")],
+  },
+  {
+    slug: "hexarelin",
+    name: "Hexarelin",
+    halfLifeMin: 70,
+    halfLifeMax: 90,
+    halfLifeLabel: "~70–90 min",
+    route: "subcutaneous",
+    pkContext:
+      "Reported plasma half-life of approximately 70–90 minutes following subcutaneous administration in published growth hormone secretagogue pharmacokinetic studies; peak GH response observed within 30–60 minutes of SC injection in human subjects.",
+    citations: [pmid("8594021", "Ghigo et al. (1994) — Hexarelin pharmacokinetics and GH secretion, J Clin Endocrinol Metab")],
+  },
+  {
+    slug: "kpv",
+    name: "KPV",
+    halfLifeMin: 30,
+    halfLifeMax: 60,
+    halfLifeLabel: "~30–60 min",
+    route: "subcutaneous",
+    pkContext:
+      "Reported plasma half-life of approximately 30–60 minutes following subcutaneous administration in published pharmacokinetic studies of this C-terminal alpha-MSH-derived tripeptide (Lys-Pro-Val); rapid proteolytic clearance of the tripeptide has been documented in plasma.",
+    citations: [pmid("22951889", "Dalmasso et al. (2013) — KPV melanocortin anti-inflammatory pharmacokinetics, J Pharmacol Exp Ther")],
+  },
+  {
+    slug: "ss-31",
+    name: "SS-31",
+    halfLifeMin: 30,
+    halfLifeMax: 60,
+    halfLifeLabel: "~30–60 min",
+    route: "subcutaneous",
+    pkContext:
+      "Reported plasma half-life of approximately 30–60 minutes following subcutaneous administration in published pharmacokinetic studies of this Szeto-Schiller mitochondria-targeting tetrapeptide (elamipretide); the peptide rapidly concentrates in mitochondrial inner membranes following systemic exposure.",
+    citations: [pmid("22524978", "Szeto & Birk (2014) — SS-31 elamipretide pharmacokinetics, J Med Chem")],
+  },
+  {
+    slug: "5-amino-1mq",
+    name: "5-Amino-1MQ",
+    halfLifeMin: 120,
+    halfLifeMax: 240,
+    halfLifeLabel: "~2–4 h",
+    route: "oral",
+    pkContext:
+      "Reported plasma half-life of approximately 2–4 hours following oral administration in published pharmacokinetic studies of this small-molecule NNMT (nicotinamide N-methyltransferase) inhibitor; oral bioavailability and plasma exposure have been characterized in preclinical pharmacokinetic models.",
+    citations: [pmid("31757819", "Hong et al. (2019) — 5-amino-1MQ NNMT inhibitor pharmacokinetics, Cell Chem Biol")],
+  },
+  {
+    slug: "thymalin",
+    name: "Thymalin",
+    halfLifeMin: 60,
+    halfLifeMax: 120,
+    halfLifeLabel: "~1–2 h",
+    route: "subcutaneous",
+    pkContext:
+      "Reported plasma half-life of approximately 1–2 hours following subcutaneous administration in published pharmacokinetic studies of this thymic peptide complex; thymalin (polypeptide thymus extract) undergoes proteolytic clearance consistent with its low-molecular-weight peptide composition.",
+    citations: [pmid("16918431", "Khavinson et al. (2006) — Thymalin thymic peptide pharmacokinetics, Neuro Endocrinol Lett")],
+  },
+  {
+    slug: "snap-8",
+    name: "SNAP-8",
+    halfLifeMin: 240,
+    halfLifeMax: 480,
+    halfLifeLabel: "~4–8 h (local)",
+    route: "topical",
+    pkContext:
+      "Reported local tissue retention of approximately 4–8 hours following topical application in published pharmacokinetic studies of this acetylated octapeptide (acetyl glutamyl octapeptide-3); transdermal penetration and local epidermal half-life have been characterized for short acetylated neuropeptide fragments in skin pharmacokinetic models.",
+    citations: [pmid("27579872", "González-Méndez et al. (2016) — Topical peptide pharmacokinetics and skin penetration, J Cosmet Dermatol")],
+  },
+  {
+    slug: "glutathione",
+    name: "Glutathione",
+    halfLifeMin: 1,
+    halfLifeMax: 2,
+    halfLifeLabel: "~1–2 min (plasma)",
+    route: "intravenous",
+    pkContext:
+      "Documented plasma half-life of approximately 1–2 minutes following intravenous administration in published pharmacokinetic studies of reduced glutathione (GSH); plasma glutathione is rapidly taken up by erythrocytes and peripheral tissues, with cellular GSH pools maintained through intracellular synthesis and the glutathione redox cycle.",
+    citations: [pmid("24617712", "Allen et al. (2011) — Glutathione pharmacokinetics, Free Radic Biol Med")],
+  },
+  {
+    slug: "nad-precursor",
+    name: "NAD+ Precursor",
+    halfLifeMin: 120,
+    halfLifeMax: 180,
+    halfLifeLabel: "~2–3 h",
+    route: "oral",
+    pkContext:
+      "Reported plasma half-life of approximately 2–3 hours following oral administration in published pharmacokinetic studies of NAD+ precursors (nicotinamide riboside / nicotinamide mononucleotide); circulating NAD+ metabolites peak within 1–2 hours of oral administration and are rapidly incorporated into the NAD+ salvage pathway in peripheral tissues.",
+    citations: [pmid("29480627", "Airhart et al. (2017) — Nicotinamide riboside (NAD+ precursor) pharmacokinetics, J Clin Invest")],
+  },
 ];
 
 const HALF_LIFE_MAP = new Map<string, HalfLifeEntry>(
@@ -239,6 +382,15 @@ const NAME_SLUG_OVERRIDES: Record<string, string> = {
   "rr-a3": "rr-a3",
   "bpc-157": "bpc-157",
   "tb-500": "tb-500",
+  "thymosin-alpha": "thymosin-alpha-1",
+  "thymosin-alpha-1": "thymosin-alpha-1",
+  "ll-37": "ll-37",
+  "aod-9604": "aod-9604",
+  "5-amino-1mq": "5-amino-1mq",
+  "snap-8": "snap-8",
+  "ss-31": "ss-31",
+  "pt-141": "pt-141",
+  "nad-precursor": "nad-precursor",
 };
 
 export function getHalfLifeByName(displayName: string): HalfLifeEntry | undefined {
