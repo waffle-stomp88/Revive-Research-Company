@@ -962,6 +962,8 @@ export const COMBO_STACK_CONSTITUENTS: Record<string, string[]> = {
   "bpc-157-tb-500-stack": ["BPC-157", "TB-500"],
   "cjc-1295-ipamorelin-stack": ["CJC-1295 (No DAC)", "Ipamorelin"],
   "cag-sema-blend": ["Cagrilintide", "RR-A1"],
+  "glow-peptide-complex": ["TB-500", "BPC-157", "GHK-Cu"],
+  "klow-peptide-complex": ["TB-500", "BPC-157", "GHK-Cu", "KPV"],
 };
 
 export function hasKineticMismatch(entries: HalfLifeEntry[]): boolean {
