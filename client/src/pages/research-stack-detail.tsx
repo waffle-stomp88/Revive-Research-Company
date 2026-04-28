@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useRoute, Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
@@ -151,6 +151,9 @@ function writeStoredZoom(value: number | null): void {
 
 function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
   const [selectedRange, setSelectedRange] = useState<number | null>(readStoredZoom);
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const [tooltip, setTooltip] = useState<{ clientX: number; clientY: number; label: string; halfLife: string } | null>(null);
+  const chartWrapRef = useRef<HTMLDivElement>(null);
 
   function handleRangeChange(value: number | null) {
     writeStoredZoom(value);
@@ -195,12 +198,67 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
   const hasCurves = curves.some(Boolean);
   const clipId = "pk-clip-" + peptides.map(p => toTestSlug(p.name)).join("-");
 
+  const curveOpacity = useCallback((idx: number) => {
+    if (hoveredIdx === null) return 1;
+    return idx === hoveredIdx ? 1 : 0.12;
+  }, [hoveredIdx]);
+
+  const markerOpacity = useCallback((idx: number) => {
+    if (hoveredIdx === null) return 1;
+    return idx === hoveredIdx ? 1 : 0.06;
+  }, [hoveredIdx]);
+
+  const handleCurveHover = useCallback((idx: number, e: React.MouseEvent) => {
+    const c = curves[idx];
+    if (!c) return;
+    setHoveredIdx(idx);
+    setTooltip({
+      clientX: e.clientX,
+      clientY: e.clientY,
+      label: c.peptide.name,
+      halfLife: c.pk.halfLifeLabel,
+    });
+  }, [curves]);
+
+  const handleCurveMove = useCallback((idx: number, e: React.MouseEvent) => {
+    const c = curves[idx];
+    if (!c) return;
+    setTooltip(prev => prev ? { ...prev, clientX: e.clientX, clientY: e.clientY } : prev);
+  }, [curves]);
+
+  const handleCurveLeave = useCallback(() => {
+    setHoveredIdx(null);
+    setTooltip(null);
+  }, []);
+
+  const handleLegendEnter = useCallback((idx: number, e?: React.MouseEvent | React.FocusEvent) => {
+    const c = curves[idx];
+    if (!c) return;
+    setHoveredIdx(idx);
+    const clientX = (e as React.MouseEvent)?.clientX ?? 0;
+    const clientY = (e as React.MouseEvent)?.clientY ?? 0;
+    if (clientX || clientY) {
+      setTooltip({ clientX, clientY, label: c.peptide.name, halfLife: c.pk.halfLifeLabel });
+    }
+  }, [curves]);
+
+  const handleLegendMove = useCallback((idx: number, e: React.MouseEvent) => {
+    const c = curves[idx];
+    if (!c) return;
+    setTooltip({ clientX: e.clientX, clientY: e.clientY, label: c.peptide.name, halfLife: c.pk.halfLifeLabel });
+  }, [curves]);
+
+  const handleLegendLeave = useCallback(() => {
+    setHoveredIdx(null);
+    setTooltip(null);
+  }, []);
+
   return (
     <div className="mb-8" data-testid="section-compounds">
       <h3 className="font-display font-semibold text-lg mb-3">Compounds in this Stack</h3>
       <Card className="border-border/40 bg-[#07070b] overflow-hidden">
         {hasCurves && (
-          <div className="p-3 pb-0">
+          <div className="p-3 pb-0 relative" ref={chartWrapRef}>
             <div className="flex items-center justify-end gap-1 mb-2" data-testid="pk-zoom-controls">
               <button
                 className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors ${
@@ -236,6 +294,7 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
               style={{ maxHeight: 200 }}
               role="img"
               aria-label="Plasma concentration–time curves for compounds in this stack"
+              onMouseLeave={handleCurveLeave}
             >
               <defs>
                 <clipPath id={clipId}>
@@ -274,14 +333,22 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
 
               {/* Area fills */}
               <g clipPath={`url(#${clipId})`}>
-                {curves.map(c => c && (
-                  <path key={`a-${c.peptide.name}`} d={c.areaD} fill={`url(#g-${toTestSlug(c.peptide.name)})`} />
+                {curves.map((c, idx) => c && (
+                  <path
+                    key={`a-${c.peptide.name}`}
+                    d={c.areaD}
+                    fill={`url(#g-${toTestSlug(c.peptide.name)})`}
+                    style={{ opacity: curveOpacity(idx), transition: "opacity 0.18s ease" }}
+                  />
                 ))}
               </g>
 
               {/* t½ vertical markers */}
-              {curves.map(c => c && c.halfLifeXFrac !== null && (
-                <g key={`m-${c.peptide.name}`}>
+              {curves.map((c, idx) => c && c.halfLifeXFrac !== null && (
+                <g
+                  key={`m-${c.peptide.name}`}
+                  style={{ opacity: markerOpacity(idx), transition: "opacity 0.18s ease" }}
+                >
                   <line
                     x1={CHART.x0 + c.halfLifeXFrac * CHART.plotW} y1={CHART.y0}
                     x2={CHART.x0 + c.halfLifeXFrac * CHART.plotW} y2={CHART.y1}
@@ -295,28 +362,61 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
               {/* Animated curve strokes */}
               <g clipPath={`url(#${clipId})`}>
                 {curves.map((c, idx) => c && (
-                  <motion.path
-                    key={`s-${c.peptide.name}`}
+                  <g
+                    key={`sg-${c.peptide.name}`}
+                    style={{ opacity: curveOpacity(idx), transition: "opacity 0.18s ease" }}
+                  >
+                    <motion.path
+                      d={c.curveD}
+                      fill="none"
+                      stroke={c.color}
+                      strokeWidth={hoveredIdx === idx ? 2.8 : 2}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      initial={{ pathLength: 0, opacity: 0 }}
+                      animate={{ pathLength: 1, opacity: 1 }}
+                      transition={{ duration: 1.4, delay: idx * 0.25, ease: "easeOut" }}
+                      style={{
+                        filter: hoveredIdx === idx
+                          ? `drop-shadow(0 0 8px ${c.color}c0)`
+                          : `drop-shadow(0 0 5px ${c.color}90)`,
+                      }}
+                    />
+                  </g>
+                ))}
+              </g>
+
+              {/* Invisible wide hit-areas for curve hover — rendered on top */}
+              <g clipPath={`url(#${clipId})`}>
+                {curves.map((c, idx) => c && (
+                  <path
+                    key={`hit-${c.peptide.name}`}
                     d={c.curveD}
                     fill="none"
-                    stroke={c.color}
-                    strokeWidth="2"
+                    stroke="transparent"
+                    strokeWidth="16"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeDasharray={isNonSCRoute(c.pk.route) ? "7 4" : undefined}
-                    initial={{ pathLength: 0, opacity: 0 }}
-                    animate={{ pathLength: 1, opacity: 1 }}
-                    transition={{ duration: 1.4, delay: idx * 0.25, ease: "easeOut" }}
-                    style={{ filter: `drop-shadow(0 0 5px ${c.color}90)` }}
+                    style={{ cursor: "crosshair" }}
+                    onMouseEnter={e => handleCurveHover(idx, e)}
+                    onMouseMove={e => handleCurveMove(idx, e)}
+                    onMouseLeave={handleCurveLeave}
+                    role="img"
+                    aria-label={`${c.peptide.name} plasma concentration curve, t½ ${c.pk.halfLifeLabel}`}
+                    tabIndex={0}
+                    onFocus={() => handleLegendEnter(idx)}
+                    onBlur={handleCurveLeave}
                   />
                 ))}
               </g>
 
               {/* Continuation arrows for extended curves */}
-              {curves.map(c => c && c.isExtended && (
+              {curves.map((c, idx) => c && c.isExtended && (
                 <text key={`arr-${c.peptide.name}`}
                   x={CHART.x1 + 3} y={c.lastY + 1}
-                  fontSize="11" fill={c.color} fillOpacity="0.7">›</text>
+                  fontSize="11" fill={c.color}
+                  style={{ opacity: curveOpacity(idx), transition: "opacity 0.18s ease", fillOpacity: 0.7 }}>›</text>
               ))}
 
               {/* X-axis tick labels */}
@@ -331,6 +431,27 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
                 Time ({useHours ? "hours" : "min"})
               </text>
             </svg>
+
+            {/* Floating tooltip — fixed positioning so it's never clipped by overflow:hidden */}
+            {tooltip && (
+              <div
+                className="pointer-events-none fixed z-50 px-2.5 py-1.5 rounded-md text-xs font-medium leading-tight"
+                style={{
+                  left: tooltip.clientX + 14,
+                  top: tooltip.clientY - 42,
+                  background: "rgba(10,10,16,0.92)",
+                  border: `1px solid ${curves[hoveredIdx!]?.color ?? "#fff"}40`,
+                  color: curves[hoveredIdx!]?.color ?? "#fff",
+                  boxShadow: `0 2px 12px rgba(0,0,0,0.6)`,
+                  backdropFilter: "blur(6px)",
+                  whiteSpace: "nowrap",
+                }}
+                role="tooltip"
+              >
+                <span className="block font-semibold">{tooltip.label}</span>
+                <span className="block opacity-70">t½ {tooltip.halfLife}</span>
+              </div>
+            )}
           </div>
         )}
 
@@ -346,12 +467,36 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
                 </div>
               );
             }
+            const isActive = hoveredIdx === i;
+            const isDimmed = hoveredIdx !== null && !isActive;
             return (
-              <div key={c.peptide.name} className="flex flex-col gap-1">
+              <div
+                key={c.peptide.name}
+                className="flex flex-col gap-1 rounded-md px-1.5 py-1 -mx-1.5 cursor-default"
+                style={{
+                  opacity: isDimmed ? 0.3 : 1,
+                  transition: "opacity 0.18s ease",
+                  outline: isActive ? `1px solid ${c.color}30` : "1px solid transparent",
+                  background: isActive ? `${c.color}08` : "transparent",
+                }}
+                onMouseEnter={e => handleLegendEnter(i, e)}
+                onMouseMove={e => handleLegendMove(i, e)}
+                onMouseLeave={handleLegendLeave}
+                onFocus={e => handleLegendEnter(i, e)}
+                onBlur={handleLegendLeave}
+                tabIndex={0}
+                role="listitem"
+                aria-label={`${c.peptide.name}, half-life ${c.pk.halfLifeLabel}`}
+                data-testid={`legend-row-${toTestSlug(c.peptide.name)}`}
+              >
                 <div className="flex flex-wrap items-center gap-2">
                   <div
                     className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: c.color, boxShadow: `0 0 7px ${c.color}` }}
+                    style={{
+                      backgroundColor: c.color,
+                      boxShadow: isActive ? `0 0 10px ${c.color}` : `0 0 7px ${c.color}`,
+                      transition: "box-shadow 0.18s ease",
+                    }}
                   />
                   {isNonSCRoute(c.pk.route) && (
                     <svg width="14" height="4" viewBox="0 0 14 4" aria-hidden="true" className="flex-shrink-0">
