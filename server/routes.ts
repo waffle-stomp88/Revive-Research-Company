@@ -2226,7 +2226,36 @@ export async function registerRoutes(
     try {
       const validatedData = insertProductSchema.parse(req.body);
       const product = await storage.createProduct(validatedData);
-      res.status(201).json(product);
+
+      // Keep the static catalog manifest in sync so CI audits can detect
+      // products added through the admin panel without a running server.
+      let catalogSyncWarning: string | undefined;
+      try {
+        const manifestPath = path.resolve(process.cwd(), "scripts", "product-catalog.json");
+        let catalog: Array<{ name: string; slug: string }> = [];
+        if (fs.existsSync(manifestPath)) {
+          catalog = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+        }
+        const alreadyPresent = catalog.some((e) => e.slug === product.slug);
+        if (!alreadyPresent) {
+          catalog.push({ name: product.name, slug: product.slug });
+          catalog.sort((a, b) => a.slug.localeCompare(b.slug));
+          fs.writeFileSync(manifestPath, JSON.stringify(catalog, null, 2) + "\n", "utf8");
+        }
+      } catch (manifestErr) {
+        // Non-fatal — the product was saved to the database successfully.
+        // Surface a warning in the response so operators know to regenerate
+        // the manifest with: node scripts/export-product-catalog.cjs
+        const reason = manifestErr instanceof Error ? manifestErr.message : String(manifestErr);
+        catalogSyncWarning =
+          `scripts/product-catalog.json could not be updated (${reason}). ` +
+          "Run: node scripts/export-product-catalog.cjs to regenerate it.";
+        console.warn("[Admin Create Product] Could not update scripts/product-catalog.json:", manifestErr);
+      }
+
+      res.status(201).json(
+        catalogSyncWarning ? { ...product, _catalogSyncWarning: catalogSyncWarning } : product
+      );
     } catch (error) {
       console.error("Error creating product:", error);
       if (error instanceof Error && error.name === "ZodError") {

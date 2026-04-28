@@ -7,10 +7,13 @@
  * NAME_SLUG_OVERRIDES). This guards against new products being silently added
  * to the catalog without a PK chart entry.
  *
- * Product slugs are read directly from server/seed.ts using the same
- * name-to-slug logic that createProduct() applies in server/storage.ts,
- * so the check is server-independent and safe to run in CI without a
- * running application server.
+ * Product source (in priority order):
+ *   1. scripts/product-catalog.json — if present, this is the authoritative
+ *      manifest.  It is kept up-to-date automatically whenever a product is
+ *      added through the admin panel and should be committed to the repo so
+ *      that CI picks it up.
+ *   2. server/seed.ts — fallback for repositories that have not yet generated
+ *      the manifest (initial seed products only).
  *
  * Usage:
  *   node scripts/audit-pk-catalog.cjs
@@ -55,6 +58,78 @@ function nameToSlug(name) {
     .replace(/[^a-z0-9\s-]/g, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-");
+}
+
+/**
+ * Validate and read the product catalog from scripts/product-catalog.json.
+ * Returns an array of { name, slug } objects.
+ *
+ * Exits with code 2 if the file is not valid JSON, not an array, or contains
+ * malformed entries — so CI fails fast on corruption rather than silently
+ * passing with zero products checked.
+ */
+function readProductsFromManifest(manifestPath) {
+  let raw;
+  try {
+    raw = fs.readFileSync(manifestPath, "utf8");
+  } catch (err) {
+    console.error(`ERROR: Cannot read ${manifestPath} — ${err.message}`);
+    process.exit(2);
+  }
+
+  let entries;
+  try {
+    entries = JSON.parse(raw);
+  } catch (err) {
+    console.error(
+      `ERROR: scripts/product-catalog.json is not valid JSON — ${err.message}\n` +
+      "       Run: node scripts/export-product-catalog.cjs to regenerate it."
+    );
+    process.exit(2);
+  }
+
+  if (!Array.isArray(entries)) {
+    console.error(
+      "ERROR: scripts/product-catalog.json must contain a JSON array of { name, slug } objects, " +
+      `but got: ${typeof entries}\n` +
+      "       Run: node scripts/export-product-catalog.cjs to regenerate it."
+    );
+    process.exit(2);
+  }
+
+  const products = [];
+  for (let i = 0; i < entries.length; i++) {
+    const entry = entries[i];
+    if (typeof entry !== "object" || entry === null) {
+      console.error(
+        `ERROR: scripts/product-catalog.json entry [${i}] is not an object — got ${JSON.stringify(entry)}\n` +
+        "       Run: node scripts/export-product-catalog.cjs to regenerate it."
+      );
+      process.exit(2);
+    }
+    if (typeof entry.name !== "string" || entry.name.trim() === "") {
+      console.error(
+        `ERROR: scripts/product-catalog.json entry [${i}] is missing a valid 'name' string field.\n` +
+        `       Found: ${JSON.stringify(entry)}\n` +
+        "       Run: node scripts/export-product-catalog.cjs to regenerate it."
+      );
+      process.exit(2);
+    }
+    if (entry.slug !== undefined && typeof entry.slug !== "string") {
+      console.error(
+        `ERROR: scripts/product-catalog.json entry [${i}] has a 'slug' field that is not a string.\n` +
+        `       Found: ${JSON.stringify(entry)}\n` +
+        "       Run: node scripts/export-product-catalog.cjs to regenerate it."
+      );
+      process.exit(2);
+    }
+    products.push({
+      name: entry.name,
+      slug: entry.slug || nameToSlug(entry.name),
+    });
+  }
+
+  return products;
 }
 
 /**
@@ -140,27 +215,42 @@ function run() {
 
   const overrides = extractOverrides(pkSrc);
 
-  // Read the product catalog directly from the seed file
-  let seedSrc;
-  try {
-    seedSrc = readFile("server/seed.ts");
-  } catch (err) {
-    console.error(`ERROR: Could not read server/seed.ts — ${err.message}`);
-    process.exit(2);
-  }
+  // ── Determine product source ──────────────────────────────────────────────
+  const manifestPath = path.join(ROOT, "scripts", "product-catalog.json");
+  const manifestExists = fs.existsSync(manifestPath);
 
   let catalogProducts;
-  try {
-    catalogProducts = readProductsFromSeed(seedSrc);
-  } catch (err) {
-    console.error(`ERROR: ${err.message}`);
-    process.exit(2);
+  let catalogSource;
+
+  if (manifestExists) {
+    // Prefer the static manifest — it includes both seed products and any
+    // products added later via the admin panel.
+    // readProductsFromManifest() validates the file and exits with code 2
+    // on any structural error, so no additional try-catch is needed here.
+    catalogSource = "scripts/product-catalog.json";
+    catalogProducts = readProductsFromManifest(manifestPath);
+  } else {
+    // Fall back to parsing server/seed.ts (seed-only products).
+    catalogSource = "server/seed.ts (manifest not found — run scripts/export-product-catalog.cjs to generate it)";
+    let seedSrc;
+    try {
+      seedSrc = readFile("server/seed.ts");
+    } catch (err) {
+      console.error(`ERROR: Could not read server/seed.ts — ${err.message}`);
+      process.exit(2);
+    }
+
+    try {
+      catalogProducts = readProductsFromSeed(seedSrc);
+    } catch (err) {
+      console.error(`ERROR: ${err.message}`);
+      process.exit(2);
+    }
   }
 
   if (catalogProducts.length === 0) {
     console.error(
-      "ERROR: No products extracted from server/seed.ts — the parser may be broken " +
-        "or the sampleProducts array is empty."
+      `ERROR: No products extracted from ${catalogSource} — the source may be empty or the parser may be broken.`
     );
     process.exit(2);
   }
@@ -191,7 +281,7 @@ function run() {
   }
 
   // Print report
-  console.log("PK Catalog Coverage Audit — seed catalog (server-independent)");
+  console.log(`PK Catalog Coverage Audit — ${catalogSource}`);
   console.log("=".repeat(70));
 
   covered.forEach(({ slug, name, resolved, viaOverride }) => {
