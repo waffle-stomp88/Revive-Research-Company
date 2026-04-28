@@ -70,3 +70,16 @@ export function getSystemIcon(systemId: string): LucideIcon | undefined {
   }
   return undefined;
 }
+
+export function getSystemName(systemId: string): string | undefined {
+  const key = systemId.toLowerCase();
+  const direct = BODY_SYSTEMS.find(bs => bs.id === key || bs.name.toLowerCase() === key);
+  if (direct) return direct.name;
+  if (COMPOUND_LABELS[key]) return key.charAt(0).toUpperCase() + key.slice(1);
+  const aliasId = SYSTEM_ALIASES[key];
+  if (aliasId) {
+    const aliased = BODY_SYSTEMS.find(bs => bs.id === aliasId);
+    if (aliased) return aliased.name;
+  }
+  return undefined;
+}

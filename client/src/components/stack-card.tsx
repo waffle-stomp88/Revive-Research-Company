@@ -1,7 +1,8 @@
 import { forwardRef } from "react";
 import { GitMerge } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import type { TriggeredOverlap } from "@/lib/pathway-overlaps";
-import { BODY_SYSTEMS } from "@/data/body-systems";
+import { getSystemIcon, getSystemColor, getSystemName } from "@/data/body-systems";
 
 function synergyRingColor(score: number): string {
   if (score >= 88) return "#E7FB10";
@@ -40,9 +41,17 @@ export const StackCard = forwardRef<HTMLDivElement, StackCardProps>(
     const filled = circumference * (synergyScore / 100);
     const gap = circumference - filled;
 
-    const matchedSystems = BODY_SYSTEMS.filter(s =>
-      activeSystems.some(a => a.toLowerCase() === s.id.toLowerCase() || a.toLowerCase() === s.name.toLowerCase())
-    );
+    const matchedSystems = activeSystems
+      .map(sys => {
+        const key = sys.toLowerCase();
+        const icon = getSystemIcon(key);
+        const color = getSystemColor(key);
+        const resolvedName = getSystemName(key);
+        if (!icon || !color || !resolvedName) return null;
+        return { id: key, name: resolvedName, icon: icon as LucideIcon, color };
+      })
+      .filter((sys, idx, arr) => sys !== null && arr.findIndex(s => s?.id === sys.id) === idx)
+      .filter((s): s is { id: string; name: string; icon: LucideIcon; color: string } => s !== null);
 
     return (
       <div
