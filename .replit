@@ -41,6 +41,10 @@ args = "pk-chart-key"
 task = "workflow.run"
 args = "pk-chart-key-e2e"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "zoom-preference"
+
 [[workflows.workflow]]
 name = "Start application"
 author = "agent"
@@ -79,6 +83,17 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "sh scripts/run-pk-chart-e2e.sh"
+
+[workflows.workflow.metadata]
+isValidation = true
+
+[[workflows.workflow]]
+name = "zoom-preference"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node scripts/test-zoom-preference.cjs"
 
 [workflows.workflow.metadata]
 isValidation = true
