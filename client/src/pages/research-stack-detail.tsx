@@ -50,6 +50,15 @@ export default function ResearchStackDetail() {
     setSynergyLevel("beginner");
   }, [params?.id]);
 
+  useEffect(() => {
+    if (!match || !params?.id) return;
+    const stack = RESEARCH_STACKS_BY_ID[params.id];
+    if (!stack) {
+      sessionStorage.setItem("stack-retired-redirect", "1");
+      setLocation("/research-stacks");
+    }
+  }, [match, params?.id]);
+
   const { data: allProducts } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
@@ -70,20 +79,7 @@ export default function ResearchStackDetail() {
   const stack = RESEARCH_STACKS_BY_ID[params.id];
 
   if (!stack) {
-    return (
-      <main className="min-h-screen pt-32 md:pt-40 pb-12">
-        <div className="max-w-4xl mx-auto px-4 md:px-8 text-center">
-          <h1 className="font-display text-3xl font-bold mb-4">Stack Not Found</h1>
-          <p className="text-muted-foreground mb-6">The research stack you're looking for doesn't exist.</p>
-          <Link href="/research-stacks">
-            <Button>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Research Stacks
-            </Button>
-          </Link>
-        </div>
-      </main>
-    );
+    return null;
   }
 
   const pricing = calculateStackPricing(params.id, priceLookup);

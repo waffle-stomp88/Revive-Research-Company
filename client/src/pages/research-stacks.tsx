@@ -3390,6 +3390,7 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
 function ResearchStacks() {
   const [activeTab, setActiveTab] = useState<StackTab>("pre-built");
   const [templatePeptideNames, setTemplatePeptideNames] = useState<string[]>([]);
+  const { toast } = useToast();
 
   const { data: productsWithStock } = useQuery<any[]>({
     queryKey: ["/api/products-with-stock"],
@@ -3403,6 +3404,18 @@ function ResearchStacks() {
   const getStackPricing = (stackId: string) => {
     return calculateStackPricing(stackId, priceLookup);
   };
+
+  // Show toast if redirected from a retired stack URL
+  useEffect(() => {
+    const wasRetired = sessionStorage.getItem("stack-retired-redirect");
+    if (wasRetired) {
+      sessionStorage.removeItem("stack-retired-redirect");
+      toast({
+        title: "Stack Retired",
+        description: "This stack has been retired. Browse our current curated stacks below.",
+      });
+    }
+  }, []);
 
   // Handle URL tab parameter on mount
   useEffect(() => {
