@@ -5040,6 +5040,22 @@ Return ONLY valid JSON in this exact format:
     }
   });
 
+  app.delete("/api/dead-links", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const user = userId ? await storage.getUser(userId) : null;
+      if (!user?.isAdmin) {
+        return res.status(403).json({ error: "Admin only" });
+      }
+      const count = deadLinkHits.size;
+      deadLinkHits.clear();
+      return res.json({ ok: true, cleared: count });
+    } catch (error) {
+      console.error("Error clearing dead links:", error);
+      return res.status(500).json({ error: "Failed to clear dead links" });
+    }
+  });
+
   app.delete("/api/dead-links/:type/:slug", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user?.claims?.sub;

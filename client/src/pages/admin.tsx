@@ -7323,6 +7323,17 @@ function DeadLinksTab() {
     },
   });
 
+  const clearAllMutation = useMutation({
+    mutationFn: () => apiRequest("DELETE", "/api/dead-links"),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/dead-links"] });
+      toast({ title: "All records cleared", description: "All dead-link records have been removed." });
+    },
+    onError: () => {
+      toast({ title: "Clear failed", description: "Could not clear all records. Please try again.", variant: "destructive" });
+    },
+  });
+
   return (
     <Card className="p-6">
       <div className="flex items-center justify-between gap-2 mb-6 flex-wrap">
@@ -7334,15 +7345,27 @@ function DeadLinksTab() {
             <code className="text-xs bg-muted px-1 py-0.5 rounded-md">RETIRED_GUIDE_SLUGS</code> for proactive redirects.
           </CardDescription>
         </div>
-        <Button
-          variant="outline"
-          size="default"
-          onClick={() => refetch()}
-          data-testid="button-refresh-dead-links"
-        >
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Refresh
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="default"
+            disabled={hits.length === 0 || clearAllMutation.isPending}
+            onClick={() => clearAllMutation.mutate()}
+            data-testid="button-clear-all-dead-links"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Clear all
+          </Button>
+          <Button
+            variant="outline"
+            size="default"
+            onClick={() => refetch()}
+            data-testid="button-refresh-dead-links"
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (
