@@ -66,6 +66,68 @@ function isValidSlug(slug: string): boolean {
   return SLUG_PATTERN.test(slug);
 }
 
+// Per-IP rate limiter for dead-link tracking: 1 count per (IP + type + slug) per hour.
+// IP address is always the primary gate so rotating headers cannot bypass it.
+// A validated UUID visitor-ID is an optional secondary dimension that prevents
+// false positives for real users sharing a corporate NAT/proxy IP.
+const DEAD_LINK_RATE_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+const deadLinkRateMap = new Map<string, number>(); // key → timestamp of last accepted hit
+
+// Only accept visitor IDs that are RFC-4122 UUIDs to prevent spoofing with
+// arbitrary values that could bloat the map.
+const VISITOR_UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Prune stale rate-limit entries every 10 minutes to prevent unbounded memory growth.
+setInterval(() => {
+  const cutoff = Date.now() - DEAD_LINK_RATE_WINDOW_MS;
+  for (const [key, ts] of deadLinkRateMap) {
+    if (ts < cutoff) deadLinkRateMap.delete(key);
+  }
+}, 10 * 60 * 1000).unref();
+
+/**
+ * Returns true when the request should be skipped (already counted recently).
+ *
+ * Strategy:
+ *  - If the request carries a validated UUID visitor ID, use it as the PRIMARY
+ *    dedup key. This lets distinct users behind the same corporate NAT/proxy each
+ *    count once without blocking each other.
+ *  - If no valid visitor UUID is present (e.g. curl, bots without JS), fall back
+ *    to the IP address as the dedup key — still enforces 1 hit/hour/slug/IP.
+ *
+ * Bots that do not send the X-Visitor-ID header are gated by IP.
+ * Bots that rotate arbitrary header values are rejected upstream by UUID validation,
+ * so they also fall through to IP gating.
+ */
+function isDeadLinkRateLimited(
+  ip: string,
+  visitorId: string | null,
+  type: string,
+  slug: string
+): boolean {
+  const now = Date.now();
+
+  if (visitorId) {
+    // Browser path: deduplicate by persistent browser UUID.
+    const vidKey = `vid:${visitorId}:${type}:${slug}`;
+    const vidLast = deadLinkRateMap.get(vidKey);
+    if (vidLast !== undefined && now - vidLast < DEAD_LINK_RATE_WINDOW_MS) {
+      return true;
+    }
+    deadLinkRateMap.set(vidKey, now);
+    return false;
+  }
+
+  // Headless/bot path: deduplicate by IP address.
+  const ipKey = `ip:${ip}:${type}:${slug}`;
+  const ipLast = deadLinkRateMap.get(ipKey);
+  if (ipLast !== undefined && now - ipLast < DEAD_LINK_RATE_WINDOW_MS) {
+    return true;
+  }
+  deadLinkRateMap.set(ipKey, now);
+  return false;
+}
+
 async function recordDeadLink(type: "product" | "guide", slug: string): Promise<void> {
   await storage.upsertDeadLinkHit(type, slug);
 }
@@ -4997,6 +5059,17 @@ Return ONLY valid JSON in this exact format:
       const rawSlug = typeof slug === "string" ? slug.trim() : "";
       if (!isValidSlug(rawSlug)) {
         return res.status(400).json({ error: "Invalid slug" });
+      }
+      const ip = req.ip || "unknown";
+      // X-Visitor-ID is accepted only when it is a well-formed UUID so that
+      // bots cannot bypass the IP gate by rotating arbitrary header values.
+      const rawVisitorHeader =
+        typeof req.headers["x-visitor-id"] === "string"
+          ? req.headers["x-visitor-id"].trim()
+          : "";
+      const visitorId = VISITOR_UUID_RE.test(rawVisitorHeader) ? rawVisitorHeader : null;
+      if (isDeadLinkRateLimited(ip, visitorId, type, rawSlug)) {
+        return res.json({ ok: true, skipped: true });
       }
       await recordDeadLink(type as "product" | "guide", rawSlug);
       return res.json({ ok: true });

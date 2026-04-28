@@ -1,6 +1,20 @@
 import { trackEvent } from "./analytics";
 
 const STORAGE_KEY_PREFIX = "retired-redirect";
+const VISITOR_ID_KEY = "rr-visitor-id";
+
+function getOrCreateVisitorId(): string {
+  try {
+    let id = localStorage.getItem(VISITOR_ID_KEY);
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem(VISITOR_ID_KEY, id);
+    }
+    return id;
+  } catch {
+    return "anonymous";
+  }
+}
 
 export type RetiredContentType = "product" | "guide" | "bundle";
 
@@ -10,7 +24,10 @@ export function flagRetiredContent(type: RetiredContentType, slug?: string): voi
     trackEvent("dead_link_visit", "retirement", `${type}:${slug}`);
     fetch("/api/dead-links", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-Visitor-ID": getOrCreateVisitorId(),
+      },
       body: JSON.stringify({ type, slug }),
     }).catch(() => {});
   }
