@@ -815,9 +815,9 @@ function nameToSlug(name: string): string {
  * here explicitly so future audits can rely on this map as a single source of truth
  * rather than the fallback HALF_LIFE_MAP direct-key lookup.
  *
- * Coverage is enforced automatically via the "pk-coverage" validation step
+ * Coverage is enforced automatically via the "pk-catalog-coverage" validation step
  * (registered with the platform CI system). Run it manually with:
- *   node scripts/audit-pk-coverage.cjs
+ *   node scripts/audit-pk-catalog.cjs
  *
  * When adding a new slug to known-stacks.ts:
  *   1. Add a HalfLifeEntry to PEPTIDE_HALF_LIVES, OR
