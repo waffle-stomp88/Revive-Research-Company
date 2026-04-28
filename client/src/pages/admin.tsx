@@ -114,6 +114,9 @@ import {
   Archive,
   ArchiveRestore,
   Link2Off,
+  BookOpen,
+  ChevronUp,
+  RotateCcw,
 } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { ObjectUploader } from "@/components/ObjectUploader";
@@ -7298,6 +7301,295 @@ function SettingsTab() {
   );
 }
 
+interface CitationResult {
+  pmid: string;
+  ok: boolean;
+  title?: string;
+  authors?: string;
+  pubdate?: string;
+  source?: string;
+  reason?: string;
+  compounds?: string[];
+}
+
+interface CitationReport {
+  available: boolean;
+  generatedAt?: string;
+  checked?: number;
+  passed?: number;
+  failed?: number;
+  failedItems?: CitationResult[];
+  dismissedItems?: CitationResult[];
+}
+
+function CitationHealthSection() {
+  const { toast } = useToast();
+  const [showDismissed, setShowDismissed] = useState(false);
+
+  const { data: report, isLoading, refetch } = useQuery<CitationReport>({
+    queryKey: ["/api/citation-report"],
+  });
+
+  const dismissMutation = useMutation({
+    mutationFn: (pmid: string) => apiRequest("POST", `/api/citation-dismissals/${pmid}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/citation-report"] });
+      toast({ title: "Marked as reviewed", description: "The citation has been dismissed from the active list." });
+    },
+    onError: () => {
+      toast({ title: "Dismiss failed", description: "Could not dismiss the citation. Please try again.", variant: "destructive" });
+    },
+  });
+
+  const undismissMutation = useMutation({
+    mutationFn: (pmid: string) => apiRequest("DELETE", `/api/citation-dismissals/${pmid}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/citation-report"] });
+      toast({ title: "Restored", description: "The citation has been restored to the active list." });
+    },
+    onError: () => {
+      toast({ title: "Restore failed", description: "Could not restore the citation. Please try again.", variant: "destructive" });
+    },
+  });
+
+  const clearDismissalsMutation = useMutation({
+    mutationFn: () => apiRequest("DELETE", "/api/citation-dismissals"),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/citation-report"] });
+      toast({ title: "All dismissals cleared", description: "All dismissed citations are now active again." });
+      setShowDismissed(false);
+    },
+    onError: () => {
+      toast({ title: "Clear failed", description: "Could not clear dismissals. Please try again.", variant: "destructive" });
+    },
+  });
+
+  const failedItems = report?.failedItems ?? [];
+  const dismissedItems = report?.dismissedItems ?? [];
+
+  return (
+    <Card className="p-6 mt-6">
+      <div className="flex items-center justify-between gap-2 mb-6 flex-wrap">
+        <div>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <BookOpen className="h-5 w-5" />
+            Citation Health
+          </CardTitle>
+          <CardDescription className="mt-1">
+            PubMed citation verification results from the latest CI run. Failed PMIDs may indicate retracted,
+            missing, or errored references in the pharmacokinetics data.
+          </CardDescription>
+        </div>
+        <div className="flex items-center gap-2">
+          {dismissedItems.length > 0 && (
+            <Button
+              variant="outline"
+              size="default"
+              disabled={clearDismissalsMutation.isPending}
+              onClick={() => clearDismissalsMutation.mutate()}
+              data-testid="button-clear-citation-dismissals"
+            >
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Restore all dismissed
+            </Button>
+          )}
+          <Button
+            variant="outline"
+            size="default"
+            onClick={() => refetch()}
+            data-testid="button-refresh-citations"
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
+        </div>
+      </div>
+
+      {isLoading ? (
+        <div className="space-y-2">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} className="h-10 w-full" />
+          ))}
+        </div>
+      ) : !report?.available ? (
+        <div className="text-center py-12 text-muted-foreground" data-testid="text-no-citation-report">
+          <BookOpen className="h-10 w-10 mx-auto mb-3 opacity-30" />
+          <p>No citation report found.</p>
+          <p className="text-sm mt-1">
+            Run{" "}
+            <code className="text-xs bg-muted px-1 py-0.5 rounded-md">
+              node scripts/verify-pk-citations.cjs --json --output citation-report.json
+            </code>{" "}
+            or trigger the CI workflow to generate a report.
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="flex flex-wrap gap-4 mb-6">
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-muted-foreground uppercase tracking-wide">Checked</span>
+              <span className="text-2xl font-bold" data-testid="text-citations-checked">{report.checked ?? 0}</span>
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-muted-foreground uppercase tracking-wide">Passed</span>
+              <span className="text-2xl font-bold text-green-600 dark:text-green-400" data-testid="text-citations-passed">{report.passed ?? 0}</span>
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-muted-foreground uppercase tracking-wide">Failed</span>
+              <span className="text-2xl font-bold text-destructive" data-testid="text-citations-failed">{report.failed ?? 0}</span>
+            </div>
+            {report.generatedAt && (
+              <div className="flex flex-col gap-1 ml-auto">
+                <span className="text-xs text-muted-foreground uppercase tracking-wide">Report generated</span>
+                <span className="text-sm text-muted-foreground">{new Date(report.generatedAt).toLocaleString()}</span>
+              </div>
+            )}
+          </div>
+
+          {failedItems.length === 0 && dismissedItems.length === 0 ? (
+            <div className="text-center py-10 text-muted-foreground" data-testid="text-all-citations-pass">
+              <CheckCircle className="h-10 w-10 mx-auto mb-3 text-green-500 opacity-70" />
+              <p className="font-medium">All citations verified</p>
+              <p className="text-sm mt-1">No broken PMIDs detected in the latest report.</p>
+            </div>
+          ) : failedItems.length === 0 ? (
+            <div className="text-center py-10 text-muted-foreground" data-testid="text-all-citations-dismissed">
+              <CheckCircle className="h-10 w-10 mx-auto mb-3 opacity-40" />
+              <p>All failed citations have been reviewed.</p>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-28">PMID</TableHead>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Source compound(s)</TableHead>
+                  <TableHead className="w-44">Failure reason</TableHead>
+                  <TableHead className="w-16"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {failedItems.map((item) => (
+                  <TableRow key={item.pmid} data-testid={`row-citation-${item.pmid}`}>
+                    <TableCell>
+                      <a
+                        href={`https://pubmed.ncbi.nlm.nih.gov/${item.pmid}/`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-mono text-sm underline underline-offset-2 text-primary"
+                        data-testid={`link-pmid-${item.pmid}`}
+                      >
+                        {item.pmid}
+                      </a>
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground max-w-xs">
+                      {item.title ? (
+                        <span data-testid={`text-citation-title-${item.pmid}`}>{item.title}</span>
+                      ) : (
+                        <span className="italic">No title available</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-sm" data-testid={`text-citation-compounds-${item.pmid}`}>
+                      {item.compounds && item.compounds.length > 0
+                        ? item.compounds.join(", ")
+                        : <span className="text-muted-foreground italic">—</span>}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="destructive" data-testid={`badge-citation-reason-${item.pmid}`}>
+                        {item.reason ?? "Unknown"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        disabled={dismissMutation.isPending}
+                        onClick={() => dismissMutation.mutate(item.pmid)}
+                        data-testid={`button-dismiss-citation-${item.pmid}`}
+                        title="Mark as reviewed"
+                      >
+                        <Check className="h-4 w-4 text-muted-foreground" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+
+          {dismissedItems.length > 0 && (
+            <div className="mt-6">
+              <button
+                onClick={() => setShowDismissed((v) => !v)}
+                className="flex items-center gap-1 text-sm text-muted-foreground hover-elevate active-elevate-2 rounded-md px-2 py-1"
+                data-testid="button-toggle-dismissed-citations"
+              >
+                <ChevronUp className={`h-4 w-4 transition-transform ${showDismissed ? "" : "rotate-180"}`} />
+                {showDismissed ? "Hide" : "Show"} {dismissedItems.length} reviewed item{dismissedItems.length !== 1 ? "s" : ""}
+              </button>
+              {showDismissed && (
+                <Table className="mt-3 opacity-60">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-28">PMID</TableHead>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Source compound(s)</TableHead>
+                      <TableHead className="w-44">Failure reason</TableHead>
+                      <TableHead className="w-16"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {dismissedItems.map((item) => (
+                      <TableRow key={item.pmid} data-testid={`row-dismissed-citation-${item.pmid}`}>
+                        <TableCell>
+                          <a
+                            href={`https://pubmed.ncbi.nlm.nih.gov/${item.pmid}/`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-mono text-sm underline underline-offset-2"
+                            data-testid={`link-dismissed-pmid-${item.pmid}`}
+                          >
+                            {item.pmid}
+                          </a>
+                        </TableCell>
+                        <TableCell className="text-sm max-w-xs">
+                          {item.title || <span className="italic">No title available</span>}
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          {item.compounds && item.compounds.length > 0
+                            ? item.compounds.join(", ")
+                            : <span className="text-muted-foreground italic">—</span>}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="secondary">
+                            {item.reason ?? "Unknown"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            disabled={undismissMutation.isPending}
+                            onClick={() => undismissMutation.mutate(item.pmid)}
+                            data-testid={`button-restore-citation-${item.pmid}`}
+                            title="Restore to active list"
+                          >
+                            <RotateCcw className="h-4 w-4 text-muted-foreground" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </div>
+          )}
+        </>
+      )}
+    </Card>
+  );
+}
+
 interface DeadLinkHit {
   type: "product" | "guide";
   slug: string;
@@ -7336,6 +7628,7 @@ function DeadLinksTab() {
   });
 
   return (
+    <>
     <Card className="p-6">
       <div className="flex items-center justify-between gap-2 mb-6 flex-wrap">
         <div>
@@ -7446,6 +7739,8 @@ function DeadLinksTab() {
         </Table>
       )}
     </Card>
+    <CitationHealthSection />
+    </>
   );
 }
 

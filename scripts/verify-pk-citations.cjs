@@ -163,6 +163,47 @@ function extractPmids(src) {
   return [...pmids].sort();
 }
 
+/**
+ * Build a map of PMID -> array of compound names that reference it within
+ * a single source file. Scans for `name: "..."` entries and associates each
+ * with the pmid() calls that appear after it (up to the next name entry).
+ */
+function buildPmidCompoundMap(src) {
+  const map = new Map(); // pmid -> Set<string>
+
+  // Find all name entries with their positions
+  const nameRegex = /\bname:\s*"([^"]+)"/g;
+  const names = [];
+  let nm;
+  while ((nm = nameRegex.exec(src)) !== null) {
+    names.push({ name: nm[1], index: nm.index });
+  }
+
+  // For each PMID occurrence, find the nearest preceding name entry
+  const pmidRegex = /pmid\(\s*"(\d+)"/g;
+  let m;
+  while ((m = pmidRegex.exec(src)) !== null) {
+    const pmid = m[1];
+    const pos = m.index;
+    let compound = "Unknown";
+    for (let i = names.length - 1; i >= 0; i--) {
+      if (names[i].index < pos) {
+        compound = names[i].name;
+        break;
+      }
+    }
+    if (!map.has(pmid)) map.set(pmid, new Set());
+    map.get(pmid).add(compound);
+  }
+
+  // Convert Sets to sorted arrays
+  const result = {};
+  for (const [pmid, compounds] of map.entries()) {
+    result[pmid] = [...compounds].sort();
+  }
+  return result;
+}
+
 async function main() {
   const targetFiles = resolveTargetFiles();
 
@@ -187,8 +228,9 @@ async function main() {
     process.exit(0);
   }
 
-  // Build a map of { filePath -> pmid[] }
+  // Build a map of { filePath -> pmid[] } and { filePath -> compoundMap }
   const fileMap = new Map();
+  const fileCompoundMap = new Map(); // filePath -> { pmid: string[] }
   for (const filePath of targetFiles) {
     if (!fs.existsSync(filePath)) {
       console.error(`File not found: ${filePath}`);
@@ -198,6 +240,7 @@ async function main() {
     const pmids = extractPmids(src);
     if (pmids.length > 0) {
       fileMap.set(filePath, pmids);
+      fileCompoundMap.set(filePath, buildPmidCompoundMap(src));
     }
   }
 
@@ -209,6 +252,18 @@ async function main() {
       if (!pmidToFiles.has(pmid)) pmidToFiles.set(pmid, new Set());
       pmidToFiles.get(pmid).add(filePath);
     }
+  }
+
+  // Build merged compound map: pmid -> sorted unique compounds across all files
+  const globalCompoundMap = {}; // pmid -> string[]
+  for (const [filePath, compoundMap] of fileCompoundMap) {
+    for (const [pmid, compounds] of Object.entries(compoundMap)) {
+      if (!globalCompoundMap[pmid]) globalCompoundMap[pmid] = new Set();
+      for (const c of compounds) globalCompoundMap[pmid].add(c);
+    }
+  }
+  for (const pmid of Object.keys(globalCompoundMap)) {
+    globalCompoundMap[pmid] = [...globalCompoundMap[pmid]].sort();
   }
 
   const totalFiles = fileMap.size;
@@ -236,6 +291,7 @@ async function main() {
   const verifiedMap = new Map(); // pmid -> result
   for (const pmid of allPmids) {
     const res = await verifyPmid(pmid);
+    res.compounds = globalCompoundMap[pmid] ?? [];
     verifiedMap.set(pmid, res);
     if (!EMIT_JSON) {
       if (res.ok) {
@@ -272,12 +328,17 @@ async function main() {
     .map((pmid) => verifiedMap.get(pmid))
     .filter((r) => r.ok);
 
+  // Top-level results array for backwards-compat with single-file consumers
+  // (e.g. the admin citation-report API that reads citation-report.json)
+  const results = allPmids.map((pmid) => verifiedMap.get(pmid));
+
   const report = {
     generatedAt: new Date().toISOString(),
     scannedFiles: targetFiles.map((f) => path.relative(REPO_ROOT, f)),
     checked: totalPmids,
     passed: globalPassed.length,
     failed: globalFailed.length,
+    results,
     byFile,
   };
   const reportJson = JSON.stringify(report, null, 2);

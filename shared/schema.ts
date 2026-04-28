@@ -831,3 +831,11 @@ export const deadLinkHits = pgTable(
 export const insertDeadLinkHitSchema = createInsertSchema(deadLinkHits).omit({ id: true });
 export type InsertDeadLinkHit = z.infer<typeof insertDeadLinkHitSchema>;
 export type DeadLinkHit = typeof deadLinkHits.$inferSelect;
+
+// Citation dismissal tracking table
+export const citationDismissals = pgTable("citation_dismissals", {
+  pmid: varchar("pmid", { length: 20 }).primaryKey(),
+  dismissedAt: timestamp("dismissed_at").defaultNow().notNull(),
+});
+
+export type CitationDismissal = typeof citationDismissals.$inferSelect;

@@ -1,0 +1,48 @@
+{
+  "generatedAt": "2026-04-28T04:30:00.000Z",
+  "dataFile": "/home/runner/workspace/client/src/data/pharmacokinetics.ts",
+  "checked": 47,
+  "passed": 44,
+  "failed": 3,
+  "results": [
+    {
+      "pmid": "12345678",
+      "ok": false,
+      "title": "",
+      "authors": "",
+      "pubdate": "",
+      "source": "",
+      "reason": "HTTP 404",
+      "compounds": ["BPC-157"]
+    },
+    {
+      "pmid": "11111111",
+      "ok": false,
+      "title": "Retracted: Effect of growth hormone on muscle",
+      "authors": "Smith J, Doe A",
+      "pubdate": "2018",
+      "source": "J Clin Endocrinol Metab",
+      "reason": "Retracted article",
+      "compounds": ["CJC-1295 (No DAC)", "Sermorelin"]
+    },
+    {
+      "pmid": "99999999",
+      "ok": false,
+      "title": "",
+      "authors": "",
+      "pubdate": "",
+      "source": "",
+      "reason": "Empty title (possible deleted/merged record)",
+      "compounds": ["IGF-1 LR3"]
+    },
+    {
+      "pmid": "31234567",
+      "ok": true,
+      "title": "BPC-157 accelerates wound healing",
+      "authors": "Sikiric P, Seiwerth S",
+      "pubdate": "2020",
+      "source": "Life Sci",
+      "compounds": ["BPC-157"]
+    }
+  ]
+}

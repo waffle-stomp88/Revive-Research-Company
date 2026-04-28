@@ -4,6 +4,7 @@ import {
   productDosageStock, priceHistory, academyProgress, emailEvents, wishlists, userResearchProfiles, productBehavioralMetrics,
   savedAddresses, notificationPreferences, researchNotes, loginHistory, batchVerificationHistory, productVotes,
   deadLinkHits,
+  citationDismissals,
   type User, type UpsertUser,
   type Product, type InsertProduct,
   type ProductDosageStock, type InsertProductDosageStock, type ProductWithDosageStock,
@@ -38,6 +39,7 @@ import {
   type ProductVote, type InsertProductVote,
   type WaitlistSignup, type InsertWaitlistSignup,
   type DeadLinkHit,
+  type CitationDismissal,
   waitlistSignups,
   priceChangeReasons
 } from "@shared/schema";
@@ -2492,6 +2494,30 @@ export class DatabaseStorage implements IStorage {
 
   async clearAllDeadLinkHits(): Promise<number> {
     const result = await db.delete(deadLinkHits).returning({ id: deadLinkHits.id });
+    return result.length;
+  }
+
+  async getCitationDismissals(): Promise<CitationDismissal[]> {
+    return db.select().from(citationDismissals).orderBy(desc(citationDismissals.dismissedAt));
+  }
+
+  async dismissCitation(pmid: string): Promise<void> {
+    await db
+      .insert(citationDismissals)
+      .values({ pmid })
+      .onConflictDoNothing();
+  }
+
+  async undismissCitation(pmid: string): Promise<boolean> {
+    const result = await db
+      .delete(citationDismissals)
+      .where(eq(citationDismissals.pmid, pmid))
+      .returning({ pmid: citationDismissals.pmid });
+    return result.length > 0;
+  }
+
+  async clearCitationDismissals(): Promise<number> {
+    const result = await db.delete(citationDismissals).returning({ pmid: citationDismissals.pmid });
     return result.length;
   }
 }

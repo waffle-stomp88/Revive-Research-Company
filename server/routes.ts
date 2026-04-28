@@ -2,6 +2,7 @@ import type { Express } from "express";
 import express from "express";
 import { createServer, type Server } from "http";
 import path from "path";
+import fs from "fs";
 import { storage, resolveDisplayPrice } from "./storage";
 import { db } from "./db";
 import { eq, desc, sql } from "drizzle-orm";
@@ -5046,6 +5047,101 @@ Return ONLY valid JSON in this exact format:
     } catch (error) {
       console.error("Error generating sitemap:", error);
       res.status(500).send("Error generating sitemap");
+    }
+  });
+
+  // Citation report and dismissal endpoints
+  const CITATION_REPORT_PATH = path.join(process.cwd(), "citation-report.json");
+  const PMID_RE = /^\d{1,20}$/;
+
+  app.get("/api/citation-report", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const user = userId ? await storage.getUser(userId) : null;
+      if (!user?.isAdmin) {
+        return res.status(403).json({ error: "Admin only" });
+      }
+      if (!fs.existsSync(CITATION_REPORT_PATH)) {
+        return res.json({ available: false });
+      }
+      const raw = fs.readFileSync(CITATION_REPORT_PATH, "utf-8");
+      const report = JSON.parse(raw);
+      const dismissals = await storage.getCitationDismissals();
+      const dismissedPmids = new Set(dismissals.map((d) => d.pmid));
+      const failed = (report.results ?? []).filter(
+        (r: any) => !r.ok && !dismissedPmids.has(String(r.pmid))
+      );
+      const dismissed = (report.results ?? []).filter(
+        (r: any) => !r.ok && dismissedPmids.has(String(r.pmid))
+      );
+      return res.json({
+        available: true,
+        generatedAt: report.generatedAt,
+        checked: report.checked,
+        passed: report.passed,
+        failed: report.failed,
+        failedItems: failed,
+        dismissedItems: dismissed,
+      });
+    } catch (error) {
+      console.error("Error reading citation report:", error);
+      return res.status(500).json({ error: "Failed to read citation report" });
+    }
+  });
+
+  app.get("/api/citation-dismissals", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const user = userId ? await storage.getUser(userId) : null;
+      if (!user?.isAdmin) return res.status(403).json({ error: "Admin only" });
+      const dismissals = await storage.getCitationDismissals();
+      return res.json(dismissals);
+    } catch (error) {
+      console.error("Error fetching citation dismissals:", error);
+      return res.status(500).json({ error: "Failed to fetch dismissals" });
+    }
+  });
+
+  app.post("/api/citation-dismissals/:pmid", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const user = userId ? await storage.getUser(userId) : null;
+      if (!user?.isAdmin) return res.status(403).json({ error: "Admin only" });
+      const { pmid } = req.params;
+      if (!PMID_RE.test(pmid)) return res.status(400).json({ error: "Invalid PMID" });
+      await storage.dismissCitation(pmid);
+      return res.json({ ok: true });
+    } catch (error) {
+      console.error("Error dismissing citation:", error);
+      return res.status(500).json({ error: "Failed to dismiss citation" });
+    }
+  });
+
+  app.delete("/api/citation-dismissals/:pmid", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const user = userId ? await storage.getUser(userId) : null;
+      if (!user?.isAdmin) return res.status(403).json({ error: "Admin only" });
+      const { pmid } = req.params;
+      if (!PMID_RE.test(pmid)) return res.status(400).json({ error: "Invalid PMID" });
+      const existed = await storage.undismissCitation(pmid);
+      return res.json({ ok: true, existed });
+    } catch (error) {
+      console.error("Error undismissing citation:", error);
+      return res.status(500).json({ error: "Failed to undismiss citation" });
+    }
+  });
+
+  app.delete("/api/citation-dismissals", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const user = userId ? await storage.getUser(userId) : null;
+      if (!user?.isAdmin) return res.status(403).json({ error: "Admin only" });
+      const cleared = await storage.clearCitationDismissals();
+      return res.json({ ok: true, cleared });
+    } catch (error) {
+      console.error("Error clearing citation dismissals:", error);
+      return res.status(500).json({ error: "Failed to clear dismissals" });
     }
   });
 
