@@ -173,8 +173,8 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
     ],
     iconName: "Dumbbell",
     color: "#f97316",
-    badge: "Receptor Study",
-    badgeColor: "#f97316",
+    badge: "Advanced",
+    badgeColor: "#a855f7",
     intentionalOverlap: true,
     synergy: {
       beginner: "IGF-1 LR3 and IGF-DES both activate the same IGF-1 receptor — the key growth factor receptor driving anabolic and muscle-repair signaling. LR3 stays active longer in the body because it avoids the proteins that normally mop up IGF-1 quickly. DES binds the receptor more tightly but clears faster. Together they let researchers study what happens when two variants of the same hormone engage the same receptor with different binding strength and duration.",
