@@ -143,7 +143,11 @@ function readStoredZoom(): number | null {
 
 function writeStoredZoom(value: number | null): void {
   try {
-    localStorage.setItem(PK_ZOOM_STORAGE_KEY, value === null ? "auto" : String(value));
+    if (value === null) {
+      localStorage.removeItem(PK_ZOOM_STORAGE_KEY);
+    } else {
+      localStorage.setItem(PK_ZOOM_STORAGE_KEY, String(value));
+    }
   } catch {
     // ignore
   }
@@ -279,7 +283,7 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
           <div className="p-3 pb-0 relative" ref={chartWrapRef}>
             <div className="flex items-center justify-end gap-1 mb-2" data-testid="pk-zoom-controls">
               <button
-                className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors ${
+                className={`relative px-2 py-0.5 rounded text-[11px] font-medium transition-colors ${
                   selectedRange === null
                     ? "bg-white/15 text-white"
                     : "text-white/40 hover:text-white/70"
@@ -287,8 +291,16 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
                 onClick={() => handleRangeChange(null)}
                 data-testid="pk-zoom-auto"
                 aria-pressed={selectedRange === null}
+                title={selectedRange !== null ? "Reset to Auto (clears saved preference)" : "Auto zoom"}
               >
                 Auto
+                {selectedRange !== null && (
+                  <span
+                    className="absolute -top-0.5 -right-0.5 block w-1.5 h-1.5 rounded-full bg-white/60"
+                    aria-label="saved preference active"
+                    data-testid="pk-zoom-auto-saved-indicator"
+                  />
+                )}
               </button>
               {PK_ZOOM_PRESETS.map(preset => (
                 <button
