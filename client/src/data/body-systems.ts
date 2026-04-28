@@ -1,4 +1,4 @@
-import { Heart, Zap, Target, Brain, Sparkles, Crown } from "lucide-react";
+import { Heart, Zap, Target, Brain, Sparkles, Crown, Moon, Shield, Activity, Beaker } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export interface BodySystem {
@@ -18,18 +18,27 @@ export const BODY_SYSTEMS: BodySystem[] = [
   { id: "longevity", name: "Longevity", icon: Crown, color: "#a855f7", description: "Anti-aging mechanisms including telomere support and cellular renewal" },
 ];
 
+export const COMPOUND_LABELS: Record<string, { icon: LucideIcon; color: string }> = {
+  sleep:    { icon: Moon,     color: "#8b5cf6" },
+  immune:   { icon: Shield,   color: "#22c55e" },
+  gut:      { icon: Shield,   color: "#3b82f6" },
+  hormonal: { icon: Activity, color: "#f59e0b" },
+  mobility: { icon: Zap,      color: "#f59e0b" },
+  mood:     { icon: Heart,    color: "#3b82f6" },
+  energy:   { icon: Activity, color: "#f59e0b" },
+  research: { icon: Beaker,   color: "#6b7280" },
+};
+
 const SYSTEM_ALIASES: Record<string, string> = {
-  gut: "healing", joints: "healing",
-  muscle: "growth", hormonal: "growth",
-  energy: "metabolic", weight: "metabolic", "fat loss": "metabolic",
-  focus: "cognitive", neuroprotection: "cognitive", mood: "cognitive",
+  joints: "healing",
+  muscle: "growth",
+  "weight": "metabolic", "fat loss": "metabolic",
+  focus: "cognitive", neuroprotection: "cognitive",
   cosmetic: "skin", hair: "skin",
   "anti-aging": "longevity",
 };
 
 const SYSTEM_FALLBACK_COLORS: Record<string, string> = {
-  sleep: "#8b5cf6",
-  immune: "#34d399", immunity: "#34d399",
   recovery: "#60a5fa",
   heart: "#ef4444", vascular: "#ef4444",
 };
@@ -38,6 +47,8 @@ export function getSystemColor(systemName: string): string | undefined {
   const key = systemName.toLowerCase();
   const direct = BODY_SYSTEMS.find(bs => bs.id === key);
   if (direct) return direct.color;
+  const compound = COMPOUND_LABELS[key];
+  if (compound) return compound.color;
   const aliasId = SYSTEM_ALIASES[key];
   if (aliasId) {
     const aliased = BODY_SYSTEMS.find(bs => bs.id === aliasId);
@@ -50,6 +61,8 @@ export function getSystemIcon(systemId: string): LucideIcon | undefined {
   const key = systemId.toLowerCase();
   const direct = BODY_SYSTEMS.find(bs => bs.id === key);
   if (direct) return direct.icon;
+  const compound = COMPOUND_LABELS[key];
+  if (compound) return compound.icon;
   const aliasId = SYSTEM_ALIASES[key];
   if (aliasId) {
     const aliased = BODY_SYSTEMS.find(bs => bs.id === aliasId);
