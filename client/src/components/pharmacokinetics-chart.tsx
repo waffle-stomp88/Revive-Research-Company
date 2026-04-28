@@ -7,6 +7,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { getHalfLifeByName, hasKineticMismatch, PK_VISIBLE_LOWER_RATIO, PK_VISIBLE_UPPER_RATIO } from "@/data/pharmacokinetics";
 import type { HalfLifeEntry } from "@/data/pharmacokinetics";
 import { isNonSCRoute, pkMidpoint, computeXMax, buildPKCurve, ptsToD } from "@/lib/pk-curve";
+import { readStoredZoom, writeStoredZoom } from "@/lib/zoom-storage";
 
 export interface StackPeptide {
   name: string;
@@ -65,31 +66,7 @@ const PK_ZOOM_PRESETS: { label: string; minutes: number }[] = [
   { label: "7 d",  minutes: 10080 },
 ];
 
-const PK_ZOOM_STORAGE_KEY_PREFIX = "pk-zoom-range-";
 const PK_PIN_STORAGE_PREFIX = "pk-pin-";
-
-function readStoredZoom(stackId: string): number | null {
-  try {
-    const raw = localStorage.getItem(PK_ZOOM_STORAGE_KEY_PREFIX + stackId);
-    if (raw === null || raw === "auto") return null;
-    const n = Number(raw);
-    return Number.isFinite(n) ? n : null;
-  } catch {
-    return null;
-  }
-}
-
-function writeStoredZoom(stackId: string, value: number | null): void {
-  try {
-    if (value === null) {
-      localStorage.removeItem(PK_ZOOM_STORAGE_KEY_PREFIX + stackId);
-    } else {
-      localStorage.setItem(PK_ZOOM_STORAGE_KEY_PREFIX + stackId, String(value));
-    }
-  } catch {
-    // ignore
-  }
-}
 
 function readStoredPin(stackId: string): string | null {
   try {

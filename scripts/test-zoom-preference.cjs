@@ -17,6 +17,12 @@
 
 "use strict";
 
+// Bootstrap tsx so this script can require() TypeScript source files directly,
+// whether invoked as `node script.cjs` or `node --require tsx/cjs script.cjs`.
+if (!require.extensions[".ts"]) {
+  require("tsx/cjs");
+}
+
 // ---------------------------------------------------------------------------
 // Minimal localStorage mock (mirrors browser localStorage API)
 // ---------------------------------------------------------------------------
@@ -46,33 +52,11 @@ class MockStorage {
 }
 
 // ---------------------------------------------------------------------------
-// Re-implement the exact logic from research-stack-detail.tsx so these tests
-// stay in sync with the source and catch regressions without requiring a build.
+// Import the real implementation from the shared module so any change to the
+// production logic is automatically reflected here — no manual sync needed.
 // ---------------------------------------------------------------------------
-const PK_ZOOM_STORAGE_KEY_PREFIX = "pk-zoom-range:";
-
-function readStoredZoom(stackId, storage) {
-  try {
-    const raw = storage.getItem(PK_ZOOM_STORAGE_KEY_PREFIX + stackId);
-    if (raw === null || raw === "auto") return null;
-    const n = Number(raw);
-    return Number.isFinite(n) ? n : null;
-  } catch {
-    return null;
-  }
-}
-
-function writeStoredZoom(stackId, value, storage) {
-  try {
-    if (value === null) {
-      storage.removeItem(PK_ZOOM_STORAGE_KEY_PREFIX + stackId);
-    } else {
-      storage.setItem(PK_ZOOM_STORAGE_KEY_PREFIX + stackId, String(value));
-    }
-  } catch {
-    // ignore
-  }
-}
+const { PK_ZOOM_STORAGE_KEY_PREFIX, readStoredZoom, writeStoredZoom } =
+  require("../client/src/lib/zoom-storage.ts");
 
 // ---------------------------------------------------------------------------
 // Tiny test harness
