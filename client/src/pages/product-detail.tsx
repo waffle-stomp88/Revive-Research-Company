@@ -1885,11 +1885,12 @@ export default function ProductDetail() {
       <AnimatePresence>
         {isPremiumPilot && showStickyPurchase && !isOutOfStock && (
           <motion.div
-            initial={{ y: -80, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -80, opacity: 0 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-            className="hidden md:block fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="hidden md:block fixed left-0 right-0 z-[49] bg-background/95 backdrop-blur-sm border-b border-border"
+            style={{ top: "calc(var(--banner-height, 36px) + 4rem)" }}
             data-testid="sticky-purchase-bar-desktop"
           >
             <div className="max-w-7xl mx-auto px-8 py-2 flex items-center justify-between gap-4 flex-wrap">
