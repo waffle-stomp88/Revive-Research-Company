@@ -1,0 +1,38 @@
+name: Check PK Citations
+
+on:
+  schedule:
+    - cron: "0 8 1 * *"
+  workflow_dispatch:
+
+jobs:
+  verify-citations:
+    name: Verify PubMed Citations
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run citation link checker
+        run: |
+          set +e
+          node scripts/verify-pk-citations.cjs --output citation-report.json
+          echo "CITATION_EXIT=$?" >> "$GITHUB_ENV"
+
+      - name: Upload citation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: citation-report
+          path: citation-report.json
+          if-no-files-found: warn
+
+      - name: Fail if broken PMIDs detected
+        if: env.CITATION_EXIT != '0'
+        run: |
+          echo "One or more PMIDs failed verification. Download the citation-report artifact for details."
+          exit 1

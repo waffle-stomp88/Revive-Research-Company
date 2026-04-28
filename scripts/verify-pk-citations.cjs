@@ -10,7 +10,8 @@
  *
  * Usage:
  *   node scripts/verify-pk-citations.cjs
- *   node scripts/verify-pk-citations.cjs --json   # emit JSON report
+ *   node scripts/verify-pk-citations.cjs --json              # emit JSON to stdout
+ *   node scripts/verify-pk-citations.cjs --json --output report.json  # write JSON to file
  *
  * Exit code:
  *   0  — all PMIDs verified
@@ -25,6 +26,8 @@ const https = require("https");
 
 const DATA_FILE = path.join(__dirname, "../client/src/data/pharmacokinetics.ts");
 const EMIT_JSON = process.argv.includes("--json");
+const OUTPUT_INDEX = process.argv.indexOf("--output");
+const OUTPUT_FILE = OUTPUT_INDEX !== -1 ? process.argv[OUTPUT_INDEX + 1] : null;
 const RATE_LIMIT_MS = 350; // PubMed eutils: max 3 requests/second
 
 function sleep(ms) {
@@ -134,20 +137,24 @@ async function main() {
   const failed = results.filter((r) => !r.ok);
   const passed = results.filter((r) => r.ok);
 
-  if (EMIT_JSON) {
-    console.log(
-      JSON.stringify(
-        {
-          checked: list.length,
-          passed: passed.length,
-          failed: failed.length,
-          results,
-        },
-        null,
-        2
-      )
-    );
-  } else {
+  const report = {
+    generatedAt: new Date().toISOString(),
+    dataFile: DATA_FILE,
+    checked: list.length,
+    passed: passed.length,
+    failed: failed.length,
+    results,
+  };
+  const reportJson = JSON.stringify(report, null, 2);
+
+  if (OUTPUT_FILE) {
+    fs.writeFileSync(OUTPUT_FILE, reportJson, "utf8");
+    console.log(`Report written to ${OUTPUT_FILE}`);
+  }
+
+  if (EMIT_JSON && !OUTPUT_FILE) {
+    console.log(reportJson);
+  } else if (!EMIT_JSON) {
     console.log(`\nResults: ${passed.length} passed, ${failed.length} failed`);
     if (failed.length > 0) {
       console.error("\nFailed PMIDs:");
