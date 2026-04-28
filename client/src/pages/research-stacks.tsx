@@ -3520,7 +3520,7 @@ function ResearchStacks() {
               exit={{ opacity: 0, x: 20 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid md:grid-cols-2 gap-6">
           {researchStacks.map((stack, index) => {
             const Icon = stack.icon;
             const prebuiltOverlaps = detectPathwayOverlaps(stack.peptides);
@@ -3534,7 +3534,7 @@ function ResearchStacks() {
               >
                 <Link href={`/research-stacks/${stack.id}`}>
                   <motion.div
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ scale: 1.02 }}
                     transition={{ type: "tween", duration: 0.15 }}
                     className="group"
                   >
@@ -3561,7 +3561,7 @@ function ResearchStacks() {
                       </Badge>
                     )}
 
-                    <div className="relative h-40 bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10] overflow-hidden">
+                    <div className="relative h-28 bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10] overflow-hidden">
                       <motion.div
                         initial={{ opacity: 0.2 }}
                         whileHover={{ opacity: 0.4 }}
@@ -3574,18 +3574,18 @@ function ResearchStacks() {
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <motion.div
                           whileHover={{
-                            scale: 1.1,
-                            rotate: 5,
+                            scale: 1.05,
+                            rotate: 3,
                           }}
                           transition={{ duration: 0.15, type: "tween" }}
                           className="relative pointer-events-auto"
                         >
                           <div
-                            className="w-20 h-20 rounded-2xl flex items-center justify-center"
+                            className="w-14 h-14 rounded-xl flex items-center justify-center"
                             style={{ backgroundColor: `${stack.color}20` }}
                           >
                             <Icon
-                              className="h-10 w-10"
+                              className="h-7 w-7"
                               style={{ color: stack.color }}
                             />
                           </div>
@@ -3602,7 +3602,7 @@ function ResearchStacks() {
                       </div>
                     </div>
 
-                    <div className="p-5 space-y-4">
+                    <div className="p-4 space-y-3">
                     <div>
                       <p
                         className="text-xs font-medium mb-1"
@@ -3610,7 +3610,7 @@ function ResearchStacks() {
                       >
                         {stack.subtitle}
                       </p>
-                      <h3 className="font-display font-bold text-white text-[25px] text-center">
+                      <h3 className="font-display font-bold text-white text-lg leading-snug">
                         {stack.name}
                       </h3>
                     </div>
@@ -3674,12 +3674,12 @@ function ResearchStacks() {
                       )}
                     </div>
 
-                    <p className="text-sm text-muted-foreground line-clamp-3">
+                    <p className="text-sm text-muted-foreground line-clamp-2">
                       {stack.description}
                     </p>
 
-                    <div className="rounded-md bg-white/[0.04] border border-white/[0.07] px-3 py-2.5">
-                      <div className="flex items-center gap-1.5 mb-1">
+                    <div className="rounded-md bg-white/[0.04] border border-white/[0.07] px-3 py-2">
+                      <div className="flex items-center gap-1.5 mb-0.5">
                         <Zap className="h-3 w-3 shrink-0" style={{ color: stack.color }} />
                         <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: stack.color }}>
                           Why it works
@@ -3701,7 +3701,7 @@ function ResearchStacks() {
                                 If bought separately: <span className="line-through">${pricing.retailValue.toFixed(2)}</span>
                               </div>
                               <div className="flex items-baseline gap-2">
-                                <span className="text-2xl font-bold" style={{ color: stack.color }}>
+                                <span className="text-xl font-bold" style={{ color: stack.color }}>
                                   ${pricing.stackPrice.toFixed(2)}
                                 </span>
                                 <span className="text-xs text-green-500 font-medium">
@@ -3750,6 +3750,74 @@ function ResearchStacks() {
             );
           })}
               </div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.4 }}
+                className="mt-8"
+              >
+                <div
+                  className="relative overflow-hidden rounded-lg border border-[#2a2a32] cursor-pointer group"
+                  style={{
+                    background: "linear-gradient(135deg, #0d0d10 0%, #12101a 40%, #0a1014 100%)",
+                  }}
+                  onClick={() => setActiveTab("custom")}
+                  data-testid="button-open-stack-builder"
+                >
+                  {/* background glow orbs */}
+                  <div className="absolute -top-12 -left-12 w-48 h-48 rounded-full opacity-20 blur-3xl pointer-events-none" style={{ background: "#a855f7" }} />
+                  <div className="absolute -bottom-12 -right-12 w-48 h-48 rounded-full opacity-15 blur-3xl pointer-events-none" style={{ background: "#21d8ff" }} />
+                  {/* grid lines overlay */}
+                  <div
+                    className="absolute inset-0 opacity-[0.04] pointer-events-none"
+                    style={{
+                      backgroundImage: "linear-gradient(#a855f7 1px, transparent 1px), linear-gradient(90deg, #a855f7 1px, transparent 1px)",
+                      backgroundSize: "40px 40px",
+                    }}
+                  />
+                  <div className="relative z-10 flex flex-col sm:flex-row items-center gap-6 p-8">
+                    {/* icon cluster */}
+                    <div className="flex-shrink-0 relative">
+                      <div
+                        className="w-16 h-16 rounded-2xl flex items-center justify-center"
+                        style={{ backgroundColor: "#a855f720", border: "1px solid #a855f730" }}
+                      >
+                        <FlaskConical className="h-8 w-8" style={{ color: "#a855f7" }} />
+                      </div>
+                      <div
+                        className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full border-2 border-[#0d0d10] flex items-center justify-center"
+                        style={{ backgroundColor: "#21d8ff" }}
+                      >
+                        <span className="text-[9px] font-bold text-black">+</span>
+                      </div>
+                    </div>
+                    {/* text */}
+                    <div className="flex-1 text-center sm:text-left">
+                      <p className="text-xs font-semibold tracking-widest uppercase mb-1.5" style={{ color: "#a855f7" }}>
+                        Stack Builder
+                      </p>
+                      <h3 className="font-display text-xl font-bold text-white mb-2">
+                        Don't see your combination?
+                      </h3>
+                      <p className="text-sm text-gray-400 max-w-lg">
+                        Combine any compounds, visualize pathway overlaps, and save your custom research protocol.
+                      </p>
+                    </div>
+                    {/* CTA button */}
+                    <div className="flex-shrink-0">
+                      <Button
+                        className="font-semibold px-6"
+                        style={{ backgroundColor: "#E7FB10", color: "#000" }}
+                        onClick={(e) => { e.stopPropagation(); setActiveTab("custom"); }}
+                      >
+                        Build Your Own
+                        <ArrowRight className="h-4 w-4 ml-2 transition-transform group-hover:translate-x-1" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
 
               <motion.div
                 initial={{ opacity: 0 }}

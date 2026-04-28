@@ -15,30 +15,9 @@ export const STACK_COMPONENTS: Record<string, StackComponent[]> = {
     { slug: "mots-c", dosage: "10mg", name: "MOTS-C" },
     { slug: "rr-a3", dosage: "10mg", name: "RR-A3" },
   ],
-  "longevity-protocol-stack": [
-    { slug: "epithalon", dosage: "10mg", name: "Epithalon" },
-    { slug: "ghk-cu", dosage: "50mg", name: "GHK-Cu" },
-  ],
   "cognitive-edge-stack": [
     { slug: "semax", dosage: "5mg", name: "Semax" },
     { slug: "selank", dosage: "5mg", name: "Selank" },
-  ],
-  "collagen-skin-stack": [
-    { slug: "ghk-cu", dosage: "50mg", name: "GHK-Cu" },
-    { slug: "bpc-157", dosage: "10mg", name: "BPC-157" },
-  ],
-  "elite-triple-stack": [
-    { slug: "rr-a3", dosage: "10mg", name: "RR-A3" },
-    { slug: "mots-c", dosage: "10mg", name: "MOTS-C" },
-    { slug: "bpc-157", dosage: "10mg", name: "BPC-157" },
-  ],
-  "ghrh-analog-stack": [
-    { slug: "cjc-1295-no-dac", dosage: "2mg", name: "CJC-1295 (No DAC)" },
-    { slug: "sermorelin", dosage: "5mg", name: "Sermorelin" },
-  ],
-  "ghsr-secretagogue-stack": [
-    { slug: "ipamorelin", dosage: "5mg", name: "Ipamorelin" },
-    { slug: "ghrp-2", dosage: "5mg", name: "GHRP-2" },
   ],
   "igf1r-anabolic-stack": [
     { slug: "igf-1-lr3", dosage: "1mg", name: "IGF-1 LR3" },
