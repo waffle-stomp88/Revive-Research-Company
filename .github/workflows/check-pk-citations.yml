@@ -4,6 +4,10 @@ on:
   schedule:
     - cron: "0 8 1 * *"
   workflow_dispatch:
+  pull_request:
+    paths:
+      - "client/src/data/**"
+      - "client/src/lib/pathway-overlaps.ts"
 
 jobs:
   verify-citations:
