@@ -1,4 +1,4 @@
-name: Check PK Citations
+name: Check Citations
 
 on:
   schedule:

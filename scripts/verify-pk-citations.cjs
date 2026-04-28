@@ -2,16 +2,21 @@
 /**
  * scripts/verify-pk-citations.cjs
  *
- * Reads all citations from client/src/data/pharmacokinetics.ts, extracts
+ * Reads all citations from one or more TypeScript source files, extracts
  * every PMID, and verifies via the PubMed eutils eSummary API that:
  *  1. The PMID exists (HTTP 200 and non-empty result)
  *  2. The record is not retracted
  *  3. The title is non-empty (catches deleted/merged records)
  *
+ * By default the script recursively walks client/src/ and automatically
+ * includes every *.ts file that contains at least one pmid("…") call.
+ * Pass explicit paths as positional arguments to override:
+ *
  * Usage:
- *   node scripts/verify-pk-citations.cjs
- *   node scripts/verify-pk-citations.cjs --json              # emit JSON to stdout
- *   node scripts/verify-pk-citations.cjs --json --output report.json  # write JSON to file
+ *   node scripts/verify-pk-citations.cjs                          # scan all client/src/**\/*.ts with PMIDs
+ *   node scripts/verify-pk-citations.cjs path/to/file.ts          # scan specific file(s) only
+ *   node scripts/verify-pk-citations.cjs --json
+ *   node scripts/verify-pk-citations.cjs --json --output report.json
  *
  * Exit code:
  *   0  — all PMIDs verified
@@ -24,7 +29,10 @@ const fs = require("fs");
 const path = require("path");
 const https = require("https");
 
-const DATA_FILE = path.join(__dirname, "../client/src/data/pharmacokinetics.ts");
+const REPO_ROOT = path.join(__dirname, "..");
+const DEFAULT_SCAN_ROOT = path.join(REPO_ROOT, "client/src");
+const PMID_PATTERN = /pmid\(\s*"(\d+)"/;
+
 const EMIT_JSON = process.argv.includes("--json");
 const OUTPUT_INDEX = process.argv.indexOf("--output");
 const OUTPUT_FILE = OUTPUT_INDEX !== -1 ? process.argv[OUTPUT_INDEX + 1] : null;
@@ -99,31 +107,113 @@ async function verifyPmid(pmid) {
   };
 }
 
-async function main() {
-  const src = fs.readFileSync(DATA_FILE, "utf8");
+/**
+ * Recursively collect all *.ts files under a directory.
+ */
+function walkTs(dir, results = []) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      walkTs(full, results);
+    } else if (entry.isFile() && entry.name.endsWith(".ts")) {
+      results.push(full);
+    }
+  }
+  return results;
+}
 
+/**
+ * Collect positional (non-flag) arguments as file paths to scan.
+ * When none are provided, recursively walk client/src/ and return only
+ * the files that actually contain at least one pmid("…") call.
+ */
+function resolveTargetFiles() {
+  const positional = process.argv.slice(2).filter((arg, i, arr) => {
+    if (arg.startsWith("--")) return false;
+    // Skip the value that follows --output
+    const prev = arr[i - 1];
+    if (prev === "--output") return false;
+    return true;
+  });
+
+  if (positional.length > 0) {
+    return positional.map((p) => path.resolve(p));
+  }
+
+  // Default: every *.ts file under client/src/ that contains pmid("…")
+  return walkTs(DEFAULT_SCAN_ROOT).filter((f) => {
+    const src = fs.readFileSync(f, "utf8");
+    return PMID_PATTERN.test(src);
+  });
+}
+
+/**
+ * Extract all unique PMIDs from a file's source text,
+ * using the pmid("NNNNNN", ...) helper call pattern.
+ */
+function extractPmids(src) {
   const pmidRegex = /pmid\(\s*"(\d+)"/g;
   const pmids = new Set();
   let m;
   while ((m = pmidRegex.exec(src)) !== null) {
     pmids.add(m[1]);
   }
+  return [...pmids].sort();
+}
 
-  if (pmids.size === 0) {
-    console.error("No PMIDs found in", DATA_FILE);
+async function main() {
+  const targetFiles = resolveTargetFiles();
+
+  // Build a map of { filePath -> pmid[] }
+  const fileMap = new Map();
+  for (const filePath of targetFiles) {
+    if (!fs.existsSync(filePath)) {
+      console.error(`File not found: ${filePath}`);
+      process.exit(1);
+    }
+    const src = fs.readFileSync(filePath, "utf8");
+    const pmids = extractPmids(src);
+    if (pmids.length > 0) {
+      fileMap.set(filePath, pmids);
+    }
+  }
+
+  // Collect all unique PMIDs across all files, remembering which files
+  // each PMID appears in so the report can trace back by source.
+  const pmidToFiles = new Map(); // pmid -> Set<filePath>
+  for (const [filePath, pmids] of fileMap) {
+    for (const pmid of pmids) {
+      if (!pmidToFiles.has(pmid)) pmidToFiles.set(pmid, new Set());
+      pmidToFiles.get(pmid).add(filePath);
+    }
+  }
+
+  const totalFiles = fileMap.size;
+  const allPmids = [...pmidToFiles.keys()].sort();
+  const totalPmids = allPmids.length;
+
+  if (totalFiles === 0 || totalPmids === 0) {
+    console.error(
+      `No PMIDs found in any of the scanned files:\n  ${targetFiles.join("\n  ")}`
+    );
     process.exit(1);
   }
 
-  const results = [];
-  const list = [...pmids].sort();
-
   if (!EMIT_JSON) {
-    console.log(`\nVerifying ${list.length} unique PMIDs from ${DATA_FILE}\n`);
+    console.log(
+      `\nVerifying ${totalPmids} unique PMIDs across ${totalFiles} file(s)\n`
+    );
+    for (const [fp, pmids] of fileMap) {
+      console.log(`  ${path.relative(REPO_ROOT, fp)}: ${pmids.length} PMID(s)`);
+    }
+    console.log();
   }
 
-  for (const pmid of list) {
+  // Verify each unique PMID once
+  const verifiedMap = new Map(); // pmid -> result
+  for (const pmid of allPmids) {
     const res = await verifyPmid(pmid);
-    results.push(res);
+    verifiedMap.set(pmid, res);
     if (!EMIT_JSON) {
       if (res.ok) {
         console.log(`  ✓ ${pmid}  ${res.title}`);
@@ -134,37 +224,77 @@ async function main() {
     await sleep(RATE_LIMIT_MS);
   }
 
-  const failed = results.filter((r) => !r.ok);
-  const passed = results.filter((r) => r.ok);
+  // Build per-file result groups
+  const byFile = [];
+  for (const [filePath, pmids] of fileMap) {
+    const relPath = path.relative(REPO_ROOT, filePath);
+    const results = pmids.map((pmid) => ({
+      ...verifiedMap.get(pmid),
+      sourceFile: relPath,
+    }));
+    const fileFailed = results.filter((r) => !r.ok);
+    byFile.push({
+      file: relPath,
+      checked: pmids.length,
+      passed: results.filter((r) => r.ok).length,
+      failed: fileFailed.length,
+      results,
+    });
+  }
+
+  const globalFailed = allPmids
+    .map((pmid) => verifiedMap.get(pmid))
+    .filter((r) => !r.ok);
+  const globalPassed = allPmids
+    .map((pmid) => verifiedMap.get(pmid))
+    .filter((r) => r.ok);
 
   const report = {
     generatedAt: new Date().toISOString(),
-    dataFile: DATA_FILE,
-    checked: list.length,
-    passed: passed.length,
-    failed: failed.length,
-    results,
+    scannedFiles: targetFiles.map((f) => path.relative(REPO_ROOT, f)),
+    checked: totalPmids,
+    passed: globalPassed.length,
+    failed: globalFailed.length,
+    byFile,
   };
   const reportJson = JSON.stringify(report, null, 2);
 
   if (OUTPUT_FILE) {
     fs.writeFileSync(OUTPUT_FILE, reportJson, "utf8");
-    console.log(`Report written to ${OUTPUT_FILE}`);
+    if (!EMIT_JSON) {
+      console.log(`\nReport written to ${OUTPUT_FILE}`);
+    }
   }
 
   if (EMIT_JSON && !OUTPUT_FILE) {
     console.log(reportJson);
   } else if (!EMIT_JSON) {
-    console.log(`\nResults: ${passed.length} passed, ${failed.length} failed`);
-    if (failed.length > 0) {
+    console.log(
+      `\nResults: ${globalPassed.length} passed, ${globalFailed.length} failed`
+    );
+
+    if (globalFailed.length > 0) {
       console.error("\nFailed PMIDs:");
-      for (const f of failed) {
-        console.error(`  PMID ${f.pmid}: ${f.reason}`);
+      for (const f of globalFailed) {
+        const sources = [...pmidToFiles.get(f.pmid)]
+          .map((fp) => path.relative(REPO_ROOT, fp))
+          .join(", ");
+        console.error(`  PMID ${f.pmid} (${sources}): ${f.reason}`);
+      }
+    }
+
+    if (byFile.length > 1) {
+      console.log("\nPer-file summary:");
+      for (const entry of byFile) {
+        const status = entry.failed > 0 ? "FAIL" : "OK";
+        console.log(
+          `  [${status}] ${entry.file}: ${entry.passed} passed, ${entry.failed} failed`
+        );
       }
     }
   }
 
-  process.exit(failed.length > 0 ? 1 : 0);
+  process.exit(globalFailed.length > 0 ? 1 : 0);
 }
 
 main().catch((err) => {
