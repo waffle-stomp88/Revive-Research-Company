@@ -70,6 +70,8 @@ import type { Product, ProductStorageProfile, Batch, Coa, EducationArticle, Prod
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { SEOHead } from "@/components/seo-head";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { PharmacokineticsChart } from "@/components/pharmacokinetics-chart";
+import { getHalfLifeByName } from "@/data/pharmacokinetics";
 import { getSynergyPartners, normalizePeptideName } from "@/lib/synergy-data";
 import { getTopPairingForProduct } from "@/lib/pairing-intelligence";
 import { Layers, Zap } from "lucide-react";
@@ -164,6 +166,7 @@ export default function ProductDetail() {
   const [notifyEmail, setNotifyEmail] = useState("");
   const [notifySuccess, setNotifySuccess] = useState(false);
   const [isEducationOpen, setIsEducationOpen] = useState(false);
+  const [isPkChartOpen, setIsPkChartOpen] = useState(false);
 
   const { data: product, isLoading, error } = useQuery<Product>({
     queryKey: ["/api/products", params.id],
@@ -1625,6 +1628,44 @@ export default function ProductDetail() {
                   </motion.div>
                 </Link>
               </div>
+            </motion.section>
+          );
+        })()}
+
+        {/* Plasma Concentration Profile Section */}
+        {(() => {
+          const hasPkData = !!getHalfLifeByName(product.name);
+          if (!hasPkData) return null;
+          const pkPeptides = [{ name: product.name, description: product.description || "" }];
+          return (
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.22 }}
+              className="mt-12"
+              data-testid="section-pk-chart"
+            >
+              <Collapsible open={isPkChartOpen} onOpenChange={setIsPkChartOpen}>
+                <CollapsibleTrigger asChild>
+                  <button
+                    className="flex items-center gap-3 mb-4 w-full text-left"
+                    data-testid="button-toggle-pk-chart"
+                  >
+                    <Clock className="h-6 w-6 text-[#21d8ff] flex-shrink-0" />
+                    <h2 className="font-display text-2xl font-bold flex-1">Plasma Concentration Profile</h2>
+                    <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${isPkChartOpen ? "rotate-180" : ""}`} />
+                  </button>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Published pharmacokinetic profile based on primary literature.
+                  </p>
+                  <PharmacokineticsChart
+                    peptides={pkPeptides}
+                    stackId={product.slug || product.id.toString()}
+                  />
+                </CollapsibleContent>
+              </Collapsible>
             </motion.section>
           );
         })()}

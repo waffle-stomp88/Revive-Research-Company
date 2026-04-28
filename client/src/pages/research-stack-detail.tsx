@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { STACK_COMPONENTS, buildPriceLookup, calculateStackPricing } from "@/lib/stack-pricing";
 import { SEOHead } from "@/components/seo-head";
 import {
-  ArrowLeft, FlaskConical, ShoppingCart, Sparkles, AlertTriangle, Package, GraduationCap, Shield, FileCheck, Truck, RefreshCw, ShoppingBag, Repeat, CheckCircle, Minus, Plus, BookOpen, ChevronRight, ChevronDown
+  ArrowLeft, FlaskConical, ShoppingCart, Sparkles, AlertTriangle, Package, GraduationCap, Shield, FileCheck, Truck, RefreshCw, ShoppingBag, Repeat, CheckCircle, Minus, Plus, BookOpen, ChevronRight, ChevronDown, Zap
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,7 @@ import { getSynergyPartners, normalizePeptideName } from "@/lib/synergy-data";
 import { getTopPairingForProduct } from "@/lib/pairing-intelligence";
 import { detectPathwayOverlaps, resolveDatasetSlug } from "@/lib/pathway-overlaps";
 import { PathwayOverlapCard } from "@/components/pathway-overlap-card";
-import { Layers, Zap } from "lucide-react";
+import { Layers } from "lucide-react";
 import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { RESEARCH_STACKS_BY_ID } from "@/data/research-stacks";

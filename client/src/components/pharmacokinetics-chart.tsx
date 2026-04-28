@@ -125,6 +125,8 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
   const chartWrapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
+  const isSingleCompound = peptides.length === 1;
+
   function handleRangeChange(value: number | null) {
     writeStoredZoom(stackId, value);
     setSelectedRange(value);
@@ -548,7 +550,8 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
 
         {/* Legend */}
         <div className="p-3 pt-2 space-y-3">
-          {hasCurves && (
+          {hasCurves && !isSingleCompound && (
+
             <p className="text-[10px] text-muted-foreground/50 mb-1 select-none" data-testid="text-pin-hint">
               {pinnedIdx !== null ? "Click the highlighted row to unpin" : "Click a curve or row to pin the highlight"}
             </p>
