@@ -1,5 +1,5 @@
 import { Switch, Route, useLocation } from "wouter";
-import { useEffect, lazy, Suspense } from "react";
+import { useEffect, useRef, lazy, Suspense } from "react";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -73,13 +73,47 @@ import CheapPeptides from "@/pages/guides/cheap-peptides";
 const ChatBot = lazy(() => import("@/components/chatbot").then(m => ({ default: m.ChatBot })));
 const BackToTopButton = lazy(() => import("@/components/back-to-top-button").then(m => ({ default: m.BackToTopButton })));
 
-function ScrollToTop() {
+function ScrollManager() {
   const [location] = useLocation();
-  
+  const isPopState = useRef(false);
+  const prevLocation = useRef(location);
+
   useEffect(() => {
-    window.scrollTo(0, 0);
+    const handlePopState = () => { isPopState.current = true; };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    const save = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        sessionStorage.setItem('scroll:' + location, String(window.scrollY));
+      }, 100);
+    };
+    window.addEventListener('scroll', save, { passive: true });
+    return () => { window.removeEventListener('scroll', save); clearTimeout(timer); };
   }, [location]);
-  
+
+  useEffect(() => {
+    if (location === prevLocation.current) return;
+    prevLocation.current = location;
+
+    if (window.location.hash) {
+      isPopState.current = false;
+      return;
+    }
+
+    if (isPopState.current) {
+      const saved = sessionStorage.getItem('scroll:' + location);
+      requestAnimationFrame(() => window.scrollTo(0, saved ? parseInt(saved, 10) : 0));
+      isPopState.current = false;
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }, [location]);
+
   return null;
 }
 
@@ -268,7 +302,7 @@ function App() {
               <PreventScrollbarHiding />
               <AgeVerificationModal />
               <AffiliateTracker />
-              <ScrollToTop />
+              <ScrollManager />
               <div className="min-h-screen flex flex-col bg-background text-foreground overflow-x-hidden">
                 <FreeShippingBanner />
                 <Navigation />
