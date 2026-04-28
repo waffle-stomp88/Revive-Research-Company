@@ -219,6 +219,7 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
     .map((pk) => pk.name);
 
   const hasCurves = curves.some(Boolean);
+  const hasNonSC = pksWithData.some(pk => isNonSCRoute(pk.route));
   const clipId = "pk-clip-" + peptides.map(p => toTestSlug(p.name)).join("-");
 
   const curveOpacity = useCallback((idx: number) => {
@@ -311,6 +312,22 @@ function PharmacokineticsChart({ peptides }: { peptides: StackPeptide[] }) {
                 </button>
               ))}
             </div>
+            {hasNonSC && (
+              <div className="flex items-center justify-end gap-3 mb-1.5 px-0.5" data-testid="pk-line-style-key">
+                <div className="flex items-center gap-1.5">
+                  <svg width="18" height="4" viewBox="0 0 18 4" aria-hidden="true">
+                    <line x1="0" y1="2" x2="18" y2="2" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeOpacity="0.45" />
+                  </svg>
+                  <span className="text-[10px] text-white/40 font-medium">SC</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <svg width="18" height="4" viewBox="0 0 18 4" aria-hidden="true">
+                    <line x1="0" y1="2" x2="18" y2="2" stroke="#fff" strokeWidth="2" strokeDasharray="5 3" strokeLinecap="round" strokeOpacity="0.45" />
+                  </svg>
+                  <span className="text-[10px] text-white/40 font-medium">Other route</span>
+                </div>
+              </div>
+            )}
             <svg
               viewBox={`0 0 ${CHART.vbW} ${CHART.vbH}`}
               className="w-full"
