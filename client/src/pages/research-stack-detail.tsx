@@ -662,7 +662,25 @@ function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPeptide[]
                     </PopoverContent>
                   </Popover>
                   {c.isExtended && (
-                    <span className="text-[10px] text-muted-foreground/60 italic">curve extends beyond chart</span>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button
+                          className="inline-flex items-center gap-1 text-[10px] text-muted-foreground/60 italic cursor-pointer hover:text-muted-foreground transition-colors"
+                          data-testid={`button-extended-info-${toTestSlug(c.peptide.name)}`}
+                          aria-label="What does curve extends beyond chart mean?"
+                          onClick={e => e.stopPropagation()}
+                        >
+                          <span>curve extends beyond chart</span>
+                          <Info className="h-3 w-3 flex-shrink-0" />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-72 text-xs" side="top" align="start">
+                        <p className="font-medium text-foreground mb-1">Extends beyond the current view</p>
+                        <p className="text-muted-foreground leading-relaxed">
+                          This compound has not yet reached its 50% decay point (t½) within the selected time window. Its full peak-to-trough profile extends past the right edge of the chart, so the curve's descent is not visible here. Widen the time range to see the complete kinetic profile.
+                        </p>
+                      </PopoverContent>
+                    </Popover>
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground pl-[18px]">{c.peptide.description}</p>
