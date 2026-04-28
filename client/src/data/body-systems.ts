@@ -47,5 +47,13 @@ export function getSystemColor(systemName: string): string | undefined {
 }
 
 export function getSystemIcon(systemId: string): LucideIcon | undefined {
-  return BODY_SYSTEMS.find(bs => bs.id === systemId.toLowerCase())?.icon;
+  const key = systemId.toLowerCase();
+  const direct = BODY_SYSTEMS.find(bs => bs.id === key);
+  if (direct) return direct.icon;
+  const aliasId = SYSTEM_ALIASES[key];
+  if (aliasId) {
+    const aliased = BODY_SYSTEMS.find(bs => bs.id === aliasId);
+    if (aliased) return aliased.icon;
+  }
+  return undefined;
 }

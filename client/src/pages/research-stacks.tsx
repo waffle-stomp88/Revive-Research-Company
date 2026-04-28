@@ -28,6 +28,7 @@ import {
 import { PathwayOverlapCard } from "@/components/pathway-overlap-card";
 import { RESEARCH_STACKS_DATA } from "@/data/research-stacks";
 import type { SynergyCopy, StackIconName } from "@/data/research-stacks";
+import { getSystemIcon } from "@/data/body-systems";
 import { KNOWN_STACKS } from "@/data/known-stacks";
 import type { KnownStack } from "@/data/known-stacks";
 import { PEPTIDE_PATHWAYS } from "@/data/peptide-pathways";
@@ -500,13 +501,13 @@ const getGeneralPairings = (
 };
 
 // Goal-based starter peptides (best first pick per goal)
-const GOAL_STARTERS: { goal: string; icon: typeof Heart; color: string; starterKey: string; description: string }[] = [
-  { goal: "Healing", icon: Heart, color: "#22c55e", starterKey: "bpc-157", description: "Start with BPC-157 — the gold standard for tissue repair" },
-  { goal: "Growth", icon: Target, color: "#f59e0b", starterKey: "ipamorelin", description: "Start with Ipamorelin — clean GH release without side effects" },
-  { goal: "Metabolic", icon: Zap, color: "#E7FB10", starterKey: "mots-c", description: "Start with MOTS-C — mitochondrial energy activator" },
-  { goal: "Cognitive", icon: Brain, color: "#21d8ff", starterKey: "semax", description: "Start with Semax — BDNF-boosting focus enhancer" },
-  { goal: "Skin", icon: Sparkles, color: "#ec4899", starterKey: "ghk-cu", description: "Start with GHK-Cu — collagen and matrix remodeling" },
-  { goal: "Longevity", icon: Crown, color: "#a855f7", starterKey: "epithalon", description: "Start with Epithalon — telomerase activation" },
+const GOAL_STARTERS: { goal: string; icon: LucideIcon; color: string; starterKey: string; description: string }[] = [
+  { goal: "Healing", icon: getSystemIcon("healing") ?? Heart, color: "#22c55e", starterKey: "bpc-157", description: "Start with BPC-157 — the gold standard for tissue repair" },
+  { goal: "Growth", icon: getSystemIcon("growth") ?? Target, color: "#f59e0b", starterKey: "ipamorelin", description: "Start with Ipamorelin — clean GH release without side effects" },
+  { goal: "Metabolic", icon: getSystemIcon("metabolic") ?? Zap, color: "#E7FB10", starterKey: "mots-c", description: "Start with MOTS-C — mitochondrial energy activator" },
+  { goal: "Cognitive", icon: getSystemIcon("cognitive") ?? Brain, color: "#21d8ff", starterKey: "semax", description: "Start with Semax — BDNF-boosting focus enhancer" },
+  { goal: "Skin", icon: getSystemIcon("skin") ?? Sparkles, color: "#ec4899", starterKey: "ghk-cu", description: "Start with GHK-Cu — collagen and matrix remodeling" },
+  { goal: "Longevity", icon: getSystemIcon("longevity") ?? Crown, color: "#a855f7", starterKey: "epithalon", description: "Start with Epithalon — telomerase activation" },
 ];
 
 // Structured synergy analysis interface (for AI response)
@@ -523,58 +524,68 @@ interface SynergyAnalysis {
   synergyScore: number;
 }
 
+// Canonical system icons resolved once at module load time via the body-systems source.
+// Only the systems whose tags already displayed the canonical icon are aliased here;
+// Growth and per-compound Longevity overrides keep their original inline icons so the
+// visible UI is unchanged.
+const _healing:   LucideIcon = getSystemIcon("healing")   ?? Heart;
+const _metabolic: LucideIcon = getSystemIcon("metabolic") ?? Zap;
+const _cognitive: LucideIcon = getSystemIcon("cognitive") ?? Brain;
+const _skin:      LucideIcon = getSystemIcon("skin")      ?? Sparkles;
+const _longevity: LucideIcon = getSystemIcon("longevity") ?? Crown;
+
 // Goal-based category mapping for peptides
-const peptideCategories: Record<string, { label: string; color: string; icon: typeof Heart }[]> = {
-  "bpc-157": [{ label: "Healing", color: "#22c55e", icon: Heart }, { label: "Gut", color: "#3b82f6", icon: Shield }],
-  "tb-500": [{ label: "Healing", color: "#22c55e", icon: Heart }, { label: "Mobility", color: "#f59e0b", icon: Zap }],
-  "ghk-cu": [{ label: "Skin", color: "#ec4899", icon: Sparkles }, { label: "Longevity", color: "#a855f7", icon: Crown }],
-  "mots-c": [{ label: "Metabolic", color: "#E7FB10", icon: Zap }, { label: "Energy", color: "#f59e0b", icon: Zap }],
-  "rr-a3": [{ label: "Metabolic", color: "#E7FB10", icon: Zap }],
-  "rr-a1": [{ label: "Metabolic", color: "#E7FB10", icon: Zap }],
-  "rr-a2": [{ label: "Metabolic", color: "#E7FB10", icon: Zap }],
-  "epithalon": [{ label: "Longevity", color: "#a855f7", icon: Crown }],
-  "semax": [{ label: "Cognitive", color: "#21d8ff", icon: Brain }],
-  "selank": [{ label: "Cognitive", color: "#21d8ff", icon: Brain }, { label: "Mood", color: "#3b82f6", icon: Heart }],
+const peptideCategories: Record<string, { label: string; color: string; icon: LucideIcon }[]> = {
+  "bpc-157": [{ label: "Healing", color: "#22c55e", icon: _healing }, { label: "Gut", color: "#3b82f6", icon: Shield }],
+  "tb-500": [{ label: "Healing", color: "#22c55e", icon: _healing }, { label: "Mobility", color: "#f59e0b", icon: Zap }],
+  "ghk-cu": [{ label: "Skin", color: "#ec4899", icon: _skin }, { label: "Longevity", color: "#a855f7", icon: _longevity }],
+  "mots-c": [{ label: "Metabolic", color: "#E7FB10", icon: _metabolic }, { label: "Energy", color: "#f59e0b", icon: Zap }],
+  "rr-a3": [{ label: "Metabolic", color: "#E7FB10", icon: _metabolic }],
+  "rr-a1": [{ label: "Metabolic", color: "#E7FB10", icon: _metabolic }],
+  "rr-a2": [{ label: "Metabolic", color: "#E7FB10", icon: _metabolic }],
+  "epithalon": [{ label: "Longevity", color: "#a855f7", icon: _longevity }],
+  "semax": [{ label: "Cognitive", color: "#21d8ff", icon: _cognitive }],
+  "selank": [{ label: "Cognitive", color: "#21d8ff", icon: _cognitive }, { label: "Mood", color: "#3b82f6", icon: Heart }],
   "ipamorelin": [{ label: "Growth", color: "#f59e0b", icon: Zap }],
   "cjc-1295": [{ label: "Growth", color: "#f59e0b", icon: Zap }],
-  "5-amino-1mq": [{ label: "Metabolic", color: "#E7FB10", icon: Zap }],
+  "5-amino-1mq": [{ label: "Metabolic", color: "#E7FB10", icon: _metabolic }],
   "ace-031": [{ label: "Growth", color: "#f59e0b", icon: Dumbbell }],
-  "aicar": [{ label: "Metabolic", color: "#E7FB10", icon: Zap }, { label: "Energy", color: "#f59e0b", icon: Activity }],
-  "aod-9604": [{ label: "Metabolic", color: "#E7FB10", icon: Zap }],
-  "adipotide": [{ label: "Metabolic", color: "#E7FB10", icon: Zap }],
-  "cagrilintide": [{ label: "Metabolic", color: "#E7FB10", icon: Zap }],
-  "cerebrolysin": [{ label: "Cognitive", color: "#21d8ff", icon: Brain }],
+  "aicar": [{ label: "Metabolic", color: "#E7FB10", icon: _metabolic }, { label: "Energy", color: "#f59e0b", icon: Activity }],
+  "aod-9604": [{ label: "Metabolic", color: "#E7FB10", icon: _metabolic }],
+  "adipotide": [{ label: "Metabolic", color: "#E7FB10", icon: _metabolic }],
+  "cagrilintide": [{ label: "Metabolic", color: "#E7FB10", icon: _metabolic }],
+  "cerebrolysin": [{ label: "Cognitive", color: "#21d8ff", icon: _cognitive }],
   "dsip": [{ label: "Sleep", color: "#8b5cf6", icon: Moon }],
-  "foxo4": [{ label: "Longevity", color: "#a855f7", icon: Crown }],
+  "foxo4": [{ label: "Longevity", color: "#a855f7", icon: _longevity }],
   "ghrp-2": [{ label: "Growth", color: "#f59e0b", icon: Zap }],
   "ghrp-6": [{ label: "Growth", color: "#f59e0b", icon: Zap }],
-  "glow": [{ label: "Skin", color: "#ec4899", icon: Sparkles }],
+  "glow": [{ label: "Skin", color: "#ec4899", icon: _skin }],
   "glutathione": [{ label: "Longevity", color: "#a855f7", icon: Shield }],
   "gonadorelin": [{ label: "Hormonal", color: "#f59e0b", icon: Activity }],
   "hexarelin": [{ label: "Growth", color: "#f59e0b", icon: Zap }],
   "igf-1":  [{ label: "Growth", color: "#f59e0b", icon: Dumbbell }],
   "igf-des": [{ label: "Growth", color: "#f59e0b", icon: Dumbbell }],
-  "klow": [{ label: "Skin", color: "#ec4899", icon: Sparkles }],
-  "kpv": [{ label: "Healing", color: "#22c55e", icon: Shield }, { label: "Skin", color: "#ec4899", icon: Sparkles }, { label: "Longevity", color: "#a855f7", icon: Crown }],
+  "klow": [{ label: "Skin", color: "#ec4899", icon: _skin }],
+  "kpv": [{ label: "Healing", color: "#22c55e", icon: Shield }, { label: "Skin", color: "#ec4899", icon: _skin }, { label: "Longevity", color: "#a855f7", icon: _longevity }],
   "kisspeptin": [{ label: "Hormonal", color: "#f59e0b", icon: Activity }],
   "ll-37": [{ label: "Immune", color: "#22c55e", icon: Shield }],
   "mgf": [{ label: "Growth", color: "#f59e0b", icon: Dumbbell }],
   "peg-mgf": [{ label: "Growth", color: "#f59e0b", icon: Dumbbell }],
-  "mazdutide": [{ label: "Metabolic", color: "#E7FB10", icon: Zap }],
-  "melanotan": [{ label: "Skin", color: "#ec4899", icon: Sparkles }],
+  "mazdutide": [{ label: "Metabolic", color: "#E7FB10", icon: _metabolic }],
+  "melanotan": [{ label: "Skin", color: "#ec4899", icon: _skin }],
   "oxytocin": [{ label: "Hormonal", color: "#f59e0b", icon: Heart }],
   "pt-141": [{ label: "Hormonal", color: "#f59e0b", icon: Activity }],
-  "pinealon": [{ label: "Cognitive", color: "#21d8ff", icon: Brain }],
-  "slu-pp-332": [{ label: "Metabolic", color: "#E7FB10", icon: Zap }, { label: "Energy", color: "#f59e0b", icon: Activity }],
+  "pinealon": [{ label: "Cognitive", color: "#21d8ff", icon: _cognitive }],
+  "slu-pp-332": [{ label: "Metabolic", color: "#E7FB10", icon: _metabolic }, { label: "Energy", color: "#f59e0b", icon: Activity }],
   "ss-31": [{ label: "Longevity", color: "#a855f7", icon: Shield }],
   "sermorelin": [{ label: "Growth", color: "#f59e0b", icon: Zap }],
-  "snap-8": [{ label: "Skin", color: "#ec4899", icon: Sparkles }],
-  "survodutide": [{ label: "Metabolic", color: "#E7FB10", icon: Zap }],
+  "snap-8": [{ label: "Skin", color: "#ec4899", icon: _skin }],
+  "survodutide": [{ label: "Metabolic", color: "#E7FB10", icon: _metabolic }],
   "tesamorelin": [{ label: "Growth", color: "#f59e0b", icon: Zap }],
   "thymalin": [{ label: "Immune", color: "#22c55e", icon: Shield }],
   "thymosin alpha": [{ label: "Immune", color: "#22c55e", icon: Shield }],
   "triptorelin": [{ label: "Hormonal", color: "#f59e0b", icon: Activity }],
-  "vip": [{ label: "Cognitive", color: "#21d8ff", icon: Brain }, { label: "Immune", color: "#22c55e", icon: Shield }],
+  "vip": [{ label: "Cognitive", color: "#21d8ff", icon: _cognitive }, { label: "Immune", color: "#22c55e", icon: Shield }],
   "default": [{ label: "Research", color: "#6b7280", icon: Beaker }],
 };
 
