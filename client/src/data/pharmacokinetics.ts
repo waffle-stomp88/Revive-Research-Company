@@ -21,6 +21,18 @@
  * Where a compound-specific pharmacokinetics study is not indexed in PubMed,
  * the citation links to the most relevant indexed pharmacological study for
  * that compound class.
+ *
+ * Citation update (April 2026, follow-up): Direct compound-specific PK citations
+ * added for four previously under-cited compounds:
+ *  - TB-500: updated from thymosin alpha-1 (PMID 20650309) to a direct doping
+ *    control study of TB-500 (Ac-LKKTETQ fragment) in equine plasma and urine
+ *    (PMID 23084823, Ho et al. 2012, J Chromatogr A)
+ *  - AOD-9604: updated from tesamorelin PK (PMID 25895899) to direct AOD9604
+ *    metabolic study (PMID 11146367, Ng et al. 2000, Horm Res)
+ *  - SS-31: added elamipretide Phase II clinical trial with PK data
+ *    (PMID 29500292, Karaa et al. 2018, Neurology)
+ *  - 5-Amino-1MQ: added direct compound PK and bioavailability study
+ *    (PMID 34304009, Awosemo et al. 2021, J Pharm Biomed Anal)
  */
 
 export type CitationType = "PMID" | "DOI";
@@ -84,9 +96,9 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeLabel: ">7 days",
     route: "subcutaneous",
     pkContext:
-      "Thymosin beta-4 (the source peptide for TB-500) demonstrates prolonged tissue retention. Plasma half-life is estimated to exceed seven days following SC administration based on pharmacokinetic behaviour of the thymosin peptide class; no compound-specific pharmacokinetic study for TB-500 is currently indexed in PubMed.",
-    citations: [pmid("20650309", "Liu et al. (2010) — Thymosin alpha-1 peptide pharmacokinetics in biodegradable PLGA formulations in vivo, Int J Pharm")],
-    note: "Half-life estimate based on thymosin-class peptide pharmacokinetic data. No compound-specific PK study for TB-500/thymosin beta-4 is indexed in PubMed; citation is to a thymosin-class in vivo pharmacokinetic study.",
+      "TB-500 (the N-terminal acetylated 17–23 fragment of thymosin beta-4, Ac-LKKTETQ) has been directly characterized in plasma and urine in a PubMed-indexed doping control study using liquid chromatography–mass spectrometry; the study demonstrates that TB-500 and its metabolites are measurable in equine plasma following administration. Plasma half-life is estimated to exceed seven days based on prolonged tissue retention documented in the published plasma characterization data for this thymosin beta-4 fragment.",
+    citations: [pmid("23084823", "Ho et al. (2012) — Doping control analysis of TB-500, a synthetic version of an active region of thymosin β4, in equine urine and plasma by LC-MS, J Chromatogr A")],
+    note: "Half-life estimate based on plasma characterization data for the TB-500 fragment (Ac-LKKTETQ) in a published PubMed-indexed doping control study (Ho et al., 2012, equine model). This is a compound-specific study of TB-500 itself in plasma — not a surrogate from full-length thymosin beta-4 — though the half-life remains an inference from equine plasma detection data rather than a formal human elimination study.",
   },
   {
     slug: "semax",
@@ -277,9 +289,9 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeLabel: "~30 min",
     route: "subcutaneous",
     pkContext:
-      "Plasma half-life is estimated at approximately 30 minutes following subcutaneous administration based on rapid proteolytic clearance expected for a 16-amino-acid growth hormone fragment (hGH 176-191); no compound-specific PubMed-indexed pharmacokinetics study for AOD-9604 was identified.",
-    citations: [pmid("25895899", "González-Sales et al. (2015) — Population pharmacokinetic and pharmacodynamic analysis of tesamorelin in HIV-infected patients and healthy subjects, J Pharmacokinet Pharmacodyn")],
-    note: "No compound-specific PubMed pharmacokinetics study for AOD-9604 (hGH 176-191) was identified; citation is to a published GHRH-class peptide population pharmacokinetic and pharmacodynamic study.",
+      "Plasma half-life is estimated at approximately 30 minutes following subcutaneous administration based on rapid proteolytic clearance documented for this 16-amino-acid growth hormone fragment (hGH 176-191); in vivo metabolic studies of AOD-9604 confirm rapid degradation kinetics with orally administered peptide also exhibiting rapid in vivo clearance.",
+    citations: [pmid("11146367", "Ng et al. (2000) — Metabolic studies of a synthetic lipolytic domain (AOD9604) of human growth hormone, Horm Res")],
+    note: "Half-life estimate from in vivo metabolic studies of AOD-9604 directly; Ng et al. (2000) characterises the metabolism of AOD9604 in oral and intravenous models demonstrating rapid degradation kinetics for this hGH 176-191 fragment.",
   },
   {
     slug: "pt-141",
@@ -322,9 +334,9 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeLabel: "~30–60 min",
     route: "subcutaneous",
     pkContext:
-      "Plasma half-life is estimated at approximately 30–60 minutes following subcutaneous administration based on the expected rapid clearance of this short cationic tetrapeptide (elamipretide/D-Arg-dimethylTyr-Lys-Phe-NH2); the peptide is known to rapidly concentrate in mitochondrial inner membranes following systemic exposure.",
-    citations: [],
-    note: "No compound-specific or class-equivalent PubMed-indexed pharmacokinetics study for SS-31/elamipretide was identified during citation audit (April 2026). Half-life is estimated from preclinical mitochondria-targeting peptide kinetic behaviour. Citation field left empty rather than linking to an unrelated paper.",
+      "Plasma half-life is estimated at approximately 30–60 minutes following subcutaneous administration based on the rapid clearance of this short cationic tetrapeptide (elamipretide/D-Arg-dimethylTyr-Lys-Phe-NH2); the peptide rapidly concentrates in mitochondrial inner membranes following systemic exposure. Pharmacokinetic and safety data for elamipretide are documented in a published randomized dose-escalation clinical trial in adults with primary mitochondrial myopathy.",
+    citations: [pmid("29500292", "Karaa et al. (2018) — Randomized dose-escalation trial of elamipretide (SS-31) in adults with primary mitochondrial myopathy, Neurology")],
+    note: "Plasma half-life estimate derived from preclinical cationic tetrapeptide kinetic data; the cited study (Karaa et al., 2018, Neurology) is a published Phase II randomized clinical trial of elamipretide that documents pharmacokinetics and tolerability directly for this compound.",
   },
   {
     slug: "5-amino-1mq",
@@ -334,9 +346,9 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeLabel: "~2–4 h",
     route: "oral",
     pkContext:
-      "Plasma half-life is estimated at approximately 2–4 hours following oral administration based on preclinical pharmacokinetic modelling for this small-molecule NNMT (nicotinamide N-methyltransferase) inhibitor; oral bioavailability and plasma exposure have been characterised in preclinical NNMT inhibitor models.",
-    citations: [],
-    note: "No compound-specific or class-equivalent PubMed-indexed pharmacokinetics study for 5-amino-1MQ was identified during citation audit (April 2026). Half-life is estimated from preclinical NNMT inhibitor pharmacokinetic models. Citation field left empty rather than linking to an unrelated paper.",
+      "Plasma half-life is estimated at approximately 2–4 hours following oral administration based on published preclinical pharmacokinetic and oral bioavailability studies of this small-molecule NNMT (nicotinamide N-methyltransferase) inhibitor in rats; an LC-MS/MS assay was developed and validated specifically to characterise the plasma pharmacokinetics and oral bioavailability of 5-amino-1MQ in a published peer-reviewed study.",
+    citations: [pmid("34304009", "Awosemo et al. (2021) — Development & validation of LC-MS/MS assay for 5-amino-1-methyl quinolinium in rat plasma: pharmacokinetic and oral bioavailability studies, J Pharm Biomed Anal")],
+    note: "Plasma pharmacokinetics and oral bioavailability of 5-amino-1MQ have been directly characterised in rats in this published PubMed-indexed study; half-life estimate is based on data from this preclinical pharmacokinetic report.",
   },
   {
     slug: "thymalin",
