@@ -500,14 +500,38 @@ const getGeneralPairings = (
   return pairings.slice(0, 3);
 };
 
+// Canonical system icons resolved once at module load time via the body-systems source.
+const _healing:   LucideIcon = getSystemIcon("healing")   ?? Heart;
+const _metabolic: LucideIcon = getSystemIcon("metabolic") ?? Zap;
+const _cognitive: LucideIcon = getSystemIcon("cognitive") ?? Brain;
+const _skin:      LucideIcon = getSystemIcon("skin")      ?? Sparkles;
+const _longevity: LucideIcon = getSystemIcon("longevity") ?? Crown;
+const _sleep:     LucideIcon = getSystemIcon("sleep")     ?? Moon;
+const _immune:    LucideIcon = getSystemIcon("immune")    ?? Shield;
+const _gut:       LucideIcon = getSystemIcon("gut")       ?? Shield;
+const _hormonal:  LucideIcon = getSystemIcon("hormonal")  ?? Activity;
+const _mobility:  LucideIcon = getSystemIcon("mobility")  ?? Zap;
+const _mood:      LucideIcon = getSystemIcon("mood")      ?? Heart;
+const _energy:    LucideIcon = getSystemIcon("energy")    ?? Activity;
+const _research:  LucideIcon = getSystemIcon("research")  ?? Beaker;
+
+// Canonical system colors resolved from the same body-systems source so that a single
+// color change in body-systems.ts propagates everywhere automatically.
+const _healingColor   = getSystemColor("healing")   ?? "#22c55e";
+const _metabolicColor = getSystemColor("metabolic") ?? "#E7FB10";
+const _growthColor    = getSystemColor("growth")    ?? "#f59e0b";
+const _cognitiveColor = getSystemColor("cognitive") ?? "#21d8ff";
+const _skinColor      = getSystemColor("skin")      ?? "#ec4899";
+const _longevityColor = getSystemColor("longevity") ?? "#a855f7";
+
 // Goal-based starter peptides (best first pick per goal)
 const GOAL_STARTERS: { goal: string; icon: LucideIcon; color: string; starterKey: string; description: string }[] = [
-  { goal: "Healing", icon: getSystemIcon("healing") ?? Heart, color: "#22c55e", starterKey: "bpc-157", description: "Start with BPC-157 — the gold standard for tissue repair" },
-  { goal: "Growth", icon: getSystemIcon("growth") ?? Target, color: "#f59e0b", starterKey: "ipamorelin", description: "Start with Ipamorelin — clean GH release without side effects" },
-  { goal: "Metabolic", icon: getSystemIcon("metabolic") ?? Zap, color: "#E7FB10", starterKey: "mots-c", description: "Start with MOTS-C — mitochondrial energy activator" },
-  { goal: "Cognitive", icon: getSystemIcon("cognitive") ?? Brain, color: "#21d8ff", starterKey: "semax", description: "Start with Semax — BDNF-boosting focus enhancer" },
-  { goal: "Skin", icon: getSystemIcon("skin") ?? Sparkles, color: "#ec4899", starterKey: "ghk-cu", description: "Start with GHK-Cu — collagen and matrix remodeling" },
-  { goal: "Longevity", icon: getSystemIcon("longevity") ?? Crown, color: "#a855f7", starterKey: "epithalon", description: "Start with Epithalon — telomerase activation" },
+  { goal: "Healing", icon: getSystemIcon("healing") ?? Heart, color: _healingColor, starterKey: "bpc-157", description: "Start with BPC-157 — the gold standard for tissue repair" },
+  { goal: "Growth", icon: getSystemIcon("growth") ?? Target, color: _growthColor, starterKey: "ipamorelin", description: "Start with Ipamorelin — clean GH release without side effects" },
+  { goal: "Metabolic", icon: getSystemIcon("metabolic") ?? Zap, color: _metabolicColor, starterKey: "mots-c", description: "Start with MOTS-C — mitochondrial energy activator" },
+  { goal: "Cognitive", icon: getSystemIcon("cognitive") ?? Brain, color: _cognitiveColor, starterKey: "semax", description: "Start with Semax — BDNF-boosting focus enhancer" },
+  { goal: "Skin", icon: getSystemIcon("skin") ?? Sparkles, color: _skinColor, starterKey: "ghk-cu", description: "Start with GHK-Cu — collagen and matrix remodeling" },
+  { goal: "Longevity", icon: getSystemIcon("longevity") ?? Crown, color: _longevityColor, starterKey: "epithalon", description: "Start with Epithalon — telomerase activation" },
 ];
 
 // Structured synergy analysis interface (for AI response)
@@ -523,24 +547,6 @@ interface SynergyAnalysis {
   expertExplanation: string;
   synergyScore: number;
 }
-
-// Canonical system icons resolved once at module load time via the body-systems source.
-// Only the systems whose tags already displayed the canonical icon are aliased here;
-// Growth and per-compound Longevity overrides keep their original inline icons so the
-// visible UI is unchanged.
-const _healing:   LucideIcon = getSystemIcon("healing")   ?? Heart;
-const _metabolic: LucideIcon = getSystemIcon("metabolic") ?? Zap;
-const _cognitive: LucideIcon = getSystemIcon("cognitive") ?? Brain;
-const _skin:      LucideIcon = getSystemIcon("skin")      ?? Sparkles;
-const _longevity: LucideIcon = getSystemIcon("longevity") ?? Crown;
-const _sleep:     LucideIcon = getSystemIcon("sleep")     ?? Moon;
-const _immune:    LucideIcon = getSystemIcon("immune")    ?? Shield;
-const _gut:       LucideIcon = getSystemIcon("gut")       ?? Shield;
-const _hormonal:  LucideIcon = getSystemIcon("hormonal")  ?? Activity;
-const _mobility:  LucideIcon = getSystemIcon("mobility")  ?? Zap;
-const _mood:      LucideIcon = getSystemIcon("mood")      ?? Heart;
-const _energy:    LucideIcon = getSystemIcon("energy")    ?? Activity;
-const _research:  LucideIcon = getSystemIcon("research")  ?? Beaker;
 
 // Goal-based category mapping for peptides
 const _gc = getSystemColor;
