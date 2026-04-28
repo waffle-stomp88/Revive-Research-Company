@@ -1,9 +1,19 @@
+import { trackEvent } from "./analytics";
+
 const STORAGE_KEY_PREFIX = "retired-redirect";
 
 export type RetiredContentType = "product" | "guide";
 
-export function flagRetiredContent(type: RetiredContentType): void {
+export function flagRetiredContent(type: RetiredContentType, slug?: string): void {
   sessionStorage.setItem(`${STORAGE_KEY_PREFIX}-${type}`, "1");
+  if (slug) {
+    trackEvent("dead_link_visit", "retirement", `${type}:${slug}`);
+    fetch("/api/dead-links", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type, slug }),
+    }).catch(() => {});
+  }
 }
 
 export function consumeRetiredFlag(type: RetiredContentType): boolean {

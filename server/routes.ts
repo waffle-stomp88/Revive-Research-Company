@@ -59,6 +59,35 @@ function generateBasicReferralCode(fullName: string): string {
 const TIER1_COMMISSION_RATE = 0.10;
 const TIER2_COMMISSION_RATE = 0.10;
 
+// In-memory dead-link hit tracker (type -> slug -> count)
+interface DeadLinkHit {
+  type: "product" | "guide";
+  slug: string;
+  count: number;
+  lastSeenAt: string;
+}
+const deadLinkHits = new Map<string, DeadLinkHit>();
+
+// Only URL-safe characters: letters, digits, hyphens, underscores, dots
+const SLUG_PATTERN = /^[a-zA-Z0-9_\-\.]{1,200}$/;
+const DEAD_LINK_MAP_MAX = 500;
+
+function isValidSlug(slug: string): boolean {
+  return SLUG_PATTERN.test(slug);
+}
+
+function recordDeadLink(type: "product" | "guide", slug: string): void {
+  const normalized = slug.toLowerCase();
+  const key = `${type}:${normalized}`;
+  const existing = deadLinkHits.get(key);
+  if (existing) {
+    existing.count += 1;
+    existing.lastSeenAt = new Date().toISOString();
+  } else if (deadLinkHits.size < DEAD_LINK_MAP_MAX) {
+    deadLinkHits.set(key, { type, slug: normalized, count: 1, lastSeenAt: new Date().toISOString() });
+  }
+}
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -4973,6 +5002,41 @@ Return ONLY valid JSON in this exact format:
     } catch (error) {
       console.error("Error generating sitemap:", error);
       res.status(500).send("Error generating sitemap");
+    }
+  });
+
+  // Dead-link tracking endpoints
+  app.post("/api/dead-links", async (req: any, res) => {
+    try {
+      const { type, slug } = req.body ?? {};
+      if (!type || !["product", "guide"].includes(type)) {
+        return res.status(400).json({ error: "Invalid type" });
+      }
+      const rawSlug = typeof slug === "string" ? slug.trim() : "";
+      if (!isValidSlug(rawSlug)) {
+        return res.status(400).json({ error: "Invalid slug" });
+      }
+      recordDeadLink(type as "product" | "guide", rawSlug);
+      return res.json({ ok: true });
+    } catch (error) {
+      console.error("Error recording dead link:", error);
+      return res.status(500).json({ error: "Failed to record dead link" });
+    }
+  });
+
+  app.get("/api/dead-links", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const user = userId ? await storage.getUser(userId) : null;
+      if (!user?.isAdmin) {
+        return res.status(403).json({ error: "Admin only" });
+      }
+      const hits = Array.from(deadLinkHits.values())
+        .sort((a, b) => b.count - a.count);
+      return res.json(hits);
+    } catch (error) {
+      console.error("Error fetching dead links:", error);
+      return res.status(500).json({ error: "Failed to fetch dead links" });
     }
   });
 

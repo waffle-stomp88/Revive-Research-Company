@@ -389,14 +389,14 @@ export default function ProductDetail() {
   // for a genuine 404 response. Transient network errors are not treated as retirement.
   useEffect(() => {
     if (params.id && RETIRED_PRODUCT_SLUGS.includes(params.id)) {
-      flagRetiredContent("product");
+      flagRetiredContent("product", params.id);
       setLocation("/peptides");
       return;
     }
     if (isLoading) return;
     const is404 = error instanceof Error && error.message.startsWith("404:");
     if (is404 || (!error && !product)) {
-      flagRetiredContent("product");
+      flagRetiredContent("product", params.id);
       setLocation("/peptides");
     }
   }, [isLoading, error, product, params.id]);

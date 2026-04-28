@@ -551,7 +551,7 @@ export default function Education() {
   useEffect(() => {
     if (!params.slug) return;
     if (RETIRED_GUIDE_SLUGS.includes(params.slug)) {
-      flagRetiredContent("guide");
+      flagRetiredContent("guide", params.slug);
       setLocation("/guides/peptide-education-center");
       return;
     }
@@ -562,7 +562,7 @@ export default function Education() {
         setActiveCategory(article.category);
         setArticleMode("quick-breakdown");
       } else {
-        flagRetiredContent("guide");
+        flagRetiredContent("guide", params.slug);
         setLocation("/guides/peptide-education-center");
       }
     }

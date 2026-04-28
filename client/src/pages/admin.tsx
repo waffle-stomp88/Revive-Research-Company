@@ -113,6 +113,7 @@ import {
   Truck,
   Archive,
   ArchiveRestore,
+  Link2Off,
 } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { ObjectUploader } from "@/components/ObjectUploader";
@@ -7297,6 +7298,88 @@ function SettingsTab() {
   );
 }
 
+interface DeadLinkHit {
+  type: "product" | "guide";
+  slug: string;
+  count: number;
+  lastSeenAt: string;
+}
+
+function DeadLinksTab() {
+  const { data: hits = [], isLoading, refetch } = useQuery<DeadLinkHit[]>({
+    queryKey: ["/api/dead-links"],
+  });
+
+  return (
+    <Card className="p-6">
+      <div className="flex items-center justify-between gap-2 mb-6 flex-wrap">
+        <div>
+          <CardTitle className="text-lg">Dead-Link Visits</CardTitle>
+          <CardDescription className="mt-1">
+            URLs that triggered a retirement redirect, sorted by hit count. Add high-frequency slugs to{" "}
+            <code className="text-xs bg-muted px-1 py-0.5 rounded-md">RETIRED_PRODUCT_SLUGS</code> or{" "}
+            <code className="text-xs bg-muted px-1 py-0.5 rounded-md">RETIRED_GUIDE_SLUGS</code> for proactive redirects.
+          </CardDescription>
+        </div>
+        <Button
+          variant="outline"
+          size="default"
+          onClick={() => refetch()}
+          data-testid="button-refresh-dead-links"
+        >
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Refresh
+        </Button>
+      </div>
+
+      {isLoading ? (
+        <div className="space-y-2">
+          {[...Array(5)].map((_, i) => (
+            <Skeleton key={i} className="h-10 w-full" />
+          ))}
+        </div>
+      ) : hits.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground" data-testid="text-no-dead-links">
+          <Link2Off className="h-10 w-10 mx-auto mb-3 opacity-30" />
+          <p>No dead-link visits recorded yet.</p>
+          <p className="text-sm mt-1">Hits will appear here when a product or guide redirect fires.</p>
+        </div>
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Type</TableHead>
+              <TableHead>Slug / ID</TableHead>
+              <TableHead className="text-right">Hits</TableHead>
+              <TableHead>Last Seen</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {hits.map((hit) => (
+              <TableRow key={`${hit.type}:${hit.slug}`} data-testid={`row-dead-link-${hit.type}-${hit.slug}`}>
+                <TableCell>
+                  <Badge variant={hit.type === "product" ? "default" : "secondary"}>
+                    {hit.type}
+                  </Badge>
+                </TableCell>
+                <TableCell className="font-mono text-sm" data-testid={`text-dead-slug-${hit.slug}`}>
+                  {hit.slug}
+                </TableCell>
+                <TableCell className="text-right font-semibold" data-testid={`text-dead-count-${hit.slug}`}>
+                  {hit.count}
+                </TableCell>
+                <TableCell className="text-muted-foreground text-sm">
+                  {new Date(hit.lastSeenAt).toLocaleString()}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
+    </Card>
+  );
+}
+
 export default function Admin() {
   const { user, isLoading: authLoading, isAuthenticated, login, logout } = useAuth();
   const { toast } = useToast();
@@ -7395,7 +7478,7 @@ export default function Admin() {
 
           <motion.div variants={itemVariants}>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full max-w-6xl grid-cols-9">
+              <TabsList className="grid w-full max-w-6xl grid-cols-10">
                 <TabsTrigger value="overview" className="flex items-center gap-2" data-testid="tab-overview">
                   <LayoutDashboard className="h-4 w-4" />
                   <span className="hidden sm:inline">Overview</span>
@@ -7431,6 +7514,10 @@ export default function Admin() {
                 <TabsTrigger value="settings" className="flex items-center gap-2" data-testid="tab-settings">
                   <Settings className="h-4 w-4" />
                   <span className="hidden sm:inline">Settings</span>
+                </TabsTrigger>
+                <TabsTrigger value="dead-links" className="flex items-center gap-2" data-testid="tab-dead-links">
+                  <Link2Off className="h-4 w-4" />
+                  <span className="hidden sm:inline">Dead Links</span>
                 </TabsTrigger>
               </TabsList>
 
@@ -7478,6 +7565,10 @@ export default function Admin() {
 
               <TabsContent value="settings">
                 <SettingsTab />
+              </TabsContent>
+
+              <TabsContent value="dead-links">
+                <DeadLinksTab />
               </TabsContent>
             </Tabs>
           </motion.div>
