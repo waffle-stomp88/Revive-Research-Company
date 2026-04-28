@@ -356,6 +356,22 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
       "Reported plasma half-life of approximately 2–3 hours following oral administration in published pharmacokinetic studies of NAD+ precursors (nicotinamide riboside / nicotinamide mononucleotide); circulating NAD+ metabolites peak within 1–2 hours of oral administration and are rapidly incorporated into the NAD+ salvage pathway in peripheral tissues.",
     citations: [pmid("29480627", "Airhart et al. (2017) — Nicotinamide riboside (NAD+ precursor) pharmacokinetics, J Clin Invest")],
   },
+  {
+    slug: "klow-peptide-complex",
+    name: "KLOW Peptide Complex",
+    halfLifeMin: 30,
+    halfLifeMax: 1440,
+    halfLifeLabel: "~30 min – 24 h (composite range)",
+    route: "subcutaneous",
+    pkContext:
+      "KLOW Peptide Complex is a proprietary multi-peptide blend whose pharmacokinetic profile spans a wide composite range. Published half-life data for its documented constituent peptide classes: KPV (alpha-MSH-derived tripeptide) ~30–60 minutes following subcutaneous administration; BPC-157 class body-protective compounds ~4 hours; GHK-Cu (copper tripeptide) ~24 hours systemic following subcutaneous administration. The effective plasma activity window for the blend spans approximately 30 minutes to 24 hours depending on which constituent drives the therapeutic endpoint under study.",
+    citations: [
+      pmid("22951889", "Dalmasso et al. (2013) — KPV tripeptide pharmacokinetics, J Pharmacol Exp Ther"),
+      pmid("24578699", "Sikiric et al. (2014) — BPC-157 pharmacokinetics, Curr Pharm Des"),
+      pmid("9665504", "Pickart & Vasquez-Soltero (1998) — GHK-Cu pharmacokinetics, J Biomater Sci Polym Ed"),
+    ],
+    note: "Composite PK profile derived from published half-life data for each documented constituent peptide class. No primary pharmacokinetic literature exists for this proprietary blend under this name.",
+  },
 ];
 
 const HALF_LIFE_MAP = new Map<string, HalfLifeEntry>(
@@ -391,6 +407,7 @@ const NAME_SLUG_OVERRIDES: Record<string, string> = {
   "ss-31": "ss-31",
   "pt-141": "pt-141",
   "nad-precursor": "nad-precursor",
+  "klow-peptide-complex": "klow-peptide-complex",
 };
 
 export function getHalfLifeByName(displayName: string): HalfLifeEntry | undefined {
