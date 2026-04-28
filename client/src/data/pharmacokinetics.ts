@@ -403,7 +403,8 @@ function nameToSlug(name: string): string {
  * here explicitly so future audits can rely on this map as a single source of truth
  * rather than the fallback HALF_LIFE_MAP direct-key lookup.
  *
- * To run a fresh audit:
+ * Coverage is enforced automatically via the "pk-coverage" validation step
+ * (registered with the platform CI system). Run it manually with:
  *   node scripts/audit-pk-coverage.cjs
  *
  * When adding a new slug to known-stacks.ts:
