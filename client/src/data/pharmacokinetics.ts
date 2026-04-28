@@ -45,6 +45,13 @@ const pmid = (id: string, label: string): Citation => ({
   label,
 });
 
+// ─── Tunable thresholds ───────────────────────────────────────────────────────
+// Ratio threshold above which two compounds are considered a kinetic mismatch.
+// If the longest half-life is more than PK_MISMATCH_RATIO times the shortest,
+// the stack is flagged as having meaningfully mismatched kinetics.
+export const PK_MISMATCH_RATIO = 10;
+
+// ─── Dataset ──────────────────────────────────────────────────────────────────
 export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
   {
     slug: "bpc-157",
@@ -489,5 +496,5 @@ export function hasKineticMismatch(entries: HalfLifeEntry[]): boolean {
 
   const min = Math.min(...values);
   const max = Math.max(...values);
-  return max / min > 10;
+  return max / min > PK_MISMATCH_RATIO;
 }
