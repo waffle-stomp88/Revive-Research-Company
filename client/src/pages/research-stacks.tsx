@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
 import { STACK_COMPONENTS, buildPriceLookup, calculateStackPricing } from "@/lib/stack-pricing";
 import { CategoryTabs } from "@/components/category-tabs";
-import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, X, Check, ShoppingCart, Beaker, Brain, Target, Rocket, Activity, Moon, Dumbbell, Timer, Save, Share2, Trash2, Copy, Users, LucideIcon, Search, AlertCircle, ChevronUp, ChevronDown, Monitor, GitMerge, Clock } from "lucide-react";
+import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, X, Check, ShoppingCart, Beaker, Brain, Target, Rocket, Activity, Moon, Dumbbell, Timer, Save, Share2, Trash2, Copy, Users, LucideIcon, Search, AlertCircle, ChevronUp, ChevronDown, Monitor, GitMerge, Clock, ExternalLink } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -2821,49 +2821,63 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                 <div className="space-y-2">
                                   {popularStacks.slice(0, 3).map((combo, i) => {
                                     const comboOverlaps = detectPathwayOverlaps(combo.peptideNames);
+                                    const comboKnownStack = checkKnownStack(combo.peptideNames);
+                                    const detailPageId = comboKnownStack?.detailPageId;
                                     return (
-                                    <div 
-                                      key={i}
-                                      className="flex items-center justify-between p-2 rounded-lg bg-[#0f0f12] border border-[#2a2a32] cursor-pointer hover:border-[#E7FB10]/40 transition-colors"
-                                      onClick={() => {
-                                        if (products) {
-                                          const matchedPeptides = combo.peptideNames
-                                            .map(name => products.find(p => p.name === name))
-                                            .filter((p): p is Product => p !== undefined && p.inStock === true);
-                                          if (matchedPeptides.length > 0) {
-                                            setSelectedPeptides(matchedPeptides);
-                                            toast({ title: "Stack loaded!" });
+                                    <div key={i} className="space-y-1">
+                                      <div 
+                                        className="flex items-center justify-between p-2 rounded-lg bg-[#0f0f12] border border-[#2a2a32] cursor-pointer hover:border-[#E7FB10]/40 transition-colors"
+                                        onClick={() => {
+                                          if (products) {
+                                            const matchedPeptides = combo.peptideNames
+                                              .map(name => products.find(p => p.name === name))
+                                              .filter((p): p is Product => p !== undefined && p.inStock === true);
+                                            if (matchedPeptides.length > 0) {
+                                              setSelectedPeptides(matchedPeptides);
+                                              toast({ title: "Stack loaded!" });
+                                            }
                                           }
-                                        }
-                                      }}
-                                    >
-                                      <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                                        <p className="text-xs text-muted-foreground truncate">
-                                          {combo.peptideNames.join(' + ')}
-                                        </p>
-                                        {comboOverlaps.length > 0 && (
-                                          <Tooltip>
-                                            <TooltipTrigger asChild>
-                                              <span
-                                                className="inline-flex items-center gap-0.5 shrink-0 px-1 py-0.5 rounded text-[9px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30"
-                                                data-testid={`badge-popular-combo-overlap-${i}`}
-                                              >
-                                                <GitMerge className="h-2.5 w-2.5" />
-                                                <span>{comboOverlaps.length} overlap{comboOverlaps.length > 1 ? "s" : ""}</span>
-                                              </span>
-                                            </TooltipTrigger>
-                                            <TooltipContent side="top" className="max-w-[260px] bg-[#1a1a1f] border-[#2a2a32]">
-                                              <p className="text-[11px] font-semibold text-amber-200 mb-1">Pathway overlap detected</p>
-                                              <p className="text-[11px] text-muted-foreground">
-                                                Selected compounds engage the same receptor system: {comboOverlaps.map((o) => o.cluster.receptor).join(", ")}.
-                                              </p>
-                                            </TooltipContent>
-                                          </Tooltip>
-                                        )}
+                                        }}
+                                      >
+                                        <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                                          <p className="text-xs text-muted-foreground truncate">
+                                            {combo.peptideNames.join(' + ')}
+                                          </p>
+                                          {comboOverlaps.length > 0 && (
+                                            <Tooltip>
+                                              <TooltipTrigger asChild>
+                                                <span
+                                                  className="inline-flex items-center gap-0.5 shrink-0 px-1 py-0.5 rounded text-[9px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30"
+                                                  data-testid={`badge-popular-combo-overlap-${i}`}
+                                                >
+                                                  <GitMerge className="h-2.5 w-2.5" />
+                                                  <span>{comboOverlaps.length} overlap{comboOverlaps.length > 1 ? "s" : ""}</span>
+                                                </span>
+                                              </TooltipTrigger>
+                                              <TooltipContent side="top" className="max-w-[260px] bg-[#1a1a1f] border-[#2a2a32]">
+                                                <p className="text-[11px] font-semibold text-amber-200 mb-1">Pathway overlap detected</p>
+                                                <p className="text-[11px] text-muted-foreground">
+                                                  Selected compounds engage the same receptor system: {comboOverlaps.map((o) => o.cluster.receptor).join(", ")}.
+                                                </p>
+                                              </TooltipContent>
+                                            </Tooltip>
+                                          )}
+                                        </div>
+                                        <Badge variant="outline" className="text-[10px] ml-2 shrink-0">
+                                          {combo.count}x built
+                                        </Badge>
                                       </div>
-                                      <Badge variant="outline" className="text-[10px] ml-2 shrink-0">
-                                        {combo.count}x built
-                                      </Badge>
+                                      {detailPageId && (
+                                        <Link
+                                          href={`/research-stacks/${detailPageId}`}
+                                          className="inline-flex items-center gap-1 text-[10px] text-[#21d8ff] hover:text-[#21d8ff]/80 transition-colors pl-1"
+                                          data-testid={`link-popular-combo-details-${i}`}
+                                          onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                                        >
+                                          <ExternalLink className="h-2.5 w-2.5" />
+                                          View full details
+                                        </Link>
+                                      )}
                                     </div>
                                     );
                                   })}

@@ -8,6 +8,7 @@ export interface KnownStack {
   color: string;
   description: string;
   synergyBonus: number;
+  detailPageId?: string;
 }
 
 export const KNOWN_STACKS: KnownStack[] = [
@@ -18,6 +19,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("healing")!,
     description: "Legendary healing combo - BPC-157's local repair + TB-500's systemic regeneration",
     synergyBonus: 95,
+    detailPageId: "recovery-tissue-stack",
   },
   {
     name: "Glow Protocol",
@@ -26,6 +28,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("skin")!,
     description: "Ultimate skin rejuvenation - collagen + blood vessels + tissue repair",
     synergyBonus: 90,
+    detailPageId: "glow-protocol",
   },
   {
     name: "GH Amplifier",
@@ -34,6 +37,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("growth")!,
     description: "Growth hormone synergy - GHRP + GHRH work better together",
     synergyBonus: 88,
+    detailPageId: "gh-amplifier",
   },
   {
     name: "Recovery+",
@@ -42,6 +46,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("healing")!,
     description: "Collagen synthesis meets tissue protection",
     synergyBonus: 82,
+    detailPageId: "recovery-plus",
   },
   {
     name: "Energy Stack",
@@ -50,6 +55,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("metabolic")!,
     description: "Mitochondrial power + metabolic signaling",
     synergyBonus: 80,
+    detailPageId: "metabolic-pathway-stack",
   },
   {
     name: "Cognitive Edge",
@@ -58,6 +64,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("cognitive")!,
     description: "Nootropic synergy - focus enhancement + anxiety reduction",
     synergyBonus: 86,
+    detailPageId: "cognitive-edge-stack",
   },
   {
     name: "Longevity Protocol",
@@ -66,6 +73,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("longevity")!,
     description: "Telomere extension meets collagen regeneration",
     synergyBonus: 84,
+    detailPageId: "longevity-protocol",
   },
   {
     name: "Deep Sleep",
@@ -74,6 +82,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("sleep")!,
     description: "Circadian rhythm + natural GH pulse optimization",
     synergyBonus: 83,
+    detailPageId: "deep-sleep",
   },
   {
     name: "Total Regen",
@@ -82,6 +91,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("healing")!,
     description: "Complete recovery - local healing + systemic repair + growth support",
     synergyBonus: 92,
+    detailPageId: "total-regen",
   },
   {
     name: "Lean Mass",
@@ -90,6 +100,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("growth")!,
     description: "GH amplification + metabolic enhancement for body composition",
     synergyBonus: 87,
+    detailPageId: "lean-mass",
   },
   {
     name: "KLOW Stack",
@@ -98,6 +109,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: "#00e5a0", // Brand-specific teal: unique visual identity for the KLOW product line
     description: "3-phase regeneration: KPV clears inflammation, BPC-157 + TB-500 repair tissue, GHK-Cu remodels collagen",
     synergyBonus: 94,
+    detailPageId: "klow-stack",
   },
   {
     name: "Immune Shield",
@@ -106,6 +118,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("immune")!,
     description: "Adaptive immunity + antimicrobial defense — dual-layer immune system protection",
     synergyBonus: 85,
+    detailPageId: "immune-shield",
   },
   {
     name: "Gut Restore",
@@ -114,6 +127,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("gut")!,
     description: "Gut lining repair + NF-κB inhibition — comprehensive gut barrier restoration",
     synergyBonus: 88,
+    detailPageId: "gut-restore",
   },
   {
     name: "Neuro Stack",
@@ -122,6 +136,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("cognitive")!,
     description: "BDNF upregulation + neurotrophic factors — dual neuroprotection for cognitive research",
     synergyBonus: 86,
+    detailPageId: "neuro-stack",
   },
   {
     name: "Fat Burner",
@@ -130,6 +145,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("metabolic")!,
     description: "GH fragment fat breakdown + NNMT enzyme inhibitor — complementary fat metabolism pathways",
     synergyBonus: 84,
+    detailPageId: "fat-burner",
   },
   {
     name: "GH Max",
@@ -138,6 +154,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("growth")!,
     description: "Triple GHRH/GHRP stimulation — maximum growth hormone output through complementary pathways",
     synergyBonus: 91,
+    detailPageId: "gh-max",
   },
   {
     name: "Skin Renewal",
@@ -146,6 +163,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("skin")!,
     description: "Collagen matrix remodeling + expression line reduction — advanced skin rejuvenation research",
     synergyBonus: 83,
+    detailPageId: "skin-renewal",
   },
   {
     name: "Longevity+",
@@ -154,6 +172,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("longevity")!,
     description: "Telomerase activation + thymic immune restoration — the Russian longevity protocol",
     synergyBonus: 87,
+    detailPageId: "longevity-plus",
   },
   {
     name: "Performance",
@@ -162,6 +181,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("growth")!,
     description: "Direct muscle growth factor + tissue repair accelerator — athletic recovery research",
     synergyBonus: 86,
+    detailPageId: "performance-stack",
   },
   {
     name: "NAD+ Mito Stack",
@@ -170,6 +190,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("energy")!,
     description: "NAD+ restoration + cardiolipin stabilization — dual mitochondrial rescue",
     synergyBonus: 89,
+    detailPageId: "nad-mito-stack",
   },
   {
     name: "Cellular Longevity",
@@ -178,6 +199,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("longevity")!,
     description: "NAD+ sirtuin activation + telomerase extension — comprehensive cellular aging defense",
     synergyBonus: 88,
+    detailPageId: "cellular-longevity",
   },
   {
     name: "NAD+ Energy",
@@ -186,6 +208,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("energy")!,
     description: "NAD+ salvage pathway + AMPK mitochondrial biogenesis — cellular energy amplification",
     synergyBonus: 85,
+    detailPageId: "nad-energy-stack",
   },
   {
     name: "Cellular Defense",
@@ -194,6 +217,7 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("immune")!,
     description: "NAD+ DNA repair enzymes + master antioxidant — dual cellular protection",
     synergyBonus: 84,
+    detailPageId: "cellular-defense",
   },
   {
     name: "Regen Glow",
@@ -202,5 +226,6 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("healing")!,
     description: "Anti-inflammatory healing blend + copper peptide collagen remodeling — repair-to-renewal pipeline",
     synergyBonus: 86,
+    detailPageId: "regen-glow",
   },
 ];
