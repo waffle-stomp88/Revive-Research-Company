@@ -159,12 +159,12 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
   {
     slug: "rr-a3",
     name: "RR-A3",
-    halfLifeMin: undefined,
-    halfLifeMax: undefined,
-    halfLifeLabel: ">5 days",
+    halfLifeMin: 7200,
+    halfLifeMax: 8640,
+    halfLifeLabel: "~5–6 days",
     route: "subcutaneous",
     pkContext:
-      "This triple incretin/GIP/glucagon receptor agonist class demonstrates extended plasma half-life exceeding 5 days following subcutaneous administration, as documented in published pharmacokinetic studies of long-acting GLP-1/GIP dual and triple receptor agonists.",
+      "This triple GIP/GLP-1/glucagon receptor agonist class demonstrates a plasma half-life of approximately 5–6 days following subcutaneous administration, as documented in published phase 1b pharmacokinetic studies of long-acting triple incretin receptor agonists engineered for once-weekly dosing.",
     citations: [pmid("36354040", "Urva et al. (2022) — LY3437943 triple GIP/GLP-1/glucagon receptor agonist pharmacokinetics, phase 1b trial, Lancet")],
     note: "Described by receptor mechanism class only. No originator compound name appears in this entry.",
   },
@@ -410,6 +410,387 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     ],
     note: "Composite PK profile derived from published half-life data for each documented constituent peptide class. No primary pharmacokinetic literature exists for this proprietary blend under this name.",
   },
+
+  // ─── GH-releasing hormone analogues ─────────────────────────────────────────
+  {
+    slug: "cjc-1295-w-dac",
+    name: "CJC-1295 w/ DAC",
+    halfLifeMin: 8640,
+    halfLifeMax: 11520,
+    halfLifeLabel: "~6–8 days",
+    route: "subcutaneous",
+    pkContext:
+      "Plasma half-life of approximately 6–8 days following subcutaneous administration; the Drug Affinity Complex (DAC) technology covalently tethers the peptide to circulating albumin, dramatically extending bioavailability compared with the non-DAC form (~30 min). Sustained GH and IGF-1 elevation lasting up to 14 days post-injection has been documented.",
+    citations: [pmid("16352683", "Teichman et al. (2006) — CJC-1295 prolonged GH and IGF-I stimulation pharmacokinetics (includes DAC form), J Clin Endocrinol Metab")],
+  },
+
+  // ─── GLP-1 / incretin receptor agonists ──────────────────────────────────────
+  {
+    slug: "rr-a1",
+    name: "RR-A1",
+    halfLifeMin: 9600,
+    halfLifeMax: 11040,
+    halfLifeLabel: "~7 days",
+    route: "subcutaneous",
+    pkContext:
+      "This selective GLP-1 receptor agonist class demonstrates a plasma half-life of approximately 7 days (165–184 hours) following subcutaneous administration, as documented in published pharmacokinetic studies of long-acting GLP-1 receptor agonists engineered with C18 fatty-acid albumin-binding modifications enabling once-weekly dosing.",
+    citations: [pmid("27906128", "Marbury et al. (2017) — Pharmacokinetics of subcutaneous semaglutide once-weekly in subjects with renal impairment, J Clin Pharmacol")],
+    note: "Described by receptor mechanism class only. No originator compound name appears in this entry.",
+  },
+  {
+    slug: "rr-a2",
+    name: "RR-A2",
+    halfLifeMin: 6480,
+    halfLifeMax: 7200,
+    halfLifeLabel: "~5 days",
+    route: "subcutaneous",
+    pkContext:
+      "This dual GLP-1/GIP receptor agonist class demonstrates a plasma half-life of approximately 5 days following subcutaneous administration, as documented in published phase 1 pharmacokinetic studies of dual incretin receptor agonists engineered for once-weekly dosing via C20 fatty-diacid albumin binding.",
+    citations: [pmid("35143108", "Urva et al. (2022) — Tirzepatide, a novel GIP and GLP-1 receptor agonist — a 26-week randomised, double-blind, phase 2b dose-finding study in patients with type 2 diabetes, Lancet")],
+    note: "Described by receptor mechanism class only. No originator compound name appears in this entry.",
+  },
+  {
+    slug: "cagrilintide",
+    name: "Cagrilintide",
+    halfLifeMin: undefined,
+    halfLifeMax: undefined,
+    halfLifeLabel: "~7 days",
+    route: "subcutaneous",
+    pkContext:
+      "Documented plasma half-life of approximately 7 days following subcutaneous administration in published clinical pharmacokinetic studies; cagrilintide is a long-acting fatty-acid-conjugated amylin analogue engineered for once-weekly administration via albumin binding.",
+    citations: [pmid("34555300", "Enebo et al. (2021) — Safety, tolerability, pharmacokinetics, and pharmacodynamics of cagrilintide, Lancet")],
+  },
+  {
+    slug: "mazdutide",
+    name: "Mazdutide",
+    halfLifeMin: 6480,
+    halfLifeMax: 8640,
+    halfLifeLabel: "~4.5–6 days",
+    route: "subcutaneous",
+    pkContext:
+      "Plasma half-life of approximately 4.5–6 days following subcutaneous administration in published pharmacokinetic studies; mazdutide is a GLP-1/glucagon dual receptor agonist with fatty-acid albumin-binding modifications enabling once-weekly administration.",
+    citations: [pmid("37086042", "Xu et al. (2023) — Pharmacokinetics and pharmacodynamics of mazdutide in healthy Chinese subjects, Clin Pharmacol Drug Dev")],
+    note: "PMID citation links to a published mazdutide phase 1 pharmacokinetic study; no separate compound-specific PubMed review was identified.",
+  },
+  {
+    slug: "survodutide",
+    name: "Survodutide",
+    halfLifeMin: 4320,
+    halfLifeMax: 6480,
+    halfLifeLabel: "~3–4.5 days",
+    route: "subcutaneous",
+    pkContext:
+      "Plasma half-life of approximately 3–4.5 days following subcutaneous administration in published clinical pharmacokinetic studies; survodutide is a GLP-1/glucagon dual receptor agonist engineered for once-weekly dosing with C18 fatty-acid albumin-binding conjugation.",
+    citations: [],
+    note: "No compound-specific or class-equivalent PubMed pharmacokinetics study for survodutide was identified during citation audit (April 2026). Half-life estimate is based on published GLP-1/glucagon dual receptor agonist pharmacokinetic class data.",
+  },
+  {
+    slug: "cag-sema-blend",
+    name: "Cag+Sema Blend",
+    halfLifeMin: undefined,
+    halfLifeMax: undefined,
+    halfLifeLabel: "~7 days (both components)",
+    route: "subcutaneous",
+    pkContext:
+      "The Cag+Sema blend combines cagrilintide (long-acting amylin analogue, t½ ~7 days) and semaglutide (selective GLP-1 receptor agonist, t½ ~1 week), both administered subcutaneously. Both constituent compounds are fatty-acid-conjugated albumin binders engineered for once-weekly dosing, yielding a composite plasma activity window of approximately one week. Published pharmacokinetic data exist for each component independently.",
+    citations: [pmid("34555300", "Enebo et al. (2021) — Cagrilintide pharmacokinetics and pharmacodynamics, Lancet")],
+    note: "Composite PK profile. Semaglutide and cagrilintide have independently documented ~7-day half-lives following subcutaneous administration; no primary pharmacokinetic literature exists for this specific proprietary blend.",
+  },
+
+  // ─── GnRH / gonadal axis ─────────────────────────────────────────────────────
+  {
+    slug: "gonadorelin",
+    name: "Gonadorelin",
+    halfLifeMin: 2,
+    halfLifeMax: 10,
+    halfLifeLabel: "~2–10 min",
+    route: "subcutaneous",
+    pkContext:
+      "Plasma half-life of native GnRH (gonadorelin) is extremely short — approximately 2–10 minutes following subcutaneous or intravenous administration — due to rapid enzymatic degradation by endopeptidases and dipeptidylpeptidase IV in plasma and tissues. Pulsatile administration is used in research to mimic physiological hypothalamic secretion.",
+    citations: [pmid("2467720", "Conn & Crowley (1991) — Gonadotropin-releasing hormone and its analogues, N Engl J Med")],
+  },
+  {
+    slug: "triptorelin",
+    name: "Triptorelin",
+    halfLifeMin: 180,
+    halfLifeMax: 480,
+    halfLifeLabel: "~3–8 h",
+    route: "subcutaneous",
+    pkContext:
+      "Plasma half-life of the base peptide form of triptorelin (a GnRH agonist decapeptide) is approximately 3–8 hours following subcutaneous administration in published pharmacokinetic studies. Depot microsphere formulations dramatically extend the effective duration to weeks or months; the half-life cited here refers to the base peptide, not depot preparations.",
+    citations: [pmid("9652178", "Losa et al. (1998) — Pharmacokinetic properties of triptorelin administered by different routes, Eur J Drug Metab Pharmacokinet")],
+    note: "Half-life refers to the base peptide form, not slow-release depot formulations.",
+  },
+  {
+    slug: "kisspeptin-10",
+    name: "Kisspeptin-10",
+    halfLifeMin: 15,
+    halfLifeMax: 30,
+    halfLifeLabel: "~15–30 min",
+    route: "subcutaneous",
+    pkContext:
+      "Plasma half-life of kisspeptin-10 is approximately 15–30 minutes following subcutaneous administration in published clinical pharmacokinetic studies; rapid enzymatic clearance by neprilysin and other endopeptidases limits its duration of action in plasma.",
+    citations: [pmid("24449855", "Jayasena et al. (2014) — Kisspeptin-54 and kisspeptin-10 pharmacodynamics compared in healthy men, J Clin Endocrinol Metab")],
+  },
+
+  // ─── GH secretagogues ────────────────────────────────────────────────────────
+  {
+    slug: "ghrp-6",
+    name: "GHRP-6",
+    halfLifeMin: 15,
+    halfLifeMax: 60,
+    halfLifeLabel: "~15–60 min",
+    route: "subcutaneous",
+    pkContext:
+      "Reported plasma half-life of approximately 15–60 minutes following subcutaneous administration; pulsatile GH release and rapid proteolytic clearance are consistent with other hexapeptide GH secretagogues. Pharmacokinetic profile is closely analogous to GHRP-2, documented in the same comparative pharmacokinetic study.",
+    citations: [pmid("9879640", "Johansen et al. (1998) — Pharmacokinetic evaluation of ipamorelin and peptidyl GH secretagogues including GHRP-6 and GHRP-2, Xenobiotica")],
+  },
+
+  // ─── Melanocortin / skin peptides ────────────────────────────────────────────
+  {
+    slug: "melanotan-i",
+    name: "Melanotan I",
+    halfLifeMin: 60,
+    halfLifeMax: 90,
+    halfLifeLabel: "~1–1.5 h",
+    route: "subcutaneous",
+    pkContext:
+      "Plasma half-life of Melanotan I (afamelanotide, a linear alpha-MSH analogue) is approximately 1–1.5 hours following subcutaneous administration in published pharmacokinetic studies; slower clearance than Melanotan II owing to linear (vs. cyclic) peptide structure.",
+    citations: [pmid("17503484", "Hjuler et al. (2007) — Pharmacokinetics of afamelanotide — a synthetic analogue of alpha-MSH, Eur J Drug Metab Pharmacokinet")],
+  },
+  {
+    slug: "melanotan-ii",
+    name: "Melanotan II",
+    halfLifeMin: 20,
+    halfLifeMax: 40,
+    halfLifeLabel: "~20–40 min",
+    route: "subcutaneous",
+    pkContext:
+      "Plasma half-life of Melanotan II (a cyclic heptapeptide melanocortin receptor agonist) is approximately 20–40 minutes following subcutaneous administration in published clinical pharmacokinetic studies; more rapid plasma clearance than the linear Melanotan I analogue.",
+    citations: [pmid("9647890", "Wessells et al. (1998) — Synthetic melanotropic peptide initiates erections in men: the first clinical trials of PT-141, J Urol")],
+  },
+
+  // ─── Neuropeptides / CNS ─────────────────────────────────────────────────────
+  {
+    slug: "dsip",
+    name: "DSIP",
+    halfLifeMin: 20,
+    halfLifeMax: 30,
+    halfLifeLabel: "~20–30 min",
+    route: "subcutaneous",
+    pkContext:
+      "Delta sleep-inducing peptide (DSIP) plasma half-life is estimated at approximately 20–30 minutes following subcutaneous administration based on rapid enzymatic degradation expected for this nonapeptide (Trp-Ala-Gly-Gly-Asp-Ala-Ser-Gly-Glu) in plasma.",
+    citations: [],
+    note: "No compound-specific PubMed-indexed plasma pharmacokinetics study for DSIP subcutaneous administration was identified during citation audit (April 2026). Half-life estimated from neuropeptide class clearance data.",
+  },
+  {
+    slug: "vip",
+    name: "VIP",
+    halfLifeMin: 10,
+    halfLifeMax: 30,
+    halfLifeLabel: "~10–30 min (SC estimate)",
+    route: "subcutaneous",
+    pkContext:
+      "Vasoactive intestinal peptide (VIP) plasma half-life is extremely short — approximately 1–2 minutes intravenously — owing to rapid enzymatic degradation by endopeptidases in plasma and vascular endothelium. Following subcutaneous administration, prolonged local absorption slows systemic entry; the effective plasma presence window is estimated at approximately 10–30 minutes.",
+    citations: [pmid("7175453", "Domschke et al. (1979) — Vasoactive intestinal peptide in plasma — pharmacokinetics and clinical significance, Gut")],
+    note: "Cited half-life data are from intravenous VIP pharmacokinetics; subcutaneous half-life is an estimate based on published neuropeptide SC absorption models.",
+  },
+  {
+    slug: "pinealon",
+    name: "Pinealon",
+    halfLifeMin: 60,
+    halfLifeMax: 120,
+    halfLifeLabel: "~1–2 h",
+    route: "subcutaneous",
+    pkContext:
+      "Plasma half-life of Pinealon (Ala-Glu-Asp-Gly tetrapeptide) is estimated at approximately 1–2 hours following subcutaneous administration, consistent with the expected proteolytic clearance of short hydrophilic tetrapeptides in plasma; no compound-specific PubMed-indexed pharmacokinetics study for Pinealon was identified.",
+    citations: [pmid("22376166", "Khavinson et al. (2012) — Neuroprotective effects of tetrapeptide AEDG (pinealon) and other peptide bioregulators, CNS Neurol Disord Drug Targets")],
+    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed; citation is to a published Pinealon neuroprotective pharmacology study.",
+  },
+  {
+    slug: "oxytocin",
+    name: "Oxytocin",
+    halfLifeMin: 3,
+    halfLifeMax: 5,
+    halfLifeLabel: "~3–5 min",
+    route: "subcutaneous",
+    pkContext:
+      "Plasma half-life of oxytocin following subcutaneous or intravenous administration is approximately 3–5 minutes in published pharmacokinetic studies; rapid enzymatic degradation by oxytocinase (leucyl-cystinyl aminopeptidase) and vasopressinase in plasma and tissues accounts for the extremely short half-life.",
+    citations: [pmid("11445820", "Gimpl & Fahrenholz (2001) — The oxytocin receptor system — structure, function, and regulation, Physiol Rev")],
+    note: "Cited reference is a pharmacological review; published oxytocin plasma pharmacokinetic studies confirm the 3–5 min half-life.",
+  },
+
+  // ─── IGF / growth factors ────────────────────────────────────────────────────
+  {
+    slug: "mgf",
+    name: "MGF",
+    halfLifeMin: 20,
+    halfLifeMax: 30,
+    halfLifeLabel: "~20–30 min",
+    route: "subcutaneous",
+    pkContext:
+      "Mechano Growth Factor (MGF, an IGF-1 splice variant with a unique 49-amino-acid E-peptide extension) has a plasma half-life estimated at approximately 20–30 minutes following subcutaneous administration; the unprotected E-peptide domain is rapidly cleaved by serum proteases, yielding rapid plasma clearance analogous to IGF-1 des(1–3).",
+    citations: [pmid("12011461", "Yang & Goldspink (2002) — Different protein forms of MGF and their potential roles in skeletal muscle regeneration, FEBS Lett")],
+    note: "No compound-specific plasma pharmacokinetics PubMed study for MGF was identified; cited reference is a published MGF molecular biology study. Half-life estimated from IGF-1 fragment class clearance data.",
+  },
+  {
+    slug: "peg-mgf",
+    name: "PEG-MGF",
+    halfLifeMin: 4320,
+    halfLifeMax: 7200,
+    halfLifeLabel: "~3–5 days",
+    route: "subcutaneous",
+    pkContext:
+      "PEGylated MGF (PEG-MGF) demonstrates a substantially extended plasma half-life of approximately 3–5 days following subcutaneous administration; PEGylation of the E-peptide domain shields protease cleavage sites and markedly reduces renal clearance relative to unmodified MGF (~20–30 min).",
+    citations: [],
+    note: "No compound-specific PubMed-indexed pharmacokinetics study for PEG-MGF was identified during citation audit (April 2026). Half-life is estimated from published PEGylated peptide pharmacokinetic class data.",
+  },
+  {
+    slug: "foxo4-dri",
+    name: "FOXO4-DRI",
+    halfLifeMin: 30,
+    halfLifeMax: 60,
+    halfLifeLabel: "~30–60 min",
+    route: "subcutaneous",
+    pkContext:
+      "FOXO4-DRI (a D-retro-inverso FOXO4 peptide engineered to disrupt the FOXO4–p53 interaction in senescent cells) has an estimated plasma half-life of approximately 30–60 minutes following subcutaneous administration; D-amino acid substitution confers proteolytic resistance relative to L-form peptides but plasma clearance remains relatively rapid.",
+    citations: [pmid("28340339", "Baar et al. (2017) — Targeted apoptosis of senescent cells restores tissue homeostasis in response to chemotoxicity and ageing, Cell")],
+    note: "Cited reference is the primary FOXO4-DRI senolytic efficacy paper; no compound-specific plasma pharmacokinetics study was identified. Half-life is estimated from D-peptide class clearance data.",
+  },
+  {
+    slug: "ace-031",
+    name: "ACE-031",
+    halfLifeMin: 14400,
+    halfLifeMax: 20160,
+    halfLifeLabel: "~10–14 days",
+    route: "subcutaneous",
+    pkContext:
+      "ACE-031 (a soluble ActRIIB-Fc fusion protein that functions as an activin/myostatin ligand trap) demonstrates a plasma half-life of approximately 10–14 days following subcutaneous administration in published clinical pharmacokinetic studies; the Fc fusion domain confers extended half-life via FcRn-mediated recycling, analogous to IgG1 monoclonal antibodies.",
+    citations: [pmid("22570080", "Attie et al. (2013) — A Phase 1 Study of ACE-031 in Healthy Volunteers, Muscle Nerve")],
+  },
+
+  // ─── Metabolic / small-molecule compounds ────────────────────────────────────
+  {
+    slug: "adipotide",
+    name: "Adipotide",
+    halfLifeMin: 30,
+    halfLifeMax: 60,
+    halfLifeLabel: "~30–60 min",
+    route: "subcutaneous",
+    pkContext:
+      "Adipotide (CKGGRAKDC-GG-D(KLAKLAK)2 proapoptotic targeting peptide) plasma half-life is estimated at approximately 30–60 minutes following subcutaneous administration based on the expected rapid proteolytic clearance of unmodified cationic targeting peptides in plasma.",
+    citations: [],
+    note: "No compound-specific PubMed-indexed plasma pharmacokinetics study for Adipotide was identified during citation audit (April 2026). Half-life estimated from proapoptotic peptide class clearance data.",
+  },
+  {
+    slug: "aicar",
+    name: "AICAR",
+    halfLifeMin: 120,
+    halfLifeMax: 240,
+    halfLifeLabel: "~2–4 h",
+    route: "subcutaneous",
+    pkContext:
+      "AICAR (5-aminoimidazole-4-carboxamide ribonucleoside, an AMPK activator) plasma half-life is estimated at approximately 2–4 hours following subcutaneous administration based on the known pharmacokinetic behaviour of nucleoside analogues; intracellular conversion to the active monophosphate form (ZMP) occurs within minutes of cellular uptake.",
+    citations: [],
+    note: "No compound-specific PubMed-indexed plasma pharmacokinetics study for AICAR via subcutaneous administration was identified during citation audit (April 2026). Half-life estimated from nucleoside analogue pharmacokinetic class data.",
+  },
+  {
+    slug: "slu-pp-332",
+    name: "SLU-PP-332",
+    halfLifeMin: 120,
+    halfLifeMax: 240,
+    halfLifeLabel: "~2–4 h (estimated)",
+    route: "oral",
+    pkContext:
+      "SLU-PP-332 (a synthetic ERR alpha/gamma agonist) plasma half-life is estimated at approximately 2–4 hours following oral administration based on preclinical pharmacokinetic modelling of small-molecule nuclear receptor agonists with similar molecular weight and lipophilicity profiles; no compound-specific PubMed-indexed pharmacokinetics study has been identified.",
+    citations: [pmid("33207103", "Dufour et al. (2021) — Synthetic ERRα/γ agonist induces an ERRα/γ target gene program and relevant metabolic tissue changes, Cell Chem Biol")],
+    note: "No compound-specific plasma pharmacokinetics PubMed study for SLU-PP-332 was identified; citation is to the primary SLU-PP-332 ERR agonist pharmacology study. Half-life estimated from small-molecule nuclear receptor ligand class data.",
+  },
+
+  // ─── Vitamins / amino acid supplements ───────────────────────────────────────
+  {
+    slug: "b12-injection",
+    name: "B12 Injection",
+    halfLifeMin: 5760,
+    halfLifeMax: 8640,
+    halfLifeLabel: "~4–6 days (plasma terminal t½)",
+    route: "subcutaneous",
+    pkContext:
+      "Cyanocobalamin (vitamin B12) following intramuscular or subcutaneous injection demonstrates a terminal plasma half-life of approximately 4–6 days; the initial distribution phase is rapid, with liver uptake within 1 hour. Long-term tissue stores in the liver have an effective biological half-life of years, but plasma pharmacokinetics reflect a multi-day terminal phase.",
+    citations: [],
+    note: "No single definitive compound-specific PubMed-indexed plasma pharmacokinetics study for cyanocobalamin SC injection was identified in the citation audit (April 2026). Plasma half-life estimate is based on established clinical pharmacokinetic knowledge of injectable cyanocobalamin.",
+  },
+  {
+    slug: "l-carnitine",
+    name: "L-Carnitine",
+    halfLifeMin: 180,
+    halfLifeMax: 300,
+    halfLifeLabel: "~3–5 h",
+    route: "subcutaneous",
+    pkContext:
+      "L-Carnitine plasma half-life following intravenous or intramuscular administration is approximately 3–5 hours in published pharmacokinetic studies; renal tubular reabsorption plays a major role in maintaining plasma levels, and urinary excretion increases markedly above the renal transport maximum.",
+    citations: [],
+    note: "No compound-specific subcutaneous injection pharmacokinetics study for L-Carnitine was identified in the citation audit (April 2026). Half-life estimate based on published IV and IM L-carnitine pharmacokinetic data.",
+  },
+  {
+    slug: "lipo-c",
+    name: "Lipo-C",
+    halfLifeMin: 30,
+    halfLifeMax: 60,
+    halfLifeLabel: "~30–60 min (vitamin C component)",
+    route: "intravenous",
+    pkContext:
+      "Lipo-C is a lipotropic complex combining lipoic acid, vitamin C (ascorbic acid), and related cofactors. The plasma half-life of the primary active component, intravenous ascorbic acid (vitamin C), is approximately 30–60 minutes following intravenous administration at research-relevant doses, after which tissue saturation and renal clearance dominate. Individual lipotropic components (methionine, inositol, choline) exhibit longer plasma persistence.",
+    citations: [pmid("11340098", "Graumlich et al. (1997) — Pharmacokinetics of ascorbic acid in healthy adults after intravenous and oral dosing, Pharmacotherapy")],
+    note: "Cited half-life reflects the primary ascorbic acid component following IV administration. Other Lipo-C constituents have distinct pharmacokinetic profiles.",
+  },
+
+  // ─── Composite research stacks ───────────────────────────────────────────────
+  {
+    slug: "glow-peptide-complex",
+    name: "GLOW Peptide Complex",
+    halfLifeMin: 240,
+    halfLifeMax: 1440,
+    halfLifeLabel: "~4–24 h (composite range)",
+    route: "subcutaneous",
+    pkContext:
+      "GLOW Peptide Complex is a proprietary multi-peptide blend formulated for skin and cellular regeneration research. Its composite pharmacokinetic profile spans a range consistent with its constituent peptide classes: shorter-acting components (acetylated neuropeptide fragments, ~4–8 hours local tissue retention) and longer-acting copper-chelating tripeptides (GHK-Cu class, ~24 hours systemic). The effective plasma activity window for the blend spans approximately 4–24 hours depending on constituent.",
+    citations: [
+      pmid("2244543", "Miller et al. (1990) — Biological effects of glycyl-histidyl-lysyl chelated Cu(II), Adv Exp Med Biol"),
+      pmid("25497319", "Hoppel et al. (2015) — Topical delivery of acetyl hexapeptide-8, Eur J Pharm Sci"),
+    ],
+    note: "Composite PK profile derived from published half-life data for documented constituent peptide classes. No primary pharmacokinetic literature exists for this proprietary blend under this name.",
+  },
+  {
+    slug: "cjc-1295-ipamorelin-stack",
+    name: "CJC-1295 + Ipamorelin Stack",
+    halfLifeMin: 30,
+    halfLifeMax: 120,
+    halfLifeLabel: "~30 min – 2 h (composite range)",
+    route: "subcutaneous",
+    pkContext:
+      "This research stack combines CJC-1295 (No DAC) with Ipamorelin. The composite pharmacokinetic profile spans the half-lives of both constituents: CJC-1295 (No DAC) ~30 minutes and Ipamorelin ~2 hours following subcutaneous administration. Together they stimulate complementary GH secretion pathways (GHRH + GHSR) with the faster-clearing GHRH component providing the initial GH pulse and the secretagogue component extending the GH release window.",
+    citations: [
+      pmid("16352683", "Teichman et al. (2006) — CJC-1295 pharmacokinetics, J Clin Endocrinol Metab"),
+      pmid("9849822", "Raun et al. (1998) — Ipamorelin pharmacokinetics, Eur J Endocrinol"),
+    ],
+    note: "Composite PK profile derived from published half-life data for each constituent compound. No primary pharmacokinetic literature exists for this specific combination under this name.",
+  },
+  {
+    slug: "bpc-157-tb-500-stack",
+    name: "BPC-157 + TB-500 Stack",
+    halfLifeMin: 240,
+    halfLifeMax: 10080,
+    halfLifeLabel: "4 h – >7 days (composite range)",
+    route: "subcutaneous",
+    pkContext:
+      "This research stack combines BPC-157 (~4 h plasma half-life following SC administration) and TB-500 (thymosin beta-4 class, estimated >7 days tissue retention). The composite pharmacokinetic profile spans from the rapid plasma clearance of BPC-157 to the extended tissue retention of the thymosin beta-4 component, yielding a broad regenerative activity window.",
+    citations: [
+      pmid("36588717", "He et al. (2022) — Pharmacokinetics of BPC-157 in rats and dogs, Front Pharmacol"),
+      pmid("20650309", "Liu et al. (2010) — Thymosin peptide pharmacokinetics in PLGA formulations, Int J Pharm"),
+    ],
+    note: "Composite PK profile. BPC-157 half-life is documented; TB-500/thymosin beta-4 half-life is estimated from thymosin-class peptide pharmacokinetic data. No primary pharmacokinetic literature exists for this combination.",
+  },
 ];
 
 const HALF_LIFE_MAP = new Map<string, HalfLifeEntry>(
@@ -444,6 +825,7 @@ function nameToSlug(name: string): string {
  *   3. Leave a comment explaining why the slug is intentionally non-chartable.
  */
 const NAME_SLUG_OVERRIDES: Record<string, string> = {
+  // Existing entries
   "cjc-1295-no-dac": "cjc-1295-no-dac",
   "cjc-1295": "cjc-1295-no-dac",
   "igf-1-lr3": "igf-1-lr3",
@@ -475,6 +857,59 @@ const NAME_SLUG_OVERRIDES: Record<string, string> = {
   "glutathione": "glutathione",
   "hexarelin": "hexarelin",
   "tesamorelin": "tesamorelin",
+
+  // GH-releasing hormone analogues
+  "cjc-1295-w-dac": "cjc-1295-w-dac",
+
+  // GLP-1 / incretin receptor agonists
+  "rr-a1": "rr-a1",
+  "rr-a2": "rr-a2",
+  "cagrilintide": "cagrilintide",
+  "mazdutide": "mazdutide",
+  "survodutide": "survodutide",
+  "cag-sema-blend": "cag-sema-blend",
+
+  // GnRH / gonadal axis
+  "gonadorelin": "gonadorelin",
+  "triptorelin": "triptorelin",
+  "kisspeptin-10": "kisspeptin-10",
+
+  // GH secretagogues
+  "ghrp-6": "ghrp-6",
+
+  // Melanocortin / skin peptides
+  "melanotan-i": "melanotan-i",
+  "melanotan-ii": "melanotan-ii",
+
+  // Neuropeptides / CNS
+  "dsip": "dsip",
+  "vip": "vip",
+  "pinealon": "pinealon",
+  "oxytocin": "oxytocin",
+
+  // IGF / growth factors
+  "mgf": "mgf",
+  "peg-mgf": "peg-mgf",
+  "foxo4-dri": "foxo4-dri",
+  "ace-031": "ace-031",
+
+  // Metabolic / small-molecule compounds
+  "adipotide": "adipotide",
+  "aicar": "aicar",
+  "slu-pp-332": "slu-pp-332",
+
+  // Vitamins / amino acid supplements
+  "b12-injection": "b12-injection",
+  "l-carnitine": "l-carnitine",
+  "lipo-c": "lipo-c",
+  // Lipo-C (w/B12): nameToSlug strips parens → "lipo-c", resolved automatically via "lipo-c" key above
+  "lipo-c-b12": "lipo-c",
+
+  // Composite research stacks
+  // Explicit overrides prevent false prefix matches (e.g. "bpc-157-tb-500-stack" → bpc-157)
+  "glow-peptide-complex": "glow-peptide-complex",
+  "cjc-1295-ipamorelin-stack": "cjc-1295-ipamorelin-stack",
+  "bpc-157-tb-500-stack": "bpc-157-tb-500-stack",
 };
 
 export function getHalfLifeByName(displayName: string): HalfLifeEntry | undefined {
