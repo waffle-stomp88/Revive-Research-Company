@@ -6,6 +6,7 @@ export interface CompoundProfile {
   casNumber: string;
   sequence?: string;
   aminoAcids?: number;
+  mechanismDescriptor?: string;
 }
 
 const compoundProfiles: CompoundProfile[] = [
@@ -17,6 +18,7 @@ const compoundProfiles: CompoundProfile[] = [
     casNumber: "137525-51-0",
     sequence: "Gly-Glu-Pro-Pro-Pro-Gly-Lys-Pro-Ala-Asp-Asp-Ala-Gly-Leu-Val",
     aminoAcids: 15,
+    mechanismDescriptor: "Pentadecapeptide · synthetic BPC fragment · VEGF / EGF / FAK pathway modulator",
   },
 ];
 
