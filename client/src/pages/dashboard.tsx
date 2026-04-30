@@ -1204,7 +1204,7 @@ export default function Dashboard() {
                           </div>
                           <div className="flex-1">
                             <p className="font-medium text-sm">Free Shipping</p>
-                            <p className="text-xs text-muted-foreground">On all orders over $200</p>
+                            <p className="text-xs text-muted-foreground">On all orders over $250</p>
                           </div>
                           <CheckCircle className="h-4 w-4 text-green-500" />
                         </div>

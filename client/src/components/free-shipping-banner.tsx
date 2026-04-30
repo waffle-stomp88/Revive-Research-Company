@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { Truck } from "lucide-react";
 import { Link } from "wouter";
 
-const FREE_SHIPPING_THRESHOLD = 200;
+const FREE_SHIPPING_THRESHOLD = 250;
 
 export function FreeShippingBanner() {
   const bannerRef = useRef<HTMLDivElement>(null);

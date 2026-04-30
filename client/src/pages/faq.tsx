@@ -36,7 +36,7 @@ const FAQ_CATEGORIES = [
       },
       {
         question: "What are your shipping rates?",
-        answer: "We offer FREE shipping on all orders over $200. For orders under $200, a flat rate of $20 applies regardless of package size or destination within the continental United States."
+        answer: "We offer FREE shipping on all orders over $250. For orders under $250, a flat rate of $20 applies regardless of package size or destination within the continental United States."
       },
       {
         question: "Do you ship internationally?",

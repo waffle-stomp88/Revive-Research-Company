@@ -25,7 +25,7 @@ const reasons = [
   {
     icon: Truck,
     title: "Fast Shipping",
-    description: "2–5 business day delivery with same-day dispatch options. Free shipping over $200.",
+    description: "2–5 business day delivery with same-day dispatch options. Free shipping over $250.",
     color: "#22c55e",
   },
   {

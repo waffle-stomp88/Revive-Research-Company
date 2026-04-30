@@ -48,7 +48,7 @@ const STATIC_ROUTES: Record<string, PageMeta> = {
   },
   "/peptides": {
     title: `Research Peptides | ${SITE_NAME}`,
-    description: "Shop premium research peptides with third-party COA verification. BPC-157, TB-500, GHK-Cu, Ipamorelin, and more. Free shipping on orders over $200.",
+    description: "Shop premium research peptides with third-party COA verification. BPC-157, TB-500, GHK-Cu, Ipamorelin, and more. Free shipping on orders over $250.",
   },
   "/research-stacks": {
     title: `Research Stacks & Custom Bundles | ${SITE_NAME}`,
@@ -60,7 +60,7 @@ const STATIC_ROUTES: Record<string, PageMeta> = {
   },
   "/cart": {
     title: `Shopping Cart | ${SITE_NAME}`,
-    description: "Review your research compound order. Free shipping on orders over $200.",
+    description: "Review your research compound order. Free shipping on orders over $250.",
   },
   "/checkout": {
     title: `Checkout | ${SITE_NAME}`,
@@ -113,7 +113,7 @@ const STATIC_ROUTES: Record<string, PageMeta> = {
   },
   "/peptide-shipping-and-handling": {
     title: `Shipping & Handling | ${SITE_NAME}`,
-    description: "Free shipping on orders over $200. Learn about our shipping methods, delivery times, and handling procedures for research compounds.",
+    description: "Free shipping on orders over $250. Learn about our shipping methods, delivery times, and handling procedures for research compounds.",
   },
   "/peptide-research-resources": {
     title: `Peptide Research Resources | ${SITE_NAME}`,

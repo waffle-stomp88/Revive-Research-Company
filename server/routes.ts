@@ -3666,7 +3666,7 @@ This system allows full traceability from production to customer. Every batch nu
 
 ===== SHIPPING & ORDERS =====
 - Standard shipping: $20 flat rate
-- Free shipping on orders over $200
+- Free shipping on orders over $250
 - Processing: 24-hour standard, same-day shipping if ordered before 12:00 PM CT
 - Package Warm Guide available at /package-warm for temperature-sensitive compounds
 - Guest checkout available — no account required to purchase
