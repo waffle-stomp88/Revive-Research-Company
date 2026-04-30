@@ -49,6 +49,16 @@ const CHART = {
   get y1() { return this.vbH - this.pB; },
 };
 
+function interpolateAtX(pts: { x: number; y: number }[], svgX: number): number {
+  const frac = (svgX - CHART.x0) / CHART.plotW;
+  const N = pts.length - 1;
+  const rawIdx = frac * N;
+  const lo = Math.max(0, Math.floor(rawIdx));
+  const hi = Math.min(N, Math.ceil(rawIdx));
+  const t = rawIdx - lo;
+  return pts[lo].y + (pts[hi].y - pts[lo].y) * t;
+}
+
 function ptsToAreaD(pts: { x: number; y: number }[]): string {
   const c = ptsToD(pts);
   const f = pts[0], l = pts[pts.length - 1];
@@ -150,7 +160,11 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
     const lastY = pts[pts.length - 1].y;
     const isExtended = mid === null || mid > xMaxMin * 0.5;
     const halfLifeXFrac = mid !== null && mid <= xMaxMin ? mid / xMaxMin : null;
-    return { peptide, pk, color, pts, isExtended, halfLifeXFrac, lastY, curveD: ptsToD(pts), areaD: ptsToAreaD(pts) };
+    const peakIdx = pts.reduce((best, p, i) => p.y < pts[best].y ? i : best, 0);
+    const tmaxXFrac = (pts[peakIdx].x - CHART.x0) / CHART.plotW;
+    const tmaxSvgX = pts[peakIdx].x;
+    const showTmaxMarker = tmaxXFrac > 0.01 && tmaxXFrac < 1;
+    return { peptide, pk, color, pts, isExtended, halfLifeXFrac, lastY, curveD: ptsToD(pts), areaD: ptsToAreaD(pts), tmaxSvgX, showTmaxMarker };
   });
 
   const definedPks = pksWithData;
@@ -256,6 +270,11 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
     setTooltip(null);
   }, []);
 
+  const handleTouchEnd = useCallback(() => {
+    setTooltip(null);
+    setCrosshairSvgX(null);
+  }, []);
+
   const handleChartMove = useCallback((e: React.MouseEvent) => {
     const svgX = svgClientToX(e.clientX, e.clientY);
     if (svgX === null) return;
@@ -284,7 +303,14 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
         });
       }
     } else {
-      setTooltip(null);
+      if (curves.filter(Boolean).length > 1) {
+        const frac = (svgX - CHART.x0) / CHART.plotW;
+        const timeMin = frac * xMaxMin;
+        const timeDisp = useHours ? `${(timeMin / 60).toFixed(1)} h` : `${Math.round(timeMin)} min`;
+        setTooltip({ clientX: e.clientX, clientY: e.clientY, label: "", halfLife: "", concentration: -1, timeDisp });
+      } else {
+        setTooltip(null);
+      }
     }
   }, [svgClientToX, curves, hoveredIdx, pinnedIdx, xMaxMin, useHours]);
 
@@ -293,6 +319,48 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
     setHoveredIdx(null);
     setTooltip(null);
   }, []);
+
+  const handleChartTouch = useCallback((e: React.TouchEvent) => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    if (!touch || !svgRef.current) return;
+    const svgX = svgClientToX(touch.clientX, touch.clientY);
+    if (svgX === null) return;
+    setCrosshairSvgX(svgX);
+    const activeIdx = pinnedIdx ?? hoveredIdx;
+    const frac = (svgX - CHART.x0) / CHART.plotW;
+    const timeMin = frac * xMaxMin;
+    const timeDisp = useHours ? `${(timeMin / 60).toFixed(1)} h` : `${Math.round(timeMin)} min`;
+    if (activeIdx !== null) {
+      const c = curves[activeIdx];
+      if (c) {
+        const yInterp = interpolateAtX(c.pts, svgX);
+        const concentration = Math.max(0, Math.min(1, 1 - (yInterp - CHART.y0) / CHART.plotH));
+        setTooltip({
+          clientX: touch.clientX,
+          clientY: touch.clientY,
+          label: c.peptide.name,
+          halfLife: c.pk.halfLifeLabel,
+          concentration,
+          timeDisp,
+        });
+      }
+    } else if (curves.some(Boolean)) {
+      const firstC = curves.find(Boolean);
+      if (firstC) {
+        const yInterp = interpolateAtX(firstC.pts, svgX);
+        const concentration = Math.max(0, Math.min(1, 1 - (yInterp - CHART.y0) / CHART.plotH));
+        setTooltip({
+          clientX: touch.clientX,
+          clientY: touch.clientY,
+          label: firstC.peptide.name,
+          halfLife: firstC.pk.halfLifeLabel,
+          concentration,
+          timeDisp,
+        });
+      }
+    }
+  }, [svgClientToX, curves, hoveredIdx, pinnedIdx, xMaxMin, useHours]);
 
   const handleCurveClick = useCallback((idx: number) => {
     const c = curves[idx];
@@ -329,11 +397,57 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
     setPinnedIdx(prev => prev === idx ? null : idx);
   }, [curves]);
 
+  const crosshairTimeDisp = crosshairSvgX !== null ? (() => {
+    const frac = (crosshairSvgX - CHART.x0) / CHART.plotW;
+    const timeMin = frac * xMaxMin;
+    return useHours ? `${(timeMin / 60).toFixed(1)} h` : `${Math.round(timeMin)} min`;
+  })() : null;
+
+  const allCurveValues = crosshairSvgX !== null
+    ? curves.map((c) => {
+        if (!c) return null;
+        const yInterp = interpolateAtX(c.pts, crosshairSvgX);
+        const pct = Math.round(Math.max(0, Math.min(1, 1 - (yInterp - CHART.y0) / CHART.plotH)) * 100);
+        return { name: c.peptide.name, color: c.color, pct, yInterp };
+      })
+    : null;
+
   return (
     <div className="mb-8" data-testid="section-compounds">
-      <h3 className="font-display font-semibold text-lg mb-3">Compounds in this Stack</h3>
+      {!isSingleCompound && (
+        <h3 className="font-display font-semibold text-lg mb-3">Compounds in this Stack</h3>
+      )}
       <Card className="border-border/40 bg-[#07070b] overflow-hidden">
-        {hasCurves && (
+          <div className="flex">
+          {/* Stats sidebar — left of chart, single compound only */}
+          {isSingleCompound && hasCurves && curves[0] && (() => {
+            const c = curves[0]!;
+            const effHL = pkMidpoint(c.pk) ?? xMaxMin * 80;
+            const ke = Math.log(2) / effHL;
+            const kaFloor = Math.log(2) / (0.08 * xMaxMin);
+            const ka = Math.max(ke * 10, kaFloor);
+            const safeKa = ka === ke ? ka * 1.0001 : ka;
+            const tmaxMin = Math.log(safeKa / ke) / (safeKa - ke);
+            const tmaxLabel = tmaxMin < 60
+              ? `~${Math.round(tmaxMin)} min`
+              : `~${parseFloat((tmaxMin / 60).toFixed(1))} h`;
+            return (
+              <div className="hidden md:flex flex-col gap-3 justify-center px-3 py-3 shrink-0 border-r border-white/5 w-24" data-testid="pk-stats-bar">
+                {[
+                  { label: "Plasma t½", value: c.pk.halfLifeLabel },
+                  { label: "Tmax", value: tmaxLabel },
+                  { label: "Route", value: routeAbbrev(c.pk.route) },
+                ].map(s => (
+                  <div key={s.label} className="flex flex-col items-center text-center">
+                    <span className="text-[10px] text-muted-foreground/50 uppercase tracking-widest mb-1 leading-none">{s.label}</span>
+                    <span className="text-base font-bold leading-tight" style={{ color: c.color }}>{s.value}</span>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
+          <div className="flex-1 flex flex-col min-w-0">
+          {hasCurves && (
           <div className="p-3 pb-0 relative" ref={chartWrapRef}>
             <div className="flex items-center justify-end gap-1 mb-2" data-testid="pk-zoom-controls">
               <button
@@ -392,7 +506,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
               ref={svgRef}
               viewBox={`0 0 ${CHART.vbW} ${CHART.vbH}`}
               className="w-full"
-              style={{ maxHeight: 200 }}
+              style={{ maxHeight: 260 }}
               role="img"
               aria-label="Plasma concentration–time curves for compounds in this stack"
               onMouseLeave={handleChartLeave}
@@ -424,12 +538,12 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                 <g key={String(f)}>
                   <line x1={CHART.x0 - 3} y1={CHART.y0 + Number(f) * CHART.plotH} x2={CHART.x0} y2={CHART.y0 + Number(f) * CHART.plotH}
                     stroke="#fff" strokeOpacity="0.15" strokeWidth="1" />
-                  <text x={CHART.x0 - 5} y={CHART.y0 + Number(f) * CHART.plotH + 3} textAnchor="end" fontSize="8" fill="#fff" fillOpacity="0.3">{lbl}</text>
+                  <text x={CHART.x0 - 5} y={CHART.y0 + Number(f) * CHART.plotH + 4} textAnchor="end" fontSize="11" fill="#fff" fillOpacity="0.7">{lbl}</text>
                 </g>
               ))}
 
               {/* Y-axis label */}
-              <text x={9} y={CHART.y0 + CHART.plotH / 2} textAnchor="middle" fontSize="8" fill="#fff" fillOpacity="0.25"
+              <text x={9} y={CHART.y0 + CHART.plotH / 2} textAnchor="middle" fontSize="10" fill="#fff" fillOpacity="0.55"
                 transform={`rotate(-90,9,${CHART.y0 + CHART.plotH / 2})`}>Relative C</text>
 
               {/* Area fills */}
@@ -457,6 +571,19 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                   />
                   <text x={CHART.x0 + c.halfLifeXFrac * CHART.plotW} y={CHART.y1 + 11}
                     textAnchor="middle" fontSize="7.5" fill={c.color} fillOpacity="0.6">t½</text>
+                </g>
+              ))}
+
+              {/* Tmax peak markers */}
+              {curves.map((c, idx) => c && c.showTmaxMarker && (
+                <g key={`tmax-${c.peptide.name}`} pointerEvents="none" style={{ opacity: markerOpacity(idx), transition: "opacity 0.18s ease" }}>
+                  <line
+                    x1={c.tmaxSvgX} y1={CHART.y0}
+                    x2={c.tmaxSvgX} y2={CHART.y0 + 8}
+                    stroke={c.color} strokeOpacity="0.4" strokeWidth="1"
+                  />
+                  <text x={c.tmaxSvgX} y={CHART.y0 - 2}
+                    textAnchor="middle" fontSize="7" fill={c.color} fillOpacity="0.5">▲</text>
                 </g>
               ))}
 
@@ -496,6 +623,9 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                 fill="transparent"
                 onMouseMove={handleChartMove}
                 onMouseLeave={handleChartLeave}
+                onTouchStart={handleChartTouch}
+                onTouchMove={handleChartTouch}
+                onTouchEnd={handleTouchEnd}
                 style={{ cursor: "crosshair" }}
               />
 
@@ -515,6 +645,9 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                     onMouseEnter={e => handleCurveHover(idx, e)}
                     onMouseMove={e => handleCurveMove(idx, e)}
                     onMouseLeave={handleCurveLeave}
+                    onTouchStart={handleChartTouch}
+                    onTouchMove={handleChartTouch}
+                    onTouchEnd={handleTouchEnd}
                     onClick={() => handleCurveClick(idx)}
                     role="button"
                     aria-label={`${c.peptide.name} plasma concentration curve, t½ ${c.pk.halfLifeLabel}${pinnedIdx === idx ? " (pinned)" : ""}`}
@@ -540,6 +673,29 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                 />
               )}
 
+              {/* Dots on curve at crosshair position */}
+              {crosshairSvgX !== null && allCurveValues && (
+                <g clipPath={`url(#${clipId})`}>
+                  {curves.map((c, idx) => {
+                    if (!c || !allCurveValues[idx]) return null;
+                    const isActive = effectiveIdx === null || effectiveIdx === idx;
+                    return (
+                      <circle
+                        key={`dot-${c.peptide.name}`}
+                        cx={crosshairSvgX}
+                        cy={allCurveValues[idx]!.yInterp}
+                        r={3.5}
+                        fill={c.color}
+                        stroke="rgba(0,0,0,0.5)"
+                        strokeWidth="1"
+                        pointerEvents="none"
+                        style={{ opacity: isActive ? 1 : 0.2, transition: "opacity 0.18s ease" }}
+                      />
+                    );
+                  })}
+                </g>
+              )}
+
               {/* Continuation arrows for extended curves */}
               {curves.map((c, idx) => c && c.isExtended && (
                 <text key={`arr-${c.peptide.name}`}
@@ -551,44 +707,75 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
               {/* X-axis tick labels */}
               {xTicks.map((t, i) => (
                 <text key={i} x={CHART.x0 + t.frac * CHART.plotW} y={CHART.y1 + 20}
-                  textAnchor="middle" fontSize="9" fill="#fff" fillOpacity="0.35">{t.label}</text>
+                  textAnchor="middle" fontSize="11" fill="#fff" fillOpacity="0.7">{t.label}</text>
               ))}
 
               {/* X-axis unit */}
               <text x={CHART.x0 + CHART.plotW / 2} y={CHART.vbH - 3}
-                textAnchor="middle" fontSize="8" fill="#fff" fillOpacity="0.22">
+                textAnchor="middle" fontSize="10" fill="#fff" fillOpacity="0.55">
                 Time ({useHours ? "hours" : "min"})
               </text>
             </svg>
 
             {/* Floating tooltip — fixed positioning so it's never clipped by overflow:hidden */}
-            {tooltip && (
-              <div
-                className="pointer-events-none fixed z-50 px-2.5 py-1.5 rounded-md text-xs font-medium leading-tight"
-                style={{
-                  left: tooltip.clientX + 14,
-                  top: tooltip.clientY - 42,
-                  background: "rgba(10,10,16,0.92)",
-                  border: `1px solid ${curves[effectiveIdx ?? -1]?.color ?? "#fff"}40`,
-                  color: curves[effectiveIdx ?? -1]?.color ?? "#fff",
-                  boxShadow: `0 2px 12px rgba(0,0,0,0.6)`,
-                  backdropFilter: "blur(6px)",
-                  whiteSpace: "nowrap",
-                }}
-                role="tooltip"
-              >
-                <span className="block font-semibold">{tooltip.label}</span>
-                {tooltip.concentration >= 0 && (
-                  <span className="block opacity-80 tabular-nums">~{Math.round(tooltip.concentration * 100)}% at {tooltip.timeDisp}</span>
-                )}
-                <span className="block opacity-50 text-[10px] mt-0.5">t½ {tooltip.halfLife}</span>
-              </div>
-            )}
+            {tooltip && (() => {
+              const TOOLTIP_WIDTH = 172;
+              const rawLeft = tooltip.clientX + 14 + TOOLTIP_WIDTH > window.innerWidth
+                ? tooltip.clientX - TOOLTIP_WIDTH - 8
+                : tooltip.clientX + 14;
+              const tooltipLeft = Math.max(8, Math.min(rawLeft, window.innerWidth - TOOLTIP_WIDTH - 8));
+              const rawTop = tooltip.clientY - 42;
+              const tooltipTop = Math.max(8, rawTop < 0 ? tooltip.clientY + 8 : rawTop);
+              const activeCurve = curves[effectiveIdx ?? -1];
+              const isMultiCurve = !isSingleCompound && allCurveValues !== null && crosshairTimeDisp !== null;
+              return (
+                <div
+                  className="pointer-events-none fixed z-50 px-2.5 py-1.5 rounded-md text-xs font-medium leading-tight"
+                  style={{
+                    left: tooltipLeft,
+                    top: tooltipTop,
+                    background: "rgba(10,10,16,0.92)",
+                    border: `1px solid ${activeCurve?.color ?? "#fff"}40`,
+                    color: "#fff",
+                    boxShadow: `0 2px 12px rgba(0,0,0,0.6)`,
+                    backdropFilter: "blur(6px)",
+                    whiteSpace: "nowrap",
+                    minWidth: isMultiCurve ? 140 : undefined,
+                  }}
+                  role="tooltip"
+                >
+                  {isMultiCurve ? (
+                    <>
+                      <span className="block text-[10px] opacity-50 tabular-nums mb-1">{crosshairTimeDisp}</span>
+                      {allCurveValues!.map((v, idx) => {
+                        if (!v) return null;
+                        const isActive = effectiveIdx === null || effectiveIdx === idx;
+                        return (
+                          <div key={v.name} className="flex items-center gap-1.5 tabular-nums" style={{ opacity: isActive ? 1 : 0.55 }}>
+                            <span style={{ color: v.color, fontSize: 9, lineHeight: 1 }}>●</span>
+                            <span className="flex-1 text-[11px]">{v.name}</span>
+                            <span className="text-[11px] opacity-80 ml-2">{v.pct}%</span>
+                          </div>
+                        );
+                      })}
+                    </>
+                  ) : (
+                    <>
+                      <span className="block font-semibold" style={{ color: activeCurve?.color ?? "#fff" }}>{tooltip.label}</span>
+                      {tooltip.concentration >= 0 && (
+                        <span className="block opacity-80 tabular-nums">~{Math.round(tooltip.concentration * 100)}% at {tooltip.timeDisp}</span>
+                      )}
+                      <span className="block opacity-50 text-[10px] mt-0.5">t½ {tooltip.halfLife}</span>
+                    </>
+                  )}
+                </div>
+              );
+            })()}
           </div>
-        )}
+          )}
 
-        {/* Legend */}
-        <div className="p-3 pt-2 space-y-3">
+          {/* Legend */}
+          <div className="p-3 pt-2 space-y-3">
           {hasCurves && !isSingleCompound && (
 
             <p className="text-[10px] text-muted-foreground/50 mb-1 select-none" data-testid="text-pin-hint">
@@ -608,6 +795,51 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
             const isPinned = pinnedIdx === i;
             const isActive = effectiveIdx === i;
             const isDimmed = effectiveIdx !== null && !isActive;
+
+            if (isSingleCompound) {
+              return (
+                <div
+                  key={c.peptide.name}
+                  className="flex flex-col gap-2"
+                  data-testid={`legend-row-${toTestSlug(c.peptide.name)}`}
+                >
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div
+                      className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: c.color, boxShadow: `0 0 7px ${c.color}` }}
+                    />
+                    <span className="text-sm font-medium">{c.peptide.name}</span>
+                    <span
+                      className="text-[10px] font-medium px-1.5 py-px rounded"
+                      style={{ backgroundColor: `${c.color}18`, color: c.color, border: `1px solid ${c.color}30` }}
+                      data-testid={`badge-route-${toTestSlug(c.peptide.name)}`}
+                    >
+                      {routeLabel(c.pk.route)}
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-1 pl-[18px]">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span className="flex items-center gap-1 text-xs font-medium" style={{ color: c.color }} data-testid={`chip-halflife-${toTestSlug(c.peptide.name)}`}>
+                        <Clock className="h-3 w-3 flex-shrink-0" />
+                        Plasma t½ {c.pk.halfLifeLabel}
+                      </span>
+                      {c.pk.citations.map((cit, j) => (
+                        <a key={j} href={cit.url} target="_blank" rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[11px] text-[#21d8ff] hover:underline opacity-70 hover:opacity-100"
+                          onClick={e => e.stopPropagation()}
+                        >
+                          <ExternalLink className="h-2.5 w-2.5" />
+                          {cit.label}
+                        </a>
+                      ))}
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{c.pk.pkContext}</p>
+                    {c.pk.note && <p className="text-[11px] text-muted-foreground/70 italic">{c.pk.note}</p>}
+                  </div>
+                </div>
+              );
+            }
+
             return (
               <div
                 key={c.peptide.name}
@@ -719,7 +951,6 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                     </Popover>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground pl-[18px]">{c.peptide.description}</p>
               </div>
             );
           })}
@@ -760,7 +991,9 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
               )}
             </div>
           </div>
-        )}
+          )}
+          </div>
+          </div>
       </Card>
     </div>
   );

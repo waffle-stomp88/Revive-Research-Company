@@ -170,7 +170,7 @@ export default function ProductDetail() {
   const twoColumnRef = useRef<HTMLDivElement>(null);
   const [showStickyPurchase, setShowStickyPurchase] = useState(false);
   const [quickAddSuccess, setQuickAddSuccess] = useState<Record<string, boolean>>({});
-  const [activeResearchTab, setActiveResearchTab] = useState<"overview" | "pk" | "cert" | "partners">("overview");
+  const [activeResearchTab, setActiveResearchTab] = useState<"overview" | "pk" | "cert" | "partners">("pk");
 
   const { data: product, isLoading, error } = useQuery<Product>({
     queryKey: ["/api/products", params.id],
@@ -713,25 +713,13 @@ export default function ProductDetail() {
               </div>
             )}
             
-            {/* Key Benefits chips - LEFT COLUMN (isPremiumPilot only, all screen sizes) */}
-            {isPremiumPilot && benefits.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2" data-testid="list-benefits-chips-left">
-                {benefits.map((benefit, index) => (
-                  <div key={index} className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-card text-sm">
-                    <CheckCircle className="h-3.5 w-3.5 text-[#E7FB10] flex-shrink-0" />
-                    <span>{benefit}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Learn About This Peptide - DESKTOP ONLY (hidden on mobile, shown below purchase on mobile) */}
-            {!isPremiumPilot && relatedArticles.length > 0 && (
+            {/* Learn About This Peptide - DESKTOP ONLY (all products) */}
+            {relatedArticles.length > 0 && (
               <motion.section
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.12 }}
-                className="mt-20 pt-6 hidden md:block relative z-10 bg-background"
+                className="mt-6 pt-6 hidden md:block relative z-10 bg-background"
                 data-testid="section-education-desktop"
               >
                 <div className="flex items-center justify-between mb-4">
@@ -780,7 +768,7 @@ export default function ProductDetail() {
               </motion.section>
             )}
 
-            {/* Usage Information - DESKTOP ONLY (below Learn About This Peptide) */}
+            {/* Usage Information - DESKTOP ONLY (non-premium only; premium shows it in overview tab) */}
             {!isPremiumPilot && product.usage && (
               <motion.section
                 initial={{ opacity: 0, y: 20 }}
@@ -1282,14 +1270,14 @@ export default function ProductDetail() {
 
             {/* RUO inline notice — below trust-signals grid (premium pilot only) */}
             {isPremiumPilot && (
-              <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-md bg-muted/40 border border-border text-xs text-muted-foreground" data-testid="notice-ruo-inline">
-                <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
+              <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-md bg-red-500/10 border border-red-500/40 text-xs text-red-300" data-testid="notice-ruo-inline">
+                <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0 text-red-400" />
                 <span>For lawful research use only. Not for human or animal consumption.</span>
               </div>
             )}
 
-            {/* Mobile-only collapsible education section (hidden for isPremiumPilot — moves to lower zone) */}
-            {!isPremiumPilot && relatedArticles.length > 0 && (
+            {/* Mobile-only collapsible education section */}
+            {relatedArticles.length > 0 && (
               <Collapsible 
                 open={isEducationOpen} 
                 onOpenChange={setIsEducationOpen}
@@ -1400,17 +1388,18 @@ export default function ProductDetail() {
         {isPremiumPilot ? (
           <>
             {/* Zone separator */}
-            <div className="mt-16 mb-0 border-t border-border/40" />
+            <div className="mt-8 mb-0" />
 
-            {/* Tinted research container */}
-            <div className="bg-muted/20 rounded-xl mt-0 px-4 md:px-8 py-8">
+            {/* Research container */}
+            <div className="rounded-xl mt-0 px-4 md:px-8 py-8 border border-border/30" style={{ background: "linear-gradient(135deg, rgba(157,78,221,0.07) 0%, rgba(10,10,18,0.6) 40%, rgba(33,216,255,0.05) 100%)" }}>
 
               {/* Tab navigation */}
               <nav
                 data-testid="nav-research-tabs"
-                className="z-[48] bg-muted/20 backdrop-blur-sm -mx-4 md:-mx-8 px-4 md:px-8 mb-8 border-b border-border/40 overflow-x-auto"
+                className="z-[48] backdrop-blur-sm -mx-4 md:-mx-8 px-4 md:px-8 mb-8 border-b border-border/30 overflow-x-auto"
+                style={{ background: "rgba(157,78,221,0.04)" }}
               >
-                <div className="flex gap-0 min-w-max">
+                <div className="flex w-full">
                   {(
                     [
                       { key: "overview", label: "Overview", testId: "tab-overview" },
@@ -1424,7 +1413,7 @@ export default function ProductDetail() {
                       type="button"
                       data-testid={tab.testId}
                       onClick={() => setActiveResearchTab(tab.key)}
-                      className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 ${
+                      className={`flex-1 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 text-center ${
                         activeResearchTab === tab.key
                           ? "border-[#E7FB10] text-foreground"
                           : "border-transparent text-muted-foreground hover:text-foreground"
@@ -1438,65 +1427,84 @@ export default function ProductDetail() {
 
               {/* Section: Overview */}
               {activeResearchTab === "overview" && <section data-testid="section-overview-panel">
-                {/* Product description — moved from right column */}
+                {/* Product description + accent separator */}
                 {product.description && (
-                  <p className="text-muted-foreground leading-relaxed mb-8" data-testid="text-overview-description">
-                    {product.description}
-                  </p>
+                  <>
+                    <p className="text-muted-foreground leading-relaxed mb-6" data-testid="text-overview-description">
+                      {product.description}
+                    </p>
+                    <div className="mb-6 h-px bg-gradient-to-r from-[#9d4edd]/40 via-[#21d8ff]/30 to-transparent" />
+                  </>
                 )}
 
-                {/* Education articles — moved from left column */}
-                {relatedArticles.length > 0 && (
-                  <div className="mb-8" data-testid="section-education-lower">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <GraduationCap className="h-5 w-5 text-[#ec4899]" />
-                        <h3 className="font-display text-lg font-bold">Learn About This Peptide</h3>
+                {/* Molecular Identity — inline stat row */}
+                {(() => {
+                  const profile = getCompoundProfile(product.slug ?? "");
+                  if (!profile) return null;
+                  return (
+                    <div className="mb-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm" data-testid="section-molecular-identity">
+                      <div className="flex items-center gap-1.5 text-muted-foreground">
+                        <Atom className="h-3.5 w-3.5 text-[#9d4edd]" />
+                        <span className="text-xs uppercase tracking-widest font-semibold text-[#9d4edd]/70">Identity</span>
                       </div>
-                      <Link href="/guides/peptide-education-center">
-                        <Button variant="outline" size="sm" className="border-[#ec4899]/30 hover:border-[#ec4899]" data-testid="link-view-all-education-lower">
-                          All Articles
-                          <ChevronRight className="h-4 w-4 ml-1" />
-                        </Button>
-                      </Link>
-                    </div>
-                    <div className="space-y-2">
-                      {relatedArticles.slice(0, 2).map((article) => (
-                        <Link key={article.id} href={`/education/${article.slug}`}>
-                          <Card
-                            className="p-4 border-[#ec4899]/20 hover:border-[#ec4899]/40 transition-all duration-300 cursor-pointer group hover:shadow-[0_0_20px_rgba(236,72,153,0.2)]"
-                            data-testid={`card-article-lower-${article.id}`}
-                          >
-                            <div className="flex items-start gap-3">
-                              <div className="p-2 rounded-lg bg-[#ec4899]/10 flex-shrink-0">
-                                <BookOpen className="h-5 w-5 text-[#ec4899]" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <Badge variant="outline" className="border-[#ec4899]/50 text-[#ec4899] text-xs">
-                                    Research Guide
-                                  </Badge>
-                                  <span className="flex items-center text-xs text-muted-foreground">
-                                    <Clock className="h-3 w-3 mr-1" />
-                                    {article.readTimeMinutes} min read
-                                  </span>
-                                </div>
-                                <h4 className="font-display text-base font-bold group-hover:text-[#ec4899] transition-colors uppercase tracking-tight leading-tight">
-                                  {article.title}
-                                </h4>
-                              </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs text-muted-foreground">Formula</span>
+                        <span className="font-mono font-semibold">{profile.formula}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs text-muted-foreground">MW</span>
+                        <span className="font-semibold">{profile.molecularWeight}</span>
+                      </div>
+                      <a
+                        href="https://pubchem.ncbi.nlm.nih.gov/compound/9915854"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 text-[#21d8ff]/80 hover:text-[#21d8ff] transition-colors"
+                        data-testid="link-cas-pubchem"
+                      >
+                        <span className="text-xs text-muted-foreground mr-0.5">CAS</span>
+                        <span className="font-semibold">{profile.casNumber}</span>
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                      {profile.sequence && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="flex items-center gap-1 cursor-default text-muted-foreground" data-testid="chip-sequence">
+                              <Dna className="h-3.5 w-3.5" />
+                              <span>{profile.aminoAcids}-aa sequence</span>
                             </div>
-                          </Card>
-                        </Link>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xs font-mono text-xs break-all">
+                            {profile.sequence}
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                    </div>
+                  );
+                })()}
+
+                {/* Key Benefits — 2-column grid */}
+                {benefits.length > 0 && (
+                  <div className="mb-8" data-testid="list-benefits-overview">
+                    <h3 className="font-display font-semibold text-lg mb-4">Key Benefits</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {benefits.map((benefit, index) => (
+                        <div key={index} className="flex items-center gap-2 px-3 py-2.5 rounded-md border border-border bg-card text-sm">
+                          <CheckCircle className="h-4 w-4 text-[#E7FB10] flex-shrink-0" />
+                          <span>{benefit}</span>
+                        </div>
                       ))}
                     </div>
                   </div>
                 )}
 
-                {/* Usage / administration notes — moved from left column */}
+                {/* Usage / administration notes */}
                 {product.usage && (
                   <div data-testid="section-usage-lower">
-                    <h3 className="font-display font-semibold text-lg mb-4">Usage Information</h3>
+                    <div className="flex items-center gap-3 mb-4">
+                      <BookOpen className="h-5 w-5 text-[#21d8ff]" />
+                      <h3 className="font-display font-semibold text-lg">Usage Information</h3>
+                    </div>
                     <p className="text-muted-foreground leading-relaxed mb-4">
                       {product.usage}
                     </p>
@@ -1516,54 +1524,6 @@ export default function ProductDetail() {
 
               {/* Section: Pharmacokinetics */}
               {activeResearchTab === "pk" && <section data-testid="section-pk-panel">
-                {/* Molecular Identity */}
-                {(() => {
-                  const profile = getCompoundProfile(product.slug ?? "");
-                  if (!profile) return null;
-                  return (
-                    <div className="mb-8" data-testid="section-molecular-identity">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Atom className="h-5 w-5 text-[#9d4edd]" />
-                        <h3 className="font-display font-semibold text-base">Molecular Identity</h3>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-card text-sm">
-                          <span className="text-xs text-muted-foreground">Formula</span>
-                          <span className="font-mono font-semibold">{profile.formula}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-card text-sm">
-                          <span className="text-xs text-muted-foreground">MW</span>
-                          <span className="font-semibold">{profile.molecularWeight}</span>
-                        </div>
-                        <a
-                          href="https://pubchem.ncbi.nlm.nih.gov/compound/9915854"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-card text-sm hover-elevate"
-                          data-testid="link-cas-pubchem"
-                        >
-                          <span className="text-xs text-muted-foreground">CAS</span>
-                          <span className="font-semibold">{profile.casNumber}</span>
-                          <ExternalLink className="h-3 w-3 text-muted-foreground" />
-                        </a>
-                        {profile.sequence && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-card text-sm cursor-default max-w-[200px]" data-testid="chip-sequence">
-                                <Dna className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                                <span className="truncate text-xs">{profile.aminoAcids}-aa sequence</span>
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent className="max-w-xs font-mono text-xs break-all">
-                              {profile.sequence}
-                            </TooltipContent>
-                          </Tooltip>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })()}
-
                 {/* PK Chart */}
                 {(() => {
                   const hasPkData = !!getHalfLifeByName(product.name);
