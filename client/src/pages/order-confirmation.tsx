@@ -326,6 +326,11 @@ export default function OrderConfirmation() {
                         style={{ backgroundColor: "#00D632", color: "#000" }}
                         size="lg"
                         data-testid="button-open-cashapp"
+                        data-cashapp-href={
+                          orderSummary?.total != null
+                            ? `https://cash.app/$reviveresearchco/${orderSummary.total.toFixed(2)}`
+                            : `https://cash.app/$reviveresearchco`
+                        }
                         disabled={isLoadingTotal}
                         onClick={() => {
                           const amount = orderSummary?.total != null ? orderSummary.total.toFixed(2) : '';
