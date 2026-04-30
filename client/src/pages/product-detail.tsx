@@ -1372,7 +1372,7 @@ export default function ProductDetail() {
                         data-testid="link-cas-pubchem"
                         title={
                           profile.pubchemUrl
-                            ? profile.pubchemUrl.includes("/substance/")
+                            ? profile.pubchemType === "substance"
                               ? "PubChem Substance record"
                               : "PubChem Compound record"
                             : "Search PubChem"
@@ -1382,7 +1382,7 @@ export default function ProductDetail() {
                         <span className="font-semibold">{profile.casNumber}</span>
                         <ExternalLink className="h-3 w-3" />
                       </a>
-                      {profile.pubchemUrl?.includes("/substance/") && (
+                      {profile.pubchemType === "substance" && (
                         <span
                           className="text-xs text-muted-foreground italic"
                           data-testid="label-pubchem-substance"

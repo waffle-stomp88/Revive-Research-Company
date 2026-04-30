@@ -476,14 +476,14 @@ export default function CompoundAudit() {
                                 rel="noopener noreferrer"
                                 data-testid={`link-pubchem-${product.slug}`}
                                 title={
-                                  profile.pubchemUrl.includes("/substance/")
+                                  profile.pubchemType === "substance"
                                     ? "PubChem Substance record"
                                     : "PubChem Compound record"
                                 }
                                 className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
                               >
                                 <ExternalLink className="w-4 h-4" />
-                                {profile.pubchemUrl.includes("/substance/") && (
+                                {profile.pubchemType === "substance" && (
                                   <span
                                     className="text-xs"
                                     data-testid={`label-pubchem-type-${product.slug}`}

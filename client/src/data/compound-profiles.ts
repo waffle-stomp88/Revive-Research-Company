@@ -5,6 +5,7 @@ export interface CompoundProfile {
   molecularWeight: string;
   casNumber: string;
   pubchemUrl?: string;
+  pubchemType?: "compound" | "substance";
   sequence?: string;
   aminoAcids?: number;
   mechanismDescriptor?: string;
@@ -63,6 +64,7 @@ const compoundProfiles: CompoundProfile[] = [
     molecularWeight: "9117.58 Da",
     casNumber: "946870-92-4",
     pubchemUrl: "https://pubchem.ncbi.nlm.nih.gov/substance/381123731",
+    pubchemType: "substance",
     aminoAcids: 83,
     mechanismDescriptor: "83 AA IGF-1 variant with N-terminal Arg³ extension · reduced IGFBP binding · prolonged anabolic half-life",
     note: "IGF-1 LR3 is an 83 AA recombinant protein variant. PubChem has no canonical compound (CID) entry for this construct. The link is a non-canonical fallback to PubChem Substance SID 381123731 (Long-(Arg3)IGF-I), which does not include formula or MW data. Note: SID 381123731 references CAS 143045-27-6 (an alternate CAS for this protein); CAS 946870-92-4 is also widely cited by commercial suppliers for the same construct. Formula and MW are from published sequence-based calculations.",
@@ -74,6 +76,7 @@ const compoundProfiles: CompoundProfile[] = [
     molecularWeight: "7371.49 Da",
     casNumber: "112603-35-7",
     pubchemUrl: "https://pubchem.ncbi.nlm.nih.gov/substance/405218160",
+    pubchemType: "substance",
     aminoAcids: 67,
     mechanismDescriptor: "N-terminally truncated IGF-1 · does not bind IGFBPs · highest affinity for muscle IGF-1R",
     note: "Des(1-3)IGF-1 is a 67 AA truncated IGF-1 variant (UNII: AG0WVP88OA). PubChem has no canonical compound (CID) entry for this construct; the link is a non-canonical fallback to PubChem Substance SID 405218160, which does not include formula or MW data. Formula and MW are from published sequence-based calculations.",
