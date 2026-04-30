@@ -14,7 +14,6 @@ import { ImageLoader } from "@/components/image-loader";
 import { QuickViewModal } from "@/components/quick-view-modal";
 import { CompareBar } from "@/components/comparison-tool";
 import { RecentlyViewed } from "@/components/recently-viewed";
-import { EarlyAccessModal } from "@/components/early-access-modal";
 import {
   Select,
   SelectContent,
@@ -1137,7 +1136,6 @@ function ProductsComponent() {
 export default function Products() {
   return (
     <>
-      <EarlyAccessModal showOnProductPages={true} />
       <ProductsComponent />
     </>
   );

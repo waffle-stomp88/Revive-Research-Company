@@ -14,7 +14,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { EarlyAccessModal } from "@/components/early-access-modal";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -4006,7 +4005,6 @@ function ResearchStacks() {
 export default function ResearchStacksWrapper() {
   return (
     <>
-      <EarlyAccessModal showOnProductPages={true} />
       <ResearchStacks />
     </>
   );

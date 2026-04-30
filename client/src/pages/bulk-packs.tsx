@@ -10,7 +10,6 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { EarlyAccessModal } from "@/components/early-access-modal";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import type { ProductWithDosageStock } from "@shared/schema";
@@ -103,7 +102,6 @@ export default function BulkPacks() {
 
   return (
     <>
-      <EarlyAccessModal showOnProductPages={true} />
       <main className="min-h-screen pt-32 md:pt-40 pb-24">
         <SEOHead
           title="Bulk Packs - Volume Pricing"
