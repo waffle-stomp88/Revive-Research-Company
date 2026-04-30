@@ -1,0 +1,126 @@
+/**
+ * Snapshot tests for compound-profiles.ts
+ *
+ * Purpose: Lock in the verified formula and molecular-weight values so that
+ * accidental edits (copy-paste errors, Unicode drift, decimal slip) are caught
+ * immediately by CI.  After the PubChem verification run that corrected 11
+ * formulas and 9 molecular weights, these tests encode the now-canonical values.
+ *
+ * Two test suites are included:
+ *
+ *   1. FORMAT CHECKS — structural assertions that apply to every entry that
+ *      has a pubchemUrl: formula must use Unicode subscript digits only,
+ *      MW must be a numeric string ending in " Da", and the CID in the URL
+ *      must be a positive integer.
+ *
+ *   2. VALUE SNAPSHOTS — vitest snapshot assertions for every entry that
+ *      carries a real (non-N/A) formula.  The snapshot file is committed
+ *      alongside this test.  Any change to a formula or MW string will fail
+ *      CI and require an explicit `vitest --update-snapshots` to approve.
+ */
+
+import { describe, it, expect } from "vitest";
+import { compoundProfiles } from "@/data/compound-profiles";
+
+// ─── helpers ─────────────────────────────────────────────────────────────────
+
+/** Unicode subscript digits U+2080 – U+2089 */
+const SUBSCRIPT_DIGIT_RE = /[\u2080-\u2089]/;
+
+/**
+ * Returns true when a formula string contains only valid chemical-formula
+ * characters and at least one Unicode subscript digit.
+ * Allowed: uppercase letters, lowercase letters, Unicode subscript digits,
+ * superscript plus (⁺) for cation notation.
+ */
+function isValidFormulaFormat(formula: string): boolean {
+  // Must not contain ASCII digits
+  if (/[0-9]/.test(formula)) return false;
+  // Must contain at least one Unicode subscript digit
+  if (!SUBSCRIPT_DIGIT_RE.test(formula)) return false;
+  // Allowed characters: letters, Unicode subscripts U+2080-U+2089, superscript + U+207A
+  return /^[A-Za-z\u2080-\u2089\u207A]+$/.test(formula);
+}
+
+/**
+ * Returns true when a MW string is a plain decimal number followed by " Da".
+ * E.g. "1419.55 Da" or "307.32 Da".
+ */
+function isValidMWFormat(mw: string): boolean {
+  return /^\d+(\.\d+)? Da$/.test(mw);
+}
+
+/**
+ * Extracts the PubChem CID integer from a canonical PubChem compound URL.
+ * Returns NaN when the pattern does not match.
+ */
+function extractCID(url: string): number {
+  const m = url.match(/pubchem\.ncbi\.nlm\.nih\.gov\/compound\/(\d+)$/);
+  return m ? parseInt(m[1], 10) : NaN;
+}
+
+// ─── 1. FORMAT CHECKS ────────────────────────────────────────────────────────
+
+describe("compound-profiles — format checks for entries with pubchemUrl", () => {
+  const withPubchem = compoundProfiles.filter((p) => !!p.pubchemUrl);
+
+  it("has at least 30 entries with a pubchemUrl (regression guard)", () => {
+    expect(withPubchem.length).toBeGreaterThanOrEqual(30);
+  });
+
+  it("every formula uses Unicode subscript digits (no ASCII digits)", () => {
+    for (const profile of withPubchem) {
+      expect(
+        isValidFormulaFormat(profile.formula),
+        `[${profile.slug}] formula "${profile.formula}" must use Unicode subscripts and contain no ASCII digits`
+      ).toBe(true);
+    }
+  });
+
+  it("every molecularWeight ends with ' Da' and has a numeric prefix", () => {
+    for (const profile of withPubchem) {
+      expect(
+        isValidMWFormat(profile.molecularWeight),
+        `[${profile.slug}] molecularWeight "${profile.molecularWeight}" must match /^\\d+(\\.\\d+)? Da$/`
+      ).toBe(true);
+    }
+  });
+
+  it("every pubchemUrl contains a valid positive integer CID", () => {
+    for (const profile of withPubchem) {
+      const cid = extractCID(profile.pubchemUrl!);
+      expect(
+        Number.isInteger(cid) && cid > 0,
+        `[${profile.slug}] pubchemUrl "${profile.pubchemUrl}" must end with a positive integer CID`
+      ).toBe(true);
+    }
+  });
+});
+
+// ─── 2. VALUE SNAPSHOTS ──────────────────────────────────────────────────────
+//
+// The snapshot captures the formula and molecularWeight for every entry that
+// has a real molecular formula (i.e. does not start with "N/A").
+//
+// On the first run vitest writes the snapshot file
+// (tests/__snapshots__/compound-profiles.test.ts.snap).  From that point on,
+// any change to a formula or MW in compound-profiles.ts will break this test.
+// An explicit `vitest --update-snapshots` is required to accept new values,
+// ensuring every drift is a conscious decision.
+
+describe("compound-profiles — value snapshots (formula + MW)", () => {
+  it("formula and molecularWeight are stable for all entries with real formulas", () => {
+    const entries = compoundProfiles
+      .filter((p) => !p.formula.startsWith("N/A"))
+      .map((p) => ({
+        slug: p.slug,
+        formula: p.formula,
+        molecularWeight: p.molecularWeight,
+      }));
+
+    // Sanity: there must be a meaningful number of real-formula entries
+    expect(entries.length).toBeGreaterThanOrEqual(35);
+
+    expect(entries).toMatchSnapshot();
+  });
+});

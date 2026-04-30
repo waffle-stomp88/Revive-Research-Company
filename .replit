@@ -53,6 +53,10 @@ args = "stacks-curation-e2e"
 task = "workflow.run"
 args = "code_review"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "compound-profiles-snapshot"
+
 [[workflows.workflow]]
 name = "Start application"
 author = "agent"
@@ -127,6 +131,18 @@ isValidation = true
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "tsc_out=$(npx tsc --noEmit 2>&1); echo \"$tsc_out\" | grep 'error TS' | grep -v 'replitAuth.ts' | (grep -q . && exit 1 || exit 0)"
+
+
+[[workflows.workflow]]
+name = "compound-profiles-snapshot"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx vitest run tests/compound-profiles.test.ts"
+
+[workflows.workflow.metadata]
+isValidation = true
 
 [agent]
 integrations = ["javascript_mem_db:1.0.0", "javascript_database:1.0.0", "javascript_log_in_with_replit:1.0.0", "javascript_object_storage:1.0.0", "javascript_openai_ai_integrations:1.0.0", "javascript_paypal:1.0.0"]

@@ -1,0 +1,211 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`compound-profiles — value snapshots (formula + MW) > formula and molecularWeight are stable for all entries with real formulas 1`] = `
+[
+  {
+    "formula": "C₆₂H₉₈N₁₆O₂₂",
+    "molecularWeight": "1419.55 Da",
+    "slug": "bpc-157",
+  },
+  {
+    "formula": "C₃₈H₆₈N₁₀O₁₄",
+    "molecularWeight": "889.02 Da",
+    "slug": "tb-500",
+  },
+  {
+    "formula": "C₃₇H₅₁N₉O₁₀S",
+    "molecularWeight": "813.93 Da",
+    "slug": "semax",
+  },
+  {
+    "formula": "C₃₃H₅₇N₁₁O₉",
+    "molecularWeight": "751.88 Da",
+    "slug": "selank",
+  },
+  {
+    "formula": "C₃₉₀H₆₁₉N₁₁₁O₁₁₅S₉",
+    "molecularWeight": "9117.58 Da",
+    "slug": "igf-1-lr3",
+  },
+  {
+    "formula": "C₃₂₀H₅₁₁N₈₉O₉₆S₈",
+    "molecularWeight": "7371.49 Da",
+    "slug": "igf-des",
+  },
+  {
+    "formula": "C₁₀₁H₁₅₂N₂₈O₂₂S₂",
+    "molecularWeight": "2174.60 Da",
+    "slug": "mots-c",
+  },
+  {
+    "formula": "C₃₈H₄₉N₉O₅",
+    "molecularWeight": "711.86 Da",
+    "slug": "ipamorelin",
+  },
+  {
+    "formula": "C₄₅H₅₅N₉O₆",
+    "molecularWeight": "817.99 Da",
+    "slug": "ghrp-2",
+  },
+  {
+    "formula": "C₁₅₂H₂₅₂N₄₂O₄₃",
+    "molecularWeight": "3367.71 Da",
+    "slug": "cjc-1295-no-dac",
+  },
+  {
+    "formula": "C₁₆₂H₂₆₈N₄₂O₄₇S",
+    "molecularWeight": "3647.28 Da",
+    "slug": "cjc-1295-w-dac",
+  },
+  {
+    "formula": "C₁₄₉H₂₄₆N₄₄O₄₂S",
+    "molecularWeight": "3357.93 Da",
+    "slug": "sermorelin",
+  },
+  {
+    "formula": "C₁₄H₂₁CuN₆O₄",
+    "molecularWeight": "400.90 Da",
+    "slug": "ghk-cu",
+  },
+  {
+    "formula": "C₁₄H₂₂N₄O₉",
+    "molecularWeight": "390.35 Da",
+    "slug": "epithalon",
+  },
+  {
+    "formula": "C₂₂₁H₃₆₆N₇₂O₆₇S",
+    "molecularWeight": "5135.88 Da",
+    "slug": "tesamorelin",
+  },
+  {
+    "formula": "C₁₂₉H₂₁₅N₃₃O₅₅",
+    "molecularWeight": "3108.27 Da",
+    "slug": "thymosin-alpha-1",
+  },
+  {
+    "formula": "C₂₀₅H₃₄₀N₆₀O₅₃",
+    "molecularWeight": "4493.33 Da",
+    "slug": "ll-37",
+  },
+  {
+    "formula": "C₇₈H₁₂₃N₂₃O₂₃S₂",
+    "molecularWeight": "1815.07 Da",
+    "slug": "aod-9604",
+  },
+  {
+    "formula": "C₅₀H₆₈N₁₄O₁₀",
+    "molecularWeight": "1025.18 Da",
+    "slug": "pt-141",
+  },
+  {
+    "formula": "C₄₇H₅₈N₁₂O₆",
+    "molecularWeight": "887.05 Da",
+    "slug": "hexarelin",
+  },
+  {
+    "formula": "C₁₆H₃₀N₄O₄",
+    "molecularWeight": "342.43 Da",
+    "slug": "kpv",
+  },
+  {
+    "formula": "C₃₂H₄₉N₉O₅",
+    "molecularWeight": "639.80 Da",
+    "slug": "ss-31",
+  },
+  {
+    "formula": "C₁₀H₁₁N₂⁺",
+    "molecularWeight": "159.21 Da",
+    "slug": "5-amino-1mq",
+  },
+  {
+    "formula": "C₃₈H₆₄N₁₄O₁₁",
+    "molecularWeight": "889.00 Da",
+    "slug": "thymalin",
+  },
+  {
+    "formula": "C₄₂H₇₂N₁₆O₁₅S",
+    "molecularWeight": "1073.19 Da",
+    "slug": "snap-8",
+  },
+  {
+    "formula": "C₁₀H₁₇N₃O₆S",
+    "molecularWeight": "307.32 Da",
+    "slug": "glutathione",
+  },
+  {
+    "formula": "C₁₁H₁₅N₂O₈P",
+    "molecularWeight": "334.22 Da",
+    "slug": "nad-precursor",
+  },
+  {
+    "formula": "C₄₆H₅₆N₁₂O₆",
+    "molecularWeight": "873.02 Da",
+    "slug": "ghrp-6",
+  },
+  {
+    "formula": "C₇₈H₁₁₁N₂₁O₁₉",
+    "molecularWeight": "1646.87 Da",
+    "slug": "melanotan-i",
+  },
+  {
+    "formula": "C₅₀H₆₉N₁₅O₉",
+    "molecularWeight": "1024.18 Da",
+    "slug": "melanotan-ii",
+  },
+  {
+    "formula": "C₃₅H₄₈N₁₀O₁₅",
+    "molecularWeight": "848.82 Da",
+    "slug": "dsip",
+  },
+  {
+    "formula": "C₁₄₇H₂₃₇N₄₃O₄₃S",
+    "molecularWeight": "3326.83 Da",
+    "slug": "vip",
+  },
+  {
+    "formula": "C₁₅H₂₆N₆O₈",
+    "molecularWeight": "418.40 Da",
+    "slug": "pinealon",
+  },
+  {
+    "formula": "C₄₃H₆₆N₁₂O₁₂S₂",
+    "molecularWeight": "1007.19 Da",
+    "slug": "oxytocin",
+  },
+  {
+    "formula": "C₁₂₉H₂₁₆N₃₀O₃₉S",
+    "molecularWeight": "2866.25 Da",
+    "slug": "mgf",
+  },
+  {
+    "formula": "C₅₅H₇₅N₁₇O₁₃",
+    "molecularWeight": "1182.32 Da",
+    "slug": "gonadorelin",
+  },
+  {
+    "formula": "C₆₄H₈₂N₁₈O₁₃",
+    "molecularWeight": "1311.46 Da",
+    "slug": "triptorelin",
+  },
+  {
+    "formula": "C₆₃H₈₃N₁₇O₁₄",
+    "molecularWeight": "1302.46 Da",
+    "slug": "kisspeptin-10",
+  },
+  {
+    "formula": "C₉H₁₄N₄O₅",
+    "molecularWeight": "258.23 Da",
+    "slug": "aicar",
+  },
+  {
+    "formula": "C₆₃H₉₁CoN₁₃O₁₄P",
+    "molecularWeight": "1344.38 Da",
+    "slug": "b12-injection",
+  },
+  {
+    "formula": "C₇H₁₅NO₃",
+    "molecularWeight": "161.20 Da",
+    "slug": "l-carnitine",
+  },
+]
+`;
