@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import type { Express } from "express";
 import { FREE_SHIPPING_THRESHOLD, FLAT_RATE_SHIPPING } from "@shared/constants";
 import express from "express";
@@ -61,6 +62,28 @@ function generateBasicReferralCode(fullName: string): string {
 
 const TIER1_COMMISSION_RATE = 0.10;
 const TIER2_COMMISSION_RATE = 0.10;
+
+// Short-lived confirmation tokens issued after a successful Stripe checkout.
+// Each token maps to minimal order display data and expires after 15 minutes.
+// This avoids exposing order metadata on the unauthenticated session-lookup URL.
+const CONFIRM_TOKEN_TTL_MS = 15 * 60 * 1000;
+interface ConfirmTokenPayload {
+  shortRef: string;
+  totalAmount: string;
+  status: string;
+  expiresAt: number;
+}
+const confirmationTokens = new Map<string, ConfirmTokenPayload>();
+function createConfirmToken(orderId: string, totalAmount: string, status: string): string {
+  const token = crypto.randomUUID();
+  confirmationTokens.set(token, {
+    shortRef: orderId.slice(-8).toUpperCase(),
+    totalAmount,
+    status,
+    expiresAt: Date.now() + CONFIRM_TOKEN_TTL_MS,
+  });
+  return token;
+}
 
 // Only URL-safe characters: letters, digits, hyphens, underscores, dots
 const SLUG_PATTERN = /^[a-zA-Z0-9_\-\.]{1,200}$/;
@@ -439,8 +462,15 @@ export async function registerRoutes(
   });
 
   // Test email endpoint - sends a plain text email to verify SES configuration
-  app.post("/api/test-email", async (req: any, res) => {
-    // TEMPORARILY PUBLIC for testing - will restore admin check after verification
+  app.post("/api/test-email", isAuthenticated, async (req: any, res) => {
+    const sessionUserId = (req.session as any)?.userId;
+    if (!sessionUserId) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    const callerUser = await storage.getUser(sessionUserId);
+    if (!callerUser?.isAdmin) {
+      return res.status(403).json({ error: "Forbidden - Admin access required" });
+    }
     console.log('[Test Email] Endpoint called');
     try {
       const { to, type } = req.body;
@@ -1149,12 +1179,19 @@ export async function registerRoutes(
     }
   });
 
-  // Get order by ID
-  app.get("/api/orders/:id", async (req, res) => {
+  // Get order by ID - requires authentication and ownership or admin
+  app.get("/api/orders/:id", isAuthenticated, async (req: any, res) => {
     try {
       const order = await storage.getOrder(req.params.id);
       if (!order) {
         return res.status(404).json({ error: "Order not found" });
+      }
+      const requestingUserId = req.user?.claims?.sub;
+      const requestingUser = requestingUserId ? await storage.getUser(requestingUserId) : null;
+      const isAdmin = requestingUser?.isAdmin === true;
+      const isOwner = order.userId && order.userId === requestingUserId;
+      if (!isAdmin && !isOwner) {
+        return res.status(403).json({ error: "Forbidden" });
       }
       res.json(order);
     } catch (error) {
@@ -1806,7 +1843,8 @@ export async function registerRoutes(
 
       const existingOrder = await storage.getOrderByStripeSessionId(sessionId);
       if (existingOrder) {
-        return res.json({ order: existingOrder, alreadyProcessed: true });
+        const token = createConfirmToken(existingOrder.id, existingOrder.totalAmount, existingOrder.status ?? 'paid');
+        return res.json({ confirmToken: token, alreadyProcessed: true });
       }
 
       const session = await stripe.checkout.sessions.retrieve(sessionId);
@@ -1901,11 +1939,27 @@ export async function registerRoutes(
         console.error(`[Order ${order.id}] Notification error:`, notificationError);
       }
 
-      res.json({ order, alreadyProcessed: false, notifications: notificationResults });
+      const token = createConfirmToken(order.id, order.totalAmount, order.status ?? 'paid');
+      res.json({ confirmToken: token, alreadyProcessed: false });
     } catch (error) {
       console.error("Error verifying checkout session:", error);
       res.status(500).json({ error: "Failed to verify checkout session" });
     }
+  });
+
+  // Confirmation token lookup — returns minimal display data for the checkout success page.
+  // The token is a short-lived random UUID issued by the Stripe session endpoint.
+  // It is not guessable and expires after 15 minutes, so no auth is required.
+  app.get("/api/confirm/:token", async (req, res) => {
+    const payload = confirmationTokens.get(req.params.token);
+    if (!payload) {
+      return res.status(404).json({ error: "Confirmation token not found or expired" });
+    }
+    if (Date.now() > payload.expiresAt) {
+      confirmationTokens.delete(req.params.token);
+      return res.status(410).json({ error: "Confirmation token expired" });
+    }
+    res.json({ shortRef: payload.shortRef, totalAmount: payload.totalAmount, status: payload.status });
   });
 
   // === ADMIN ROUTES ===

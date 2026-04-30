@@ -1,23 +1,41 @@
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Link, useLocation } from "wouter";
+import { Link } from "wouter";
 import { SEOHead } from "@/components/seo-head";
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CheckCircle, Package, FlaskConical, ArrowRight } from "lucide-react";
-import type { Order } from "@shared/schema";
+
+interface SessionResponse {
+  confirmToken: string;
+  alreadyProcessed: boolean;
+}
+
+interface ConfirmResponse {
+  shortRef: string;
+  totalAmount: string;
+  status: string;
+}
 
 export default function CheckoutSuccess() {
-  const [, setLocation] = useLocation();
   const searchParams = new URLSearchParams(window.location.search);
   const sessionId = searchParams.get("session_id");
 
-  const { data, isLoading, error } = useQuery<{ order: Order; alreadyProcessed: boolean }>({
+  const { data: sessionData, isLoading: sessionLoading, error: sessionError } = useQuery<SessionResponse>({
     queryKey: ["/api/stripe/checkout-session", sessionId],
     enabled: !!sessionId,
   });
+
+  const confirmToken = sessionData?.confirmToken;
+
+  const { data: confirmData, isLoading: confirmLoading, error: confirmError } = useQuery<ConfirmResponse>({
+    queryKey: ["/api/confirm", confirmToken],
+    enabled: !!confirmToken,
+  });
+
+  const isLoading = sessionLoading || (!!confirmToken && confirmLoading);
+  const error = sessionError || confirmError;
 
   if (!sessionId) {
     return (
@@ -49,7 +67,7 @@ export default function CheckoutSuccess() {
     );
   }
 
-  if (error || !data?.order) {
+  if (error || !confirmData) {
     return (
       <main className="min-h-screen pt-32 md:pt-40 pb-24 flex items-center justify-center">
         <Card className="p-12 text-center max-w-md">
@@ -65,8 +83,6 @@ export default function CheckoutSuccess() {
       </main>
     );
   }
-
-  const order = data.order;
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24 flex items-center justify-center">
@@ -107,9 +123,9 @@ export default function CheckoutSuccess() {
             transition={{ delay: 0.4 }}
             className="bg-muted/50 rounded-lg p-4 mb-6"
           >
-            <p className="text-sm text-muted-foreground mb-1">Order ID</p>
+            <p className="text-sm text-muted-foreground mb-1">Order Reference</p>
             <p className="font-mono text-lg font-semibold" data-testid="text-order-id">
-              {order.id.slice(-8).toUpperCase()}
+              {confirmData.shortRef}
             </p>
           </motion.div>
 
@@ -121,13 +137,10 @@ export default function CheckoutSuccess() {
           >
             <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
               <Package className="h-4 w-4" />
-              <span>Shipping to {order.firstName} {order.lastName}</span>
+              <span>Your order is being processed and will ship within 24 hours.</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              {order.address}, {order.city}, {order.state} {order.zipCode}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              A confirmation email has been sent to {order.email}
+              A confirmation email has been sent to the address provided at checkout.
             </p>
           </motion.div>
 
