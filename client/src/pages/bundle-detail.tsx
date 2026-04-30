@@ -155,7 +155,7 @@ export default function BundleDetail() {
   const benefits = bundle.benefits || [];
 
   return (
-    <main className="min-h-screen pt-32 md:pt-40 pb-12">
+    <main className="min-h-screen pt-32 md:pt-40 pb-36 md:pb-12">
       <SEOHead 
         title={`${bundle.name} | Research Bundle`}
         description={bundle.tagline || `${bundle.name} - Premium research peptide bundle with ${Math.round(STACK_DISCOUNT * 100)}% savings. Contains ${bundle.products.join(", ")}.`}
@@ -448,6 +448,26 @@ export default function BundleDetail() {
               </div>
             </Card>
           </motion.div>
+        </div>
+      </div>
+
+      {/* Sticky Mobile Add-to-Cart Bar */}
+      <div className="md:hidden fixed bottom-16 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-border p-3 safe-area-pb" data-testid="sticky-cart-bar-mobile-bundle">
+        <div className="flex items-center gap-3 max-w-lg mx-auto">
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold truncate">{bundle.name}</p>
+            <p className="text-lg font-bold text-[#E7FB10]">{pricingReady ? `$${getDiscountedPrice().toFixed(2)}` : "—"}</p>
+          </div>
+          <Button
+            size="lg"
+            className="bg-[#E7FB10] text-black font-display gap-2 shadow-[0_0_15px_rgba(231,251,16,0.4)]"
+            onClick={handleAddToCart}
+            disabled={!pricingReady}
+            data-testid="button-sticky-add-to-cart-bundle"
+          >
+            <ShoppingBag className="h-5 w-5" />
+            Add to Cart
+          </Button>
         </div>
       </div>
     </main>
