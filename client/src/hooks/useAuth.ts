@@ -1,7 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { apiRequest } from "@/lib/queryClient";
 import type { User } from "@shared/schema";
 
 export function useAuth() {
@@ -12,6 +11,7 @@ export function useAuth() {
     loginWithRedirect,
     logout: auth0Logout,
     getAccessTokenSilently,
+    getIdTokenClaims,
   } = useAuth0();
 
   // Check for session-based user (dev bypass or other server sessions)
@@ -22,20 +22,43 @@ export function useAuth() {
     enabled: true,
   });
 
-  // Sync Auth0 user to database when authenticated via Auth0
+  // Sync Auth0 user to database when authenticated via Auth0.
+  // The raw ID token is sent in the Authorization header so the server
+  // can cryptographically verify the caller's identity before creating
+  // a session — request body fields are never trusted for identity.
   useEffect(() => {
     if (auth0IsAuthenticated && auth0User) {
-      apiRequest("POST", "/api/auth/sync", {
-        id: auth0User.sub,
-        email: auth0User.email,
-        firstName: auth0User.given_name || auth0User.nickname || '',
-        lastName: auth0User.family_name || '',
-        profileImageUrl: auth0User.picture,
-      }).then(() => {
-        refetchSession();
-      }).catch(console.error);
+      (async () => {
+        try {
+          const idTokenClaims = await getIdTokenClaims();
+          const idToken = idTokenClaims?.__raw;
+          if (!idToken) {
+            console.error("[Auth] Failed to retrieve ID token");
+            return;
+          }
+
+          const res = await fetch("/api/auth/sync", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${idToken}`,
+            },
+            credentials: "include",
+            body: JSON.stringify({}),
+          });
+
+          if (!res.ok) {
+            console.error("[Auth] Sync failed:", res.status, await res.text());
+            return;
+          }
+
+          refetchSession();
+        } catch (err) {
+          console.error("[Auth] Error during sync:", err);
+        }
+      })();
     }
-  }, [auth0IsAuthenticated, auth0User, refetchSession]);
+  }, [auth0IsAuthenticated, auth0User, refetchSession, getIdTokenClaims]);
 
   const login = (returnTo?: string) => {
     loginWithRedirect({

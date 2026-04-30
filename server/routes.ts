@@ -8,7 +8,7 @@ import { storage, resolveDisplayPrice } from "./storage";
 import { db } from "./db";
 import { eq, desc, sql } from "drizzle-orm";
 import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertNewsletterSubscriberSchema, subscriptions, savedStacks, insertSavedStackSchema } from "@shared/schema";
-import { setupAuth, isAuthenticated } from "./auth0Auth";
+import { setupAuth, isAuthenticated, verifyAuth0Token } from "./auth0Auth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { processProductImage } from "./imageProcessor";
@@ -296,26 +296,49 @@ export async function registerRoutes(
   });
 
   // Sync Auth0 user to database
+  // Requires a valid Auth0 ID token in the Authorization header.
+  // User identity is extracted from the verified token — request body
+  // fields are never trusted for session binding.
   app.post('/api/auth/sync', async (req, res) => {
     try {
-      const { id, email, firstName, lastName, profileImageUrl } = req.body;
-      
-      if (!id || !email) {
-        return res.status(400).json({ message: "Missing required fields" });
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ message: "Authorization token required" });
       }
-      
+
+      const token = authHeader.slice(7);
+      let claims;
+      try {
+        claims = await verifyAuth0Token(token);
+      } catch (err) {
+        console.warn("[Security] Auth0 token verification failed:", (err as Error).message);
+        return res.status(401).json({ message: "Invalid or expired token" });
+      }
+
+      // Identity comes exclusively from the verified token, never from the request body.
+      // Email is only stored when Auth0 has confirmed it is verified.
+      const id = claims.sub;
+      const email = claims.email_verified === true ? (claims.email || null) : null;
+      const firstName = claims.given_name || claims.nickname || null;
+      const lastName = claims.family_name || null;
+      const profileImageUrl = claims.picture || null;
+
+      if (!id) {
+        return res.status(400).json({ message: "Token missing subject claim" });
+      }
+
       await storage.upsertUser({
         id,
         email,
-        firstName: firstName || null,
-        lastName: lastName || null,
-        profileImageUrl: profileImageUrl || null,
+        firstName,
+        lastName,
+        profileImageUrl,
       });
-      
+
       const user = await storage.getUser(id);
-      
+
       (req.session as any).userId = id;
-      
+
       res.json(user);
     } catch (error) {
       console.error("Error syncing user:", error);
