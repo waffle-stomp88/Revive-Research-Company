@@ -82,11 +82,6 @@ export default function Checkout() {
   });
   const [copied, setCopied] = useState(false);
   
-  // RUO/Age reminder state - shown once per session on checkout
-  const [showRuoReminder, setShowRuoReminder] = useState(false);
-  const [ruoAcknowledged, setRuoAcknowledged] = useState(false);
-  const [ageConfirmed, setAgeConfirmed] = useState(false);
-  
   // Early access email signup state
   const [notifyEmail, setNotifyEmail] = useState("");
   const [emailSubmitted, setEmailSubmitted] = useState(false);
@@ -204,20 +199,6 @@ export default function Checkout() {
     }
   };
   
-  // Check if user has already acknowledged the RUO reminder this session
-  useEffect(() => {
-    const hasAcknowledged = sessionStorage.getItem('checkoutRuoAcknowledged');
-    if (!hasAcknowledged) {
-      setShowRuoReminder(true);
-    }
-  }, []);
-  
-  const handleRuoAcknowledge = () => {
-    if (ruoAcknowledged && ageConfirmed) {
-      sessionStorage.setItem('checkoutRuoAcknowledged', 'true');
-      setShowRuoReminder(false);
-    }
-  };
 
   const newsletterMutation = useMutation({
     mutationFn: async (email: string) => {
@@ -570,106 +551,6 @@ export default function Checkout() {
     );
   }
 
-  // RUO/Age Reminder Dialog Component
-  const RuoReminderDialog = () => {
-    if (!showRuoReminder) return null;
-    
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
-        <div className="relative bg-background border border-border rounded-lg shadow-lg max-w-md w-full">
-          <div className="p-6">
-            <div className="text-center mb-6">
-              <div className="mx-auto mb-3 w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
-                <AlertTriangle className="h-6 w-6 text-red-500" />
-              </div>
-              <h2 className="font-display text-xl font-semibold">Before You Continue</h2>
-              <p className="text-muted-foreground text-sm mt-2">
-                Please confirm you understand the following
-              </p>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 animate-pulse-subtle">
-                <div className="flex items-start gap-3">
-                  <Beaker className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
-                  <div className="space-y-1">
-                    <p className="font-semibold text-sm text-red-400">Research Use Only</p>
-                    <p className="text-xs text-muted-foreground">
-                      These products are sold exclusively for scientific research purposes. 
-                      They are not intended for human consumption, therapeutic use, or any other purpose.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-[#E7FB10]/10 border border-[#E7FB10]/30 rounded-lg p-4">
-                <div className="flex items-start gap-3">
-                  <ShieldCheck className="h-5 w-5 text-[#E7FB10] mt-0.5 flex-shrink-0" />
-                  <div className="space-y-1">
-                    <p className="font-semibold text-sm text-[#E7FB10]">Age Requirement</p>
-                    <p className="text-xs text-muted-foreground">
-                      You must be 21 years or older to purchase research compounds from Revive Research.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="space-y-3 pt-2">
-                <div className="flex items-start gap-3 cursor-pointer group" onClick={() => setRuoAcknowledged(!ruoAcknowledged)}>
-                  <div 
-                    className={`mt-0.5 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors duration-200 flex-shrink-0 ${
-                      ruoAcknowledged 
-                        ? 'bg-red-500 border-red-500' 
-                        : 'border-red-500/50'
-                    }`}
-                  >
-                    {ruoAcknowledged && (
-                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </div>
-                  <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors" data-testid="checkbox-ruo-acknowledge">
-                    I understand these products are for <span className="text-red-400 font-medium">research purposes only</span> and not for human use
-                  </span>
-                </div>
-                
-                <div className="flex items-start gap-3 cursor-pointer group" onClick={() => setAgeConfirmed(!ageConfirmed)}>
-                  <div 
-                    className={`mt-0.5 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors duration-200 flex-shrink-0 ${
-                      ageConfirmed 
-                        ? 'bg-[#E7FB10] border-[#E7FB10]' 
-                        : 'border-[#E7FB10]/50'
-                    }`}
-                  >
-                    {ageConfirmed && (
-                      <svg className="w-3 h-3 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </div>
-                  <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors" data-testid="checkbox-age-confirm">
-                    I confirm I am <span className="text-[#E7FB10] font-medium">21 years of age or older</span>
-                  </span>
-                </div>
-              </div>
-            </div>
-            
-            <Button 
-              onClick={handleRuoAcknowledge}
-              disabled={!ruoAcknowledged || !ageConfirmed}
-              className="w-full bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90 disabled:opacity-50 mt-6"
-              data-testid="button-confirm-ruo"
-            >
-              Continue to Checkout
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   // Payment Method Selection Component
   const PaymentMethodSelector = () => (
     <div className="space-y-3">
@@ -786,13 +667,12 @@ export default function Checkout() {
   if (fromCart) {
     return (
       <>
-        <RuoReminderDialog />
         <main className="min-h-screen pt-32 md:pt-40 pb-24 px-3 sm:px-4 md:px-8 overflow-x-hidden">
           <SEOHead title="Checkout" description="Complete your order securely. All research compounds ship same-day before 12 PM CT with discreet packaging." canonicalPath="/checkout" />
           <div className="max-w-4xl mx-auto w-full">
             {/* Mobile Header - Compact */}
             <div className="flex items-center justify-between mb-4 md:mb-8">
-              <Link href="/cart" onClick={() => sessionStorage.removeItem('checkoutRuoAcknowledged')}>
+              <Link href="/cart">
                 <Button variant="ghost" size="sm" className="gap-1 -ml-2 md:-ml-4" data-testid="button-back-cart">
                   <ArrowLeft className="h-4 w-4" />
                   <span className="hidden sm:inline">Back to Cart</span>

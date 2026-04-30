@@ -1,0 +1,105 @@
+Yes — your dev team's analysis is solid and they're recommending exactly the right approach. Before they write the migration task, let me make sure we're aligned on a few things and add some details they should include.
+
+## What they got right
+
+✅ **Keep Express sessions, don't move to Supabase JWTs.** This is the lowest-risk path and gets you off Auth0 without rewriting your data layer. RLS can be a future hardening project.
+
+✅ **Match by email and update IDs across all tables.** This is the right migration strategy for the 7 users.
+
+✅ **Auth0 is shallow** — they confirmed it's just the login front door, which means the surface area of the change is small.
+
+## Things I want to make sure they include in the task
+
+**1. The "match by email" approach has one gotcha — handle it explicitly.**
+
+What happens when an existing user logs in for the first time post-migration? The flow needs to be:
+
+1. User logs in via Supabase (gets a new Supabase UUID)
+2. Backend's `/api/auth/sync` receives the Supabase user info
+3. Backend checks: does a user with this email already exist in our DB with an `auth0|` prefixed ID?
+4. **If yes:** Run the ID swap — update that user's ID to the new Supabase UUID, and cascade-update every foreign key reference (orders, affiliate accounts, research profiles, etc.)
+5. **If no:** Normal new user flow
+
+This is the critical logic. Make sure your dev team writes this as a **one-time migration on first login** per existing user, not a script run upfront. Reason: you can't generate the Supabase UUIDs ahead of time for the email/password users — those get created when the user actually signs up via Supabase.
+
+**Alternative (cleaner):** Pre-create the 7 Supabase user accounts via the Supabase admin API, get their UUIDs immediately, and run a one-shot migration script to update all the foreign keys before launch. Then send password reset emails. This way the migration is done and dusted, not happening lazily on each user's first login.
+
+**Ask your dev team which approach they prefer.** The pre-create + one-shot script is cleaner if they're comfortable with it.
+
+**2. Make sure they enumerate every table that references the user ID.**
+
+Before writing any migration code, they need to do a quick audit:
+
+> "List every table in the database that has a foreign key referencing the users table, or that stores a user ID as a string column."
+
+You mentioned: orders, affiliate accounts, "research profiles," and "stuff." Get them to give you the actual list. If they miss one table, that data gets orphaned. Common ones to check:
+- Orders / order line items
+- Affiliate accounts and affiliate commissions
+- Research Academy progress / gamification data
+- Synergy Engine saved stacks
+- Any cart / wishlist data
+- Audit logs
+- Email subscription preferences
+
+**3. Google OAuth setup — they need to configure this in Supabase.**
+
+In your Supabase dashboard: **Authentication → Providers → Google**. They'll need to:
+- Create a Google Cloud OAuth client (or reuse the one you have for Auth0 if it exists)
+- Add the Supabase callback URL to the authorized redirect URIs in Google Cloud
+- Paste the Google client ID and secret into Supabase
+
+If they're reusing the existing Google Cloud OAuth app, they need to **add** the Supabase redirect URL alongside the existing Auth0 one, not replace it (so Auth0 keeps working during the cutover window if needed).
+
+**4. The dev bypass route.**
+
+Confirm whether it stays. If yes, it needs to be updated to issue an Express session keyed to a real user record (not an Auth0-style ID). If no, remove it entirely as part of this work — fewer auth paths = fewer security surface area.
+
+**5. Email template for the password reset.**
+
+Supabase sends password reset emails via its built-in service by default, which works fine but will say "noreply@mail.app.supabase.io" or similar. For 7 users this is acceptable. Long-term, you'll want to point Supabase Auth emails at Amazon SES (which you're already using for transactional emails) for branded sender addresses.
+
+For the cutover, I'd actually recommend **you send the reset email manually from your own email** — it's only 7 people, it'll feel personal, and it lets you explain what's happening:
+
+> "Hey [Name], quick heads up — we upgraded our login system on reviveresearch.co. Your account and any data tied to it are intact, but you'll need to set a new password the next time you log in. Click here to set it: [link]. If you originally signed up with Google, you can ignore this — just sign in with Google as normal. Any issues, reply to this email."
+
+**6. Cutover checklist — make sure they include rollback plan.**
+
+Before flipping the switch:
+- ✅ Backup the database (full snapshot, not just users table)
+- ✅ Test the migration script on a copy of the DB first, not production
+- ✅ Verify all 7 users' data is intact post-migration on the test copy
+- ✅ Document the exact steps to roll back to Auth0 if something breaks
+- ✅ Pick a low-traffic time for the cutover (you're pre-launch so this is easy)
+- ✅ Keep the Auth0 tenant active for at least 2 weeks post-cutover as a safety net
+
+**7. After migration is done — keep these for cleanup later:**
+
+- Remove Auth0 SDK packages from `package.json`
+- Remove Auth0 environment variables (`AUTH0_DOMAIN`, `AUTH0_CLIENT_ID`, etc.)
+- Remove any Auth0-specific routes or middleware
+- Cancel Auth0 subscription (you're on free, so just delete the tenant when you're confident)
+
+## My answer to "want me to write up the full migration task now?"
+
+**Yes — but tell them to include the items above.** Specifically:
+
+1. The pre-create + one-shot script approach (vs. lazy-on-login) — let them recommend which they prefer
+2. Full enumeration of foreign key tables BEFORE writing code
+3. Google OAuth setup steps in Supabase
+4. Decision on the dev bypass route
+5. Backup + rollback plan
+6. Test on a DB copy first
+
+Reply to your dev team with something like:
+
+> Yes, please write up the full migration task. Before you do, can you:
+>
+> 1. Enumerate every table that references the user ID as a foreign key, so we know the full scope of the ID update
+> 2. Recommend whether we should pre-create the 7 Supabase accounts via admin API and run a one-shot migration script, vs. handling the ID swap lazily on each user's first login — what's the tradeoff?
+> 3. Include Google OAuth setup steps for Supabase (we'll keep both Google and email/password)
+> 4. Confirm whether we're keeping the dev bypass route or removing it
+> 5. Include a backup + rollback plan, and test the migration on a DB copy before touching production
+>
+> Also: I'll handle the email to the 7 users myself — don't worry about that.
+
+This gives them everything they need to deliver a production-quality plan instead of a generic one.
