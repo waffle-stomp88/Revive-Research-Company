@@ -169,12 +169,15 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
     const pts = buildPKCurve(mid, xMaxMin, CHART);
     const lastY = pts[pts.length - 1].y;
     const isExtended = mid === null || mid > xMaxMin * 0.5;
+    // "extendsNote" is true only when the half-life point is actually beyond the
+    // right edge of the chart — the curve hasn't reached t½ in the visible window.
+    const extendsNote = mid === null || mid > xMaxMin;
     const halfLifeXFrac = mid !== null && mid <= xMaxMin ? mid / xMaxMin : null;
     const peakIdx = pts.reduce((best, p, i) => p.y < pts[best].y ? i : best, 0);
     const tmaxXFrac = (pts[peakIdx].x - CHART.x0) / CHART.plotW;
     const tmaxSvgX = pts[peakIdx].x;
     const showTmaxMarker = tmaxXFrac > 0.01 && tmaxXFrac < 1;
-    return { peptide, pk, color, pts, isExtended, halfLifeXFrac, lastY, curveD: ptsToD(pts), areaD: ptsToAreaD(pts), tmaxSvgX, showTmaxMarker };
+    return { peptide, pk, color, pts, isExtended, extendsNote, halfLifeXFrac, lastY, curveD: ptsToD(pts), areaD: ptsToAreaD(pts), tmaxSvgX, showTmaxMarker };
   });
 
   const definedPks = pksWithData;
@@ -282,8 +285,9 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
   }, []);
 
   const handleTouchEnd = useCallback(() => {
-    setTooltip(null);
-    setCrosshairSvgX(null);
+    // Keep tooltip and crosshair visible after lifting finger so users can read the data.
+    // The tooltip auto-dismisses on scroll (handled by the window scroll listener).
+    // Users can pin a specific curve by tapping its row in the legend below.
   }, []);
 
   const handleChartMove = useCallback((e: React.MouseEvent) => {
@@ -340,6 +344,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
     e.preventDefault();
     const touch = e.touches[0];
     if (!touch || !svgRef.current) return;
+
     const svgX = svgClientToX(touch.clientX, touch.clientY);
     if (svgX === null) return;
     setCrosshairSvgX(svgX);
@@ -347,7 +352,9 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
     const frac = (svgX - CHART.x0) / CHART.plotW;
     const timeMin = frac * xMaxMin;
     const timeDisp = useHours ? `${(timeMin / 60).toFixed(1)} h` : `${Math.round(timeMin)} min`;
+
     if (activeIdx !== null) {
+      // A curve is pinned — show only that curve's data.
       const c = curves[activeIdx];
       if (c) {
         const yInterp = interpolateAtX(c.pts, svgX);
@@ -362,19 +369,17 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
         });
       }
     } else if (curves.some(Boolean)) {
-      const firstC = curves.find(Boolean);
-      if (firstC) {
-        const yInterp = interpolateAtX(firstC.pts, svgX);
-        const concentration = Math.max(0, Math.min(1, 1 - (yInterp - CHART.y0) / CHART.plotH));
-        setTooltip({
-          clientX: touch.clientX,
-          clientY: touch.clientY,
-          label: firstC.peptide.name,
-          halfLife: firstC.pk.halfLifeLabel,
-          concentration,
-          timeDisp,
-        });
-      }
+      // No pin — set tooltip so the multi-curve combined box renders
+      // (the actual per-curve values come from allCurveValues, which is
+      // derived reactively from the crosshairSvgX we just set above).
+      setTooltip({
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+        label: "",
+        halfLife: "",
+        concentration: -1,
+        timeDisp,
+      });
     }
   }, [svgClientToX, curves, hoveredIdx, pinnedIdx, xMaxMin, useHours]);
 
@@ -766,9 +771,11 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                       <span className="block text-[10px] opacity-50 tabular-nums mb-1">{crosshairTimeDisp}</span>
                       {allCurveValues!.map((v, idx) => {
                         if (!v) return null;
-                        const isActive = effectiveIdx === null || effectiveIdx === idx;
+                        // When pinned, dim non-pinned curves. When just hovering (no pin),
+                        // show all curves at full opacity so the user can read everything.
+                        const isActive = pinnedIdx === null || pinnedIdx === idx;
                         return (
-                          <div key={v.name} className="flex items-center gap-1.5 tabular-nums" style={{ opacity: isActive ? 1 : 0.55 }}>
+                          <div key={v.name} className="flex items-center gap-1.5 tabular-nums" style={{ opacity: isActive ? 1 : 0.45 }}>
                             <span style={{ color: v.color, fontSize: 9, lineHeight: 1 }}>●</span>
                             <span className="flex-1 text-[11px]">{v.name}</span>
                             <span className="text-[11px] opacity-80 ml-2">{v.pct}%</span>
@@ -946,7 +953,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                       </div>
                     </PopoverContent>
                   </Popover>
-                  {c.isExtended && (
+                  {c.extendsNote && (
                     <Popover>
                       <PopoverTrigger asChild>
                         <button
@@ -955,19 +962,37 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                           aria-label="What does curve extends beyond chart mean?"
                           onClick={e => e.stopPropagation()}
                         >
-                          <span>curve extends beyond chart</span>
+                          <span>t½ extends beyond chart</span>
                           <Info className="h-3 w-3 flex-shrink-0" />
                         </button>
                       </PopoverTrigger>
                       <PopoverContent className="w-72 text-xs" side="top" align="start">
-                        <p className="font-medium text-foreground mb-1">Extends beyond the current view</p>
+                        <p className="font-medium text-foreground mb-1">Half-life extends beyond the current view</p>
                         <p className="text-muted-foreground leading-relaxed">
-                          This compound has not yet reached its 50% decay point (t½) within the selected time window. Its full peak-to-trough profile extends past the right edge of the chart, so the curve's descent is not visible here. Widen the time range to see the complete kinetic profile.
+                          This compound's t½ point falls outside the current time window — the curve hasn't reached 50% decay yet. The › arrow at the right edge shows it continues. Widen the time range (e.g. switch to 7 d) to see the full kinetic profile.
                         </p>
                       </PopoverContent>
                     </Popover>
                   )}
                 </div>
+                {/* Citations row — visible directly below each compound in the legend */}
+                {c.pk.citations.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 pl-[18px]" onClick={e => e.stopPropagation()}>
+                    {c.pk.citations.map((cit, j) => (
+                      <a
+                        key={j}
+                        href={cit.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[10px] text-[#21d8ff]/70 hover:text-[#21d8ff] hover:underline transition-colors"
+                        data-testid={`link-citation-${toTestSlug(c.peptide.name)}-${j}`}
+                      >
+                        <ExternalLink className="h-2.5 w-2.5 flex-shrink-0" />
+                        {cit.label}
+                      </a>
+                    ))}
+                  </div>
+                )}
               </div>
             );
           })}

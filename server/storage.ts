@@ -2497,3 +2497,35 @@ export class DatabaseStorage implements IStorage {
 }
 
 export const storage = new DatabaseStorage();
+
+/**
+ * Ensures canonical slugs are set for GLOW and KLOW blend products.
+ *
+ * These products are typically created through the admin UI. When a product is
+ * created without a slug the storage layer auto-generates one from the name, but
+ * older records (or any created before auto-generation was in place) may have a
+ * null slug. Without the correct slug the PK chart falls back to the composite
+ * half-life entry and shows a single blended curve instead of individual
+ * constituent curves.
+ *
+ * Safe to call at startup: runs only if a product with the given name exists and
+ * its slug is either null or does not match the expected value.
+ */
+export async function fixBlendProductSlugs(): Promise<void> {
+  const BLEND_SLUG_MAP: Array<{ name: string; slug: string }> = [
+    { name: "GLOW Peptide Complex", slug: "glow-peptide-complex" },
+    { name: "KLOW Peptide Complex", slug: "klow-peptide-complex" },
+  ];
+
+  for (const { name, slug } of BLEND_SLUG_MAP) {
+    await db
+      .update(products)
+      .set({ slug })
+      .where(
+        and(
+          ilike(products.name, name),
+          or(isNull(products.slug), sql`${products.slug} != ${slug}`)
+        )
+      );
+  }
+}

@@ -5,5 +5,7 @@
   { "name": "Epithalon", "slug": "epithalon" },
   { "name": "Ipamorelin", "slug": "ipamorelin" },
   { "name": "Semax", "slug": "semax" },
-  { "name": "Bacteriostatic Water", "slug": "bacteriostatic-water" }
+  { "name": "Bacteriostatic Water", "slug": "bacteriostatic-water" },
+  { "name": "GLOW Peptide Complex", "slug": "glow-peptide-complex" },
+  { "name": "KLOW Peptide Complex", "slug": "klow-peptide-complex" }
 ]
