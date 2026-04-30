@@ -150,7 +150,7 @@ export default function ResearchStackDetail() {
   };
 
   return (
-    <main className="min-h-screen pt-24 md:pt-40 pb-12 overflow-x-hidden">
+    <main className="min-h-screen pt-24 md:pt-40 pb-36 md:pb-12 overflow-x-hidden">
       <SEOHead 
         title={`${stack.name} | Research Stack`}
         description={stack.description}
@@ -524,6 +524,12 @@ export default function ResearchStackDetail() {
               </div>
             </div>
 
+            {/* Compact RUO inline notice — desktop only */}
+            <div className="hidden md:flex items-center gap-2 mb-4 px-3 py-2 rounded-md bg-red-500/10 border border-red-500/40 text-xs text-red-300" data-testid="notice-ruo-inline-stack">
+              <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0 text-red-400" />
+              <span>For lawful research use only. Not for human or animal consumption.</span>
+            </div>
+
             {stack.educationLinks.length > 0 && (
               <Collapsible className="md:hidden mb-6">
                 <CollapsibleTrigger asChild>
@@ -638,8 +644,8 @@ export default function ResearchStackDetail() {
           </motion.div>
         </div>
 
-        {/* RUO Disclaimer - DESKTOP ONLY - Full width below both columns */}
-        <Card className="p-6 bg-red-950/30 border-2 border-red-500/50 animate-pulse-subtle mt-8 hidden md:block" data-testid="card-ruo-disclaimer-desktop">
+        {/* RUO Disclaimer - hidden, replaced with compact inline notice */}
+        <Card className="hidden" data-testid="card-ruo-disclaimer-desktop">
           <div className="flex items-start gap-4">
             <div className="p-3 rounded-full bg-red-500/20 border border-red-500/30 flex-shrink-0">
               <AlertTriangle className="h-6 w-6 text-red-400" />
@@ -774,6 +780,26 @@ export default function ResearchStackDetail() {
           );
         })()}
 
+      </div>
+
+      {/* Sticky Mobile Add-to-Cart Bar */}
+      <div className="md:hidden fixed bottom-16 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-border p-3 safe-area-pb" data-testid="sticky-cart-bar-mobile-stack">
+        <div className="flex items-center gap-3 max-w-lg mx-auto">
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold truncate">{stack.name}</p>
+            <p className="text-lg font-bold text-[#E7FB10]">{pricingReady ? `$${getBasePrice().toFixed(2)}` : "—"}</p>
+          </div>
+          <Button
+            size="lg"
+            className="bg-[#E7FB10] text-black font-display gap-2 shadow-[0_0_15px_rgba(231,251,16,0.4)]"
+            onClick={handleAddToCart}
+            disabled={!pricingReady}
+            data-testid="button-sticky-add-to-cart-stack"
+          >
+            <ShoppingBag className="h-5 w-5" />
+            Add to Cart
+          </Button>
+        </div>
       </div>
     </main>
   );

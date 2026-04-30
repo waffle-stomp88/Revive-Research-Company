@@ -662,7 +662,7 @@ export default function ProductDetail() {
     : `Premium ${product.name} research peptide. Third-party lab tested with Certificate of Analysis. For research use only.`;
 
   return (
-    <main className="min-h-screen pt-24 md:pt-40 pb-12 overflow-x-hidden">
+    <main className="min-h-screen pt-24 md:pt-40 pb-36 md:pb-12 overflow-x-hidden">
       <SEOHead 
         title={seoTitle}
         description={seoDescription}
@@ -1223,7 +1223,7 @@ export default function ProductDetail() {
             </div>
 
             {/* RUO inline notice — below trust-signals grid */}
-            <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-md bg-red-500/10 border border-red-500/40 text-xs text-red-300" data-testid="notice-ruo-inline">
+            <div className="hidden md:flex items-center gap-2 mb-4 px-3 py-2 rounded-md bg-red-500/10 border border-red-500/40 text-xs text-red-300" data-testid="notice-ruo-inline">
               <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0 text-red-400" />
               <span>For lawful research use only. Not for human or animal consumption.</span>
             </div>
@@ -1305,30 +1305,31 @@ export default function ProductDetail() {
               {/* Tab navigation */}
               <nav
                 data-testid="nav-research-tabs"
-                className="z-[48] backdrop-blur-sm -mx-4 md:-mx-8 px-4 md:px-8 mb-8 border-b border-border/30 overflow-x-auto"
+                className="z-[48] backdrop-blur-sm -mx-4 md:-mx-8 px-4 md:px-8 mb-8 border-b border-border/30 overflow-x-auto scrollbar-hide"
                 style={{ background: "rgba(157,78,221,0.04)" }}
               >
-                <div className="flex w-full">
+                <div className="flex min-w-max">
                   {(
                     [
-                      { key: "overview", label: "Overview", testId: "tab-overview" },
-                      ...(hasPkData ? [{ key: "pk", label: "Pharmacokinetics", testId: "tab-pk" }] : []),
-                      { key: "cert", label: "Certification", testId: "tab-cert" },
-                      { key: "partners", label: "Research Partners", testId: "tab-partners" },
-                    ] as { key: "overview" | "pk" | "cert" | "partners"; label: string; testId: string }[]
+                      { key: "overview", label: "Overview", mobileLabel: "Overview", testId: "tab-overview" },
+                      ...(hasPkData ? [{ key: "pk", label: "Pharmacokinetics", mobileLabel: "PK", testId: "tab-pk" }] : []),
+                      { key: "cert", label: "Certification", mobileLabel: "COA", testId: "tab-cert" },
+                      { key: "partners", label: "Research Partners", mobileLabel: "Partners", testId: "tab-partners" },
+                    ] as { key: "overview" | "pk" | "cert" | "partners"; label: string; mobileLabel: string; testId: string }[]
                   ).map((tab) => (
                     <button
                       key={tab.key}
                       type="button"
                       data-testid={tab.testId}
                       onClick={() => setActiveResearchTab(tab.key)}
-                      className={`flex-1 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 text-center ${
+                      className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 text-center ${
                         activeResearchTab === tab.key
                           ? "border-[#E7FB10] text-foreground"
                           : "border-transparent text-muted-foreground hover:text-foreground"
                       }`}
                     >
-                      {tab.label}
+                      <span className="sm:hidden">{tab.mobileLabel}</span>
+                      <span className="hidden sm:inline">{tab.label}</span>
                     </button>
                   ))}
                 </div>
@@ -1860,7 +1861,7 @@ export default function ProductDetail() {
 
       {/* Sticky Mobile Add-to-Cart Bar */}
       {product && !isOutOfStock && (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-border p-3 safe-area-pb" data-testid="sticky-cart-bar-mobile">
+        <div className="md:hidden fixed bottom-16 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-border p-3 safe-area-pb" data-testid="sticky-cart-bar-mobile">
           <div className="flex items-center gap-3 max-w-lg mx-auto">
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold truncate">{product.name}</p>
