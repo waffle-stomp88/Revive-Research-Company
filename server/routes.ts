@@ -2274,7 +2274,7 @@ export async function registerRoutes(
           catalog = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
         }
         const alreadyPresent = catalog.some((e) => e.slug === product.slug);
-        if (!alreadyPresent) {
+        if (!alreadyPresent && product.slug) {
           catalog.push({ name: product.name, slug: product.slug });
           catalog.sort((a, b) => a.slug.localeCompare(b.slug));
           fs.writeFileSync(manifestPath, JSON.stringify(catalog, null, 2) + "\n", "utf8");

@@ -415,8 +415,6 @@ export default function ProductDetail() {
     }
   }, [productId]);
 
-  const isPremiumPilot = product?.slug === "bpc-157";
-
   const hasPkData = product
     ? product.slug
       ? COMBO_STACK_CONSTITUENTS[product.slug]
@@ -435,7 +433,7 @@ export default function ProductDetail() {
   useEffect(() => {
     const productInStock = product?.inStock !== false &&
       (product?.stockAmount === null || product?.stockAmount === undefined || (product?.stockAmount ?? 0) > 0);
-    if (!isPremiumPilot || !productInStock) {
+    if (!productInStock) {
       setShowStickyPurchase(false);
       return;
     }
@@ -447,7 +445,7 @@ export default function ProductDetail() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isPremiumPilot, product]);
+  }, [product]);
 
 
   const handleQuantityChange = (delta: number) => {
@@ -817,8 +815,8 @@ export default function ProductDetail() {
               </div>
             </div>
 
-            {/* Mechanism descriptor line - isPremiumPilot only, below price row */}
-            {isPremiumPilot && (() => {
+            {/* Mechanism descriptor line — below price row */}
+            {(() => {
               const profile = getCompoundProfile(product.slug ?? "");
               if (!profile?.mechanismDescriptor) return null;
               return (
@@ -1224,13 +1222,11 @@ export default function ProductDetail() {
               </div>
             </div>
 
-            {/* RUO inline notice — below trust-signals grid (premium pilot only) */}
-            {isPremiumPilot && (
-              <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-md bg-red-500/10 border border-red-500/40 text-xs text-red-300" data-testid="notice-ruo-inline">
-                <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0 text-red-400" />
-                <span>For lawful research use only. Not for human or animal consumption.</span>
-              </div>
-            )}
+            {/* RUO inline notice — below trust-signals grid */}
+            <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-md bg-red-500/10 border border-red-500/40 text-xs text-red-300" data-testid="notice-ruo-inline">
+              <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0 text-red-400" />
+              <span>For lawful research use only. Not for human or animal consumption.</span>
+            </div>
 
             {/* Mobile-only collapsible education section */}
             {relatedArticles.length > 0 && (
@@ -1278,7 +1274,7 @@ export default function ProductDetail() {
         </div>
 
         {/* RUO Disclaimer - DESKTOP ONLY - Full width below both columns */}
-        <Card className={`p-6 bg-red-950/30 border-2 border-red-500/50 animate-pulse-subtle mt-8 ${isPremiumPilot ? "hidden" : "hidden md:block"}`} data-testid="card-ruo-disclaimer-desktop">
+        <Card className="hidden p-6 bg-red-950/30 border-2 border-red-500/50 animate-pulse-subtle mt-8" data-testid="card-ruo-disclaimer-desktop">
           <div className="flex items-start gap-4">
             <div className="p-3 rounded-full bg-red-500/20 border border-red-500/30 flex-shrink-0">
               <AlertTriangle className="h-6 w-6 text-red-400" />
@@ -1818,7 +1814,7 @@ export default function ProductDetail() {
 
       {/* Feature 1: Sticky Desktop Purchase Bar */}
       <AnimatePresence>
-        {isPremiumPilot && showStickyPurchase && !isOutOfStock && (
+        {showStickyPurchase && !isOutOfStock && (
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
