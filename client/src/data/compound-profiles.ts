@@ -576,6 +576,8 @@ const compoundProfiles: CompoundProfile[] = [
   },
 ];
 
+export { compoundProfiles };
+
 export function getCompoundProfile(slug: string): CompoundProfile | undefined {
   return compoundProfiles.find((p) => p.slug === slug);
 }

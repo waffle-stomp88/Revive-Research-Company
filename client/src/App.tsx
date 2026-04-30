@@ -30,6 +30,7 @@ import CoaLibrary from "@/pages/coa-library";
 import Dashboard from "@/pages/dashboard";
 import AccountSettings from "@/pages/account-settings";
 import Admin from "@/pages/admin";
+import CompoundAudit from "@/pages/admin/compound-audit";
 import Affiliate from "@/pages/affiliate";
 import AffiliateDashboard from "@/pages/affiliate-dashboard";
 import FAQ from "@/pages/faq";
@@ -174,6 +175,7 @@ function Router() {
         </Route>
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/account-settings" component={AccountSettings} />
+        <Route path="/admin/compound-audit" component={CompoundAudit} />
         <Route path="/admin" component={Admin} />
         <Route path="/affiliate" component={Affiliate} />
         <Route path="/affiliate-dashboard" component={AffiliateDashboard} />

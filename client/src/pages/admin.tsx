@@ -7831,16 +7831,24 @@ export default function Admin() {
           initial="hidden"
           animate="visible"
         >
-          <motion.div variants={itemVariants} className="flex items-center gap-4 mb-8">
-            <div className="h-12 w-12 rounded-lg bg-primary flex items-center justify-center">
+          <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-4 mb-8">
+            <div className="h-12 w-12 rounded-lg bg-primary flex items-center justify-center shrink-0">
               <Shield className="h-6 w-6 text-primary-foreground" />
             </div>
-            <div>
+            <div className="flex-1 min-w-0">
               <h1 className="font-display text-2xl md:text-3xl font-bold holographic-text" data-testid="text-admin-title">
                 Admin Panel
               </h1>
               <p className="text-muted-foreground">Manage products, orders, and site content</p>
             </div>
+            <a
+              href="/admin/compound-audit"
+              data-testid="link-compound-audit"
+              className="inline-flex items-center gap-2 text-sm font-medium px-3 py-2 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            >
+              <BookOpen className="h-4 w-4" />
+              Compound Audit
+            </a>
           </motion.div>
 
           <motion.div variants={itemVariants}>
