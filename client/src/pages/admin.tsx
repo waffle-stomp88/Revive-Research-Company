@@ -3595,6 +3595,9 @@ function OrderViewDialog({
                   {order.paymentMethod === 'zelle' && (
                     <Badge variant="outline" className="bg-[#6D1ED4]/10 text-[#6D1ED4] border-[#6D1ED4]/30">Zelle</Badge>
                   )}
+                  {order.paymentMethod === 'venmo' && (
+                    <Badge style={{ backgroundColor: "#00AFF1", color: "white" }} className="text-xs">Venmo</Badge>
+                  )}
                   {!order.paymentMethod && (
                     <Badge variant="secondary">Unknown</Badge>
                   )}

@@ -5,7 +5,6 @@ import { SEOHead } from "@/components/seo-head";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,11 +24,9 @@ import {
   Truck,
   Loader2,
   Repeat,
-  Percent,
   User,
   LogIn,
   LogOut,
-  UserPlus,
   CheckCircle,
   Clock,
   Package,
@@ -51,7 +48,7 @@ import type { Product, User as UserType } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { getBundleById } from "@/lib/bundles";
 
-type PaymentMethod = "paypal" | "cashapp" | "zelle";
+type PaymentMethod = "paypal" | "cashapp" | "zelle" | "venmo";
 
 const subscriptionDiscounts: { [key: string]: number } = {
   weekly: 15,
@@ -153,6 +150,8 @@ export default function Checkout() {
   // Get available bac water sizes
   const bacWaterSizes = bacWaterStocks?.filter(s => s.inStock) || [];
   const [selectedBacWaterSize, setSelectedBacWaterSize] = useState<string>("30ML");
+  const [selectedBacWaterQty, setSelectedBacWaterQty] = useState<number>(1);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
   
   // Check if cart has peptides and BAC water
   const hasPeptides = cartItems.some(item => !item.name.toLowerCase().includes("bacteriostatic") && !item.name.toLowerCase().includes("supplies"));
@@ -179,7 +178,7 @@ export default function Checkout() {
         productId: bacWater.id,
         name: bacWater.name,
         price: price,
-        quantity: 1,
+        quantity: selectedBacWaterQty,
         dosage: selectedSize,
         image: bacWater.imageUrl || productImage,
       });
@@ -189,7 +188,7 @@ export default function Checkout() {
       }
       toast({
         title: "Added to cart",
-        description: `${bacWater.name} (${selectedSize}) added to your cart.`,
+        description: `${selectedBacWaterQty}x ${bacWater.name} (${selectedSize}) added to your cart.`,
       });
     }
   };
@@ -443,9 +442,10 @@ export default function Checkout() {
 
   const handleManualPaymentSubmit = () => {
     if (!customerEmail || !customerName || !shippingAddress.street || !shippingAddress.city || !shippingAddress.state || !shippingAddress.zip) {
+      setSubmitAttempted(true);
       toast({
         title: "Missing Information",
-        description: "Please fill in all required fields.",
+        description: "Please fill in all highlighted fields.",
         variant: "destructive",
       });
       return;
@@ -498,6 +498,7 @@ export default function Checkout() {
 
   // Payment method info
   const CASHAPP_TAG = "$reviveresearchco";
+  const VENMO_HANDLE = "@reviveresearchco";
   const ZELLE_INFO = "Coming Soon"; // Placeholder until user provides
 
   if (fromCart && cartItems.length === 0) {
@@ -671,116 +672,6 @@ export default function Checkout() {
   };
 
   // Payment Method Selection Component
-  const PaymentMethodSelector = () => (
-    <div className="space-y-3">
-      <h3 className="font-display font-semibold text-sm mb-3">Payment Method</h3>
-      
-      {/* PayPal - Primary */}
-      <div
-        className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
-          selectedPaymentMethod === "paypal"
-            ? "border-[#0070ba] bg-[#0070ba]/10"
-            : "border-border md:hover:border-[#0070ba]/50"
-        }`}
-        onClick={() => {
-          setSelectedPaymentMethod("paypal");
-          setManualPaymentStep("select");
-        }}
-        data-testid="payment-method-paypal"
-      >
-        <div className="flex items-center gap-3">
-          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-            selectedPaymentMethod === "paypal" ? "border-[#0070ba]" : "border-muted-foreground/30"
-          }`}>
-            {selectedPaymentMethod === "paypal" && (
-              <div className="w-2.5 h-2.5 rounded-full bg-[#0070ba]" />
-            )}
-          </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-sm">PayPal</span>
-              <Badge className="bg-[#0070ba] text-white text-xs">Recommended</Badge>
-            </div>
-            <p className="text-xs text-muted-foreground">Pay securely with PayPal or card</p>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-8 h-5 bg-[#0070ba] rounded flex items-center justify-center">
-              <span className="text-white text-[8px] font-bold">PayPal</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* CashApp */}
-      <div
-        className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
-          selectedPaymentMethod === "cashapp"
-            ? "border-[#00D632] bg-[#00D632]/10"
-            : "border-border md:hover:border-[#00D632]/50"
-        }`}
-        onClick={() => {
-          setSelectedPaymentMethod("cashapp");
-          setManualPaymentStep("instructions");
-        }}
-        data-testid="payment-method-cashapp"
-      >
-        <div className="flex items-center gap-3">
-          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-            selectedPaymentMethod === "cashapp" ? "border-[#00D632]" : "border-muted-foreground/30"
-          }`}>
-            {selectedPaymentMethod === "cashapp" && (
-              <div className="w-2.5 h-2.5 rounded-full bg-[#00D632]" />
-            )}
-          </div>
-          <div className="flex-1">
-            <span className="font-semibold text-sm">CashApp</span>
-            <p className="text-xs text-muted-foreground">Send payment manually</p>
-          </div>
-          <div className="w-8 h-8 bg-[#00D632] rounded-lg flex items-center justify-center">
-            <DollarSign className="h-4 w-4 text-white" />
-          </div>
-        </div>
-      </div>
-
-      {/* Zelle */}
-      <div
-        className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
-          selectedPaymentMethod === "zelle"
-            ? "border-[#6D1ED4] bg-[#6D1ED4]/10"
-            : "border-border md:hover:border-[#6D1ED4]/50"
-        } ${ZELLE_INFO === "Coming Soon" ? "opacity-50 cursor-not-allowed" : ""}`}
-        onClick={() => {
-          if (ZELLE_INFO !== "Coming Soon") {
-            setSelectedPaymentMethod("zelle");
-            setManualPaymentStep("instructions");
-          }
-        }}
-        data-testid="payment-method-zelle"
-      >
-        <div className="flex items-center gap-3">
-          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-            selectedPaymentMethod === "zelle" ? "border-[#6D1ED4]" : "border-muted-foreground/30"
-          }`}>
-            {selectedPaymentMethod === "zelle" && (
-              <div className="w-2.5 h-2.5 rounded-full bg-[#6D1ED4]" />
-            )}
-          </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-sm">Zelle</span>
-              {ZELLE_INFO === "Coming Soon" && (
-                <Badge variant="secondary" className="text-xs">Coming Soon</Badge>
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground">Bank transfer payment</p>
-          </div>
-          <div className="w-8 h-8 bg-[#6D1ED4] rounded-lg flex items-center justify-center">
-            <Building2 className="h-4 w-4 text-white" />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 
   // Main Cart Checkout Flow
   if (fromCart) {
@@ -829,7 +720,7 @@ export default function Checkout() {
             </div>
 
             {/* Desktop: Two columns. Mobile: Stack with order summary first */}
-            <div className="grid md:grid-cols-2 gap-6 md:gap-12">
+            <div className="grid md:grid-cols-[1fr_360px] gap-6 md:gap-8">
               {/* Left Column: Payment Methods */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -837,27 +728,21 @@ export default function Checkout() {
                 transition={{ delay: 0.1 }}
                 className="order-2 md:order-1"
               >
-                {/* Account Section - Guest Checkout Friendly */}
-                <Card className="p-3 md:p-6 mb-4 md:mb-6 border-2 border-[#21d8ff]/60 bg-[#21d8ff]/20 shadow-[0_0_25px_rgba(33,216,255,0.25),inset_0_0_30px_rgba(33,216,255,0.08)]">
-                  <h2 className="font-display text-base md:text-xl font-semibold mb-2 md:mb-4 flex items-center gap-2">
-                    <User className="h-4 w-4 md:h-5 md:w-5 text-[#21d8ff]" />
-                    {isAuthenticated ? "Your Account" : "Checkout as Guest"}
-                  </h2>
-                  
-                  {userLoading ? (
-                    <div className="flex justify-center py-2 md:py-4">
-                      <Loader2 className="h-5 w-5 md:h-6 md:w-6 animate-spin text-muted-foreground" />
-                    </div>
-                  ) : isAuthenticated ? (
-                    <div className="bg-[#E7FB10]/10 border border-[#E7FB10]/30 rounded-lg p-2 md:p-4">
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2 md:gap-3 min-w-0">
-                          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#E7FB10]/20 flex items-center justify-center flex-shrink-0">
-                            <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-[#E7FB10]" />
+                {/* Unified Checkout Card */}
+                <Card className="p-4 md:p-6 mb-4">
+                  {/* Account Strip */}
+                  <div className="flex items-center justify-between pb-4 mb-5 border-b border-border/50">
+                    {userLoading ? (
+                      <div className="h-5 w-40 bg-muted rounded animate-pulse" />
+                    ) : isAuthenticated ? (
+                      <>
+                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                          <div className="w-7 h-7 rounded-full bg-[#E7FB10]/20 flex items-center justify-center flex-shrink-0">
+                            <CheckCircle className="h-3.5 w-3.5 text-[#E7FB10]" />
                           </div>
                           <div className="min-w-0">
-                            <p className="font-medium text-sm md:text-base truncate">{user?.firstName || 'Researcher'}</p>
-                            <p className="text-xs md:text-sm text-muted-foreground truncate">{user?.email}</p>
+                            <p className="text-sm font-medium leading-none">{user?.firstName || 'Researcher'}</p>
+                            <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                           </div>
                         </div>
                         <Button
@@ -867,381 +752,323 @@ export default function Checkout() {
                           onClick={() => logout()}
                           data-testid="button-checkout-logout"
                         >
-                          <LogOut className="h-4 w-4" />
+                          <LogOut className="h-3.5 w-3.5" />
                         </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {/* Guest checkout confirmation */}
-                      <div className="bg-[#1a1a1f]/80 border border-[#21d8ff]/40 rounded-lg p-3">
-                        <div className="flex items-center gap-2 mb-2">
-                          <CheckCircle className="h-4 w-4 text-[#21d8ff]" />
-                          <span className="font-medium text-sm">No account needed</span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <User className="h-3.5 w-3.5 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">Checking out as guest</span>
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                          You can complete your purchase as a guest. We'll send order confirmation to your email.
-                        </p>
-                      </div>
-                      
-                      {/* Create account benefits */}
-                      <div className="border border-border/50 rounded-lg p-3 bg-[#1a1a1f]/80">
-                        <p className="text-sm font-medium mb-2 flex items-center gap-2">
-                          <UserPlus className="h-4 w-4 text-[#E7FB10]" />
-                          Want to save your order?
-                        </p>
-                        <ul className="text-xs text-muted-foreground space-y-1.5 mb-3 ml-6">
-                          <li className="flex items-center gap-2">
-                            <Package className="h-3 w-3 flex-shrink-0" />
-                            View order history
-                          </li>
-                          <li className="flex items-center gap-2">
-                            <Truck className="h-3 w-3 flex-shrink-0" />
-                            Track shipments
-                          </li>
-                          <li className="flex items-center gap-2">
-                            <Clock className="h-3 w-3 flex-shrink-0" />
-                            Faster future checkouts
-                          </li>
-                          <li className="flex items-center gap-2">
-                            <Target className="h-3 w-3 flex-shrink-0" />
-                            Save wishlist items
-                          </li>
-                          <li className="flex items-center gap-2">
-                            <Percent className="h-3 w-3 flex-shrink-0" />
-                            Earn rewards & discounts
-                          </li>
-                        </ul>
                         <Button
-                          variant="outline"
-                          className="w-full gap-2 border-[#E7FB10]/50 text-[#E7FB10] hover:bg-[#E7FB10]/10"
+                          variant="ghost"
                           size="sm"
+                          className="gap-1.5 text-[#21d8ff] text-xs"
                           onClick={() => login()}
                           data-testid="button-checkout-login"
                         >
                           <LogIn className="h-3 w-3" />
-                          Create Account / Sign In
+                          Sign In
                         </Button>
-                      </div>
-                    </div>
-                  )}
-                </Card>
+                      </>
+                    )}
+                  </div>
 
-                {/* Payment Methods */}
-                <Card className="p-4 md:p-6 mb-4">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 rounded-lg bg-muted">
-                      <CreditCard className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                    <div>
-                      <h2 className="font-display text-lg font-semibold">Payment</h2>
-                      <p className="text-xs text-muted-foreground">Choose your payment method</p>
+                  {/* Payment Method Selector — 2×2 compact pill grid */}
+                  <div className="mb-5">
+                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">How do you want to pay?</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border-2 transition-all text-left ${
+                          selectedPaymentMethod === "paypal"
+                            ? "border-[#0070ba] bg-[#0070ba]/10"
+                            : "border-border hover:border-[#0070ba]/40"
+                        }`}
+                        onClick={() => { setSelectedPaymentMethod("paypal"); setManualPaymentStep("select"); }}
+                        data-testid="payment-method-paypal"
+                      >
+                        <div className="w-8 h-8 bg-[#0070ba] rounded-md flex items-center justify-center flex-shrink-0">
+                          <span className="text-white text-[9px] font-extrabold leading-none">PP</span>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-semibold leading-tight">PayPal</p>
+                          <p className="text-[10px] text-[#0070ba] font-medium">Recommended</p>
+                        </div>
+                        {selectedPaymentMethod === "paypal" && (
+                          <CheckCircle className="h-3.5 w-3.5 text-[#0070ba] flex-shrink-0" />
+                        )}
+                      </button>
+
+                      <button
+                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border-2 transition-all text-left ${
+                          selectedPaymentMethod === "cashapp"
+                            ? "border-[#00D632] bg-[#00D632]/10"
+                            : "border-border hover:border-[#00D632]/40"
+                        }`}
+                        onClick={() => { setSelectedPaymentMethod("cashapp"); setManualPaymentStep("instructions"); }}
+                        data-testid="payment-method-cashapp"
+                      >
+                        <div className="w-8 h-8 bg-[#00D632] rounded-md flex items-center justify-center flex-shrink-0">
+                          <DollarSign className="h-3.5 w-3.5 text-white" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-semibold leading-tight">CashApp</p>
+                          <p className="text-[10px] text-muted-foreground">{CASHAPP_TAG}</p>
+                        </div>
+                        {selectedPaymentMethod === "cashapp" && (
+                          <CheckCircle className="h-3.5 w-3.5 text-[#00D632] flex-shrink-0" />
+                        )}
+                      </button>
+
+                      <button
+                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border-2 transition-all text-left ${
+                          selectedPaymentMethod === "venmo"
+                            ? "border-[#00AFF1] bg-[#00AFF1]/10"
+                            : "border-border hover:border-[#00AFF1]/40"
+                        }`}
+                        onClick={() => { setSelectedPaymentMethod("venmo"); setManualPaymentStep("instructions"); }}
+                        data-testid="payment-method-venmo"
+                      >
+                        <div className="w-8 h-8 bg-[#00AFF1] rounded-md flex items-center justify-center flex-shrink-0">
+                          <CreditCard className="h-3.5 w-3.5 text-white" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-semibold leading-tight">Venmo</p>
+                          <p className="text-[10px] text-muted-foreground">{VENMO_HANDLE}</p>
+                        </div>
+                        {selectedPaymentMethod === "venmo" && (
+                          <CheckCircle className="h-3.5 w-3.5 text-[#00AFF1] flex-shrink-0" />
+                        )}
+                      </button>
+
+                      <button
+                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg border-2 border-border transition-all text-left opacity-40 cursor-not-allowed"
+                        disabled
+                        data-testid="payment-method-zelle"
+                      >
+                        <div className="w-8 h-8 bg-[#6D1ED4] rounded-md flex items-center justify-center flex-shrink-0">
+                          <Building2 className="h-3.5 w-3.5 text-white" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-semibold leading-tight">Zelle</p>
+                          <p className="text-[10px] text-muted-foreground">Coming soon</p>
+                        </div>
+                      </button>
                     </div>
                   </div>
 
-                  <PaymentMethodSelector />
-                  
-                  {/* Manual Payment Instructions - CashApp */}
-                  {selectedPaymentMethod === "cashapp" && manualPaymentStep === "instructions" && !hasValidZip && (
-                    <div className="mt-4">
-                      <Card className="p-4 border-yellow-500/50 bg-yellow-500/5">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-yellow-500/20">
-                            <MapPin className="h-4 w-4 text-yellow-500" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium">Enter your ZIP code first</p>
-                            <p className="text-xs text-muted-foreground">We need your ZIP code to calculate taxes before showing payment details</p>
-                          </div>
+                  {/* Animated content per method */}
+                  <AnimatePresence mode="wait">
+                    {selectedPaymentMethod === "paypal" && (
+                      <motion.div
+                        key="paypal-info"
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        transition={{ duration: 0.18 }}
+                        className="rounded-lg bg-[#0070ba]/10 border border-[#0070ba]/30 p-3 flex items-center gap-3"
+                      >
+                        <div className="w-9 h-9 bg-[#0070ba] rounded-md flex items-center justify-center flex-shrink-0">
+                          <Lock className="h-4 w-4 text-white" />
                         </div>
-                      </Card>
-                    </div>
-                  )}
-                  
-                  {selectedPaymentMethod === "cashapp" && manualPaymentStep === "instructions" && hasValidZip && (
-                    <div className="mt-4">
-                      <Card className="p-4" style={{ borderColor: "#00D63250" }}>
-                        <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
-                          <Smartphone className="h-4 w-4" style={{ color: "#00D632" }} />
-                          How CashApp Payment Works
-                        </h4>
-                        
-                        <div className="space-y-3">
-                          <div className="flex items-start gap-3">
-                            <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: "#00D632" }}>
-                              1
-                            </div>
-                            <div className="flex-1">
-                              <p className="text-sm font-medium">Place your order</p>
-                              <p className="text-xs text-muted-foreground">You'll receive your unique order number</p>
-                            </div>
-                          </div>
-
-                          <div className="flex items-start gap-3">
-                            <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: "#00D632" }}>
-                              2
-                            </div>
-                            <div className="flex-1">
-                              <p className="text-sm font-medium">Send payment via CashApp</p>
-                              <p className="text-xs text-muted-foreground">Include only your order number in the note</p>
-                            </div>
-                          </div>
-
-                          <div className="flex items-start gap-3">
-                            <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: "#00D632" }}>
-                              3
-                            </div>
-                            <div className="flex-1">
-                              <p className="text-sm font-medium">We verify and ship</p>
-                              <p className="text-xs text-muted-foreground">Orders verified within 2-4 hours during business hours</p>
-                            </div>
-                          </div>
+                        <div>
+                          <p className="text-sm font-medium">Secure PayPal checkout</p>
+                          <p className="text-xs text-muted-foreground">Review your order summary, then click "Pay with PayPal" — you'll complete payment on PayPal's site and be brought right back.</p>
                         </div>
+                      </motion.div>
+                    )}
 
-                        <div className="mt-4 p-3 rounded-lg bg-[#00D632]/10 border border-[#00D632]/30">
-                          <p className="text-xs text-muted-foreground text-center">
-                            <Clock className="h-3 w-3 inline mr-1" style={{ color: "#00D632" }} />
-                            Payment instructions will appear after you place your order
+                    {['cashapp', 'venmo', 'zelle'].includes(selectedPaymentMethod) && (
+                      <motion.div
+                        key="manual-form"
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        transition={{ duration: 0.18 }}
+                        className="space-y-5"
+                      >
+                        {/* Shipping Details — inline */}
+                        <div>
+                          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                            <MapPin className="h-3 w-3" />
+                            Shipping Details
                           </p>
-                        </div>
-
-                        <div className="mt-4 pt-4 border-t border-border space-y-3">
-                          <div className="grid grid-cols-2 gap-3">
-                            <div>
-                              <Label htmlFor="mp-customerName" className="text-xs">Full Name *</Label>
-                              <Input
-                                id="mp-customerName"
-                                value={customerName}
-                                onChange={(e) => setCustomerName(e.target.value)}
-                                placeholder="John Doe"
-                                className="mt-1"
-                                data-testid="input-mp-customer-name"
-                              />
+                          <div className="space-y-3">
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <Label htmlFor="ship-name" className="text-xs">Full Name *</Label>
+                                <Input
+                                  id="ship-name"
+                                  value={customerName}
+                                  onChange={(e) => { setCustomerName(e.target.value); if (submitAttempted && e.target.value) setSubmitAttempted(false); }}
+                                  placeholder="John Doe"
+                                  autoComplete="name"
+                                  className={`mt-1 ${submitAttempted && !customerName ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                                  data-testid="input-customer-name"
+                                />
+                                {submitAttempted && !customerName && <p className="text-xs text-red-500 mt-1">Required</p>}
+                              </div>
+                              <div>
+                                <Label htmlFor="ship-email" className="text-xs">Email *</Label>
+                                <Input
+                                  id="ship-email"
+                                  type="email"
+                                  value={customerEmail}
+                                  onChange={(e) => setCustomerEmail(e.target.value)}
+                                  placeholder="john@example.com"
+                                  autoComplete="email"
+                                  className={`mt-1 ${submitAttempted && !customerEmail ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                                  data-testid="input-customer-email"
+                                />
+                                {submitAttempted && !customerEmail && <p className="text-xs text-red-500 mt-1">Required</p>}
+                              </div>
                             </div>
                             <div>
-                              <Label htmlFor="mp-customerEmail" className="text-xs">Email *</Label>
+                              <Label htmlFor="ship-street" className="text-xs">Street Address *</Label>
                               <Input
-                                id="mp-customerEmail"
-                                type="email"
-                                value={customerEmail}
-                                onChange={(e) => setCustomerEmail(e.target.value)}
-                                placeholder="john@example.com"
-                                className="mt-1"
-                                data-testid="input-mp-customer-email"
+                                id="ship-street"
+                                value={shippingAddress.street}
+                                onChange={(e) => setShippingAddress({...shippingAddress, street: e.target.value})}
+                                placeholder="123 Research Lane"
+                                autoComplete="street-address"
+                                className={`mt-1 ${submitAttempted && !shippingAddress.street ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                                data-testid="input-street"
                               />
+                              {submitAttempted && !shippingAddress.street && <p className="text-xs text-red-500 mt-1">Required</p>}
                             </div>
-                          </div>
-                          <div>
-                            <Label htmlFor="mp-street" className="text-xs">Street Address *</Label>
-                            <Input
-                              id="mp-street"
-                              value={shippingAddress.street}
-                              onChange={(e) => setShippingAddress({...shippingAddress, street: e.target.value})}
-                              placeholder="123 Research Lane"
-                              className="mt-1"
-                              data-testid="input-mp-street"
-                            />
-                          </div>
-                          <div className="grid grid-cols-3 gap-3">
-                            <div>
-                              <Label htmlFor="mp-city" className="text-xs">City *</Label>
-                              <Input
-                                id="mp-city"
-                                value={shippingAddress.city}
-                                onChange={(e) => setShippingAddress({...shippingAddress, city: e.target.value})}
-                                placeholder="Austin"
-                                className="mt-1"
-                                data-testid="input-mp-city"
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="mp-state" className="text-xs">State *</Label>
-                              <Input
-                                id="mp-state"
-                                value={shippingAddress.state}
-                                onChange={(e) => setShippingAddress({...shippingAddress, state: e.target.value})}
-                                placeholder="TX"
-                                className="mt-1"
-                                data-testid="input-mp-state"
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="mp-zip" className="text-xs">ZIP * {hasValidZip && taxState && <span className="text-green-500 ml-1">({taxState})</span>}</Label>
-                              <Input
-                                id="mp-zip"
-                                value={shippingAddress.zip}
-                                onChange={(e) => {
-                                  const newZip = e.target.value;
-                                  const detectedState = getStateFromZip(newZip);
-                                  setShippingAddress({
-                                    ...shippingAddress, 
-                                    zip: newZip,
-                                    state: detectedState || shippingAddress.state
-                                  });
-                                }}
-                                placeholder="78701"
-                                className="mt-1"
-                                data-testid="input-mp-zip"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="mt-4 p-3 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30">
-                          <p className="text-xs text-muted-foreground">
-                            <AlertTriangle className="h-3 w-3 inline mr-1 text-[#E7FB10]" />
-                            Your order will be marked as "Pending Payment" until we verify your CashApp transfer.
-                            Processing typically takes 1-2 business hours.
-                          </p>
-                        </div>
-                      </Card>
-                    </div>
-                  )}
-
-                  {/* Manual Payment Instructions - Zelle */}
-                  {selectedPaymentMethod === "zelle" && manualPaymentStep === "instructions" && (
-                    <div className="mt-4">
-                      <Card className="p-4" style={{ borderColor: "#6D1ED450" }}>
-                        <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
-                          <Smartphone className="h-4 w-4" style={{ color: "#6D1ED4" }} />
-                          Zelle Payment Instructions
-                        </h4>
-                        
-                        <div className="space-y-4">
-                          <div className="flex items-start gap-3">
-                            <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: "#6D1ED4" }}>
-                              1
-                            </div>
-                            <div className="flex-1">
-                              <p className="text-sm font-medium mb-2">Send ${cartTotal.toFixed(2)} to:</p>
-                              <div 
-                                className="flex items-center gap-2 p-2 rounded-md bg-muted cursor-pointer md:hover:bg-muted/80 transition-colors"
-                                onClick={() => copyToClipboard(ZELLE_INFO)}
-                              >
-                                <span className="font-mono font-bold text-sm flex-1" style={{ color: "#6D1ED4" }}>
-                                  {ZELLE_INFO}
-                                </span>
-                                <Button size="icon" variant="ghost" className="h-6 w-6">
-                                  {copied ? <CheckCircle className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
-                                </Button>
+                            <div className="grid grid-cols-3 gap-3">
+                              <div className="col-span-1">
+                                <Label htmlFor="ship-city" className="text-xs">City *</Label>
+                                <Input
+                                  id="ship-city"
+                                  value={shippingAddress.city}
+                                  onChange={(e) => setShippingAddress({...shippingAddress, city: e.target.value})}
+                                  placeholder="Austin"
+                                  autoComplete="address-level2"
+                                  className={`mt-1 ${submitAttempted && !shippingAddress.city ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                                  data-testid="input-city"
+                                />
+                                {submitAttempted && !shippingAddress.city && <p className="text-xs text-red-500 mt-1">Required</p>}
+                              </div>
+                              <div>
+                                <Label htmlFor="ship-state" className="text-xs">State *</Label>
+                                <Input
+                                  id="ship-state"
+                                  value={shippingAddress.state}
+                                  onChange={(e) => setShippingAddress({...shippingAddress, state: e.target.value})}
+                                  placeholder="TX"
+                                  maxLength={2}
+                                  autoComplete="address-level1"
+                                  className={`mt-1 ${submitAttempted && !shippingAddress.state ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                                  data-testid="input-state"
+                                />
+                                {submitAttempted && !shippingAddress.state && <p className="text-xs text-red-500 mt-1">Required</p>}
+                              </div>
+                              <div>
+                                <Label htmlFor="ship-zip" className="text-xs">ZIP Code *</Label>
+                                <Input
+                                  id="ship-zip"
+                                  value={shippingAddress.zip}
+                                  onChange={(e) => setShippingAddress({...shippingAddress, zip: e.target.value})}
+                                  placeholder="78701"
+                                  maxLength={5}
+                                  autoComplete="postal-code"
+                                  className={`mt-1 ${submitAttempted && !shippingAddress.zip ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                                  data-testid="input-zip"
+                                />
+                                {submitAttempted && !shippingAddress.zip && <p className="text-xs text-red-500 mt-1">Required</p>}
                               </div>
                             </div>
                           </div>
-
-                          <div className="flex items-start gap-3">
-                            <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: "#6D1ED4" }}>
-                              2
-                            </div>
-                            <div className="flex-1">
-                              <p className="text-sm font-medium">Include in the note:</p>
-                              <p className="text-xs text-muted-foreground">Your email address for order confirmation</p>
-                            </div>
-                          </div>
-
-                          <div className="flex items-start gap-3">
-                            <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: "#6D1ED4" }}>
-                              3
-                            </div>
-                            <div className="flex-1">
-                              <p className="text-sm font-medium">Fill in your shipping details below</p>
-                              <p className="text-xs text-muted-foreground">We'll verify payment and ship your order</p>
-                            </div>
-                          </div>
                         </div>
 
-                        <div className="mt-4 pt-4 border-t border-border space-y-3">
-                          <div className="grid grid-cols-2 gap-3">
-                            <div>
-                              <Label htmlFor="zelle-customerName" className="text-xs">Full Name *</Label>
-                              <Input
-                                id="zelle-customerName"
-                                value={customerName}
-                                onChange={(e) => setCustomerName(e.target.value)}
-                                placeholder="John Doe"
-                                className="mt-1"
-                                data-testid="input-zelle-customer-name"
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="zelle-customerEmail" className="text-xs">Email *</Label>
-                              <Input
-                                id="zelle-customerEmail"
-                                type="email"
-                                value={customerEmail}
-                                onChange={(e) => setCustomerEmail(e.target.value)}
-                                placeholder="john@example.com"
-                                className="mt-1"
-                                data-testid="input-zelle-customer-email"
-                              />
-                            </div>
-                          </div>
-                          <div>
-                            <Label htmlFor="zelle-street" className="text-xs">Street Address *</Label>
-                            <Input
-                              id="zelle-street"
-                              value={shippingAddress.street}
-                              onChange={(e) => setShippingAddress({...shippingAddress, street: e.target.value})}
-                              placeholder="123 Research Lane"
-                              className="mt-1"
-                              data-testid="input-zelle-street"
-                            />
-                          </div>
-                          <div className="grid grid-cols-3 gap-3">
-                            <div>
-                              <Label htmlFor="zelle-city" className="text-xs">City *</Label>
-                              <Input
-                                id="zelle-city"
-                                value={shippingAddress.city}
-                                onChange={(e) => setShippingAddress({...shippingAddress, city: e.target.value})}
-                                placeholder="Austin"
-                                className="mt-1"
-                                data-testid="input-zelle-city"
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="zelle-state" className="text-xs">State *</Label>
-                              <Input
-                                id="zelle-state"
-                                value={shippingAddress.state}
-                                onChange={(e) => setShippingAddress({...shippingAddress, state: e.target.value})}
-                                placeholder="TX"
-                                className="mt-1"
-                                data-testid="input-zelle-state"
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="zelle-zip" className="text-xs">ZIP * {hasValidZip && taxState && <span className="text-green-500 ml-1">({taxState})</span>}</Label>
-                              <Input
-                                id="zelle-zip"
-                                value={shippingAddress.zip}
-                                onChange={(e) => {
-                                  const newZip = e.target.value;
-                                  const detectedState = getStateFromZip(newZip);
-                                  setShippingAddress({
-                                    ...shippingAddress, 
-                                    zip: newZip,
-                                    state: detectedState || shippingAddress.state
-                                  });
-                                }}
-                                placeholder="78701"
-                                className="mt-1"
-                                data-testid="input-zelle-zip"
-                              />
-                            </div>
-                          </div>
+                        <Separator />
+
+                        {/* What happens next */}
+                        <div>
+                          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">What happens next</p>
+                          {(() => {
+                            const methodColor = selectedPaymentMethod === "cashapp" ? "#00D632" : selectedPaymentMethod === "venmo" ? "#00AFF1" : "#6D1ED4";
+                            const methodHandle = selectedPaymentMethod === "cashapp" ? CASHAPP_TAG : selectedPaymentMethod === "venmo" ? VENMO_HANDLE : ZELLE_INFO;
+                            return (
+                              <ol className="space-y-3">
+                                <li className="flex items-start gap-3">
+                                  <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 mt-0.5" style={{ backgroundColor: methodColor }}>1</div>
+                                  <p className="text-sm text-muted-foreground leading-snug">Confirm your order — you'll get a unique order number</p>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                  <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 mt-0.5" style={{ backgroundColor: methodColor }}>2</div>
+                                  <p className="text-sm text-muted-foreground leading-snug">
+                                    Send <span className="font-semibold text-foreground">${cartTotal.toFixed(2)}</span> to{" "}
+                                    <button
+                                      className="font-mono font-semibold underline underline-offset-2 cursor-pointer"
+                                      style={{ color: methodColor }}
+                                      onClick={() => copyToClipboard(methodHandle)}
+                                    >
+                                      {methodHandle}
+                                    </button>{" "}
+                                    with{" "}
+                                    <span className="font-semibold text-foreground underline underline-offset-2">your order number in the note</span>
+                                    {" "}— this is required to match your payment
+                                  </p>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                  <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 mt-0.5" style={{ backgroundColor: methodColor }}>3</div>
+                                  <p className="text-sm text-muted-foreground leading-snug">We verify payment and ship — you'll receive a shipping notification once it's on the way</p>
+                                </li>
+                              </ol>
+                            );
+                          })()}
                         </div>
 
-                        <div className="mt-4 p-3 rounded-lg bg-[#E7FB10]/10 border border-[#E7FB10]/30">
-                          <p className="text-xs text-muted-foreground">
-                            <AlertTriangle className="h-3 w-3 inline mr-1 text-[#E7FB10]" />
-                            Your order will be marked as "Pending Payment" until we verify your Zelle transfer.
-                            Processing typically takes 1-2 business hours.
-                          </p>
-                        </div>
-                      </Card>
-                    </div>
-                  )}
+                        {/* Desktop Confirm Button */}
+                        <Button
+                          size="lg"
+                          className={`w-full hidden md:flex font-display text-base gap-2 transition-all duration-300 ${
+                            EARLY_ACCESS_MODE
+                              ? "bg-muted text-muted-foreground cursor-not-allowed"
+                              : selectedPaymentMethod === "cashapp"
+                                ? "bg-[#00D632] text-white"
+                                : selectedPaymentMethod === "venmo"
+                                  ? "bg-[#00AFF1] text-white"
+                                  : "bg-[#6D1ED4] text-white"
+                          }`}
+                          onClick={handleManualPaymentSubmit}
+                          disabled={createManualOrderMutation.isPending || EARLY_ACCESS_MODE}
+                          data-testid="button-checkout"
+                        >
+                          {createManualOrderMutation.isPending ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              Processing...
+                            </>
+                          ) : EARLY_ACCESS_MODE ? (
+                            <>
+                              <Clock className="h-4 w-4" />
+                              Coming Soon
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle className="h-4 w-4" />
+                              Confirm Order — Pay via {selectedPaymentMethod === "cashapp" ? "CashApp" : selectedPaymentMethod === "venmo" ? "Venmo" : "Zelle"} After
+                            </>
+                          )}
+                        </Button>
+                        <p className="hidden md:block text-xs text-muted-foreground text-center -mt-3">
+                          You'll receive your order number, then send payment separately.
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
                 </Card>
+
+                {/* Mobile spacer for sticky bar */}
+                {['cashapp', 'venmo', 'zelle'].includes(selectedPaymentMethod) && (
+                  <div className="md:hidden h-24" />
+                )}
+
 
                 {/* Trust & Verification Links - Desktop only */}
                 <Card className="hidden md:block p-4 border-[#9d4edd]/50 bg-gradient-to-br from-[#9d4edd]/20 to-transparent">
@@ -1293,10 +1120,10 @@ export default function Checkout() {
                   )}
 
                   {/* Item list */}
-                  <div className="space-y-3 md:space-y-4 mb-4 md:mb-6">
+                  <div className="divide-y divide-border/40 mb-4 md:mb-6">
                     {cartItems.map((item) => (
-                      <div key={`${item.productId}-${item.dosage}-${item.isSubscription ? 'sub' : 'one'}${item.packSize ? `-pack${item.packSize}` : ''}`} className="flex gap-3 md:gap-4">
-                        <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-muted to-muted/50 rounded-md flex items-center justify-center flex-shrink-0 overflow-hidden relative">
+                      <div key={`${item.productId}-${item.dosage}-${item.isSubscription ? 'sub' : 'one'}${item.packSize ? `-pack${item.packSize}` : ''}`} className="flex gap-3 md:gap-4 py-3 first:pt-0 last:pb-0">
+                        <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-muted to-muted/50 rounded-md flex items-center justify-center flex-shrink-0 overflow-hidden relative ring-1 ring-[#E7FB10]/20">
                           <img 
                             src={item.image || productImage} 
                             alt={`${item.name} ${item.dosage} research peptide`}
@@ -1308,13 +1135,13 @@ export default function Checkout() {
                             </div>
                           )}
                         </div>
-                        <div className="flex-1 min-w-0 flex items-center justify-between">
-                          <div>
-                            <h3 className="font-display font-semibold text-sm truncate">
+                        <div className="flex-1 min-w-0 flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <h3 className="font-display font-bold text-base leading-tight truncate">
                               {item.name}
-                              {item.packSize && <span className="text-[#E7FB10] ml-1 text-xs">({item.packSize}-Pack)</span>}
+                              {item.packSize && <span className="text-[#E7FB10] ml-1.5 text-sm">({item.packSize}-Pack)</span>}
                             </h3>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-muted-foreground mt-0.5">
                               {item.dosage} × {item.quantity}
                               {item.isSubscription && item.subscriptionInterval && (
                                 <span className="ml-1 text-primary">
@@ -1323,7 +1150,7 @@ export default function Checkout() {
                               )}
                             </p>
                           </div>
-                          <p className="font-semibold text-sm">
+                          <p className="font-bold text-base text-[#E7FB10] tabular-nums flex-shrink-0">
                             ${(item.price * item.quantity).toFixed(2)}
                           </p>
                         </div>
@@ -1345,13 +1172,16 @@ export default function Checkout() {
                           <p className="text-xs text-muted-foreground">Reconstitute peptides properly</p>
                         </div>
                       </div>
-                      <div className="flex items-center justify-between gap-3 mt-3 pt-3 border-t border-border/30">
+                      <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border/30 flex-wrap">
                         {hasBacWater ? (
                           <>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
                               <span className="text-sm text-[#21d8ff] font-medium">{bacWaterInCart?.dosage}</span>
+                              {(bacWaterInCart?.quantity ?? 1) > 1 && (
+                                <span className="text-xs text-muted-foreground">x{bacWaterInCart?.quantity}</span>
+                              )}
                               <span className="text-sm font-bold text-[#21d8ff]">
-                                ${bacWaterInCart?.price.toFixed(2)}
+                                ${((bacWaterInCart?.price ?? 0) * (bacWaterInCart?.quantity ?? 1)).toFixed(2)}
                               </span>
                             </div>
                             <Button
@@ -1370,7 +1200,7 @@ export default function Checkout() {
                               <select
                                 value={selectedBacWaterSize}
                                 onChange={(e) => setSelectedBacWaterSize(e.target.value)}
-                                className="bg-background border border-border rounded-md px-3 py-1.5 text-sm flex-1"
+                                className="bg-background border border-border rounded-md px-2 py-1.5 text-sm flex-1 min-w-0"
                                 data-testid="select-bac-water-size"
                               >
                                 {bacWaterSizes.map((size) => (
@@ -1380,13 +1210,32 @@ export default function Checkout() {
                                 ))}
                               </select>
                             ) : (
-                              <span className="text-sm font-bold text-[#21d8ff]">
+                              <span className="text-sm font-bold text-[#21d8ff] flex-1">
                                 ${Number(bacWater.price).toFixed(2)}
                               </span>
                             )}
+                            <div className="flex items-center border border-border rounded-md overflow-hidden flex-shrink-0" data-testid="bac-water-qty-control">
+                              <button
+                                className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors text-sm font-bold"
+                                onClick={() => setSelectedBacWaterQty(q => Math.max(1, q - 1))}
+                                data-testid="button-bac-water-qty-minus"
+                              >
+                                −
+                              </button>
+                              <span className="w-7 text-center text-sm font-medium" data-testid="text-bac-water-qty">
+                                {selectedBacWaterQty}
+                              </span>
+                              <button
+                                className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors text-sm font-bold"
+                                onClick={() => setSelectedBacWaterQty(q => Math.min(10, q + 1))}
+                                data-testid="button-bac-water-qty-plus"
+                              >
+                                +
+                              </button>
+                            </div>
                             <Button
                               size="sm"
-                              className="bg-[#21d8ff] text-black font-semibold text-xs px-4"
+                              className="bg-[#21d8ff] text-black font-semibold text-xs px-4 flex-shrink-0"
                               onClick={() => handleAddBacWater()}
                               data-testid="button-add-bac-water"
                             >
@@ -1660,47 +1509,61 @@ export default function Checkout() {
                         />
                       )}
                     </div>
-                  ) : (
-                    <Button
-                      size="lg"
-                      className={`w-full font-display text-lg gap-2 transition-all duration-300 ${
-                        EARLY_ACCESS_MODE 
-                          ? "bg-muted text-muted-foreground cursor-not-allowed" 
-                          : selectedPaymentMethod === "cashapp"
-                            ? "bg-[#00D632] hover:bg-[#00D632]/90 text-white"
-                            : "bg-[#6D1ED4] hover:bg-[#6D1ED4]/90 text-white"
-                      }`}
-                      onClick={handleManualPaymentSubmit}
-                      disabled={createManualOrderMutation.isPending || EARLY_ACCESS_MODE}
-                      data-testid="button-checkout"
-                    >
-                      {createManualOrderMutation.isPending ? (
-                        <>
-                          <Loader2 className="h-5 w-5 animate-spin" />
-                          Processing...
-                        </>
-                      ) : EARLY_ACCESS_MODE ? (
-                        <>
-                          <Clock className="h-5 w-5" />
-                          Coming Soon
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle className="h-5 w-5" />
-                          Place Order (Pay via {selectedPaymentMethod === "cashapp" ? "CashApp" : "Zelle"})
-                        </>
-                      )}
-                    </Button>
-                  )}
-
-                  <p className="text-xs text-muted-foreground text-center mt-4">
-                    By proceeding, you agree to our terms of service and privacy policy.
-                  </p>
+                  ) : null}
                 </Card>
               </motion.div>
             </div>
           </div>
         </main>
+
+        {/* Sticky mobile bottom bar — always visible when filling out manual payment */}
+        {['cashapp', 'zelle', 'venmo'].includes(selectedPaymentMethod || '') && (
+          <div className="md:hidden fixed bottom-0 left-0 right-0 z-[100] bg-background/95 backdrop-blur-md border-t border-border px-4 py-3">
+            <div className="flex items-center gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground">Order Total</p>
+                <p className="font-display font-bold text-xl">${cartTotal.toFixed(2)}</p>
+              </div>
+              <Button
+                size="lg"
+                className={`font-display gap-2 flex-shrink-0 ${
+                  EARLY_ACCESS_MODE
+                    ? "bg-muted text-muted-foreground cursor-not-allowed"
+                    : selectedPaymentMethod === "cashapp"
+                      ? "bg-[#00D632] text-white"
+                      : selectedPaymentMethod === "venmo"
+                        ? "bg-[#00AFF1] text-white"
+                        : "bg-[#6D1ED4] text-white"
+                }`}
+                onClick={handleManualPaymentSubmit}
+                disabled={createManualOrderMutation.isPending || EARLY_ACCESS_MODE}
+                data-testid="button-checkout-sticky"
+              >
+                {createManualOrderMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : EARLY_ACCESS_MODE ? (
+                  <>
+                    <Clock className="h-4 w-4" />
+                    Coming Soon
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="h-4 w-4" />
+                    Confirm Order
+                  </>
+                )}
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground text-center mt-1.5">
+              You'll send{" "}
+              {selectedPaymentMethod === "cashapp" ? "CashApp" : selectedPaymentMethod === "venmo" ? "Venmo" : "Zelle"}{" "}
+              payment after receiving your order number
+            </p>
+          </div>
+        )}
       </>
     );
   }

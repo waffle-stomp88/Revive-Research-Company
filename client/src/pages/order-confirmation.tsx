@@ -48,9 +48,11 @@ export default function OrderConfirmation() {
   const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [copiedOrderId, setCopiedOrderId] = useState(false);
   const { toast } = useToast();
   
   const CASHAPP_TAG = "$reviveresearchco";
+  const VENMO_HANDLE = "@reviveresearchco";
   const ZELLE_INFO = "payments@reviveresearch.co";
   
   // Format order ID to short reference (last 8 chars, uppercase) - matches email format
@@ -90,6 +92,16 @@ export default function OrderConfirmation() {
       description: "Payment info copied to clipboard.",
     });
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const copyOrderIdToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedOrderId(true);
+    toast({
+      title: "Order number copied!",
+      description: "Paste this ONLY in the payment note.",
+    });
+    setTimeout(() => setCopiedOrderId(false), 2000);
   };
 
   return (
@@ -157,12 +169,13 @@ export default function OrderConfirmation() {
             </motion.div>
           </motion.div>
 
-          {/* Manual Payment Instructions - Show for CashApp/Zelle orders */}
+          {/* Manual Payment Instructions - Show for CashApp/Zelle/Venmo orders */}
           {isManualPayment && (() => {
-            const isCashApp = paymentMethod === "cashapp" || !paymentMethod;
-            const color = isCashApp ? "#00D632" : "#6D1ED4";
-            const methodName = isCashApp ? "CashApp" : "Zelle";
-            const paymentInfo = isCashApp ? CASHAPP_TAG : ZELLE_INFO;
+            const isVenmo = paymentMethod === "venmo";
+            const isCashApp = paymentMethod === "cashapp" || (!paymentMethod && !isVenmo);
+            const color = isCashApp ? "#00D632" : isVenmo ? "#00AFF1" : "#6D1ED4";
+            const methodName = isCashApp ? "CashApp" : isVenmo ? "Venmo" : "Zelle";
+            const paymentInfo = isCashApp ? CASHAPP_TAG : isVenmo ? VENMO_HANDLE : ZELLE_INFO;
             
             return (
               <motion.div
@@ -183,20 +196,27 @@ export default function OrderConfirmation() {
 
                   {/* Order Number Display */}
                   {orderId && (
-                    <div className="rounded-lg p-4 mb-4 bg-muted/30 border border-border/50">
-                      <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Your Order Number</p>
-                      <div className="flex items-center gap-2">
-                        <p className="font-mono text-lg font-bold text-[#E7FB10]">#{getShortOrderRef(orderId)}</p>
-                        <Button 
-                          size="sm" 
-                          variant="ghost" 
-                          className="h-7 px-2"
-                          onClick={() => copyToClipboard(getShortOrderRef(orderId))}
-                          data-testid="button-copy-order-id"
-                        >
-                          <Copy className="h-3 w-3" />
+                    <div className="rounded-lg p-4 mb-4" style={{ backgroundColor: `${color}10`, borderColor: `${color}30`, borderWidth: 1 }}>
+                      <div className="flex items-center gap-3 mb-3">
+                        <AlertTriangle className="w-4 h-4 flex-shrink-0" style={{ color }} />
+                        <span className="font-semibold text-sm">Copy your order number — paste it in the payment note</span>
+                      </div>
+                      <div
+                        className="flex items-center gap-2 p-3 rounded-md bg-background cursor-pointer md:hover:bg-muted transition-colors"
+                        onClick={() => copyOrderIdToClipboard(getShortOrderRef(orderId))}
+                        data-testid="button-copy-order-id"
+                      >
+                        <span className="font-mono font-bold text-lg flex-1" style={{ color }}>
+                          #{getShortOrderRef(orderId)}
+                        </span>
+                        <Button size="sm" variant="outline" style={{ borderColor: `${color}50` }}>
+                          {copiedOrderId ? <CheckCircle className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                          <span className="ml-2">{copiedOrderId ? "Copied!" : "Copy"}</span>
                         </Button>
                       </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        This is the ONLY thing you should write in the {methodName} note — nothing else
+                      </p>
                     </div>
                   )}
 
@@ -245,7 +265,7 @@ export default function OrderConfirmation() {
                       <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: color }}>
                         3
                       </div>
-                      <p className="text-muted-foreground">We'll verify payment and ship within <span className="font-semibold text-foreground">2-4 hours</span> during business hours</p>
+                      <p className="text-muted-foreground">We verify payment and ship — you'll receive a shipping notification once it's on the way</p>
                     </div>
                   </div>
 
@@ -300,11 +320,11 @@ export default function OrderConfirmation() {
                             <FlaskConical className="w-5 h-5 text-[#21d8ff]" />
                           </div>
                           <div>
-                            <p className="font-semibold text-sm">{item.name}</p>
-                            <p className="text-xs text-muted-foreground">{item.dosage} × {item.quantity}</p>
+                            <p className="font-display font-bold text-base leading-tight">{item.name}</p>
+                            <p className="text-xs text-muted-foreground mt-0.5">{item.dosage} × {item.quantity}</p>
                           </div>
                         </div>
-                        <p className="font-semibold text-[#E7FB10]">${(item.price * item.quantity).toFixed(2)}</p>
+                        <p className="font-bold text-base text-[#E7FB10] tabular-nums flex-shrink-0">${(item.price * item.quantity).toFixed(2)}</p>
                       </motion.div>
                     ))}
                   </div>

@@ -673,7 +673,7 @@ export async function registerRoutes(
     }
   });
 
-  // Create manual payment order (CashApp/Zelle) with pending_payment status
+  // Create manual payment order (CashApp/Zelle/Venmo) with pending_payment status
   app.post("/api/orders/manual", async (req: any, res) => {
     try {
       const { 
@@ -690,7 +690,7 @@ export async function registerRoutes(
         return res.status(400).json({ error: "Missing required fields" });
       }
 
-      if (!['cashapp', 'zelle'].includes(paymentMethod)) {
+      if (!['cashapp', 'zelle', 'venmo'].includes(paymentMethod)) {
         return res.status(400).json({ error: "Invalid payment method" });
       }
 
@@ -792,7 +792,7 @@ export async function registerRoutes(
         order,
         paymentMethod,
         emailSent,
-        message: `Order created. Please send $${total.toFixed(2)} via ${paymentMethod.toUpperCase()} and include your email in the note.`
+        message: `Order created. Please send $${total.toFixed(2)} via ${paymentMethod.toUpperCase()} and include ONLY your order number in the payment note.`
       });
     } catch (error) {
       console.error("Error creating manual order:", error);
