@@ -50,6 +50,7 @@ export default function OrderConfirmation() {
   const [orderId, setOrderId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [copiedOrderId, setCopiedOrderId] = useState(false);
+  const [isLoadingTotal, setIsLoadingTotal] = useState(false);
   const { toast } = useToast();
   
   const CASHAPP_TAG = "$reviveresearchco";
@@ -82,6 +83,32 @@ export default function OrderConfirmation() {
       } catch (e) {
         console.error('Failed to parse order summary:', e);
       }
+    } else if (orderIdParam) {
+      // sessionStorage was cleared (e.g. after a page refresh) — fetch the
+      // order total from the API so the Venmo/CashApp deep-link stays pre-filled.
+      setIsLoadingTotal(true);
+      fetch(`/api/orders/${orderIdParam}`)
+        .then((res) => res.ok ? res.json() : null)
+        .then((order) => {
+          if (order?.totalAmount != null) {
+            const parsedTotal = parseFloat(order.totalAmount);
+            if (Number.isFinite(parsedTotal)) {
+              setOrderSummary((prev) =>
+                prev ?? {
+                  paypalOrderId: order.paypalOrderId ?? "",
+                  items: [],
+                  subtotal: 0,
+                  shipping: 0,
+                  discount: 0,
+                  total: parsedTotal,
+                  customerEmail: order.email ?? "",
+                }
+              );
+            }
+          }
+        })
+        .catch((err) => console.error('Failed to fetch order for total:', err))
+        .finally(() => setIsLoadingTotal(false));
     }
   }, []);
   
@@ -218,6 +245,7 @@ export default function OrderConfirmation() {
                         style={{ backgroundColor: "#00AFF1", color: "#fff" }}
                         size="lg"
                         data-testid="button-open-venmo"
+                        disabled={isLoadingTotal}
                         onClick={() => {
                           const amount = orderSummary?.total != null ? orderSummary.total.toFixed(2) : '';
                           const note = orderId ? getShortOrderRef(orderId) : '';
@@ -294,6 +322,7 @@ export default function OrderConfirmation() {
                         style={{ backgroundColor: "#00D632", color: "#000" }}
                         size="lg"
                         data-testid="button-open-cashapp"
+                        disabled={isLoadingTotal}
                         onClick={() => {
                           const amount = orderSummary?.total != null ? orderSummary.total.toFixed(2) : '';
                           const url = amount
