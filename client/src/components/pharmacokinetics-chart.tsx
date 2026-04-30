@@ -182,13 +182,21 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
     return idx === effectiveIdx ? 1 : 0.06;
   }, [effectiveIdx]);
 
+  const svgClientToX = useCallback((clientX: number, clientY: number): number | null => {
+    if (!svgRef.current) return null;
+    const svgEl = svgRef.current;
+    const pt = svgEl.createSVGPoint();
+    pt.x = clientX;
+    pt.y = clientY;
+    const svgPt = pt.matrixTransform(svgEl.getScreenCTM()!.inverse());
+    return Math.max(CHART.x0, Math.min(CHART.x1, svgPt.x));
+  }, []);
+
   const getCrosshairData = useCallback((idx: number, e: React.MouseEvent) => {
     const c = curves[idx];
     if (!c || !svgRef.current) return null;
-    const rect = svgRef.current.getBoundingClientRect();
-    const svgX = Math.max(CHART.x0, Math.min(CHART.x1,
-      ((e.clientX - rect.left) / rect.width) * CHART.vbW
-    ));
+    const svgX = svgClientToX(e.clientX, e.clientY);
+    if (svgX === null) return null;
     const frac = (svgX - CHART.x0) / CHART.plotW;
     const N = c.pts.length - 1;
     const rawIdx = frac * N;
@@ -204,44 +212,86 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
       ? `${(timeMin / 60).toFixed(1)} h`
       : `${Math.round(timeMin)} min`;
     return { svgX, concentration, timeDisp };
-  }, [curves, xMaxMin, useHours]);
+  }, [curves, xMaxMin, useHours, svgClientToX]);
 
   const handleCurveHover = useCallback((idx: number, e: React.MouseEvent) => {
     const c = curves[idx];
     if (!c) return;
     setHoveredIdx(idx);
-    const crosshair = getCrosshairData(idx, e);
+    const activeIdx = pinnedIdx ?? idx;
+    const activeC = curves[activeIdx];
+    if (!activeC) return;
+    const crosshair = getCrosshairData(activeIdx, e);
     setCrosshairSvgX(crosshair?.svgX ?? null);
     setTooltip({
       clientX: e.clientX,
       clientY: e.clientY,
-      label: c.peptide.name,
-      halfLife: c.pk.halfLifeLabel,
+      label: activeC.peptide.name,
+      halfLife: activeC.pk.halfLifeLabel,
       concentration: crosshair?.concentration ?? 0,
       timeDisp: crosshair?.timeDisp ?? "",
     });
-  }, [curves, getCrosshairData]);
+  }, [curves, getCrosshairData, pinnedIdx]);
 
   const handleCurveMove = useCallback((idx: number, e: React.MouseEvent) => {
-    const c = curves[idx];
-    if (!c) return;
-    const crosshair = getCrosshairData(idx, e);
+    const activeIdx = pinnedIdx ?? idx;
+    const activeC = curves[activeIdx];
+    if (!activeC) return;
+    const crosshair = getCrosshairData(activeIdx, e);
     if (crosshair) {
       setCrosshairSvgX(crosshair.svgX);
       setTooltip(prev => prev ? {
         ...prev,
         clientX: e.clientX,
         clientY: e.clientY,
+        label: activeC.peptide.name,
+        halfLife: activeC.pk.halfLifeLabel,
         concentration: crosshair.concentration,
         timeDisp: crosshair.timeDisp,
       } : prev);
     }
-  }, [curves, getCrosshairData]);
+  }, [curves, getCrosshairData, pinnedIdx]);
 
   const handleCurveLeave = useCallback(() => {
+    setTooltip(null);
+  }, []);
+
+  const handleChartMove = useCallback((e: React.MouseEvent) => {
+    const svgX = svgClientToX(e.clientX, e.clientY);
+    if (svgX === null) return;
+    setCrosshairSvgX(svgX);
+    const activeIdx = pinnedIdx ?? hoveredIdx;
+    if (activeIdx !== null) {
+      const c = curves[activeIdx];
+      if (c) {
+        const frac = (svgX - CHART.x0) / CHART.plotW;
+        const N = c.pts.length - 1;
+        const rawIdx = frac * N;
+        const lo = Math.max(0, Math.floor(rawIdx));
+        const hi = Math.min(N, Math.ceil(rawIdx));
+        const t = rawIdx - lo;
+        const yInterp = c.pts[lo].y + (c.pts[hi].y - c.pts[lo].y) * t;
+        const concentration = Math.max(0, Math.min(1, 1 - (yInterp - CHART.y0) / CHART.plotH));
+        const timeMin = frac * xMaxMin;
+        const timeDisp = useHours ? `${(timeMin / 60).toFixed(1)} h` : `${Math.round(timeMin)} min`;
+        setTooltip({
+          clientX: e.clientX,
+          clientY: e.clientY,
+          label: c.peptide.name,
+          halfLife: c.pk.halfLifeLabel,
+          concentration,
+          timeDisp,
+        });
+      }
+    } else {
+      setTooltip(null);
+    }
+  }, [svgClientToX, curves, hoveredIdx, pinnedIdx, xMaxMin, useHours]);
+
+  const handleChartLeave = useCallback(() => {
+    setCrosshairSvgX(null);
     setHoveredIdx(null);
     setTooltip(null);
-    setCrosshairSvgX(null);
   }, []);
 
   const handleCurveClick = useCallback((idx: number) => {
@@ -345,7 +395,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
               style={{ maxHeight: 200 }}
               role="img"
               aria-label="Plasma concentration–time curves for compounds in this stack"
-              onMouseLeave={handleCurveLeave}
+              onMouseLeave={handleChartLeave}
             >
               <defs>
                 <clipPath id={clipId}>
@@ -437,6 +487,18 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                 ))}
               </g>
 
+              {/* Transparent overlay rect — tracks crosshair across entire plot area */}
+              <rect
+                x={CHART.x0}
+                y={CHART.y0}
+                width={CHART.plotW}
+                height={CHART.plotH}
+                fill="transparent"
+                onMouseMove={handleChartMove}
+                onMouseLeave={handleChartLeave}
+                style={{ cursor: "crosshair" }}
+              />
+
               {/* Invisible wide hit-areas for curve hover/click — rendered on top */}
               <g clipPath={`url(#${clipId})`}>
                 {curves.map((c, idx) => c && (
@@ -466,11 +528,11 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
               </g>
 
               {/* Vertical crosshair line */}
-              {crosshairSvgX !== null && hoveredIdx !== null && (
+              {crosshairSvgX !== null && (
                 <line
                   x1={crosshairSvgX} y1={CHART.y0}
                   x2={crosshairSvgX} y2={CHART.y1}
-                  stroke={curves[hoveredIdx]?.color ?? "#fff"}
+                  stroke={curves[effectiveIdx ?? -1]?.color ?? "#fff"}
                   strokeOpacity="0.55"
                   strokeWidth="1"
                   strokeDasharray="3 3"
@@ -507,8 +569,8 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                   left: tooltip.clientX + 14,
                   top: tooltip.clientY - 42,
                   background: "rgba(10,10,16,0.92)",
-                  border: `1px solid ${curves[hoveredIdx!]?.color ?? "#fff"}40`,
-                  color: curves[hoveredIdx!]?.color ?? "#fff",
+                  border: `1px solid ${curves[effectiveIdx ?? -1]?.color ?? "#fff"}40`,
+                  color: curves[effectiveIdx ?? -1]?.color ?? "#fff",
                   boxShadow: `0 2px 12px rgba(0,0,0,0.6)`,
                   backdropFilter: "blur(6px)",
                   whiteSpace: "nowrap",
