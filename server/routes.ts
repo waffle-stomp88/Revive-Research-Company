@@ -683,7 +683,8 @@ export async function registerRoutes(
         customerName, 
         shippingAddress, 
         items, 
-        total 
+        total,
+        isTest: isTestOrder = false,
       } = req.body;
 
       // Validate required fields
@@ -719,7 +720,7 @@ export async function registerRoutes(
         status: 'pending_payment',
         fulfillmentStatus: 'pending',
         paymentMethod: paymentMethod,
-        isTest: false, // Manual orders are assumed to be real unless admin marks otherwise
+        isTest: Boolean(isTestOrder),
         notes: `Manual ${paymentMethod.toUpperCase()} payment. Items: ${items.map((i: any) => `${i.name} (${i.dosage}) x${i.quantity}`).join(', ')}`,
       };
 
@@ -728,79 +729,114 @@ export async function registerRoutes(
         orderData.userId = req.user.claims.sub;
       }
 
-      // Validate stock before creating the order
+      // Validate stock before creating the order (skip for test orders)
       const stockItems = items.map((item: any) => ({
         productId: item.productId,
         dosage: item.dosage || undefined,
         quantity: item.quantity || 1,
       }));
-      const stockCheck = await storage.validateStock(stockItems);
-      if (!stockCheck.valid) {
-        return res.status(409).json({ 
-          error: "Some items are no longer available", 
-          stockErrors: stockCheck.errors 
-        });
+
+      if (!isTestOrder) {
+        const stockCheck = await storage.validateStock(stockItems);
+        if (!stockCheck.valid) {
+          return res.status(409).json({ 
+            error: "Some items are no longer available", 
+            stockErrors: stockCheck.errors 
+          });
+        }
       }
 
       const validatedData = insertOrderSchema.parse(orderData);
       const order = await storage.createOrder(validatedData);
       
-      console.log(`[Manual Order ${order.id}] Created with ${paymentMethod} - awaiting payment`);
+      console.log(`[Manual Order ${order.id}] Created with ${paymentMethod}${isTestOrder ? ' (TEST - no stock/email side-effects)' : ' - awaiting payment'}`);
       
-      // Decrement stock immediately to reserve inventory
-      try {
-        const stockResult = await storage.decrementStock(stockItems);
-        if (!stockResult.success) {
-          console.warn(`[Manual Order ${order.id}] Stock decrement warnings:`, stockResult.errors);
+      if (!isTestOrder) {
+        // Decrement stock immediately to reserve inventory
+        try {
+          const stockResult = await storage.decrementStock(stockItems);
+          if (!stockResult.success) {
+            console.warn(`[Manual Order ${order.id}] Stock decrement warnings:`, stockResult.errors);
+          }
+        } catch (stockError: any) {
+          console.error(`[Manual Order ${order.id}] Stock decrement failed:`, stockError.message);
         }
-      } catch (stockError: any) {
-        console.error(`[Manual Order ${order.id}] Stock decrement failed:`, stockError.message);
-      }
-      
-      // Calculate order details for email
-      const orderSubtotal = items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
-      const orderShipping = 0; // Will be calculated at fulfillment
-      const orderTax = total - orderSubtotal; // Tax is included in total
-      const orderTaxState = shippingAddress.state || '';
-      
-      // Send customer email with pending payment notice
-      let emailSent = false;
-      try {
-        const emailResult = await sendOrderConfirmationEmail(order, undefined, items, orderSubtotal, orderShipping, orderTax, orderTaxState);
-        if (emailResult.success) {
-          await storage.updateOrderEmailStatus(order.id, 'sent');
-          emailSent = true;
-          console.log(`[Manual Order ${order.id}] Confirmation email sent to ${customerEmail}`);
-        } else {
-          await storage.updateOrderEmailStatus(order.id, 'failed', emailResult.error);
-          console.error(`[Manual Order ${order.id}] Email failed:`, emailResult.error);
+        
+        // Calculate order details for email
+        const orderSubtotal = items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
+        const orderShipping = 0; // Will be calculated at fulfillment
+        const orderTax = total - orderSubtotal; // Tax is included in total
+        const orderTaxState = shippingAddress.state || '';
+        
+        // Send customer email with pending payment notice
+        let emailSent = false;
+        try {
+          const emailResult = await sendOrderConfirmationEmail(order, undefined, items, orderSubtotal, orderShipping, orderTax, orderTaxState);
+          if (emailResult.success) {
+            await storage.updateOrderEmailStatus(order.id, 'sent');
+            emailSent = true;
+            console.log(`[Manual Order ${order.id}] Confirmation email sent to ${customerEmail}`);
+          } else {
+            await storage.updateOrderEmailStatus(order.id, 'failed', emailResult.error);
+            console.error(`[Manual Order ${order.id}] Email failed:`, emailResult.error);
+          }
+        } catch (emailError: any) {
+          console.error(`[Manual Order ${order.id}] Email error:`, emailError.message);
+          await storage.updateOrderEmailStatus(order.id, 'failed', emailError.message);
         }
-      } catch (emailError: any) {
-        console.error(`[Manual Order ${order.id}] Email error:`, emailError.message);
-        await storage.updateOrderEmailStatus(order.id, 'failed', emailError.message);
-      }
 
-      // Send admin notification
-      try {
-        await sendAdminOrderNotificationEmail(order, undefined, items, orderSubtotal, orderShipping, orderTax, orderTaxState);
-        console.log(`[Manual Order ${order.id}] Admin notification sent`);
-      } catch (adminEmailError: any) {
-        console.error(`[Manual Order ${order.id}] Admin notification failed:`, adminEmailError.message);
+        // Send admin notification
+        try {
+          await sendAdminOrderNotificationEmail(order, undefined, items, orderSubtotal, orderShipping, orderTax, orderTaxState);
+          console.log(`[Manual Order ${order.id}] Admin notification sent`);
+        } catch (adminEmailError: any) {
+          console.error(`[Manual Order ${order.id}] Admin notification failed:`, adminEmailError.message);
+        }
+
+        res.status(201).json({ 
+          id: order.id,
+          order,
+          paymentMethod,
+          emailSent,
+          message: `Order created. Please send $${total.toFixed(2)} via ${paymentMethod.toUpperCase()} and include ONLY your order number in the payment note.`
+        });
+      } else {
+        res.status(201).json({
+          id: order.id,
+          order,
+          paymentMethod,
+          emailSent: false,
+          message: `Test order created. No stock reserved, no emails sent.`,
+        });
       }
-      
-      res.status(201).json({ 
-        id: order.id,
-        order,
-        paymentMethod,
-        emailSent,
-        message: `Order created. Please send $${total.toFixed(2)} via ${paymentMethod.toUpperCase()} and include ONLY your order number in the payment note.`
-      });
     } catch (error) {
       console.error("Error creating manual order:", error);
       if (error instanceof Error && error.name === "ZodError") {
         return res.status(400).json({ error: "Invalid order data" });
       }
       res.status(500).json({ error: "Failed to create order" });
+    }
+  });
+
+  // Test-only cleanup: delete an order that was created with isTest=true.
+  // This endpoint requires no authentication because it only operates on
+  // orders explicitly flagged as test orders — real orders are always protected.
+  app.delete("/api/orders/test-cleanup/:id", async (req, res) => {
+    try {
+      const orderId = req.params.id;
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+      if (!order.isTest) {
+        return res.status(403).json({ error: "Only test orders can be deleted via this endpoint" });
+      }
+      await storage.deleteOrder(orderId);
+      console.log(`[Test Cleanup] Deleted test order ${orderId}`);
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("[Test Cleanup] Error:", error);
+      res.status(500).json({ error: error.message || "Failed to delete test order" });
     }
   });
 
