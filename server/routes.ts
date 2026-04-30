@@ -28,6 +28,7 @@ import {
 } from "./paypal";
 import OpenAI from "openai";
 import { z } from "zod";
+import rateLimit from "express-rate-limit";
 
 const chatMessageSchema = z.object({
   role: z.enum(["user", "assistant"]),
@@ -3635,8 +3636,16 @@ export async function registerRoutes(
     }
   });
 
+  const aiRateLimit = rateLimit({
+    windowMs: 60 * 1000,
+    max: 20,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: "Too many requests. Please wait a moment before trying again." },
+  });
+
   // Chatbot endpoint
-  app.post("/api/chat", async (req, res) => {
+  app.post("/api/chat", aiRateLimit, async (req, res) => {
     try {
       const parseResult = chatRequestSchema.safeParse(req.body);
       
@@ -3867,12 +3876,16 @@ If a user asks about any of these terms, DO NOT explain why they are blocked. DO
   });
 
   // AI Synergy Analysis for Custom Stack Builder
-  app.post("/api/ai/synergy-analysis", async (req, res) => {
+  app.post("/api/ai/synergy-analysis", aiRateLimit, async (req, res) => {
     try {
       const { peptides } = req.body;
       
       if (!peptides || typeof peptides !== 'string') {
         return res.status(400).json({ error: "Peptides list is required" });
+      }
+
+      if (peptides.length > 500) {
+        return res.status(400).json({ error: "Peptides list is too long" });
       }
 
       const peptideList = peptides.split(",").map((p: string) => p.trim());

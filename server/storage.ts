@@ -1236,7 +1236,7 @@ export class DatabaseStorage implements IStorage {
   }
   
   async getLegalDocumentBySlug(slug: string): Promise<LegalDocument | undefined> {
-    const [doc] = await db.select().from(legalDocuments).where(eq(legalDocuments.slug, slug));
+    const [doc] = await db.select().from(legalDocuments).where(and(eq(legalDocuments.slug, slug), eq(legalDocuments.isPublished, true)));
     return doc || undefined;
   }
   
@@ -1294,7 +1294,7 @@ export class DatabaseStorage implements IStorage {
   }
   
   async getEducationArticleBySlug(slug: string): Promise<EducationArticle | undefined> {
-    const [article] = await db.select().from(educationArticles).where(eq(educationArticles.slug, slug));
+    const [article] = await db.select().from(educationArticles).where(and(eq(educationArticles.slug, slug), eq(educationArticles.isPublished, true)));
     return article || undefined;
   }
   
