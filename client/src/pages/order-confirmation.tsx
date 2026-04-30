@@ -60,6 +60,12 @@ export default function OrderConfirmation() {
   // Format order ID to short reference (last 8 chars, uppercase) - matches email format
   const getShortOrderRef = (id: string) => id.slice(-8).toUpperCase();
 
+  const buildVenmoDeepLink = (total: number | null | undefined, oid: string | null): string => {
+    const amount = total != null ? total.toFixed(2) : '';
+    const note = oid ? getShortOrderRef(oid) : '';
+    return `venmo://paycharge?txn=pay&recipients=reviveresearchco${amount ? `&amount=${amount}` : ''}${note ? `&note=${note}` : ''}`;
+  };
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const paypalId = params.get("paypalOrderId");
@@ -245,12 +251,10 @@ export default function OrderConfirmation() {
                         style={{ backgroundColor: "#00AFF1", color: "#fff" }}
                         size="lg"
                         data-testid="button-open-venmo"
+                        data-venmo-href={buildVenmoDeepLink(orderSummary?.total, orderId)}
                         disabled={isLoadingTotal}
                         onClick={() => {
-                          const amount = orderSummary?.total != null ? orderSummary.total.toFixed(2) : '';
-                          const note = orderId ? getShortOrderRef(orderId) : '';
-                          const deepLink = `venmo://paycharge?txn=pay&recipients=reviveresearchco${amount ? `&amount=${amount}` : ''}${note ? `&note=${note}` : ''}`;
-                          window.location.href = deepLink;
+                          window.location.href = buildVenmoDeepLink(orderSummary?.total, orderId);
                           setTimeout(() => { window.open('https://venmo.com/reviveresearchco', '_blank'); }, 1500);
                         }}
                       >
