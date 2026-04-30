@@ -10,8 +10,11 @@
  *
  *   1. FORMAT CHECKS — structural assertions that apply to every entry that
  *      has a pubchemUrl: formula must use Unicode subscript digits only,
- *      MW must be a numeric string ending in " Da", and the CID in the URL
- *      must be a positive integer.
+ *      MW must be a numeric string ending in " Da", and the PubChem identifier
+ *      (CID for /compound/ links, SID for /substance/ fallback links) must be
+ *      a positive integer.  Substance SID URLs are permitted only for the
+ *      entries in SUBSTANCE_SID_ALLOWLIST (large recombinant proteins with no
+ *      canonical PubChem compound CID).
  *
  *   2. VALUE SNAPSHOTS — vitest snapshot assertions for every entry that
  *      carries a real (non-N/A) formula.  The snapshot file is committed
@@ -51,11 +54,15 @@ function isValidMWFormat(mw: string): boolean {
 }
 
 /**
- * Extracts the PubChem CID integer from a canonical PubChem compound URL.
- * Returns NaN when the pattern does not match.
+ * Extracts the PubChem identifier integer from a canonical PubChem compound
+ * or substance URL.  Compound URLs use /compound/<CID> and substance URLs
+ * use /substance/<SID>.  Both are valid: large recombinant proteins (e.g.
+ * IGF-1 LR3, IGF-DES) have no compound CID in PubChem and are linked via
+ * substance (SID) fallback records instead.
+ * Returns NaN when neither pattern matches.
  */
-function extractCID(url: string): number {
-  const m = url.match(/pubchem\.ncbi\.nlm\.nih\.gov\/compound\/(\d+)$/);
+function extractPubChemId(url: string): number {
+  const m = url.match(/pubchem\.ncbi\.nlm\.nih\.gov\/(?:compound|substance)\/(\d+)$/);
   return m ? parseInt(m[1], 10) : NaN;
 }
 
@@ -86,13 +93,33 @@ describe("compound-profiles — format checks for entries with pubchemUrl", () =
     }
   });
 
-  it("every pubchemUrl contains a valid positive integer CID", () => {
+  it("every pubchemUrl contains a valid positive integer CID or SID", () => {
     for (const profile of withPubchem) {
-      const cid = extractCID(profile.pubchemUrl!);
+      const pubchemId = extractPubChemId(profile.pubchemUrl!);
       expect(
-        Number.isInteger(cid) && cid > 0,
-        `[${profile.slug}] pubchemUrl "${profile.pubchemUrl}" must end with a positive integer CID`
+        Number.isInteger(pubchemId) && pubchemId > 0,
+        `[${profile.slug}] pubchemUrl "${profile.pubchemUrl}" must end with a positive integer CID (/compound/) or SID (/substance/)`
       ).toBe(true);
+    }
+  });
+
+  /**
+   * Allowlist of slugs whose pubchemUrl intentionally points to a PubChem
+   * Substance record (/substance/<SID>) instead of a Compound record
+   * (/compound/<CID>).  Only large recombinant proteins for which no PubChem
+   * compound CID exists should appear here.  All other entries must use
+   * /compound/ URLs.
+   */
+  const SUBSTANCE_SID_ALLOWLIST = new Set(["igf-1-lr3", "igf-des"]);
+
+  it("only allowlisted entries use PubChem Substance (/substance/) URLs", () => {
+    for (const profile of withPubchem) {
+      if (profile.pubchemUrl!.includes("/substance/")) {
+        expect(
+          SUBSTANCE_SID_ALLOWLIST.has(profile.slug),
+          `[${profile.slug}] uses a /substance/ URL but is not in SUBSTANCE_SID_ALLOWLIST — add it to the allowlist or use a /compound/ CID instead`
+        ).toBe(true);
+      }
     }
   });
 });
