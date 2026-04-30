@@ -1,4 +1,4 @@
-import { Zap, Timer, Flame, Heart, type LucideIcon } from "lucide-react";
+import { Zap, Timer, Heart, type LucideIcon } from "lucide-react";
 
 export interface Bundle {
   id: string;
@@ -40,21 +40,6 @@ export const BUNDLES: Bundle[] = [
       "Cellular mechanism studies",
       "NAD+ pathway research",
       "Comprehensive cellular protocol",
-    ],
-  },
-  {
-    id: "performance-stack",
-    name: "GH Secretagogue Stack",
-    tagline: "GHRH/GHRP Research",
-    icon: Flame,
-    description: "CJC-1295 + Ipamorelin for growth hormone secretagogue mechanism research. Ideal for endocrine pathway studies.",
-    products: ["CJC-1295", "Ipamorelin"],
-    color: "cyan",
-    benefits: [
-      "GH secretagogue research",
-      "Endocrine pathway studies",
-      "Synergistic GHRH/GHRP combo",
-      "Extended release formula",
     ],
   },
   {

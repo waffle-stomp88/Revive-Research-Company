@@ -11,17 +11,26 @@ export const STACK_COMPONENTS: Record<string, StackComponent[]> = {
     { slug: "bpc-157", dosage: "10mg", name: "BPC-157" },
     { slug: "tb-500", dosage: "10mg", name: "TB-500" },
   ],
-  "metabolic-pathway-stack": [
-    { slug: "mots-c", dosage: "10mg", name: "MOTS-C" },
-    { slug: "rr-a3", dosage: "10mg", name: "RR-A3" },
-  ],
   "cognitive-edge-stack": [
     { slug: "semax", dosage: "5mg", name: "Semax" },
     { slug: "selank", dosage: "5mg", name: "Selank" },
   ],
-  "igf1r-anabolic-stack": [
-    { slug: "igf-1-lr3", dosage: "1mg", name: "IGF-1 LR3" },
-    { slug: "igf-des", dosage: "2mg", name: "IGF-DES" },
+  "gh-amplifier": [
+    { slug: "ipamorelin", dosage: "5mg", name: "Ipamorelin" },
+    { slug: "cjc-1295-no-dac", dosage: "2mg", name: "CJC-1295" },
+  ],
+  "glow-protocol": [
+    { slug: "bpc-157", dosage: "10mg", name: "BPC-157" },
+    { slug: "tb-500", dosage: "10mg", name: "TB-500" },
+    { slug: "ghk-cu", dosage: "50mg", name: "GHK-Cu" },
+  ],
+  "longevity-protocol": [
+    { slug: "epithalon", dosage: "10mg", name: "Epithalon" },
+    { slug: "ghk-cu", dosage: "50mg", name: "GHK-Cu" },
+  ],
+  "fat-burner": [
+    { slug: "aod-9604", dosage: "5mg", name: "AOD-9604" },
+    { slug: "5-amino-1mq", dosage: "50mg", name: "5-Amino-1MQ" },
   ],
 };
 
@@ -34,10 +43,6 @@ export const BUNDLE_COMPONENTS: Record<string, StackComponent[]> = {
     { slug: "epithalon", dosage: "10mg", name: "Epithalon" },
     { slug: "ghk-cu", dosage: "50mg", name: "GHK-Cu" },
     { slug: "nad-precursor", dosage: "100mg", name: "NAD+ Precursor" },
-  ],
-  "performance-stack": [
-    { slug: "cjc-1295-no-dac", dosage: "2mg", name: "CJC-1295" },
-    { slug: "ipamorelin", dosage: "5mg", name: "Ipamorelin" },
   ],
   "healing-protocol": [
     { slug: "bpc-157", dosage: "10mg", name: "BPC-157" },
