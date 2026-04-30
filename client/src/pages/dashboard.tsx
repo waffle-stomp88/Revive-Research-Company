@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
@@ -1204,7 +1205,7 @@ export default function Dashboard() {
                           </div>
                           <div className="flex-1">
                             <p className="font-medium text-sm">Free Shipping</p>
-                            <p className="text-xs text-muted-foreground">On all orders over $250</p>
+                            <p className="text-xs text-muted-foreground">{`On all orders over $${FREE_SHIPPING_THRESHOLD}`}</p>
                           </div>
                           <CheckCircle className="h-4 w-4 text-green-500" />
                         </div>

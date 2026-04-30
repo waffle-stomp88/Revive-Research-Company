@@ -1,8 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Truck } from "lucide-react";
 import { Link } from "wouter";
-
-const FREE_SHIPPING_THRESHOLD = 250;
+import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
 
 export function FreeShippingBanner() {
   const bannerRef = useRef<HTMLDivElement>(null);
@@ -38,7 +37,7 @@ export function FreeShippingBanner() {
       <div className="max-w-7xl mx-auto flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium">
         <Truck className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
         <span className="truncate">
-          <span className="font-bold text-red-500" style={{ animation: 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}>FREE SHIPPING</span> on orders over ${FREE_SHIPPING_THRESHOLD}
+          <span className="font-bold text-red-500" style={{ animation: 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}>FREE SHIPPING</span>{` on orders over $${FREE_SHIPPING_THRESHOLD}`}
           <span className="hidden sm:inline"> &bull; Same day shipping on orders placed before 12:00 PM CT</span>
         </span>
         <Link href="/peptides" className="ml-1 sm:ml-2 underline hover:no-underline font-semibold whitespace-nowrap flex-shrink-0">
@@ -48,5 +47,3 @@ export function FreeShippingBanner() {
     </div>
   );
 }
-
-export { FREE_SHIPPING_THRESHOLD };

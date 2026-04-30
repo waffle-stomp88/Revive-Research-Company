@@ -1,4 +1,5 @@
 import { motion, useScroll, useTransform } from "framer-motion";
+import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -426,7 +427,7 @@ function CTASection() {
 export default function Home() {
   return (
     <main>
-      <SEOHead title="Home" description="Shop third-party tested peptides for scientific research. GMP-certified compounds with Certificates of Analysis. Free shipping over $250." canonicalPath="/" />
+      <SEOHead title="Home" description={`Shop third-party tested peptides for scientific research. GMP-certified compounds with Certificates of Analysis. Free shipping over $${FREE_SHIPPING_THRESHOLD}.`} canonicalPath="/" />
       <HeroSection />
       {/* MolecularDNAVisual - hidden on mobile for performance */}
       <div className="hidden md:block">

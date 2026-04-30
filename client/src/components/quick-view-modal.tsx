@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import { X, Minus, Plus, ShoppingCart, ArrowRight, Shield, Truck, FileCheck } from "lucide-react";
@@ -122,7 +123,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                 </div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Truck className="h-3.5 w-3.5 text-[#21d8ff]" />
-                  <span>Free shipping on orders over $250</span>
+                  <span>{`Free shipping on orders over $${FREE_SHIPPING_THRESHOLD}`}</span>
                 </div>
               </div>
 

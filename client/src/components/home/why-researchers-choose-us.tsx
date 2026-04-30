@@ -1,4 +1,5 @@
 import { motion, useInView } from "framer-motion";
+import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
 import { useRef } from "react";
 import { 
   Shield, 
@@ -25,7 +26,7 @@ const reasons = [
   {
     icon: Truck,
     title: "Fast Shipping",
-    description: "2–5 business day delivery with same-day dispatch options. Free shipping over $250.",
+    description: `2–5 business day delivery with same-day dispatch options. Free shipping over $${FREE_SHIPPING_THRESHOLD}.`,
     color: "#22c55e",
   },
   {

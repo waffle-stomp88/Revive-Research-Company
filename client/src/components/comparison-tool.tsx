@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import { 
@@ -334,7 +335,7 @@ function CompareModal({ products, isOpen, onClose }: CompareModalProps) {
             <Shield className="h-4 w-4 text-[#21d8ff] flex-shrink-0 mt-0.5" />
             <p className="text-xs text-muted-foreground">
               All products include a Certificate of Analysis with third-party lab verification. 
-              Free shipping on orders over $250.
+              {`Free shipping on orders over $${FREE_SHIPPING_THRESHOLD}.`}
             </p>
           </div>
         </div>

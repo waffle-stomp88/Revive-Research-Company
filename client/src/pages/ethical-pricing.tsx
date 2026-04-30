@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
+import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -17,7 +18,7 @@ const commitments = [
   "Transparent cost breakdown",
   "Competitive with quality vendors",
   "Volume discounts clearly stated",
-  "Free shipping over $250",
+  `Free shipping over $${FREE_SHIPPING_THRESHOLD}`,
 ];
 
 export default function EthicalPricing() {

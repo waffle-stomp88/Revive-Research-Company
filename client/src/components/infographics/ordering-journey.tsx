@@ -1,4 +1,5 @@
 import { motion, useInView } from "framer-motion";
+import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
 import { useRef, useState } from "react";
 import { 
   ShoppingCart,
@@ -240,7 +241,7 @@ export function OrderingJourney() {
       >
         <h3 className="font-display font-semibold text-[#21d8ff] mb-2">Total Delivery Time</h3>
         <p className="text-sm text-muted-foreground mb-3">
-          <span className="text-[#E7FB10] font-bold">2–5 business days</span> from checkout to your door with free shipping on orders over <span className="text-[#21d8ff] font-bold">$250</span>
+          <span className="text-[#E7FB10] font-bold">2–5 business days</span> from checkout to your door with free shipping on orders over <span className="text-[#21d8ff] font-bold">${FREE_SHIPPING_THRESHOLD}</span>
         </p>
         <p className="text-xs text-muted-foreground">
           Every order includes QR-verified analysis and full tracking. Cold packs available as an optional add-on. Your package integrity is guaranteed.

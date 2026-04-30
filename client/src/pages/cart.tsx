@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
 import { motion } from "framer-motion";
 import { Link, useLocation } from "wouter";
 import { SEOHead } from "@/components/seo-head";
@@ -273,7 +274,6 @@ export default function CartPage() {
   };
 
   const subtotal = getSubtotal();
-  const FREE_SHIPPING_THRESHOLD = 250;
   const FLAT_RATE_SHIPPING = 20;
   const hasFreeShippingFromDiscount = appliedDiscount?.freeShipping || false;
   const shipping = (subtotal >= FREE_SHIPPING_THRESHOLD || hasFreeShippingFromDiscount) ? 0 : FLAT_RATE_SHIPPING;
@@ -311,7 +311,7 @@ export default function CartPage() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-12 px-3 sm:px-4 md:px-8">
-      <SEOHead title="Cart" description="Review your research compound order. Free shipping on orders over $250. Secure checkout with fast processing." canonicalPath="/cart" />
+      <SEOHead title="Cart" description={`Review your research compound order. Free shipping on orders over $${FREE_SHIPPING_THRESHOLD}. Secure checkout with fast processing.`} canonicalPath="/cart" />
       <div className="max-w-6xl mx-auto w-full">
         <motion.div
           initial={{ opacity: 0, x: -20 }}

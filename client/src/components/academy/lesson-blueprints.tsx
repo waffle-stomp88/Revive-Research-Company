@@ -1,3 +1,4 @@
+import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
 import {
   Compass,
   BookOpen,
@@ -810,7 +811,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
           illustration={<OrderingJourneyMini />}
           stats={[
             { label: "Processing", value: "24hr" },
-            { label: "Free Ship", value: "$250+" },
+            { label: "Free Ship", value: `$${FREE_SHIPPING_THRESHOLD}+` },
           ]}
         />
 
@@ -825,7 +826,7 @@ export const VISUAL_LESSONS: Record<string, () => JSX.Element> = {
               icon: ShoppingCart,
               color: "#E7FB10",
               details: ["Choose research compounds", "Select appropriate quantities", "Apply any discount codes"],
-              tip: "Orders over $250 ship free!",
+              tip: `Orders over $${FREE_SHIPPING_THRESHOLD} ship free!`,
             },
             {
               id: 2,
