@@ -19,7 +19,8 @@ import {
   AlertTriangle,
   Smartphone,
   Copy,
-  DollarSign
+  DollarSign,
+  ExternalLink
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -159,11 +160,15 @@ export default function OrderConfirmation() {
               transition={{ delay: 0.4 }}
             >
               <h1 className="font-display text-4xl md:text-5xl font-bold mb-3 bg-gradient-to-r from-[#E7FB10] to-[#21d8ff] bg-clip-text text-transparent">
-                Order Confirmed!
+                {isManualPayment && (paymentMethod === "venmo" || paymentMethod === "cashapp")
+                  ? "Order Pending"
+                  : "Order Confirmed!"}
               </h1>
               <p className="text-lg text-muted-foreground flex items-center justify-center gap-2">
                 <Sparkles className="w-5 h-5 text-[#E7FB10]" />
-                Thank you for choosing Revive Research
+                {isManualPayment && (paymentMethod === "venmo" || paymentMethod === "cashapp")
+                  ? "Complete your payment below to confirm"
+                  : "Thank you for choosing Revive Research"}
                 <Sparkles className="w-5 h-5 text-[#21d8ff]" />
               </p>
             </motion.div>
@@ -184,97 +189,247 @@ export default function OrderConfirmation() {
                 transition={{ delay: 0.45 }}
               >
                 <Card className="p-6 mb-6" style={{ borderColor: `${color}80` }}>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 rounded-lg" style={{ backgroundColor: `${color}20` }}>
-                      <DollarSign className="w-5 h-5" style={{ color }} />
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="p-3 rounded-lg" style={{ backgroundColor: `${color}20` }}>
+                      <DollarSign className="w-6 h-6" style={{ color }} />
                     </div>
                     <div>
-                      <h2 className="font-display text-xl font-semibold" style={{ color }}>Complete Your Payment</h2>
-                      <p className="text-xs text-muted-foreground">Your order is pending until payment is received</p>
+                      <h2 className="font-display text-2xl font-bold" style={{ color }}>Complete Your Payment</h2>
+                      <p className="text-sm text-muted-foreground">Your order is pending until payment is received</p>
                     </div>
                   </div>
 
-                  {/* Order Number Display */}
-                  {orderId && (
-                    <div className="rounded-lg p-4 mb-4" style={{ backgroundColor: `${color}10`, borderColor: `${color}30`, borderWidth: 1 }}>
-                      <div className="flex items-center gap-3 mb-3">
-                        <AlertTriangle className="w-4 h-4 flex-shrink-0" style={{ color }} />
-                        <span className="font-semibold text-sm">Copy your order number — paste it in the payment note</span>
-                      </div>
-                      <div
-                        className="flex items-center gap-2 p-3 rounded-md bg-background cursor-pointer md:hover:bg-muted transition-colors"
-                        onClick={() => copyOrderIdToClipboard(getShortOrderRef(orderId))}
-                        data-testid="button-copy-order-id"
+                  {isVenmo ? (
+                    /* ── Venmo: streamlined layout ── */
+                    <>
+                      {/* Amount hero */}
+                      {orderSummary?.total != null && (
+                        <div className="rounded-lg p-5 mb-4 text-center" style={{ backgroundColor: "#00AFF120", borderColor: "#00AFF140", borderWidth: 1 }}>
+                          <p className="text-sm font-semibold text-muted-foreground mb-1">Amount to send</p>
+                          <p className="font-display font-bold text-5xl" style={{ color: "#00AFF1" }}>
+                            ${orderSummary.total.toFixed(2)}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Primary action */}
+                      <Button
+                        className="w-full font-bold gap-2 mb-2"
+                        style={{ backgroundColor: "#00AFF1", color: "#fff" }}
+                        size="lg"
+                        data-testid="button-open-venmo"
+                        onClick={() => {
+                          const amount = orderSummary?.total != null ? orderSummary.total.toFixed(2) : '';
+                          const note = orderId ? getShortOrderRef(orderId) : '';
+                          const deepLink = `venmo://paycharge?txn=pay&recipients=reviveresearchco${amount ? `&amount=${amount}` : ''}${note ? `&note=${note}` : ''}`;
+                          window.location.href = deepLink;
+                          setTimeout(() => { window.open('https://venmo.com/reviveresearchco', '_blank'); }, 1500);
+                        }}
                       >
-                        <span className="font-mono font-bold text-lg flex-1" style={{ color }}>
-                          #{getShortOrderRef(orderId)}
-                        </span>
-                        <Button size="sm" variant="outline" style={{ borderColor: `${color}50` }}>
-                          {copiedOrderId ? <CheckCircle className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
-                          <span className="ml-2">{copiedOrderId ? "Copied!" : "Copy"}</span>
-                        </Button>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        This is the ONLY thing you should write in the {methodName} note — nothing else
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="rounded-lg p-4 mb-4" style={{ backgroundColor: `${color}10`, borderColor: `${color}30`, borderWidth: 1 }}>
-                    <div className="flex items-center gap-3 mb-3">
-                      <Smartphone className="w-5 h-5" style={{ color }} />
-                      <span className="font-semibold">Send payment via {methodName}:</span>
-                    </div>
-                    <div 
-                      className="flex items-center gap-2 p-3 rounded-md bg-background cursor-pointer md:hover:bg-muted transition-colors"
-                      onClick={() => copyToClipboard(paymentInfo)}
-                      data-testid="button-copy-payment-info"
-                    >
-                      <span className="font-mono font-bold text-lg flex-1" style={{ color }}>
-                        {paymentInfo}
-                      </span>
-                      <Button size="sm" variant="outline" style={{ borderColor: `${color}50` }}>
-                        {copied ? <CheckCircle className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
-                        <span className="ml-2">{copied ? "Copied!" : "Copy"}</span>
+                        <ExternalLink className="w-4 h-4" />
+                        Open in Venmo
                       </Button>
-                    </div>
-                  </div>
+                      <p className="text-sm text-muted-foreground text-center mb-5">
+                        Opens pre-filled with <span className="font-mono font-semibold" style={{ color: "#00AFF1" }}>@reviveresearchco</span>
+                        {orderSummary?.total ? ` and $${orderSummary.total.toFixed(2)}` : ""}
+                      </p>
 
-                  <div className="space-y-3 text-sm">
-                    <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: color }}>
-                        1
+                      {/* Separator */}
+                      <div className="pt-1 pb-4" style={{ borderTopColor: "#00AFF130", borderTopWidth: 1 }}>
+                        <p className="text-sm font-bold text-foreground mt-4 mb-3">One last step — add this to the Venmo note:</p>
                       </div>
-                      <p className="text-muted-foreground">Open {methodName} and send payment to <span className="font-mono font-semibold" style={{ color }}>{paymentInfo}</span></p>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: color }}>
-                        2
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">
-                          In the payment note, enter <span className="font-semibold text-foreground">ONLY</span> your order number: <span className="font-mono font-bold" style={{ color }}>{orderId ? `#${getShortOrderRef(orderId)}` : "your order #"}</span>
-                        </p>
-                        <p className="text-xs text-[#E7FB10] mt-1 flex items-center gap-1">
-                          <AlertTriangle className="h-3 w-3" />
-                          Important: Do not include any other text — only the order number
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: color }}>
-                        3
-                      </div>
-                      <p className="text-muted-foreground">We verify payment and ship — you'll receive a shipping notification once it's on the way</p>
-                    </div>
-                  </div>
 
-                  <div className="mt-4 pt-4" style={{ borderTopColor: `${color}30`, borderTopWidth: 1 }}>
-                    <p className="text-xs text-muted-foreground flex items-center gap-2">
-                      <AlertTriangle className="h-3 w-3 text-[#E7FB10]" />
-                      Your order status will update to "Paid" once we confirm your {methodName} transfer.
-                    </p>
-                  </div>
+                      {/* Order number copy */}
+                      {orderId && (
+                        <>
+                          <div
+                            className="flex items-center gap-2 p-3 rounded-md bg-background cursor-pointer md:hover:bg-muted transition-colors mb-3"
+                            onClick={() => copyOrderIdToClipboard(getShortOrderRef(orderId))}
+                            data-testid="button-copy-order-id"
+                            style={{ borderColor: "#00AFF140", borderWidth: 1 }}
+                          >
+                            <span className="font-mono font-bold text-xl flex-1" style={{ color: "#00AFF1" }}>
+                              Order #{getShortOrderRef(orderId)}
+                            </span>
+                            <Button size="sm" variant="outline" style={{ borderColor: "#00AFF150" }}>
+                              {copiedOrderId ? <CheckCircle className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                              <span className="ml-2">{copiedOrderId ? "Copied!" : "Copy"}</span>
+                            </Button>
+                          </div>
+                          <div className="flex items-center gap-2 rounded-md px-3 py-2.5 bg-[#E7FB10]/15 border border-[#E7FB10]/50 mb-4">
+                            <AlertTriangle className="w-4 h-4 flex-shrink-0 text-[#E7FB10]" />
+                            <p className="text-sm font-semibold text-[#E7FB10]">
+                              This is the <span className="underline underline-offset-2">ONLY</span> thing to write in the note — nothing else
+                            </p>
+                          </div>
+                        </>
+                      )}
+
+                      {/* Footer */}
+                      <div className="pt-4" style={{ borderTopColor: "#00AFF130", borderTopWidth: 1 }}>
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className="h-4 w-4 flex-shrink-0 text-[#E7FB10]" />
+                          <p className="text-sm font-semibold text-foreground">
+                            Your order status will update to "Paid" once we confirm your Venmo transfer.
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  ) : isCashApp ? (
+                    /* ── CashApp: streamlined layout (same pattern as Venmo) ── */
+                    <>
+                      {/* Amount hero */}
+                      {orderSummary?.total != null && (
+                        <div className="rounded-lg p-5 mb-4 text-center" style={{ backgroundColor: "#00D63220", borderColor: "#00D63240", borderWidth: 1 }}>
+                          <p className="text-sm font-semibold text-muted-foreground mb-1">Amount to send</p>
+                          <p className="font-display font-bold text-5xl" style={{ color: "#00D632" }}>
+                            ${orderSummary.total.toFixed(2)}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Primary action */}
+                      <Button
+                        className="w-full font-bold gap-2 mb-2"
+                        style={{ backgroundColor: "#00D632", color: "#000" }}
+                        size="lg"
+                        data-testid="button-open-cashapp"
+                        onClick={() => {
+                          const amount = orderSummary?.total != null ? orderSummary.total.toFixed(2) : '';
+                          const url = amount
+                            ? `https://cash.app/$reviveresearchco/${amount}`
+                            : `https://cash.app/$reviveresearchco`;
+                          window.open(url, '_blank');
+                        }}
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        Open in CashApp
+                      </Button>
+                      <p className="text-sm text-muted-foreground text-center mb-5">
+                        Opens pre-filled with <span className="font-mono font-semibold" style={{ color: "#00D632" }}>$reviveresearchco</span>
+                        {orderSummary?.total ? ` and $${orderSummary.total.toFixed(2)}` : ""}
+                      </p>
+
+                      {/* Separator */}
+                      <div className="pt-1 pb-4" style={{ borderTopColor: "#00D63230", borderTopWidth: 1 }}>
+                        <p className="text-sm font-bold text-foreground mt-4 mb-3">One last step — add this to the CashApp note:</p>
+                      </div>
+
+                      {/* Order number copy */}
+                      {orderId && (
+                        <>
+                          <div
+                            className="flex items-center gap-2 p-3 rounded-md bg-background cursor-pointer md:hover:bg-muted transition-colors mb-3"
+                            onClick={() => copyOrderIdToClipboard(getShortOrderRef(orderId))}
+                            data-testid="button-copy-order-id"
+                            style={{ borderColor: "#00D63240", borderWidth: 1 }}
+                          >
+                            <span className="font-mono font-bold text-xl flex-1" style={{ color: "#00D632" }}>
+                              Order #{getShortOrderRef(orderId)}
+                            </span>
+                            <Button size="sm" variant="outline" style={{ borderColor: "#00D63250" }}>
+                              {copiedOrderId ? <CheckCircle className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                              <span className="ml-2">{copiedOrderId ? "Copied!" : "Copy"}</span>
+                            </Button>
+                          </div>
+                          <div className="flex items-center gap-2 rounded-md px-3 py-2.5 bg-[#E7FB10]/15 border border-[#E7FB10]/50 mb-4">
+                            <AlertTriangle className="w-4 h-4 flex-shrink-0 text-[#E7FB10]" />
+                            <p className="text-sm font-semibold text-[#E7FB10]">
+                              This is the <span className="underline underline-offset-2">ONLY</span> thing to write in the note — nothing else
+                            </p>
+                          </div>
+                        </>
+                      )}
+
+                      {/* Footer */}
+                      <div className="pt-4" style={{ borderTopColor: "#00D63230", borderTopWidth: 1 }}>
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className="h-4 w-4 flex-shrink-0 text-[#E7FB10]" />
+                          <p className="text-sm font-semibold text-foreground">
+                            Your order status will update to "Paid" once we confirm your CashApp transfer.
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    /* ── Zelle: manual steps layout ── */
+                    <>
+                      {/* Order Number Display */}
+                      {orderId && (
+                        <div className="rounded-lg p-4 mb-4" style={{ backgroundColor: `${color}10`, borderColor: `${color}30`, borderWidth: 1 }}>
+                          <div className="flex items-center gap-2 mb-3">
+                            <AlertTriangle className="w-4 h-4 flex-shrink-0" style={{ color }} />
+                            <span className="text-sm font-semibold text-muted-foreground">Copy your order number — paste it in the payment note</span>
+                          </div>
+                          <div
+                            className="flex items-center gap-2 p-3 rounded-md bg-background cursor-pointer md:hover:bg-muted transition-colors"
+                            onClick={() => copyOrderIdToClipboard(getShortOrderRef(orderId))}
+                            data-testid="button-copy-order-id"
+                          >
+                            <span className="font-mono font-bold text-xl flex-1" style={{ color }}>
+                              Order #{getShortOrderRef(orderId)}
+                            </span>
+                            <Button size="sm" variant="outline" style={{ borderColor: `${color}50` }}>
+                              {copiedOrderId ? <CheckCircle className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                              <span className="ml-2">{copiedOrderId ? "Copied!" : "Copy"}</span>
+                            </Button>
+                          </div>
+                          <div className="flex items-center gap-2 mt-3 rounded-md px-3 py-2.5 bg-[#E7FB10]/15 border border-[#E7FB10]/50">
+                            <AlertTriangle className="w-4 h-4 flex-shrink-0 text-[#E7FB10]" />
+                            <p className="text-sm font-semibold text-[#E7FB10]">
+                              This is the <span className="underline underline-offset-2">ONLY</span> thing you should write in the {methodName} note — nothing else
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="rounded-lg p-4 mb-4" style={{ backgroundColor: `${color}10`, borderColor: `${color}30`, borderWidth: 1 }}>
+                        <div className="flex items-center gap-2 mb-3">
+                          <Smartphone className="w-4 h-4" style={{ color }} />
+                          <span className="text-sm font-semibold text-muted-foreground">Send payment via {methodName}:</span>
+                        </div>
+                        <div
+                          className="flex items-center gap-2 p-3 rounded-md bg-background cursor-pointer md:hover:bg-muted transition-colors"
+                          onClick={() => copyToClipboard(paymentInfo)}
+                          data-testid="button-copy-payment-info"
+                        >
+                          <span className="font-mono font-bold text-xl flex-1" style={{ color }}>
+                            {paymentInfo}
+                          </span>
+                          <Button size="sm" variant="outline" style={{ borderColor: `${color}50` }}>
+                            {copied ? <CheckCircle className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                            <span className="ml-2">{copied ? "Copied!" : "Copy"}</span>
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="flex items-start gap-3">
+                          <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0 mt-0.5" style={{ backgroundColor: color }}>1</div>
+                          <p className="text-sm text-foreground">Open {methodName} and send payment to <span className="font-mono font-semibold" style={{ color }}>{paymentInfo}</span></p>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0 mt-0.5" style={{ backgroundColor: color }}>2</div>
+                          <p className="text-sm text-foreground">
+                            In the payment note, enter <span className="font-bold underline underline-offset-2">ONLY</span> your order number: <span className="font-mono font-semibold" style={{ color }}>{orderId ? `#${getShortOrderRef(orderId)}` : "your order #"}</span>
+                          </p>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0 mt-0.5" style={{ backgroundColor: color }}>3</div>
+                          <p className="text-sm text-foreground">We verify payment and ship — you'll receive a shipping notification once it's on the way</p>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 pt-4" style={{ borderTopColor: `${color}30`, borderTopWidth: 1 }}>
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className="h-4 w-4 flex-shrink-0 text-[#E7FB10]" />
+                          <p className="text-sm font-semibold text-foreground">
+                            Your order status will update to "Paid" once we confirm your {methodName} transfer.
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </Card>
               </motion.div>
             );
@@ -380,7 +535,9 @@ export default function OrderConfirmation() {
                   <div>
                     <p className="font-semibold text-sm">Processing Time</p>
                     <p className="text-sm text-muted-foreground">
-                      Orders are typically processed within 24 hours on business days.
+                      {isManualPayment
+                        ? "Processing begins once your payment is confirmed."
+                        : "Orders are typically processed within 24 hours on business days."}
                     </p>
                   </div>
                 </div>
@@ -392,7 +549,7 @@ export default function OrderConfirmation() {
                   <div>
                     <p className="font-semibold text-sm">Shipping</p>
                     <p className="text-sm text-muted-foreground">
-                      You'll receive tracking information once your order ships (2 business days).
+                      You'll receive tracking information once your order ships (2–5 business days).
                     </p>
                   </div>
                 </div>

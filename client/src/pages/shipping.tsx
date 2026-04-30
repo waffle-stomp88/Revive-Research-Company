@@ -23,7 +23,7 @@ const SHIPPING_INFO = {
   processingTime: "24 hours",
   sameDayCutoff: "12:00 PM CT",
   carrier: "USPS Priority / UPS Ground",
-  transitTime: "2 business days"
+  transitTime: "2–5 business days"
 };
 
 export default function Shipping() {

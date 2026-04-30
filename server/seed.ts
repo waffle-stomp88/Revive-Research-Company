@@ -402,7 +402,7 @@ Orders placed **before 12:00 PM Central Time** on business days ship the same da
 All other orders ship within 24 business hours of placement.
 
 ### Delivery Timeframes
-- **Standard Delivery:** 2 business days
+- **Standard Delivery:** 2–5 business days
 
 ## Packaging & Handling
 
