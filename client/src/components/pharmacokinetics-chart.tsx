@@ -111,6 +111,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
   const [crosshairSvgX, setCrosshairSvgX] = useState<number | null>(null);
   const chartWrapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
+  const lastInteractionWasTouch = useRef(false);
 
   const isSingleCompound = peptides.length === 1;
 
@@ -134,6 +135,15 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
       writeStoredPin(stackId, name);
     }
   }, [pinnedIdx, stackId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    const dismiss = () => {
+      setTooltip(null);
+      setCrosshairSvgX(null);
+    };
+    window.addEventListener('scroll', dismiss, { passive: true });
+    return () => window.removeEventListener('scroll', dismiss);
+  }, []);
 
   const entries = peptides.map((p, i) => ({
     peptide: p,
@@ -276,6 +286,10 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
   }, []);
 
   const handleChartMove = useCallback((e: React.MouseEvent) => {
+    if (lastInteractionWasTouch.current) {
+      lastInteractionWasTouch.current = false;
+      return;
+    }
     const svgX = svgClientToX(e.clientX, e.clientY);
     if (svgX === null) return;
     setCrosshairSvgX(svgX);
@@ -321,6 +335,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
   }, []);
 
   const handleChartTouch = useCallback((e: React.TouchEvent) => {
+    lastInteractionWasTouch.current = true;
     e.preventDefault();
     const touch = e.touches[0];
     if (!touch || !svgRef.current) return;
