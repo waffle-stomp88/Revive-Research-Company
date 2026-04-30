@@ -1370,11 +1370,26 @@ export default function ProductDetail() {
                         rel="noopener noreferrer"
                         className="flex items-center gap-1 text-[#21d8ff]/80 hover:text-[#21d8ff] transition-colors"
                         data-testid="link-cas-pubchem"
+                        title={
+                          profile.pubchemUrl
+                            ? profile.pubchemUrl.includes("/substance/")
+                              ? "PubChem Substance record"
+                              : "PubChem Compound record"
+                            : "Search PubChem"
+                        }
                       >
                         <span className="text-xs text-muted-foreground mr-0.5">CAS</span>
                         <span className="font-semibold">{profile.casNumber}</span>
                         <ExternalLink className="h-3 w-3" />
                       </a>
+                      {profile.pubchemUrl?.includes("/substance/") && (
+                        <span
+                          className="text-xs text-muted-foreground italic"
+                          data-testid="label-pubchem-substance"
+                        >
+                          Substance record
+                        </span>
+                      )}
                       {profile.sequence && (
                         <Tooltip>
                           <TooltipTrigger asChild>

@@ -475,9 +475,22 @@ export default function CompoundAudit() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 data-testid={`link-pubchem-${product.slug}`}
-                                className="inline-flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                                title={
+                                  profile.pubchemUrl.includes("/substance/")
+                                    ? "PubChem Substance record"
+                                    : "PubChem Compound record"
+                                }
+                                className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
                               >
                                 <ExternalLink className="w-4 h-4" />
+                                {profile.pubchemUrl.includes("/substance/") && (
+                                  <span
+                                    className="text-xs"
+                                    data-testid={`label-pubchem-type-${product.slug}`}
+                                  >
+                                    Substance
+                                  </span>
+                                )}
                               </a>
                             ) : (
                               <span className="text-muted-foreground text-xs">—</span>
