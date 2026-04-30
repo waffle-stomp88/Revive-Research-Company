@@ -46,15 +46,6 @@ function nameToSlug(name) {
     .replace(/^-+|-+$/g, "");
 }
 
-function extractResearchStackIds(src) {
-  const ids = [];
-  const matches = src.matchAll(/id:\s*"([^"]+)"/g);
-  for (const m of matches) {
-    ids.push(m[1]);
-  }
-  return ids;
-}
-
 function extractPrebuiltStackPeptides(src) {
   const stacks = [];
   const stackBlocks = src.matchAll(/\{\s*id:\s*"([^"]+)"[\s\S]*?peptides:\s*\[([\s\S]*?)\]/g);
