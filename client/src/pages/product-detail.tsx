@@ -170,7 +170,7 @@ export default function ProductDetail() {
   const twoColumnRef = useRef<HTMLDivElement>(null);
   const [showStickyPurchase, setShowStickyPurchase] = useState(false);
   const [quickAddSuccess, setQuickAddSuccess] = useState<Record<string, boolean>>({});
-  const [activeResearchTab, setActiveResearchTab] = useState<"overview" | "pk" | "cert" | "partners">("pk");
+  const [activeResearchTab, setActiveResearchTab] = useState<"overview" | "pk" | "cert" | "partners">("overview");
 
   const { data: product, isLoading, error } = useQuery<Product>({
     queryKey: ["/api/products", params.id],
@@ -416,6 +416,20 @@ export default function ProductDetail() {
   }, [productId]);
 
   const isPremiumPilot = product?.slug === "bpc-157";
+
+  const hasPkData = product
+    ? product.slug
+      ? COMBO_STACK_CONSTITUENTS[product.slug]
+        ? COMBO_STACK_CONSTITUENTS[product.slug].every((n) => !!getHalfLifeByName(n))
+        : !!getHalfLifeByName(product.name)
+      : !!getHalfLifeByName(product.name)
+    : false;
+
+  useEffect(() => {
+    if (!hasPkData && activeResearchTab === "pk") {
+      setActiveResearchTab("overview");
+    }
+  }, [hasPkData, activeResearchTab]);
 
   // Feature 1: Sticky desktop purchase bar — scroll handler
   useEffect(() => {
@@ -768,39 +782,6 @@ export default function ProductDetail() {
               </motion.section>
             )}
 
-            {/* Usage Information - DESKTOP ONLY (non-premium only; premium shows it in overview tab) */}
-            {!isPremiumPilot && product.usage && (
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.14 }}
-                className="mt-16 pt-6 hidden md:block relative z-10 bg-background"
-                data-testid="section-usage-desktop"
-              >
-                <h3 className="font-display font-semibold text-lg mb-4">Usage Information</h3>
-                <p className="text-muted-foreground leading-relaxed mb-4">
-                  {product.usage}
-                </p>
-                <div className="py-2">
-                  <Link href="/guides/storage-101">
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="inline-block"
-                    >
-                      <Button 
-                        className="gap-2 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold md:hover:shadow-[0_0_20px_rgba(33,216,255,0.6)] transition-shadow" 
-                        data-testid="link-learn-storage-desktop"
-                      >
-                        <BookOpen className="h-4 w-4" />
-                        Learn More: Storage Best Practices
-                        <ChevronRight className="h-3 w-3" />
-                      </Button>
-                    </motion.div>
-                  </Link>
-                </div>
-              </motion.section>
-            )}
 
           </motion.div>
 
@@ -850,12 +831,6 @@ export default function ProductDetail() {
               );
             })()}
 
-            {/* Description - Desktop only (mobile shows below buttons) */}
-            {!isPremiumPilot && (
-              <p className="hidden md:block text-sm text-muted-foreground leading-relaxed mb-4" data-testid="text-product-description">
-                {product.description}
-              </p>
-            )}
 
             <div className="grid grid-cols-2 gap-3 mb-3 md:mb-4">
               {product.dosageOptions && product.dosageOptions.length > 0 && (
@@ -1227,25 +1202,6 @@ export default function ProductDetail() {
               </motion.div>
             )}
 
-            {/* Mobile-only collapsible description - shown below purchase actions (hidden for isPremiumPilot — moves to lower zone) */}
-            {!isPremiumPilot && <Collapsible className="md:hidden mt-4">
-              <CollapsibleTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className="w-full justify-between text-sm"
-                  data-testid="button-toggle-description-mobile"
-                >
-                  <span className="text-muted-foreground">About this product</span>
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="pt-2">
-                <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-product-description-mobile">
-                  {product.description}
-                </p>
-              </CollapsibleContent>
-            </Collapsible>}
 
             <Separator className="my-4 md:my-6" />
 
@@ -1318,48 +1274,6 @@ export default function ProductDetail() {
               </Collapsible>
             )}
 
-            {/* Key Benefits — right column list for non-premium; chips moved to left col for isPremiumPilot */}
-            {!isPremiumPilot && benefits.length > 0 && (
-              <div className="mb-8">
-                <h3 className="font-display font-semibold text-lg mb-4">Key Benefits</h3>
-                <ul className="space-y-3">
-                  {benefits.map((benefit, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-[#E7FB10] mt-0.5 flex-shrink-0" />
-                      <span className="text-muted-foreground">{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Usage Information - MOBILE ONLY (hidden for isPremiumPilot — moves to lower zone) */}
-            {!isPremiumPilot && product.usage && (
-              <div className="mb-8 overflow-visible md:hidden">
-                <h3 className="font-display font-semibold text-lg mb-4">Usage Information</h3>
-                <p className="text-muted-foreground leading-relaxed mb-4">
-                  {product.usage}
-                </p>
-                <div className="py-2 px-1 -mx-1">
-                  <Link href="/guides/storage-101">
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="inline-block"
-                    >
-                      <Button 
-                        className="gap-2 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold transition-shadow ml-4" 
-                        data-testid="link-learn-storage"
-                      >
-                        <BookOpen className="h-4 w-4" />
-                        Learn More: Storage Best Practices
-                        <ChevronRight className="h-3 w-3" />
-                      </Button>
-                    </motion.div>
-                  </Link>
-                </div>
-              </div>
-            )}
           </motion.div>
         </div>
 
@@ -1383,15 +1297,14 @@ export default function ProductDetail() {
           </div>
         </Card>
 
-        {/* === RESEARCH ZONE (BPC-157 premium pilot) or FLAT SECTIONS (all other products) === */}
+        {/* === RESEARCH ZONE === */}
 
-        {isPremiumPilot ? (
-          <>
-            {/* Zone separator */}
-            <div className="mt-8 mb-0" />
+        <>
+          {/* Zone separator */}
+          <div className="mt-8 mb-0" />
 
-            {/* Research container */}
-            <div className="rounded-xl mt-0 px-4 md:px-8 py-8 border border-border/30" style={{ background: "linear-gradient(135deg, rgba(157,78,221,0.07) 0%, rgba(10,10,18,0.6) 40%, rgba(33,216,255,0.05) 100%)" }}>
+          {/* Research container */}
+          <div className="rounded-xl mt-0 px-4 md:px-8 py-8 border border-border/30" style={{ background: "linear-gradient(135deg, rgba(157,78,221,0.07) 0%, rgba(10,10,18,0.6) 40%, rgba(33,216,255,0.05) 100%)" }}>
 
               {/* Tab navigation */}
               <nav
@@ -1403,10 +1316,10 @@ export default function ProductDetail() {
                   {(
                     [
                       { key: "overview", label: "Overview", testId: "tab-overview" },
-                      { key: "pk", label: "Pharmacokinetics", testId: "tab-pk" },
+                      ...(hasPkData ? [{ key: "pk", label: "Pharmacokinetics", testId: "tab-pk" }] : []),
                       { key: "cert", label: "Certification", testId: "tab-cert" },
                       { key: "partners", label: "Research Partners", testId: "tab-partners" },
-                    ] as const
+                    ] as { key: "overview" | "pk" | "cert" | "partners"; label: string; testId: string }[]
                   ).map((tab) => (
                     <button
                       key={tab.key}
@@ -1456,7 +1369,7 @@ export default function ProductDetail() {
                         <span className="font-semibold">{profile.molecularWeight}</span>
                       </div>
                       <a
-                        href="https://pubchem.ncbi.nlm.nih.gov/compound/9915854"
+                        href={profile.pubchemUrl ?? `https://pubchem.ncbi.nlm.nih.gov/#query=${encodeURIComponent(profile.casNumber)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-1 text-[#21d8ff]/80 hover:text-[#21d8ff] transition-colors"
@@ -1526,9 +1439,15 @@ export default function ProductDetail() {
               {activeResearchTab === "pk" && <section data-testid="section-pk-panel">
                 {/* PK Chart */}
                 {(() => {
-                  const hasPkData = !!getHalfLifeByName(product.name);
-                  if (!hasPkData) return null;
-                  const pkPeptides = [{ name: product.name, description: product.description || "" }];
+                  const constituentNames = product.slug ? COMBO_STACK_CONSTITUENTS[product.slug] : undefined;
+                  let pkPeptides: { name: string; description: string }[];
+                  if (constituentNames) {
+                    if (!constituentNames.every((n) => !!getHalfLifeByName(n))) return null;
+                    pkPeptides = constituentNames.map((n) => ({ name: n, description: "" }));
+                  } else {
+                    if (!getHalfLifeByName(product.name)) return null;
+                    pkPeptides = [{ name: product.name, description: product.description || "" }];
+                  }
                   return (
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
@@ -1891,316 +1810,6 @@ export default function ProductDetail() {
 
             </div>
           </>
-        ) : (
-          <>
-            {/* Non-premium: Storage & Stability */}
-            {storageProfile && (
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.17 }}
-                className="mt-8"
-                data-testid="section-storage"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-                  <div className="flex items-center gap-2">
-                    <Thermometer className="h-4 w-4 text-[#9d4edd]" />
-                    <h2 className="font-display text-base font-semibold tracking-wide uppercase text-muted-foreground">Storage & Stability</h2>
-                  </div>
-                  <Link href="/guides/storage-101">
-                    <Button variant="ghost" size="sm" className="text-xs gap-1 text-muted-foreground" data-testid="link-storage-guide">
-                      Storage 101 <ChevronRight className="h-3 w-3" />
-                    </Button>
-                  </Link>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border border border-border rounded-lg overflow-hidden" data-testid="card-storage-temp">
-                  <div className="flex items-center gap-3 px-4 py-3">
-                    <Snowflake className="h-4 w-4 text-[#9d4edd] flex-shrink-0" />
-                    <div>
-                      <p className="text-xs text-muted-foreground">Temperature</p>
-                      <p className="text-sm font-semibold">{storageProfile.storageTempDry || "Refrigerated"}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 px-4 py-3" data-testid="card-stability">
-                    <Clock className="h-4 w-4 text-[#9d4edd] flex-shrink-0" />
-                    <div>
-                      <p className="text-xs text-muted-foreground">Stability</p>
-                      <p className="text-sm font-semibold">{storageProfile.stabilityWindowDry || "24 months"}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 px-4 py-3" data-testid="card-light-sensitive">
-                    <Eye className="h-4 w-4 text-[#9d4edd] flex-shrink-0" />
-                    <div>
-                      <p className="text-xs text-muted-foreground">Light</p>
-                      <p className="text-sm font-semibold">{storageProfile.lightSensitivity || "Protect"}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 px-4 py-3" data-testid="card-form">
-                    <Beaker className="h-4 w-4 text-[#9d4edd] flex-shrink-0" />
-                    <div>
-                      <p className="text-xs text-muted-foreground">Form</p>
-                      <p className="text-sm font-semibold">{storageProfile.powderAppearance || "Lyophilized"}</p>
-                    </div>
-                  </div>
-                </div>
-                {storageProfile.handlingInstructions && (
-                  <p className="mt-2 text-xs text-muted-foreground px-1" data-testid="card-handling-notes">
-                    <span className="font-medium text-foreground/70">Note: </span>
-                    {storageProfile.handlingInstructions}
-                  </p>
-                )}
-              </motion.section>
-            )}
-
-            {/* Non-premium: COA Section */}
-            {productCoas.length > 0 && (
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.18 }}
-                className="mt-8"
-                data-testid="section-batches"
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <FileCheck className="h-6 w-6 text-[#9d4edd]" />
-                    <h2 className="font-display text-2xl font-bold">Certificates of Analysis</h2>
-                  </div>
-                  <Link href="/coa-library">
-                    <Button variant="outline" size="sm" className="border-[#9d4edd]/30 hover:border-[#9d4edd]" data-testid="link-view-all-coas">
-                      View All COAs
-                      <ExternalLink className="h-4 w-4 ml-2" />
-                    </Button>
-                  </Link>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {productCoas.slice(0, 4).map((coa) => (
-                    <Card
-                      key={coa.id}
-                      className="p-4 border-[#9d4edd]/20 hover:border-[#9d4edd]/40 transition-colors"
-                      data-testid={`card-coa-${coa.id}`}
-                    >
-                      <div className="flex items-start justify-between mb-3">
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-mono font-bold text-sm">{coa.batchNumber}</span>
-                            {coa.dosage && (
-                              <Badge variant="outline" className="text-xs border-[#9d4edd]/30">{coa.dosage}</Badge>
-                            )}
-                            {coa.verified && (
-                              <Badge className="bg-green-500/20 text-green-400 text-xs">Verified</Badge>
-                            )}
-                          </div>
-                          <p className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            Tested: {coa.testDate}
-                          </p>
-                        </div>
-                        <Link href={`/batch?batch=${coa.batchNumber}`}>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="border-2 border-[#9d4edd] text-[#9d4edd] font-semibold hover:bg-[#9d4edd]/10 hover:border-[#9d4edd] h-9 gap-2 px-3"
-                            data-testid={`button-verify-coa-${coa.id}`}
-                          >
-                            <Eye className="h-4 w-4" />
-                            Verify
-                          </Button>
-                        </Link>
-                      </div>
-                      <div className="space-y-2">
-                        <p className="text-xs font-medium text-muted-foreground">Test Results:</p>
-                        <div className="flex flex-wrap gap-2">
-                          <Badge variant="outline" className="text-xs border-[#9d4edd]/30">
-                            Purity: {coa.purity}
-                          </Badge>
-                          <Badge variant="outline" className="text-xs border-[#9d4edd]/30">
-                            Lab: {coa.labName}
-                          </Badge>
-                        </div>
-                        {coa.labVerificationUrl && (
-                          <a href={coa.labVerificationUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-[#9d4edd] hover:underline mt-1" data-testid={`link-verify-lab-${coa.batchNumber}`}>
-                            <ExternalLink className="h-3 w-3" />
-                            Verify with Lab
-                          </a>
-                        )}
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              </motion.section>
-            )}
-
-            {/* Non-premium: Synergy Recommendations Section */}
-            {product && (() => {
-              const synergyPartners = getSynergyPartners(product.name);
-              if (synergyPartners.length === 0) return null;
-              const matchingProducts = allProducts.filter((p: Product) => {
-                if (p.category === "Research Stacks" || p.category === "Supplies" || p.category === "Research Compounds") return false;
-                const normalizedProductName = normalizePeptideName(p.name);
-                return synergyPartners.some(sp =>
-                  normalizePeptideName(sp.partner) === normalizedProductName ||
-                  normalizedProductName.includes(normalizePeptideName(sp.partner)) ||
-                  normalizePeptideName(sp.partner).includes(normalizedProductName)
-                );
-              });
-              if (matchingProducts.length === 0) return null;
-              return (
-                <motion.section
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.2 }}
-                  className="mt-8"
-                  data-testid="section-synergy"
-                >
-                  <div className="flex flex-wrap items-center gap-3 mb-6">
-                    <Layers className="h-6 w-6 text-[#22c55e]" />
-                    <h2 className="font-display text-2xl font-bold" data-testid="text-synergy-heading">Works Well With</h2>
-                  </div>
-                  <p className="text-muted-foreground mb-6" data-testid="text-synergy-description">
-                    Research-backed pairings with {product.name} based on complementary mechanisms of action.
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
-                    {matchingProducts.slice(0, 3).map((partnerProduct: Product) => {
-                      const partnerSynergy = synergyPartners.find(sp =>
-                        normalizePeptideName(sp.partner) === normalizePeptideName(partnerProduct.name) ||
-                        normalizePeptideName(partnerProduct.name).includes(normalizePeptideName(sp.partner)) ||
-                        normalizePeptideName(sp.partner).includes(normalizePeptideName(partnerProduct.name))
-                      );
-                      const pairingReason = getTopPairingForProduct(product.name, partnerProduct.name);
-                      const score = partnerSynergy?.synergyBonus ?? 0;
-                      const tier = score >= 90
-                        ? { label: "Legendary", color: "#E7FB10", bg: "rgba(231,251,16,0.15)", border: "rgba(231,251,16,0.3)" }
-                        : score >= 85
-                        ? { label: "Great", color: "#22c55e", bg: "rgba(34,197,94,0.15)", border: "rgba(34,197,94,0.3)" }
-                        : score >= 75
-                        ? { label: "Good", color: "#21d8ff", bg: "rgba(33,216,255,0.15)", border: "rgba(33,216,255,0.3)" }
-                        : { label: "Basic", color: "#f97316", bg: "rgba(249,115,22,0.15)", border: "rgba(249,115,22,0.3)" };
-                      const isLegendary = score >= 90;
-                      return (
-                        <Link key={partnerProduct.id} href={`/peptides/${partnerProduct.slug || partnerProduct.id}`} className="h-full" data-testid={`link-synergy-${partnerProduct.id}`}>
-                          <Card
-                            className="p-4 cursor-pointer hover-elevate h-full transition-shadow duration-300"
-                            style={{
-                              borderColor: tier.border,
-                              ...(isLegendary ? { boxShadow: `0 0 12px ${tier.bg}, 0 0 4px ${tier.bg}` } : {}),
-                            }}
-                            data-testid={`card-synergy-${partnerProduct.id}`}
-                          >
-                            <div className="flex flex-wrap items-start gap-4 h-full">
-                              <div className="w-16 h-16 rounded-lg overflow-hidden bg-card flex-shrink-0">
-                                <img
-                                  src={partnerProduct.imageUrl || productImage}
-                                  alt={partnerProduct.name}
-                                  className="w-full h-full object-cover"
-                                  data-testid={`img-synergy-${partnerProduct.id}`}
-                                />
-                              </div>
-                              <div className="flex-1 min-w-0 flex flex-col h-full">
-                                <p className="font-medium text-sm truncate" data-testid={`text-synergy-name-${partnerProduct.id}`}>
-                                  {partnerProduct.name}
-                                </p>
-                                {partnerSynergy && (
-                                  <Badge
-                                    className="mt-2 text-xs no-default-hover-elevate no-default-active-elevate"
-                                    style={{ backgroundColor: tier.bg, color: tier.color, borderColor: tier.border }}
-                                    data-testid={`badge-synergy-stack-${partnerProduct.id}`}
-                                  >
-                                    <Zap className="h-3 w-3 mr-1" />
-                                    {partnerSynergy.stack.name} • {partnerSynergy.synergyBonus}% {tier.label}
-                                  </Badge>
-                                )}
-                                {pairingReason && (
-                                  <p className="text-xs text-muted-foreground mt-2 line-clamp-2 flex-1" data-testid={`text-pairing-reason-${partnerProduct.id}`}>
-                                    {pairingReason.mechanism}
-                                  </p>
-                                )}
-                                {!pairingReason && <div className="flex-1" />}
-                                <div className="flex items-center justify-between mt-2 mt-auto gap-2">
-                                  <p className="text-sm font-bold text-[#E7FB10]" data-testid={`text-synergy-price-${partnerProduct.id}`}>
-                                    {(() => {
-                                      const displayPrice = Number(partnerProduct.price) > 0
-                                        ? Number(partnerProduct.price)
-                                        : (partnerProduct as any).minPrice ? Number((partnerProduct as any).minPrice) : 0;
-                                      return displayPrice > 0 ? <>From ${displayPrice.toFixed(2)}</> : null;
-                                    })()}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          </Card>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                  <div className="mt-6 flex justify-center">
-                    <Link href="/research-stacks?tab=custom" data-testid="link-build-custom-stack">
-                      <motion.div
-                        className="inline-block relative"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.98 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                      >
-                        <motion.div
-                          className="absolute inset-0 rounded-md bg-[#21d8ff]/40 blur-xl pointer-events-none"
-                          animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.15, 1] }}
-                          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                        />
-                        <Button
-                          size="lg"
-                          className="relative font-display gap-3 bg-gradient-to-r from-[#21d8ff] to-[#0ea5e9] border border-[#21d8ff] text-black shadow-lg shadow-[#21d8ff]/30"
-                          data-testid="button-build-custom-stack"
-                        >
-                          <Layers className="h-5 w-5" />
-                          Build a Custom Stack
-                          <ChevronRight className="h-5 w-5" />
-                        </Button>
-                      </motion.div>
-                    </Link>
-                  </div>
-                </motion.section>
-              );
-            })()}
-          </>
-        )}
-
-        {/* Plasma Concentration Profile Section — shown here for non-premium-pilot only */}
-        {!isPremiumPilot && (() => {
-          // For recognized combo stacks, show individual curves for each constituent
-          // compound (matching research-stack detail page behaviour). For single
-          // products, fall back to the composite / single entry as before.
-          const constituentNames = product.slug ? COMBO_STACK_CONSTITUENTS[product.slug] : undefined;
-          let pkPeptides: { name: string; description: string }[];
-          if (constituentNames) {
-            // Only render the chart if every constituent has PK data
-            if (!constituentNames.every((n) => !!getHalfLifeByName(n))) return null;
-            pkPeptides = constituentNames.map((n) => ({ name: n, description: "" }));
-          } else {
-            if (!getHalfLifeByName(product.name)) return null;
-            pkPeptides = [{ name: product.name, description: product.description || "" }];
-          }
-          return (
-            <motion.section
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.22 }}
-              className="mt-12"
-              data-testid="section-pk-chart"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <Clock className="h-6 w-6 text-[#21d8ff] flex-shrink-0" />
-                <h2 className="font-display text-2xl font-bold flex-1">Plasma Concentration Profile</h2>
-              </div>
-              <p className="text-sm text-muted-foreground mb-4">
-                Published pharmacokinetic profile based on primary literature.
-              </p>
-              <PharmacokineticsChart
-                peptides={pkPeptides}
-                stackId={product.slug || product.id.toString()}
-              />
-            </motion.section>
-          );
-        })()}
 
       </div>
       

@@ -4,6 +4,7 @@ export interface CompoundProfile {
   formula: string;
   molecularWeight: string;
   casNumber: string;
+  pubchemUrl?: string;
   sequence?: string;
   aminoAcids?: number;
   mechanismDescriptor?: string;
@@ -16,6 +17,7 @@ const compoundProfiles: CompoundProfile[] = [
     formula: "C\u2086\u2082H\u2089\u2088N\u2081\u2086O\u2082\u2082",
     molecularWeight: "1419.55 Da",
     casNumber: "137525-51-0",
+    pubchemUrl: "https://pubchem.ncbi.nlm.nih.gov/compound/9915854",
     sequence: "Gly-Glu-Pro-Pro-Pro-Gly-Lys-Pro-Ala-Asp-Asp-Ala-Gly-Leu-Val",
     aminoAcids: 15,
     mechanismDescriptor: "Pentadecapeptide · synthetic BPC fragment · VEGF / EGF / FAK pathway modulator",
