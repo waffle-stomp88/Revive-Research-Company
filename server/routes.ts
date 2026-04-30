@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import type { Express } from "express";
 import { FREE_SHIPPING_THRESHOLD, FLAT_RATE_SHIPPING } from "@shared/constants";
+import { calculateTax } from "@shared/taxRates";
 import express from "express";
 import { createServer, type Server } from "http";
 import path from "path";
@@ -8,7 +9,7 @@ import fs from "fs";
 import { storage, resolveDisplayPrice } from "./storage";
 import { db } from "./db";
 import { eq, desc, sql } from "drizzle-orm";
-import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertNewsletterSubscriberSchema, subscriptions, savedStacks, insertSavedStackSchema } from "@shared/schema";
+import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertNewsletterSubscriberSchema, subscriptions, orders as ordersTable, savedStacks, insertSavedStackSchema } from "@shared/schema";
 import { setupAuth, isAuthenticated, verifyAuth0Token } from "./auth0Auth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
@@ -26,6 +27,7 @@ import {
   handlePayPalWebhook,
   SUBSCRIPTION_DISCOUNTS,
   isPayPalSandbox,
+  getPaypalOrderDetails,
 } from "./paypal";
 import OpenAI from "openai";
 import { z } from "zod";
@@ -309,8 +311,41 @@ export async function registerRoutes(
     await createPayPalSubscription(req, res);
   });
 
-  app.post("/api/subscriptions/cancel", async (req, res) => {
-    await cancelPayPalSubscription(req, res);
+  app.post("/api/subscriptions/cancel", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const { subscriptionId } = req.body;
+      if (!subscriptionId) {
+        return res.status(400).json({ error: "Subscription ID is required" });
+      }
+
+      // Verify the subscription exists and belongs to the authenticated user.
+      // This prevents one user from cancelling another user's subscription
+      // using only a guessed or leaked PayPal subscription ID.
+      const [subscription] = await db.select().from(subscriptions)
+        .where(eq(subscriptions.paypalSubscriptionId, subscriptionId));
+
+      if (!subscription) {
+        return res.status(404).json({ error: "Subscription not found" });
+      }
+
+      if (subscription.userId !== userId) {
+        console.warn(
+          `[Subscriptions] User ${userId} attempted to cancel subscription ` +
+          `${subscriptionId} belonging to user ${subscription.userId}`
+        );
+        return res.status(403).json({ error: "Access denied: subscription does not belong to this account" });
+      }
+
+      await cancelPayPalSubscription(req, res);
+    } catch (error: any) {
+      console.error("Error in subscription cancel authorization:", error);
+      res.status(500).json({ error: "Failed to process cancellation request" });
+    }
   });
 
   // PayPal Webhook handler
@@ -916,6 +951,107 @@ export async function registerRoutes(
         return res.status(400).json({ error: "Missing required fields" });
       }
 
+      // --- Input validation: items must be a non-empty array with positive integer quantities ---
+      if (!Array.isArray(items) || items.length === 0) {
+        return res.status(400).json({ error: "Items must be a non-empty array" });
+      }
+      for (const item of items) {
+        if (!item.productId || typeof item.productId !== "string") {
+          return res.status(400).json({ error: "Each item must have a valid productId" });
+        }
+        const qty = Number(item.quantity);
+        if (!Number.isInteger(qty) || qty < 1) {
+          return res.status(400).json({ error: "Each item quantity must be a positive integer" });
+        }
+      }
+
+      // --- Replay attack prevention ---
+      // Reject if this PayPal order ID has already been used to create an order.
+      // The unique constraint on paypal_order_id also provides a database-level guard.
+      const existingOrders = await db.select({ id: ordersTable.id })
+        .from(ordersTable)
+        .where(eq(ordersTable.paypalOrderId, paypalOrderId))
+        .limit(1);
+
+      if (existingOrders.length > 0) {
+        console.warn(`[PayPal Order] Replay attempt: order ${paypalOrderId} already finalized as ${existingOrders[0].id}`);
+        return res.status(409).json({ error: "This PayPal order has already been finalized" });
+      }
+
+      // --- Server-side PayPal payment verification ---
+      // Retrieve order details directly from PayPal to confirm it exists,
+      // belongs to this merchant, and was fully captured (COMPLETED).
+      const paypalDetails = await getPaypalOrderDetails(paypalOrderId);
+
+      if (!paypalDetails) {
+        console.warn(`[PayPal Order] Could not retrieve PayPal order ${paypalOrderId} from PayPal API`);
+        return res.status(402).json({ error: "Payment verification failed: could not retrieve order from PayPal" });
+      }
+
+      if (paypalDetails.status !== "COMPLETED") {
+        console.warn(`[PayPal Order] Order ${paypalOrderId} has status ${paypalDetails.status}, not COMPLETED`);
+        return res.status(402).json({ error: "Payment verification failed: order has not been fully captured" });
+      }
+
+      if (paypalDetails.currency !== "USD") {
+        console.warn(`[PayPal Order] Unexpected currency ${paypalDetails.currency} for order ${paypalOrderId}`);
+        return res.status(402).json({ error: "Payment verification failed: unsupported currency" });
+      }
+
+      // --- Recompute expected total from authoritative server-side pricing ---
+      // This prevents underpayment attacks where a low-value PayPal order is
+      // presented alongside a high-value cart.
+      let serverSubtotal = 0;
+      for (const item of items) {
+        const qty = Number(item.quantity);
+        const productData = await storage.getProductWithDosageStock(item.productId);
+        if (!productData) {
+          console.warn(`[PayPal Order] Unknown productId ${item.productId} in order ${paypalOrderId}`);
+          return res.status(400).json({ error: `Unknown product: ${item.productId}` });
+        }
+        let unitPrice: number | null = null;
+        if (item.dosage && productData.dosageStocks.length > 0) {
+          const dosageStock = productData.dosageStocks.find(
+            (ds) => ds.dosage === item.dosage && ds.price && parseFloat(ds.price) > 0
+          );
+          if (dosageStock?.price) {
+            unitPrice = parseFloat(dosageStock.price);
+          }
+        }
+        if (unitPrice === null) {
+          unitPrice = parseFloat(productData.price);
+        }
+        if (isNaN(unitPrice) || unitPrice <= 0) {
+          console.warn(`[PayPal Order] Could not resolve price for product ${item.productId} dosage ${item.dosage}`);
+          return res.status(400).json({ error: `Could not resolve price for product ${item.productId}` });
+        }
+        serverSubtotal += unitPrice * qty;
+      }
+
+      const serverShipping = serverSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING;
+      const shippingState = (shippingAddress?.state || "").toUpperCase().trim();
+      const serverTax = calculateTax(shippingState, serverSubtotal);
+      const serverTotal = serverSubtotal + serverShipping + serverTax;
+
+      // Allow a small tolerance for floating-point rounding ($0.50 max).
+      // The captured amount must be >= the full server-computed total.
+      const PAYMENT_TOLERANCE = 0.50;
+
+      if (paypalDetails.capturedAmount < serverTotal - PAYMENT_TOLERANCE) {
+        console.warn(
+          `[PayPal Order] Payment amount mismatch for ${paypalOrderId}: ` +
+          `captured=${paypalDetails.capturedAmount}, server total=${serverTotal} ` +
+          `(subtotal=${serverSubtotal}, shipping=${serverShipping}, tax=${serverTax})`
+        );
+        return res.status(402).json({ error: "Payment verification failed: captured amount does not match order total" });
+      }
+
+      console.log(
+        `[PayPal Order] Verified ${paypalOrderId}: captured=${paypalDetails.capturedAmount}, ` +
+        `server total=${serverTotal} (subtotal=${serverSubtotal}, shipping=${serverShipping}, tax=${serverTax})`
+      );
+      // --- End of payment verification ---
+
       // Build order data from cart items
       const [firstName, ...lastNameParts] = customerName.split(' ');
       const lastName = lastNameParts.join(' ') || '';
@@ -939,8 +1075,9 @@ export async function registerRoutes(
         fulfillmentStatus: 'pending',
         paymentMethod: 'paypal',
         paymentConfirmed: true,
+        paypalOrderId,
         isTest: isPayPalSandbox(), // Mark as test order if using PayPal sandbox
-        notes: `PayPal Order: ${paypalOrderId}. Payer: ${paypalPayerId || 'N/A'}. Items: ${items.map((i: any) => `${i.name} (${i.dosage}) x${i.quantity}`).join(', ')}`,
+        fulfillmentNotes: `PayPal Order: ${paypalOrderId}. Payer: ${paypalPayerId || 'N/A'}. Items: ${items.map((i: any) => `${i.name} (${i.dosage}) x${i.quantity}`).join(', ')}`,
       };
 
       // If user is authenticated, link order to their account

@@ -180,6 +180,8 @@ export const orders = pgTable("orders", {
   emailStatus: text("email_status").default("pending"),
   emailSentAt: timestamp("email_sent_at"),
   emailError: text("email_error"),
+  // PayPal order ID (unique) for replay-attack prevention
+  paypalOrderId: text("paypal_order_id").unique(),
   // Test/sandbox indicator - true for PayPal sandbox or test orders
   isTest: boolean("is_test").default(false),
   createdAt: timestamp("created_at").defaultNow(),

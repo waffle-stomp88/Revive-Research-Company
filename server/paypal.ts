@@ -182,6 +182,55 @@ export async function capturePaypalOrder(req: Request, res: Response) {
   }
 }
 
+export interface PaypalOrderVerification {
+  status: string;
+  capturedAmount: number;
+  currency: string;
+}
+
+export async function getPaypalOrderDetails(orderID: string): Promise<PaypalOrderVerification | null> {
+  try {
+    const accessToken = await getAccessToken();
+    const baseUrl = getPayPalBaseUrl();
+
+    const response = await fetch(`${baseUrl}/v2/checkout/orders/${encodeURIComponent(orderID)}`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      console.error(`[PayPal] getPaypalOrderDetails HTTP ${response.status} for order ${orderID}`);
+      return null;
+    }
+
+    const order = await response.json();
+
+    let capturedAmount = 0;
+    let currency = "USD";
+
+    if (order.purchase_units && Array.isArray(order.purchase_units)) {
+      for (const unit of order.purchase_units) {
+        if (unit.payments && Array.isArray(unit.payments.captures)) {
+          for (const capture of unit.payments.captures) {
+            if (capture.status === "COMPLETED") {
+              capturedAmount += parseFloat(capture.amount?.value ?? "0");
+              currency = capture.amount?.currency_code ?? "USD";
+            }
+          }
+        }
+      }
+    }
+
+    return { status: order.status ?? "UNKNOWN", capturedAmount, currency };
+  } catch (error: any) {
+    console.error("Failed to get PayPal order details:", error);
+    return null;
+  }
+}
+
 export async function loadPaypalDefault(req: Request, res: Response) {
   try {
     const clientToken = await getClientToken();
