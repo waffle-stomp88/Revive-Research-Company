@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
+import { FREE_SHIPPING_THRESHOLD, FLAT_RATE_SHIPPING } from "@shared/constants";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { SEOHead } from "@/components/seo-head";
@@ -37,7 +37,7 @@ const FAQ_CATEGORIES = [
       },
       {
         question: "What are your shipping rates?",
-        answer: `We offer FREE shipping on all orders over $${FREE_SHIPPING_THRESHOLD}. For orders under $${FREE_SHIPPING_THRESHOLD}, a flat rate of $20 applies regardless of package size or destination within the continental United States.`
+        answer: `We offer FREE shipping on all orders over $${FREE_SHIPPING_THRESHOLD}. For orders under $${FREE_SHIPPING_THRESHOLD}, a flat rate of $${FLAT_RATE_SHIPPING} applies regardless of package size or destination within the continental United States.`
       },
       {
         question: "Do you ship internationally?",

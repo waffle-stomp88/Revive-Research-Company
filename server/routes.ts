@@ -1,5 +1,5 @@
 import type { Express } from "express";
-import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
+import { FREE_SHIPPING_THRESHOLD, FLAT_RATE_SHIPPING } from "@shared/constants";
 import express from "express";
 import { createServer, type Server } from "http";
 import path from "path";
@@ -3702,7 +3702,7 @@ This system allows full traceability from production to customer. Every batch nu
 - Revive Research does NOT self-test — all testing is done by independent labs for maximum credibility
 
 ===== SHIPPING & ORDERS =====
-- Standard shipping: $20 flat rate
+- Standard shipping: $${FLAT_RATE_SHIPPING} flat rate
 - Free shipping on orders over $${FREE_SHIPPING_THRESHOLD}
 - Processing: 24-hour standard, same-day shipping if ordered before 12:00 PM CT
 - Package Warm Guide available at /package-warm for temperature-sensitive compounds

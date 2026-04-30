@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { SEOHead } from "@/components/seo-head";
-import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
+import { FREE_SHIPPING_THRESHOLD, FLAT_RATE_SHIPPING } from "@shared/constants";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,7 +20,7 @@ import {
 
 const SHIPPING_INFO = {
   freeShippingThreshold: FREE_SHIPPING_THRESHOLD,
-  flatRate: 20,
+  flatRate: FLAT_RATE_SHIPPING,
   processingTime: "24 hours",
   sameDayCutoff: "12:00 PM CT",
   carrier: "USPS Priority / UPS Ground",

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
+import { FREE_SHIPPING_THRESHOLD, FLAT_RATE_SHIPPING, COLD_PACK_FEE } from "@shared/constants";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import { SEOHead } from "@/components/seo-head";
@@ -481,8 +481,6 @@ export default function Checkout() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const FLAT_RATE_SHIPPING = 20;
-  const COLD_PACK_FEE = 14.99;
   const cartSubtotal = getSubtotal();
   // Subscriptions always ship free
   const baseShipping = hasSubscriptionItems ? 0 : (cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING);

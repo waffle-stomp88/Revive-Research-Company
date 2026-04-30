@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
+import { FREE_SHIPPING_THRESHOLD, FLAT_RATE_SHIPPING } from "@shared/constants";
 import { motion } from "framer-motion";
 import { Link, useLocation } from "wouter";
 import { SEOHead } from "@/components/seo-head";
@@ -274,7 +274,6 @@ export default function CartPage() {
   };
 
   const subtotal = getSubtotal();
-  const FLAT_RATE_SHIPPING = 20;
   const hasFreeShippingFromDiscount = appliedDiscount?.freeShipping || false;
   const shipping = (subtotal >= FREE_SHIPPING_THRESHOLD || hasFreeShippingFromDiscount) ? 0 : FLAT_RATE_SHIPPING;
   const discountAmount = appliedDiscount ? (subtotal * appliedDiscount.percentage) / 100 : 0;

@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
+import { FREE_SHIPPING_THRESHOLD, FLAT_RATE_SHIPPING } from "@shared/constants";
 import { eq } from "drizzle-orm";
 import { products, coas, legalDocuments, educationArticles } from "@shared/schema";
 
@@ -389,7 +389,7 @@ Complete information about our shipping methods, delivery timeframes, and handli
 
 | Order Total | Shipping Cost |
 |-------------|---------------|
-| Under $${FREE_SHIPPING_THRESHOLD}  | $20 flat rate |
+| Under $${FREE_SHIPPING_THRESHOLD}  | $${FLAT_RATE_SHIPPING} flat rate |
 | $${FREE_SHIPPING_THRESHOLD}+       | **FREE** |
 
 All shipping is via expedited courier service within the continental United States.
