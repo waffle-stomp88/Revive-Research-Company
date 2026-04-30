@@ -27,7 +27,26 @@ test.describe("MiniPKChart — browser rendering on /research-stacks", () => {
     expect(tagName).toBe("svg");
   });
 
-  test("cognitive-edge-stack renders both the mini-pk-chart SVG and the pk-line-style-key", async ({
+  test("fat-burner renders both the mini-pk-chart SVG and the pk-line-style-key (SC + oral = mixed routes)", async ({
+    page,
+  }) => {
+    await page.goto("/research-stacks");
+
+    await page.waitForSelector('[data-testid="card-stack-fat-burner"]', {
+      timeout: 15000,
+    });
+
+    const chart = page.locator('[data-testid="mini-pk-chart-fat-burner"]');
+    await expect(chart).toBeVisible({ timeout: 10000 });
+
+    const tagName = await chart.evaluate((el) => el.tagName.toLowerCase());
+    expect(tagName).toBe("svg");
+
+    const key = page.locator('[data-testid="pk-line-style-key-fat-burner"]');
+    await expect(key).toBeVisible({ timeout: 5000 });
+  });
+
+  test("cognitive-edge-stack does NOT render the pk-line-style-key (all intranasal — no SC curves)", async ({
     page,
   }) => {
     await page.goto("/research-stacks");
@@ -36,13 +55,7 @@ test.describe("MiniPKChart — browser rendering on /research-stacks", () => {
       timeout: 15000,
     });
 
-    const chart = page.locator('[data-testid="mini-pk-chart-cognitive-edge-stack"]');
-    await expect(chart).toBeVisible({ timeout: 10000 });
-
-    const tagName = await chart.evaluate((el) => el.tagName.toLowerCase());
-    expect(tagName).toBe("svg");
-
     const key = page.locator('[data-testid="pk-line-style-key-cognitive-edge-stack"]');
-    await expect(key).toBeVisible({ timeout: 5000 });
+    await expect(key).not.toBeVisible({ timeout: 5000 });
   });
 });

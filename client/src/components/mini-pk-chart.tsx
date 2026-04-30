@@ -25,6 +25,7 @@ export function MiniPKChart({ peptideNames, stackId }: { peptideNames: string[];
 
   const xMaxMin = computeXMax(pksWithData).xMaxMin;
   const hasNonSC = pksWithData.some(pk => isNonSCRoute(pk.route));
+  const hasAnySC = pksWithData.some(pk => !isNonSCRoute(pk.route));
 
   const curves = entries.flatMap(({ name, pk, color }) => {
     if (!pk) return [];
@@ -58,7 +59,7 @@ export function MiniPKChart({ peptideNames, stackId }: { peptideNames: string[];
           />
         ))}
       </svg>
-      {hasNonSC && (
+      {hasNonSC && hasAnySC && (
         <div className="flex items-center justify-end gap-3 mt-1" data-testid={`pk-line-style-key-${stackId}`}>
           <div className="flex items-center gap-1.5">
             <svg width="14" height="4" viewBox="0 0 14 4" aria-hidden="true">

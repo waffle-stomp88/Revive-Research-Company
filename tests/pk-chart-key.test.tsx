@@ -48,15 +48,26 @@ describe("MiniPKChart — listing-page rendering", () => {
     }
   });
 
-  it("renders the pk-line-style-key for the cognitive-edge-stack (Semax + Selank — both intranasal)", () => {
+  it("renders the pk-line-style-key for fat-burner (AOD-9604 SC + 5-Amino-1MQ oral — genuinely mixed routes)", () => {
+    const fatBurnerStack = RESEARCH_STACKS_DATA.find(s => s.id === "fat-burner");
+    expect(fatBurnerStack).toBeDefined();
+
+    const peptideNames = fatBurnerStack!.peptides.map(p => p.name);
+    render(<MiniPKChart peptideNames={peptideNames} stackId={fatBurnerStack!.id} />);
+
+    const keyEl = screen.getByTestId(`pk-line-style-key-${fatBurnerStack!.id}`);
+    expect(keyEl).toBeInTheDocument();
+  });
+
+  it("does NOT render pk-line-style-key for all-intranasal stacks (cognitive-edge-stack: Semax + Selank)", () => {
     const cognitiveStack = RESEARCH_STACKS_DATA.find(s => s.id === "cognitive-edge-stack");
     expect(cognitiveStack).toBeDefined();
 
     const peptideNames = cognitiveStack!.peptides.map(p => p.name);
     render(<MiniPKChart peptideNames={peptideNames} stackId={cognitiveStack!.id} />);
 
-    const keyEl = screen.getByTestId(`pk-line-style-key-${cognitiveStack!.id}`);
-    expect(keyEl).toBeInTheDocument();
+    const keyEl = screen.queryByTestId(`pk-line-style-key-${cognitiveStack!.id}`);
+    expect(keyEl).toBeNull();
   });
 
   it("does NOT render pk-line-style-key for all-SC stacks (recovery-tissue-stack: BPC-157 + TB-500)", () => {

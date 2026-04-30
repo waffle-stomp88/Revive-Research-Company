@@ -192,6 +192,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
 
   const hasCurves = curves.some(Boolean);
   const hasNonSC = pksWithData.some(pk => isNonSCRoute(pk.route));
+  const hasAnySC = pksWithData.some(pk => !isNonSCRoute(pk.route));
   const clipId = "pk-clip-" + peptides.map(p => toTestSlug(p.name)).join("-");
 
   const effectiveIdx = pinnedIdx ?? hoveredIdx;
@@ -501,7 +502,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                 </button>
               ))}
             </div>
-            {hasNonSC && (
+            {hasNonSC && hasAnySC && (
               <div className="flex items-center justify-end gap-3 mb-1.5 px-0.5" data-testid="pk-line-style-key">
                 <div className="flex items-center gap-1.5">
                   <svg width="18" height="4" viewBox="0 0 18 4" aria-hidden="true">
@@ -616,6 +617,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                       strokeWidth={hoveredIdx === idx ? 2.8 : 2}
                       strokeLinecap="round"
                       strokeLinejoin="round"
+                      strokeDasharray={isNonSCRoute(c.pk.route) ? "7 4" : undefined}
                       initial={{ pathLength: 0, opacity: 0 }}
                       animate={{ pathLength: 1, opacity: 1 }}
                       transition={{ duration: 1.4, delay: idx * 0.25, ease: "easeOut" }}
