@@ -803,7 +803,7 @@ export default function ProductDetail() {
               {(() => {
                 const stripe = getStripeConfig(product.slug, product.category, product.stripeLabel, product.stripeAccentColor);
                 return (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2" data-testid="stripe-category">
                     <div className="w-0.5 h-3.5 rounded-full flex-shrink-0" style={{ backgroundColor: stripe.accentColor }} />
                     <span className="text-[10px] font-mono uppercase tracking-widest" style={{ color: stripe.accentColor }}>
                       {stripe.label}
@@ -832,6 +832,7 @@ export default function ProductDetail() {
                   <div
                     className="h-[3px] mt-2 mb-3 rounded-full -mx-4 md:-mx-6"
                     style={{ background: "linear-gradient(to right, #21d8ff, #E7FB10)" }}
+                    data-testid="separator-gradient"
                   />
                   {profile?.mechanismDescriptor && (
                     <p className="text-xs text-muted-foreground/70 font-mono mb-3" data-testid="text-mechanism-descriptor">
@@ -853,7 +854,7 @@ export default function ProductDetail() {
 
 
 
-            <div className="border border-border/50 rounded-lg p-3 mb-3 md:mb-4 bg-white/[0.06]">
+            <div className="border border-border/50 rounded-lg p-3 mb-3 md:mb-4 bg-white/[0.06]" data-testid="box-dosage">
               <div className="grid grid-cols-2 gap-3">
               {product.dosageOptions && product.dosageOptions.length > 0 && (
                 <div>
@@ -968,7 +969,7 @@ export default function ProductDetail() {
                       </p>
                     </div>
                     {purchaseType === "one-time" && (
-                      <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-[#E7FB10] flex items-center justify-center flex-shrink-0">
+                      <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-[#E7FB10] flex items-center justify-center flex-shrink-0" data-testid="check-one-time">
                         <Check className="h-3 w-3 text-black" />
                       </div>
                     )}
@@ -1057,7 +1058,7 @@ export default function ProductDetail() {
               )}
             </div>
 
-            <div className="flex items-center text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-2 md:mb-3 border border-border/40 rounded-md overflow-hidden">
+            <div className="flex items-center text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-2 md:mb-3 border border-border/40 rounded-md overflow-hidden" data-testid="bar-trust-badges">
               <div className="flex-1 flex items-center justify-center gap-1.5 py-2.5">
                 <Shield className="h-4 w-4 flex-shrink-0 text-[#21d8ff]" />
                 <span>3rd Party Tested</span>
@@ -1082,7 +1083,7 @@ export default function ProductDetail() {
 
             {/* Purchase buttons - only show when in stock */}
             {!isOutOfStock ? (
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2" data-testid="stack-cta">
                 <Button
                   size="lg"
                   className={`w-full font-display font-bold gap-2 text-black transition-shadow duration-300 ${
@@ -1134,6 +1135,7 @@ export default function ProductDetail() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="p-5 rounded-lg border-2 border-red-500/30 bg-red-500/5"
+                data-testid="panel-out-of-stock"
               >
                 <div className="flex items-center gap-2 mb-4">
                   <div className="p-2 rounded-full bg-red-500/20">
