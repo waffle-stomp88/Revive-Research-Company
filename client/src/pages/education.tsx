@@ -942,9 +942,25 @@ export default function Education() {
                               exit={{ opacity: 0, y: -10 }}
                               transition={{ duration: 0.3 }}
                             >
-                              <p className="text-xs text-[#21d8ff]/60 mb-3">
-                                Plasma Concentration Profile · Published pharmacokinetic data
-                              </p>
+                              <div className="flex gap-2 items-start rounded-md bg-[#21d8ff]/5 border border-[#21d8ff]/15 px-3 py-2.5">
+                                <Info className="h-4 w-4 text-[#21d8ff]/60 flex-shrink-0 mt-0.5" />
+                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                  <span className="text-[#21d8ff]/80 font-medium">Pharmacokinetic (PK) data</span>{" "}
+                                  shows how compound concentration in the bloodstream changes over time after
+                                  a single dose, based on published research. The peak marks maximum plasma
+                                  levels; the slope shows how quickly the compound clears. This helps
+                                  researchers understand dosing intervals, duration of activity, and how
+                                  compounds may interact when studied in combination.
+                                </p>
+                              </div>
+                              <div className="flex gap-2 items-start mt-2 mb-4 rounded-md bg-amber-500/5 border border-amber-500/20 px-3 py-2.5">
+                                <AlertTriangle className="h-4 w-4 text-amber-500/60 flex-shrink-0 mt-0.5" />
+                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                  <span className="text-amber-500/80 font-medium">Research use only.</span>{" "}
+                                  We do not recommend, suggest, or endorse any specific dosage, administration
+                                  protocol, or use of these compounds in humans or animals.
+                                </p>
+                              </div>
                               <PharmacokineticsChart
                                 peptides={articlePkPeptides!}
                                 stackId={`article-${expandedArticleObj?.slug}`}
@@ -993,8 +1009,8 @@ export default function Education() {
                             <div className="flex items-start gap-3">
                               <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0 mt-0.5" />
                               <div>
-                                <p className="text-xs font-medium text-red-400 mb-1">Research Use Only</p>
-                                <p className="text-xs text-muted-foreground leading-relaxed">
+                                <p className="text-sm font-medium text-red-400 mb-1">Research Use Only</p>
+                                <p className="text-sm text-muted-foreground leading-relaxed">
                                   This compound is intended for laboratory research purposes only. Not for human consumption, 
                                   veterinary use, or any therapeutic applications. All information provided is for 
                                   educational purposes and does not constitute medical advice.

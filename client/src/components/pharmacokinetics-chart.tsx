@@ -14,6 +14,8 @@ export interface StackPeptide {
   description: string;
 }
 
+const ROUTE_COLOR = "#ff2d8b";
+
 function routeAbbrev(route: string): string {
   const r = route.toLowerCase();
   if (r === "subcutaneous") return "SC";
@@ -502,11 +504,11 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
             return (
               <div className="hidden md:flex flex-col gap-3 justify-center px-3 py-3 shrink-0 border-r border-white/5 w-24" data-testid="pk-stats-bar">
                 {[
-                  { label: "Plasma t½", value: c.pk.halfLifeLabel, delay: 0.1 },
-                  { label: "Tmax", value: tmaxLabel, delay: 0.3 },
-                  { label: "Route", value: routeAbbrev(c.pk.route), delay: 0.5 },
+                  { label: "Plasma t½", value: c.pk.halfLifeLabel, delay: 0.1, color: c.color },
+                  { label: "Tmax", value: tmaxLabel, delay: 0.3, color: c.color },
+                  { label: "Route", value: routeAbbrev(c.pk.route), delay: 0.5, color: ROUTE_COLOR },
                 ].map(s => (
-                  <AnimatedStat key={s.label} label={s.label} value={s.value} color={c.color} delay={s.delay} />
+                  <AnimatedStat key={s.label} label={s.label} value={s.value} color={s.color} delay={s.delay} />
                 ))}
               </div>
             );
@@ -914,21 +916,28 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                     <span className="text-sm font-medium">{c.peptide.name}</span>
                     <span
                       className="text-[10px] font-medium px-1.5 py-px rounded"
-                      style={{ backgroundColor: `${c.color}18`, color: c.color, border: `1px solid ${c.color}30` }}
+                      style={{ backgroundColor: `${ROUTE_COLOR}18`, color: ROUTE_COLOR, border: `1px solid ${ROUTE_COLOR}40` }}
                       data-testid={`badge-route-${toTestSlug(c.peptide.name)}`}
                     >
                       {routeLabel(c.pk.route)}
                     </span>
                   </div>
-                  <div className="flex flex-col gap-1 pl-[18px]">
-                    <div className="flex flex-wrap items-center gap-3">
-                      <span className="flex items-center gap-1 text-xs font-medium" style={{ color: c.color }} data-testid={`chip-halflife-${toTestSlug(c.peptide.name)}`}>
-                        <Clock className="h-3 w-3 flex-shrink-0" />
-                        Plasma t½ {c.pk.halfLifeLabel}
-                      </span>
+                  <div className="flex flex-col pl-[18px]">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="flex items-center gap-1 text-xs font-medium cursor-help w-fit py-1" style={{ color: c.color }} data-testid={`chip-halflife-${toTestSlug(c.peptide.name)}`}>
+                          <Clock className="h-3 w-3 flex-shrink-0" />
+                          Plasma t½ {c.pk.halfLifeLabel}
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-[220px] text-xs leading-relaxed">
+                        The half-life (t½) is how long it takes plasma concentration to fall to half its peak value — a measure of how quickly the compound clears the bloodstream.
+                      </TooltipContent>
+                    </Tooltip>
+                    <div className="flex flex-wrap gap-3 border-t border-border/20 pt-2 mt-1">
                       {c.pk.citations.map((cit, j) => (
                         <a key={j} href={cit.url} target="_blank" rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-[11px] text-[#21d8ff] hover:underline opacity-70 hover:opacity-100"
+                          className="inline-flex items-center gap-1 text-xs text-[#21d8ff] hover:underline opacity-70 hover:opacity-100"
                           onClick={e => e.stopPropagation()}
                         >
                           <ExternalLink className="h-2.5 w-2.5" />
@@ -936,8 +945,8 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                         </a>
                       ))}
                     </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">{c.pk.pkContext}</p>
-                    {c.pk.note && <p className="text-[11px] text-muted-foreground/70 italic">{c.pk.note}</p>}
+                    <p className="text-sm text-muted-foreground leading-relaxed border-t border-border/20 pt-2 mt-2">{c.pk.pkContext}</p>
+                    {c.pk.note && <p className="text-xs text-muted-foreground/70 italic pt-1.5">{c.pk.note}</p>}
                   </div>
                 </div>
               );
@@ -993,7 +1002,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                     <TooltipTrigger asChild>
                       <span
                         className="text-[10px] font-medium px-1.5 py-px rounded cursor-default"
-                        style={{ backgroundColor: `${c.color}18`, color: c.color, border: `1px solid ${c.color}30` }}
+                        style={{ backgroundColor: `${ROUTE_COLOR}18`, color: ROUTE_COLOR, border: `1px solid ${ROUTE_COLOR}40` }}
                         data-testid={`badge-route-${toTestSlug(c.peptide.name)}`}
                       >
                         {routeAbbrev(c.pk.route)}
