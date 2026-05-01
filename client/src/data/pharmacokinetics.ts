@@ -954,9 +954,45 @@ export function getHalfLifeBySlug(slug: string): HalfLifeEntry | undefined {
  * instead of a single composite entry, matching the behavior on research
  * stack detail pages.
  *
+ * ─── HOW TO ADD A NEW BLEND PRODUCT ────────────────────────────────────────
+ *
+ * When a new proprietary blend or combination product is added to the catalog,
+ * follow these steps so it renders individual PK curves on its detail page:
+ *
+ * 1. Identify the product's slug (the URL-safe identifier stored in the DB,
+ *    e.g. "my-new-blend-stack"). If the product has no slug yet, derive one
+ *    from its name: lowercase, strip parentheticals, replace non-alphanumeric
+ *    characters with hyphens, and trim leading/trailing hyphens.
+ *
+ * 2. Add a new entry to COMBO_STACK_CONSTITUENTS below:
+ *
+ *      "my-new-blend-stack": ["CompoundA", "CompoundB"],
+ *
+ *    The key must match the product's DB slug (or the name-derived slug that
+ *    productSlugKey() in product-detail.tsx would compute).
+ *
+ * 3. Each constituent name in the array must resolve to a HalfLifeEntry via
+ *    getHalfLifeByName(). Verify this by checking the halfLifeData array above
+ *    and confirming the exact display-name string is present. If the compound
+ *    is not yet in the dataset, add a HalfLifeEntry for it first.
+ *
+ * 4. Common compliance-safe identifiers:
+ *    - "RR-A1"  → selective GLP-1 RA class (semaglutide PK data)
+ *    - "RR-A2"  → dual GIP/GLP-1 RA class  (tirzepatide PK data)
+ *    - "RR-A3"  → triple-incretin RA class  (retatrutide PK data)
+ *    Use these wherever the originator compound name cannot appear.
+ *
+ * 5. Rebuild / restart the dev server. The product detail page will
+ *    automatically switch from a single-curve chart to a multi-curve chart.
+ *
+ * 6. Optionally visit /admin/blend-audit to confirm the new slug no longer
+ *    appears in the "unregistered blend" warning list.
+ *
+ * ─── COMPLIANCE NOTE ────────────────────────────────────────────────────────
  * Each name in the array must resolve to a HalfLifeEntry via getHalfLifeByName.
  * - "RR-A1" is the compliance-safe identifier for the selective GLP-1 RA class
  *   (semaglutide PK data stored under this slug per the dataset compliance policy).
+ * ────────────────────────────────────────────────────────────────────────────
  */
 export const COMBO_STACK_CONSTITUENTS: Record<string, string[]> = {
   "bpc-157-tb-500-stack": ["BPC-157", "TB-500"],
@@ -965,6 +1001,63 @@ export const COMBO_STACK_CONSTITUENTS: Record<string, string[]> = {
   "glow-peptide-complex": ["TB-500", "BPC-157", "GHK-Cu"],
   "klow-peptide-complex": ["TB-500", "BPC-157", "GHK-Cu", "KPV"],
 };
+
+/**
+ * Slug suffix patterns that suggest a product is a multi-compound blend.
+ * Any product whose slug ends with one of these tokens and is NOT present in
+ * COMBO_STACK_CONSTITUENTS is surfaced as a warning in /admin/blend-audit.
+ */
+export const BLEND_SLUG_PATTERNS = [
+  "-stack",
+  "-blend",
+  "-complex",
+  "-combo",
+  "-mix",
+  "-formula",
+] as const;
+
+/**
+ * Returns true when a product slug looks like it might be a multi-compound
+ * blend but has not been registered in COMBO_STACK_CONSTITUENTS.
+ *
+ * Used by /admin/blend-audit to surface potential gaps in the PK chart config.
+ * A true result is a hint only — the product might legitimately be a single
+ * compound whose name ends with a blend-like suffix.
+ */
+export function looksLikeUnregisteredBlend(slug: string): boolean {
+  if (COMBO_STACK_CONSTITUENTS[slug]) return false;
+  const lower = slug.toLowerCase();
+  return BLEND_SLUG_PATTERNS.some((pattern) => lower.endsWith(pattern));
+}
+
+/**
+ * Canonical slug-resolution logic shared between product-detail.tsx and
+ * admin/blend-audit.tsx.
+ *
+ * Resolution order:
+ * 1. If the stored DB slug is directly present in COMBO_STACK_CONSTITUENTS,
+ *    return it as-is.
+ * 2. If the product has a name, derive a slug from it (lowercase, strip
+ *    parentheticals, replace non-alphanumeric runs with hyphens, trim).
+ * 3. Fall back to the raw DB slug (may be undefined → returned as undefined).
+ *
+ * This ensures that runtime chart rendering and the admin audit page always
+ * agree on which key to look up in COMBO_STACK_CONSTITUENTS.
+ */
+export function resolveComboSlugKey(product: {
+  slug?: string | null;
+  name?: string | null;
+}): string | undefined {
+  if (product.slug && COMBO_STACK_CONSTITUENTS[product.slug]) return product.slug;
+  if (product.name) {
+    return product.name
+      .toLowerCase()
+      .replace(/\s*\([^)]*\)/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  }
+  return product.slug ?? undefined;
+}
 
 export function hasKineticMismatch(entries: HalfLifeEntry[]): boolean {
   const defined = entries.filter((e) => e.halfLifeMin !== undefined || e.halfLifeMax !== undefined);

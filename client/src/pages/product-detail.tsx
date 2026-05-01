@@ -71,7 +71,7 @@ import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { SEOHead } from "@/components/seo-head";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { PharmacokineticsChart } from "@/components/pharmacokinetics-chart";
-import { getHalfLifeByName, COMBO_STACK_CONSTITUENTS } from "@/data/pharmacokinetics";
+import { getHalfLifeByName, COMBO_STACK_CONSTITUENTS, resolveComboSlugKey } from "@/data/pharmacokinetics";
 import { getSynergyPartners, normalizePeptideName } from "@/lib/synergy-data";
 import { getTopPairingForProduct } from "@/lib/pairing-intelligence";
 import { Layers, Zap, Atom, Dna } from "lucide-react";
@@ -79,26 +79,6 @@ import { flagRetiredContent, RETIRED_PRODUCT_SLUGS } from "@/lib/retired-redirec
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { getCompoundProfile } from "@/data/compound-profiles";
 
-/**
- * Derives a slug key from the product for COMBO_STACK_CONSTITUENTS lookup.
- * Falls back to a name-derived slug when the DB slug field is not populated,
- * so multi-curve PK charts work for GLOW / KLOW even without a stored slug.
- */
-function productSlugKey(product: Product): string | undefined {
-  // If the stored slug directly maps to a known blend, use it as-is.
-  if (product.slug && COMBO_STACK_CONSTITUENTS[product.slug]) return product.slug;
-  // Derive a key from the product name. This handles null slugs AND the case
-  // where the stored slug exists but does not match the expected COMBO key
-  // (e.g., a legacy slug value set before the blend mapping was defined).
-  if (product.name) {
-    return product.name
-      .toLowerCase()
-      .replace(/\s*\([^)]*\)/g, "")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-  }
-  return product.slug ?? undefined;
-}
 
 // Badge priority system - max 2 badges per product
 // Priority: Out of Stock > Low Stock > Selling Fast > Featured
@@ -441,7 +421,7 @@ export default function ProductDetail() {
 
   const hasPkData = product
     ? (() => {
-        const k = productSlugKey(product);
+        const k = resolveComboSlugKey(product);
         if (k && COMBO_STACK_CONSTITUENTS[k]) {
           return COMBO_STACK_CONSTITUENTS[k].every((n) => !!getHalfLifeByName(n));
         }
@@ -1477,7 +1457,7 @@ export default function ProductDetail() {
               {activeResearchTab === "pk" && <section data-testid="section-pk-panel">
                 {/* PK Chart */}
                 {(() => {
-                  const slugKey = productSlugKey(product);
+                  const slugKey = resolveComboSlugKey(product);
                   const constituentNames = slugKey ? COMBO_STACK_CONSTITUENTS[slugKey] : undefined;
                   let pkPeptides: { name: string; description: string }[];
                   if (constituentNames) {

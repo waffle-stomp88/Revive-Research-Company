@@ -117,6 +117,7 @@ import {
   BookOpen,
   ChevronUp,
   RotateCcw,
+  FlaskConical,
 } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { ObjectUploader } from "@/components/ObjectUploader";
@@ -7848,6 +7849,14 @@ export default function Admin() {
             >
               <BookOpen className="h-4 w-4" />
               Compound Audit
+            </a>
+            <a
+              href="/admin/blend-audit"
+              data-testid="link-blend-audit"
+              className="inline-flex items-center gap-2 text-sm font-medium px-3 py-2 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            >
+              <FlaskConical className="h-4 w-4" />
+              Blend Audit
             </a>
           </motion.div>
 
