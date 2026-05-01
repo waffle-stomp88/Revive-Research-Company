@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { BookOpen, Zap, GraduationCap, Sparkles } from "lucide-react";
 
-type ArticleMode = "deep-dive" | "quick-breakdown";
+type ArticleMode = "deep-dive" | "quick-breakdown" | "pharmacokinetics";
 
 interface ArticleModeToggleProps {
   mode: ArticleMode;

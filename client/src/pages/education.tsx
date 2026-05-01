@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
@@ -33,6 +33,7 @@ import {
   Search,
   ArrowRight,
   Layers,
+  Activity,
 } from "lucide-react";
 import {
   Select,
@@ -96,6 +97,8 @@ import {
   B12MethylationVisual,
   MelanotanReceptorVisual
 } from "@/components/education";
+import { PharmacokineticsChart } from "@/components/pharmacokinetics-chart";
+import { getHalfLifeByName, COMBO_STACK_CONSTITUENTS } from "@/data/pharmacokinetics";
 
 // Articles that are part of the Academy curriculum (for cross-linking)
 const ACADEMY_ARTICLE_SLUGS = [
@@ -439,7 +442,13 @@ const getPubMedSearchTerm = (slug: string, _title: string): string => {
       .join(' ');
 };
 
-type ArticleMode = "deep-dive" | "quick-breakdown";
+type ArticleMode = "deep-dive" | "quick-breakdown" | "pharmacokinetics";
+
+function articleSlugToCompoundKey(articleSlug: string): string {
+  return articleSlug
+    .replace(/^what-is-/, "")
+    .replace(/-(peptide|compound|molecule|supplement)$/, "");
+}
 
 export default function Education() {
   const params = useParams<{ slug?: string }>();
@@ -477,6 +486,7 @@ export default function Education() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [expandedArticle, setExpandedArticle] = useState<string | null>(null);
   const [articleMode, setArticleMode] = useState<ArticleMode>("quick-breakdown");
+  const prevReadingModeRef = useRef<"quick-breakdown" | "deep-dive">("quick-breakdown");
   const [peptideSort, setPeptideSort] = useState<SortOption>("a-z");
   const [peptideGroupFilter, setPeptideGroupFilter] = useState<string>("all");
   const [generalEdCategoryFilter, setGeneralEdCategoryFilter] = useState<string>("all");
@@ -585,6 +595,38 @@ export default function Education() {
       });
     }
   }, [expandedArticle]);
+
+  // Track previous reading mode so PK Profile toggle can return to it
+  useEffect(() => {
+    if (articleMode === "quick-breakdown" || articleMode === "deep-dive") {
+      prevReadingModeRef.current = articleMode;
+    }
+  }, [articleMode]);
+
+  // Derive PK data for the currently expanded article
+  const expandedArticleObj = useMemo(
+    () => articles.find(a => a.id === expandedArticle) ?? null,
+    [articles, expandedArticle],
+  );
+
+  const articleCompoundKey = expandedArticleObj?.slug
+    ? articleSlugToCompoundKey(expandedArticleObj.slug)
+    : null;
+
+  const articlePkPeptides: { name: string; description: string }[] | null = useMemo(() => {
+    if (!articleCompoundKey) return null;
+    const constituentNames = COMBO_STACK_CONSTITUENTS[articleCompoundKey];
+    if (constituentNames) {
+      return constituentNames.every(n => !!getHalfLifeByName(n))
+        ? constituentNames.map(n => ({ name: n, description: "" }))
+        : null;
+    }
+    const entry = getHalfLifeByName(articleCompoundKey);
+    if (entry) return [{ name: entry.name, description: expandedArticleObj?.title ?? "" }];
+    return null;
+  }, [articleCompoundKey, expandedArticleObj]);
+
+  const articleHasPk = !!articlePkPeptides;
 
   // Calculate peptide article counts per group for dropdown badges
   const peptideGroupCounts = useMemo(() => {
@@ -827,31 +869,60 @@ export default function Education() {
                           {article.summary}
                         </p>
                         
-                        {hasQuickBreakdown(article.slug) && (
+                        {(hasQuickBreakdown(article.slug) || articleHasPk) && (
                           <div className="flex flex-wrap items-center gap-3">
-                            <ArticleModeToggle 
-                              mode={articleMode} 
-                              onModeChange={setArticleMode} 
-                            />
-                            {articleMode === "quick-breakdown" && <BeginnerBadge />}
-                            {article.category === "peptides" && article.slug?.startsWith('what-is-') && (
-                              <a 
-                                href={`https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(
-                                  getPubMedSearchTerm(article.slug || "", article.title)
-                                )}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="ml-auto"
-                                data-testid={`link-pubmed-research`}
-                              >
-                                <Button 
-                                  size="sm"
-                                  className="bg-[#21d8ff] hover:bg-black text-black hover:text-[#21d8ff] font-medium gap-2"
-                                >
-                                  View on PubMed
-                                  <ExternalLink className="h-3.5 w-3.5" />
-                                </Button>
-                              </a>
+                            {hasQuickBreakdown(article.slug) && (
+                              <>
+                                <ArticleModeToggle 
+                                  mode={articleMode} 
+                                  onModeChange={setArticleMode} 
+                                />
+                                {articleMode === "quick-breakdown" && <BeginnerBadge />}
+                              </>
+                            )}
+                            {(articleHasPk || (article.category === "peptides" && article.slug?.startsWith('what-is-'))) && (
+                              <div className="ml-auto flex items-center gap-2">
+                                {articleHasPk && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className={`gap-2 transition-colors ${
+                                      articleMode === "pharmacokinetics"
+                                        ? "border-[#21d8ff] text-[#21d8ff] bg-[#21d8ff]/10"
+                                        : "border-[#21d8ff]/40 text-[#21d8ff]/70"
+                                    }`}
+                                    onClick={() =>
+                                      setArticleMode(
+                                        articleMode === "pharmacokinetics"
+                                          ? prevReadingModeRef.current
+                                          : "pharmacokinetics"
+                                      )
+                                    }
+                                    data-testid="button-pk-profile"
+                                  >
+                                    <Activity className="h-3.5 w-3.5" />
+                                    PK Profile
+                                  </Button>
+                                )}
+                                {article.category === "peptides" && article.slug?.startsWith('what-is-') && (
+                                  <a 
+                                    href={`https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(
+                                      getPubMedSearchTerm(article.slug || "", article.title)
+                                    )}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    data-testid={`link-pubmed-research`}
+                                  >
+                                    <Button 
+                                      size="sm"
+                                      className="bg-[#21d8ff] hover:bg-black text-black hover:text-[#21d8ff] font-medium gap-2"
+                                    >
+                                      View on PubMed
+                                      <ExternalLink className="h-3.5 w-3.5" />
+                                    </Button>
+                                  </a>
+                                )}
+                              </div>
                             )}
                           </div>
                         )}
@@ -859,7 +930,23 @@ export default function Education() {
 
                       <div className="p-4 md:p-6">
                         <AnimatePresence mode="wait">
-                          {hasQuickBreakdown(article.slug) && articleMode === "quick-breakdown" ? (
+                          {articleHasPk && articleMode === "pharmacokinetics" ? (
+                            <motion.div
+                              key="pk-profile"
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              transition={{ duration: 0.3 }}
+                            >
+                              <p className="text-xs text-[#21d8ff]/60 mb-3">
+                                Plasma Concentration Profile · Published pharmacokinetic data
+                              </p>
+                              <PharmacokineticsChart
+                                peptides={articlePkPeptides!}
+                                stackId={`article-${expandedArticleObj?.slug}`}
+                              />
+                            </motion.div>
+                          ) : hasQuickBreakdown(article.slug) && articleMode === "quick-breakdown" ? (
                             <motion.div
                               key="beginner"
                               initial={{ opacity: 0, y: 10 }}
