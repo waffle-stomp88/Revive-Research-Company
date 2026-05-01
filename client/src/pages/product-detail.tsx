@@ -78,6 +78,7 @@ import { Layers, Zap, Atom, Dna } from "lucide-react";
 import { flagRetiredContent, RETIRED_PRODUCT_SLUGS } from "@/lib/retired-redirects";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { getCompoundProfile } from "@/data/compound-profiles";
+import { getStripeConfig } from "@/data/category-stripe-config";
 
 
 // Badge priority system - max 2 badges per product
@@ -690,11 +691,9 @@ export default function ProductDetail() {
         </motion.div>
 
         <div ref={twoColumnRef} className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start relative overflow-hidden">
-          {product.slug === "bpc-157" && (
-            <div className="absolute -top-4 right-0 text-[120px] md:text-[160px] font-display font-black uppercase leading-none text-white/[0.04] select-none pointer-events-none tracking-tight">
-              BPC-157
-            </div>
-          )}
+          <div className="absolute -top-4 right-0 text-[120px] md:text-[160px] font-display font-black uppercase leading-none text-white/[0.04] select-none pointer-events-none tracking-tight">
+            {product.name}
+          </div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -801,18 +800,17 @@ export default function ProductDetail() {
             className="min-w-0 overflow-hidden"
           >
             <div className="flex items-center gap-2 mb-2 flex-wrap">
-              {product.slug === "bpc-157" ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-0.5 h-3.5 bg-[#E7FB10] rounded-full flex-shrink-0" />
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#E7FB10]">
-                    Regenerative Peptide · Research Grade
-                  </span>
-                </div>
-              ) : (
-                <Badge variant="secondary" className="text-xs uppercase tracking-wider">
-                  {product.category}
-                </Badge>
-              )}
+              {(() => {
+                const stripe = getStripeConfig(product.slug, product.category);
+                return (
+                  <div className="flex items-center gap-2">
+                    <div className="w-0.5 h-3.5 rounded-full flex-shrink-0" style={{ backgroundColor: stripe.accentColor }} />
+                    <span className="text-[10px] font-mono uppercase tracking-widest" style={{ color: stripe.accentColor }}>
+                      {stripe.label}
+                    </span>
+                  </div>
+                );
+              })()}
               {/* Smart badge system - max 2 badges based on priority; hidden while dosage stock is loading to prevent OOS flash */}
               {!isDosageStocksLoading && getProductBadges(product, sellingFastIds).map((badge) => (
                 <Badge key={badge.type} className={`inline-flex items-center gap-1 ${badge.className}`}>
@@ -826,8 +824,9 @@ export default function ProductDetail() {
               {product.name}
             </h1>
 
-            {product.slug === "bpc-157" && (() => {
-              const profile = getCompoundProfile("bpc-157");
+            {(() => {
+              const profile = getCompoundProfile(product.slug ?? "");
+              if (!profile) return null;
               return (
                 <>
                   <div
@@ -852,35 +851,13 @@ export default function ProductDetail() {
               </div>
             </div>
 
-            {/* Mechanism descriptor line — below price row */}
-            {(() => {
-              const profile = getCompoundProfile(product.slug ?? "");
-              if (!profile?.mechanismDescriptor) return null;
-              if (product.slug === "bpc-157") return null; // shown above the price for BPC-157
-              return (
-                <p
-                  className="text-xs text-muted-foreground/70 font-mono mb-4"
-                  data-testid="text-mechanism-descriptor"
-                >
-                  {profile.mechanismDescriptor}
-                </p>
-              );
-            })()}
 
 
-            <div className={product.slug === "bpc-157"
-              ? "border border-border/50 rounded-lg p-3 mb-3 md:mb-4 bg-white/[0.06]"
-              : ""
-            }>
-              <div className={product.slug === "bpc-157"
-                ? "grid grid-cols-2 gap-3"
-                : "grid grid-cols-2 gap-3 mb-3 md:mb-4"
-              }>
+            <div className="border border-border/50 rounded-lg p-3 mb-3 md:mb-4 bg-white/[0.06]">
+              <div className="grid grid-cols-2 gap-3">
               {product.dosageOptions && product.dosageOptions.length > 0 && (
                 <div>
-                  <Label className={`text-xs font-medium mb-1.5 block text-muted-foreground ${
-                    product.slug === "bpc-157" ? "uppercase tracking-widest text-[10px]" : ""
-                  }`}>Dosage</Label>
+                  <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest">Dosage</Label>
                   <Select value={selectedDosage} onValueChange={setSelectedDosage}>
                     <SelectTrigger data-testid="select-dosage" className="h-9">
                       <SelectValue placeholder="Select dosage" />
@@ -937,10 +914,8 @@ export default function ProductDetail() {
               )}
 
               <div>
-                <Label className={`text-xs font-medium mb-1.5 block text-muted-foreground ${
-                  product.slug === "bpc-157" ? "uppercase tracking-widest text-[10px]" : ""
-                }`}>Quantity</Label>
-                <div className={`flex items-center border rounded-md h-9 ${isOutOfStock ? 'border-red-500/50 opacity-50' : 'border-border'} ${product.slug === 'bpc-157' ? 'bg-background' : ''}`}>
+                <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest">Quantity</Label>
+                <div className={`flex items-center border rounded-md h-9 bg-background ${isOutOfStock ? 'border-red-500/50 opacity-50' : 'border-border'}`}>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -972,9 +947,7 @@ export default function ProductDetail() {
             {/* Purchase Options - Hidden when out of stock */}
             {!isOutOfStock && (
               <div className="mb-3 md:mb-4">
-                <Label className={`text-xs font-medium mb-1.5 block text-muted-foreground ${
-                  product.slug === "bpc-157" ? "uppercase tracking-widest text-[10px]" : ""
-                }`}>Purchase Option</Label>
+                <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest">Purchase Option</Label>
                 <div className="grid grid-cols-2 gap-2">
                   <div 
                     className={`relative flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
@@ -994,7 +967,7 @@ export default function ProductDetail() {
                         ${getBasePrice().toFixed(2)}
                       </p>
                     </div>
-                    {product.slug === "bpc-157" && purchaseType === "one-time" && (
+                    {purchaseType === "one-time" && (
                       <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-[#E7FB10] flex items-center justify-center flex-shrink-0">
                         <Check className="h-3 w-3 text-black" />
                       </div>
@@ -1020,7 +993,7 @@ export default function ProductDetail() {
                         Auto-delivery
                       </p>
                     </div>
-                    {product.slug === "bpc-157" && purchaseType === "subscription" && (
+                    {purchaseType === "subscription" && (
                       <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-[#21d8ff] flex items-center justify-center flex-shrink-0">
                         <Check className="h-3 w-3 text-black" />
                       </div>
@@ -1082,33 +1055,24 @@ export default function ProductDetail() {
                   )}
                 </span>
               )}
-              {product.slug !== "bpc-157" && (
-                <div className="flex items-center gap-3">
-                  <span className="flex items-center gap-1"><Shield className="h-3 w-3" /> Lab Tested</span>
-                  <span className="flex items-center gap-1"><Truck className="h-3 w-3" /> Fast Ship</span>
-                </div>
-              )}
             </div>
 
-            {/* BPC-157: segmented trust badge bar */}
-            {product.slug === "bpc-157" && (
-              <div className="flex items-center text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-2 md:mb-3 border border-border/40 rounded-md overflow-hidden">
-                <div className="flex-1 flex items-center justify-center gap-1.5 py-2">
-                  <Shield className="h-3 w-3 flex-shrink-0" />
-                  <span>3rd Party Tested</span>
-                </div>
-                <div className="w-px self-stretch bg-border/40" />
-                <div className="flex-1 flex items-center justify-center gap-1.5 py-2">
-                  <FileCheck className="h-3 w-3 flex-shrink-0" />
-                  <span>COA Included</span>
-                </div>
-                <div className="w-px self-stretch bg-border/40" />
-                <div className="flex-1 flex items-center justify-center gap-1.5 py-2">
-                  <RefreshCw className="h-3 w-3 flex-shrink-0" />
-                  <span>Guaranteed</span>
-                </div>
+            <div className="flex items-center text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-2 md:mb-3 border border-border/40 rounded-md overflow-hidden">
+              <div className="flex-1 flex items-center justify-center gap-1.5 py-2.5">
+                <Shield className="h-4 w-4 flex-shrink-0 text-[#21d8ff]" />
+                <span>3rd Party Tested</span>
               </div>
-            )}
+              <div className="w-px self-stretch bg-border/40" />
+              <div className="flex-1 flex items-center justify-center gap-1.5 py-2.5">
+                <FileCheck className="h-4 w-4 flex-shrink-0 text-[#21d8ff]" />
+                <span>COA Included</span>
+              </div>
+              <div className="w-px self-stretch bg-border/40" />
+              <div className="flex-1 flex items-center justify-center gap-1.5 py-2.5">
+                <RefreshCw className="h-4 w-4 flex-shrink-0 text-[#21d8ff]" />
+                <span>Guaranteed</span>
+              </div>
+            </div>
 
             {/* Mobile-only compact RUO notice */}
             <div className="md:hidden flex items-center gap-2 p-2.5 rounded-lg bg-red-950/30 border border-red-500/40 mb-3" data-testid="card-ruo-mobile">
@@ -1118,107 +1082,52 @@ export default function ProductDetail() {
 
             {/* Purchase buttons - only show when in stock */}
             {!isOutOfStock ? (
-              <>
-                {product.slug === "bpc-157" ? (
-                  /* BPC-157 pilot: stacked vertical button layout */
-                  <div className="flex flex-col gap-2">
-                    <Button
-                      size="lg"
-                      className={`w-full font-display font-bold gap-2 text-black transition-shadow duration-300 ${
-                        purchaseType === "subscription"
-                          ? "bg-[#21d8ff] border-[#21d8ff] shadow-[0_0_20px_rgba(33,216,255,0.4)]"
-                          : "bg-[#E7FB10] border-[#E7FB10] shadow-[0_0_20px_rgba(231,251,16,0.4)]"
-                      }`}
-                      onClick={handleBuyNow}
-                      data-testid="button-buy-now"
-                    >
-                      {purchaseType === "subscription" ? (
-                        <><Repeat className="h-5 w-5" />Subscribe Now</>
-                      ) : (
-                        <><ShoppingCart className="h-5 w-5" />Buy Now</>
-                      )}
-                    </Button>
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="w-full font-display gap-2 border-2"
-                      onClick={handleAddToCart}
-                      data-testid="button-add-to-cart"
-                    >
-                      <ShoppingBag className="h-5 w-5" />
-                      Add to Cart
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className={`w-full gap-2 transition-all duration-300 border-[#ec4899]/50 text-[#ec4899] md:hover:border-[#ec4899] md:hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] ${
-                        isInWishlist ? "bg-[#ec4899]/10" : ""
-                      }`}
-                      onClick={handleToggleWishlist}
-                      disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
-                      data-testid="button-toggle-wishlist"
-                    >
-                      <Heart className={`h-4 w-4 ${isInWishlist ? "fill-current" : ""}`} />
-                      {isInWishlist ? "Saved to Wishlist" : "Save to Wishlist"}
-                    </Button>
-                    {purchaseType === "subscription" && (
-                      <p className="text-[10px] text-center text-muted-foreground">
-                        Save ${((getBasePrice() - getDiscountedPrice()) * quantity).toFixed(2)} per order • Cancel anytime
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  /* Original side-by-side layout for all other products */
-                  <>
-                    <div className="flex gap-3">
-                      <Button
-                        size="lg"
-                        variant="outline"
-                        className="flex-1 font-display gap-2 border-2 md:hover:border-[#21d8ff] md:hover:text-[#21d8ff] md:hover:shadow-[0_0_15px_rgba(33,216,255,0.3)] transition-all duration-300"
-                        onClick={handleAddToCart}
-                        data-testid="button-add-to-cart"
-                      >
-                        <ShoppingBag className="h-5 w-5" />
-                        Add to Cart
-                      </Button>
-                      <Button
-                        size="lg"
-                        className={`flex-1 font-display gap-2 transition-shadow duration-300 text-black ${
-                          purchaseType === "subscription" 
-                            ? "bg-[#21d8ff] border-[#21d8ff] md:hover:bg-[#21d8ff]/90 shadow-[0_0_20px_rgba(33,216,255,0.4)] md:hover:shadow-[0_0_40px_rgba(33,216,255,0.6)]" 
-                            : "bg-[#E7FB10] border-[#E7FB10] md:hover:bg-[#E7FB10]/90 shadow-[0_0_20px_rgba(231,251,16,0.4)] md:hover:shadow-[0_0_40px_rgba(231,251,16,0.6)]"
-                        }`}
-                        onClick={handleBuyNow}
-                        data-testid="button-buy-now"
-                      >
-                        {purchaseType === "subscription" ? (
-                          <><Repeat className="h-5 w-5" />Subscribe</>
-                        ) : (
-                          <><ShoppingCart className="h-5 w-5" />Buy Now</>
-                        )}
-                      </Button>
-                    </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className={`w-full mt-2 gap-2 transition-all duration-300 border-[#ec4899]/50 text-[#ec4899] md:hover:border-[#ec4899] md:hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] ${
-                        isInWishlist ? "bg-[#ec4899]/10" : ""
-                      }`}
-                      onClick={handleToggleWishlist}
-                      disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
-                      data-testid="button-toggle-wishlist"
-                    >
-                      <Heart className={`h-4 w-4 ${isInWishlist ? "fill-current" : ""}`} />
-                      {isInWishlist ? "Saved to Wishlist" : "Save to Wishlist"}
-                    </Button>
-                    {purchaseType === "subscription" && (
-                      <p className="text-[10px] text-center text-muted-foreground mt-1">
-                        Save ${((getBasePrice() - getDiscountedPrice()) * quantity).toFixed(2)} per order • Cancel anytime
-                      </p>
-                    )}
-                  </>
+              <div className="flex flex-col gap-2">
+                <Button
+                  size="lg"
+                  className={`w-full font-display font-bold gap-2 text-black transition-shadow duration-300 ${
+                    purchaseType === "subscription"
+                      ? "bg-[#21d8ff] border-[#21d8ff] shadow-[0_0_20px_rgba(33,216,255,0.4)]"
+                      : "bg-[#E7FB10] border-[#E7FB10] shadow-[0_0_20px_rgba(231,251,16,0.4)]"
+                  }`}
+                  onClick={handleBuyNow}
+                  data-testid="button-buy-now"
+                >
+                  {purchaseType === "subscription" ? (
+                    <><Repeat className="h-5 w-5" />Subscribe Now</>
+                  ) : (
+                    <><ShoppingCart className="h-5 w-5" />Buy Now</>
+                  )}
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full font-display gap-2 border-2"
+                  onClick={handleAddToCart}
+                  data-testid="button-add-to-cart"
+                >
+                  <ShoppingBag className="h-5 w-5" />
+                  Add to Cart
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className={`w-full gap-2 transition-all duration-300 border-[#ec4899]/50 text-[#ec4899] md:hover:border-[#ec4899] md:hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] ${
+                    isInWishlist ? "bg-[#ec4899]/10" : ""
+                  }`}
+                  onClick={handleToggleWishlist}
+                  disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
+                  data-testid="button-toggle-wishlist"
+                >
+                  <Heart className={`h-4 w-4 ${isInWishlist ? "fill-current" : ""}`} />
+                  {isInWishlist ? "Saved to Wishlist" : "Save to Wishlist"}
+                </Button>
+                {purchaseType === "subscription" && (
+                  <p className="text-[10px] text-center text-muted-foreground">
+                    Save ${((getBasePrice() - getDiscountedPrice()) * quantity).toFixed(2)} per order • Cancel anytime
+                  </p>
                 )}
-              </>
+              </div>
             ) : (
               /* Out of Stock - Show prominent notification signup */
               <motion.div
@@ -1330,26 +1239,7 @@ export default function ProductDetail() {
 
             <Separator className="my-4 md:my-6" />
 
-            <div className="grid grid-cols-4 gap-2 text-center mb-4 md:mb-6">
-              <div className="flex flex-col items-center gap-1">
-                <Shield className="h-4 w-4 text-[#21d8ff]" />
-                <span className="text-[10px] text-muted-foreground">3rd Party Tested</span>
-              </div>
-              <div className="flex flex-col items-center gap-1">
-                <FileCheck className="h-4 w-4 text-[#21d8ff]" />
-                <span className="text-[10px] text-muted-foreground">COA Included</span>
-              </div>
-              <div className="flex flex-col items-center gap-1">
-                <Truck className="h-4 w-4 text-[#21d8ff]" />
-                <span className="text-[10px] text-muted-foreground">Fast Shipping</span>
-              </div>
-              <div className="flex flex-col items-center gap-1">
-                <RefreshCw className="h-4 w-4 text-[#21d8ff]" />
-                <span className="text-[10px] text-muted-foreground">Guaranteed</span>
-              </div>
-            </div>
-
-            {/* RUO inline notice — below trust-signals grid */}
+            {/* RUO inline notice */}
             <div className="hidden md:flex items-center gap-2 mb-4 px-3 py-2 rounded-md bg-red-500/10 border border-red-500/40 text-xs text-red-300" data-testid="notice-ruo-inline">
               <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0 text-red-400" />
               <span>For lawful research use only. Not for human or animal consumption.</span>
@@ -1464,11 +1354,9 @@ export default function ProductDetail() {
 
               {/* Section: Overview */}
               {activeResearchTab === "overview" && <section data-testid="section-overview-panel" className="relative overflow-hidden">
-                {product.slug === "bpc-157" && (
-                  <div className="absolute bottom-0 right-0 text-[100px] md:text-[130px] font-display font-black uppercase leading-none text-white/[0.07] select-none pointer-events-none tracking-tight">
-                    BPC-157
-                  </div>
-                )}
+                <div className="absolute bottom-0 right-0 text-[100px] md:text-[130px] font-display font-black uppercase leading-none text-white/[0.07] select-none pointer-events-none tracking-tight">
+                  {product.name}
+                </div>
                 {/* Product description + accent separator */}
                 {product.description && (
                   <>
