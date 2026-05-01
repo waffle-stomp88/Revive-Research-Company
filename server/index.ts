@@ -3,7 +3,7 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import { getMetaForUrl, getPreRenderedContent, injectMetaTags, shouldReturn404 } from "./seo";
-import { fixBlendProductSlugs } from "./storage";
+import { fixBlendProductSlugs, seedStripePresetsIfEmpty } from "./storage";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -110,6 +110,10 @@ export function log(message: string, source = "express") {
   // (guards against older records created before slug auto-generation was in place)
   await fixBlendProductSlugs().catch((err) => {
     console.warn("[startup] fixBlendProductSlugs failed (non-fatal):", err?.message ?? err);
+  });
+
+  await seedStripePresetsIfEmpty().catch((err) => {
+    console.warn("[startup] seedStripePresetsIfEmpty failed (non-fatal):", err?.message ?? err);
   });
 
   await registerRoutes(httpServer, app);

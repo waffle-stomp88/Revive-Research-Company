@@ -9,7 +9,7 @@ import fs from "fs";
 import { storage, resolveDisplayPrice } from "./storage";
 import { db } from "./db";
 import { eq, desc, sql } from "drizzle-orm";
-import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertNewsletterSubscriberSchema, subscriptions, orders as ordersTable, savedStacks, insertSavedStackSchema } from "@shared/schema";
+import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertNewsletterSubscriberSchema, subscriptions, orders as ordersTable, savedStacks, insertSavedStackSchema, insertStripePresetSchema } from "@shared/schema";
 import { setupAuth, isAuthenticated, verifyAuth0Token } from "./auth0Auth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
@@ -5527,6 +5527,74 @@ Return ONLY valid JSON in this exact format:
     } catch (error) {
       console.error("Error dismissing dead link:", error);
       return res.status(500).json({ error: "Failed to dismiss dead link" });
+    }
+  });
+
+  // ── Stripe Presets ─────────────────────────────────────────────────────────
+  // Public read (needed to populate the admin dropdown without a separate auth check)
+  app.get("/api/stripe-presets", async (_req, res) => {
+    try {
+      const presets = await storage.getAllStripePresets();
+      return res.json(presets);
+    } catch (error) {
+      console.error("Error fetching stripe presets:", error);
+      return res.status(500).json({ error: "Failed to fetch stripe presets" });
+    }
+  });
+
+  app.post("/api/admin/stripe-presets", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const user = userId ? await storage.getUser(userId) : null;
+      if (!user?.isAdmin) return res.status(403).json({ error: "Admin only" });
+
+      const parsed = insertStripePresetSchema.safeParse(req.body);
+      if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
+
+      const preset = await storage.createStripePreset(parsed.data);
+      return res.status(201).json(preset);
+    } catch (error: any) {
+      if (error?.constraint === "uq_stripe_presets_label" || error?.message?.includes("uq_stripe_presets_label")) {
+        return res.status(409).json({ error: "A preset with that label already exists" });
+      }
+      console.error("Error creating stripe preset:", error);
+      return res.status(500).json({ error: "Failed to create stripe preset" });
+    }
+  });
+
+  app.patch("/api/admin/stripe-presets/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const user = userId ? await storage.getUser(userId) : null;
+      if (!user?.isAdmin) return res.status(403).json({ error: "Admin only" });
+
+      const parsed = insertStripePresetSchema.partial().safeParse(req.body);
+      if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
+
+      const preset = await storage.updateStripePreset(req.params.id, parsed.data);
+      if (!preset) return res.status(404).json({ error: "Preset not found" });
+      return res.json(preset);
+    } catch (error: any) {
+      if (error?.constraint === "uq_stripe_presets_label" || error?.message?.includes("uq_stripe_presets_label")) {
+        return res.status(409).json({ error: "A preset with that label already exists" });
+      }
+      console.error("Error updating stripe preset:", error);
+      return res.status(500).json({ error: "Failed to update stripe preset" });
+    }
+  });
+
+  app.delete("/api/admin/stripe-presets/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const user = userId ? await storage.getUser(userId) : null;
+      if (!user?.isAdmin) return res.status(403).json({ error: "Admin only" });
+
+      const deleted = await storage.deleteStripePreset(req.params.id);
+      if (!deleted) return res.status(404).json({ error: "Preset not found" });
+      return res.json({ ok: true });
+    } catch (error) {
+      console.error("Error deleting stripe preset:", error);
+      return res.status(500).json({ error: "Failed to delete stripe preset" });
     }
   });
 

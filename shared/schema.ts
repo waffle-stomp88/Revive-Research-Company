@@ -857,3 +857,28 @@ export const citationDismissals = pgTable("citation_dismissals", {
 });
 
 export type CitationDismissal = typeof citationDismissals.$inferSelect;
+
+// Stripe presets table - Admin-managed colour/label presets for category stripes
+export const stripePresets = pgTable(
+  "stripe_presets",
+  {
+    id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+    label: text("label").notNull(),
+    accentColor: text("accent_color").notNull(),
+    sortOrder: integer("sort_order").default(0),
+  },
+  (table) => [unique("uq_stripe_presets_label").on(table.label)],
+);
+
+export const insertStripePresetSchema = createInsertSchema(stripePresets)
+  .omit({ id: true })
+  .extend({
+    accentColor: z
+      .string()
+      .refine(
+        (v) => /^#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/.test(v),
+        { message: "accentColor must be a valid hex colour (e.g. #f97316)" },
+      ),
+  });
+export type InsertStripePreset = z.infer<typeof insertStripePresetSchema>;
+export type StripePreset = typeof stripePresets.$inferSelect;

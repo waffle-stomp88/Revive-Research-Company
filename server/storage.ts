@@ -5,6 +5,7 @@ import {
   savedAddresses, notificationPreferences, researchNotes, loginHistory, batchVerificationHistory, productVotes,
   deadLinkHits,
   citationDismissals,
+  stripePresets,
   type User, type UpsertUser,
   type Product, type InsertProduct,
   type ProductDosageStock, type InsertProductDosageStock, type ProductWithDosageStock,
@@ -40,6 +41,7 @@ import {
   type WaitlistSignup, type InsertWaitlistSignup,
   type DeadLinkHit,
   type CitationDismissal,
+  type StripePreset, type InsertStripePreset,
   waitlistSignups,
   priceChangeReasons
 } from "@shared/schema";
@@ -359,6 +361,15 @@ export interface IStorage {
   getAllDeadLinkHits(): Promise<DeadLinkHit[]>;
   deleteDeadLinkHit(type: string, slug: string): Promise<boolean>;
   clearAllDeadLinkHits(): Promise<number>;
+
+  // Stripe Presets
+  getAllStripePresets(): Promise<StripePreset[]>;
+  getStripePreset(id: string): Promise<StripePreset | undefined>;
+  createStripePreset(preset: InsertStripePreset): Promise<StripePreset>;
+  updateStripePreset(id: string, preset: Partial<InsertStripePreset>): Promise<StripePreset | undefined>;
+  deleteStripePreset(id: string): Promise<boolean>;
+  getStripePresetsCount(): Promise<number>;
+  seedStripePresets(presets: InsertStripePreset[]): Promise<void>;
 }
 
 export function resolveDisplayPrice(
@@ -2494,6 +2505,40 @@ export class DatabaseStorage implements IStorage {
     const result = await db.delete(citationDismissals).returning({ pmid: citationDismissals.pmid });
     return result.length;
   }
+
+  async getAllStripePresets(): Promise<StripePreset[]> {
+    return db.select().from(stripePresets).orderBy(stripePresets.sortOrder, stripePresets.label);
+  }
+
+  async getStripePreset(id: string): Promise<StripePreset | undefined> {
+    const [preset] = await db.select().from(stripePresets).where(eq(stripePresets.id, id));
+    return preset || undefined;
+  }
+
+  async createStripePreset(preset: InsertStripePreset): Promise<StripePreset> {
+    const [created] = await db.insert(stripePresets).values(preset).returning();
+    return created;
+  }
+
+  async updateStripePreset(id: string, preset: Partial<InsertStripePreset>): Promise<StripePreset | undefined> {
+    const [updated] = await db.update(stripePresets).set(preset).where(eq(stripePresets.id, id)).returning();
+    return updated || undefined;
+  }
+
+  async deleteStripePreset(id: string): Promise<boolean> {
+    const result = await db.delete(stripePresets).where(eq(stripePresets.id, id)).returning({ id: stripePresets.id });
+    return result.length > 0;
+  }
+
+  async getStripePresetsCount(): Promise<number> {
+    const [{ cnt }] = await db.select({ cnt: count() }).from(stripePresets);
+    return Number(cnt);
+  }
+
+  async seedStripePresets(presets: InsertStripePreset[]): Promise<void> {
+    if (presets.length === 0) return;
+    await db.insert(stripePresets).values(presets).onConflictDoNothing();
+  }
 }
 
 export const storage = new DatabaseStorage();
@@ -2528,4 +2573,30 @@ export async function fixBlendProductSlugs(): Promise<void> {
         )
       );
   }
+}
+
+/**
+ * Seeds the stripe_presets table with the default hardcoded presets if it is
+ * currently empty. This runs once at startup and is a no-op on subsequent
+ * restarts once the table has been populated.
+ */
+export async function seedStripePresetsIfEmpty(): Promise<void> {
+  const existingCount = await storage.getStripePresetsCount();
+  if (existingCount > 0) return;
+
+  const DEFAULT_PRESETS: Array<{ label: string; accentColor: string; sortOrder: number }> = [
+    { label: "Yellow-Green (Default / Regenerative)", accentColor: "#E7FB10", sortOrder: 0 },
+    { label: "Cyan (Cognitive / Neuro)", accentColor: "#21d8ff", sortOrder: 1 },
+    { label: "Purple (GH / IGF-1 / Longevity)", accentColor: "#9d4edd", sortOrder: 2 },
+    { label: "Violet (Longevity / Senolytic)", accentColor: "#a855f7", sortOrder: 3 },
+    { label: "Indigo (Sleep / Hormonal)", accentColor: "#6366f1", sortOrder: 4 },
+    { label: "Green (Immune / Antimicrobial)", accentColor: "#22c55e", sortOrder: 5 },
+    { label: "Amber (Metabolic / Mitochondrial)", accentColor: "#f59e0b", sortOrder: 6 },
+    { label: "Orange (Fat-Loss / Tanning / GLP-1)", accentColor: "#f97316", sortOrder: 7 },
+    { label: "Pink (Skin / Cosmetic)", accentColor: "#ec4899", sortOrder: 8 },
+    { label: "Red (Sexual Health)", accentColor: "#f43f5e", sortOrder: 9 },
+    { label: "Slate (Reconstitution / Research)", accentColor: "#64748b", sortOrder: 10 },
+  ];
+
+  await storage.seedStripePresets(DEFAULT_PRESETS);
 }

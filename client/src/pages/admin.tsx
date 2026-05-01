@@ -123,10 +123,9 @@ import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianG
 import { ObjectUploader } from "@/components/ObjectUploader";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertProductSchema, insertCoaSchema, type Product, type Coa, type Order, type Contact, type AffiliateApplication, type Affiliate, type AffiliatePayout, type ProductDosageStock, type ProductWithDosageStock, type ProductBehavioralMetrics } from "@shared/schema";
+import { insertProductSchema, insertCoaSchema, type Product, type Coa, type Order, type Contact, type AffiliateApplication, type Affiliate, type AffiliatePayout, type ProductDosageStock, type ProductWithDosageStock, type ProductBehavioralMetrics, type StripePreset } from "@shared/schema";
 import { MANUFACTURER_PRODUCT_IDS, getMfgIdForProduct, getAllMfgIdsForProduct, generateBatchNumber, getNextCycleLetter, validateBatchNumber } from "@shared/batchNumbers";
 import { z } from "zod";
-import { STRIPE_ACCENT_PRESETS } from "@/data/category-stripe-config";
 
 // Dosage stock item type for local state management
 interface DosageStockItem {
@@ -853,6 +852,11 @@ function ProductsTab() {
   // Fetch products with dosage stock data
   const { data: productsWithStock, isLoading } = useQuery<ProductWithDosageStock[]>({
     queryKey: ["/api/admin/products-with-stock"],
+  });
+
+  // Fetch stripe presets from DB (replaces hardcoded STRIPE_ACCENT_PRESETS)
+  const { data: stripePresets = [] } = useQuery<StripePreset[]>({
+    queryKey: ["/api/stripe-presets"],
   });
 
   // Fallback to regular products for non-admin use
@@ -1612,12 +1616,12 @@ function ProductsTab() {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="__none__">— automatic —</SelectItem>
-                              {STRIPE_ACCENT_PRESETS.map((preset) => (
-                                <SelectItem key={preset.value} value={preset.value}>
+                              {stripePresets.map((preset) => (
+                                <SelectItem key={preset.id} value={preset.accentColor}>
                                   <span className="flex items-center gap-2">
                                     <span
                                       className="inline-block w-3 h-3 rounded-full flex-shrink-0"
-                                      style={{ backgroundColor: preset.value }}
+                                      style={{ backgroundColor: preset.accentColor }}
                                     />
                                     {preset.label}
                                   </span>
@@ -7364,12 +7368,232 @@ function CommunicationsTab() {
   );
 }
 
+function extractApiError(error: unknown, fallback: string): string {
+  if (error instanceof Error) {
+    const match = error.message.match(/^\d+: (.+)$/);
+    if (match) {
+      try { return JSON.parse(match[1])?.error ?? fallback; } catch { return match[1]; }
+    }
+  }
+  return fallback;
+}
+
+function StripePresetsTab() {
+  const { toast } = useToast();
+  const [editingPreset, setEditingPreset] = useState<StripePreset | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [newLabel, setNewLabel] = useState("");
+  const [newColor, setNewColor] = useState("#E7FB10");
+  const [editLabel, setEditLabel] = useState("");
+  const [editColor, setEditColor] = useState("");
+
+  const { data: presets = [], isLoading } = useQuery<StripePreset[]>({
+    queryKey: ["/api/stripe-presets"],
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: { label: string; accentColor: string }) =>
+      apiRequest("POST", "/api/admin/stripe-presets", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/stripe-presets"] });
+      setIsAdding(false);
+      setNewLabel("");
+      setNewColor("#E7FB10");
+      toast({ title: "Preset created" });
+    },
+    onError: (err) => toast({ title: extractApiError(err, "Failed to create preset"), variant: "destructive" }),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: { label: string; accentColor: string } }) =>
+      apiRequest("PATCH", `/api/admin/stripe-presets/${id}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/stripe-presets"] });
+      setEditingPreset(null);
+      toast({ title: "Preset updated" });
+    },
+    onError: (err) => toast({ title: extractApiError(err, "Failed to update preset"), variant: "destructive" }),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => apiRequest("DELETE", `/api/admin/stripe-presets/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/stripe-presets"] });
+      toast({ title: "Preset deleted" });
+    },
+    onError: (err) => toast({ title: extractApiError(err, "Failed to delete preset"), variant: "destructive" }),
+  });
+
+  const startEdit = (preset: StripePreset) => {
+    setEditingPreset(preset);
+    setEditLabel(preset.label);
+    setEditColor(preset.accentColor);
+  };
+
+  const HEX_RE = /^#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-base font-semibold">Stripe Colour Presets</h3>
+          <p className="text-sm text-muted-foreground">Manage the colour presets available in the product accent-colour dropdown.</p>
+        </div>
+        <Button
+          size="sm"
+          onClick={() => { setIsAdding(true); setEditingPreset(null); }}
+          data-testid="button-add-stripe-preset"
+        >
+          <Plus className="h-4 w-4 mr-1" />
+          Add Preset
+        </Button>
+      </div>
+
+      {isAdding && (
+        <Card className="p-4">
+          <p className="text-sm font-medium mb-3">New Preset</p>
+          <div className="flex flex-wrap gap-3 items-end">
+            <div className="flex-1 min-w-[200px]">
+              <Label className="text-xs mb-1 block">Label</Label>
+              <Input
+                value={newLabel}
+                onChange={(e) => setNewLabel(e.target.value)}
+                placeholder="e.g. Teal (Anti-Aging)"
+                data-testid="input-new-preset-label"
+              />
+            </div>
+            <div className="w-36">
+              <Label className="text-xs mb-1 block">Accent Colour (hex)</Label>
+              <div className="flex gap-2 items-center">
+                <Input
+                  value={newColor}
+                  onChange={(e) => setNewColor(e.target.value)}
+                  placeholder="#E7FB10"
+                  data-testid="input-new-preset-color"
+                />
+                {HEX_RE.test(newColor) && (
+                  <div className="w-8 h-8 rounded-md border border-border flex-shrink-0" style={{ backgroundColor: newColor }} />
+                )}
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                onClick={() => {
+                  if (!newLabel.trim()) return toast({ title: "Label is required", variant: "destructive" });
+                  if (!HEX_RE.test(newColor)) return toast({ title: "Invalid hex colour", variant: "destructive" });
+                  createMutation.mutate({ label: newLabel.trim(), accentColor: newColor });
+                }}
+                disabled={createMutation.isPending}
+                data-testid="button-save-new-preset"
+              >
+                {createMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                Save
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => setIsAdding(false)} data-testid="button-cancel-new-preset">
+                <X className="h-4 w-4" />
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {isLoading ? (
+        <div className="space-y-2">
+          {[1, 2, 3].map((i) => <Skeleton key={i} className="h-12 w-full" />)}
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {presets.length === 0 && (
+            <p className="text-sm text-muted-foreground text-center py-8">No presets yet. Add one above.</p>
+          )}
+          {presets.map((preset) => (
+            <Card key={preset.id} className="p-3" data-testid={`card-stripe-preset-${preset.id}`}>
+              {editingPreset?.id === preset.id ? (
+                <div className="flex flex-wrap gap-3 items-end">
+                  <div className="flex-1 min-w-[200px]">
+                    <Label className="text-xs mb-1 block">Label</Label>
+                    <Input
+                      value={editLabel}
+                      onChange={(e) => setEditLabel(e.target.value)}
+                      data-testid={`input-edit-preset-label-${preset.id}`}
+                    />
+                  </div>
+                  <div className="w-36">
+                    <Label className="text-xs mb-1 block">Accent Colour (hex)</Label>
+                    <div className="flex gap-2 items-center">
+                      <Input
+                        value={editColor}
+                        onChange={(e) => setEditColor(e.target.value)}
+                        data-testid={`input-edit-preset-color-${preset.id}`}
+                      />
+                      {HEX_RE.test(editColor) && (
+                        <div className="w-8 h-8 rounded-md border border-border flex-shrink-0" style={{ backgroundColor: editColor }} />
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        if (!editLabel.trim()) return toast({ title: "Label is required", variant: "destructive" });
+                        if (!HEX_RE.test(editColor)) return toast({ title: "Invalid hex colour", variant: "destructive" });
+                        updateMutation.mutate({ id: preset.id, data: { label: editLabel.trim(), accentColor: editColor } });
+                      }}
+                      disabled={updateMutation.isPending}
+                      data-testid={`button-save-preset-${preset.id}`}
+                    >
+                      {updateMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                      Save
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => setEditingPreset(null)} data-testid={`button-cancel-preset-${preset.id}`}>
+                      <X className="h-4 w-4" />
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3 flex-wrap">
+                  <div
+                    className="w-5 h-5 rounded-full flex-shrink-0 border border-border"
+                    style={{ backgroundColor: preset.accentColor }}
+                    data-testid={`swatch-preset-${preset.id}`}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate" data-testid={`text-preset-label-${preset.id}`}>{preset.label}</p>
+                    <p className="text-xs text-muted-foreground font-mono" data-testid={`text-preset-color-${preset.id}`}>{preset.accentColor}</p>
+                  </div>
+                  <div className="flex gap-2 ml-auto">
+                    <Button size="icon" variant="ghost" onClick={() => startEdit(preset)} data-testid={`button-edit-preset-${preset.id}`}>
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => deleteMutation.mutate(preset.id)}
+                      disabled={deleteMutation.isPending}
+                      data-testid={`button-delete-preset-${preset.id}`}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function SettingsTab() {
   const [settingsSubTab, setSettingsSubTab] = useState("discounts");
   
   return (
     <div className="space-y-4">
-      <div className="flex gap-2 mb-4">
+      <div className="flex flex-wrap gap-2 mb-4">
         <Button 
           variant={settingsSubTab === "discounts" ? "default" : "outline"}
           onClick={() => setSettingsSubTab("discounts")}
@@ -7379,11 +7603,26 @@ function SettingsTab() {
           <Tag className="h-4 w-4" />
           Discount Codes
         </Button>
+        <Button
+          variant={settingsSubTab === "stripe-presets" ? "default" : "outline"}
+          onClick={() => setSettingsSubTab("stripe-presets")}
+          className="gap-2"
+          data-testid="subtab-stripe-presets"
+        >
+          <Settings className="h-4 w-4" />
+          Stripe Colour Presets
+        </Button>
       </div>
       
       {settingsSubTab === "discounts" && (
         <Card className="p-6">
           <DiscountCodesTab />
+        </Card>
+      )}
+
+      {settingsSubTab === "stripe-presets" && (
+        <Card className="p-6">
+          <StripePresetsTab />
         </Card>
       )}
     </div>
