@@ -509,7 +509,9 @@ export default function Education() {
     } else {
       sessionStorage.setItem('education_scroll_pos', window.pageYOffset.toString());
       setExpandedArticle(articleId);
-      setArticleMode("quick-breakdown");
+      const defaultMode = hasQuickBreakdown(article?.slug ?? "") ? "quick-breakdown" : "deep-dive";
+      setArticleMode(defaultMode);
+      prevReadingModeRef.current = defaultMode;
     }
   };
 
@@ -570,7 +572,9 @@ export default function Education() {
       if (article) {
         setExpandedArticle(article.id);
         setActiveCategory(article.category);
-        setArticleMode("quick-breakdown");
+        const defaultMode = hasQuickBreakdown(article.slug ?? "") ? "quick-breakdown" : "deep-dive";
+        setArticleMode(defaultMode);
+        prevReadingModeRef.current = defaultMode;
       } else {
         flagRetiredContent("guide", params.slug);
         setLocation("/guides/peptide-education-center");
