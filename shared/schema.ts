@@ -58,9 +58,25 @@ export const products = pgTable("products", {
   // Pricing advisory system
   pricingSuggestionsEnabled: boolean("pricing_suggestions_enabled").default(false),
   publishedAt: timestamp("published_at"),
+  // Category stripe override (admin-supplied, takes priority over hardcoded map)
+  stripeLabel: text("stripe_label"),
+  stripeAccentColor: text("stripe_accent_color"),
 });
 
-export const insertProductSchema = createInsertSchema(products).omit({ id: true });
+const HEX_COLOR_RE = /^#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/;
+
+export const insertProductSchema = createInsertSchema(products)
+  .omit({ id: true })
+  .extend({
+    stripeAccentColor: z
+      .string()
+      .nullable()
+      .optional()
+      .refine(
+        (v) => v == null || v === "" || HEX_COLOR_RE.test(v),
+        { message: "stripeAccentColor must be a valid hex colour (e.g. #f97316)" },
+      ),
+  });
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type Product = typeof products.$inferSelect;
 

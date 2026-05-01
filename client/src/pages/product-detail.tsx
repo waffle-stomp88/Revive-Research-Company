@@ -801,7 +801,7 @@ export default function ProductDetail() {
           >
             <div className="flex items-center gap-2 mb-2 flex-wrap">
               {(() => {
-                const stripe = getStripeConfig(product.slug, product.category);
+                const stripe = getStripeConfig(product.slug, product.category, product.stripeLabel, product.stripeAccentColor);
                 return (
                   <div className="flex items-center gap-2">
                     <div className="w-0.5 h-3.5 rounded-full flex-shrink-0" style={{ backgroundColor: stripe.accentColor }} />

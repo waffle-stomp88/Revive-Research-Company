@@ -126,6 +126,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProductSchema, insertCoaSchema, type Product, type Coa, type Order, type Contact, type AffiliateApplication, type Affiliate, type AffiliatePayout, type ProductDosageStock, type ProductWithDosageStock, type ProductBehavioralMetrics } from "@shared/schema";
 import { MANUFACTURER_PRODUCT_IDS, getMfgIdForProduct, getAllMfgIdsForProduct, generateBatchNumber, getNextCycleLetter, validateBatchNumber } from "@shared/batchNumbers";
 import { z } from "zod";
+import { STRIPE_ACCENT_PRESETS } from "@/data/category-stripe-config";
 
 // Dosage stock item type for local state management
 interface DosageStockItem {
@@ -154,6 +155,8 @@ const productFormSchema = insertProductSchema.extend({
   dosageOptions: z.string().optional(),
   isWeeklyDeal: z.boolean().optional(),
   weeklyDealEndDate: z.string().optional(),
+  stripeLabel: z.string().optional(),
+  stripeAccentColor: z.string().optional(),
 });
 
 type ProductFormValues = z.infer<typeof productFormSchema>;
@@ -951,6 +954,8 @@ function ProductsTab() {
       imageUrl: "",
       stockAmount: 0,
       dosageOptions: "",
+      stripeLabel: "",
+      stripeAccentColor: "",
     },
   });
 
@@ -1061,6 +1066,8 @@ function ProductsTab() {
         imageUrl: product.imageUrl || "",
         stockAmount: product.stockAmount || 0,
         dosageOptions: product.dosageOptions?.join(", ") || "",
+        stripeLabel: product.stripeLabel || "",
+        stripeAccentColor: product.stripeAccentColor || "",
       });
     } else {
       setEditingProduct(null);
@@ -1204,6 +1211,8 @@ function ProductsTab() {
       imageUrl: values.imageUrl || null,
       stockAmount: totalStock,
       inStock: anyInStock,
+      stripeLabel: values.stripeLabel?.trim() || null,
+      stripeAccentColor: values.stripeAccentColor?.trim() || null,
     };
 
     const handleSaveComplete = () => {
@@ -1555,6 +1564,82 @@ function ProductsTab() {
                     </FormItem>
                   )}
                 />
+
+                {/* Category Stripe Override */}
+                <div className="space-y-3 p-4 rounded-lg border border-border/50 bg-muted/30">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="w-2 h-4 rounded-full flex-shrink-0"
+                      style={{
+                        backgroundColor: form.watch("stripeAccentColor") || "#E7FB10",
+                      }}
+                    />
+                    <p className="text-sm font-semibold">Category Stripe</p>
+                    <p className="text-xs text-muted-foreground ml-auto">Overrides automatic label/colour for this product</p>
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="stripeLabel"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs">Stripe Label</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            value={field.value ?? ""}
+                            placeholder="e.g. Regenerative Peptide · Research Grade"
+                            data-testid="input-stripe-label"
+                          />
+                        </FormControl>
+                        <p className="text-[11px] text-muted-foreground">Leave blank to use the automatic label for this product's slug/category.</p>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="stripeAccentColor"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs">Accent Colour</FormLabel>
+                        <div className="flex gap-2 items-center">
+                          <Select
+                            value={field.value || ""}
+                            onValueChange={(val) => field.onChange(val === "__none__" ? "" : val)}
+                          >
+                            <SelectTrigger data-testid="select-stripe-accent-color" className="flex-1">
+                              <SelectValue placeholder="— automatic —" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="__none__">— automatic —</SelectItem>
+                              {STRIPE_ACCENT_PRESETS.map((preset) => (
+                                <SelectItem key={preset.value} value={preset.value}>
+                                  <span className="flex items-center gap-2">
+                                    <span
+                                      className="inline-block w-3 h-3 rounded-full flex-shrink-0"
+                                      style={{ backgroundColor: preset.value }}
+                                    />
+                                    {preset.label}
+                                  </span>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {field.value && (
+                            <div
+                              className="w-9 h-9 rounded-md border border-border flex-shrink-0"
+                              style={{ backgroundColor: field.value }}
+                              data-testid="swatch-stripe-accent-color"
+                            />
+                          )}
+                        </div>
+                        <p className="text-[11px] text-muted-foreground">Leave as automatic to inherit colour from the slug/category map.</p>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
                 <FormField
                   control={form.control}
                   name="benefits"

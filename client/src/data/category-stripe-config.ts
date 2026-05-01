@@ -81,11 +81,46 @@ const DEFAULT_STRIPE: StripeConfig = {
   accentColor: "#E7FB10",
 };
 
-export function getStripeConfig(slug?: string | null, category?: string | null): StripeConfig {
-  if (slug && slugOverrides[slug]) return slugOverrides[slug];
-  if (category) {
+export const STRIPE_ACCENT_PRESETS: { label: string; value: string }[] = [
+  { label: "Yellow-Green (Default / Regenerative)", value: "#E7FB10" },
+  { label: "Cyan (Cognitive / Neuro)", value: "#21d8ff" },
+  { label: "Purple (GH / IGF-1 / Longevity)", value: "#9d4edd" },
+  { label: "Violet (Longevity / Senolytic)", value: "#a855f7" },
+  { label: "Indigo (Sleep / Hormonal)", value: "#6366f1" },
+  { label: "Green (Immune / Antimicrobial)", value: "#22c55e" },
+  { label: "Amber (Metabolic / Mitochondrial)", value: "#f59e0b" },
+  { label: "Orange (Fat-Loss / Tanning / GLP-1)", value: "#f97316" },
+  { label: "Pink (Skin / Cosmetic)", value: "#ec4899" },
+  { label: "Red (Sexual Health)", value: "#f43f5e" },
+  { label: "Slate (Reconstitution / Research)", value: "#64748b" },
+];
+
+export function getStripeConfig(
+  slug?: string | null,
+  category?: string | null,
+  adminLabel?: string | null,
+  adminAccentColor?: string | null,
+): StripeConfig {
+  // Resolve the full automatic config first (slug → category → default)
+  let auto: StripeConfig;
+  if (slug && slugOverrides[slug]) {
+    auto = slugOverrides[slug];
+  } else if (category) {
     const key = category.toLowerCase().trim();
-    if (categoryFallbacks[key]) return categoryFallbacks[key];
+    auto = categoryFallbacks[key] ?? DEFAULT_STRIPE;
+  } else {
+    auto = DEFAULT_STRIPE;
   }
-  return DEFAULT_STRIPE;
+
+  // Admin-supplied values take priority over automatic resolution.
+  // Partial overrides (label-only or colour-only) fall back to the fully
+  // resolved automatic value, so category-mapped colours are preserved.
+  if (adminLabel || adminAccentColor) {
+    return {
+      label: adminLabel || auto.label,
+      accentColor: adminAccentColor || auto.accentColor,
+    };
+  }
+
+  return auto;
 }

@@ -2522,6 +2522,16 @@ export async function registerRoutes(
     try {
       let productId = req.params.id;
       
+      // Validate stripeAccentColor format if supplied
+      const hexColorRe = /^#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/;
+      if (
+        req.body.stripeAccentColor != null &&
+        req.body.stripeAccentColor !== "" &&
+        !hexColorRe.test(req.body.stripeAccentColor)
+      ) {
+        return res.status(400).json({ error: "stripeAccentColor must be a valid hex colour (e.g. #f97316)" });
+      }
+
       // Check if ID is a slug format (not a UUID) and resolve to actual UUID
       const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
       if (!uuidPattern.test(productId)) {
