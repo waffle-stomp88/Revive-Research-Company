@@ -168,14 +168,34 @@ export function log(message: string, source = "express") {
   }
 
   const port = parseInt(process.env.DEPLOY_PORT || process.env.PORT || "5000", 10);
-  httpServer.listen(
-    {
-      port,
-      host: "0.0.0.0",
-      reusePort: true,
-    },
-    () => {
-      log(`serving on port ${port}`);
-    },
-  );
+
+  function startListening(retries = 3) {
+    httpServer.listen(
+      {
+        port,
+        host: "0.0.0.0",
+        reusePort: true,
+      },
+      () => {
+        log(`serving on port ${port}`);
+      },
+    );
+
+    httpServer.on("error", (err: NodeJS.ErrnoException) => {
+      if (err.code === "EADDRINUSE" && retries > 0) {
+        log(`port ${port} in use — freeing it and retrying...`);
+        const { execSync } = require("child_process");
+        try { execSync(`fuser -k ${port}/tcp`); } catch {}
+        httpServer.close();
+        setTimeout(() => {
+          httpServer.removeAllListeners("error");
+          startListening(retries - 1);
+        }, 1000);
+      } else {
+        throw err;
+      }
+    });
+  }
+
+  startListening();
 })();
