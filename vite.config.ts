@@ -31,6 +31,18 @@ export default defineConfig({
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
   },
+  optimizeDeps: {
+    include: [
+      "three",
+      "@react-three/fiber",
+      "@react-three/drei",
+      "framer-motion",
+      "jspdf",
+      "qrcode",
+      "recharts",
+      "lucide-react",
+    ],
+  },
   server: {
     fs: {
       strict: true,
