@@ -986,6 +986,20 @@ function Step4Result({
         </Link>
       )}
 
+      {/* Discover synergies in 3D */}
+      <Link href="/galaxy">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="mt-1 w-full gap-2 text-[#E7FB10]/80 hover:text-[#E7FB10]"
+          data-testid="link-galaxy-from-wizard"
+        >
+          <Sparkles className="h-3.5 w-3.5" />
+          Discover synergies in 3D — Synergy Galaxy
+          <ChevronRight className="h-3.5 w-3.5" />
+        </Button>
+      </Link>
+
       {/* Success state */}
       <div className="mt-4 flex items-center gap-2 text-xs text-[#22c55e]">
         <CheckCircle className="h-4 w-4" />

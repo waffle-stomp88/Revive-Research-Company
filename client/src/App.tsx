@@ -56,6 +56,7 @@ import ProductsHub from "@/pages/products-hub";
 import DosageCalculator from "@/pages/dosage-calculator";
 import ReconstitutionWizard from "@/pages/reconstitution-wizard";
 import ResearchStacks from "@/pages/research-stacks";
+const GalaxyPage = lazy(() => import("@/pages/galaxy"));
 import ResearchStackDetail from "@/pages/research-stack-detail";
 import StackShare from "@/pages/stack-share";
 import Academy from "@/pages/academy";
@@ -162,6 +163,11 @@ function Router() {
         <Route path="/wholesale" component={Wholesale} />
         <Route path="/research-stacks" component={ResearchStacks} />
         <Route path="/research-stacks/:id" component={ResearchStackDetail} />
+        <Route path="/galaxy">
+          <Suspense fallback={<div className="min-h-screen bg-[#0d0d10]" />}>
+            <GalaxyPage />
+          </Suspense>
+        </Route>
         <Route path="/stacks/:shareCode" component={StackShare} />
         <Route path="/bundles/:id" component={BundleDetail} />
         <Route path="/cart" component={Cart} />

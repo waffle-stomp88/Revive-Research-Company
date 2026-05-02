@@ -3536,6 +3536,17 @@ function ResearchStacks() {
                 <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
                   Curated multi-compound combinations designed for synergistic pathway research.
                 </p>
+                <Link href="/galaxy">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-4 gap-1.5 border-[#E7FB10]/40 text-[#E7FB10] hover:text-[#E7FB10]"
+                    data-testid="link-explore-galaxy"
+                  >
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Explore the Synergy Galaxy
+                  </Button>
+                </Link>
               </motion.div>
             ) : (
               <motion.div
