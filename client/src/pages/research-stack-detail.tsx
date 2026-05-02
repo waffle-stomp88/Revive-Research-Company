@@ -2,10 +2,10 @@ import { useState, useMemo, useEffect } from "react";
 import { useRoute, Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { STACK_COMPONENTS, buildPriceLookup, calculateStackPricing } from "@/lib/stack-pricing";
+import { buildPriceLookup, calculateStackPricing } from "@/lib/stack-pricing";
 import { SEOHead } from "@/components/seo-head";
 import {
-  ArrowLeft, FlaskConical, ShoppingCart, Sparkles, AlertTriangle, Package, GraduationCap, Shield, FileCheck, Truck, RefreshCw, ShoppingBag, Repeat, CheckCircle, Minus, Plus, BookOpen, ChevronRight, ChevronDown, Zap
+  ArrowLeft, ShoppingCart, AlertTriangle, Package, GraduationCap, Shield, FileCheck, RefreshCw, ShoppingBag, Repeat, CheckCircle, Minus, Plus, BookOpen, ChevronRight, ChevronDown, Zap, Check
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,6 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ImageLoader } from "@/components/image-loader";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
@@ -46,9 +45,11 @@ export default function ResearchStackDetail() {
   const [purchaseType, setPurchaseType] = useState<PurchaseType>("one-time");
   const [subscriptionInterval, setSubscriptionInterval] = useState<SubscriptionInterval>("monthly");
   const [synergyLevel, setSynergyLevel] = useState<"beginner" | "expert">("beginner");
+  const [activeResearchTab, setActiveResearchTab] = useState<"overview" | "pk" | "synergy">("overview");
 
   useEffect(() => {
     setSynergyLevel("beginner");
+    setActiveResearchTab("overview");
   }, [params?.id]);
 
   useEffect(() => {
@@ -169,16 +170,14 @@ export default function ResearchStackDetail() {
 
         <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="flex flex-col">
-            <Card className="overflow-hidden border-[#2a2a32] sticky top-24">
+            <div className="relative w-full md:sticky md:top-24 z-20">
               <div
-                className="relative aspect-square bg-gradient-to-br from-[#1a1a1f] to-[#0d0d10] flex items-center justify-center"
-                style={{
-                  background: `radial-gradient(circle at 50% 50%, ${stack.color}15, transparent 70%), linear-gradient(135deg, #1a1a1f, #0d0d10)`,
-                }}
+                className="relative overflow-hidden rounded-lg aspect-[4/3] flex items-center justify-center"
+                style={{ background: `radial-gradient(circle at 50% 50%, ${stack.color}20, transparent 70%), linear-gradient(135deg, #1a1a1f, #0d0d10)` }}
               >
                 {stack.badge && (
                   <Badge
-                    className="absolute top-4 right-4"
+                    className="absolute top-4 right-4 z-30"
                     style={{
                       backgroundColor: stack.badgeColor,
                       color: stack.badgeColor === "#E7FB10" || stack.badgeColor === "#f59e0b" ? "black" : "white",
@@ -193,7 +192,7 @@ export default function ResearchStackDetail() {
                     <Package className="h-20 w-20 md:h-24 md:w-24" style={{ color: stack.color }} />
                   </div>
                   <div className="flex justify-center gap-2 mt-4">
-                    {stack.peptides.map((peptide, i) => (
+                    {stack.peptides.map((_, i) => (
                       <div key={i} className="w-4 h-4 rounded-full border-2 border-[#1a1a1f]" style={{ backgroundColor: stack.color }} />
                     ))}
                   </div>
@@ -202,7 +201,7 @@ export default function ResearchStackDetail() {
                   </p>
                 </div>
               </div>
-            </Card>
+            </div>
 
 
             {stack.educationLinks.length > 0 && (
@@ -253,44 +252,16 @@ export default function ResearchStackDetail() {
               </motion.section>
             )}
 
-            {/* Storage Information - DESKTOP ONLY */}
-            <motion.section
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.14 }}
-              className="mt-8 hidden md:block"
-              data-testid="section-storage-desktop"
-            >
-              <h3 className="font-display font-semibold text-lg mb-4">Storage Information</h3>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                {stack.storageGuide}
-              </p>
-              <div className="py-2">
-                <Link href="/guides/storage-101">
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="inline-block"
-                  >
-                    <Button 
-                      className="gap-2 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold md:hover:shadow-[0_0_20px_rgba(33,216,255,0.6)] transition-shadow" 
-                      data-testid="link-learn-storage-desktop"
-                    >
-                      <BookOpen className="h-4 w-4" />
-                      Learn More: Storage Best Practices
-                      <ChevronRight className="h-3 w-3" />
-                    </Button>
-                  </motion.div>
-                </Link>
-              </div>
-            </motion.section>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }} className="min-w-0 overflow-hidden">
             <div className="flex items-center gap-2 mb-2 flex-wrap">
-              <Badge variant="secondary" className="text-xs uppercase tracking-wider">
-                Research Stack
-              </Badge>
+              <div className="flex items-center gap-2" data-testid="stripe-category">
+                <div className="w-0.5 h-3.5 rounded-full flex-shrink-0" style={{ backgroundColor: stack.color }} />
+                <span className="text-[10px] font-mono uppercase tracking-widest" style={{ color: stack.color }}>
+                  Research Stack
+                </span>
+              </div>
               {stack.peptides.map((peptide) => (
                 <Badge
                   key={peptide.name}
@@ -308,6 +279,17 @@ export default function ResearchStackDetail() {
               {stack.name}
             </h1>
 
+            <div
+              className="h-[3px] mt-2 mb-3 rounded-full -mx-4 md:-mx-6"
+              style={{ background: "linear-gradient(to right, #21d8ff, #E7FB10)" }}
+              data-testid="separator-gradient"
+            />
+            {stack.subtitle && (
+              <p className="text-xs text-muted-foreground/70 font-mono mb-3" data-testid="text-stack-subtitle">
+                {stack.subtitle}
+              </p>
+            )}
+
             <div className="mb-2 md:mb-3">
               <div className="flex items-baseline gap-2 md:gap-3 flex-wrap">
                 <span className="font-display text-2xl md:text-3xl font-bold text-[#E7FB10]" data-testid="text-stack-price">
@@ -323,39 +305,37 @@ export default function ResearchStackDetail() {
               {stack.longDescription}
             </p>
 
-            <div className="grid grid-cols-2 gap-3 mb-3 md:mb-4">
-              <div>
-                <Label className="text-xs font-medium mb-1.5 block text-muted-foreground">Quantity</Label>
-                <div className="flex items-center border rounded-md h-9 border-border">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-9 w-9"
-                    onClick={() => handleQuantityChange(-1)}
-                    disabled={quantity <= 1}
-                    data-testid="button-quantity-minus"
-                  >
-                    <Minus className="h-3 w-3" />
-                  </Button>
-                  <span className="flex-1 text-center font-medium text-sm" data-testid="text-quantity">
-                    {quantity}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-9 w-9"
-                    onClick={() => handleQuantityChange(1)}
-                    disabled={quantity >= 10}
-                    data-testid="button-quantity-plus"
-                  >
-                    <Plus className="h-3 w-3" />
-                  </Button>
-                </div>
+            <div className="border border-border/50 rounded-lg p-3 mb-3 md:mb-4 bg-white/[0.06]" data-testid="box-quantity">
+              <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest">Quantity</Label>
+              <div className="flex items-center border rounded-md h-9 border-border bg-background">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9"
+                  onClick={() => handleQuantityChange(-1)}
+                  disabled={quantity <= 1}
+                  data-testid="button-quantity-minus"
+                >
+                  <Minus className="h-3 w-3" />
+                </Button>
+                <span className="flex-1 text-center font-medium text-sm" data-testid="text-quantity">
+                  {quantity}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9"
+                  onClick={() => handleQuantityChange(1)}
+                  disabled={quantity >= 10}
+                  data-testid="button-quantity-plus"
+                >
+                  <Plus className="h-3 w-3" />
+                </Button>
               </div>
             </div>
 
             <div className="mb-3 md:mb-4">
-              <Label className="text-xs font-medium mb-1.5 block text-muted-foreground">Purchase Option</Label>
+              <Label className="text-[10px] font-medium mb-1.5 block text-muted-foreground uppercase tracking-widest">Purchase Option</Label>
               <div className="grid grid-cols-2 gap-2">
                 <div
                   className={`relative flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
@@ -371,6 +351,11 @@ export default function ResearchStackDetail() {
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">${getBasePrice().toFixed(2)}</p>
                   </div>
+                  {purchaseType === "one-time" && (
+                    <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-[#E7FB10] flex items-center justify-center flex-shrink-0" data-testid="check-one-time">
+                      <Check className="h-3 w-3 text-black" />
+                    </div>
+                  )}
                 </div>
 
                 <div
@@ -388,6 +373,11 @@ export default function ResearchStackDetail() {
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">Auto-delivery</p>
                   </div>
+                  {purchaseType === "subscription" && (
+                    <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-[#21d8ff] flex items-center justify-center flex-shrink-0" data-testid="check-subscription">
+                      <Check className="h-3 w-3 text-black" />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -421,18 +411,20 @@ export default function ResearchStackDetail() {
               </motion.div>
             )}
 
-            <div className="flex items-center justify-between text-xs text-muted-foreground mb-2 md:mb-3">
-              <span className="flex items-center gap-1">
-                <CheckCircle className="h-3 w-3 text-green-500" />
-                In Stock
-              </span>
-              <div className="flex items-center gap-3">
-                <span className="flex items-center gap-1">
-                  <Shield className="h-3 w-3" /> Lab Tested
-                </span>
-                <span className="flex items-center gap-1">
-                  <Truck className="h-3 w-3" /> Fast Ship
-                </span>
+            <div className="flex items-center text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-2 md:mb-3 border border-border/60 rounded-md overflow-hidden bg-muted/20" data-testid="bar-trust-badges">
+              <div className="flex-1 flex items-center justify-center gap-1.5 py-2.5">
+                <Shield className="h-4 w-4 flex-shrink-0 text-[#21d8ff]" />
+                <span>3rd Party Tested</span>
+              </div>
+              <div className="w-px self-stretch bg-border/60" />
+              <div className="flex-1 flex items-center justify-center gap-1.5 py-2.5">
+                <FileCheck className="h-4 w-4 flex-shrink-0 text-[#21d8ff]" />
+                <span>COA Included</span>
+              </div>
+              <div className="w-px self-stretch bg-border/60" />
+              <div className="flex-1 flex items-center justify-center gap-1.5 py-2.5">
+                <RefreshCw className="h-4 w-4 flex-shrink-0 text-[#21d8ff]" />
+                <span>Guaranteed</span>
               </div>
             </div>
 
@@ -441,24 +433,13 @@ export default function ResearchStackDetail() {
               <span className="text-xs text-red-400 font-medium">Research Use Only - Not for human consumption</span>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-2" data-testid="stack-cta">
               <Button
                 size="lg"
-                variant="outline"
-                className="flex-1 font-display gap-2 border-2 md:hover:border-[#21d8ff] md:hover:text-[#21d8ff] md:hover:shadow-[0_0_15px_rgba(33,216,255,0.3)] transition-all duration-300"
-                onClick={handleAddToCart}
-                disabled={!pricingReady}
-                data-testid="button-add-to-cart"
-              >
-                <ShoppingBag className="h-5 w-5" />
-                Add to Cart
-              </Button>
-              <Button
-                size="lg"
-                className={`flex-1 font-display gap-2 transition-shadow duration-300 text-black ${
+                className={`w-full font-display font-bold gap-2 text-black transition-shadow duration-300 ${
                   purchaseType === "subscription"
-                    ? "bg-[#21d8ff] border-[#21d8ff] md:hover:bg-[#21d8ff]/90 shadow-[0_0_20px_rgba(33,216,255,0.4)] md:hover:shadow-[0_0_40px_rgba(33,216,255,0.6)]"
-                    : "bg-[#E7FB10] border-[#E7FB10] md:hover:bg-[#E7FB10]/90 shadow-[0_0_20px_rgba(231,251,16,0.4)] md:hover:shadow-[0_0_40px_rgba(231,251,16,0.6)]"
+                    ? "bg-[#21d8ff] border-[#21d8ff] shadow-[0_0_20px_rgba(33,216,255,0.4)] hover:shadow-[0_0_36px_rgba(33,216,255,0.75)]"
+                    : "bg-[#E7FB10] border-[#E7FB10] shadow-[0_0_20px_rgba(231,251,16,0.4)] hover:shadow-[0_0_36px_rgba(231,251,16,0.75)]"
                 }`}
                 onClick={handleBuyNow}
                 disabled={!pricingReady}
@@ -467,7 +448,7 @@ export default function ResearchStackDetail() {
                 {purchaseType === "subscription" ? (
                   <>
                     <Repeat className="h-5 w-5" />
-                    Subscribe
+                    Subscribe Now
                   </>
                 ) : (
                   <>
@@ -475,6 +456,17 @@ export default function ResearchStackDetail() {
                     Buy Now
                   </>
                 )}
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full font-display gap-2 border-2 transition-shadow duration-300 hover:shadow-[0_0_18px_rgba(255,255,255,0.1)] hover:border-foreground/50"
+                onClick={handleAddToCart}
+                disabled={!pricingReady}
+                data-testid="button-add-to-cart"
+              >
+                <ShoppingBag className="h-5 w-5" />
+                Add to Cart
               </Button>
             </div>
 
@@ -504,25 +496,6 @@ export default function ResearchStackDetail() {
             </Collapsible>
 
             <Separator className="my-4 md:my-6" />
-
-            <div className="grid grid-cols-4 gap-2 text-center mb-4 md:mb-6">
-              <div className="flex flex-col items-center gap-1">
-                <Shield className="h-4 w-4 text-[#21d8ff]" />
-                <span className="text-[10px] text-muted-foreground">3rd Party Tested</span>
-              </div>
-              <div className="flex flex-col items-center gap-1">
-                <FileCheck className="h-4 w-4 text-[#21d8ff]" />
-                <span className="text-[10px] text-muted-foreground">COA Included</span>
-              </div>
-              <div className="flex flex-col items-center gap-1">
-                <Truck className="h-4 w-4 text-[#21d8ff]" />
-                <span className="text-[10px] text-muted-foreground">Fast Shipping</span>
-              </div>
-              <div className="flex flex-col items-center gap-1">
-                <RefreshCw className="h-4 w-4 text-[#21d8ff]" />
-                <span className="text-[10px] text-muted-foreground">Guaranteed</span>
-              </div>
-            </div>
 
             {/* Compact RUO inline notice — desktop only */}
             <div className="hidden md:flex items-center gap-2 mb-4 px-3 py-2 rounded-md bg-red-500/10 border border-red-500/40 text-xs text-red-300" data-testid="notice-ruo-inline-stack">
@@ -566,82 +539,173 @@ export default function ResearchStackDetail() {
               </Collapsible>
             )}
 
-            {stack.keyBenefits.length > 0 && (
-              <div className="mb-8">
-                <h3 className="font-display font-semibold text-lg mb-4">Key Benefits</h3>
-                <ul className="space-y-3">
-                  {stack.keyBenefits.map((benefit, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-[#E7FB10] mt-0.5 flex-shrink-0" />
-                      <span className="text-muted-foreground">{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            <PharmacokineticsChart peptides={stack.peptides} stackId={stack.id} />
-
-            <div className="mb-8" data-testid="section-synergy-explanation">
-              <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-                <div className="flex items-center gap-2">
-                  <Zap className="h-5 w-5" style={{ color: stack.color }} />
-                  <h3 className="font-display font-semibold text-lg">Why These Peptides Work Together</h3>
-                </div>
-                <div role="group" aria-label="Synergy explanation level" className="flex items-center gap-1 p-0.5 rounded-md border border-border bg-muted/30">
-                  <Button
-                    aria-pressed={synergyLevel === "beginner"}
-                    variant="ghost"
-                    size="sm"
-                    className={`h-7 px-3 text-xs rounded-sm transition-colors ${synergyLevel === "beginner" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground"}`}
-                    onClick={() => setSynergyLevel("beginner")}
-                    data-testid="button-synergy-beginner"
-                  >
-                    Overview
-                  </Button>
-                  <Button
-                    aria-pressed={synergyLevel === "expert"}
-                    variant="ghost"
-                    size="sm"
-                    className={`h-7 px-3 text-xs rounded-sm transition-colors ${synergyLevel === "expert" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground"}`}
-                    onClick={() => setSynergyLevel("expert")}
-                    data-testid="button-synergy-expert"
-                  >
-                    Mechanistic
-                  </Button>
-                </div>
-              </div>
-              <Card className="p-4 border-border/60" data-testid="card-synergy-content">
-                <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-synergy-copy">
-                  {synergyLevel === "beginner" ? stack.synergy.beginner : stack.synergy.expert}
-                </p>
-              </Card>
-            </div>
-
-            {pathwayOverlaps.length > 0 && (
-              <div id="pathway-overlap" className="mb-6" data-testid="section-pathway-overlap-detail">
-                <PathwayOverlapCard overlaps={pathwayOverlaps} intentional={stack.intentionalOverlap} />
-              </div>
-            )}
-
-            <div className="mb-8 overflow-visible md:hidden">
-              <h3 className="font-display font-semibold text-lg mb-4">Storage Information</h3>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                {stack.storageGuide}
-              </p>
-              <Link href="/guides/storage-101">
-                <Button 
-                  className="gap-2 bg-gradient-to-r from-[#21d8ff] to-[#9d4edd] text-black font-semibold transition-shadow" 
-                  data-testid="link-learn-storage-mobile"
-                >
-                  <BookOpen className="h-4 w-4" />
-                  Learn More: Storage Best Practices
-                  <ChevronRight className="h-3 w-3" />
-                </Button>
-              </Link>
-            </div>
-
           </motion.div>
+        </div>
+
+        {/* === RESEARCH ZONE === */}
+        <div
+          className="rounded-xl mt-8 px-4 md:px-8 py-8 border border-border/30"
+          style={{ background: "linear-gradient(135deg, rgba(157,78,221,0.07) 0%, rgba(10,10,18,0.6) 40%, rgba(33,216,255,0.05) 100%)" }}
+          data-testid="section-research-zone"
+        >
+          {/* Tab Nav */}
+          <nav
+            data-testid="nav-research-tabs"
+            className="backdrop-blur-sm -mx-4 md:-mx-8 px-4 md:px-8 mb-8 border-b border-border/30 overflow-x-auto scrollbar-hide"
+            style={{ background: "rgba(157,78,221,0.04)" }}
+          >
+            <div className="flex min-w-max">
+              {(
+                [
+                  { key: "overview", label: "Overview", mobileLabel: "Overview", testId: "tab-overview" },
+                  { key: "pk", label: "Pharmacokinetics", mobileLabel: "PK", testId: "tab-pk" },
+                  { key: "synergy", label: "Synergy", mobileLabel: "Synergy", testId: "tab-synergy" },
+                ] as { key: "overview" | "pk" | "synergy"; label: string; mobileLabel: string; testId: string }[]
+              ).map((tab) => (
+                <button
+                  key={tab.key}
+                  type="button"
+                  data-testid={tab.testId}
+                  onClick={() => setActiveResearchTab(tab.key)}
+                  className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 text-center ${
+                    activeResearchTab === tab.key
+                      ? "border-[#E7FB10] text-foreground"
+                      : "border-transparent text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <span className="sm:hidden">{tab.mobileLabel}</span>
+                  <span className="hidden sm:inline">{tab.label}</span>
+                </button>
+              ))}
+            </div>
+          </nav>
+
+          {/* Overview Tab */}
+          {activeResearchTab === "overview" && (
+            <section data-testid="section-overview-panel" className="relative overflow-hidden">
+              <div className="absolute bottom-0 right-0 text-[100px] md:text-[130px] font-display font-black uppercase leading-none text-white/[0.07] select-none pointer-events-none tracking-tight">
+                {stack.name}
+              </div>
+
+              {stack.longDescription && (
+                <>
+                  <p className="text-muted-foreground leading-relaxed mb-6" data-testid="text-overview-description">
+                    {stack.longDescription}
+                  </p>
+                  <div className="mb-6 h-px bg-gradient-to-r from-[#9d4edd]/40 via-[#21d8ff]/30 to-transparent" />
+                </>
+              )}
+
+              {stack.keyBenefits.length > 0 && (
+                <div className="mb-8" data-testid="list-benefits-overview">
+                  <h3 className="font-display font-semibold text-lg mb-4">Key Benefits</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {stack.keyBenefits.map((benefit, index) => (
+                      <div key={index} className="flex items-center gap-2 px-3 py-2.5 rounded-md border border-border bg-card text-sm">
+                        <CheckCircle className="h-4 w-4 text-[#E7FB10] flex-shrink-0" />
+                        <span>{benefit}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div data-testid="section-storage-overview">
+                <div className="flex items-center gap-3 mb-3">
+                  <BookOpen className="h-5 w-5 text-[#21d8ff]" />
+                  <h3 className="font-display font-semibold text-lg">Storage Information</h3>
+                </div>
+                <p className="text-muted-foreground leading-relaxed mb-4">
+                  {stack.storageGuide}
+                </p>
+                <Link href="/guides/storage-101">
+                  <Button variant="outline" size="sm" className="border-[#21d8ff]/30 hover:border-[#21d8ff] gap-1.5" data-testid="link-learn-storage-overview">
+                    <BookOpen className="h-3.5 w-3.5" />
+                    Storage Best Practices
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </Button>
+                </Link>
+              </div>
+            </section>
+          )}
+
+          {/* PK Tab */}
+          {activeResearchTab === "pk" && (
+            <section data-testid="section-pk-panel">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+                className="rounded-xl border border-[#21d8ff]/20 bg-gradient-to-br from-[#0d1a2a] to-[#0a0f1a] overflow-hidden"
+                data-testid="section-pk-chart"
+              >
+                <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-[#21d8ff]/10">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-[#21d8ff]/10">
+                      <Shield className="h-5 w-5 text-[#21d8ff]" />
+                    </div>
+                    <div>
+                      <h2 className="font-display text-lg font-bold text-white">Plasma Concentration Profile</h2>
+                      <p className="text-xs text-[#21d8ff]/60 mt-0.5">Published pharmacokinetic data · primary literature</p>
+                    </div>
+                  </div>
+                  <Badge className="text-xs no-default-hover-elevate no-default-active-elevate bg-[#21d8ff]/10 text-[#21d8ff] border border-[#21d8ff]/20">
+                    PK Data
+                  </Badge>
+                </div>
+                <div className="px-2 pb-4 pt-2">
+                  <PharmacokineticsChart peptides={stack.peptides} stackId={stack.id} />
+                </div>
+              </motion.div>
+            </section>
+          )}
+
+          {/* Synergy Tab */}
+          {activeResearchTab === "synergy" && (
+            <section data-testid="section-synergy-panel">
+              <div className="mb-8" data-testid="section-synergy-explanation">
+                <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-5 w-5" style={{ color: stack.color }} />
+                    <h3 className="font-display font-semibold text-lg">Why These Peptides Work Together</h3>
+                  </div>
+                  <div role="group" aria-label="Synergy explanation level" className="flex items-center gap-1 p-0.5 rounded-md border border-border bg-muted/30">
+                    <Button
+                      aria-pressed={synergyLevel === "beginner"}
+                      variant="ghost"
+                      size="sm"
+                      className={`h-7 px-3 text-xs rounded-sm transition-colors ${synergyLevel === "beginner" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground"}`}
+                      onClick={() => setSynergyLevel("beginner")}
+                      data-testid="button-synergy-beginner"
+                    >
+                      Overview
+                    </Button>
+                    <Button
+                      aria-pressed={synergyLevel === "expert"}
+                      variant="ghost"
+                      size="sm"
+                      className={`h-7 px-3 text-xs rounded-sm transition-colors ${synergyLevel === "expert" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground"}`}
+                      onClick={() => setSynergyLevel("expert")}
+                      data-testid="button-synergy-expert"
+                    >
+                      Mechanistic
+                    </Button>
+                  </div>
+                </div>
+                <Card className="p-4 border-border/60" data-testid="card-synergy-content">
+                  <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-synergy-copy">
+                    {synergyLevel === "beginner" ? stack.synergy.beginner : stack.synergy.expert}
+                  </p>
+                </Card>
+              </div>
+
+              {pathwayOverlaps.length > 0 && (
+                <div id="pathway-overlap" className="mb-6" data-testid="section-pathway-overlap-detail">
+                  <PathwayOverlapCard overlaps={pathwayOverlaps} intentional={stack.intentionalOverlap} />
+                </div>
+              )}
+            </section>
+          )}
         </div>
 
         {/* RUO Disclaimer - hidden, replaced with compact inline notice */}
