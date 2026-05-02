@@ -198,7 +198,7 @@ const STATIC_ROUTES: Record<string, PageMeta> = {
   },
   "/guides/how-to-verify-peptide-quality": {
     title: `How to Verify Peptide Quality | ${SITE_NAME}`,
-    description: "Step-by-step guide to verifying research peptide quality. COA analysis, vendor evaluation, and quality indicators.",
+    description: "Most peptide COAs are unverified or fabricated. Learn to spot red flags in lab reports, verify Colmaric test results, and identify trustworthy vendors before you buy.",
     jsonLd: [{
       "@context": "https://schema.org",
       "@type": "Article",
