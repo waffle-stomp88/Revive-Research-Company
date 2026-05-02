@@ -72,11 +72,13 @@ import {
   Copy,
   BookMarked,
   Users,
+  Activity,
 } from "lucide-react";
 import type { Order, Product, Coa, ResearchPhase, ResearchTitle, SavedStack } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { CompoundFinder } from "@/components/compound-finder";
 import { LogbookTab, LogbookWipeCard } from "@/components/logbook-tab";
+import { CyclesTab } from "@/components/cycles/CyclesTab";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -135,7 +137,7 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     const tab = params.get("tab");
-    return ["general", "orders", "stacks", "logbook", "education", "settings"].includes(tab || "") ? tab! : "general";
+    return ["general", "orders", "stacks", "logbook", "cycles", "education", "settings"].includes(tab || "") ? tab! : "general";
   });
   const [viewOrderDetails, setViewOrderDetails] = useState<Order | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -803,7 +805,7 @@ export default function Dashboard() {
             {/* 6-Tab Layout */}
             <motion.div variants={itemVariants}>
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 gap-1 mb-6 h-auto">
+                <TabsList className="grid w-full grid-cols-4 sm:grid-cols-7 gap-1 mb-6 h-auto">
                   <TabsTrigger value="general" className="gap-2" data-testid="tab-general">
                     <Home className="h-4 w-4" />
                     <span className="hidden sm:inline">General</span>
@@ -819,6 +821,10 @@ export default function Dashboard() {
                   <TabsTrigger value="logbook" className="gap-2" data-testid="tab-logbook">
                     <BookMarked className="h-4 w-4" />
                     <span className="hidden sm:inline">Logbook</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="cycles" className="gap-2" data-testid="tab-cycles">
+                    <Activity className="h-4 w-4" />
+                    <span className="hidden sm:inline">Cycles</span>
                   </TabsTrigger>
                   <TabsTrigger value="education" className="gap-2" data-testid="tab-education">
                     <GraduationCap className="h-4 w-4" />
@@ -1745,6 +1751,11 @@ export default function Dashboard() {
                 {/* Logbook Tab */}
                 <TabsContent value="logbook" className="space-y-6">
                   <LogbookTab />
+                </TabsContent>
+
+                {/* Cycles Tab */}
+                <TabsContent value="cycles" className="space-y-6">
+                  <CyclesTab />
                 </TabsContent>
 
                 {/* Education Tab */}

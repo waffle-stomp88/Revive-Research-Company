@@ -10,6 +10,7 @@ import { storage, resolveDisplayPrice } from "./storage";
 import { db } from "./db";
 import { eq, desc, sql } from "drizzle-orm";
 import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertNewsletterSubscriberSchema, subscriptions, orders as ordersTable, savedStacks, insertSavedStackSchema, insertStripePresetSchema, insertResearchNoteSchema, LOGBOOK_SOURCE_TAG, type ResearchNote } from "@shared/schema";
+import { detectCycles } from "@shared/cycle-detection";
 import { setupAuth, isAuthenticated, verifyAuth0Token } from "./auth0Auth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
@@ -5162,6 +5163,110 @@ Return ONLY valid JSON in this exact format:
     } catch (error) {
       console.error("Error exporting logbook CSV:", error);
       res.status(500).json({ error: "Failed to export logbook" });
+    }
+  });
+
+  // ============== CYCLES (derived from logbook entries) ==============
+  app.get("/api/cycles", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const [entries, tags] = await Promise.all([
+        storage.getLogbookEntries(userId),
+        storage.listCycleTagsForUser(userId),
+      ]);
+      const cycles = detectCycles(entries);
+      const tagMap = new Map<string, { id: string; name: string }>();
+      for (const t of tags) {
+        const ts = (t.cycleStartTimestamp instanceof Date
+          ? t.cycleStartTimestamp
+          : new Date(t.cycleStartTimestamp as unknown as string)
+        ).toISOString();
+        tagMap.set(`${t.compoundKey}::${ts}`, { id: t.id, name: t.name });
+      }
+      const enriched = cycles.map((c) => {
+        const k = `${c.compoundKey}::${c.startDate.toISOString()}`;
+        const tag = tagMap.get(k) ?? null;
+        return {
+          compoundKey: c.compoundKey,
+          compoundLabel: c.compoundLabel,
+          startEntryId: c.startEntryId,
+          endEntryId: c.endEntryId,
+          startDate: c.startDate.toISOString(),
+          endDate: c.endDate.toISOString(),
+          status: c.status,
+          entryIds: c.entries.map((e) => e.id),
+          totalDoses: c.entries.length,
+          tagId: tag?.id ?? null,
+          name: tag?.name ?? null,
+        };
+      });
+      res.json({ cycles: enriched, totalLogbookEntries: entries.length });
+    } catch (error) {
+      console.error("Error fetching cycles:", error);
+      res.status(500).json({ error: "Failed to fetch cycles" });
+    }
+  });
+
+  const cycleTagPatchSchema = z.object({
+    compoundKey: z.string().min(1).max(200),
+    cycleStartTimestamp: z.string().min(1),
+    name: z.string().min(1).max(120),
+  });
+
+  app.patch("/api/cycles/tag", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const parsed = cycleTagPatchSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res
+          .status(400)
+          .json({ error: "Invalid cycle tag", details: parsed.error.flatten() });
+      }
+      const startDate = new Date(parsed.data.cycleStartTimestamp);
+      if (isNaN(startDate.getTime())) {
+        return res.status(400).json({ error: "Invalid cycleStartTimestamp" });
+      }
+      const trimmedName = parsed.data.name.trim();
+      if (trimmedName.length === 0) {
+        return res.status(400).json({ error: "Cycle name cannot be empty" });
+      }
+      const userEntries = await storage.getLogbookEntries(userId);
+      const detected = detectCycles(userEntries);
+      const matches = detected.some(
+        (c) =>
+          c.compoundKey === parsed.data.compoundKey &&
+          c.startDate.getTime() === startDate.getTime(),
+      );
+      if (!matches) {
+        return res
+          .status(404)
+          .json({ error: "Cycle not found for this user" });
+      }
+      const tag = await storage.upsertCycleTag({
+        userId,
+        compoundKey: parsed.data.compoundKey,
+        cycleStartTimestamp: startDate,
+        name: trimmedName,
+      });
+      res.json(tag);
+    } catch (error) {
+      console.error("Error upserting cycle tag:", error);
+      res.status(500).json({ error: "Failed to save cycle name" });
+    }
+  });
+
+  app.delete("/api/cycles/tag/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id } = req.params;
+      const ok = await storage.deleteCycleTag(id, userId);
+      if (!ok) {
+        return res.status(404).json({ error: "Tag not found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting cycle tag:", error);
+      res.status(500).json({ error: "Failed to delete cycle name" });
     }
   });
 

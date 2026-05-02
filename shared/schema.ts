@@ -860,6 +860,38 @@ export const insertBatchVerificationHistorySchema = createInsertSchema(batchVeri
 export type InsertBatchVerificationHistory = z.infer<typeof insertBatchVerificationHistorySchema>;
 export type BatchVerificationHistory = typeof batchVerificationHistory.$inferSelect;
 
+// Cycle Tags - User-supplied names for cycles derived from logbook entries.
+// Cycles themselves are derived (not stored), so this table is keyed by the
+// stable triple (userId, compoundKey, cycleStartTimestamp) which survives
+// edits to the underlying entries.
+export const cycleTags = pgTable(
+  "cycle_tags",
+  {
+    id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+    userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    compoundKey: text("compound_key").notNull(),
+    cycleStartTimestamp: timestamp("cycle_start_timestamp").notNull(),
+    name: text("name").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+  },
+  (table) => [
+    unique("uq_cycle_tags_user_compound_start").on(
+      table.userId,
+      table.compoundKey,
+      table.cycleStartTimestamp,
+    ),
+  ],
+);
+
+export const insertCycleTagSchema = createInsertSchema(cycleTags).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertCycleTag = z.infer<typeof insertCycleTagSchema>;
+export type CycleTag = typeof cycleTags.$inferSelect;
+
 // Saved Stacks - User-created custom peptide stacks
 export const savedStacks = pgTable("saved_stacks", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),

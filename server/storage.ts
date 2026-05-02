@@ -3,6 +3,7 @@ import {
   batches, productStorageProfiles, legalDocuments, faqEntries, educationArticles, coaGlossaryTerms, stockNotifications, discountCodes, newsletterSubscribers,
   productDosageStock, priceHistory, academyProgress, emailEvents, wishlists, userResearchProfiles, productBehavioralMetrics,
   savedAddresses, notificationPreferences, researchNotes, loginHistory, batchVerificationHistory, productVotes,
+  cycleTags,
   deadLinkHits,
   citationDismissals,
   stripePresets,
@@ -35,6 +36,7 @@ import {
   type SavedAddress, type InsertSavedAddress,
   type NotificationPreferences, type InsertNotificationPreferences,
   type ResearchNote, type InsertResearchNote,
+  type CycleTag, type InsertCycleTag,
   type LoginHistory, type InsertLoginHistory,
   type BatchVerificationHistory, type InsertBatchVerificationHistory,
   type ProductVote, type InsertProductVote,
@@ -347,7 +349,12 @@ export interface IStorage {
     minMood?: number;
   }): Promise<ResearchNote[]>;
   wipeLogbookEntries(userId: string): Promise<number>;
-  
+
+  // Cycle Tags (user-named cycles derived from logbook entries)
+  listCycleTagsForUser(userId: string): Promise<CycleTag[]>;
+  upsertCycleTag(data: InsertCycleTag): Promise<CycleTag>;
+  deleteCycleTag(id: string, userId: string): Promise<boolean>;
+
   // Login History
   recordLogin(userId: string, data: Partial<InsertLoginHistory>): Promise<LoginHistory>;
   getLoginHistory(userId: string, limit?: number): Promise<LoginHistory[]>;
@@ -2401,6 +2408,42 @@ export class DatabaseStorage implements IStorage {
       .orderBy(
         desc(sql`COALESCE(${researchNotes.administeredAt}, ${researchNotes.createdAt})`),
       );
+  }
+
+  // ============== CYCLE TAGS ==============
+  async listCycleTagsForUser(userId: string): Promise<CycleTag[]> {
+    return await db
+      .select()
+      .from(cycleTags)
+      .where(eq(cycleTags.userId, userId));
+  }
+
+  async upsertCycleTag(data: InsertCycleTag): Promise<CycleTag> {
+    const startTs =
+      data.cycleStartTimestamp instanceof Date
+        ? data.cycleStartTimestamp
+        : new Date(data.cycleStartTimestamp as unknown as string);
+    const [row] = await db
+      .insert(cycleTags)
+      .values({ ...data, cycleStartTimestamp: startTs })
+      .onConflictDoUpdate({
+        target: [
+          cycleTags.userId,
+          cycleTags.compoundKey,
+          cycleTags.cycleStartTimestamp,
+        ],
+        set: { name: data.name, updatedAt: new Date() },
+      })
+      .returning();
+    return row;
+  }
+
+  async deleteCycleTag(id: string, userId: string): Promise<boolean> {
+    const result = await db
+      .delete(cycleTags)
+      .where(and(eq(cycleTags.id, id), eq(cycleTags.userId, userId)))
+      .returning();
+    return result.length > 0;
   }
 
   async wipeLogbookEntries(userId: string): Promise<number> {
