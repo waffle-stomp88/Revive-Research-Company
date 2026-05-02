@@ -1036,7 +1036,7 @@ export default function ProductDetail() {
             )}
 
             <div className="flex items-center justify-between text-xs text-muted-foreground mb-2 md:mb-3">
-              {!isOutOfStock ? (
+              {!isOutOfStock && (
                 <span className="flex items-center gap-1">
                   {displayStockAmount > 0 && displayStockAmount <= 10 ? (
                     <>
