@@ -316,7 +316,7 @@ function App() {
               <AgeVerificationModal />
               <AffiliateTracker />
               <ScrollManager />
-              <div className="min-h-screen flex flex-col bg-background text-foreground overflow-x-hidden">
+              <div className="min-h-screen flex flex-col bg-background text-foreground [overflow-x:clip]">
                 <FreeShippingBanner />
                 <Navigation />
                 <div className="flex-1 pb-16 md:pb-0">

@@ -669,7 +669,7 @@ export default function ProductDetail() {
     : `Premium ${product.name} research peptide. Third-party lab tested with Certificate of Analysis. For research use only.`;
 
   return (
-    <main className="min-h-screen pt-24 md:pt-40 pb-36 md:pb-12 overflow-x-hidden">
+    <main className="min-h-screen pt-24 md:pt-40 pb-36 md:pb-12 [overflow-x:clip]">
       <SEOHead 
         title={seoTitle}
         description={seoDescription}
@@ -690,7 +690,7 @@ export default function ProductDetail() {
           </Link>
         </motion.div>
 
-        <div ref={twoColumnRef} className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start relative overflow-hidden">
+        <div ref={twoColumnRef} className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start relative [clip-path:inset(0)]">
           <div className="absolute -top-4 right-0 text-[120px] md:text-[160px] font-display font-black uppercase leading-none text-white/[0.04] select-none pointer-events-none tracking-tight">
             {product.name}
           </div>
@@ -701,14 +701,14 @@ export default function ProductDetail() {
             className="flex flex-col"
           >
             {product.model3dUrl ? (
-              <div className="sticky top-24">
+              <div className="sticky top-24 z-20">
                 <ModelViewer3D 
                   modelUrl={product.model3dUrl}
                   productName={product.name}
                 />
               </div>
             ) : (
-              <div className="relative w-full md:sticky md:top-24 overflow-hidden">
+              <div className="relative w-full md:sticky md:top-24 z-20">
                 <div className="relative overflow-hidden rounded-lg aspect-[4/3]">
                   <ImageLoader 
                     src={product.imageUrl || productImage} 
@@ -741,7 +741,7 @@ export default function ProductDetail() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.12 }}
-                className="mt-6 pt-6 hidden md:block relative z-10 bg-background"
+                className="mt-2 pt-4 hidden md:block relative z-10 bg-background"
                 data-testid="section-education-desktop"
               >
                 <div className="flex items-center justify-between mb-4">
@@ -1058,17 +1058,17 @@ export default function ProductDetail() {
               )}
             </div>
 
-            <div className="flex items-center text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-2 md:mb-3 border border-border/40 rounded-md overflow-hidden" data-testid="bar-trust-badges">
+            <div className="flex items-center text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-2 md:mb-3 border border-border/60 rounded-md overflow-hidden bg-muted/20" data-testid="bar-trust-badges">
               <div className="flex-1 flex items-center justify-center gap-1.5 py-2.5">
                 <Shield className="h-4 w-4 flex-shrink-0 text-[#21d8ff]" />
                 <span>3rd Party Tested</span>
               </div>
-              <div className="w-px self-stretch bg-border/40" />
+              <div className="w-px self-stretch bg-border/60" />
               <div className="flex-1 flex items-center justify-center gap-1.5 py-2.5">
                 <FileCheck className="h-4 w-4 flex-shrink-0 text-[#21d8ff]" />
                 <span>COA Included</span>
               </div>
-              <div className="w-px self-stretch bg-border/40" />
+              <div className="w-px self-stretch bg-border/60" />
               <div className="flex-1 flex items-center justify-center gap-1.5 py-2.5">
                 <RefreshCw className="h-4 w-4 flex-shrink-0 text-[#21d8ff]" />
                 <span>Guaranteed</span>
@@ -1088,8 +1088,8 @@ export default function ProductDetail() {
                   size="lg"
                   className={`w-full font-display font-bold gap-2 text-black transition-shadow duration-300 ${
                     purchaseType === "subscription"
-                      ? "bg-[#21d8ff] border-[#21d8ff] shadow-[0_0_20px_rgba(33,216,255,0.4)]"
-                      : "bg-[#E7FB10] border-[#E7FB10] shadow-[0_0_20px_rgba(231,251,16,0.4)]"
+                      ? "bg-[#21d8ff] border-[#21d8ff] shadow-[0_0_20px_rgba(33,216,255,0.4)] hover:shadow-[0_0_36px_rgba(33,216,255,0.75)]"
+                      : "bg-[#E7FB10] border-[#E7FB10] shadow-[0_0_20px_rgba(231,251,16,0.4)] hover:shadow-[0_0_36px_rgba(231,251,16,0.75)]"
                   }`}
                   onClick={handleBuyNow}
                   data-testid="button-buy-now"
@@ -1103,7 +1103,7 @@ export default function ProductDetail() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="w-full font-display gap-2 border-2"
+                  className="w-full font-display gap-2 border-2 transition-shadow duration-300 hover:shadow-[0_0_18px_rgba(255,255,255,0.1)] hover:border-foreground/50"
                   onClick={handleAddToCart}
                   data-testid="button-add-to-cart"
                 >
