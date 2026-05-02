@@ -49,7 +49,6 @@ import {
   type DoseUnit,
   type Frequency,
 } from "@/lib/reconstitution-math";
-import { generateVialCardPDF } from "@/lib/vial-card-pdf";
 import type { Product } from "@shared/schema";
 
 type WizardState = {
@@ -180,6 +179,7 @@ export default function ReconstitutionWizard() {
     if (!result) return;
     setIsGeneratingPDF(true);
     try {
+      const { generateVialCardPDF } = await import("@/lib/vial-card-pdf");
       const blob = await generateVialCardPDF({
         peptideName: state.peptideName,
         peptideSlug: state.peptideSlug,
