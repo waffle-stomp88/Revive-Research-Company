@@ -11,6 +11,7 @@ interface VialCardData {
   syringeMl: number;
   result: ReconResult;
   reconstitutionDate?: Date;
+  shareUrl?: string;
 }
 
 export async function generateVialCardPDF(data: VialCardData): Promise<Blob> {
@@ -96,19 +97,17 @@ export async function generateVialCardPDF(data: VialCardData): Promise<Blob> {
 
   y = boxY + 100;
 
-  // QR Code linking back to the wizard with this state
+  // QR Code linking back to the wizard with full state (so the recipe can be reopened)
   try {
     const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
-    const qrPath = data.peptideSlug
-      ? `${baseUrl}/peptides/${data.peptideSlug}`
-      : `${baseUrl}/reconstitution-wizard`;
-    const qrDataUrl = await QRCode.toDataURL(qrPath, { width: 160, margin: 1 });
+    const qrTarget = data.shareUrl || `${baseUrl}/reconstitution-wizard`;
+    const qrDataUrl = await QRCode.toDataURL(qrTarget, { width: 160, margin: 1 });
     doc.addImage(qrDataUrl, "PNG", pageW - margin - 80, y, 80, 80);
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
     doc.setTextColor("#71717a");
-    doc.text("Scan for COA & product info", pageW - margin - 80, y + 90);
+    doc.text("Scan to reopen this recipe", pageW - margin - 80, y + 90);
   } catch {
     // QR optional - skip silently
   }

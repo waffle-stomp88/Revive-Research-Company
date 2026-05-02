@@ -103,6 +103,10 @@ export function estimatedExpiryDays(): number {
   return STORAGE_DAYS_AT_4C;
 }
 
+const MAX_ENCODED_LENGTH = 2048;
+const ALLOWED_DOSE_UNITS: readonly string[] = ["mcg", "mg"];
+const ALLOWED_FREQUENCIES: readonly string[] = Object.keys(FREQUENCY_LABELS);
+
 export function encodeWizardState(state: Record<string, unknown>): string {
   try {
     return btoa(encodeURIComponent(JSON.stringify(state)));
@@ -111,10 +115,38 @@ export function encodeWizardState(state: Record<string, unknown>): string {
   }
 }
 
+function clamp(n: unknown, min: number, max: number, fallback: number): number {
+  const num = typeof n === "number" && Number.isFinite(n) ? n : Number(n);
+  if (!Number.isFinite(num)) return fallback;
+  return Math.max(min, Math.min(max, num));
+}
+
+function safeStr(s: unknown, max: number): string {
+  if (typeof s !== "string") return "";
+  return s.slice(0, max);
+}
+
 export function decodeWizardState<T = Record<string, unknown>>(encoded: string): T | null {
+  if (typeof encoded !== "string" || encoded.length === 0 || encoded.length > MAX_ENCODED_LENGTH) {
+    return null;
+  }
   try {
     const json = decodeURIComponent(atob(encoded));
-    return JSON.parse(json) as T;
+    if (json.length > MAX_ENCODED_LENGTH * 2) return null;
+    const raw = JSON.parse(json);
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+    const r = raw as Record<string, unknown>;
+    const sanitized = {
+      peptideName: safeStr(r.peptideName, 120),
+      peptideSlug: safeStr(r.peptideSlug, 120),
+      vialMg: clamp(r.vialMg, 0, 1000, 10),
+      bacWaterMl: clamp(r.bacWaterMl, 0, 100, 2),
+      doseValue: clamp(r.doseValue, 0, 100000, 0),
+      doseUnit: ALLOWED_DOSE_UNITS.includes(String(r.doseUnit)) ? r.doseUnit : "mcg",
+      syringeMl: clamp(r.syringeMl, 0.1, 5, 1),
+      frequency: ALLOWED_FREQUENCIES.includes(String(r.frequency)) ? r.frequency : "once_daily",
+    };
+    return sanitized as T;
   } catch {
     return null;
   }

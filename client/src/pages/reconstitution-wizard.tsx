@@ -189,6 +189,7 @@ export default function ReconstitutionWizard() {
         syringeMl: state.syringeMl,
         result,
         reconstitutionDate: new Date(),
+        shareUrl,
       });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -388,7 +389,7 @@ export default function ReconstitutionWizard() {
 
           {/* Sticky summary - desktop */}
           <aside className="hidden lg:block">
-            <Card className="border-[#2a2a32] p-5 sticky top-32" data-testid="card-summary">
+            <Card className="border-[#2a2a32] p-5 sticky top-32 z-30" data-testid="card-summary">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-display font-bold uppercase text-sm tracking-wider">Summary</h3>
                 <Badge variant="outline" className="text-[10px]">Live</Badge>
