@@ -54,6 +54,7 @@ import LabNotes from "@/pages/lab-notes";
 import ResourcesHub from "@/pages/resources";
 import ProductsHub from "@/pages/products-hub";
 import DosageCalculator from "@/pages/dosage-calculator";
+import ReconstitutionWizard from "@/pages/reconstitution-wizard";
 import ResearchStacks from "@/pages/research-stacks";
 import ResearchStackDetail from "@/pages/research-stack-detail";
 import StackShare from "@/pages/stack-share";
@@ -213,6 +214,7 @@ function Router() {
         <Route path="/about/our-transparency-commitment" component={Transparency} />
         <Route path="/coa/batch-testing-archive" component={BatchArchive} />
         <Route path="/tools/peptide-reconstitution-calculator" component={DosageCalculator} />
+        <Route path="/reconstitution-wizard" component={ReconstitutionWizard} />
         <Route path="/peptide-research-resources" component={ResourcesHub} />
         <Route path="/peptide-research-faq" component={FAQ} />
         <Route path="/peptide-shipping-and-handling" component={Shipping} />

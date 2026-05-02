@@ -103,6 +103,10 @@ const STATIC_ROUTES: Record<string, PageMeta> = {
     title: `Peptide Reconstitution Calculator | ${SITE_NAME}`,
     description: "Free peptide reconstitution calculator. Calculate precise dilution volumes for your research peptides based on vial size and desired concentration.",
   },
+  "/reconstitution-wizard": {
+    title: `Reconstitution Wizard - Step-by-Step Peptide Guide | ${SITE_NAME}`,
+    description: "Guided peptide reconstitution wizard with animated syringe visualization. Get exact draw-to-mark instructions and download a printable Vial Card.",
+  },
   "/peptide-research-faq": {
     title: `Peptide Research FAQ | ${SITE_NAME}`,
     description: "Frequently asked questions about research peptides, ordering, shipping, COAs, and more. Get answers from Revive Research.",
