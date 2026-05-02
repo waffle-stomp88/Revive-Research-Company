@@ -1,4 +1,5 @@
 import express, { type Request, Response, NextFunction } from "express";
+import { execSync } from "child_process";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
@@ -184,7 +185,6 @@ export function log(message: string, source = "express") {
     httpServer.on("error", (err: NodeJS.ErrnoException) => {
       if (err.code === "EADDRINUSE" && retries > 0) {
         log(`port ${port} in use — freeing it and retrying...`);
-        const { execSync } = require("child_process");
         try { execSync(`fuser -k ${port}/tcp`); } catch {}
         httpServer.close();
         setTimeout(() => {
