@@ -17,68 +17,63 @@ import { initGA } from "@/lib/analytics";
 import { useAnalytics } from "@/hooks/use-analytics";
 
 import Home from "@/pages/home";
+import Products from "@/pages/products";
+import BulkPacks from "@/pages/bulk-packs";
+import Wholesale from "@/pages/wholesale";
+import ProductDetail from "@/pages/product-detail";
+import BundleDetail from "@/pages/bundle-detail";
+import Cart from "@/pages/cart";
+import Checkout from "@/pages/checkout";
+import CheckoutSuccess from "@/pages/checkout-success";
+import CoaVerification from "@/pages/coa";
+import CoaLibrary from "@/pages/coa-library";
+import Dashboard from "@/pages/dashboard";
+import AccountSettings from "@/pages/account-settings";
+import Admin from "@/pages/admin";
+import CompoundAudit from "@/pages/admin/compound-audit";
+import BlendAudit from "@/pages/admin/blend-audit";
+import Affiliate from "@/pages/affiliate";
+import AffiliateDashboard from "@/pages/affiliate-dashboard";
+import FAQ from "@/pages/faq";
+import Shipping from "@/pages/shipping";
+import TermsOfService from "@/pages/terms-of-service";
+import PrivacyPolicy from "@/pages/privacy-policy";
+import Disclaimer from "@/pages/disclaimer";
+import Contact from "@/pages/contact";
+import Legal from "@/pages/legal";
+import WhatWeDontDo from "@/pages/what-we-dont-do";
+import Education from "@/pages/education";
+import QualityProcess from "@/pages/quality-process";
+import PackageWarm from "@/pages/package-warm";
+import Transparency from "@/pages/transparency";
+import EthicalPricing from "@/pages/ethical-pricing";
+import BuyerChecklist from "@/pages/buyer-checklist";
+import Troubleshooting from "@/pages/troubleshooting";
+import BatchArchive from "@/pages/batch-archive";
+import LabNotes from "@/pages/lab-notes";
+import ResourcesHub from "@/pages/resources";
+import ProductsHub from "@/pages/products-hub";
+import DosageCalculator from "@/pages/dosage-calculator";
+import ReconstitutionWizard from "@/pages/reconstitution-wizard";
+import ResearchStacks from "@/pages/research-stacks";
+import ResearchStackDetail from "@/pages/research-stack-detail";
+import StackShare from "@/pages/stack-share";
+import Academy from "@/pages/academy";
+import DevLogin from "@/pages/dev-login";
+import Unsubscribe from "@/pages/unsubscribe";
+import SubscriptionSuccess from "@/pages/subscription-success";
+import OrderConfirmation from "@/pages/order-confirmation";
 import NotFound from "@/pages/not-found";
 
-const Products = lazy(() => import("@/pages/products"));
-const BulkPacks = lazy(() => import("@/pages/bulk-packs"));
-const Wholesale = lazy(() => import("@/pages/wholesale"));
-const ProductDetail = lazy(() => import("@/pages/product-detail"));
-const BundleDetail = lazy(() => import("@/pages/bundle-detail"));
-const Cart = lazy(() => import("@/pages/cart"));
-const Checkout = lazy(() => import("@/pages/checkout"));
-const CheckoutSuccess = lazy(() => import("@/pages/checkout-success"));
-const CoaVerification = lazy(() => import("@/pages/coa"));
-const CoaLibrary = lazy(() => import("@/pages/coa-library"));
-const Dashboard = lazy(() => import("@/pages/dashboard"));
-const AccountSettings = lazy(() => import("@/pages/account-settings"));
-const Admin = lazy(() => import("@/pages/admin"));
-const CompoundAudit = lazy(() => import("@/pages/admin/compound-audit"));
-const BlendAudit = lazy(() => import("@/pages/admin/blend-audit"));
-const Affiliate = lazy(() => import("@/pages/affiliate"));
-const AffiliateDashboard = lazy(() => import("@/pages/affiliate-dashboard"));
-const FAQ = lazy(() => import("@/pages/faq"));
-const Shipping = lazy(() => import("@/pages/shipping"));
-const TermsOfService = lazy(() => import("@/pages/terms-of-service"));
-const PrivacyPolicy = lazy(() => import("@/pages/privacy-policy"));
-const Disclaimer = lazy(() => import("@/pages/disclaimer"));
-const Contact = lazy(() => import("@/pages/contact"));
-const Legal = lazy(() => import("@/pages/legal"));
-const WhatWeDontDo = lazy(() => import("@/pages/what-we-dont-do"));
-const Education = lazy(() => import("@/pages/education"));
-const QualityProcess = lazy(() => import("@/pages/quality-process"));
-const PackageWarm = lazy(() => import("@/pages/package-warm"));
-const Transparency = lazy(() => import("@/pages/transparency"));
-const EthicalPricing = lazy(() => import("@/pages/ethical-pricing"));
-const BuyerChecklist = lazy(() => import("@/pages/buyer-checklist"));
-const Troubleshooting = lazy(() => import("@/pages/troubleshooting"));
-const BatchArchive = lazy(() => import("@/pages/batch-archive"));
-const LabNotes = lazy(() => import("@/pages/lab-notes"));
-const ResourcesHub = lazy(() => import("@/pages/resources"));
-const ProductsHub = lazy(() => import("@/pages/products-hub"));
-const DosageCalculator = lazy(() => import("@/pages/dosage-calculator"));
-const ReconstitutionWizard = lazy(() => import("@/pages/reconstitution-wizard"));
-const ResearchStacks = lazy(() => import("@/pages/research-stacks"));
-const ResearchStackDetail = lazy(() => import("@/pages/research-stack-detail"));
-const StackShare = lazy(() => import("@/pages/stack-share"));
-const Academy = lazy(() => import("@/pages/academy"));
-const DevLogin = lazy(() => import("@/pages/dev-login"));
-const Unsubscribe = lazy(() => import("@/pages/unsubscribe"));
-const SubscriptionSuccess = lazy(() => import("@/pages/subscription-success"));
-const OrderConfirmation = lazy(() => import("@/pages/order-confirmation"));
-
-const CoaTrust = lazy(() => import("@/pages/guides/coa-trust"));
-const BatchTesting = lazy(() => import("@/pages/guides/batch-testing"));
-const ResearchUseOnly = lazy(() => import("@/pages/guides/research-use-only"));
-const VerifyQuality = lazy(() => import("@/pages/guides/verify-quality"));
-const PurityExplained = lazy(() => import("@/pages/guides/purity-explained"));
-const CheapPeptides = lazy(() => import("@/pages/guides/cheap-peptides"));
+import CoaTrust from "@/pages/guides/coa-trust";
+import BatchTesting from "@/pages/guides/batch-testing";
+import ResearchUseOnly from "@/pages/guides/research-use-only";
+import VerifyQuality from "@/pages/guides/verify-quality";
+import PurityExplained from "@/pages/guides/purity-explained";
+import CheapPeptides from "@/pages/guides/cheap-peptides";
 
 const ChatBot = lazy(() => import("@/components/chatbot").then(m => ({ default: m.ChatBot })));
 const BackToTopButton = lazy(() => import("@/components/back-to-top-button").then(m => ({ default: m.BackToTopButton })));
-
-function RouteFallback() {
-  return <div className="min-h-[60vh]" aria-hidden="true" />;
-}
 
 function ScrollManager() {
   const [location] = useLocation();
@@ -156,7 +151,6 @@ function Router() {
   return (
     <>
       <AnalyticsTracker />
-      <Suspense fallback={<RouteFallback />}>
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/shop" component={ProductsHub} />
@@ -247,7 +241,6 @@ function Router() {
         {/* Compound-name product URLs intentionally not routed — do not create */}
         <Route component={NotFound} />
       </Switch>
-      </Suspense>
     </>
   );
 }
