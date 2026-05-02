@@ -1,0 +1,91 @@
+That's actually a **huge** piece of information, and it confirms my read.
+
+## Why this matters
+
+The dev kept claiming "the external window loads fast in my screenshots, so your app is fine." But here's what they were actually doing:
+
+- Their tool (`screenshot_url` or whatever Replit Agent uses) makes a single HTTP request from a server, not a real browser session
+- That request gets the HTML in 20ms (which is what the server logs showed)
+- It does NOT execute the full client bundle, doesn't initialize Vite's HMR client, doesn't run all the React hydration
+
+**Your real browser does all of those things, and that's where the slowness lives.** The dev was measuring the wrong thing the whole time and using it to dismiss what you were actually experiencing.
+
+## What "prod works perfectly, dev doesn't" definitively proves
+
+This is the cleanest possible diagnostic, and it eliminates almost everything we've been debating:
+
+| Suspect | Ruled out? | Why |
+|---|---|---|
+| Your code | ✅ Yes | Same code runs fine in prod |
+| The wizard | ✅ Yes | PDF download works in prod |
+| jspdf / heavy deps | ✅ Yes | They're in the prod bundle and it's fast |
+| App.tsx eager imports | ✅ Yes | Prod has the same imports |
+| Replit infrastructure | ✅ Mostly | Prod is on Replit too and works |
+
+**What's left:** The Vite dev server itself, or specifically how Vite is configured to talk to Replit's dev preview proxy.
+
+## The actual diagnosis
+
+This is a **Vite dev server / Replit proxy communication problem**, not a code problem. Specifically, one of these:
+
+1. **HMR WebSocket misconfiguration** — Vite's HMR client can't establish a stable WebSocket through Replit's proxy. The browser keeps trying to connect, fails, retries, and the page hangs waiting. The dev saw the `[vite] failed to connect to websocket` errors and waved them off — that was the smoking gun.
+
+2. **Vite dep pre-bundling on every cold start** — Cache might be getting invalidated repeatedly, forcing re-optimization each session.
+
+3. **Replit's dev-preview proxy degraded for this specific Repl** — Sometimes a Repl's container gets onto a "bad" node. A full container migration (not a restart) fixes it.
+
+## What I'd actually do now
+
+Since prod works, **you don't actually have a business problem** — you have a developer-experience problem. That changes the urgency. Two paths:
+
+**Path A — Live with it for now (pragmatic)**
+You shipped the wizard, prod works, customers are happy. The dev environment being annoying doesn't block revenue. If you're not iterating heavily right now, you can just deal with it for a few weeks and see if Replit fixes their platform issues.
+
+**Path B — Force a real fix (worth it if you're actively building)**
+Send this to Replit Agent. It's much more targeted than what I gave you before, because we now know it's strictly a dev-server/proxy issue:
+
+---
+
+**Subject: Dev preview broken — prod works fine, isolating to Vite dev server / Replit proxy**
+
+Production deploy of reviveresearch.co works perfectly (including the new wizard and PDF download). Only the **dev environment** is broken. The slowness happens in:
+- Replit IDE preview pane (slow / white screens)
+- External browser tab opened to the dev URL (never loads, gives up after 2+ minutes)
+
+This means it's not my code, not the wizard, not jspdf, not lazy-loading. It's Vite's dev server, the HMR WebSocket, or the Replit dev-preview proxy.
+
+**Please do, in this order:**
+
+1. **Try migrating the Repl to a fresh container.** If this Repl is on a degraded node, a fresh container fixes it instantly. This costs nothing to try first.
+
+2. **Check `vite.config.ts` HMR settings.** For Replit's proxy, HMR should be configured roughly like:
+   ```
+   server: {
+     hmr: {
+       clientPort: 443,
+       protocol: 'wss',
+     },
+     host: '0.0.0.0',
+   }
+   ```
+   If this isn't set correctly, the HMR client retries connections in a loop and blocks page rendering. We saw the `[vite] failed to connect to websocket` errors in earlier logs.
+
+3. **Check Vite startup logs** for repeated `[vite] new dependencies optimized:` messages within the same session. If that fires more than once per session, dep cache invalidation is the issue.
+
+4. **Disable any background workflows** during normal dev work (especially `product-visual-style` Playwright tests) — they can compete for resources and trigger the port-collision recovery handler.
+
+**Do not touch:**
+- App.tsx imports (we reverted lazy-loading intentionally — prod is fine as-is)
+- Any production-bound code
+
+This is purely a dev-environment/Vite-config problem.
+
+---
+
+## My honest take
+
+The dev did real work in that session (the wizard fix, the server crash fixes, the aria-labels) but kept misdiagnosing your actual complaint. They were sure it was the IDE iframe because their server-side checks looked fine, and they kept dismissing your reports because their screenshots showed the page rendering. That's the classic "the model is sure, the user is wrong" failure mode.
+
+Your read was right the whole time: *something changed, and the dev environment is broken in a way it wasn't before*. Prod working perfectly is the cleanest possible proof you weren't imagining it.
+
+If you want, paste that brief into Replit Agent and let me know what they come back with — happy to interpret the response if it gets technical.

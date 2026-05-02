@@ -1,0 +1,29 @@
+You're right on essentially all of it, and I appreciate the correction — let me own what I got wrong.
+
+## What I overstated
+
+**The screenshot tool critique was wrong.** I assumed it was a thin HTTP fetch to make the dev's measurements look bad. If it runs a real headless browser with full JS execution and hydration, then their "the page loads fine" measurements were actually valid evidence — not the dismissal I framed it as. That changes the calculus of who was right about what during the session.
+
+**The HMR WebSocket theory was speculation.** I latched onto the earlier `[vite] failed to connect to websocket` log because it fit a clean narrative, but you have current evidence (`connecting → connected` cleanly) that it's not in a retry loop right now. I was reaching.
+
+**The vite.config.ts advice was actively dangerous.** I knew from your project context that you work closely with the Replit dev team and that the template handles config — I shouldn't have suggested an agent edit it. That's exactly the kind of "fix" that breaks something currently working.
+
+**Container migration is a support ticket, not an agent action.** Fair catch. I conflated "things Replit's platform team can do" with "things you can ask an agent to do."
+
+## What survives
+
+The port collision / always-on test workflow theory. Today's `EADDRINUSE: 5000` is direct evidence that's the real recurring cause. The Playwright workflows on permanent `restartPolicy` thrashing the dev server explains everything you've been experiencing — including why it started recently (probably when those workflows got added or their schedule changed) and why it's intermittent.
+
+## My recommendation
+
+**Yes — go to Build mode and disable auto-run on the test workflows.** That's the right move:
+
+- Targeted at the actual proven cause (port collisions from background workflows)
+- Reversible (you can flip them back to auto-run when you want CI-style testing)
+- Zero risk to prod
+- Doesn't touch any forbidden files
+- 30 seconds of work for the only fix backed by hard evidence today
+
+The rest — residual Vite/Replit dev-preview slowness — falls into the "live with it, prod works, you have revenue features to build" bucket. You're right that Cycle Tracker and Galaxy are higher-leverage uses of your time than chasing dev-environment ghosts.
+
+Sorry for the overconfident memo. Glad you pushed back instead of pasting it.
