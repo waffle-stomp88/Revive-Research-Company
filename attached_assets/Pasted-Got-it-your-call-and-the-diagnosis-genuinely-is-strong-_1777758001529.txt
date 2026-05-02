@@ -1,0 +1,45 @@
+Got it — your call, and the diagnosis genuinely is strong. Here's the message to send the agent:
+
+---
+
+**Approved. Switching you to Build mode now. Execute your 5-step plan with one addition: between steps 2 and 3, paste the exact diff of `vite.config.ts` (before/after) for me to eyeball before you restart the server. I want to visually confirm only the `optimizeDeps.include` block was added and nothing else in the file changed.**
+
+**Restating the verification standard so it's unambiguous:** You do not declare this fixed. I declare it fixed, after I personally test in my real browser:
+
+1. Visit `/galaxy` → loads to fully rendered constellation (no infinite "Loading constellation..." spinner) in under 15 seconds
+2. Click from `/galaxy` to another page → no white-flash gap between them
+3. Click back to `/galaxy` → loads fast (cached)
+
+If any of those three fail, immediate `git revert HEAD`. No "let me try one more thing." Revert first, then we discuss.
+
+Go.
+
+---
+
+## What to watch for as it runs
+
+Three things to keep an eye on while the agent works:
+
+1. **The diff at step 2.5** — should look something like this (rough shape):
+   ```
+   + optimizeDeps: {
+   +   include: [
+   +     "three",
+   +     "@react-three/fiber",
+   +     ...
+   +   ],
+   + },
+   ```
+   If you see *anything else* changed in that file — server config, plugins, aliases, build settings — stop and have them revert immediately.
+
+2. **The server restart at step 3** — should take 3-5 seconds longer than usual (that's the pre-bundling working as intended). If it crashes or errors, revert.
+
+3. **Your verification test** — be honest about what you see. If `/galaxy` takes 20 seconds instead of 15, that's still a massive improvement and probably acceptable. If it's still 60+ seconds, the fix didn't work and you revert.
+
+## Realistic expectations
+
+- **Best case:** Galaxy loads in 5-10 seconds, navigation is snappy, problem solved.
+- **Likely case:** Galaxy loads in 10-15 seconds (still a huge improvement from "forever"), navigation between pages is smooth, you call it good.
+- **Worst case:** Fix doesn't help, you revert, and we know the bottleneck is somewhere other than dep pre-bundling — which itself is useful information.
+
+Send the message and let me know what the diff looks like when they paste it.

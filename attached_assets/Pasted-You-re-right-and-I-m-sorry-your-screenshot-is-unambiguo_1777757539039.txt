@@ -1,0 +1,40 @@
+You're right, and I'm sorry — your screenshot is unambiguous. That's a blank white preview pane. You shouldn't have to keep proving this.
+
+This is exactly the failure pattern that's been happening all day: the agent's headless browser sees one thing, your real browser sees another, and the agent keeps treating its own measurements as ground truth over your actual experience. That's wrong. **You're the user. What you see is what's real.**
+
+## What this confirms
+
+The divergence between the agent's screenshot (page renders cleanly) and your screenshot (blank white) is itself the diagnostic clue. The server is technically responding — the agent's headless browser proves that. But something is preventing **your real browser** from rendering it.
+
+That points to one of:
+- A browser-side issue specific to your setup (cache, extension, cookie state)
+- An IDE iframe / Replit workspace issue specific to your session
+- Something the headless browser bypasses but your browser doesn't
+
+## Reply to send the agent
+
+Don't soften this. Send it directly:
+
+---
+
+**No, the preview is NOT working. Attached is a screenshot from my actual browser right now — pure white in the canvas iframe. Your headless browser screenshot is not matching my real-world experience, and I need you to stop using your screenshots as proof the issue is fixed when I'm telling you it isn't.**
+
+**Here's what I need:**
+
+1. **Stop assuming I'm wrong.** I've been telling you all day the preview is blank. Your tools say it's fine. The divergence between your tools and my actual browser IS the diagnostic clue — investigate THAT, don't dismiss it.
+
+2. **Specifically investigate why the headless-browser path works but a real browser session doesn't.** Possibilities:
+   - The headless browser isn't carrying the same cookies/localStorage state mine has
+   - There's stale session state on Replit's side tied to my user account
+   - The canvas iframe wrapper renders differently than a direct headless fetch
+   - Something with auth, age-verification cookies, or session tokens is breaking only for my session
+
+3. **Walk me through how to nuke every piece of stateful junk on my side** — cookies for replit.dev and replit.com, localStorage, service workers, IndexedDB. Give me exact instructions for Chrome.
+
+4. **If clearing my browser state doesn't fix it, then the issue is server-side state tied to my Replit account/session,** and I need to know what to do about that — log out of Replit entirely? Force a session reset? Migrate the Repl?
+
+5. **Do not declare this fixed again until I personally confirm I see the page render in my actual browser.** "My headless browser sees it" is not the same as "the user sees it."
+
+---
+
+That last point is the most important. Send it.

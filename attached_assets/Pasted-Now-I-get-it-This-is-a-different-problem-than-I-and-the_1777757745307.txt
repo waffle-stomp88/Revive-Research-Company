@@ -1,0 +1,68 @@
+Now I get it. **This is a different problem than I (and the agent) have been thinking about.**
+
+The preview isn't broken — it's *eventually* loading. But every navigation is taking 1-2+ minutes and going through a white-screen phase. That's not a "blank preview" failure, that's **catastrophically slow page transitions in dev mode**, and it's a real, specific symptom that points to a real, specific cause.
+
+Looking at your screenshots, I can see:
+- The Galaxy page header, navigation, and shell loaded (yellow shipping bar, logo, nav menu, "THE PEPTIDE UNIVERSE" heading)
+- Then it sits forever on **"Loading constellation..."** with a spinner
+- Then eventually goes back to white when you navigate
+
+**That "Loading constellation..." spinner is the smoking gun.**
+
+## What's actually happening
+
+The Galaxy page (`/galaxy`) is your Synergy Engine visualization — that constellation/star-map view of peptides. That's a **heavy 3D/canvas component**, almost certainly using `three.js` or `react-three-fiber`. Loading those libraries in dev mode through Vite means:
+
+1. Vite has to transform every dependency on first request
+2. Three.js + react-three are massive (thousands of modules)
+3. The Replit dev proxy adds latency to every chunk request
+4. While that's happening, you stare at white or "Loading..."
+
+The fact that **navigation goes white again** when you click another page tells me the same thing is happening for other heavy routes — Vite re-transforming, re-fetching, re-bundling on demand.
+
+## Why this got worse recently (the actual answer)
+
+The reconstitution wizard added new heavy deps (`jspdf`, `qrcode`, possibly `framer-motion` if it was newly added). When Vite sees new heavy deps, it triggers a **dep re-optimization** that invalidates cached chunks and forces re-transformation of related modules. That's the "this used to work fine, now it doesn't" pattern.
+
+## Updated prompt to send Replit
+
+Now we have a real, specific symptom to point at. Here's the prompt:
+
+---
+
+**You've been treating this as "is the page rendering or not." That's the wrong frame. The actual symptom is:**
+
+1. **Initial preview load takes 1-2+ minutes to show anything** (white screen the whole time)
+2. **Heavy pages like `/galaxy` get stuck on internal loading states** (the "Loading constellation..." spinner sits forever)
+3. **Every navigation between pages goes white again before eventually loading**
+
+**This is dev-mode-specific transformation/transfer slowness, not a crash. The server is healthy, the page eventually renders — it's just unusably slow. This started today after the reconstitution wizard work.**
+
+**Investigate, don't fix:**
+
+1. **Run the dev server with debug logging:** `DEBUG=vite:* npm run dev` (or however the start script works) and capture 60 seconds of output during a fresh page load of `/galaxy`. I want to see what Vite is actually doing during the slow period — transforming what, optimizing what, fetching what.
+
+2. **Check what heavy deps the `/galaxy` page pulls in.** Specifically: three.js, @react-three/fiber, @react-three/drei, framer-motion, anything WebGL-related. List them with file sizes.
+
+3. **Check `vite.config.ts` `optimizeDeps.include` array.** Are the heavy deps (three, @react-three/*, framer-motion, jspdf, qrcode, model-viewer) explicitly pre-bundled? If not, that's likely why every cold load is slow — Vite is discovering and bundling them on demand.
+
+4. **Check Network tab during a slow `/galaxy` load.** How many JS chunk requests fire? How long does each take? Is anything pending for 30+ seconds?
+
+5. **Run `du -sh node_modules/.vite/deps/*` and tell me which optimized deps are largest.** If three or @react-three is multiple MB, the proxy is taking forever to ship them to my browser.
+
+6. **Check git log for `package.json` changes in the last 48 hours.** What new dependencies got added during the wizard work? List them with versions.
+
+7. **Critical:** Compare today's `vite.config.ts` to the version from before the wizard work. Did anything change in the Vite config? (`git log -p vite.config.ts | head -100`)
+
+**Once you have all seven answers, give me the report. The actual fix is almost certainly going to be one of:**
+- Adding heavy deps to `optimizeDeps.include`
+- Pre-bundling three/react-three more aggressively
+- Lazy-loading the Galaxy page's heavy 3D components inside the page (different from lazy-loading the page itself)
+
+**I'm not asking you to make those changes yet. Investigate first. Don't declare anything fixed until I personally confirm `/galaxy` loads in under 15 seconds AND navigating between two pages doesn't go white in between.**
+
+---
+
+This is the right diagnostic now. The "Loading constellation..." screenshot was the missing piece all day — it tells us the *route is loading*, but the *route's heavy assets* aren't getting through fast enough. That's a Vite dep-optimization problem, and it's actually fixable.
+
+Send that and let's see what comes back.
