@@ -131,6 +131,7 @@ export function RecentlyViewed({ currentProductId, variant = "sidebar" }: Recent
               className="h-12 w-12 rounded-full border-[#21d8ff]/50 bg-[#1a1a1f]/90 backdrop-blur-sm hover:border-[#21d8ff]"
               onClick={() => setIsCollapsed(false)}
               data-testid="button-expand-recent"
+              aria-label="Show recently viewed products"
             >
               <Clock className="h-5 w-5 text-[#21d8ff]" />
               <span className="absolute -top-1 -right-1 bg-[#E7FB10] text-black text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
@@ -157,6 +158,7 @@ export function RecentlyViewed({ currentProductId, variant = "sidebar" }: Recent
                   className="h-6 w-6"
                   onClick={() => setIsCollapsed(true)}
                   data-testid="button-collapse-recent"
+                  aria-label="Hide recently viewed products"
                 >
                   <X className="h-3 w-3" />
                 </Button>

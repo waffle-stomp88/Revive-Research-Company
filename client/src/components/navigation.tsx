@@ -457,6 +457,7 @@ export function Navigation() {
                       size="icon" 
                       className="relative hover:bg-[#E7FB10]/10 hover:text-[#E7FB10] transition-all duration-300" 
                       data-testid="button-cart"
+                      aria-label="View shopping cart"
                     >
                       <ShoppingCart className="h-5 w-5" />
                       {cartItemCount > 0 && (
@@ -695,6 +696,7 @@ export function Navigation() {
                   className="md:hidden hover:bg-[#E7FB10]/10 hover:text-[#E7FB10] transition-all duration-300"
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                   data-testid="button-mobile-menu"
+                  aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
                 >
                   {isMobileMenuOpen ? (
                     <X className="h-5 w-5" />

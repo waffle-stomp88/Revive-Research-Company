@@ -147,6 +147,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                     onClick={() => handleQuantityChange(-1)}
                     disabled={quantity <= 1 || isOutOfStock}
                     data-testid="button-quickview-minus"
+                    aria-label="Decrease quantity"
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
@@ -160,6 +161,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                     onClick={() => handleQuantityChange(1)}
                     disabled={quantity >= 10 || isOutOfStock}
                     data-testid="button-quickview-plus"
+                    aria-label="Increase quantity"
                   >
                     <Plus className="h-4 w-4" />
                   </Button>

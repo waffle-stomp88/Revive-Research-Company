@@ -149,6 +149,7 @@ export function ChatBot() {
                   onClick={() => setIsOpen(false)}
                   className="h-8 w-8"
                   data-testid="button-close-chat"
+                  aria-label="Close chat"
                 >
                   <X className="h-4 w-4" />
                 </Button>

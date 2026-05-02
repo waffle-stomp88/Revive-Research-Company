@@ -198,6 +198,7 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
             onClick={() => setShowFilters(!showFilters)}
             data-testid="button-toggle-filters"
             title="Toggle filters"
+            aria-label="Toggle search filters"
           >
             <Filter className="h-3.5 w-3.5" />
           </Button>
@@ -212,6 +213,7 @@ export function SearchAutocomplete({ onProductSelect, className = "" }: SearchAu
                 inputRef.current?.focus();
               }}
               data-testid="button-clear-search"
+              aria-label="Clear search"
             >
               <X className="h-3 w-3" />
             </Button>
