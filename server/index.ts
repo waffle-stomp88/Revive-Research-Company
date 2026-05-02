@@ -184,13 +184,23 @@ export function log(message: string, source = "express") {
 
     httpServer.on("error", (err: NodeJS.ErrnoException) => {
       if (err.code === "EADDRINUSE" && retries > 0) {
-        log(`port ${port} in use — freeing it and retrying...`);
-        try { execSync(`fuser -k ${port}/tcp`); } catch {}
+        log(`port ${port} in use — attempting to free it (${retries} retr${retries === 1 ? "y" : "ies"} left)...`);
+        // Try multiple kill strategies — Replit NixOS doesn't have `fuser`,
+        // but `lsof` is usually available. `pkill` is a fallback that targets
+        // the process pattern that would be holding the port in dev.
+        let freed = false;
+        for (const cmd of [
+          `lsof -ti :${port} | xargs -r kill -9`,
+          `pkill -9 -f "tsx server/index.ts" || true`,
+        ]) {
+          try { execSync(cmd, { stdio: "ignore", shell: "/bin/sh" }); freed = true; break; } catch {}
+        }
+        if (!freed) log(`could not free port ${port} — relying on retry timeout`);
         httpServer.close();
         setTimeout(() => {
           httpServer.removeAllListeners("error");
           startListening(retries - 1);
-        }, 1000);
+        }, 1500);
       } else {
         throw err;
       }
