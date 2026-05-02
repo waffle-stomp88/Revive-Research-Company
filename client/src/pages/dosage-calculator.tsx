@@ -477,6 +477,28 @@ export default function DosageCalculator() {
             </motion.div>
           )}
 
+          <motion.a
+            href="/reconstitution-wizard"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="mt-6 flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-[#E7FB10]/10 via-[#E7FB10]/5 to-transparent border border-[#E7FB10]/30 hover-elevate active-elevate-2 group"
+            data-testid="link-try-wizard"
+          >
+            <div className="p-2.5 rounded-lg bg-[#E7FB10]/20 flex-shrink-0">
+              <Sparkles className="h-5 w-5 text-[#E7FB10]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-[#E7FB10]">New: Reconstitution Wizard</p>
+              <p className="text-xs text-gray-400 mt-0.5">
+                Guided step-by-step flow with animated syringe and printable Vial Card.
+              </p>
+            </div>
+            <span className="text-xs text-[#E7FB10] font-medium hidden sm:inline group-hover:translate-x-1 transition-transform">
+              Try it →
+            </span>
+          </motion.a>
+
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
