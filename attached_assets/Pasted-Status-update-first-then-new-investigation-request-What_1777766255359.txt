@@ -1,0 +1,38 @@
+Status update first, then new investigation request.
+What we accomplished tonight (current state of the codebase):
+
+.replit workflow edit — Removed the 3 Playwright e2e workflows from the parent "Project" parallel group. Fixed real port-5000 EADDRINUSE collisions. Workflows still individually runnable and still trigger on task-completion validation.
+vite.config.ts optimizeDeps.include added — 8 heavy deps (three, @react-three/fiber, @react-three/drei, framer-motion, jspdf, qrcode, recharts, lucide-react) now pre-bundled at server startup instead of cold-discovered per route.
+dashboard.tsx lazy-load — LogbookTab, LogbookWipeCard, and CyclesTab converted from static imports to lazy() with <Suspense fallback={null}> wrappers. Removed ~500KB + jspdf from the eager homepage tree. Same pattern as Galaxy.
+Self-hosted Google Fonts — All 5 font families (Inter, Space Grotesk, DM Sans, Bebas Neue, JetBrains Mono) now served from /fonts/. Removed Google Fonts links from index.html and index.css.
+Reverted — The unauthorized lazy-loading of all 54 pages in App.tsx (commit 2c9671c6 from a different agent session). Per my instructions, no lazy-loading at the App.tsx routing level.
+
+Current performance results (tested in my real browser):
+
+Canvas iframe cold load: 1 min 12 sec (was 10+ min blank earlier today)
+External browser tab cold load: 55 sec (was 2-3 min earlier today)
+Galaxy page: 5-6 sec (was infinite "Loading constellation..." spinner)
+Dashboard tabs: work, lazy-load on first click (5-10s, expected)
+Visual: clean, fonts load with brief 2-3s flash (expected font-display: swap behavior)
+
+The remaining problem: Last night this Repl loaded fast on the same machine, same network, same browser. 1:12 cold load in the canvas iframe is much better than today's broken state, but it's still 3-6x slower than last night's baseline. Tonight's fixes addressed real issues but didn't fully restore last night's performance. Something else from recent merges is likely still in the eager tree.
+New investigation request — investigate, don't fix:
+
+Re-run the network waterfall probe with the current state (post all 4 fixes). I want updated numbers, not the old waterfall. Same metrics as your earlier probe:
+
+Total requests
+Total bytes downloaded
+Latency histogram
+Top 15 slowest single requests
+Bytes by category
+Time to hero visible
+
+
+Compare against your earlier pre-A waterfall. What specifically changed in request count and bytes? Did A actually reduce the eager tree as expected, or did it shift things around without removing them?
+Identify the next 5 biggest contributors to the eager tree. From your previous waterfall, candidates included research-stacks.tsx (911KB), order-confirmation.tsx (176KB), the 6 guide pages (~50KB each). Confirm whether these are actually in the homepage's eager load path or somewhere else.
+Diff App.tsx eager imports against the last-known-good state from yesterday (the commit before the wizard merge — find it in git log). What new pages or components have been added to the eager tree since yesterday that weren't there before? Specifically check anything from the Logbook, Cycle Tracker, Galaxy, or wizard PRs that might still be pulling into the eager tree even after A.
+Check for accidental imports. Sometimes a component imports another for a tiny utility (a single icon, a type, a helper) and accidentally pulls the entire dependency tree. Are any of the new components (LogbookTab, CyclesTab, etc., even though now lazy) being imported by something in the eager tree for utilities/types?
+Check what the homepage itself directly imports — every component, every utility, every context. List them with sizes. Has anything been added to the homepage in recent merges?
+Specifically check Navigation, Footer, MobileBottomNav, and CartContext — anything always-rendered. Did these get bloated by recent work?
+
+Once you have all 7 answers, give me the report. Do not propose fixes yet, do not modify anything. I want to see the data before deciding what (if anything) to do next.
