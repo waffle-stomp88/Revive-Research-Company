@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { FREE_SHIPPING_THRESHOLD } from "@shared/constants";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
@@ -77,8 +77,15 @@ import {
 import type { Order, Product, Coa, ResearchPhase, ResearchTitle, SavedStack } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { CompoundFinder } from "@/components/compound-finder";
-import { LogbookTab, LogbookWipeCard } from "@/components/logbook-tab";
-import { CyclesTab } from "@/components/cycles/CyclesTab";
+const LogbookTab = lazy(() =>
+  import("@/components/logbook-tab").then((m) => ({ default: m.LogbookTab }))
+);
+const LogbookWipeCard = lazy(() =>
+  import("@/components/logbook-tab").then((m) => ({ default: m.LogbookWipeCard }))
+);
+const CyclesTab = lazy(() =>
+  import("@/components/cycles/CyclesTab").then((m) => ({ default: m.CyclesTab }))
+);
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -1750,12 +1757,12 @@ export default function Dashboard() {
 
                 {/* Logbook Tab */}
                 <TabsContent value="logbook" className="space-y-6">
-                  <LogbookTab />
+                  <Suspense fallback={null}><LogbookTab /></Suspense>
                 </TabsContent>
 
                 {/* Cycles Tab */}
                 <TabsContent value="cycles" className="space-y-6">
-                  <CyclesTab />
+                  <Suspense fallback={null}><CyclesTab /></Suspense>
                 </TabsContent>
 
                 {/* Education Tab */}
@@ -2463,7 +2470,7 @@ export default function Dashboard() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <LogbookWipeCard />
+                      <Suspense fallback={null}><LogbookWipeCard /></Suspense>
                       <p className="text-sm text-muted-foreground mb-4">
                         Permanently delete your account and all associated data.
                       </p>
