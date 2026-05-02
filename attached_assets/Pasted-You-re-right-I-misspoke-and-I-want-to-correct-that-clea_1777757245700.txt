@@ -1,0 +1,48 @@
+You're right — I misspoke and I want to correct that clearly.
+What I got wrong
+I wrote "dev was working before" referring to before the .replit edit. That was sloppy phrasing on my part. The actual timeline is:
+
+Last night: Dev preview working perfectly
+Today, after the reconstitution wizard work: Dev preview broke (blank screens, slow loads)
+Multiple "fixes" by Replit Agent today: None actually fixed the blank preview
+The .replit workflow edit: Fixed the port-5000 collision (a real but separate problem), didn't touch the blank preview
+Right now: Blank preview is still broken, exactly as it has been all day
+
+So the .replit edit is not a suspect for the blank preview. It can't be — the blank preview was already happening before that edit. I should not have suggested otherwise.
+What this actually means
+The thing that broke your dev preview is something that happened during today's reconstitution wizard work session. That's been the answer the whole time, and we've been circling around it without nailing it down.
+Looking back at the transcript with this clearer timeline:
+
+The wizard was added (new code, new deps)
+The server crashed multiple times (require is not defined, fuser: not found)
+Vite's dep cache got wiped
+The HMR WebSocket reconnect loop happened
+Lazy-loading was added then reverted
+Various aria-label fixes
+
+Something in that pile of changes is what broke your dev environment, and the agent kept declaring victory after each individual fix without confirming the original symptom (blank preview) was actually resolved.
+Revised prompt to send Replit
+Let me rewrite that prompt with the correct framing:
+
+The dev preview has been blank/broken since this morning's reconstitution wizard work session. None of today's "fixes" have actually resolved it — they fixed adjacent problems but not the blank preview itself. I need you to focus specifically on the blank preview.
+Important context:
+
+Last night: dev preview worked perfectly
+This morning: started reconstitution wizard work, dev preview broke
+All day: blank white page in preview, takes forever or never loads
+Today's .replit workflow edit fixed port-5000 collisions, but did NOT fix the blank preview (the blank preview was already broken before that edit)
+Prod (reviveresearch.co) works fine — so it's specifically a dev-environment issue tied to changes in the working tree that haven't been deployed
+
+Don't take action yet. I need you to investigate:
+
+Is Start application currently running cleanly? Show me its status and the most recent 50 lines of its console output. Any errors, warnings, or repeated messages?
+What does curl -s -o /dev/null -w "%{http_code} %{time_total}s\n" http://localhost:5000/ return? Does the server respond on the inside?
+Check Vite logs for anything abnormal — [vite] failed to connect to websocket, dependencies optimized firing repeatedly, slow transform times, any error.
+Walk me through every file that was modified during today's wizard work. Not just what was committed — everything that's still sitting in the working tree. List them.
+For each modified file, is there anything that could specifically break dev-mode rendering but not prod? Examples: dev-only conditional code, import.meta.env.DEV branches, dynamic imports that resolve differently, anything HMR-specific.
+Open the preview URL with your headless browser and capture: the actual HTML response body, the console output, the network tab (especially any 404s on JS chunks, any pending requests that never resolve).
+Check if Vite's dep cache (node_modules/.vite) is in a healthy state — what's its age, size, and contents? Has it been wiped or corrupted by today's troubleshooting?
+Is there any service worker, browser cache, or stale HMR client state that could be holding the preview in a broken state from this morning's crashes?
+
+Once you have all eight answers, give me a report. Do not modify anything yet.
+Critical instruction: Do NOT declare a fix complete until you have visually confirmed the preview loads in under 10 seconds with actual content visible (not just a 200 response from curl). The pattern today has been "fix something adjacent, declare victory, blank preview persists." I need you to verify the actual symptom is gone, not just that some related issue was resolved.

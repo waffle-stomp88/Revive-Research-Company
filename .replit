@@ -35,10 +35,6 @@ args = "pk-chart-key"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "pk-chart-key-e2e"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
 args = "zoom-preference"
 
 [[workflows.workflow.tasks]]
@@ -47,19 +43,11 @@ args = "pk-catalog-coverage"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "stacks-curation-e2e"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
 args = "code_review"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
 args = "compound-profiles-snapshot"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "product-visual-style"
 
 [[workflows.workflow]]
 name = "Start application"
