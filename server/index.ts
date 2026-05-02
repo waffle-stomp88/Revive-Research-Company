@@ -96,7 +96,11 @@ export function log(message: string, source = "express") {
       const duration = Date.now() - start;
       if (path.startsWith("/api")) {
         let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-        if (capturedJsonResponse) {
+        // Logbook responses contain private personal-research observations,
+        // doses, and metrics. Never write the response body to logs for
+        // these routes — even on errors.
+        const isSensitivePath = path.startsWith("/api/logbook");
+        if (capturedJsonResponse && !isSensitivePath) {
           logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
         }
 

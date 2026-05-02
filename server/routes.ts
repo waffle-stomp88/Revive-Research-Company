@@ -9,7 +9,7 @@ import fs from "fs";
 import { storage, resolveDisplayPrice } from "./storage";
 import { db } from "./db";
 import { eq, desc, sql } from "drizzle-orm";
-import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertNewsletterSubscriberSchema, subscriptions, orders as ordersTable, savedStacks, insertSavedStackSchema, insertStripePresetSchema } from "@shared/schema";
+import { insertOrderSchema, insertContactSchema, insertProductSchema, insertCoaSchema, insertAffiliateApplicationSchema, insertAffiliateSchema, insertAffiliateSaleSchema, insertAffiliatePayoutSchema, insertNewsletterSubscriberSchema, subscriptions, orders as ordersTable, savedStacks, insertSavedStackSchema, insertStripePresetSchema, insertResearchNoteSchema, LOGBOOK_SOURCE_TAG, type ResearchNote } from "@shared/schema";
 import { setupAuth, isAuthenticated, verifyAuth0Token } from "./auth0Auth";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
@@ -4882,8 +4882,11 @@ Return ONLY valid JSON in this exact format:
 
   app.patch("/api/research-notes/:id", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
       const { id } = req.params;
-      const note = await storage.updateResearchNote(id, req.body);
+      // Strip userId from any incoming payload — ownership is server-side.
+      const { userId: _ignored, id: _ignoredId, ...payload } = req.body || {};
+      const note = await storage.updateResearchNoteForUser(id, userId, payload);
       if (!note) {
         return res.status(404).json({ error: "Note not found" });
       }
@@ -4896,8 +4899,12 @@ Return ONLY valid JSON in this exact format:
 
   app.delete("/api/research-notes/:id", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
       const { id } = req.params;
-      await storage.deleteResearchNote(id);
+      const ok = await storage.deleteResearchNoteForUser(id, userId);
+      if (!ok) {
+        return res.status(404).json({ error: "Note not found" });
+      }
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting research note:", error);
@@ -4907,12 +4914,254 @@ Return ONLY valid JSON in this exact format:
 
   app.post("/api/research-notes/:id/toggle-pin", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
       const { id } = req.params;
+      const existing = await storage.getResearchNote(id);
+      if (!existing || existing.userId !== userId) {
+        return res.status(404).json({ error: "Note not found" });
+      }
       const note = await storage.toggleResearchNotePin(id);
       res.json(note);
     } catch (error) {
       console.error("Error toggling pin:", error);
       res.status(500).json({ error: "Failed to toggle pin" });
+    }
+  });
+
+  // ============== LOGBOOK (auth-gated personal research log) ==============
+  // Backed by the same researchNotes table; all routes scope strictly to the
+  // authenticated user. Ownership is verified server-side; clients cannot
+  // override userId via request body.
+  const parseDateOrUndefined = (
+    raw: unknown,
+    bound: "start" | "end" = "start",
+  ): Date | undefined => {
+    if (typeof raw !== "string" || !raw) return undefined;
+    // Bare "YYYY-MM-DD" → expand to start or end of day so date-only ranges
+    // remain inclusive on both ends regardless of how the client built it.
+    let value = raw;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+      value = bound === "end" ? `${raw}T23:59:59.999Z` : `${raw}T00:00:00.000Z`;
+    }
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? undefined : d;
+  };
+
+  const parseIntInRange = (
+    raw: unknown,
+    min: number,
+    max: number,
+  ): number | undefined => {
+    if (typeof raw !== "string" || !raw) return undefined;
+    const n = parseInt(raw, 10);
+    if (!Number.isFinite(n) || n < min || n > max) return undefined;
+    return n;
+  };
+
+  const parseLogbookFilters = (q: any) => ({
+    from: parseDateOrUndefined(q.from, "start"),
+    to: parseDateOrUndefined(q.to, "end"),
+    productId:
+      typeof q.productId === "string" && q.productId ? q.productId : undefined,
+    customCompound:
+      typeof q.customCompound === "string" && q.customCompound.trim()
+        ? q.customCompound.trim().slice(0, 120)
+        : undefined,
+    hasObservation:
+      q.hasObservation === "true" || q.hasObservation === "1"
+        ? true
+        : undefined,
+    minSleep: parseIntInRange(q.minSleep, 1, 10),
+    minEnergy: parseIntInRange(q.minEnergy, 1, 10),
+    minMood: parseIntInRange(q.minMood, 1, 10),
+  });
+
+  app.get("/api/logbook", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const entries = await storage.getLogbookEntries(
+        userId,
+        parseLogbookFilters(req.query),
+      );
+      res.json(entries);
+    } catch (error) {
+      console.error("Error fetching logbook entries:", error);
+      res.status(500).json({ error: "Failed to fetch logbook entries" });
+    }
+  });
+
+  // Helper: ensure the source:logbook discriminator tag is present so
+  // wipe/list operations can target only entries created via the logbook
+  // API and never touch pre-existing /api/research-notes journal notes.
+  const withLogbookSourceTag = (
+    tags: string[] | null | undefined,
+  ): string[] => {
+    const base = Array.isArray(tags) ? tags.filter((t) => typeof t === "string") : [];
+    return base.includes(LOGBOOK_SOURCE_TAG) ? base : [LOGBOOK_SOURCE_TAG, ...base];
+  };
+
+  app.post("/api/logbook", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      // userId is bound from session; never trust the body.
+      const { userId: _ignored, id: _ignoredId, ...payload } = req.body || {};
+      const parsed = insertResearchNoteSchema.safeParse({ ...payload, userId });
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Invalid logbook entry", details: parsed.error.flatten() });
+      }
+      const entry = await storage.createResearchNote({
+        ...parsed.data,
+        tags: withLogbookSourceTag(parsed.data.tags),
+      });
+      res.json(entry);
+    } catch (error) {
+      console.error("Error creating logbook entry:", error);
+      res.status(500).json({ error: "Failed to create logbook entry" });
+    }
+  });
+
+  // Guard for PATCH/DELETE-by-id: load the row, confirm it belongs to the
+  // caller AND carries the source:logbook discriminator. Returns the row
+  // on success or null when the caller has no business touching it. We
+  // return null (the route maps to 404) for both "not found" and "wrong
+  // owner / not a logbook entry" so this endpoint can never confirm or
+  // mutate a non-logbook row by id.
+  const loadOwnedLogbookEntry = async (
+    id: string,
+    userId: string,
+  ): Promise<ResearchNote | null> => {
+    const note = await storage.getResearchNote(id);
+    if (!note) return null;
+    if (note.userId !== userId) return null;
+    if (!Array.isArray(note.tags) || !note.tags.includes(LOGBOOK_SOURCE_TAG)) return null;
+    return note;
+  };
+
+  app.patch("/api/logbook/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id } = req.params;
+      const existing = await loadOwnedLogbookEntry(id, userId);
+      if (!existing) {
+        return res.status(404).json({ error: "Entry not found" });
+      }
+      const { userId: _ignored, id: _ignoredId, ...payload } = req.body || {};
+      // partial() so PATCH only validates supplied fields.
+      const parsed = insertResearchNoteSchema.partial().safeParse(payload);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Invalid logbook entry", details: parsed.error.flatten() });
+      }
+      // If the client sends a `tags` array (even an empty one), preserve
+      // the source:logbook discriminator so the row remains identifiable.
+      const update =
+        parsed.data.tags !== undefined
+          ? { ...parsed.data, tags: withLogbookSourceTag(parsed.data.tags) }
+          : parsed.data;
+      const entry = await storage.updateResearchNoteForUser(id, userId, update);
+      if (!entry) {
+        return res.status(404).json({ error: "Entry not found" });
+      }
+      res.json(entry);
+    } catch (error) {
+      console.error("Error updating logbook entry:", error);
+      res.status(500).json({ error: "Failed to update logbook entry" });
+    }
+  });
+
+  app.delete("/api/logbook/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id } = req.params;
+      const existing = await loadOwnedLogbookEntry(id, userId);
+      if (!existing) {
+        return res.status(404).json({ error: "Entry not found" });
+      }
+      const ok = await storage.deleteResearchNoteForUser(id, userId);
+      if (!ok) {
+        return res.status(404).json({ error: "Entry not found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting logbook entry:", error);
+      res.status(500).json({ error: "Failed to delete logbook entry" });
+    }
+  });
+
+  app.delete("/api/logbook", isAuthenticated, async (req: any, res) => {
+    try {
+      // Require an explicit confirmation header so a stray DELETE on the
+      // collection cannot wipe the entire logbook by accident.
+      const confirm = req.header("X-Confirm-Wipe");
+      if (confirm !== "true") {
+        return res.status(400).json({
+          error: "Confirmation header required",
+          message: "Send X-Confirm-Wipe: true to delete all logbook entries.",
+        });
+      }
+      const userId = req.user.claims.sub;
+      const deleted = await storage.wipeLogbookEntries(userId);
+      res.json({ success: true, deleted });
+    } catch (error) {
+      console.error("Error wiping logbook:", error);
+      res.status(500).json({ error: "Failed to wipe logbook" });
+    }
+  });
+
+  app.get("/api/logbook/export.csv", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const entries = await storage.getLogbookEntries(
+        userId,
+        parseLogbookFilters(req.query),
+      );
+
+      const escapeCsv = (val: unknown): string => {
+        if (val === null || val === undefined) return "";
+        const s = val instanceof Date ? val.toISOString() : String(val);
+        if (/[",\n\r]/.test(s)) {
+          return `"${s.replace(/"/g, '""')}"`;
+        }
+        return s;
+      };
+
+      const headers = [
+        "id", "administeredAt", "createdAt", "title", "productId", "batchNumber",
+        "dose", "doseUnit", "route",
+        "bodyWeightKg", "sleepScore", "energyScore", "moodScore",
+        "cycleMarker", "tags", "observation",
+      ];
+
+      res.setHeader("Content-Type", "text/csv; charset=utf-8");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="logbook-${new Date().toISOString().slice(0, 10)}.csv"`,
+      );
+      res.write(headers.join(",") + "\n");
+      for (const e of entries as ResearchNote[]) {
+        const row = [
+          e.id,
+          e.administeredAt,
+          e.createdAt,
+          e.title,
+          e.productId,
+          e.batchNumber,
+          e.dose,
+          e.doseUnit,
+          e.route,
+          e.bodyWeightKg,
+          e.sleepScore,
+          e.energyScore,
+          e.moodScore,
+          e.cycleMarker,
+          e.tags ? e.tags.join("|") : "",
+          e.content,
+        ].map(escapeCsv).join(",");
+        res.write(row + "\n");
+      }
+      res.end();
+    } catch (error) {
+      console.error("Error exporting logbook CSV:", error);
+      res.status(500).json({ error: "Failed to export logbook" });
     }
   });
 

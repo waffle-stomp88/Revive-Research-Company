@@ -735,7 +735,7 @@ export const insertNotificationPreferencesSchema = createInsertSchema(notificati
 export type InsertNotificationPreferences = z.infer<typeof insertNotificationPreferencesSchema>;
 export type NotificationPreferences = typeof notificationPreferences.$inferSelect;
 
-// Research Notes table - Personal journal for tracking research
+// Research Notes table - Personal journal & logbook for tracking research
 export const researchNotes = pgTable("research_notes", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
@@ -745,11 +745,87 @@ export const researchNotes = pgTable("research_notes", {
   batchNumber: text("batch_number"), // Optional link to batch
   tags: text("tags").array(),
   isPinned: boolean("is_pinned").default(false),
+  // ===== Logbook structured fields (all nullable for back-compat) =====
+  dose: decimal("dose", { precision: 10, scale: 3 }),
+  doseUnit: text("dose_unit"), // mcg | mg | iu
+  route: text("route"), // subq | im | oral | intranasal | topical
+  administeredAt: timestamp("administered_at"), // when the dose was actually taken
+  bodyWeightKg: decimal("body_weight_kg", { precision: 6, scale: 2 }),
+  sleepScore: integer("sleep_score"), // 1-10
+  energyScore: integer("energy_score"), // 1-10
+  moodScore: integer("mood_score"), // 1-10
+  cycleMarker: text("cycle_marker"), // start | end | null=continue
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const insertResearchNoteSchema = createInsertSchema(researchNotes).omit({ id: true, createdAt: true, updatedAt: true });
+export const DOSE_UNITS = ["mcg", "mg", "iu"] as const;
+export const ROUTES = ["subq", "im", "oral", "intranasal", "topical"] as const;
+export const CYCLE_MARKERS = ["start", "end", "continue"] as const;
+
+// Reserved tag namespace prefixes used by the logbook to keep its own
+// metadata distinct from user-typed tags. The reserved prefixes:
+//   compound:NAME  — free-text custom compound for an entry
+//   source:logbook — discriminator marking the row as a logbook entry
+//                    (vs a pre-existing /api/research-notes journal note)
+export const LOGBOOK_SOURCE_TAG = "source:logbook";
+export const LOGBOOK_RESERVED_TAG_PREFIXES = ["compound:", "source:"] as const;
+
+// Coerce a "decimal" field that may arrive as a string from JSON forms.
+// Rejects non-numeric strings (returns a Zod issue) instead of silently
+// passing garbage to the DB.
+const decimalField = (max: number) =>
+  z
+    .union([z.string(), z.number()])
+    .optional()
+    .nullable()
+    .transform((v, ctx) => {
+      if (v === null || v === undefined || v === "") return null;
+      const n = typeof v === "number" ? v : parseFloat(v);
+      if (!Number.isFinite(n)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Must be a finite number",
+        });
+        return z.NEVER;
+      }
+      if (n < 0 || n > max) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Must be between 0 and ${max}`,
+        });
+        return z.NEVER;
+      }
+      // drizzle `decimal` columns expect strings.
+      return String(n);
+    });
+
+export const insertResearchNoteSchema = createInsertSchema(researchNotes, {
+  dose: decimalField(10_000_000),
+  bodyWeightKg: decimalField(1000),
+  doseUnit: z.enum(DOSE_UNITS).optional().nullable(),
+  route: z.enum(ROUTES).optional().nullable(),
+  cycleMarker: z.enum(CYCLE_MARKERS).optional().nullable().transform((v) => v === "continue" ? null : v ?? null),
+  sleepScore: z.number().int().min(1).max(10).optional().nullable(),
+  energyScore: z.number().int().min(1).max(10).optional().nullable(),
+  moodScore: z.number().int().min(1).max(10).optional().nullable(),
+  administeredAt: z
+    .union([z.string(), z.date()])
+    .optional()
+    .nullable()
+    .transform((v, ctx) => {
+      if (!v) return null;
+      const d = typeof v === "string" ? new Date(v) : v;
+      if (isNaN(d.getTime())) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Invalid date",
+        });
+        return z.NEVER;
+      }
+      return d;
+    }),
+}).omit({ id: true, createdAt: true, updatedAt: true });
 export type InsertResearchNote = z.infer<typeof insertResearchNoteSchema>;
 export type ResearchNote = typeof researchNotes.$inferSelect;
 

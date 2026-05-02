@@ -331,8 +331,22 @@ export interface IStorage {
   getResearchNote(id: string): Promise<ResearchNote | undefined>;
   createResearchNote(note: InsertResearchNote): Promise<ResearchNote>;
   updateResearchNote(id: string, data: Partial<InsertResearchNote>): Promise<ResearchNote | undefined>;
+  updateResearchNoteForUser(id: string, userId: string, data: Partial<InsertResearchNote>): Promise<ResearchNote | undefined>;
   deleteResearchNote(id: string): Promise<boolean>;
+  deleteResearchNoteForUser(id: string, userId: string): Promise<boolean>;
   toggleResearchNotePin(id: string): Promise<ResearchNote | undefined>;
+
+  // Logbook (auth-gated personal research log; backed by researchNotes table)
+  getLogbookEntries(userId: string, filters?: {
+    from?: Date;
+    to?: Date;
+    productId?: string;
+    hasObservation?: boolean;
+    minSleep?: number;
+    minEnergy?: number;
+    minMood?: number;
+  }): Promise<ResearchNote[]>;
+  wipeLogbookEntries(userId: string): Promise<number>;
   
   // Login History
   recordLogin(userId: string, data: Partial<InsertLoginHistory>): Promise<LoginHistory>;
@@ -2300,9 +2314,109 @@ export class DatabaseStorage implements IStorage {
     return updated;
   }
 
+  async updateResearchNoteForUser(
+    id: string,
+    userId: string,
+    data: Partial<InsertResearchNote>,
+  ): Promise<ResearchNote | undefined> {
+    const [updated] = await db.update(researchNotes)
+      .set({ ...data, updatedAt: new Date() })
+      .where(and(eq(researchNotes.id, id), eq(researchNotes.userId, userId)))
+      .returning();
+    return updated;
+  }
+
   async deleteResearchNote(id: string): Promise<boolean> {
     await db.delete(researchNotes).where(eq(researchNotes.id, id));
     return true;
+  }
+
+  async deleteResearchNoteForUser(id: string, userId: string): Promise<boolean> {
+    const result = await db.delete(researchNotes)
+      .where(and(eq(researchNotes.id, id), eq(researchNotes.userId, userId)))
+      .returning();
+    return result.length > 0;
+  }
+
+  async getLogbookEntries(
+    userId: string,
+    filters?: {
+      from?: Date;
+      to?: Date;
+      productId?: string;
+      customCompound?: string;
+      hasObservation?: boolean;
+      minSleep?: number;
+      minEnergy?: number;
+      minMood?: number;
+    },
+  ): Promise<ResearchNote[]> {
+    const conditions = [
+      eq(researchNotes.userId, userId),
+      // Logbook list is scoped to entries created via /api/logbook
+      // (discriminator tag), so pre-existing /api/research-notes journal
+      // notes never leak into the logbook UI or CSV export.
+      sql`${researchNotes.tags} @> ARRAY['source:logbook']::text[]`,
+    ];
+    if (filters?.from) {
+      conditions.push(
+        sql`COALESCE(${researchNotes.administeredAt}, ${researchNotes.createdAt}) >= ${filters.from}`,
+      );
+    }
+    if (filters?.to) {
+      conditions.push(
+        sql`COALESCE(${researchNotes.administeredAt}, ${researchNotes.createdAt}) <= ${filters.to}`,
+      );
+    }
+    if (filters?.productId) {
+      conditions.push(eq(researchNotes.productId, filters.productId));
+    }
+    if (filters?.customCompound) {
+      // Custom-compound free-text search matches any entry whose `tags`
+      // array contains a `compound:<value>` tag (case-insensitive substring).
+      const pattern = `%compound:%${filters.customCompound.toLowerCase()}%`;
+      conditions.push(
+        sql`EXISTS (
+          SELECT 1 FROM unnest(${researchNotes.tags}) AS t
+          WHERE lower(t) LIKE ${pattern}
+        )`,
+      );
+    }
+    if (filters?.hasObservation) {
+      conditions.push(
+        sql`${researchNotes.content} IS NOT NULL AND length(trim(${researchNotes.content})) > 0`,
+      );
+    }
+    if (typeof filters?.minSleep === "number") {
+      conditions.push(sql`${researchNotes.sleepScore} >= ${filters.minSleep}`);
+    }
+    if (typeof filters?.minEnergy === "number") {
+      conditions.push(sql`${researchNotes.energyScore} >= ${filters.minEnergy}`);
+    }
+    if (typeof filters?.minMood === "number") {
+      conditions.push(sql`${researchNotes.moodScore} >= ${filters.minMood}`);
+    }
+    return await db.select().from(researchNotes)
+      .where(and(...conditions))
+      .orderBy(
+        desc(sql`COALESCE(${researchNotes.administeredAt}, ${researchNotes.createdAt})`),
+      );
+  }
+
+  async wipeLogbookEntries(userId: string): Promise<number> {
+    // Scope wipe strictly to entries that carry the source:logbook
+    // discriminator tag. This guarantees pre-existing /api/research-notes
+    // journal notes for the same user are never deleted by the logbook
+    // "wipe everything" action.
+    const result = await db.delete(researchNotes)
+      .where(
+        and(
+          eq(researchNotes.userId, userId),
+          sql`${researchNotes.tags} @> ARRAY['source:logbook']::text[]`,
+        ),
+      )
+      .returning();
+    return result.length;
   }
 
   async toggleResearchNotePin(id: string): Promise<ResearchNote | undefined> {
