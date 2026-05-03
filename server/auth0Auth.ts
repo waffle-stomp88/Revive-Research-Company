@@ -101,11 +101,19 @@ export async function verifyAuth0Token(token: string): Promise<Auth0TokenClaims>
 
 export const isAuthenticated: RequestHandler = async (req: any, res, next) => {
   const authHeader = req.headers.authorization;
-  
+
   if (authHeader && authHeader.startsWith('Bearer ')) {
-    return next();
+    const token = authHeader.slice(7);
+    try {
+      const claims = await verifyAuth0Token(token);
+      req.user = { claims };
+      req.isAuthenticated = () => true;
+      return next();
+    } catch {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
   }
-  
+
   const userId = (req.session as any)?.userId;
   if (userId) {
     // Populate req.user with user data so routes can access it
@@ -121,7 +129,7 @@ export const isAuthenticated: RequestHandler = async (req: any, res, next) => {
       return next();
     }
   }
-  
+
   return res.status(401).json({ message: "Unauthorized" });
 };
 
