@@ -11,6 +11,12 @@ import { GalaxyStars } from "./galaxy-stars";
 import { GalaxyEdges } from "./galaxy-edges";
 import { GalaxyStarfield } from "./galaxy-starfield";
 import { GalaxyCameraRig, type FlyTarget } from "./galaxy-camera-rig";
+import { GalaxyHalos } from "./galaxy-halos";
+import { GalaxyEffects } from "./galaxy-effects";
+import {
+  GALAXY_VFX,
+  type GalaxyVfxVariant,
+} from "./galaxy-vfx-config";
 
 interface GalaxySceneProps {
   visibleSystemIds: Set<string>;
@@ -21,6 +27,7 @@ interface GalaxySceneProps {
   onHover: (id: string | null) => void;
   onNodeMeta: (nodes: GalaxyNode[]) => void;
   resetSignal: number;
+  vfxVariant?: GalaxyVfxVariant;
 }
 
 export function GalaxyScene({
@@ -32,9 +39,11 @@ export function GalaxyScene({
   onHover,
   onNodeMeta,
   resetSignal,
+  vfxVariant = "cinematic",
 }: GalaxySceneProps) {
   const layout = useMemo(() => buildGalaxyLayout(), []);
   const { nodes, edges } = layout;
+  const vfx = GALAXY_VFX[vfxVariant];
   const [edgeHover, setEdgeHover] = useState<{
     edge: GalaxyEdge;
     pointer: { x: number; y: number };
@@ -54,6 +63,18 @@ export function GalaxyScene({
       if (idleTimer.current) clearTimeout(idleTimer.current);
     };
   }, []);
+
+  // Adjacency map: node id -> set of connected node ids (via edges)
+  const adjacency = useMemo(() => {
+    const m = new Map<string, Set<string>>();
+    for (const e of edges) {
+      if (!m.has(e.fromId)) m.set(e.fromId, new Set());
+      if (!m.has(e.toId)) m.set(e.toId, new Set());
+      m.get(e.fromId)!.add(e.toId);
+      m.get(e.toId)!.add(e.fromId);
+    }
+    return m;
+  }, [edges]);
 
   const visibleMask = useMemo(() => {
     const m = new Uint8Array(nodes.length);
@@ -90,6 +111,17 @@ export function GalaxyScene({
     }
     return m;
   }, [nodes, visibleMask, searchTerm]);
+
+  const connectedMask = useMemo(() => {
+    if (!hoveredId) return null;
+    const set = adjacency.get(hoveredId);
+    if (!set) return null;
+    const m = new Uint8Array(nodes.length);
+    for (let i = 0; i < nodes.length; i++) {
+      m[i] = set.has(nodes[i].id) ? 1 : 0;
+    }
+    return m;
+  }, [adjacency, hoveredId, nodes]);
 
   const handleUserInteract = useCallback(() => {
     setAutoRotate(false);
@@ -138,28 +170,39 @@ export function GalaxyScene({
       >
         <ambientLight intensity={0.5} />
         <pointLight position={[20, 20, 20]} intensity={0.6} color="#ffffff" />
-        <pointLight position={[-20, -10, -20]} intensity={0.35} color="#21d8ff" />
+        <pointLight position={[-20, -10, -20]} intensity={0.45} color="#21d8ff" />
         <GalaxyStarfield />
         <GalaxyEdges
           nodes={nodes}
           edges={edges}
           nodeVisibleMask={visibleMask}
           hoveredNodeId={hoveredId}
+          edgeConfig={vfx.edges}
           onEdgeHover={(edge, pointer) => {
             if (edge && pointer) setEdgeHover({ edge, pointer });
             else setEdgeHover(null);
           }}
         />
+        <GalaxyHalos
+          nodes={nodes}
+          visibleMask={visibleMask}
+          highlightMask={highlightMask}
+          hoveredId={hoveredId}
+          selectedId={selectedId}
+          haloConfig={vfx.halo}
+        />
         <GalaxyStars
           nodes={nodes}
           visibleMask={visibleMask}
           highlightMask={highlightMask}
+          connectedMask={connectedMask}
           hoveredId={hoveredId}
           selectedId={selectedId}
           onHover={onHover}
           onClick={handleSelect}
           onDoubleClick={handleDoubleClick}
         />
+        <GalaxyEffects config={vfx.bloom} />
         {hoveredId &&
           (() => {
             const n = nodes.find((x) => x.id === hoveredId);

@@ -7,6 +7,7 @@ interface GalaxyStarsProps {
   nodes: GalaxyNode[];
   visibleMask: Uint8Array;
   highlightMask: Uint8Array;
+  connectedMask: Uint8Array | null;
   hoveredId: string | null;
   selectedId: string | null;
   onHover: (id: string | null) => void;
@@ -18,6 +19,7 @@ export function GalaxyStars({
   nodes,
   visibleMask,
   highlightMask,
+  connectedMask,
   hoveredId,
   selectedId,
   onHover,
@@ -50,11 +52,20 @@ export function GalaxyStars({
       const highlight = highlightMask[i] === 1;
       const isSelected = selectedId === n.id;
       const isHovered = hoveredId === n.id;
+      const connected = connectedMask ? connectedMask[i] === 1 : false;
+      const dimNeighbors =
+        hoveredId !== null && !isHovered && !connected;
+
       tmpColor.set(n.color);
       if (!visible) {
-        tmpColor.multiplyScalar(0.08);
+        tmpColor.multiplyScalar(0.06);
       } else if (isSelected || isHovered) {
-        tmpColor.multiplyScalar(1.6);
+        // bloom-friendly HDR multiplier
+        tmpColor.multiplyScalar(2.4);
+      } else if (connected) {
+        tmpColor.multiplyScalar(1.55);
+      } else if (dimNeighbors) {
+        tmpColor.multiplyScalar(0.22);
       } else if (highlight) {
         tmpColor.multiplyScalar(1.15);
       } else {
@@ -65,7 +76,15 @@ export function GalaxyStars({
     if (meshRef.current.instanceColor) {
       meshRef.current.instanceColor.needsUpdate = true;
     }
-  }, [nodes, visibleMask, highlightMask, hoveredId, selectedId, tmpColor]);
+  }, [
+    nodes,
+    visibleMask,
+    highlightMask,
+    connectedMask,
+    hoveredId,
+    selectedId,
+    tmpColor,
+  ]);
 
   const handlePointerOver = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
@@ -111,8 +130,8 @@ export function GalaxyStars({
       <sphereGeometry args={[1, 18, 18]} />
       <meshStandardMaterial
         emissive={"#ffffff"}
-        emissiveIntensity={0.55}
-        roughness={0.45}
+        emissiveIntensity={0.7}
+        roughness={0.4}
         metalness={0.15}
         toneMapped={false}
       />

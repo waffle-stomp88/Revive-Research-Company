@@ -13,6 +13,7 @@ import {
 import { GalaxySvgFallback } from "@/components/galaxy/galaxy-svg-fallback";
 import { GalaxyFilterBar } from "@/components/galaxy/galaxy-filter-bar";
 import { GalaxySidePanel } from "@/components/galaxy/galaxy-side-panel";
+import { resolveVfxVariant } from "@/components/galaxy/galaxy-vfx-config";
 
 const GalaxyScene = lazy(() =>
   import("@/components/galaxy/galaxy-scene").then((m) => ({
@@ -52,6 +53,14 @@ export default function GalaxyPage() {
   // Decide rendering path on mount
   const [useFallback, setUseFallback] = useState<boolean | null>(null);
   useEffect(() => {
+    const params = new URLSearchParams(
+      typeof window === "undefined" ? "" : window.location.search
+    );
+    const force3d = params.get("force3d") === "1";
+    if (force3d) {
+      setUseFallback(false);
+      return;
+    }
     const noWebGL = !detectWebGL();
     const reducedMotion = prefersReducedMotion();
     setUseFallback(noWebGL || reducedMotion);
@@ -59,6 +68,14 @@ export default function GalaxyPage() {
 
   // Deep-link via ?peptide=<slug-or-id> to auto-open a side panel
   const [location] = useLocation();
+
+  // VFX variant via ?vfx=cinematic|minimal (defaults to cinematic)
+  const vfxVariant = useMemo(() => {
+    if (typeof window === "undefined") return resolveVfxVariant(null);
+    const params = new URLSearchParams(window.location.search);
+    return resolveVfxVariant(params.get("vfx"));
+  }, [location]);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
@@ -197,6 +214,7 @@ export default function GalaxyPage() {
                 onHover={setHoveredId}
                 onNodeMeta={handleNodeMeta}
                 resetSignal={resetSignal}
+                vfxVariant={vfxVariant}
               />
             </ErrorBoundary>
           </Suspense>
