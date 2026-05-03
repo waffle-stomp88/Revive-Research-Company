@@ -11,6 +11,11 @@ interface GalaxyHalosProps {
   hoveredId: string | null;
   selectedId: string | null;
   haloConfig: GalaxyVfxConfig["halo"];
+  // True when a search term is actively narrowing matches. When false, the
+  // highlight mask is identical to the visible mask, so treating "highlight"
+  // as a boosted state would render every resting star's halo — producing
+  // the boxy soft squares users see across the cluster.
+  searchActive: boolean;
 }
 
 const HALO_VS = /* glsl */ `
@@ -65,6 +70,7 @@ export function GalaxyHalos({
   hoveredId,
   selectedId,
   haloConfig,
+  searchActive,
 }: GalaxyHalosProps) {
   const pointsRef = useRef<THREE.Points>(null);
   const matRef = useRef<THREE.ShaderMaterial>(null);
@@ -138,7 +144,7 @@ export function GalaxyHalos({
       } else if (isSelected) {
         boost = 3;
         size = n.size * haloConfig.selectedScale;
-      } else if (highlight) {
+      } else if (highlight && searchActive) {
         boost = 2;
         size = n.size * haloConfig.baseScale;
       } else {
@@ -159,6 +165,7 @@ export function GalaxyHalos({
     haloConfig.baseScale,
     haloConfig.hoverScale,
     haloConfig.selectedScale,
+    searchActive,
   ]);
 
   useFrame((state) => {

@@ -1,0 +1,43 @@
+The agent's framing is solid. Quick honest read on each option, then a recommendation.
+My honest read on each option
+Option A — Procedural ringed gas giants
+Most consistent with what you've already built. Your current Galaxy is hand-built with shaders (stars, halos, nebula) — adding a procedural planet keeps the visual language cohesive. Risk is the "first pass might look generic" thing the agent flagged. Iteration time matters here.
+Option B — Procedural spiral galaxies
+Honestly the most cinematic of the three. Distant galaxies in the background of a galaxy scene is the classic sci-fi visual (think Mass Effect, No Man's Sky loading screens). Spiral shader is harder to nail than a planet shader, but when it works it looks incredible.
+Option C — AI-generated textures
+Highest visual fidelity, fastest path to "looks great." But three real concerns:
+
+Bundle size. You spent tonight specifically optimizing what gets shipped to your dev server. Adding 1-3MB of image assets to your eager tree is the opposite of what we just did. Even if Galaxy is lazy-loaded, those textures still ship when someone visits Galaxy.
+Style consistency. AI-generated planets often look photorealistic, while your current Galaxy is stylized/illustrative. Mixing the two can clash badly — like sticking a NASA photo next to a hand-drawn cartoon.
+Variability risk. "Style needs to match the existing aesthetic" is doing a lot of work in the agent's pros/cons. Could take 5 generations to get right or 50.
+
+My honest recommendation
+Start with just Option B (one distant spiral galaxy). Here's why:
+
+It's the highest-impact single visual addition — distant galaxies are quintessential "deep space" cinema
+Procedural means zero bundle size cost (your dev environment will thank you)
+One element is enough to test the concept — if it doesn't look good, you've only iterated on one shader
+If it does look good, you can add a planet (Option A) as a second element later
+Avoids the AI-generated rabbit hole entirely
+
+Skip the agent's "small mix of A + B" suggestion — not because it's wrong, but because committing to two new shader components at once doubles the iteration time. If the spiral galaxy doesn't land aesthetically, you've wasted twice the work. Ship one, evaluate, then add the second.
+One thing worth asking the agent first
+Before saying "build it," ask for visual reference / mood board. The agent should describe (or even better, show) what they're aiming for. "Distant spiral galaxy" could mean:
+
+A faint, almost-invisible smudge (subtle atmosphere)
+A clearly visible Andromeda-style spiral (focal point)
+An abstract glowing swirl (stylized)
+
+Each requires different shader approaches and looks completely different. Worth aligning on aesthetic direction before any code.
+Reply to send
+
+I want to start with just Option B (procedural spiral galaxy) — single element first. If it lands aesthetically, we can add Option A (ringed planet) as a second pass. Skip Option C entirely — image assets would undo tonight's bundle optimizations.
+Before any code:
+
+Describe the visual aesthetic you're aiming for. Reference real examples if possible — Andromeda-style spiral, abstract glowing swirl, faint background smudge, etc. I want to align on what "distant spiral galaxy" should actually look like before you build it.
+How many spiral galaxies are you proposing? You mentioned 2-3 in the original survey but 1 in the recommendation. Pick one number and explain why.
+Where will they sit in 3D space? Camera-relative anchors so they always stay in the background? Fixed positions? Animated drift?
+What's the proposed config flag setup? Should match the nebula pattern so I can toggle it per-variant easily.
+Component name and file location. Same naming pattern as galaxy-stars.tsx, galaxy-halos.tsx, galaxy-nebula.tsx, etc.
+
+Don't write any code yet. I want a written proposal with the aesthetic reference + technical approach. After I approve the proposal, then show me the diff.

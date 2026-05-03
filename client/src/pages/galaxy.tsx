@@ -156,7 +156,7 @@ export default function GalaxyPage() {
 
   return (
     <main
-      className="min-h-screen bg-[#0d0d10] text-foreground relative"
+      className={`min-h-screen ${vfxVariant === "cinematic" ? "bg-black" : "bg-[#0d0d10]"} text-foreground relative`}
       data-testid="page-galaxy"
     >
       <SEOHead

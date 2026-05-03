@@ -1,0 +1,74 @@
+Diffs look clean. Let me give you my honest read.
+
+## What I see in the three diffs
+
+**Diff 1 & 2 (precision change):** Trivial — single keyword change in two files. `mediump` → `highp`. Zero risk.
+
+**Diff 3 (composer + dither):** More substantial but well-structured:
+- Imports are clean (just removes `GammaCorrectionShader` since we're replacing it)
+- The `DitherGammaShader` is a self-contained inline shader definition with proper vertex + fragment code
+- The shader does the same gamma correction as before plus adds a tiny noise dither
+- The HalfFloat render target swap is a clean one-line change to the composer constructor
+
+## What I want to flag
+
+**One small concern:** the `DitherGammaShader` is being defined inline inside the file rather than imported from `three-stdlib` like the original `GammaCorrectionShader` was. That's fine — but it means if there's a typo or shader compilation error in that custom code, the bloom pass won't render correctly and you'll get either a black screen or weirdly-rendered Galaxy.
+
+The shader code itself looks correct to me at a glance:
+- Standard UV passthrough vertex shader ✓
+- Standard texture2D sample ✓
+- Standard sRGB OETF (gamma 2.2) ✓
+- Hash function for white noise dither ✓
+- ±0.5/255 amplitude is conservative ✓
+
+But I'm not a shader expert. Worth being ready to revert if Galaxy renders weird after the change.
+
+**Second small thing:** The eslint-disable comment for `react-hooks/exhaustive-deps` was already there in the original, so that's not new — just preserved. Means `config.strength`, `config.radius`, `config.threshold` and `size` aren't in the dependency array. That was a pre-existing decision, not something this change introduces.
+
+## My recommendation
+
+**Approve.** The diffs are well-scoped and the agent did good work explaining the reasoning. Visual quality is the kind of thing where you can't really know until you see it, so the right move is to apply, screenshot, and decide.
+
+## Reply to send
+
+---
+
+**Approved. Apply all three diffs together.**
+
+**Execute:**
+1. Apply diffs 1, 2, and 3
+2. Restart Start application
+3. Confirm server is healthy on port 5000
+4. Hand back to me for visual verification
+
+**My verification:**
+- Galaxy page loads without errors
+- Compare visually to the screenshot I sent earlier — star halos should look smoother, less banded
+- No stars are missing, broken, or rendering weirdly
+- Overall scene brightness/saturation should look similar (not dramatically different)
+
+**If anything looks worse, broken, or just weird:** immediate `git revert HEAD`. We can always try diffs 4-7 (visual tuning) separately if 1-3 alone don't fully fix it.
+
+---
+
+## What to look for visually after
+
+When you test, compare to the original screenshot you sent:
+
+**Should improve:**
+- Banding/concentric rings inside the colored halos should be smoother
+- Star glow edges should look more organic, less "stickered"
+- Overall gradient transitions should feel less stepped
+
+**Should stay roughly the same:**
+- Colors and saturation
+- Bloom intensity (we didn't tune that)
+- Star positions, line connections, layout
+
+**Red flags that mean revert:**
+- Any stars rendering as solid squares or weird shapes
+- Black screen or nothing rendering at all
+- Dramatic color shifts (everything suddenly looks washed out or way more saturated)
+- Performance dropping noticeably (lag/stutter when rotating)
+
+Send the message.

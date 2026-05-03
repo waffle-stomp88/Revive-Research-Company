@@ -14,6 +14,7 @@ import { GalaxyCameraRig, type FlyTarget } from "./galaxy-camera-rig";
 import { GalaxyHalos } from "./galaxy-halos";
 import { GalaxyEffects } from "./galaxy-effects";
 import { GalaxyNebula } from "./galaxy-nebula";
+import { GalaxyDistantGalaxy } from "./galaxy-distant-galaxy";
 import {
   GALAXY_VFX,
   type GalaxyVfxVariant,
@@ -166,14 +167,18 @@ export function GalaxyScene({
         camera={{ position: [0, 6, 48], fov: 55, near: 0.1, far: 200 }}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         onCreated={({ gl }) => {
-          gl.setClearColor(new THREE.Color("#0d0d10"), 1);
+          gl.setClearColor(
+            new THREE.Color(vfxVariant === "cinematic" ? "#000000" : "#0d0d10"),
+            1
+          );
         }}
       >
         <ambientLight intensity={0.5} />
         <pointLight position={[20, 20, 20]} intensity={0.6} color="#ffffff" />
         <pointLight position={[-20, -10, -20]} intensity={0.45} color="#21d8ff" />
-        <GalaxyStarfield twinkle={vfx.twinkle} fog={vfx.fog} />
+        <GalaxyStarfield twinkle={vfx.twinkle} fog={vfx.fog} vfxVariant={vfxVariant} />
         <GalaxyNebula nodes={nodes} config={vfx.nebula} fog={vfx.fog} />
+        <GalaxyDistantGalaxy config={vfx.distantGalaxy} />
         <GalaxyEdges
           nodes={nodes}
           edges={edges}
@@ -192,6 +197,7 @@ export function GalaxyScene({
           hoveredId={hoveredId}
           selectedId={selectedId}
           haloConfig={vfx.halo}
+          searchActive={searchTerm.trim().length > 0}
         />
         <GalaxyStars
           nodes={nodes}
@@ -203,6 +209,7 @@ export function GalaxyScene({
           onHover={onHover}
           onClick={handleSelect}
           onDoubleClick={handleDoubleClick}
+          vfxVariant={vfxVariant}
         />
         <GalaxyEffects config={vfx.bloom} />
         {hoveredId &&

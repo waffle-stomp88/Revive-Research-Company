@@ -2090,6 +2090,29 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between gap-3 flex-wrap rounded-md border border-[#E7FB10]/25 bg-[#E7FB10]/[0.04] px-4 py-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-9 h-9 rounded-md bg-[#E7FB10]/10 border border-[#E7FB10]/30 flex items-center justify-center shrink-0">
+            <Sparkles className="h-4 w-4 text-[#E7FB10]" />
+          </div>
+          <div className="min-w-0">
+            <h4 className="text-sm font-semibold text-white tracking-wide">Synergy Galaxy</h4>
+            <p className="text-xs text-white/50 truncate">
+              Explore every peptide synergy in an interactive 3D map.
+            </p>
+          </div>
+        </div>
+        <Link href="/galaxy">
+          <Button
+            className="gap-1.5 bg-[#E7FB10] text-black hover:bg-[#E7FB10]/90"
+            data-testid="button-launch-synergy-galaxy"
+          >
+            <Sparkles className="h-4 w-4" />
+            Launch Synergy Galaxy
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Button>
+        </Link>
+      </div>
       <div className="hidden md:block">
         <PathwayMap selectedPeptides={selectedPeptides} />
       </div>

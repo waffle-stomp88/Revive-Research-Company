@@ -26,6 +26,16 @@ export interface GalaxyVfxConfig {
     alpha: number;
     driftSpeed: number;
   };
+  distantGalaxy: {
+    enabled: boolean;
+    size: number;
+    brightness: number;
+    tiltDeg: number;
+    coreColor: string;
+    armColor: string;
+    armSweep: number;
+    dustStrength: number;
+  };
   twinkle: {
     enabled: boolean;
     amount: number;
@@ -45,7 +55,7 @@ export interface GalaxyVfxConfig {
 
 export const GALAXY_VFX: Record<GalaxyVfxVariant, GalaxyVfxConfig> = {
   cinematic: {
-    bloom: { strength: 0.4, radius: 0.4, threshold: 0.85 },
+    bloom: { strength: 0.65, radius: 0.32, threshold: 0.55 },
     halo: {
       baseScale: 1.8,
       hoverScale: 3.8,
@@ -65,6 +75,16 @@ export const GALAXY_VFX: Record<GalaxyVfxVariant, GalaxyVfxConfig> = {
       puffSize: 0,
       alpha: 0,
       driftSpeed: 0,
+    },
+    distantGalaxy: {
+      enabled: false,
+      size: 0,
+      brightness: 0,
+      tiltDeg: 0,
+      coreColor: "#000000",
+      armColor: "#000000",
+      armSweep: 0,
+      dustStrength: 0,
     },
     twinkle: {
       enabled: true,
@@ -103,6 +123,16 @@ export const GALAXY_VFX: Record<GalaxyVfxVariant, GalaxyVfxConfig> = {
       puffSize: 0,
       alpha: 0,
       driftSpeed: 0,
+    },
+    distantGalaxy: {
+      enabled: false,
+      size: 0,
+      brightness: 0,
+      tiltDeg: 0,
+      coreColor: "#000000",
+      armColor: "#000000",
+      armSweep: 0,
+      dustStrength: 0,
     },
     twinkle: {
       enabled: true,
