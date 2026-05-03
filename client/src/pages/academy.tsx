@@ -42,11 +42,10 @@ import {
   Gift,
   Rocket,
   TrendingUp,
-  Loader2,
 } from "lucide-react";
 import type { AcademyProgress, EducationArticle } from "@shared/schema";
 import { academyPersonas, academyAchievements } from "@shared/schema";
-import type { Slide } from "@/components/academy/lesson-slides";
+import { getLessonSlides } from "@/components/academy/lesson-slides";
 import { HorizontalLearningPath } from "@/components/academy/horizontal-learning-path";
 import { EmailCapture } from "@/components/email-capture";
 
@@ -279,15 +278,6 @@ function EmbeddedLessonViewer({
   persona?: string | null;
 }) {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [slides, setSlides] = useState<Slide[] | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    import("@/components/academy/lesson-slides").then((mod) => {
-      if (!cancelled) setSlides(mod.getLessonSlides(lessonId));
-    });
-    return () => { cancelled = true; };
-  }, [lessonId]);
 
   useEffect(() => {
     const originalOverflow = document.body.style.overflow;
@@ -312,32 +302,14 @@ function EmbeddedLessonViewer({
 
   const lessonInfo = findLessonById(lessonId);
   const isCompleted = completedLessons.includes(lessonId);
+  const slides = getLessonSlides(lessonId);
   
   // Get persona-specific learning mode
   const personaConfig = persona ? PERSONA_CONFIG[persona as keyof typeof PERSONA_CONFIG] : null;
   const learningMode = personaConfig?.unlockMode === "full" ? "Quick Review" : 
                        personaConfig?.unlockMode === "module" ? "Standard" : "Guided";
 
-  if (!lessonInfo) return null;
-
-  if (!slides) {
-    return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8"
-        onClick={onClose}
-        data-testid="lesson-loading"
-      >
-        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
-        <div className="relative flex flex-col items-center gap-3 text-white/80">
-          <Loader2 className="h-8 w-8 animate-spin" />
-          <span className="text-sm">Loading lesson...</span>
-        </div>
-      </motion.div>
-    );
-  }
+  if (!lessonInfo || !slides) return null;
 
   const { lesson, module } = lessonInfo;
   const totalSlides = slides.length;
