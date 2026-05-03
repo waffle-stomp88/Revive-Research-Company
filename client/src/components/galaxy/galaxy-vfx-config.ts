@@ -60,11 +60,11 @@ export const GALAXY_VFX: Record<GalaxyVfxVariant, GalaxyVfxConfig> = {
       baseGlow: 0.55,
     },
     nebula: {
-      enabled: true,
-      puffCount: 10,
-      puffSize: 14,
-      alpha: 0.12,
-      driftSpeed: 0.04,
+      enabled: false,
+      puffCount: 0,
+      puffSize: 0,
+      alpha: 0,
+      driftSpeed: 0,
     },
     twinkle: {
       enabled: true,
