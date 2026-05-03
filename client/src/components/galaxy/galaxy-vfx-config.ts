@@ -45,13 +45,13 @@ export interface GalaxyVfxConfig {
 
 export const GALAXY_VFX: Record<GalaxyVfxVariant, GalaxyVfxConfig> = {
   cinematic: {
-    bloom: { strength: 0.25, radius: 0.25, threshold: 0.75 },
+    bloom: { strength: 0.5, radius: 0.4, threshold: 0.6 },
     halo: {
-      baseScale: 1.4,
-      hoverScale: 3.6,
-      selectedScale: 3.0,
-      baseAlpha: 0.22,
-      hoverAlpha: 0.85,
+      baseScale: 1.8,
+      hoverScale: 3.8,
+      selectedScale: 3.2,
+      baseAlpha: 0.35,
+      hoverAlpha: 0.9,
       pulseAmount: 0.18,
     },
     edges: {
