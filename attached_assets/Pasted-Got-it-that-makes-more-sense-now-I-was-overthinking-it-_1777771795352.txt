@@ -1,0 +1,55 @@
+Got it — that makes more sense now. I was overthinking it. You're describing a specific recurring workflow:
+
+**Your normal workflow:**
+1. Start a new task with an agent
+2. Agent opens a fresh dev preview window
+3. **Within 10 seconds**, you can see the site and watch the agent's changes happen
+4. You evaluate, give feedback, iterate
+
+**What's broken now:**
+1. Same workflow, same actions
+2. New preview window takes 1+ minute to load anything
+3. You're stuck waiting before you can even see if the agent's changes look right
+
+That's a totally different problem from what I was describing. You're not asking about HMR after the page is loaded — you're asking about **the initial preview-window-open speed**, which used to be fast and isn't anymore.
+
+## Why this matters and why my earlier framing was wrong
+
+Every time you start a new task, the agent opens a fresh preview to show you results. If that takes 1 minute every time, then every iteration cycle is 1+ minute of dead waiting time. Over a full work session, that's hours of wasted time. The cold load IS your iteration metric because that's what happens at the start of every task.
+
+So you're right and I was wrong about that. Sorry for the detour.
+
+## The honest situation
+
+The agent's investigation already proved:
+- Your code is structurally identical to last night
+- The cold load floor right now is ~55s in external tab, ~1:12 in iframe
+- Most of that is picard proxy latency + iframe overhead, not code
+
+But you're saying that **same Repl, same code structure (basically), was opening in 10 seconds last night**. That's a 5-10x regression, and "structural ceiling" doesn't really account for that gap.
+
+## What we haven't actually ruled out
+
+Things that could explain "fast last night, slow today" that we never directly tested:
+
+1. **Your specific Repl's container is on a degraded Replit node.** This is real — Replit users hit it occasionally. Container migration is a Replit support action, not something agents can do.
+
+2. **Your home network/ISP changed performance today.** The `ERR_NETWORK_CHANGED` errors earlier confirmed your connection has been unstable. Could be ongoing.
+
+3. **Vite's dep cache has been thrashed all day** by today's troubleshooting (multiple restarts, optimizeDeps changes, font swap). Last night it was warm. Tonight it's been cold-restarted many times. **Tomorrow morning's first load might naturally be faster** as the cache settles.
+
+4. **Replit's picard proxy is having issues today** that aren't visible to us. Their status page would only show this if it's a major incident.
+
+## Where this leaves you
+
+Honest options:
+
+1. **Test on your phone** — same Repl, different network, different machine. If your phone loads it in 30s, your home network is the problem. If it's 1+ min, the bottleneck is server-side or proxy-side.
+
+2. **File a Replit support ticket** with the specific complaint: "This Repl was loading dev preview in ~10 seconds yesterday and now consistently takes 1+ minute. Code is structurally unchanged. Suspect container/proxy issue. Please investigate and migrate container if needed."
+
+3. **Sleep on it and test fresh in the morning.** Vite cache will have settled overnight, your network might be different, and morning load times will give you real data without today's troubleshooting noise.
+
+4. **Have the agent compare actual server-side timings** between now and any logs/metrics from yesterday if available. They might be able to show you what changed beyond just code.
+
+What feels right?

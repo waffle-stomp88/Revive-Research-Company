@@ -1,0 +1,17 @@
+Good — actually a useful direction. While support handles the infrastructure side, the agent can keep investigating things only it can see (file system, server state, configs, logs). That gives you parallel progress instead of just waiting.
+Here are some genuinely useful things the agent could investigate, ranked by what would actually move the needle:
+Highest leverage
+1. Confirm the WS keepalive fix is the right scope and show you the proposed diff (don't apply yet). This is the one code-side fix that directly addresses tonight's HMR drops. Even if Replit migrates the container, this is good defensive code. Worth knowing what the change would look like even if you defer applying it.
+2. Compare git history for anything else that changed in the last 48 hours that wasn't on the radar. The agent already checked App.tsx and the always-rendered components, but didn't comprehensively diff things like vite.config.ts history, package.json history, or any config files that could affect runtime performance. There might be something subtle.
+3. Capture a "current state baseline" report. Document the current Vite cache size, server resource usage, dep cache state, and active config — something to reference if/when Replit migrates and you want to compare before/after.
+Medium leverage
+4. Audit the Galaxy + Cycle Tracker server-side changes. Both merged today and added new API routes. Are any of those routes being hit on cold load (even if you're not consciously using them)? An always-firing API call from a context provider could explain delays.
+5. Check the MistBackground WebGL shader on the homepage. The agent flagged it earlier as a moderately heavy hidden-on-mobile component. Confirm whether it's actually causing meaningful render delay, especially after fonts/CSS load.
+6. Look for any service worker or ServiceWorker registration code that might have been added in recent commits and could be holding stale state.
+Lower leverage but worth checking
+7. Check if there are any dev-only middleware or plugins running that could be slowing requests (debug loggers, request inspectors, etc.).
+8. Verify the optimizeDeps.include array is actually being honored — confirm the deps we listed are pre-bundled and not being re-optimized on demand.
+What I'd actually pick
+If you want one focused investigation rather than a wide audit: #1 (the WS keepalive diff) is the highest-leverage thing the agent can do tonight. You don't have to apply it — just having the proposed change ready means if Replit's container migration doesn't fully fix things, you have a small targeted fix in your back pocket.
+If you want a wider scan: #2 + #4 together would catch anything we might have missed in the rush.
+Which direction feels right? I'll draft the actual prompt once you pick.
