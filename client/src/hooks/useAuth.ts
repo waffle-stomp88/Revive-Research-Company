@@ -30,6 +30,15 @@ export function useAuth() {
     if (auth0IsAuthenticated && auth0User) {
       (async () => {
         try {
+          // Force Auth0 to refresh the token so returning users (session > 10h)
+          // don't send a stale, expired ID token to /api/auth/sync.
+          // Falls back silently — fresh logins are unaffected.
+          try {
+            await getAccessTokenSilently({ cacheMode: "off" });
+          } catch (refreshErr) {
+            console.warn("[Auth] Token refresh failed, using cached token:", refreshErr);
+          }
+
           const idTokenClaims = await getIdTokenClaims();
           const idToken = idTokenClaims?.__raw;
           if (!idToken) {
@@ -58,7 +67,7 @@ export function useAuth() {
         }
       })();
     }
-  }, [auth0IsAuthenticated, auth0User, refetchSession, getIdTokenClaims]);
+  }, [auth0IsAuthenticated, auth0User, refetchSession, getIdTokenClaims, getAccessTokenSilently]);
 
   const login = (returnTo?: string) => {
     loginWithRedirect({
