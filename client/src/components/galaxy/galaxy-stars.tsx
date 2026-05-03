@@ -126,10 +126,7 @@ export function GalaxyStars({
       frustumCulled={false}
     >
       <sphereGeometry args={[1, 18, 18]} />
-      <meshBasicMaterial
-        vertexColors
-        toneMapped={false}
-      />
+      <meshBasicMaterial toneMapped={false} />
     </instancedMesh>
   );
 }
