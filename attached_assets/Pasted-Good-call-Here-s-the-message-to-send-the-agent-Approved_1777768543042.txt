@@ -1,0 +1,38 @@
+Good call. Here's the message to send the agent:
+
+Approved with the spinner addition.
+Apply the proposed diff to academy.tsx with this modification: instead of returning null when slides aren't loaded, render a small loading spinner inside the modal so the user gets immediate feedback that something is loading.
+Suggested spinner: Match whatever loading-state pattern already exists elsewhere in the codebase (e.g., if there's a <Spinner /> or <LoadingSpinner /> component in components/ui/, use that for consistency). If nothing exists, a simple centered spinner with "Loading lesson..." text is fine. Don't build anything elaborate — keep it small and consistent with the app's existing visual language.
+Execute:
+
+Show me the FINAL diff before applying — including both the lazy-load conversion AND the spinner addition. I want to eyeball both pieces in one look.
+Wait for my approval
+Apply only after I say go
+Restart Start application
+Hand back to me to test
+
+My verification standard:
+
+Cold load homepage in external browser tab — compare to current ~55s baseline
+Navigate to /academy — confirm page loads and looks normal
+Click into a lesson — confirm spinner shows briefly, then lesson content renders
+Click into a second lesson — confirm second click is faster (cached chunk)
+If anything regresses or breaks: immediate git revert HEAD
+
+Critical:
+
+Do not declare fixed — I declare it fixed
+Do not chain into "while we're at it" changes
+One change, measure, decide
+After this, regardless of result, we're at the structural ceiling and stopping
+
+
+What to look for in the diff
+When the agent shows you the final diff, check for:
+
+The 3 academy.tsx edits the agent already proposed (type-only import, useEffect for dynamic import, removed sync call)
+The spinner addition — should be a small JSX block in the early-return where null was, not a complex new component
+Nothing else touched — no Dashboard changes, no other files, no "while I'm here" cleanup
+Cancellation guard preserved — the cancelled = true cleanup the agent included for unmount safety should still be there
+
+If the diff looks clean, give the go. If anything's bigger than expected, push back.
