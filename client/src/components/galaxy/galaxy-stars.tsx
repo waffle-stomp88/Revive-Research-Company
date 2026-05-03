@@ -130,7 +130,7 @@ export function GalaxyStars({
       <sphereGeometry args={[1, 18, 18]} />
       <meshStandardMaterial
         emissive={"#ffffff"}
-        emissiveIntensity={0.7}
+        emissiveIntensity={0.25}
         roughness={0.4}
         metalness={0.15}
         toneMapped={false}
