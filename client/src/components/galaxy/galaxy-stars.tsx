@@ -68,8 +68,6 @@ export function GalaxyStars({
         tmpColor.multiplyScalar(0.22);
       } else if (highlight) {
         tmpColor.multiplyScalar(1.15);
-      } else {
-        tmpColor.multiplyScalar(0.85);
       }
       meshRef.current.setColorAt(i, tmpColor);
     }
@@ -128,11 +126,8 @@ export function GalaxyStars({
       frustumCulled={false}
     >
       <sphereGeometry args={[1, 18, 18]} />
-      <meshStandardMaterial
-        emissive={"#ffffff"}
-        emissiveIntensity={0.55}
-        roughness={0.4}
-        metalness={0.15}
+      <meshBasicMaterial
+        vertexColors
         toneMapped={false}
       />
     </instancedMesh>
