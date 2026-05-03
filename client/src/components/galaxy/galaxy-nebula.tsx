@@ -125,14 +125,14 @@ export function GalaxyNebula({ nodes, config, fog }: GalaxyNebulaProps) {
     };
 
     for (let i = 0; i < count; i++) {
-      const sys = systems[(i + hashStr(systems[i % systems.length].id)) % systems.length];
+      const sys = systems[i % systems.length];
       const [cx, cy, cz] = sys.center;
-      // Offset within the cluster region
+      // Offset within the cluster region — keep puffs close to their cluster
       const u = rand();
       const v = rand();
       const theta = 2 * Math.PI * u;
       const phi = Math.acos(2 * v - 1);
-      const r = 4 + rand() * 9;
+      const r = 2 + rand() * 4;
 
       positions[i * 3] = cx + r * Math.sin(phi) * Math.cos(theta);
       positions[i * 3 + 1] = cy + r * Math.sin(phi) * Math.sin(theta) * 0.7;
