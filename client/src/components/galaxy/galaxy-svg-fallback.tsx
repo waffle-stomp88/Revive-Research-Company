@@ -1,10 +1,20 @@
 import { useMemo } from "react";
 import { Link } from "wouter";
+import { Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { buildGalaxyLayout } from "@/lib/galaxy-layout";
 import { BODY_SYSTEMS } from "@/data/body-systems";
 import { KNOWN_STACKS } from "@/data/known-stacks";
 
-export function GalaxySvgFallback() {
+interface GalaxySvgFallbackProps {
+  onTry3D?: () => void;
+  try3DReason?: "reduced-motion" | "error" | null;
+}
+
+export function GalaxySvgFallback({
+  onTry3D,
+  try3DReason,
+}: GalaxySvgFallbackProps = {}) {
   const { nodes } = useMemo(() => buildGalaxyLayout(), []);
 
   // Project nodes to 2D using a simple isometric-like projection of (x, y)
@@ -33,11 +43,34 @@ export function GalaxySvgFallback() {
         <h2 className="font-display text-2xl font-bold mb-2">
           Synergy Constellation Map
         </h2>
-        <p className="text-sm text-muted-foreground mb-6">
+        <p className="text-sm text-muted-foreground mb-4">
           A static 2D version of the Synergy Galaxy. Each dot is a peptide,
           colored by its primary body system. Lines connect peptides that
           appear together in researched stacks.
         </p>
+        {onTry3D && (
+          <div className="mb-6 flex flex-wrap items-center gap-3">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onTry3D}
+              className="gap-1.5"
+              data-testid="button-view-3d-galaxy"
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              View 3D galaxy
+            </Button>
+            {try3DReason === "reduced-motion" && (
+              <span
+                className="text-xs text-muted-foreground"
+                data-testid="text-reduced-motion-notice"
+              >
+                We default to this static map because your system requests
+                reduced motion. The 3D view loads with calmer animations.
+              </span>
+            )}
+          </div>
+        )}
 
         <svg
           role="img"

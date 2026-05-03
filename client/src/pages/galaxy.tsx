@@ -52,6 +52,9 @@ export default function GalaxyPage() {
 
   // Decide rendering path on mount
   const [useFallback, setUseFallback] = useState<boolean | null>(null);
+  const [fallbackReason, setFallbackReason] = useState<
+    "reduced-motion" | "no-webgl" | null
+  >(null);
   useEffect(() => {
     const params = new URLSearchParams(
       typeof window === "undefined" ? "" : window.location.search
@@ -59,21 +62,36 @@ export default function GalaxyPage() {
     const force3d = params.get("force3d") === "1";
     if (force3d) {
       setUseFallback(false);
+      setFallbackReason(null);
       return;
     }
     const noWebGL = !detectWebGL();
     const reducedMotion = prefersReducedMotion();
-    setUseFallback(noWebGL || reducedMotion);
+    if (noWebGL) {
+      setFallbackReason("no-webgl");
+      setUseFallback(true);
+    } else if (reducedMotion) {
+      setFallbackReason("reduced-motion");
+      setUseFallback(true);
+    } else {
+      setFallbackReason(null);
+      setUseFallback(false);
+    }
   }, []);
 
   // Deep-link via ?peptide=<slug-or-id> to auto-open a side panel
   const [location] = useLocation();
 
   // VFX variant via ?vfx=cinematic|minimal (defaults to cinematic)
-  const vfxVariant = useMemo(() => {
+  const [vfxVariant, setVfxVariant] = useState(() => {
     if (typeof window === "undefined") return resolveVfxVariant(null);
     const params = new URLSearchParams(window.location.search);
     return resolveVfxVariant(params.get("vfx"));
+  });
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    setVfxVariant(resolveVfxVariant(params.get("vfx")));
   }, [location]);
 
   useEffect(() => {
@@ -120,6 +138,22 @@ export default function GalaxyPage() {
 
   const showFallback = forceFallback || useFallback === true;
 
+  const handleTry3D = useCallback(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      params.set("force3d", "1");
+      if (!params.get("vfx")) params.set("vfx", "minimal");
+      const newUrl = `${window.location.pathname}?${params.toString()}${window.location.hash}`;
+      window.history.replaceState({}, "", newUrl);
+      setVfxVariant(resolveVfxVariant(params.get("vfx")));
+    } else {
+      setVfxVariant(resolveVfxVariant("minimal"));
+    }
+    setForceFallback(false);
+    setUseFallback(false);
+    setFallbackReason(null);
+  }, []);
+
   return (
     <main
       className="min-h-screen bg-[#0d0d10] text-foreground relative"
@@ -165,19 +199,20 @@ export default function GalaxyPage() {
         </div>
       ) : showFallback ? (
         <div className="pt-32 md:pt-36 pb-12">
-          <GalaxySvgFallback />
-          <div className="max-w-5xl mx-auto px-4 md:px-8 mt-8">
-            {!useFallback && (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setForceFallback(false)}
-                data-testid="galaxy-try-3d"
-              >
-                Try 3D view
-              </Button>
-            )}
-          </div>
+          <GalaxySvgFallback
+            onTry3D={
+              fallbackReason === "reduced-motion" || forceFallback
+                ? handleTry3D
+                : undefined
+            }
+            try3DReason={
+              fallbackReason === "reduced-motion"
+                ? "reduced-motion"
+                : forceFallback
+                ? "error"
+                : null
+            }
+          />
         </div>
       ) : (
         <>
