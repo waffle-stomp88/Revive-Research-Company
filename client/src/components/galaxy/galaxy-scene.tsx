@@ -13,6 +13,7 @@ import { GalaxyStarfield } from "./galaxy-starfield";
 import { GalaxyCameraRig, type FlyTarget } from "./galaxy-camera-rig";
 import { GalaxyHalos } from "./galaxy-halos";
 import { GalaxyEffects } from "./galaxy-effects";
+import { GalaxyNebula } from "./galaxy-nebula";
 import {
   GALAXY_VFX,
   type GalaxyVfxVariant,
@@ -171,7 +172,8 @@ export function GalaxyScene({
         <ambientLight intensity={0.5} />
         <pointLight position={[20, 20, 20]} intensity={0.6} color="#ffffff" />
         <pointLight position={[-20, -10, -20]} intensity={0.45} color="#21d8ff" />
-        <GalaxyStarfield />
+        <GalaxyStarfield twinkle={vfx.twinkle} fog={vfx.fog} />
+        <GalaxyNebula nodes={nodes} config={vfx.nebula} fog={vfx.fog} />
         <GalaxyEdges
           nodes={nodes}
           edges={edges}
@@ -246,6 +248,7 @@ export function GalaxyScene({
           resetSignal={resetSignal}
           autoRotate={autoRotate}
           onUserInteract={handleUserInteract}
+          parallax={vfx.parallax}
         />
       </Canvas>
 

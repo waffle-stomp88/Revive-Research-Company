@@ -19,6 +19,28 @@ export interface GalaxyVfxConfig {
     pulseSpeed: number;
     baseGlow: number;
   };
+  nebula: {
+    enabled: boolean;
+    puffCount: number;
+    puffSize: number;
+    alpha: number;
+    driftSpeed: number;
+  };
+  twinkle: {
+    enabled: boolean;
+    amount: number;
+    speed: number;
+  };
+  fog: {
+    enabled: boolean;
+    near: number;
+    far: number;
+  };
+  parallax: {
+    enabled: boolean;
+    strength: number;
+    lerp: number;
+  };
 }
 
 export const GALAXY_VFX: Record<GalaxyVfxVariant, GalaxyVfxConfig> = {
@@ -37,6 +59,28 @@ export const GALAXY_VFX: Record<GalaxyVfxVariant, GalaxyVfxConfig> = {
       pulseSpeed: 0.55,
       baseGlow: 0.55,
     },
+    nebula: {
+      enabled: true,
+      puffCount: 18,
+      puffSize: 24,
+      alpha: 0.32,
+      driftSpeed: 0.04,
+    },
+    twinkle: {
+      enabled: true,
+      amount: 0.55,
+      speed: 1.4,
+    },
+    fog: {
+      enabled: true,
+      near: 38,
+      far: 120,
+    },
+    parallax: {
+      enabled: true,
+      strength: 0.7,
+      lerp: 2.4,
+    },
   },
   minimal: {
     bloom: { strength: 0.45, radius: 0.6, threshold: 0.15 },
@@ -52,6 +96,28 @@ export const GALAXY_VFX: Record<GalaxyVfxVariant, GalaxyVfxConfig> = {
       pulseStrength: 0.55,
       pulseSpeed: 0.4,
       baseGlow: 0.35,
+    },
+    nebula: {
+      enabled: false,
+      puffCount: 0,
+      puffSize: 0,
+      alpha: 0,
+      driftSpeed: 0,
+    },
+    twinkle: {
+      enabled: true,
+      amount: 0.3,
+      speed: 1.0,
+    },
+    fog: {
+      enabled: true,
+      near: 44,
+      far: 110,
+    },
+    parallax: {
+      enabled: false,
+      strength: 0,
+      lerp: 0,
     },
   },
 };
