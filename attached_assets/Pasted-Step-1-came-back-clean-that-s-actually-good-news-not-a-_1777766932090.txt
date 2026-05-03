@@ -1,0 +1,40 @@
+Step 1 came back clean — that's actually good news, not a wasted investigation. It confirms `optimizeDeps` is doing its job correctly (pre-bundle the chunk for fast delivery, don't load it eagerly), and rules out a real concern the agent flagged earlier. Worth the 5 minutes.
+
+Now Step 2 is where the potential payoff is. The decision is whether to keep going.
+
+## My honest read on whether to do Step 2
+
+**research-stacks.tsx is genuinely the biggest single page** in your eager tree at 932KB. The agent's plan is the same proven pattern as the Dashboard fix that already worked tonight:
+- Keep the page eager in App.tsx (your rule)
+- Lazy-load its heaviest internal components inside the page
+- Galaxy already does this, Dashboard now does this
+
+**Realistic upside:** 5-10 seconds shaved off cold load (best case), getting you closer to ~45-50s external tab.
+
+**Risk:** Low. Same pattern, well-understood, easily reversible.
+
+**Caveat:** This is the *last* big lever. After this, you genuinely are at the structural ceiling of "what code changes can do" — the rest is iframe overhead and proxy variance the agent already proved isn't fixable.
+
+## Reply to send the agent
+
+---
+
+**Good — Step 1 confirms optimizeDeps is doing its job correctly. Worth verifying.**
+
+**Proceed with Step 2 investigation. Trace research-stacks.tsx imports, identify the heaviest subtrees, and propose the diff using the same Dashboard pattern. Show me the diff before applying — do not apply yet.**
+
+**Specifically I want to see:**
+1. Full list of research-stacks.tsx's direct imports with sizes
+2. Which ones you're proposing to lazy-load (and why those specifically)
+3. The actual proposed diff — both the lazy() conversions and the Suspense wrappers
+4. Estimated cold-path reduction in KB
+
+**Same rules as before:**
+- Investigate, propose, wait for my approval
+- Apply only after I say go
+- After applying, I test and verify before you declare anything
+- If anything regresses: immediate revert
+
+---
+
+Send that. After Step 2, regardless of outcome, you've genuinely hit the limit of what's fixable from your code. Whatever the result, that's where this troubleshooting ends — not because I'm telling you to stop, but because there's literally nothing else to optimize.
