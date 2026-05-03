@@ -45,7 +45,7 @@ export interface GalaxyVfxConfig {
 
 export const GALAXY_VFX: Record<GalaxyVfxVariant, GalaxyVfxConfig> = {
   cinematic: {
-    bloom: { strength: 1.05, radius: 0.85, threshold: 0.0 },
+    bloom: { strength: 0.7, radius: 0.8, threshold: 0.55 },
     halo: {
       baseScale: 2.6,
       hoverScale: 5.2,
@@ -61,9 +61,9 @@ export const GALAXY_VFX: Record<GalaxyVfxVariant, GalaxyVfxConfig> = {
     },
     nebula: {
       enabled: true,
-      puffCount: 18,
-      puffSize: 24,
-      alpha: 0.32,
+      puffCount: 10,
+      puffSize: 14,
+      alpha: 0.12,
       driftSpeed: 0.04,
     },
     twinkle: {
@@ -73,8 +73,8 @@ export const GALAXY_VFX: Record<GalaxyVfxVariant, GalaxyVfxConfig> = {
     },
     fog: {
       enabled: true,
-      near: 38,
-      far: 120,
+      near: 70,
+      far: 200,
     },
     parallax: {
       enabled: true,
