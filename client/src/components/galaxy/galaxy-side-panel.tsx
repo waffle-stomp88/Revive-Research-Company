@@ -24,7 +24,7 @@ export function GalaxySidePanel({ node, onClose }: GalaxySidePanelProps) {
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: "100%", opacity: 0 }}
       transition={{ type: "spring", damping: 26, stiffness: 220 }}
-      className="absolute top-0 right-0 h-full w-full max-w-md bg-background/92 backdrop-blur-xl border-l border-border z-30 overflow-y-auto"
+      className="absolute top-24 md:top-28 bottom-0 right-0 w-full max-w-md bg-background/92 backdrop-blur-xl border-l border-t border-border z-30 overflow-y-auto"
       data-testid="galaxy-side-panel"
     >
       <div className="p-5 md:p-6">

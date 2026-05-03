@@ -213,7 +213,7 @@ export default function GalaxyPage() {
           {/* Bottom hint strip */}
           <div className="absolute bottom-3 md:bottom-4 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
             <div className="px-3 py-1.5 rounded-full bg-background/70 backdrop-blur-md border border-border text-[10px] text-muted-foreground">
-              Drag to orbit · scroll to zoom · click a star · double-click to fly in
+              Drag to orbit · scroll to zoom · click a star to inspect · double-click to warp in
             </div>
           </div>
 

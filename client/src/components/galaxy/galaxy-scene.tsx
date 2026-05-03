@@ -10,7 +10,7 @@ import {
 import { GalaxyStars } from "./galaxy-stars";
 import { GalaxyEdges } from "./galaxy-edges";
 import { GalaxyStarfield } from "./galaxy-starfield";
-import { GalaxyCameraRig } from "./galaxy-camera-rig";
+import { GalaxyCameraRig, type FlyTarget } from "./galaxy-camera-rig";
 
 interface GalaxySceneProps {
   visibleSystemIds: Set<string>;
@@ -39,9 +39,7 @@ export function GalaxyScene({
     edge: GalaxyEdge;
     pointer: { x: number; y: number };
   } | null>(null);
-  const [flyTarget, setFlyTarget] = useState<[number, number, number] | null>(
-    null
-  );
+  const [flyTarget, setFlyTarget] = useState<FlyTarget | null>(null);
   const [autoRotate, setAutoRotate] = useState(true);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -93,28 +91,40 @@ export function GalaxyScene({
     return m;
   }, [nodes, visibleMask, searchTerm]);
 
-  const handleDoubleClick = useCallback(
-    (id: string) => {
-      const n = nodes.find((x) => x.id === id);
-      if (!n) return;
-      setFlyTarget([n.position[0], n.position[1], n.position[2]]);
-      onSelect(id);
-    },
-    [nodes, onSelect]
-  );
-
-  const handleSelect = useCallback(
-    (id: string) => {
-      onSelect(id);
-    },
-    [onSelect]
-  );
-
   const handleUserInteract = useCallback(() => {
     setAutoRotate(false);
     if (idleTimer.current) clearTimeout(idleTimer.current);
     idleTimer.current = setTimeout(() => setAutoRotate(true), 6000);
   }, []);
+
+  const handleDoubleClick = useCallback(
+    (id: string) => {
+      const n = nodes.find((x) => x.id === id);
+      if (!n) return;
+      handleUserInteract();
+      setFlyTarget({
+        position: [n.position[0], n.position[1], n.position[2]],
+        mode: "warp",
+      });
+      onSelect(id);
+    },
+    [nodes, onSelect, handleUserInteract]
+  );
+
+  const handleSelect = useCallback(
+    (id: string) => {
+      const n = nodes.find((x) => x.id === id);
+      if (n) {
+        handleUserInteract();
+        setFlyTarget({
+          position: [n.position[0], n.position[1], n.position[2]],
+          mode: "pan",
+        });
+      }
+      onSelect(id);
+    },
+    [nodes, onSelect, handleUserInteract]
+  );
 
   return (
     <div className="absolute inset-0">
