@@ -25,7 +25,6 @@ const navLinks = [
 const productLinks = [
   { href: "/peptides", label: "Peptides", icon: FlaskConical, description: "Individual vials", color: "#a855f7" },
   { href: "/research-stacks", label: "Research Stacks", icon: Layers, description: "Multi-compound combos", color: "#ec4899" },
-  { href: "/galaxy", label: "Synergy Galaxy", icon: Sparkles, description: "3D map of peptide synergies", color: "#E7FB10" },
   { href: "/bulk-packs", label: "Bulk Packs", icon: Boxes, description: "5-packs, 10-packs", color: "#21d8ff" },
   { href: "/wholesale", label: "Wholesale Program", icon: Building2, description: "Clinics & resellers", color: "#22c55e" },
 ];
