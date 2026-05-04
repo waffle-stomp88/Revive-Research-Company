@@ -30,16 +30,36 @@ export function useAuth() {
     if (auth0IsAuthenticated && auth0User) {
       (async () => {
         try {
-          // Force Auth0 to refresh the token so returning users (session > 10h)
-          // don't send a stale, expired ID token to /api/auth/sync.
-          // Falls back silently — fresh logins are unaffected.
-          try {
-            await getAccessTokenSilently({ cacheMode: "off" });
-          } catch (refreshErr) {
-            console.warn("[Auth] Token refresh failed, using cached token:", refreshErr);
+          // Read the current ID token first.
+          let idTokenClaims = await getIdTokenClaims();
+
+          // Decode the exp claim from the JWT payload (no library needed).
+          // Only refresh if the token is genuinely expired — fresh logins
+          // (exp is in the future) skip the iframe call entirely so Samsung
+          // Browser tracking protection cannot corrupt the auth state.
+          const raw = idTokenClaims?.__raw;
+          if (raw) {
+            try {
+              const payloadB64 = raw.split(".")[1];
+              const payload = JSON.parse(atob(payloadB64.replace(/-/g, "+").replace(/_/g, "/")));
+              const exp: number = payload.exp;
+              if (exp < Date.now() / 1000) {
+                // Token is expired — attempt a silent refresh.
+                try {
+                  await getAccessTokenSilently();
+                  // Re-read claims after refresh so we send the new token.
+                  idTokenClaims = await getIdTokenClaims();
+                } catch (refreshErr) {
+                  console.warn("[Auth] Token refresh failed, using expired token:", refreshErr);
+                  // Fall through with the original (expired) token; the server
+                  // will reject it and the user can re-login manually.
+                }
+              }
+            } catch (decodeErr) {
+              console.warn("[Auth] Could not decode ID token exp claim:", decodeErr);
+            }
           }
 
-          const idTokenClaims = await getIdTokenClaims();
           const idToken = idTokenClaims?.__raw;
           if (!idToken) {
             console.error("[Auth] Failed to retrieve ID token");
