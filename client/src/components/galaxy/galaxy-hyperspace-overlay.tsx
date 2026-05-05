@@ -191,8 +191,9 @@ export function GalaxyHyperspaceOverlay({ isActive, totalDurationMs }: Props) {
 
     // Paint frame 0 synchronously so the white flash covers the canvas before
     // the browser composites the next frame — prevents one-frame galaxy bleed.
+    // render() already self-schedules via requestAnimationFrame(render) when p < 1,
+    // so no separate rAF call is needed here; the loop starts inside render itself.
     render(performance.now());
-    rafRef.current = requestAnimationFrame(render);
     return () => {
       cancelAnimationFrame(rafRef.current);
       ro.disconnect();
