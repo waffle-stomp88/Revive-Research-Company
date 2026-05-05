@@ -278,6 +278,7 @@ export default function GalaxyPage() {
           <div
             className="absolute inset-0"
             onClick={handleCanvasFirstClick}
+            style={{ opacity: doEntry && entryPhase === "loading" ? 0 : 1 }}
           >
             <Suspense
               fallback={
