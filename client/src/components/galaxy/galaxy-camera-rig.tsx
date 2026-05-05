@@ -17,6 +17,7 @@ interface CameraRigProps {
   onFlyComplete: () => void;
   resetSignal: number;
   autoRotate: boolean;
+  autoRotateSpeed?: number;
   parallax: GalaxyVfxConfig["parallax"];
   doEntry?: boolean;
 }
@@ -26,6 +27,7 @@ export function GalaxyCameraRig({
   onFlyComplete,
   resetSignal,
   autoRotate,
+  autoRotateSpeed = 0.45,
   parallax,
   doEntry = false,
 }: CameraRigProps) {
@@ -100,13 +102,13 @@ export function GalaxyCameraRig({
 
   // Cinematic entry — runs once on mount when doEntry is true.
   // Starts far out in "deep space" and flies inward to the galaxy.
-  // Canvas is already initialised with camera at [0,30,320].
+  // Canvas is already initialised with camera at [0,90,900].
   useEffect(() => {
     if (!doEntry) return;
     flyState.current = {
-      fromPos: new THREE.Vector3(0, 30, 320),
+      fromPos: new THREE.Vector3(0, 90, 900),
       fromTarget: new THREE.Vector3(0, 0, 0),
-      toPos: new THREE.Vector3(0, 6, 48),
+      toPos: new THREE.Vector3(0, 18, 160),
       toTarget: new THREE.Vector3(0, 0, 0),
       t: 0,
       duration: 4.2,
@@ -151,7 +153,7 @@ export function GalaxyCameraRig({
     flyState.current = {
       fromPos: camera.position.clone(),
       fromTarget: controlsRef.current.target.clone(),
-      toPos: new THREE.Vector3(0, 6, 48),
+      toPos: new THREE.Vector3(0, 18, 160),
       toTarget: new THREE.Vector3(0, 0, 0),
       t: 0,
       duration: 0.9,
@@ -245,10 +247,10 @@ export function GalaxyCameraRig({
         RIGHT: THREE.MOUSE.PAN,
       }}
       minDistance={4}
-      maxDistance={90}
+      maxDistance={400}
       zoomToCursor
       autoRotate={autoRotate && !flyState.current}
-      autoRotateSpeed={0.45}
+      autoRotateSpeed={autoRotateSpeed}
       onStart={() => {
         draggingRef.current = true;
       }}

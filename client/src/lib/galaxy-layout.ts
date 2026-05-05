@@ -63,9 +63,13 @@ const SYSTEM_ALIAS_MAP: Record<string, string> = {
   cosmetic: "skin",
   longevity: "longevity",
   immune: "longevity",
-  hormonal: "longevity",
   heart: "healing",
   vascular: "healing",
+  // Hormonal is now first-class
+  hormonal: "hormonal",
+  reproductive: "hormonal",
+  fertility: "hormonal",
+  libido: "hormonal",
 };
 
 export function resolvePrimarySystem(systems: string[]): string {
@@ -97,20 +101,29 @@ function hashString(s: string): number {
   return h >>> 0;
 }
 
-const GALAXY_RADIUS = 18;
-const SYSTEM_RADIUS = 7;
+// Galaxy scale — much larger than the original "solar system" size
+const GALAXY_RADIUS = 60;
+const SYSTEM_RADIUS = 15;
 const RNG_SEED = 0xc0ffee;
+
+// Spiral arm angular offsets (radians) per body system index so clusters
+// fan out in distinct spiral arms rather than distributing as a sphere.
+const SPIRAL_ARM_OFFSETS = [0, 0.72, 1.44, 2.16, 2.88, 3.6, 4.32];
 
 function systemCenters(): Record<string, [number, number, number]> {
   const result: Record<string, [number, number, number]> = {};
   const n = BODY_SYSTEMS.length;
   for (let i = 0; i < n; i++) {
     const sys = BODY_SYSTEMS[i];
-    const phi = Math.acos(1 - (2 * (i + 0.5)) / n);
-    const theta = Math.PI * (1 + Math.sqrt(5)) * (i + 0.5);
-    const x = GALAXY_RADIUS * Math.sin(phi) * Math.cos(theta);
-    const y = GALAXY_RADIUS * Math.sin(phi) * Math.sin(theta) * 0.6;
-    const z = GALAXY_RADIUS * Math.cos(phi);
+    // Spread systems evenly around the galactic disc using the golden angle
+    const theta = Math.PI * (1 + Math.sqrt(5)) * (i + 0.5) + (SPIRAL_ARM_OFFSETS[i] ?? 0);
+    // Vary radial distance slightly per system so arms don't all overlap
+    const radialFraction = 0.55 + ((i * 0.618) % 1) * 0.45;
+    const r = GALAXY_RADIUS * radialFraction;
+    const x = r * Math.cos(theta);
+    // Y-axis flattened to 0.25 for a galactic disc appearance (was 0.6)
+    const y = r * Math.sin(theta) * 0.25;
+    const z = r * Math.sin(theta);
     result[sys.id] = [x, y, z];
   }
   return result;
@@ -180,16 +193,15 @@ export function buildGalaxyLayout(): GalaxyLayout {
       const data: PeptidePathway = PEPTIDE_PATHWAYS[id];
       const rng = mulberry32(hashString(id) ^ RNG_SEED);
 
-      // Stable spherical position around the system's center
-      const u = rng();
-      const v = rng();
-      const theta = 2 * Math.PI * u;
-      const phi = Math.acos(2 * v - 1);
-      const r = SYSTEM_RADIUS * (0.55 + 0.45 * rng());
+      // Stable disc-shaped position around the system's center
+      // Use 2D disc distribution (uniform in XZ plane) with flattened Y
+      const angle = 2 * Math.PI * rng();
+      const radial = SYSTEM_RADIUS * Math.sqrt(rng()); // sqrt for uniform disc density
+      const yJitter = (rng() - 0.5) * 2 * SYSTEM_RADIUS * 0.18; // very flat Y spread
 
-      const ox = r * Math.sin(phi) * Math.cos(theta);
-      const oy = r * Math.sin(phi) * Math.sin(theta);
-      const oz = r * Math.cos(phi);
+      const ox = radial * Math.cos(angle);
+      const oy = yJitter;
+      const oz = radial * Math.sin(angle);
 
       const sCount = synergyCount[id] ?? 0;
       const size = 0.55 + Math.min(sCount, 8) * 0.13;
@@ -221,12 +233,8 @@ export function buildGalaxyLayout(): GalaxyLayout {
   const edgeIndex = new Map<string, number>();
 
   for (const stack of KNOWN_STACKS) {
-    // detailPageId is optional — only exists on the curated known-stacks entries
     const detailPageId = (stack as KnownStack & { detailPageId?: string }).detailPageId;
 
-    // Resolve each peptide ref to a node id, deduplicating so a single peptide
-    // that matches multiple refs (e.g. melanotan-i and melanotan-ii both → "melanotan")
-    // doesn't appear twice in the same stack and create self-loop edges.
     const seen = new Set<string>();
     const stackIds: string[] = [];
     for (const ref of stack.peptides) {
@@ -241,7 +249,6 @@ export function buildGalaxyLayout(): GalaxyLayout {
       for (let j = i + 1; j < stackIds.length; j++) {
         const a = stackIds[i];
         const b = stackIds[j];
-        // Guard against any remaining self-loops
         if (a === b) continue;
         const key = a < b ? `${a}|${b}` : `${b}|${a}`;
         const ai = nodeIndex[a];

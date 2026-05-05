@@ -1,4 +1,4 @@
-import { Heart, Zap, Target, Brain, Sparkles, Crown, Moon, Shield, Activity, Beaker } from "lucide-react";
+import { Heart, Zap, Target, Brain, Sparkles, Crown, Moon, Shield, Activity, Beaker, Flame } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export interface BodySystem {
@@ -16,13 +16,13 @@ export const BODY_SYSTEMS: BodySystem[] = [
   { id: "cognitive", name: "Cognitive", icon: Brain, color: "#21d8ff", description: "Neuroprotection, focus enhancement, and brain-derived growth factors" },
   { id: "skin", name: "Skin", icon: Sparkles, color: "#ec4899", description: "Collagen synthesis, elastin production, and dermal regeneration" },
   { id: "longevity", name: "Longevity", icon: Crown, color: "#a855f7", description: "Anti-aging mechanisms including telomere support and cellular renewal" },
+  { id: "hormonal", name: "Hormonal", icon: Flame, color: "#f43f5e", description: "Reproductive axis, endocrine signaling, and sexual health peptides" },
 ];
 
 export const COMPOUND_LABELS: Record<string, { icon: LucideIcon; color: string }> = {
   sleep:    { icon: Moon,     color: "#8b5cf6" },
   immune:   { icon: Shield,   color: "#22c55e" },
   gut:      { icon: Shield,   color: "#3b82f6" },
-  hormonal: { icon: Activity, color: "#f59e0b" },
   mobility: { icon: Zap,      color: "#f59e0b" },
   mood:     { icon: Heart,    color: "#3b82f6" },
   energy:   { icon: Activity, color: "#f59e0b" },
@@ -36,6 +36,7 @@ const SYSTEM_ALIASES: Record<string, string> = {
   focus: "cognitive", neuroprotection: "cognitive",
   cosmetic: "skin", hair: "skin",
   "anti-aging": "longevity",
+  reproductive: "hormonal", fertility: "hormonal", libido: "hormonal",
 };
 
 const SYSTEM_FALLBACK_COLORS: Record<string, string> = {

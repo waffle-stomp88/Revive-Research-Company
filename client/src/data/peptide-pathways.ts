@@ -6,6 +6,7 @@ export interface PeptidePathway {
 }
 
 export const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
+  // ── Existing entries ───────────────────────────────────────────────────────
   "bpc-157": {
     name: "BPC-157",
     pathways: ["Nitric Oxide", "Angiogenesis", "Collagen Synthesis"],
@@ -293,5 +294,341 @@ export const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
     pathways: ["VPAC Receptor", "Vasodilation", "Anti-Inflammatory"],
     mechanisms: ["Neuropeptide vasodilator", "Smooth muscle relaxation", "Immune tolerance"],
     systems: ["Gut", "Immune", "Vascular"],
+  },
+
+  // ── New: Thymic Bioregulators ──────────────────────────────────────────────
+  "cortagen": {
+    name: "Cortagen",
+    pathways: ["Neuronal Differentiation", "BDNF", "Brain Bioregulation"],
+    mechanisms: ["Cortex-derived tetrapeptide", "Neuroprotective signaling", "Brain cell renewal"],
+    systems: ["Cognitive", "Longevity"],
+  },
+  "vilon": {
+    name: "Vilon",
+    pathways: ["T-Cell Regulation", "Immune Modulation", "Neuroendocrine Axis"],
+    mechanisms: ["Dipeptide bioregulator", "Immunosenescence reversal", "Hypothalamic peptide signaling"],
+    systems: ["Immune", "Longevity"],
+  },
+  "cardiogen": {
+    name: "Cardiogen",
+    pathways: ["Myocardial Protection", "Cardiac Gene Expression", "Anti-Fibrotic"],
+    mechanisms: ["Heart tissue bioregulator", "Cardiomyocyte differentiation", "Oxidative stress reduction"],
+    systems: ["Heart", "Longevity"],
+  },
+  "pancragen": {
+    name: "Pancragen",
+    pathways: ["Pancreatic Function", "Insulin Regulation", "Glucagon Signaling"],
+    mechanisms: ["Pancreatic bioregulator", "Beta-cell protection", "Glucose homeostasis support"],
+    systems: ["Metabolic", "Longevity"],
+  },
+  "chonluten": {
+    name: "Chonluten",
+    pathways: ["Bronchial Epithelial Repair", "Mucus Regulation", "Inflammatory Modulation"],
+    mechanisms: ["Lung bioregulator tripeptide", "Epithelial cell renewal", "Respiratory tract protection"],
+    systems: ["Immune", "Healing"],
+  },
+  "crystagen": {
+    name: "Crystagen",
+    pathways: ["Thyroid Function", "T3/T4 Regulation", "Metabolic Rate"],
+    mechanisms: ["Thyroid bioregulator", "Thyroid cell differentiation", "Iodine uptake modulation"],
+    systems: ["Metabolic", "Longevity"],
+  },
+  "vesugen": {
+    name: "Vesugen",
+    pathways: ["Vascular Endothelium", "Nitric Oxide", "Angiogenesis"],
+    mechanisms: ["Blood vessel bioregulator", "Endothelial cell renewal", "Vascular tone regulation"],
+    systems: ["Healing", "Vascular"],
+  },
+  "ventfort": {
+    name: "Ventfort",
+    pathways: ["Vascular Smooth Muscle", "Collagen Synthesis", "Elastin Production"],
+    mechanisms: ["Vessel wall bioregulator", "Smooth muscle cell renewal", "Arterial flexibility support"],
+    systems: ["Healing", "Vascular"],
+  },
+
+  // ── New: GH Secretagogues ──────────────────────────────────────────────────
+  "mk-677": {
+    name: "MK-677",
+    pathways: ["Ghrelin Receptor", "GH Secretion", "IGF-1 Signaling"],
+    mechanisms: ["Oral GH secretagogue", "Pituitary GH pulse amplification", "Sustained IGF-1 elevation"],
+    systems: ["Growth", "Muscle", "Recovery"],
+  },
+  "peg-mgf": {
+    name: "PEG-MGF",
+    pathways: ["IGF-1 Signaling", "Satellite Cell Activation", "Muscle Repair"],
+    mechanisms: ["PEGylated MGF for extended half-life", "Delayed muscle stem cell activation", "Local hypertrophy induction"],
+    systems: ["Growth", "Muscle", "Recovery"],
+  },
+  "mod-grf-1-29": {
+    name: "Mod GRF 1-29",
+    pathways: ["GHRH Signaling", "GH Secretion", "Pituitary Activation"],
+    mechanisms: ["CJC-1295 without DAC", "Short-acting GHRH analog", "Pulsatile GH release"],
+    systems: ["Growth", "Recovery"],
+  },
+
+  // ── New: Nootropics ────────────────────────────────────────────────────────
+  "dihexa": {
+    name: "Dihexa",
+    pathways: ["HGF/MET Signaling", "Synaptogenesis", "Neuroplasticity"],
+    mechanisms: ["Hepatocyte growth factor potentiator", "Synapse formation enhancement", "Cognitive restoration"],
+    systems: ["Cognitive", "Neuroprotection"],
+  },
+  "nsi-189": {
+    name: "NSI-189",
+    pathways: ["Hippocampal Neurogenesis", "BDNF", "Serotonin"],
+    mechanisms: ["Hippocampal volume increase", "Neurogenesis stimulation", "Mood and memory enhancement"],
+    systems: ["Cognitive", "Mood"],
+  },
+  "p21-peptide": {
+    name: "P21 Peptide",
+    pathways: ["CNTF Receptor", "Neurotrophin Signaling", "Neural Differentiation"],
+    mechanisms: ["Ciliary neurotrophic factor mimic", "Neural stem cell activation", "Cognitive protection"],
+    systems: ["Cognitive", "Longevity"],
+  },
+  "cortexin": {
+    name: "Cortexin",
+    pathways: ["Neurotrophic Signaling", "GABA", "Neuroprotection"],
+    mechanisms: ["Polypeptide brain bioregulator", "GABAergic modulation", "Cerebral metabolism enhancement"],
+    systems: ["Cognitive", "Neuroprotection"],
+  },
+  "noopept": {
+    name: "Noopept",
+    pathways: ["NGF", "BDNF", "Glutamate Receptor"],
+    mechanisms: ["Cycloprolylglycine prodrug", "Neuropeptide signaling", "Memory consolidation enhancement"],
+    systems: ["Cognitive", "Focus"],
+  },
+
+  // ── New: Metabolic / GLP-class ─────────────────────────────────────────────
+  "retatrutide": {
+    name: "Retatrutide",
+    pathways: ["Incretin Receptor", "GIP", "Glucagon"],
+    mechanisms: ["Triple GLP-1/GIP/Glucagon agonist", "Appetite suppression", "Enhanced lipolysis"],
+    systems: ["Metabolic", "Weight"],
+  },
+  "semaglutide": {
+    name: "Semaglutide",
+    pathways: ["GLP-1 Receptor", "Insulin Secretion", "Appetite Regulation"],
+    mechanisms: ["Long-acting GLP-1 analog", "Gastric emptying delay", "Central satiety signaling"],
+    systems: ["Metabolic", "Weight"],
+  },
+  "tirzepatide": {
+    name: "Tirzepatide",
+    pathways: ["GLP-1 Receptor", "GIP Receptor", "Insulin Secretion"],
+    mechanisms: ["Dual GLP-1/GIP agonist", "Glucose-dependent insulin release", "Adipose tissue reduction"],
+    systems: ["Metabolic", "Weight"],
+  },
+  "glp-2": {
+    name: "GLP-2",
+    pathways: ["GLP-2 Receptor", "Intestinal Growth", "Mucosal Healing"],
+    mechanisms: ["Glucagon-like peptide-2", "Intestinal villus height increase", "Gut barrier fortification"],
+    systems: ["Gut", "Healing"],
+  },
+
+  // ── New: Skin / Cosmetic ───────────────────────────────────────────────────
+  "palmitoyl-tripeptide-1": {
+    name: "Palmitoyl Tripeptide-1",
+    pathways: ["Collagen Synthesis", "TGF-β Signaling", "Matrix Remodeling"],
+    mechanisms: ["Lipopeptide collagen stimulator", "Fibronectin production", "Skin firmness enhancement"],
+    systems: ["Skin", "Longevity"],
+  },
+  "leuphasyl": {
+    name: "Leuphasyl",
+    pathways: ["Enkephalin Receptor", "Neuromuscular Junction", "SNARE Modulation"],
+    mechanisms: ["Opioid receptor modulation", "Synergistic Botox-like effect", "Facial muscle relaxation"],
+    systems: ["Skin", "Cosmetic"],
+  },
+  "argireline": {
+    name: "Argireline",
+    pathways: ["SNARE Complex", "Acetylcholine Release", "Neuromuscular Modulation"],
+    mechanisms: ["Acetyl hexapeptide-3", "Neurotransmitter inhibition at NMJ", "Wrinkle depth reduction"],
+    systems: ["Skin", "Cosmetic"],
+  },
+  "matrixyl": {
+    name: "Matrixyl",
+    pathways: ["Collagen Synthesis", "Elastin Production", "Fibronectin Signaling"],
+    mechanisms: ["Palmitoyl pentapeptide-4", "Matrikine signaling", "Extracellular matrix restoration"],
+    systems: ["Skin", "Longevity"],
+  },
+
+  // ── New: Longevity ─────────────────────────────────────────────────────────
+  "humanin": {
+    name: "Humanin",
+    pathways: ["STAT3 Signaling", "Mitochondrial Protection", "Anti-Apoptotic"],
+    mechanisms: ["Mitochondrial-derived peptide", "Cell death inhibition", "Insulin sensitivity improvement"],
+    systems: ["Longevity", "Metabolic", "Cognitive"],
+  },
+  "ara-290": {
+    name: "ARA-290",
+    pathways: ["EPO Receptor", "Tissue Protection", "Anti-Inflammatory"],
+    mechanisms: ["Erythropoietin peptide fragment", "Innate repair receptor activation", "Neuropathic pain reduction"],
+    systems: ["Healing", "Longevity"],
+  },
+  "cortistatin": {
+    name: "Cortistatin",
+    pathways: ["Somatostatin Receptor", "GH Regulation", "Neuroprotection"],
+    mechanisms: ["Neuropeptide somatostatin analog", "Anti-inflammatory signaling", "Sleep architecture modulation"],
+    systems: ["Cognitive", "Longevity", "Sleep"],
+  },
+  "thymulin": {
+    name: "Thymulin",
+    pathways: ["T-Cell Maturation", "Zinc-Dependent Signaling", "Immune Restoration"],
+    mechanisms: ["Thymic factor peptide", "T-lymphocyte differentiation", "Immunosenescence reversal"],
+    systems: ["Immune", "Longevity"],
+  },
+  "angiotensin-1-7": {
+    name: "Angiotensin 1-7",
+    pathways: ["Mas Receptor", "ACE2 Axis", "Vasodilation"],
+    mechanisms: ["Renin-angiotensin counter-regulatory peptide", "Anti-fibrotic signaling", "Cardioprotection"],
+    systems: ["Vascular", "Heart", "Longevity"],
+  },
+
+  // ── New: Healing ──────────────────────────────────────────────────────────
+  "thymosin-alpha-4": {
+    name: "Thymosin Alpha-4",
+    pathways: ["Actin Sequestration", "Cell Migration", "Angiogenesis"],
+    mechanisms: ["TB-500 active domain peptide", "Wound closure acceleration", "Anti-inflammatory action"],
+    systems: ["Healing", "Immune"],
+  },
+  "larazotide": {
+    name: "Larazotide",
+    pathways: ["Tight Junction Regulation", "Gut Permeability", "Mucosal Barrier"],
+    mechanisms: ["Zonulin antagonist", "Intestinal barrier fortification", "Celiac and leaky gut management"],
+    systems: ["Gut", "Healing", "Immune"],
+  },
+  "ghrelin": {
+    name: "Ghrelin",
+    pathways: ["Ghrelin Receptor", "Appetite Stimulation", "GH Secretion"],
+    mechanisms: ["Hunger hormone", "Gastric motility activation", "Energy balance regulation"],
+    systems: ["Gut", "Growth", "Metabolic"],
+  },
+  "follistatin-344": {
+    name: "Follistatin-344",
+    pathways: ["Myostatin Inhibition", "Activin Signaling", "Muscle Hypertrophy"],
+    mechanisms: ["Activin binding protein", "TGF-β ligand sequestration", "Satellite cell proliferation"],
+    systems: ["Growth", "Muscle"],
+  },
+
+  // ── New: Hormonal / Reproductive ───────────────────────────────────────────
+  "bremelanotide": {
+    name: "Bremelanotide",
+    pathways: ["MC4R Activation", "Dopamine", "Melanocortin Signaling"],
+    mechanisms: ["Central arousal pathway activation", "Sexual dysfunction treatment", "Dopaminergic modulation"],
+    systems: ["Hormonal", "Mood"],
+  },
+  "enclomiphene": {
+    name: "Enclomiphene",
+    pathways: ["Estrogen Receptor Antagonism", "LH Release", "FSH Release"],
+    mechanisms: ["Selective estrogen receptor modulator", "HPG axis stimulation", "Endogenous testosterone restoration"],
+    systems: ["Hormonal"],
+  },
+  "kisspeptin-54": {
+    name: "Kisspeptin-54",
+    pathways: ["GnRH Receptor", "LH Surge", "Reproductive Axis"],
+    mechanisms: ["Full-length kisspeptin isoform", "Pulsatile GnRH modulation", "Ovulation and fertility regulation"],
+    systems: ["Hormonal"],
+  },
+  "leuprolide": {
+    name: "Leuprolide",
+    pathways: ["GnRH Receptor", "LH Release", "FSH Release"],
+    mechanisms: ["Synthetic GnRH agonist", "Pituitary desensitization at high dose", "Sex hormone modulation"],
+    systems: ["Hormonal"],
+  },
+
+  // ── New: Gut / Vascular / Other ───────────────────────────────────────────
+  "motilin": {
+    name: "Motilin",
+    pathways: ["Motilin Receptor", "Gastric Motility", "Migrating Motor Complex"],
+    mechanisms: ["Gut hormone peptide", "Small intestine peristalsis initiation", "Interdigestive motility"],
+    systems: ["Gut", "Healing"],
+  },
+  "apelin-13": {
+    name: "Apelin-13",
+    pathways: ["APJ Receptor", "Vasodilation", "Cardiac Output"],
+    mechanisms: ["Adipokine peptide", "Positive inotropic effect", "Blood pressure regulation"],
+    systems: ["Vascular", "Heart"],
+  },
+  "neuropeptide-y": {
+    name: "Neuropeptide Y",
+    pathways: ["NPY Receptor", "Appetite Regulation", "Stress Response"],
+    mechanisms: ["Most abundant brain peptide", "Anxiolytic-like signaling", "Orexigenic hypothalamic action"],
+    systems: ["Cognitive", "Metabolic", "Mood"],
+  },
+  "substance-p": {
+    name: "Substance P",
+    pathways: ["NK1 Receptor", "Pain Transmission", "Neurogenic Inflammation"],
+    mechanisms: ["Tachykinin neuropeptide", "Mast cell activation", "Wound healing modulation"],
+    systems: ["Healing", "Cognitive"],
+  },
+  "thymopentin": {
+    name: "Thymopentin",
+    pathways: ["T-Cell Activation", "IL-2 Signaling", "Immune Restoration"],
+    mechanisms: ["Thymopoietin fragment", "T-helper cell proliferation", "Lymphocyte differentiation"],
+    systems: ["Immune", "Longevity"],
+  },
+  "c-peptide": {
+    name: "C-Peptide",
+    pathways: ["Insulin Signaling", "Renal Protection", "Microvascular Function"],
+    mechanisms: ["Proinsulin cleavage product", "Na+/K+-ATPase activation", "Diabetic complication protection"],
+    systems: ["Metabolic", "Healing"],
+  },
+  "neurotensin": {
+    name: "Neurotensin",
+    pathways: ["NTS Receptor", "Dopamine Modulation", "Gut Motility"],
+    mechanisms: ["Neuropeptide paracrine signaling", "Antinociception", "Hypothermic effect"],
+    systems: ["Cognitive", "Gut"],
+  },
+  "somatostatin": {
+    name: "Somatostatin",
+    pathways: ["SSTR Signaling", "GH Inhibition", "Insulin Suppression"],
+    mechanisms: ["Hypothalamic inhibitory peptide", "Broad neuroendocrine brake", "Gastric acid reduction"],
+    systems: ["Metabolic", "Cognitive", "Gut"],
+  },
+  "relaxin-2": {
+    name: "Relaxin-2",
+    pathways: ["RXFP1 Receptor", "Anti-Fibrotic", "Vasodilation"],
+    mechanisms: ["Matrix metalloproteinase induction", "Collagen degradation", "Tissue remodeling"],
+    systems: ["Healing", "Vascular", "Hormonal"],
+  },
+  "adrenomedullin": {
+    name: "Adrenomedullin",
+    pathways: ["CGRP Receptor", "Vasodilation", "Anti-Inflammatory"],
+    mechanisms: ["Cardiovascular peptide hormone", "cAMP-mediated smooth muscle relaxation", "Endothelial protection"],
+    systems: ["Vascular", "Heart"],
+  },
+  "cholecystokinin": {
+    name: "Cholecystokinin",
+    pathways: ["CCK Receptor", "Satiety Signaling", "Digestive Enzyme Release"],
+    mechanisms: ["GI hormone peptide", "Gallbladder contraction", "Pancreatic enzyme secretion"],
+    systems: ["Gut", "Metabolic"],
+  },
+  "enkephalin": {
+    name: "Enkephalin",
+    pathways: ["Opioid Receptor", "Pain Modulation", "Mood Regulation"],
+    mechanisms: ["Endogenous opioid pentapeptide", "Mu and delta receptor agonism", "Analgesic and anxiolytic action"],
+    systems: ["Mood", "Cognitive"],
+  },
+  "thyroid-releasing-hormone": {
+    name: "TRH",
+    pathways: ["TRH Receptor", "TSH Release", "Thyroid Axis"],
+    mechanisms: ["Thyrotropin-releasing hormone tripeptide", "Pituitary TSH stimulation", "CNS neuroprotective effects"],
+    systems: ["Hormonal", "Cognitive"],
+  },
+  "galanin": {
+    name: "Galanin",
+    pathways: ["Galanin Receptor", "Norepinephrine", "Serotonin"],
+    mechanisms: ["Neuropeptide neuromodulator", "Memory-related hippocampal signaling", "Feeding behavior modulation"],
+    systems: ["Cognitive", "Mood"],
+  },
+  "klotho-peptide": {
+    name: "Klotho Peptide",
+    pathways: ["Klotho Signaling", "FGF23 Modulation", "Anti-Aging Transcription"],
+    mechanisms: ["Anti-aging hormone peptide fragment", "Neuroprotection via PI3K inhibition", "Cognitive and renal longevity"],
+    systems: ["Longevity", "Cognitive"],
+  },
+  "collagen-tripeptide": {
+    name: "Collagen Tripeptide",
+    pathways: ["Collagen Synthesis", "Fibroblast Activation", "ECM Remodeling"],
+    mechanisms: ["Gly-Pro-Hyp bioactive tripeptide", "Procollagen gene expression boost", "Skin and joint repair"],
+    systems: ["Skin", "Healing"],
   },
 };

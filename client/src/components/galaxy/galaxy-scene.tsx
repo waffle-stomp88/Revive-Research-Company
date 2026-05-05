@@ -16,6 +16,7 @@ import { GalaxyEffects } from "./galaxy-effects";
 import { GalaxyNebula } from "./galaxy-nebula";
 import { GalaxyDistantGalaxy } from "./galaxy-distant-galaxy";
 import { GalaxyWarpStreaks } from "./galaxy-warp-streaks";
+import { GalaxyDustStars } from "./galaxy-dust-stars";
 import {
   GALAXY_VFX,
   type GalaxyVfxVariant,
@@ -37,6 +38,8 @@ interface GalaxySceneProps {
   onHoverSound?: () => void;
   externalWarpId?: string | null;
   onExternalWarpConsumed?: () => void;
+  rotationPaused?: boolean;
+  rotationSpeed?: number;
 }
 
 export function GalaxyScene({
@@ -55,6 +58,8 @@ export function GalaxyScene({
   onHoverSound,
   externalWarpId,
   onExternalWarpConsumed,
+  rotationPaused = false,
+  rotationSpeed = 0.45,
 }: GalaxySceneProps) {
   const layout = useMemo(() => buildGalaxyLayout(), []);
   const { nodes, edges } = layout;
@@ -164,8 +169,11 @@ export function GalaxyScene({
   const handleUserInteract = useCallback(() => {
     setAutoRotate(false);
     if (idleTimer.current) clearTimeout(idleTimer.current);
-    idleTimer.current = setTimeout(() => setAutoRotate(true), 6000);
-  }, []);
+    // Only schedule the idle-resume if rotation is not manually paused
+    if (!rotationPaused) {
+      idleTimer.current = setTimeout(() => setAutoRotate(true), 6000);
+    }
+  }, [rotationPaused]);
 
   const handleDoubleClick = useCallback(
     (id: string) => {
@@ -196,14 +204,15 @@ export function GalaxyScene({
 
   const hoveredNode = hoveredId ? nodes.find((x) => x.id === hoveredId) : null;
 
-  // Canvas starts far out in deep space for the discovery entry; normal view otherwise.
-  const initialCamPos: [number, number, number] = doEntry ? [0, 30, 320] : [0, 6, 48];
+  // Camera is pulled back further to accommodate the expanded galaxy radius (~60).
+  // Entry starts far out in deep space; normal view sits above the galactic disc.
+  const initialCamPos: [number, number, number] = doEntry ? [0, 90, 900] : [0, 18, 160];
 
   return (
     <div className="absolute inset-0">
       <Canvas
         dpr={[1, 1.75]}
-        camera={{ position: initialCamPos, fov: 55, near: 0.1, far: 500 }}
+        camera={{ position: initialCamPos, fov: 55, near: 0.1, far: 2000 }}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         onCreated={({ gl }) => {
           gl.setClearColor(
@@ -216,6 +225,7 @@ export function GalaxyScene({
         <pointLight position={[20, 20, 20]} intensity={0.6} color="#ffffff" />
         <pointLight position={[-20, -10, -20]} intensity={0.45} color="#21d8ff" />
         <GalaxyStarfield twinkle={vfx.twinkle} fog={vfx.fog} vfxVariant={vfxVariant} />
+        <GalaxyDustStars count={2000} discRadius={120} ySpread={8} />
         <GalaxyNebula nodes={nodes} config={vfx.nebula} fog={vfx.fog} />
         <GalaxyDistantGalaxy config={vfx.distantGalaxy} />
         <GalaxyEdges
@@ -317,7 +327,8 @@ export function GalaxyScene({
             setIsWarping(false);
           }}
           resetSignal={resetSignal}
-          autoRotate={autoRotate && !hoveredId}
+          autoRotate={autoRotate && !hoveredId && !rotationPaused}
+          autoRotateSpeed={rotationSpeed}
           parallax={vfx.parallax}
           doEntry={doEntry}
         />

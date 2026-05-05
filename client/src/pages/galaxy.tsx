@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Loader2, ArrowRight, Volume2, VolumeX, Search, X, Zap } from "lucide-react";
+import { Sparkles, Loader2, ArrowRight, Volume2, VolumeX, Search, X, Zap, Pause, Play } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -57,6 +57,8 @@ export default function GalaxyPage() {
   const [warpToId, setWarpToId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [resetSignal, setResetSignal] = useState(0);
+  const [rotationPaused, setRotationPaused] = useState(false);
+  const [rotationSpeed, setRotationSpeed] = useState(0.45);
   const [forceFallback, setForceFallback] = useState(false);
   const [nodeMeta, setNodeMeta] = useState<GalaxyNode[]>([]);
 
@@ -453,6 +455,8 @@ export default function GalaxyPage() {
                   onHoverSound={audio.playHover}
                   externalWarpId={warpToId}
                   onExternalWarpConsumed={() => setWarpToId(null)}
+                  rotationPaused={rotationPaused}
+                  rotationSpeed={rotationSpeed}
                 />
               </ErrorBoundary>
             </Suspense>
@@ -478,13 +482,14 @@ export default function GalaxyPage() {
             )}
           </AnimatePresence>
 
-          {/* Mute toggle — bottom-left of canvas */}
+          {/* Bottom-left controls: mute · pause/resume · speed */}
           <motion.div
-            className="absolute bottom-3 md:bottom-4 left-4 md:left-8 z-20"
+            className="absolute bottom-3 md:bottom-4 left-4 md:left-8 z-20 flex items-center gap-1.5"
             animate={{ opacity: uiVisible ? 1 : 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
             style={{ pointerEvents: uiVisible ? undefined : "none" }}
           >
+            {/* Mute */}
             <Button
               size="icon"
               variant="ghost"
@@ -499,6 +504,48 @@ export default function GalaxyPage() {
                 <Volume2 className="h-4 w-4" />
               )}
             </Button>
+
+            {/* Divider */}
+            <div className="w-px h-5 bg-white/20 mx-0.5" />
+
+            {/* Pause / Resume rotation */}
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => setRotationPaused((p) => !p)}
+              aria-label={rotationPaused ? "Resume rotation" : "Pause rotation"}
+              data-testid="button-galaxy-rotation-pause"
+              className="text-white/50 hover:text-white/90 bg-black/40 backdrop-blur-sm"
+            >
+              {rotationPaused ? (
+                <Play className="h-4 w-4" />
+              ) : (
+                <Pause className="h-4 w-4" />
+              )}
+            </Button>
+
+            {/* Speed slider — only interactive when not paused */}
+            <div
+              className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-black/40 backdrop-blur-sm"
+              data-testid="galaxy-rotation-speed-control"
+            >
+              <span className="text-[10px] text-white/40 select-none whitespace-nowrap">Speed</span>
+              <input
+                type="range"
+                min={0.05}
+                max={3}
+                step={0.05}
+                value={rotationSpeed}
+                onChange={(e) => setRotationSpeed(parseFloat(e.target.value))}
+                disabled={rotationPaused}
+                aria-label="Rotation speed"
+                data-testid="slider-galaxy-rotation-speed"
+                className="w-20 accent-[#E7FB10] cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+              />
+              <span className="text-[10px] text-white/50 w-6 text-right select-none tabular-nums">
+                {rotationSpeed.toFixed(1)}×
+              </span>
+            </div>
           </motion.div>
 
           {/* Bottom hints — fades in after entry */}
