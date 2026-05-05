@@ -1,7 +1,8 @@
 import { lazy, Suspense, useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Loader2, ArrowRight, Volume2, VolumeX } from "lucide-react";
+import { Sparkles, Loader2, ArrowRight, Volume2, VolumeX, Search, X, Zap } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { SEOHead } from "@/components/seo-head";
@@ -48,6 +49,10 @@ export default function GalaxyPage() {
   const allSystems = useMemo(() => new Set(BODY_SYSTEMS.map((s) => s.id)), []);
   const [visibleSystems, setVisibleSystems] = useState<Set<string>>(allSystems);
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchActiveIdx, setSearchActiveIdx] = useState(-1);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchListRef = useRef<HTMLUListElement>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [warpToId, setWarpToId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -172,6 +177,64 @@ export default function GalaxyPage() {
     setWarpToId(id);
   }, []);
 
+  // Inline galaxy search helpers
+  const searchLower = searchTerm.trim().toLowerCase();
+  const searchMatches = useMemo(
+    () =>
+      searchLower.length === 0
+        ? []
+        : nodes
+            .filter(
+              (n) =>
+                n.name.toLowerCase().includes(searchLower) ||
+                n.id.toLowerCase().includes(searchLower) ||
+                n.systemName.toLowerCase().includes(searchLower)
+            )
+            .slice(0, 8),
+    [nodes, searchLower]
+  );
+  const showSearchDropdown = searchOpen && searchMatches.length > 0;
+
+  const handleSearchSelect = useCallback(
+    (id: string) => {
+      handleWarpTo(id);
+      setSearchTerm("");
+      setSearchOpen(false);
+      setSearchActiveIdx(-1);
+      searchInputRef.current?.blur();
+    },
+    [handleWarpTo]
+  );
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showSearchDropdown) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSearchActiveIdx((i) => Math.min(i + 1, searchMatches.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSearchActiveIdx((i) => Math.max(i - 1, 0));
+    } else if (e.key === "Enter") {
+      if (searchActiveIdx >= 0 && searchMatches[searchActiveIdx]) {
+        e.preventDefault();
+        handleSearchSelect(searchMatches[searchActiveIdx].id);
+      }
+    } else if (e.key === "Escape") {
+      setSearchOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    setSearchActiveIdx(-1);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    if (searchActiveIdx >= 0 && searchListRef.current) {
+      const item = searchListRef.current.children[searchActiveIdx] as HTMLElement;
+      item?.scrollIntoView({ block: "nearest" });
+    }
+  }, [searchActiveIdx]);
+
   // Start ambient on first canvas interaction (user gesture satisfies browser policy)
   const handleCanvasFirstClick = useCallback(() => {
     if (ambientStarted.current || reducedMotion) return;
@@ -237,6 +300,80 @@ export default function GalaxyPage() {
               Each star is a peptide. Lines connect researched synergy pairs.
               Drag to orbit, click a star to inspect.
             </p>
+
+            {/* Inline galaxy search */}
+            {uiVisible && (
+              <div className="relative mt-3 w-64" data-testid="galaxy-inline-search-wrap">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none z-10" />
+                <Input
+                  ref={searchInputRef}
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setSearchOpen(true);
+                  }}
+                  onFocus={() => setSearchOpen(true)}
+                  onBlur={() => setTimeout(() => setSearchOpen(false), 150)}
+                  onKeyDown={handleSearchKeyDown}
+                  placeholder="Find a peptide — warp to it"
+                  className="h-9 pl-8 pr-8 text-sm bg-black/50 border-white/15 backdrop-blur-sm placeholder:text-white/30 focus-visible:border-[#21d8ff]/50 focus-visible:ring-0"
+                  data-testid="galaxy-search-input"
+                  aria-label="Search peptides"
+                  aria-autocomplete="list"
+                  aria-expanded={showSearchDropdown}
+                  role="combobox"
+                />
+                {searchTerm && (
+                  <button
+                    onMouseDown={(e) => { e.preventDefault(); setSearchTerm(""); setSearchOpen(false); }}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground z-10"
+                    aria-label="Clear search"
+                    data-testid="galaxy-search-clear"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
+
+                {/* Autocomplete dropdown */}
+                {showSearchDropdown && (
+                  <ul
+                    ref={searchListRef}
+                    role="listbox"
+                    className="absolute left-0 right-0 top-[calc(100%+4px)] rounded-lg bg-black/90 backdrop-blur-xl border border-white/10 shadow-xl overflow-hidden z-30"
+                  >
+                    {searchMatches.map((node, i) => (
+                      <li
+                        key={node.id}
+                        role="option"
+                        aria-selected={i === searchActiveIdx}
+                        onMouseDown={() => handleSearchSelect(node.id)}
+                        onMouseEnter={() => setSearchActiveIdx(i)}
+                        className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-colors ${
+                          i === searchActiveIdx
+                            ? "bg-white/10"
+                            : "hover:bg-white/5"
+                        }`}
+                        data-testid={`galaxy-search-result-${node.id}`}
+                      >
+                        <span
+                          className="w-2 h-2 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: node.color }}
+                        />
+                        <span className="flex-1 min-w-0">
+                          <span className="text-sm font-medium text-white/90 truncate block">
+                            {node.name}
+                          </span>
+                          <span className="text-xs text-white/40">
+                            {node.systemName}
+                          </span>
+                        </span>
+                        <Zap className="h-3 w-3 flex-shrink-0 opacity-50" style={{ color: node.color }} />
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
           </motion.div>
         </div>
       </motion.div>
@@ -274,11 +411,7 @@ export default function GalaxyPage() {
             <GalaxyFilterBar
               visibleSystems={visibleSystems}
               toggleSystem={toggleSystem}
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
               onReset={handleReset}
-              nodes={nodes}
-              onWarpTo={handleWarpTo}
             />
           </motion.div>
 
