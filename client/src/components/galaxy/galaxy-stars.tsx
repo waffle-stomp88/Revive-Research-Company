@@ -48,7 +48,7 @@ const SPRITE_FS = /* glsl */ `
     float r = length(uv);
     if (r > 0.5) discard;
     float core = exp(-r * r * 110.0);
-    float halo = exp(-r * r * 11.0) * 0.28;
+    float halo = exp(-r * r * 22.0) * 0.18;
     float axisFalloff = mix(70.0, 14.0, clamp(vStreak, 0.0, 1.0));
     float crossX = exp(-uv.y * uv.y * 2400.0) * exp(-abs(uv.x) * axisFalloff);
     float crossY = exp(-uv.x * uv.x * 2400.0) * exp(-abs(uv.y) * axisFalloff);
@@ -211,7 +211,8 @@ function CinematicStars({
     for (let i = 0; i < nodes.length; i++) {
       const n = nodes[i];
       dummy.position.set(n.position[0], n.position[1], n.position[2]);
-      dummy.scale.setScalar(Math.max(n.size, 0.7) * 1.15);
+      // Keep hit-sphere tight to the visual star core, not the glow.
+      dummy.scale.setScalar(Math.max(n.size * 0.38, 0.22));
       dummy.updateMatrix();
       meshRef.current.setMatrixAt(i, dummy.matrix);
     }

@@ -132,6 +132,8 @@ export function GalaxySidePanel({ node, onClose }: GalaxySidePanelProps) {
             </p>
             <div className="space-y-2">
               {stacks.map((s) => {
+                // detailPageId is optional — only set on the six curated research stacks
+                const detailId = (s as typeof s & { detailPageId?: string }).detailPageId;
                 const partners = s.peptides
                   .filter(
                     (p) =>
@@ -142,7 +144,7 @@ export function GalaxySidePanel({ node, onClose }: GalaxySidePanelProps) {
                 const inner = (
                   <div
                     className="flex items-center justify-between gap-3 rounded-md border border-border p-3 hover-elevate cursor-pointer"
-                    data-testid={`galaxy-panel-synergy-${s.detailPageId ?? s.name.toLowerCase().replace(/\s+/g, "-")}`}
+                    data-testid={`galaxy-panel-synergy-${detailId ?? s.name.toLowerCase().replace(/\s+/g, "-")}`}
                   >
                     <div className="min-w-0">
                       <p className="text-sm font-medium truncate">{s.name}</p>
@@ -161,10 +163,10 @@ export function GalaxySidePanel({ node, onClose }: GalaxySidePanelProps) {
                     </div>
                   </div>
                 );
-                return s.detailPageId ? (
+                return detailId ? (
                   <Link
                     key={s.name}
-                    href={`/research-stacks/${s.detailPageId}`}
+                    href={`/research-stacks/${detailId}`}
                   >
                     {inner}
                   </Link>

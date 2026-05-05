@@ -17,8 +17,8 @@ interface CameraRigProps {
   onFlyComplete: () => void;
   resetSignal: number;
   autoRotate: boolean;
-  onUserInteract: () => void;
   parallax: GalaxyVfxConfig["parallax"];
+  doEntry?: boolean;
 }
 
 export function GalaxyCameraRig({
@@ -26,8 +26,8 @@ export function GalaxyCameraRig({
   onFlyComplete,
   resetSignal,
   autoRotate,
-  onUserInteract,
   parallax,
+  doEntry = false,
 }: CameraRigProps) {
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const { camera, gl } = useThree();
@@ -42,8 +42,19 @@ export function GalaxyCameraRig({
     t: number;
     duration: number;
     easePower: number;
+    easeMode: "out" | "inout";
     fovPull: number;
+    fovMode: "hump" | "narrow";
   } | null>(null);
+
+  const applyEase = (t: number, power: number, mode: "out" | "inout") => {
+    if (mode === "inout") {
+      return t < 0.5
+        ? Math.pow(2 * t, power) / 2
+        : 1 - Math.pow(2 * (1 - t), power) / 2;
+    }
+    return 1 - Math.pow(1 - t, power);
+  };
 
   // Parallax state
   const mouseRef = useRef({ x: 0, y: 0, hasInput: false });
@@ -87,6 +98,25 @@ export function GalaxyCameraRig({
     };
   }, [gl, parallax.enabled]);
 
+  // Cinematic entry — runs once on mount when doEntry is true.
+  // Starts far out in "deep space" and flies inward to the galaxy.
+  // Canvas is already initialised with camera at [0,15,120].
+  useEffect(() => {
+    if (!doEntry) return;
+    flyState.current = {
+      fromPos: new THREE.Vector3(0, 15, 120),
+      fromTarget: new THREE.Vector3(0, 0, 0),
+      toPos: new THREE.Vector3(0, 6, 48),
+      toTarget: new THREE.Vector3(0, 0, 0),
+      t: 0,
+      duration: 2.8,
+      easePower: 2.5,
+      easeMode: "inout",
+      fovPull: 18,
+      fovMode: "narrow",
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Fly-to behavior
   useEffect(() => {
     if (!flyTarget || !controlsRef.current) return;
@@ -108,7 +138,9 @@ export function GalaxyCameraRig({
       t: 0,
       duration: isWarp ? 0.65 : 0.85,
       easePower: isWarp ? 4 : 3,
+      easeMode: "out",
       fovPull: isWarp ? 13 : 0,
+      fovMode: "hump",
     };
   }, [flyTarget, camera]);
 
@@ -124,17 +156,15 @@ export function GalaxyCameraRig({
       t: 0,
       duration: 0.9,
       easePower: 3,
+      easeMode: "out",
       fovPull: 0,
+      fovMode: "hump",
     };
   }, [resetSignal, camera]);
 
   useFrame((_, delta) => {
     if (!controlsRef.current) return;
 
-    // Remove any previously applied parallax offset before mutating state, so
-    // OrbitControls works against the un-offset camera transform. We keep the
-    // offset value itself in `currentOffsetRef` so it can keep easing toward
-    // the desired position across frames.
     if (appliedOffsetRef.current.lengthSq() > 0) {
       camera.position.sub(appliedOffsetRef.current);
       controlsRef.current.target.sub(appliedOffsetRef.current);
@@ -144,13 +174,19 @@ export function GalaxyCameraRig({
     if (flyState.current) {
       const fs = flyState.current;
       fs.t = Math.min(1, fs.t + delta / fs.duration);
-      const e = 1 - Math.pow(1 - fs.t, fs.easePower);
+      const e = applyEase(fs.t, fs.easePower, fs.easeMode);
       camera.position.lerpVectors(fs.fromPos, fs.toPos, e);
       controlsRef.current.target.lerpVectors(fs.fromTarget, fs.toTarget, e);
       if (fs.fovPull > 0 && (camera as THREE.PerspectiveCamera).isPerspectiveCamera) {
         const persp = camera as THREE.PerspectiveCamera;
-        const pull = Math.sin(fs.t * Math.PI) * fs.fovPull;
-        persp.fov = baseFovRef.current - pull;
+        if (fs.fovMode === "narrow") {
+          // Entry: starts wide (vast space), narrows to normal as we arrive
+          persp.fov = baseFovRef.current + fs.fovPull * (1 - e);
+        } else {
+          // Warp: hump shape — FOV dips mid-flight then snaps back
+          const pull = Math.sin(fs.t * Math.PI) * fs.fovPull;
+          persp.fov = baseFovRef.current - pull;
+        }
         persp.updateProjectionMatrix();
       }
       controlsRef.current.update();
@@ -167,9 +203,7 @@ export function GalaxyCameraRig({
       controlsRef.current.update();
     }
 
-    // Apply parallax offset (after controls.update so we don't fight it).
     if (parallax.enabled && !draggingRef.current && !flyState.current) {
-      // Build basis perpendicular to view direction
       const viewDir = controlsRef.current.target
         .clone()
         .sub(camera.position)
@@ -185,9 +219,6 @@ export function GalaxyCameraRig({
           .addScaledVector(right, mouseRef.current.x * parallax.strength)
           .addScaledVector(up, -mouseRef.current.y * parallax.strength);
       }
-      // Ease the persistent current offset toward desired (toward 0 when no
-      // input), so the sway accumulates over multiple frames instead of
-      // resetting each frame.
       const lerpAmt = 1 - Math.exp(-parallax.lerp * delta);
       currentOffsetRef.current.lerp(desired, lerpAmt);
 
@@ -195,7 +226,6 @@ export function GalaxyCameraRig({
       camera.position.add(appliedOffsetRef.current);
       controlsRef.current.target.add(appliedOffsetRef.current);
     } else {
-      // Parallax disabled or paused — decay any residual offset back to 0.
       currentOffsetRef.current.set(0, 0, 0);
     }
   });
@@ -207,14 +237,20 @@ export function GalaxyCameraRig({
       }}
       enableDamping
       dampingFactor={0.08}
-      enablePan={false}
+      enablePan
+      panSpeed={0.6}
+      mouseButtons={{
+        LEFT: THREE.MOUSE.ROTATE,
+        MIDDLE: THREE.MOUSE.DOLLY,
+        RIGHT: THREE.MOUSE.PAN,
+      }}
       minDistance={4}
       maxDistance={90}
+      zoomToCursor
       autoRotate={autoRotate && !flyState.current}
       autoRotateSpeed={0.45}
       onStart={() => {
         draggingRef.current = true;
-        onUserInteract();
       }}
       onEnd={() => {
         draggingRef.current = false;

@@ -9,6 +9,7 @@ interface GalaxyEdgesProps {
   edges: GalaxyEdge[];
   nodeVisibleMask: Uint8Array;
   hoveredNodeId: string | null;
+  selectedNodeId?: string | null;
   edgeConfig: GalaxyVfxConfig["edges"];
   onEdgeHover: (
     edge: GalaxyEdge | null,
@@ -22,17 +23,20 @@ const EDGE_VS = /* glsl */ `
   attribute float aSegId;
   attribute float aIntensity;
   attribute float aBoost;
+  attribute float aSelected;
   varying vec3 vColor;
   varying float vSegT;
   varying float vSegId;
   varying float vIntensity;
   varying float vBoost;
+  varying float vSelected;
   void main() {
     vColor = aColor;
     vSegT = aSegT;
     vSegId = aSegId;
     vIntensity = aIntensity;
     vBoost = aBoost;
+    vSelected = aSelected;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }
 `;
@@ -44,23 +48,24 @@ const EDGE_FS = /* glsl */ `
   varying float vSegId;
   varying float vIntensity;
   varying float vBoost;
+  varying float vSelected;
   uniform float uTime;
   uniform float uPulseStrength;
   uniform float uPulseSpeed;
   uniform float uBaseGlow;
+  uniform float uRevealProgress;
 
   void main() {
-    // Hard-suppress edges marked as not visible (intensity ~ 0)
     if (vIntensity < 0.02) discard;
 
-    // base color with intensity
+    // Clip selected edges at current reveal progress (draw outward from t=0)
+    if (vSelected > 0.5 && vSegT > uRevealProgress) discard;
+
     vec3 base = vColor * vIntensity * uBaseGlow;
 
-    // pulse: a soft moving bump along the segment
     float speed = uPulseSpeed * mix(1.0, 1.8, step(1.5, vBoost));
     float offset = fract(vSegId * 0.3137);
     float head = fract(vSegT - uTime * speed + offset);
-    // Sharp bright pulse (smooth bump near 0)
     float pulse = exp(-pow(head * 6.0, 2.0))
                 + 0.5 * exp(-pow((head - 1.0) * 6.0, 2.0));
     float pulseScale = uPulseStrength * mix(0.6, 1.6, step(1.5, vBoost));
@@ -76,11 +81,13 @@ export function GalaxyEdges({
   edges,
   nodeVisibleMask,
   hoveredNodeId,
+  selectedNodeId,
   edgeConfig,
   onEdgeHover,
 }: GalaxyEdgesProps) {
   const lineRef = useRef<THREE.LineSegments>(null);
   const matRef = useRef<THREE.ShaderMaterial>(null);
+  const revealProgressRef = useRef(1.0);
 
   const { positions, colors, segT, segId } = useMemo(() => {
     const pos = new Float32Array(edges.length * 6);
@@ -112,6 +119,19 @@ export function GalaxyEdges({
     [edges.length]
   );
 
+  // Create aSelected buffer imperatively so R3F reconciliation never resets it
+  useEffect(() => {
+    if (!lineRef.current) return;
+    const geom = lineRef.current.geometry;
+    if (!geom.getAttribute("aSelected")) {
+      geom.setAttribute(
+        "aSelected",
+        new THREE.BufferAttribute(new Float32Array(edges.length * 2), 1)
+      );
+    }
+  }, [edges.length]);
+
+  // Intensity / boost update
   useEffect(() => {
     if (!lineRef.current) return;
     const geom = lineRef.current.geometry;
@@ -152,13 +172,49 @@ export function GalaxyEdges({
     boostAttr.needsUpdate = true;
   }, [edges, nodeVisibleMask, hoveredNodeId]);
 
-  useFrame((state) => {
-    if (matRef.current) {
-      matRef.current.uniforms.uTime.value = state.clock.elapsedTime;
+  // Selection reveal: update aSelected buffer and trigger animation
+  useEffect(() => {
+    if (!lineRef.current) return;
+    const geom = lineRef.current.geometry;
+    const selAttr = geom.getAttribute("aSelected") as
+      | THREE.BufferAttribute
+      | undefined;
+    if (!selAttr) return;
+
+    if (selectedNodeId == null) {
+      // No selection — mark all edges unselected, snap reveal to fully visible
+      for (let i = 0; i < edges.length * 2; i++) selAttr.setX(i, 0.0);
+      revealProgressRef.current = 1.0;
+      if (matRef.current) matRef.current.uniforms.uRevealProgress.value = 1.0;
+    } else {
+      // Mark edges connected to the selected node, reset reveal
+      for (let i = 0; i < edges.length; i++) {
+        const e = edges[i];
+        const isConn =
+          e.fromId === selectedNodeId || e.toId === selectedNodeId ? 1.0 : 0.0;
+        selAttr.setX(i * 2, isConn);
+        selAttr.setX(i * 2 + 1, isConn);
+      }
+      revealProgressRef.current = 0.0;
+      if (matRef.current) matRef.current.uniforms.uRevealProgress.value = 0.0;
+    }
+    selAttr.needsUpdate = true;
+  }, [edges, selectedNodeId]);
+
+  useFrame((state, delta) => {
+    if (!matRef.current) return;
+    matRef.current.uniforms.uTime.value = state.clock.elapsedTime;
+
+    if (revealProgressRef.current < 1.0) {
+      revealProgressRef.current = Math.min(
+        1.0,
+        revealProgressRef.current + delta / 0.6
+      );
+      matRef.current.uniforms.uRevealProgress.value = revealProgressRef.current;
     }
   });
 
-  // Sync shader uniforms when variant changes
+  // Sync edge config uniforms
   useEffect(() => {
     if (!matRef.current) return;
     matRef.current.uniforms.uPulseStrength.value = edgeConfig.pulseStrength;
@@ -242,6 +298,7 @@ export function GalaxyEdges({
           uPulseStrength: { value: edgeConfig.pulseStrength },
           uPulseSpeed: { value: edgeConfig.pulseSpeed },
           uBaseGlow: { value: edgeConfig.baseGlow },
+          uRevealProgress: { value: 1.0 },
         }}
       />
     </lineSegments>

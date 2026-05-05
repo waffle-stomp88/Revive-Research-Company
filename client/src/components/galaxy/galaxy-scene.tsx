@@ -30,6 +30,8 @@ interface GalaxySceneProps {
   onNodeMeta: (nodes: GalaxyNode[]) => void;
   resetSignal: number;
   vfxVariant?: GalaxyVfxVariant;
+  onLoaded?: () => void;
+  doEntry?: boolean;
 }
 
 export function GalaxyScene({
@@ -42,6 +44,8 @@ export function GalaxyScene({
   onNodeMeta,
   resetSignal,
   vfxVariant = "cinematic",
+  onLoaded,
+  doEntry = false,
 }: GalaxySceneProps) {
   const layout = useMemo(() => buildGalaxyLayout(), []);
   const { nodes, edges } = layout;
@@ -54,19 +58,22 @@ export function GalaxyScene({
   const [autoRotate, setAutoRotate] = useState(true);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Surface node meta to parent (after mount; never during render)
+  // Signal parent that scene has mounted
+  useEffect(() => {
+    onLoaded?.();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Surface node meta to parent
   useEffect(() => {
     onNodeMeta(nodes);
   }, [nodes, onNodeMeta]);
 
-  // Cleanup idle timer on unmount
   useEffect(() => {
     return () => {
       if (idleTimer.current) clearTimeout(idleTimer.current);
     };
   }, []);
 
-  // Adjacency map: node id -> set of connected node ids (via edges)
   const adjacency = useMemo(() => {
     const m = new Map<string, Set<string>>();
     for (const e of edges) {
@@ -84,10 +91,7 @@ export function GalaxyScene({
     for (let i = 0; i < nodes.length; i++) {
       const n = nodes[i];
       const sysOk = visibleSystemIds.has(n.systemId);
-      if (!sysOk) {
-        m[i] = 0;
-        continue;
-      }
+      if (!sysOk) { m[i] = 0; continue; }
       if (lower.length > 0) {
         const matches =
           n.name.toLowerCase().includes(lower) ||
@@ -108,9 +112,7 @@ export function GalaxyScene({
       for (let i = 0; i < nodes.length; i++) m[i] = visibleMask[i];
       return m;
     }
-    for (let i = 0; i < nodes.length; i++) {
-      m[i] = visibleMask[i] === 1 ? 1 : 0;
-    }
+    for (let i = 0; i < nodes.length; i++) m[i] = visibleMask[i] === 1 ? 1 : 0;
     return m;
   }, [nodes, visibleMask, searchTerm]);
 
@@ -119,9 +121,7 @@ export function GalaxyScene({
     const set = adjacency.get(hoveredId);
     if (!set) return null;
     const m = new Uint8Array(nodes.length);
-    for (let i = 0; i < nodes.length; i++) {
-      m[i] = set.has(nodes[i].id) ? 1 : 0;
-    }
+    for (let i = 0; i < nodes.length; i++) m[i] = set.has(nodes[i].id) ? 1 : 0;
     return m;
   }, [adjacency, hoveredId, nodes]);
 
@@ -136,10 +136,7 @@ export function GalaxyScene({
       const n = nodes.find((x) => x.id === id);
       if (!n) return;
       handleUserInteract();
-      setFlyTarget({
-        position: [n.position[0], n.position[1], n.position[2]],
-        mode: "warp",
-      });
+      setFlyTarget({ position: [n.position[0], n.position[1], n.position[2]], mode: "warp" });
       onSelect(id);
     },
     [nodes, onSelect, handleUserInteract]
@@ -150,21 +147,23 @@ export function GalaxyScene({
       const n = nodes.find((x) => x.id === id);
       if (n) {
         handleUserInteract();
-        setFlyTarget({
-          position: [n.position[0], n.position[1], n.position[2]],
-          mode: "pan",
-        });
+        setFlyTarget({ position: [n.position[0], n.position[1], n.position[2]], mode: "pan" });
       }
       onSelect(id);
     },
     [nodes, onSelect, handleUserInteract]
   );
 
+  const hoveredNode = hoveredId ? nodes.find((x) => x.id === hoveredId) : null;
+
+  // Canvas starts far out in deep space for the discovery entry; normal view otherwise.
+  const initialCamPos: [number, number, number] = doEntry ? [0, 15, 120] : [0, 6, 48];
+
   return (
     <div className="absolute inset-0">
       <Canvas
         dpr={[1, 1.75]}
-        camera={{ position: [0, 6, 48], fov: 55, near: 0.1, far: 200 }}
+        camera={{ position: initialCamPos, fov: 55, near: 0.1, far: 200 }}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         onCreated={({ gl }) => {
           gl.setClearColor(
@@ -184,6 +183,7 @@ export function GalaxyScene({
           edges={edges}
           nodeVisibleMask={visibleMask}
           hoveredNodeId={hoveredId}
+          selectedNodeId={selectedId}
           edgeConfig={vfx.edges}
           onEdgeHover={(edge, pointer) => {
             if (edge && pointer) setEdgeHover({ edge, pointer });
@@ -212,6 +212,30 @@ export function GalaxyScene({
           vfxVariant={vfxVariant}
         />
         <GalaxyEffects config={vfx.bloom} />
+
+        {/* Targeting reticle on hover */}
+        {hoveredNode && (
+          <Html
+            position={hoveredNode.position}
+            center
+            zIndexRange={[100, 200]}
+            style={{ pointerEvents: "none" }}
+          >
+            <div
+              className="galaxy-reticle"
+              style={{ color: hoveredNode.color }}
+              data-testid="galaxy-reticle"
+            >
+              <div className="galaxy-reticle-corner galaxy-reticle-corner-tl" style={{ borderColor: hoveredNode.color }} />
+              <div className="galaxy-reticle-corner galaxy-reticle-corner-tr" style={{ borderColor: hoveredNode.color }} />
+              <div className="galaxy-reticle-corner galaxy-reticle-corner-bl" style={{ borderColor: hoveredNode.color }} />
+              <div className="galaxy-reticle-corner galaxy-reticle-corner-br" style={{ borderColor: hoveredNode.color }} />
+              <div className="galaxy-reticle-dot" style={{ backgroundColor: hoveredNode.color }} />
+            </div>
+          </Html>
+        )}
+
+        {/* Star hover label */}
         {hoveredId &&
           (() => {
             const n = nodes.find((x) => x.id === hoveredId);
@@ -220,19 +244,15 @@ export function GalaxyScene({
               <Html
                 position={n.position}
                 center
-                distanceFactor={14}
                 zIndexRange={[100, 0]}
                 style={{ pointerEvents: "none" }}
               >
                 <div
-                  className="px-3 py-1.5 rounded-md bg-background/85 backdrop-blur-md border text-xs flex items-center gap-2 shadow-lg whitespace-nowrap -translate-y-8 transition-opacity duration-150"
-                  style={{ borderColor: `${n.color}66` }}
+                  className="px-3 py-1.5 rounded-md bg-background/85 backdrop-blur-md border flex items-center gap-2 shadow-lg whitespace-nowrap -translate-y-8 transition-opacity duration-150"
+                  style={{ fontSize: "13px", borderColor: `${n.color}66` }}
                   data-testid="galaxy-hover-label"
                 >
-                  <span
-                    className="inline-block w-2 h-2 rounded-full"
-                    style={{ backgroundColor: n.color }}
-                  />
+                  <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: n.color }} />
                   <span className="font-medium">{n.name}</span>
                   <span className="text-muted-foreground">·</span>
                   <span style={{ color: n.color }}>{n.systemName}</span>
@@ -240,8 +260,7 @@ export function GalaxyScene({
                     <>
                       <span className="text-muted-foreground">·</span>
                       <span className="text-muted-foreground">
-                        {n.synergyCount} link
-                        {n.synergyCount === 1 ? "" : "s"}
+                        {n.synergyCount} link{n.synergyCount === 1 ? "" : "s"}
                       </span>
                     </>
                   )}
@@ -249,13 +268,14 @@ export function GalaxyScene({
               </Html>
             );
           })()}
+
         <GalaxyCameraRig
           flyTarget={flyTarget}
           onFlyComplete={() => setFlyTarget(null)}
           resetSignal={resetSignal}
-          autoRotate={autoRotate}
-          onUserInteract={handleUserInteract}
+          autoRotate={autoRotate && !hoveredId}
           parallax={vfx.parallax}
+          doEntry={doEntry}
         />
       </Canvas>
 
@@ -263,10 +283,7 @@ export function GalaxyScene({
       {edgeHover && (
         <div
           className="pointer-events-none fixed z-20"
-          style={{
-            left: edgeHover.pointer.x + 12,
-            top: edgeHover.pointer.y + 12,
-          }}
+          style={{ left: edgeHover.pointer.x + 12, top: edgeHover.pointer.y + 12 }}
           data-testid="galaxy-edge-tooltip"
         >
           <div className="px-3 py-1.5 rounded-md bg-background/90 border border-[#E7FB10]/40 text-xs shadow-lg max-w-xs">
@@ -276,27 +293,18 @@ export function GalaxyScene({
                   Appears in {edgeHover.edge.stacks.length} stacks
                 </div>
                 {edgeHover.edge.stacks.map((s, i) => (
-                  <div
-                    key={`${s.name}-${i}`}
-                    className="flex items-center gap-2"
-                  >
+                  <div key={`${s.name}-${i}`} className="flex items-center gap-2">
                     <span className="font-medium text-[#E7FB10]">{s.name}</span>
                     <span className="text-muted-foreground">·</span>
-                    <span className="text-muted-foreground">
-                      synergy {s.synergyBonus}
-                    </span>
+                    <span className="text-muted-foreground">synergy {s.synergyBonus}</span>
                   </div>
                 ))}
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <span className="font-medium text-[#E7FB10]">
-                  {edgeHover.edge.stackName}
-                </span>
+                <span className="font-medium text-[#E7FB10]">{edgeHover.edge.stackName}</span>
                 <span className="text-muted-foreground">·</span>
-                <span className="text-muted-foreground">
-                  synergy {edgeHover.edge.synergyBonus}
-                </span>
+                <span className="text-muted-foreground">synergy {edgeHover.edge.synergyBonus}</span>
               </div>
             )}
           </div>

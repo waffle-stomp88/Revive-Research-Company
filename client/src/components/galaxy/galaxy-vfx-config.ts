@@ -57,12 +57,12 @@ export const GALAXY_VFX: Record<GalaxyVfxVariant, GalaxyVfxConfig> = {
   cinematic: {
     bloom: { strength: 0.65, radius: 0.32, threshold: 0.55 },
     halo: {
-      baseScale: 1.8,
-      hoverScale: 3.8,
-      selectedScale: 3.2,
+      baseScale: 1.1,
+      hoverScale: 2.0,
+      selectedScale: 1.7,
       baseAlpha: 0,
-      hoverAlpha: 0.9,
-      pulseAmount: 0.18,
+      hoverAlpha: 0.72,
+      pulseAmount: 0.12,
     },
     edges: {
       pulseStrength: 1.2,

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo, useState, useCallback } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Loader2, ArrowRight } from "lucide-react";
@@ -40,6 +40,8 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+type EntryPhase = "loading" | "entry" | "done";
+
 export default function GalaxyPage() {
   const allSystems = useMemo(() => new Set(BODY_SYSTEMS.map((s) => s.id)), []);
   const [visibleSystems, setVisibleSystems] = useState<Set<string>>(allSystems);
@@ -49,6 +51,13 @@ export default function GalaxyPage() {
   const [resetSignal, setResetSignal] = useState(0);
   const [forceFallback, setForceFallback] = useState(false);
   const [nodeMeta, setNodeMeta] = useState<GalaxyNode[]>([]);
+
+  // Compute once: whether we should play the cinematic entry
+  const doEntry = useMemo(() => !prefersReducedMotion(), []);
+
+  // Entry phase state: loading → entry → done
+  const [entryPhase, setEntryPhase] = useState<EntryPhase>("loading");
+  const entryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Decide rendering path on mount
   const [useFallback, setUseFallback] = useState<boolean | null>(null);
@@ -79,10 +88,26 @@ export default function GalaxyPage() {
     }
   }, []);
 
-  // Deep-link via ?peptide=<slug-or-id> to auto-open a side panel
+  // Called when the 3D scene mounts — starts the UI-chrome timer
+  const handleSceneLoaded = useCallback(() => {
+    if (!doEntry) {
+      setEntryPhase("done");
+      return;
+    }
+    setEntryPhase("entry");
+    // UI fades in 0.4s after the 1.8s camera animation settles
+    // 2.8s camera fly + 0.5s grace before UI chrome fades in
+    entryTimerRef.current = setTimeout(() => setEntryPhase("done"), 3300);
+  }, [doEntry]);
+
+  useEffect(() => {
+    return () => {
+      if (entryTimerRef.current) clearTimeout(entryTimerRef.current);
+    };
+  }, []);
+
   const [location] = useLocation();
 
-  // VFX variant via ?vfx=cinematic|minimal (defaults to cinematic)
   const [vfxVariant, setVfxVariant] = useState(() => {
     if (typeof window === "undefined") return resolveVfxVariant(null);
     const params = new URLSearchParams(window.location.search);
@@ -109,7 +134,6 @@ export default function GalaxyPage() {
     if (match) setSelectedId(match.id);
   }, [location]);
 
-  // Surface node list for the side panel
   const layout = useMemo(() => buildGalaxyLayout(), []);
   const handleNodeMeta = useCallback((nodes: GalaxyNode[]) => {
     setNodeMeta(nodes);
@@ -137,6 +161,7 @@ export default function GalaxyPage() {
   }, []);
 
   const showFallback = forceFallback || useFallback === true;
+  const uiVisible = entryPhase === "done";
 
   const handleTry3D = useCallback(() => {
     if (typeof window !== "undefined") {
@@ -166,8 +191,13 @@ export default function GalaxyPage() {
         ogImage="https://reviveresearch.co/assets/logo.png"
       />
 
-      {/* Header strip */}
-      <div className="absolute top-0 left-0 right-0 z-20 pt-24 md:pt-28 pb-3 px-4 md:px-8 pointer-events-none">
+      {/* Header strip — fades in after entry */}
+      <motion.div
+        className="absolute top-0 left-0 right-0 z-20 pt-24 md:pt-28 pb-3 px-4 md:px-8 pointer-events-none"
+        animate={{ opacity: uiVisible || showFallback ? 1 : 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        style={{ pointerEvents: uiVisible || showFallback ? undefined : "none" }}
+      >
         <div className="max-w-7xl mx-auto flex items-end justify-between gap-4 flex-wrap">
           <motion.div
             initial={{ opacity: 0, y: 8 }}
@@ -190,7 +220,7 @@ export default function GalaxyPage() {
             </p>
           </motion.div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Galaxy canvas / fallback */}
       {useFallback === null ? (
@@ -216,13 +246,20 @@ export default function GalaxyPage() {
         </div>
       ) : (
         <>
-          <GalaxyFilterBar
-            visibleSystems={visibleSystems}
-            toggleSystem={toggleSystem}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            onReset={handleReset}
-          />
+          {/* Filter bar — fades in after entry */}
+          <motion.div
+            animate={{ opacity: uiVisible ? 1 : 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            style={{ pointerEvents: uiVisible ? undefined : "none" }}
+          >
+            <GalaxyFilterBar
+              visibleSystems={visibleSystems}
+              toggleSystem={toggleSystem}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              onReset={handleReset}
+            />
+          </motion.div>
 
           <Suspense
             fallback={
@@ -250,6 +287,8 @@ export default function GalaxyPage() {
                 onNodeMeta={handleNodeMeta}
                 resetSignal={resetSignal}
                 vfxVariant={vfxVariant}
+                onLoaded={handleSceneLoaded}
+                doEntry={doEntry}
               />
             </ErrorBoundary>
           </Suspense>
@@ -258,20 +297,32 @@ export default function GalaxyPage() {
             {selectedNode && (
               <GalaxySidePanel
                 node={selectedNode}
-                onClose={() => setSelectedId(null)}
+                onClose={() => {
+                    setSelectedId(null);
+                    setResetSignal((n) => n + 1);
+                  }}
               />
             )}
           </AnimatePresence>
 
-          {/* Bottom hint strip */}
-          <div className="absolute bottom-3 md:bottom-4 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
+          {/* Bottom hints — fades in after entry */}
+          <motion.div
+            className="absolute bottom-3 md:bottom-4 left-1/2 -translate-x-1/2 z-10 pointer-events-none"
+            animate={{ opacity: uiVisible ? 1 : 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          >
             <div className="px-3 py-1.5 rounded-full bg-background/70 backdrop-blur-md border border-border text-[10px] text-muted-foreground">
               Drag to orbit · scroll to zoom · click a star to inspect · double-click to warp in
             </div>
-          </div>
+          </motion.div>
 
-          {/* Discover stacks footer link */}
-          <div className="absolute bottom-3 md:bottom-4 right-4 md:right-8 z-10">
+          {/* Stacks link — fades in after entry */}
+          <motion.div
+            className="absolute bottom-3 md:bottom-4 right-4 md:right-8 z-10"
+            animate={{ opacity: uiVisible ? 1 : 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            style={{ pointerEvents: uiVisible ? undefined : "none" }}
+          >
             <Link href="/research-stacks">
               <Button
                 size="sm"
@@ -283,7 +334,7 @@ export default function GalaxyPage() {
                 <ArrowRight className="h-3.5 w-3.5" />
               </Button>
             </Link>
-          </div>
+          </motion.div>
         </>
       )}
     </main>

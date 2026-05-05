@@ -583,6 +583,69 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;  /* Chrome, Safari and Opera */
   }
+
+  /* Galaxy targeting reticle */
+  @keyframes galaxy-reticle-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes galaxy-reticle-dot-pulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    50% { transform: translate(-50%, -50%) scale(1.6); opacity: 0.6; }
+  }
+
+  .galaxy-reticle {
+    width: 64px;
+    height: 64px;
+    position: relative;
+    animation: galaxy-reticle-rotate 3s linear infinite;
+  }
+
+  .galaxy-reticle-corner {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-width: 2px;
+    border-style: solid;
+  }
+
+  .galaxy-reticle-corner-tl {
+    top: 0; left: 0;
+    border-right: none;
+    border-bottom: none;
+    border-radius: 1px 0 0 0;
+  }
+
+  .galaxy-reticle-corner-tr {
+    top: 0; right: 0;
+    border-left: none;
+    border-bottom: none;
+    border-radius: 0 1px 0 0;
+  }
+
+  .galaxy-reticle-corner-bl {
+    bottom: 0; left: 0;
+    border-right: none;
+    border-top: none;
+    border-radius: 0 0 0 1px;
+  }
+
+  .galaxy-reticle-corner-br {
+    bottom: 0; right: 0;
+    border-left: none;
+    border-top: none;
+    border-radius: 0 0 1px 0;
+  }
+
+  .galaxy-reticle-dot {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: galaxy-reticle-dot-pulse 1.2s ease-in-out infinite;
+  }
 }
 
 /* Age verification modal - Samsung Internet / mobile browser compatible */

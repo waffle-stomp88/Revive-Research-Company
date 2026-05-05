@@ -1,5 +1,5 @@
 import { PEPTIDE_PATHWAYS, type PeptidePathway } from "@/data/peptide-pathways";
-import { KNOWN_STACKS, type KnownStack } from "@/data/known-stacks";
+import { KNOWN_STACKS, type KnownStack } from "@/lib/synergy-data";
 import { BODY_SYSTEMS, getSystemColor } from "@/data/body-systems";
 
 export interface GalaxyNode {
@@ -221,15 +221,28 @@ export function buildGalaxyLayout(): GalaxyLayout {
   const edgeIndex = new Map<string, number>();
 
   for (const stack of KNOWN_STACKS) {
+    // detailPageId is optional — only exists on the curated known-stacks entries
+    const detailPageId = (stack as KnownStack & { detailPageId?: string }).detailPageId;
+
+    // Resolve each peptide ref to a node id, deduplicating so a single peptide
+    // that matches multiple refs (e.g. melanotan-i and melanotan-ii both → "melanotan")
+    // doesn't appear twice in the same stack and create self-loop edges.
+    const seen = new Set<string>();
     const stackIds: string[] = [];
     for (const ref of stack.peptides) {
       const matchId = findNodeIdForPeptideRef(ref, lookup);
-      if (matchId) stackIds.push(matchId);
+      if (matchId && !seen.has(matchId)) {
+        seen.add(matchId);
+        stackIds.push(matchId);
+      }
     }
+
     for (let i = 0; i < stackIds.length; i++) {
       for (let j = i + 1; j < stackIds.length; j++) {
         const a = stackIds[i];
         const b = stackIds[j];
+        // Guard against any remaining self-loops
+        if (a === b) continue;
         const key = a < b ? `${a}|${b}` : `${b}|${a}`;
         const ai = nodeIndex[a];
         const bi = nodeIndex[b];
@@ -239,14 +252,14 @@ export function buildGalaxyLayout(): GalaxyLayout {
           const existing = edges[existingIdx];
           existing.stacks.push({
             name: stack.name,
-            id: stack.detailPageId,
+            id: detailPageId,
             synergyBonus: stack.synergyBonus,
           });
           if (stack.synergyBonus > existing.synergyBonus) {
             existing.synergyBonus = stack.synergyBonus;
             existing.weight = Math.max(0.15, (stack.synergyBonus - 80) / 20);
             existing.stackName = stack.name;
-            existing.stackId = stack.detailPageId;
+            existing.stackId = detailPageId;
           }
           continue;
         }
@@ -261,14 +274,8 @@ export function buildGalaxyLayout(): GalaxyLayout {
           toColor: nodes[bi].color,
           weight,
           stackName: stack.name,
-          stackId: stack.detailPageId,
-          stacks: [
-            {
-              name: stack.name,
-              id: stack.detailPageId,
-              synergyBonus: stack.synergyBonus,
-            },
-          ],
+          stackId: detailPageId,
+          stacks: [{ name: stack.name, id: detailPageId, synergyBonus: stack.synergyBonus }],
           synergyBonus: stack.synergyBonus,
         });
       }

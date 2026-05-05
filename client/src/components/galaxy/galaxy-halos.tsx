@@ -108,7 +108,9 @@ export function GalaxyHalos({
       pos[i * 3] = n.position[0];
       pos[i * 3 + 1] = n.position[1];
       pos[i * 3 + 2] = n.position[2];
-      siz[i] = n.size * haloConfig.baseScale;
+      // Square the size so hub nodes (many stacks) glow dramatically larger
+      // than leaf nodes. n.size ranges ~0.55–1.59, so squaring gives ~8× range.
+      siz[i] = n.size * n.size * haloConfig.baseScale;
       c.set(n.color);
       col[i * 3] = c.r;
       col[i * 3 + 1] = c.g;
@@ -135,7 +137,9 @@ export function GalaxyHalos({
       // Dim non-connected when hovered: only the hovered node itself gets the big halo here.
       // (Edges + stars handle the connectivity dimming.)
       let boost = 0;
-      let size = n.size * haloConfig.baseScale;
+      // Squared size makes hub nodes (many connections) glow much larger than leaf nodes
+      const idleSize = n.size * n.size * haloConfig.baseScale;
+      let size = idleSize;
       if (!visible) {
         boost = 0;
       } else if (isHover) {
@@ -146,10 +150,10 @@ export function GalaxyHalos({
         size = n.size * haloConfig.selectedScale;
       } else if (highlight && searchActive) {
         boost = 2;
-        size = n.size * haloConfig.baseScale;
+        size = idleSize;
       } else {
         boost = 1;
-        size = n.size * haloConfig.baseScale;
+        size = idleSize;
       }
       sizeAttr.setX(i, size);
       boostAttr.setX(i, boost);
