@@ -63,6 +63,9 @@ export function GalaxyHyperspaceOverlay({ isActive, totalDurationMs }: Props) {
     startRef.current = performance.now();
 
     const render = (now: number) => {
+      // NOTE: render is also called synchronously below (frame 0) to ensure the
+      // white flash paints before the first rAF tick, closing the one-frame gap
+      // where the canvas is transparent and the 3D galaxy bleeds through.
       const p = Math.min(1, (now - startRef.current) / totalDurationMs);
 
       const w = canvas.width, h = canvas.height;
@@ -186,6 +189,9 @@ export function GalaxyHyperspaceOverlay({ isActive, totalDurationMs }: Props) {
       }
     };
 
+    // Paint frame 0 synchronously so the white flash covers the canvas before
+    // the browser composites the next frame — prevents one-frame galaxy bleed.
+    render(performance.now());
     rafRef.current = requestAnimationFrame(render);
     return () => {
       cancelAnimationFrame(rafRef.current);
