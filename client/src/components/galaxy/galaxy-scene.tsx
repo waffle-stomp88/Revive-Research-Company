@@ -15,6 +15,7 @@ import { GalaxyHalos } from "./galaxy-halos";
 import { GalaxyEffects } from "./galaxy-effects";
 import { GalaxyNebula } from "./galaxy-nebula";
 import { GalaxyDistantGalaxy } from "./galaxy-distant-galaxy";
+import { GalaxyWarpStreaks } from "./galaxy-warp-streaks";
 import {
   GALAXY_VFX,
   type GalaxyVfxVariant,
@@ -32,6 +33,8 @@ interface GalaxySceneProps {
   vfxVariant?: GalaxyVfxVariant;
   onLoaded?: () => void;
   doEntry?: boolean;
+  onWarp?: () => void;
+  onHoverSound?: () => void;
 }
 
 export function GalaxyScene({
@@ -46,6 +49,8 @@ export function GalaxyScene({
   vfxVariant = "cinematic",
   onLoaded,
   doEntry = false,
+  onWarp,
+  onHoverSound,
 }: GalaxySceneProps) {
   const layout = useMemo(() => buildGalaxyLayout(), []);
   const { nodes, edges } = layout;
@@ -57,6 +62,10 @@ export function GalaxyScene({
   const [flyTarget, setFlyTarget] = useState<FlyTarget | null>(null);
   const [autoRotate, setAutoRotate] = useState(true);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Warp streak state
+  const [isWarping, setIsWarping] = useState(false);
+  const [warpKey, setWarpKey] = useState(0);
 
   // Signal parent that scene has mounted
   useEffect(() => {
@@ -73,6 +82,15 @@ export function GalaxyScene({
       if (idleTimer.current) clearTimeout(idleTimer.current);
     };
   }, []);
+
+  // Fire hover sound when hoveredId changes to a non-null value
+  const prevHoveredId = useRef<string | null>(null);
+  useEffect(() => {
+    if (hoveredId && hoveredId !== prevHoveredId.current) {
+      onHoverSound?.();
+    }
+    prevHoveredId.current = hoveredId;
+  }, [hoveredId, onHoverSound]);
 
   const adjacency = useMemo(() => {
     const m = new Map<string, Set<string>>();
@@ -138,8 +156,12 @@ export function GalaxyScene({
       handleUserInteract();
       setFlyTarget({ position: [n.position[0], n.position[1], n.position[2]], mode: "warp" });
       onSelect(id);
+      // Trigger warp streaks
+      setIsWarping(true);
+      setWarpKey((k) => k + 1);
+      onWarp?.();
     },
-    [nodes, onSelect, handleUserInteract]
+    [nodes, onSelect, handleUserInteract, onWarp]
   );
 
   const handleSelect = useCallback(
@@ -157,13 +179,13 @@ export function GalaxyScene({
   const hoveredNode = hoveredId ? nodes.find((x) => x.id === hoveredId) : null;
 
   // Canvas starts far out in deep space for the discovery entry; normal view otherwise.
-  const initialCamPos: [number, number, number] = doEntry ? [0, 15, 120] : [0, 6, 48];
+  const initialCamPos: [number, number, number] = doEntry ? [0, 30, 320] : [0, 6, 48];
 
   return (
     <div className="absolute inset-0">
       <Canvas
         dpr={[1, 1.75]}
-        camera={{ position: initialCamPos, fov: 55, near: 0.1, far: 200 }}
+        camera={{ position: initialCamPos, fov: 55, near: 0.1, far: 500 }}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         onCreated={({ gl }) => {
           gl.setClearColor(
@@ -212,6 +234,7 @@ export function GalaxyScene({
           vfxVariant={vfxVariant}
         />
         <GalaxyEffects config={vfx.bloom} />
+        <GalaxyWarpStreaks isWarping={isWarping} warpKey={warpKey} />
 
         {/* Targeting reticle on hover */}
         {hoveredNode && (
@@ -271,7 +294,10 @@ export function GalaxyScene({
 
         <GalaxyCameraRig
           flyTarget={flyTarget}
-          onFlyComplete={() => setFlyTarget(null)}
+          onFlyComplete={() => {
+            setFlyTarget(null);
+            setIsWarping(false);
+          }}
           resetSignal={resetSignal}
           autoRotate={autoRotate && !hoveredId}
           parallax={vfx.parallax}

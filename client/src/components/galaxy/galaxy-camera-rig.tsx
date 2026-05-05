@@ -100,19 +100,19 @@ export function GalaxyCameraRig({
 
   // Cinematic entry — runs once on mount when doEntry is true.
   // Starts far out in "deep space" and flies inward to the galaxy.
-  // Canvas is already initialised with camera at [0,15,120].
+  // Canvas is already initialised with camera at [0,30,320].
   useEffect(() => {
     if (!doEntry) return;
     flyState.current = {
-      fromPos: new THREE.Vector3(0, 15, 120),
+      fromPos: new THREE.Vector3(0, 30, 320),
       fromTarget: new THREE.Vector3(0, 0, 0),
       toPos: new THREE.Vector3(0, 6, 48),
       toTarget: new THREE.Vector3(0, 0, 0),
       t: 0,
-      duration: 2.8,
-      easePower: 2.5,
+      duration: 4.2,
+      easePower: 2.8,
       easeMode: "inout",
-      fovPull: 18,
+      fovPull: 28,
       fovMode: "narrow",
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps

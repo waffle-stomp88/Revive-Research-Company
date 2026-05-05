@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Loader2, ArrowRight } from "lucide-react";
+import { Sparkles, Loader2, ArrowRight, Volume2, VolumeX } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { SEOHead } from "@/components/seo-head";
@@ -14,6 +14,8 @@ import { GalaxySvgFallback } from "@/components/galaxy/galaxy-svg-fallback";
 import { GalaxyFilterBar } from "@/components/galaxy/galaxy-filter-bar";
 import { GalaxySidePanel } from "@/components/galaxy/galaxy-side-panel";
 import { resolveVfxVariant } from "@/components/galaxy/galaxy-vfx-config";
+import { useGalaxyAudio } from "@/hooks/useGalaxyAudio";
+import { GalaxyHyperspaceOverlay } from "@/components/galaxy/galaxy-hyperspace-overlay";
 
 const GalaxyScene = lazy(() =>
   import("@/components/galaxy/galaxy-scene").then((m) => ({
@@ -52,8 +54,13 @@ export default function GalaxyPage() {
   const [forceFallback, setForceFallback] = useState(false);
   const [nodeMeta, setNodeMeta] = useState<GalaxyNode[]>([]);
 
+  // Audio hook — only active when 3D canvas is shown and reduced motion is off
+  const reducedMotion = useMemo(() => prefersReducedMotion(), []);
+  const audio = useGalaxyAudio();
+  const ambientStarted = useRef(false);
+
   // Compute once: whether we should play the cinematic entry
-  const doEntry = useMemo(() => !prefersReducedMotion(), []);
+  const doEntry = useMemo(() => !reducedMotion, [reducedMotion]);
 
   // Entry phase state: loading → entry → done
   const [entryPhase, setEntryPhase] = useState<EntryPhase>("loading");
@@ -75,11 +82,11 @@ export default function GalaxyPage() {
       return;
     }
     const noWebGL = !detectWebGL();
-    const reducedMotion = prefersReducedMotion();
+    const rm = prefersReducedMotion();
     if (noWebGL) {
       setFallbackReason("no-webgl");
       setUseFallback(true);
-    } else if (reducedMotion) {
+    } else if (rm) {
       setFallbackReason("reduced-motion");
       setUseFallback(true);
     } else {
@@ -95,9 +102,8 @@ export default function GalaxyPage() {
       return;
     }
     setEntryPhase("entry");
-    // UI fades in 0.4s after the 1.8s camera animation settles
-    // 2.8s camera fly + 0.5s grace before UI chrome fades in
-    entryTimerRef.current = setTimeout(() => setEntryPhase("done"), 3300);
+    // 4.2s camera fly + 0.5s grace before UI chrome fades in
+    entryTimerRef.current = setTimeout(() => setEntryPhase("done"), 4800);
   }, [doEntry]);
 
   useEffect(() => {
@@ -159,6 +165,13 @@ export default function GalaxyPage() {
     setSelectedId(null);
     setResetSignal((n) => n + 1);
   }, []);
+
+  // Start ambient on first canvas interaction (user gesture satisfies browser policy)
+  const handleCanvasFirstClick = useCallback(() => {
+    if (ambientStarted.current || reducedMotion) return;
+    ambientStarted.current = true;
+    audio.startAmbient();
+  }, [audio, reducedMotion]);
 
   const showFallback = forceFallback || useFallback === true;
   const uiVisible = entryPhase === "done";
@@ -261,37 +274,53 @@ export default function GalaxyPage() {
             />
           </motion.div>
 
-          <Suspense
-            fallback={
-              <div
-                className="absolute inset-0 flex items-center justify-center"
-                data-testid="galaxy-loading"
-              >
-                <div className="flex flex-col items-center gap-3">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#E7FB10]" />
-                  <p className="text-xs text-muted-foreground">
-                    Loading constellation...
-                  </p>
-                </div>
-              </div>
-            }
+          {/* Canvas wrapper — captures first click to start ambient audio */}
+          <div
+            className="absolute inset-0"
+            onClick={handleCanvasFirstClick}
           >
-            <ErrorBoundary onError={() => setForceFallback(true)}>
-              <GalaxyScene
-                visibleSystemIds={visibleSystems}
-                searchTerm={searchTerm}
-                selectedId={selectedId}
-                onSelect={setSelectedId}
-                hoveredId={hoveredId}
-                onHover={setHoveredId}
-                onNodeMeta={handleNodeMeta}
-                resetSignal={resetSignal}
-                vfxVariant={vfxVariant}
-                onLoaded={handleSceneLoaded}
-                doEntry={doEntry}
-              />
-            </ErrorBoundary>
-          </Suspense>
+            <Suspense
+              fallback={
+                <div
+                  className="absolute inset-0 flex items-center justify-center"
+                  data-testid="galaxy-loading"
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <Loader2 className="h-8 w-8 animate-spin text-[#E7FB10]" />
+                    <p className="text-xs text-muted-foreground">
+                      Loading constellation...
+                    </p>
+                  </div>
+                </div>
+              }
+            >
+              <ErrorBoundary onError={() => setForceFallback(true)}>
+                <GalaxyScene
+                  visibleSystemIds={visibleSystems}
+                  searchTerm={searchTerm}
+                  selectedId={selectedId}
+                  onSelect={setSelectedId}
+                  hoveredId={hoveredId}
+                  onHover={setHoveredId}
+                  onNodeMeta={handleNodeMeta}
+                  resetSignal={resetSignal}
+                  vfxVariant={vfxVariant}
+                  onLoaded={handleSceneLoaded}
+                  doEntry={doEntry}
+                  onWarp={audio.playWarp}
+                  onHoverSound={audio.playHover}
+                />
+              </ErrorBoundary>
+            </Suspense>
+          </div>
+
+          {/* Hyperspace overlay — 2D canvas that draws radial streak lines during entry */}
+          {doEntry && (
+            <GalaxyHyperspaceOverlay
+              isActive={entryPhase === "entry"}
+              totalDurationMs={3800}
+            />
+          )}
 
           <AnimatePresence>
             {selectedNode && (
@@ -304,6 +333,29 @@ export default function GalaxyPage() {
               />
             )}
           </AnimatePresence>
+
+          {/* Mute toggle — bottom-left of canvas */}
+          <motion.div
+            className="absolute bottom-3 md:bottom-4 left-4 md:left-8 z-20"
+            animate={{ opacity: uiVisible ? 1 : 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            style={{ pointerEvents: uiVisible ? undefined : "none" }}
+          >
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={audio.toggleMute}
+              aria-label={audio.isMuted ? "Unmute ambient sound" : "Mute ambient sound"}
+              data-testid="button-galaxy-mute"
+              className="text-white/50 hover:text-white/90 bg-black/40 backdrop-blur-sm"
+            >
+              {audio.isMuted ? (
+                <VolumeX className="h-4 w-4" />
+              ) : (
+                <Volume2 className="h-4 w-4" />
+              )}
+            </Button>
+          </motion.div>
 
           {/* Bottom hints — fades in after entry */}
           <motion.div
