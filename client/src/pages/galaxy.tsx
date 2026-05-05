@@ -278,7 +278,7 @@ export default function GalaxyPage() {
           <div
             className="absolute inset-0"
             onClick={handleCanvasFirstClick}
-            style={{ opacity: doEntry && entryPhase === "loading" ? 0 : 1 }}
+            style={{}}
           >
             <Suspense
               fallback={
@@ -318,7 +318,7 @@ export default function GalaxyPage() {
           {/* Hyperspace overlay — 2D canvas that draws radial streak lines during entry */}
           {doEntry && (
             <GalaxyHyperspaceOverlay
-              isActive={entryPhase === "entry"}
+              isActive={entryPhase !== "done"}
               totalDurationMs={3800}
             />
           )}
