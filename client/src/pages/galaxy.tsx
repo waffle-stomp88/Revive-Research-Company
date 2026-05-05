@@ -314,20 +314,7 @@ export default function GalaxyPage() {
             </Suspense>
           </div>
 
-          {/* Black cover — hides the galaxy while the 3D scene loads before the
-              hyperspace animation kicks in. Must be the same z-index as the overlay
-              canvas (15) so they sit on the same layer during the handoff. */}
-          {doEntry && entryPhase === "loading" && (
-            <div
-              className="absolute inset-0 bg-black pointer-events-none"
-              style={{ zIndex: 15 }}
-            />
-          )}
-
-          {/* Hyperspace overlay — 2D canvas that draws radial streak lines during entry.
-              Uses useLayoutEffect internally so the white flash paints to the canvas
-              before the browser composites the frame where the black cover disappears,
-              eliminating any one-frame gap of visible galaxy. */}
+          {/* Hyperspace overlay — 2D canvas that draws radial streak lines during entry */}
           {doEntry && (
             <GalaxyHyperspaceOverlay
               isActive={entryPhase === "entry"}
