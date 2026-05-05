@@ -49,6 +49,7 @@ export default function GalaxyPage() {
   const [visibleSystems, setVisibleSystems] = useState<Set<string>>(allSystems);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [warpToId, setWarpToId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [resetSignal, setResetSignal] = useState(0);
   const [forceFallback, setForceFallback] = useState(false);
@@ -166,6 +167,11 @@ export default function GalaxyPage() {
     setResetSignal((n) => n + 1);
   }, []);
 
+  const handleWarpTo = useCallback((id: string) => {
+    setSelectedId(id);
+    setWarpToId(id);
+  }, []);
+
   // Start ambient on first canvas interaction (user gesture satisfies browser policy)
   const handleCanvasFirstClick = useCallback(() => {
     if (ambientStarted.current || reducedMotion) return;
@@ -271,6 +277,8 @@ export default function GalaxyPage() {
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
               onReset={handleReset}
+              nodes={nodes}
+              onWarpTo={handleWarpTo}
             />
           </motion.div>
 
@@ -310,6 +318,8 @@ export default function GalaxyPage() {
                   doEntry={doEntry}
                   onWarp={audio.playWarp}
                   onHoverSound={audio.playHover}
+                  externalWarpId={warpToId}
+                  onExternalWarpConsumed={() => setWarpToId(null)}
                 />
               </ErrorBoundary>
             </Suspense>

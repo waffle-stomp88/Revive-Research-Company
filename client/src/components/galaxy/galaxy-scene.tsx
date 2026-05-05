@@ -35,6 +35,8 @@ interface GalaxySceneProps {
   doEntry?: boolean;
   onWarp?: () => void;
   onHoverSound?: () => void;
+  externalWarpId?: string | null;
+  onExternalWarpConsumed?: () => void;
 }
 
 export function GalaxyScene({
@@ -51,6 +53,8 @@ export function GalaxyScene({
   doEntry = false,
   onWarp,
   onHoverSound,
+  externalWarpId,
+  onExternalWarpConsumed,
 }: GalaxySceneProps) {
   const layout = useMemo(() => buildGalaxyLayout(), []);
   const { nodes, edges } = layout;
@@ -66,6 +70,20 @@ export function GalaxyScene({
   // Warp streak state
   const [isWarping, setIsWarping] = useState(false);
   const [warpKey, setWarpKey] = useState(0);
+
+  // External warp trigger (e.g. from search-to-warp)
+  useEffect(() => {
+    if (!externalWarpId) return;
+    const n = nodes.find((x) => x.id === externalWarpId);
+    if (!n) return;
+    handleUserInteract();
+    setFlyTarget({ position: [n.position[0], n.position[1], n.position[2]], mode: "warp" });
+    setIsWarping(true);
+    setWarpKey((k) => k + 1);
+    onWarp?.();
+    onExternalWarpConsumed?.();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [externalWarpId]);
 
   // Signal parent that scene has mounted
   useEffect(() => {
