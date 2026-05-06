@@ -1,0 +1,166 @@
+# Education Center Restructure — Dev Brief
+
+## Context
+
+The current Education Center forces fundamentally different content types (peptide profiles, body system overviews, lab guides, trust/verification, general education) into a single tabbed interface with the same card layout. This is causing organization issues, particularly with the recent addition of body system overviews.
+
+The fix is structural: introduce **Body Systems as hub pages** that act as the connective tissue between system-level concepts and individual peptide profiles, while preserving all existing peptide profile URLs.
+
+## Goals
+
+1. Make the library easy to navigate for three distinct user personas (newcomer, browser, researcher)
+2. Preserve all existing peptide profile URLs (no SEO migration risk)
+3. Build internal linking that compounds topical authority for body system queries
+4. Surface the Synergy Engine at the moment of highest relevance (when users are exploring a system)
+
+## Information Architecture
+
+```
+Education Center landing
+├── Start Here (pathway-based on-ramp + Research Academy CTA)
+├── Body Systems (NEW — hub pages, 7–8 systems)
+│   └── Each hub lists all child peptide profiles
+├── Peptide Library (existing — A–Z directory of all profiles)
+├── Lab & Research Guides (existing)
+└── Trust & Verification (existing)
+```
+
+**Key relationship:** Every peptide profile has exactly one canonical body system as its parent (per Grayson's confirmation). Cross-tagging is not needed in v1.
+
+## URL Structure
+
+- **Existing peptide profile URLs are preserved as-is.** No migration.
+- **New body system hub URLs:** `/systems/{slug}` (e.g., `/systems/tissue-repair`, `/systems/endocrine`). These are new routes.
+- The taxonomy lives in **breadcrumb logic, internal linking, and BreadcrumbList JSON-LD schema** — not in URL paths.
+
+## Page Templates
+
+### Template A — Education Center Landing Page
+
+Replace the current tabbed view with a single scrollable page containing these sections in order:
+
+1. **Hero with search**
+   - Large search input (primary action)
+   - Two text CTAs below: "New here? Start the Academy" | "Researcher? Browse A–Z"
+
+2. **Browse by Body System** (the new hero section of the page)
+   - Grid of 6–8 large visual cards, one per system
+   - Each card shows: system icon, system name, 1-line description, peptide count ("12 compounds")
+   - Clicking a card → routes to `/systems/{slug}` hub page
+
+3. **Featured Pathways** (curated editorial collections)
+   - 3–4 cards: e.g., "Recovery & Repair Stack 101," "Understanding GLP-1s," "Longevity Foundations"
+   - Each pathway is a sequenced reading list (3–5 articles) — content team curates manually
+   - Stored as a config object or CMS entries (not auto-generated)
+
+4. **Peptide Library Preview**
+   - Compact A–Z grid showing ~8 sample peptides
+   - "View all 100+ profiles →" link to full A–Z view
+
+5. **Lab Guides + Trust & Verification** (lower priority, two-column layout)
+
+The four existing tabs (Peptide Research Guides / General Education / Lab Guides / Trust & Verification) become anchor links that scroll to those sections, OR move to a secondary sidebar nav. Do not keep them as a primary tab interface.
+
+### Template B — Body System Hub Page (NEW)
+
+Route: `/systems/{slug}`
+
+Sections in order:
+
+1. **Hero**: System name, one-paragraph description framing what the system is and why it matters
+2. **Quick Breakdown / Deep Dive toggle** for the system overview content itself (mirror the existing peptide profile toggle pattern for visual consistency)
+3. **Peptides in this System** — grid of every peptide profile tagged to this system. This is the connective tissue payoff. Use the same card style as the existing Peptide Library so the pattern feels consistent.
+4. **Common Research Stacks** — 2–3 pre-built stacks pulled from the Synergy Engine, each rendered as a stack card with "Build your own →" CTA linking to the full Synergy Engine
+5. **Related Lab Guides** — links to procedural content relevant to this system (manual curation per system)
+6. **Continue Learning** — link to next logical system or back to Education Center landing
+
+### Template C — Peptide Profile Page (EXISTING — minor additions only)
+
+The existing template stays. Two additions:
+
+1. **Breadcrumb at top:**
+   `Education Center › {System Name} › {Peptide Name}`
+   The middle item is clickable and routes to the system hub. Implement BreadcrumbList JSON-LD schema for SEO.
+
+2. **"Explore this system" footer module** at the bottom of every profile:
+   > "BPC-157 is part of the Tissue Repair system. Explore 7 other peptides in this category →"
+   Routes to `/systems/tissue-repair`.
+
+### Template D — Peptide Library (A–Z) Page
+
+Existing template. Two minor improvements:
+
+- Filter chip names should match body system names exactly (Tissue Repair, not "Tissue")
+- Each peptide card shows the system tag prominently so users learn the taxonomy passively
+
+## Data Model Changes
+
+Add to the peptide profile schema:
+```
+{
+  ...existing fields,
+  primarySystem: string  // slug reference, e.g. "tissue-repair"
+}
+```
+
+Add a new body system entity:
+```
+{
+  slug: string,           // "tissue-repair"
+  name: string,           // "Tissue Repair"
+  description: string,    // 1-paragraph hero copy
+  iconKey: string,        // reference to icon system
+  quickBreakdown: rich text,
+  deepDive: rich text,
+  recommendedStacks: array of stack IDs from Synergy Engine,
+  relatedLabGuides: array of guide slugs
+}
+```
+
+## SEO Requirements
+
+- **BreadcrumbList JSON-LD** on all peptide profile pages and body system hubs
+- **Internal linking:** Every peptide profile links UP to its parent system hub (in breadcrumb + footer module). Every system hub links DOWN to all child profiles. This creates the topical authority flywheel.
+- **No URL changes** to existing peptide profile pages
+- **New canonical URLs** for body system hubs (set rel=canonical to self)
+- **Sitemap.xml update** to include the new `/systems/*` routes
+- **Robots.txt** — already correctly configured; no changes needed
+
+## Pathways System
+
+For the "Featured Pathways" section on the landing page:
+
+- Each pathway is a curated sequenced reading list (3–5 articles)
+- Implementation can be as simple as a config object or CMS entries — content team owns the curation
+- A pathway page can be a simple template: hero + ordered list of article cards with "Next →" CTAs between them
+- v1 can launch with 3–4 pathways manually defined; gamification/progress tracking can come later via Research Academy integration
+
+## Phasing
+
+**Phase 1 (MVP):**
+- New Body System Hub template (Template B)
+- Add `primarySystem` field to peptide profiles, backfill all existing profiles
+- Add breadcrumb + footer module to existing peptide profile pages
+- New `/systems/*` routes
+
+**Phase 2:**
+- Restructure Education Center landing page (Template A)
+- Add Featured Pathways section + content
+- Update sitemap + JSON-LD schema
+
+**Phase 3:**
+- Refine cross-linking, add "Common Research Stacks" wired into Synergy Engine
+- Add lab guide cross-references on system hubs
+
+## Out of Scope (v1)
+
+- Multi-system tagging for peptides (deferred — Grayson confirmed primary system is sufficient)
+- URL migration of existing peptide profiles (intentionally avoided)
+- Gamified pathway progress tracking (Research Academy already handles this for course content)
+
+## Success Metrics
+
+- Body system hub pages ranking for system-level queries within 60 days
+- Increased session depth from peptide profile landing pages (breadcrumb + footer module driving clicks UP into system hubs)
+- Synergy Engine engagement from the new "Common Research Stacks" module on system hubs
+- Reduced bounce rate on Education Center landing page
