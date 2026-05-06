@@ -8,6 +8,7 @@ export interface KnownStack {
   color: string;
   description: string;
   synergyBonus: number;
+  detailPageId?: string;
 }
 
 export interface PeptidePathway {
@@ -465,6 +466,15 @@ export const KNOWN_STACKS: KnownStack[] = [
     color: getSystemColor("hormonal")!,
     description: "GnRH agonist hormonal reset + pulsatile GnRH maintenance",
     synergyBonus: 83,
+  },
+  {
+    name: "HPG Axis Modulation Stack",
+    peptides: ["triptorelin", "enclomiphene"],
+    icon: Target,
+    color: getSystemColor("hormonal")!,
+    description: "GnRH agonist + ERα-antagonist SERM dual-entry HPG axis research model",
+    synergyBonus: 85,
+    detailPageId: "triptorelin-enclomiphene-hpg-axis",
   },
   {
     name: "VIP Gut-Brain",
