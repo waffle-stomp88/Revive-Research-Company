@@ -9,6 +9,30 @@ import {
 } from "@/lib/galaxy-layout";
 
 const SYSTEM_GUIDE_LINKS: Record<string, { href: string; label: string }> = {
+  healing: {
+    href: "/guides/healing-peptides",
+    label: "Tissue Repair & Healing Peptide Guide",
+  },
+  metabolic: {
+    href: "/guides/metabolic-peptides",
+    label: "AMPK, GLP-1 & Metabolic Peptide Guide",
+  },
+  growth: {
+    href: "/guides/growth-peptides",
+    label: "GH Axis & Growth Peptide Guide",
+  },
+  cognitive: {
+    href: "/guides/cognitive-peptides",
+    label: "Neurotrophic & Cognitive Peptide Guide",
+  },
+  skin: {
+    href: "/guides/skin-peptides",
+    label: "Collagen & Skin Peptide Guide",
+  },
+  longevity: {
+    href: "/guides/longevity-peptides",
+    label: "Telomere & Longevity Peptide Guide",
+  },
   hormonal: {
     href: "/guides/hormonal-peptides",
     label: "HPG Axis & Hormonal Peptide Guide",

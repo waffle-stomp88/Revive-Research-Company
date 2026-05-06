@@ -74,6 +74,11 @@ import PurityExplained from "@/pages/guides/purity-explained";
 import CheapPeptides from "@/pages/guides/cheap-peptides";
 import HormonalPeptidesGuide from "@/pages/guides/hormonal-peptides";
 import HealingPeptidesGuide from "@/pages/guides/healing-peptides";
+import MetabolicPeptidesGuide from "@/pages/guides/metabolic-peptides";
+import GrowthPeptidesGuide from "@/pages/guides/growth-peptides";
+import CognitivePeptidesGuide from "@/pages/guides/cognitive-peptides";
+import SkinPeptidesGuide from "@/pages/guides/skin-peptides";
+import LongevityPeptidesGuide from "@/pages/guides/longevity-peptides";
 
 const ChatBot = lazy(() => import("@/components/chatbot").then(m => ({ default: m.ChatBot })));
 const BackToTopButton = lazy(() => import("@/components/back-to-top-button").then(m => ({ default: m.BackToTopButton })));
@@ -210,8 +215,13 @@ function Router() {
         <Route path="/guides/how-to-verify-peptide-quality" component={VerifyQuality} />
         <Route path="/guides/peptide-purity-explained" component={PurityExplained} />
         <Route path="/guides/why-cheap-peptides-are-cheap" component={CheapPeptides} />
-        <Route path="/guides/hormonal-peptides" component={HormonalPeptidesGuide} />
         <Route path="/guides/healing-peptides" component={HealingPeptidesGuide} />
+        <Route path="/guides/metabolic-peptides" component={MetabolicPeptidesGuide} />
+        <Route path="/guides/growth-peptides" component={GrowthPeptidesGuide} />
+        <Route path="/guides/cognitive-peptides" component={CognitivePeptidesGuide} />
+        <Route path="/guides/skin-peptides" component={SkinPeptidesGuide} />
+        <Route path="/guides/longevity-peptides" component={LongevityPeptidesGuide} />
+        <Route path="/guides/hormonal-peptides" component={HormonalPeptidesGuide} />
         <Route path="/guides/peptide-education-center" component={Education} />
         {/* Catch-all: compound-name guide URLs intentionally not routed — do not create */}
         {/* Catch-all for individual peptide article pages (e.g. /guides/what-is-bpc-157-peptide) */}
