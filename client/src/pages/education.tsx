@@ -1178,6 +1178,59 @@ export default function Education() {
                           );
                         })()}
 
+                        {/* Growth Hormone System Guide cross-link */}
+                        {article.slug && [
+                          "what-is-cjc-1295-peptide",
+                          "what-is-ipamorelin-peptide",
+                          "what-is-tesamorelin-peptide",
+                          "what-is-igf-1-lr3-peptide",
+                          "what-is-igf-des-peptide",
+                        ].includes(article.slug) && (
+                          <div className="mt-8 pt-8 border-t border-border/50" data-testid="article-gh-system-guide-link">
+                            <h3 className="font-display text-xl font-bold mb-2 flex items-center gap-2">
+                              <Activity className="h-5 w-5 text-[#f59e0b]" />
+                              See Also
+                            </h3>
+                            <p className="text-xs text-muted-foreground mb-4">
+                              Understand how this compound fits into the broader Growth Hormone system.
+                            </p>
+                            <Link href="/guides/growth-hormone-peptides">
+                              <Card
+                                className="p-4 cursor-pointer hover-elevate transition-all"
+                                style={{ borderColor: "rgba(245,158,11,0.25)" }}
+                                data-testid="card-gh-system-guide"
+                              >
+                                <div className="flex items-center gap-4">
+                                  <div
+                                    className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center"
+                                    style={{ backgroundColor: "rgba(245,158,11,0.12)" }}
+                                  >
+                                    <BookOpen className="h-5 w-5" style={{ color: "#f59e0b" }} />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                                      <Badge
+                                        className="text-[10px] border"
+                                        style={{ backgroundColor: "rgba(245,158,11,0.15)", color: "#f59e0b", borderColor: "rgba(245,158,11,0.35)" }}
+                                      >
+                                        Growth Hormone
+                                      </Badge>
+                                      <span className="text-[10px] text-muted-foreground">24 min read</span>
+                                    </div>
+                                    <h4 className="font-semibold text-sm text-foreground leading-snug">
+                                      Growth Hormone Peptides: GHRH/GHRP Axis, GH Secretagogue Mechanisms, and the GH → IGF-1 Cascade
+                                    </h4>
+                                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                                      How CJC-1295, Ipamorelin, Tesamorelin, IGF-1 LR3, and IGF-DES work together across the full GH axis.
+                                    </p>
+                                  </div>
+                                  <ArrowRight className="h-4 w-4 flex-shrink-0" style={{ color: "#f59e0b" }} />
+                                </div>
+                              </Card>
+                            </Link>
+                          </div>
+                        )}
+
                       </div>
                     </Card>
                   );
