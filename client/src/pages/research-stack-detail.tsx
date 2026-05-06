@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { buildPriceLookup, calculateStackPricing } from "@/lib/stack-pricing";
 import { SEOHead } from "@/components/seo-head";
 import {
-  ArrowLeft, ShoppingCart, AlertTriangle, Package, GraduationCap, Shield, FileCheck, RefreshCw, ShoppingBag, Repeat, CheckCircle, Minus, Plus, BookOpen, ChevronRight, ChevronDown, Zap, Check
+  ArrowLeft, ShoppingCart, AlertTriangle, Package, GraduationCap, Shield, FileCheck, RefreshCw, ShoppingBag, Repeat, CheckCircle, Minus, Plus, BookOpen, ChevronRight, ChevronDown, Zap, Check, FlaskConical
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -92,6 +92,12 @@ export default function ResearchStackDetail() {
       .map(p => resolveDatasetSlug(p.name))
       .filter((s): s is string => Boolean(s))
   );
+
+  const HEALING_PEPTIDES = new Set(["bpc-157", "tb-500", "ghk-cu"]);
+  const isHealingStack = stack.peptides.length > 0 && stack.peptides.every(
+    p => HEALING_PEPTIDES.has(p.name.toLowerCase())
+  );
+
   const getBasePrice = () => pricing?.stackPrice ?? 0;
 
   const getSelectedDiscount = () => {
@@ -626,6 +632,42 @@ export default function ResearchStackDetail() {
                   </Button>
                 </Link>
               </div>
+
+              {isHealingStack && (
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: 0.15 }}
+                  className="mt-8"
+                  data-testid="section-healing-guide-cta"
+                >
+                  <div className="h-px bg-gradient-to-r from-[#22c55e]/40 via-[#21d8ff]/30 to-transparent mb-8" />
+                  <Link href="/guides/healing-peptides" data-testid="link-healing-peptides-guide">
+                    <Card className="p-5 border-[#22c55e]/30 cursor-pointer hover-elevate transition-all duration-300 hover:border-[#22c55e]/60 hover:shadow-[0_0_24px_rgba(34,197,94,0.18)]">
+                      <div className="flex items-start gap-4">
+                        <div className="p-2.5 rounded-lg bg-[#22c55e]/10 flex-shrink-0">
+                          <FlaskConical className="h-5 w-5 text-[#22c55e]" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
+                            <Badge className="bg-[#22c55e]/15 text-[#22c55e] border border-[#22c55e]/30 text-xs no-default-hover-elevate no-default-active-elevate">
+                              Deep Dive
+                            </Badge>
+                            <span className="text-xs text-muted-foreground font-mono uppercase tracking-widest">Healing Peptides Guide</span>
+                          </div>
+                          <h4 className="font-display text-base md:text-lg font-bold leading-snug mb-1">
+                            Learn the Science Behind This Stack
+                          </h4>
+                          <p className="text-sm text-muted-foreground leading-relaxed">
+                            Explore the tissue repair cascade, angiogenesis signaling, and how the peptides in this stack interact at the molecular level.
+                          </p>
+                        </div>
+                        <ChevronRight className="h-5 w-5 text-[#22c55e] flex-shrink-0 mt-0.5" />
+                      </div>
+                    </Card>
+                  </Link>
+                </motion.div>
+              )}
             </section>
           )}
 
