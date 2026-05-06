@@ -1,0 +1,54 @@
+Task 1.4 looks solid. Before signing off, let me actually pressure-test it the way I did the others rather than just nodding along — there are a couple of things worth flagging.
+
+## What's strong
+
+The cannibalization analysis is correct, and canonical tags are the right tool for this exact scenario — preserving indexed URLs and any backlink equity while consolidating ranking signals on the hub. The 8-page mapping table is clear. Step 2 (the two-way hub ↔ guide relationship) closes the loop properly so users can still discover the deep-dive content from the hub.
+
+Two pages canonicalizing to `/systems/growth` is also correct — that's how canonical tags are supposed to work when multiple URLs cover the same topic at different depths.
+
+## Issues worth flagging
+
+**1. The `useEffect` fallback in Step 1 is risky.**
+
+The implementation example uses a `useEffect` that creates and appends the canonical link on mount, then removes it on unmount. Two problems with this:
+
+- **Server-side rendering / SEO crawlers may not execute the effect.** Googlebot does render JavaScript, but canonical tags injected via JS-only patterns are inconsistently honored compared to canonical tags present in the initial HTML response. Given this whole project's SEO motivation, that's a meaningful risk — the entire point of Task 1.4 is to send a clean signal to Google, and a JS-injected canonical may dilute that signal.
+- **The `querySelector` check in the example doesn't actually prevent duplicate tags reliably.** It finds an existing canonical and... still calls `appendChild` on it (which moves it but doesn't update the href). The logic is buggy as written.
+
+The brief should explicitly require the canonical tag to be present in the initial HTML response, not injected post-hydration. If the React SPA is purely client-rendered, this needs a real solution: either `react-helmet-async` (or `next/head` equivalent if applicable), or a proper SSR/prerender pass for these specific guide routes.
+
+**Recommended ticket update**: replace the `useEffect` fallback with a clear instruction to use whatever head-management library the project already uses (likely `react-helmet-async` given it's a React SPA on Replit). If the project doesn't have one wired up yet, that's a prerequisite — and worth flagging because it affects Task 1.1 and Task 1.3's JSON-LD injection too.
+
+Worth your dev team confirming: how are `<title>` and meta description currently being set on these pages? Whatever that mechanism is, the canonical tag should ride along the same pipeline.
+
+**2. The "Related Lab Guides" or "Deep Dive" card in the hub needs to be more concrete.**
+
+Step 2 says "the system hub should include a card or link pointing to its corresponding detailed guide page" but defers to "coordinate with whoever builds Task 1.1." That's a coordination gap. If Task 1.1 ships first without that link, then Task 1.4 ships with canonical tags pointing UP to the hub but no link DOWN from the hub, the deep-dive content becomes orphaned from internal navigation — Google still consolidates ranking, but users can't find it from the hub.
+
+**Recommended fix**: this should be folded into Task 1.1's spec as a hard requirement, not deferred to coordination. Specifically, the existing Task 1.1 ticket has a "Related Lab Guides" section in the hub template that reads from `relatedLabGuideSlugs` in `body-system-hubs.ts`. The fix is simple: ensure each system's `relatedLabGuideSlugs` array includes its corresponding legacy guide slug (e.g., the `healing` system entry includes `healing-peptides`). That makes the link automatic and removes the coordination dependency.
+
+**3. The growth system has two legacy guides — clarify the hub's handling.**
+
+`/systems/growth` will have two pages canonicalizing to it (`growth-peptides` and `growth-hormone-peptides`). The hub's "Related Lab Guides" section should link to *both*, with clear labels distinguishing them ("Growth Peptides Overview" vs "Growth Hormone Peptides Deep Dive" or similar). Otherwise users see two near-identical link cards and don't know which to click.
+
+This is more a content/UX note than a structural issue, but worth specifying in the ticket so it's not a surprise at QA.
+
+**4. Sitemap update — small but easy to forget.**
+
+The legacy guide pages stay live, so they should stay in the sitemap. The new `/systems/{slug}` hubs need to be *added*. The original brief mentions this, but Task 1.4's ticket is silent on it. Worth a one-line check: confirm sitemap.xml generation includes both URL families. If the sitemap is auto-generated from routes, it'll happen naturally; if it's manual, someone needs to update it.
+
+## Recommended ticket additions
+
+Three small adds to #372:
+
+1. **Replace the `useEffect` fallback with a real head-management approach.** Use whatever the project already uses for `<title>` injection. If nothing exists, that's a prerequisite worth surfacing as a separate small infrastructure task.
+
+2. **Move the "hub links back to legacy guide" requirement into Task 1.1's spec** (specifically: ensure each system's `relatedLabGuideSlugs` array includes its corresponding legacy guide slug). Don't leave it as a coordination item.
+
+3. **Confirm sitemap.xml includes both `/guides/*` and `/systems/*` URL families** after deploy.
+
+## One open question
+
+Before this ships, worth your team confirming: do the legacy guide pages currently rank for any meaningful queries? If yes, the canonical approach is correct (preserve and consolidate). If they get ~zero traffic, a 301 redirect to the hub might be cleaner — fewer pages to maintain, no canonical chain to manage. Quick check in Search Console for impressions on those URLs would settle the question.
+
+Want me to help draft a quick GSC query plan, or is the canonical approach locked in regardless?

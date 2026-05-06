@@ -1,0 +1,56 @@
+These three task tickets are well-scoped and dev-ready. Before I sign off, let me actually pressure-test the plan rather than just nodding along — there are a few things in #370 specifically that I want to flag before your team picks it up.
+
+## Issues worth surfacing
+
+**1. The redirect to `/systems/{slug}` from the existing system guide cards needs more thought.**
+
+#370 Step 3 says: update the existing "Healing" and "Hormonal" system guide cards to point to `/systems/healing` and `/systems/hormonal` instead of `/guides/healing-peptides` and `/guides/hormonal-peptides`.
+
+That's the right end state, but it leaves a question: what happens to `/guides/healing-peptides` and `/guides/hormonal-peptides` as URLs?
+
+Three options:
+- **Leave them live as-is** — they become orphan content competing with the new hub for the same query. Bad for SEO (cannibalization).
+- **301 redirect to `/systems/{slug}`** — clean, transfers any backlinks/authority. But you lose a URL that's already indexed and ranking.
+- **Keep them live as a "Deep Dive" subpage linked from the hub** — preserves indexed URLs and any authority they've built, but you need to ensure they don't compete with the hub. Add a canonical from the deep-dive page to the hub, or differentiate the content explicitly.
+
+The brief mentions option 3 ("they become 'deep dive' content within the hub") but doesn't specify the canonical/SEO handling. Worth deciding before deploy. **My recommendation: keep them live, link from the hub, add `<link rel="canonical" href="/systems/{slug}">` on the deep-dive pages** so Google consolidates ranking signals on the hub. The deep-dive content becomes secondary detail, not a competing page.
+
+**2. The "Browse by Body System" placement decision is doing two things at once.**
+
+Step 2 says place it inside the Peptides tab content. But Task 1.1 already creates 7 system hubs that aren't peptide profiles — they're a tier above. Putting "Browse by Body System" *inside* the Peptides tab signals to users that systems are a sub-category of peptide profiles, when structurally they're a parent.
+
+Two cleaner options:
+- **Place it above the tabs entirely** (as a hero-adjacent section, before the tabbed interface starts). This signals "systems are the primary navigation; tabs are a secondary view."
+- **Place it as the first section of the page**, with the tabs below it. Same effect.
+
+Putting it inside one tab buries it from anyone landing on a different tab and undersells its importance. This is essentially a partial Phase 2 move — and that's fine, but it should be a deliberate choice.
+
+**3. Counting consistency between hub and landing.**
+
+Both Task 1.1 and Task 1.2 compute peptide counts from `PEPTIDE_PATHWAYS` via `resolvePrimarySystem()`. Good — same source of truth. But worth adding a small detail: **memoize the count computation** if it's running on every render. With ~100 peptides × 7 systems × every page render, it's not catastrophic, but a `useMemo` (or computing once at module load) is cheap insurance. Worth a one-line note in the ticket.
+
+**4. Empty state for systems with zero peptides.**
+
+What happens if a system in `body-system-hubs.ts` has zero peptides currently mapped to it via `resolvePrimarySystem()`? Does the card show "0 compounds" and link to an empty hub? Hide the card entirely?
+
+Probably an edge case (all 7 systems should have peptides), but worth a one-line spec: "If peptide count is 0, hide the card from the grid." Or alternatively, "show the card with no count badge."
+
+## What's solid
+
+Everything else lines up cleanly. The deploy-order dependency (1.1 before 1.2 and 1.3) is correctly flagged. The data-source consolidation through `resolvePrimarySystem()` is exactly the right pattern. The breadcrumb JSON-LD spec is complete. The footer module copy is direct and useful.
+
+## Recommended ticket additions for #370
+
+Three small adds:
+
+1. **SEO handling for legacy `/guides/healing-peptides` and `/guides/hormonal-peptides`**: keep live, add `<link rel="canonical">` pointing to `/systems/{slug}`, link from the hub as "Deep Dive" content. Document this so it doesn't get forgotten.
+
+2. **Placement decision**: consider placing "Browse by Body System" above the tabs rather than inside the Peptides tab. If staying inside the tab for Phase 1 (to minimize landing-page churn), explicitly note it as a Phase 2 move-up.
+
+3. **Edge cases**:
+   - Memoize peptide count computation
+   - Specify behavior when a system has zero peptides (hide card, or show with no count)
+
+---
+
+Do you want me to draft the canonical-tag SEO handling as a fourth small ticket (Task 1.4), or is that lightweight enough to fold into #370? It's really one line of HTML per page plus the decision to keep the URLs live, but the implications matter enough that having it as its own line item might prevent it from getting lost.
