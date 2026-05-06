@@ -4,11 +4,11 @@ import { test, expect } from "@playwright/test";
  * Browser-level e2e tests verifying the Research Stacks curation state.
  *
  * These tests guard against regressions where:
- *   - Extra stacks sneak back into the listing (count must be exactly 8)
+ *   - Extra stacks sneak back into the listing (count must be exactly 10)
  *   - The removed "Immune" category tab reappears as a filter option
  *   - Removed/retired stack URLs fail to redirect back to the listing
  *
- * The page renders 8 filter buttons (All + 7 categories) and exactly 8 stack
+ * The page renders 8 filter buttons (All + 7 categories) and exactly 10 stack
  * cards when the pre-built stacks view is active (the default on load).
  * Categories: Recovery, Cognitive, Metabolic, GH Axis, Longevity, Skin, Hormonal
  */
@@ -22,6 +22,8 @@ const EXPECTED_STACK_IDS = [
   "fat-burner",
   "melanocortin-arousal-stack",
   "hpg-axis-restore-stack",
+  "gonadorelin-kisspeptin-hpg-cascade",
+  "triptorelin-enclomiphene-hpg-axis",
 ];
 
 const EXPECTED_FILTER_TESTIDS = [
@@ -36,17 +38,17 @@ const EXPECTED_FILTER_TESTIDS = [
 ];
 
 test.describe("Research Stacks curation — /research-stacks", () => {
-  test("exactly 8 stack cards appear in the pre-built listing", async ({ page }) => {
+  test("exactly 10 stack cards appear in the pre-built listing", async ({ page }) => {
     await page.goto("/research-stacks");
 
     // The page defaults to the pre-built tab; wait for cards to appear
     await page.waitForSelector('[data-testid^="card-stack-"]', { timeout: 15000 });
 
     const cards = page.locator('[data-testid^="card-stack-"]');
-    await expect(cards).toHaveCount(8);
+    await expect(cards).toHaveCount(10);
   });
 
-  test("all 8 expected stack cards are individually present", async ({ page }) => {
+  test("all 10 expected stack cards are individually present", async ({ page }) => {
     await page.goto("/research-stacks");
 
     await page.waitForSelector('[data-testid^="card-stack-"]', { timeout: 15000 });

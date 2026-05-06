@@ -296,7 +296,7 @@ function HormonalPeptideTable() {
 
 /* ─── Related Stacks Section ────────────────────────────────────────────── */
 
-const HORMONAL_PEPTIDE_NAMES = ["PT-141", "Kisspeptin-10", "MT-2"];
+const HORMONAL_PEPTIDE_NAMES = ["PT-141", "Kisspeptin-10", "MT-2", "Gonadorelin", "Triptorelin"];
 
 function RelatedStacks() {
   const ref = useRef(null);
