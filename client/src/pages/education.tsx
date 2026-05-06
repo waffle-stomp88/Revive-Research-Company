@@ -260,6 +260,20 @@ const peptideGroups = [
   { id: "hormonal", label: "Hormonal", color: "#21d8ff", slugs: ["hcg", "kisspeptin"] },
 ];
 
+// Body-system overview guides — static pages linked from the Education Center
+const BODY_SYSTEM_GUIDES = [
+  {
+    slug: "hormonal-peptides",
+    title: "Hormonal Peptides: HPG Axis & Endocrine Support",
+    description: "How kisspeptin, HCG, gonadorelin, and related compounds interact with the hypothalamic-pituitary-gonadal axis.",
+    href: "/guides/hormonal-peptides",
+    icon: Activity,
+    color: "#21d8ff",
+    readTime: 12,
+    group: "hormonal",
+  },
+];
+
 const generalEdCategories = [
   { id: "all", label: "All Articles", color: "#21d8ff" },
   { id: "basics", label: "Research Basics", color: "#21d8ff" },
@@ -1198,6 +1212,75 @@ export default function Education() {
                         {filteredArticles.length} research guide{filteredArticles.length !== 1 ? 's' : ''}
                       </p>
                     </div>
+
+                    {/* Body System Overview Guides — shown inline above articles for the matching group */}
+                    {(() => {
+                      const visibleSystemGuides = BODY_SYSTEM_GUIDES.filter(
+                        (g) =>
+                          peptideGroupFilter === "all" ||
+                          g.group === peptideGroupFilter
+                      );
+                      if (visibleSystemGuides.length === 0) return null;
+                      const groupLabel = peptideGroups.find(g => g.id === peptideGroupFilter)?.label;
+                      return (
+                        <div className="mb-5">
+                          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
+                            <Compass className="h-3.5 w-3.5" />
+                            {groupLabel ? `${groupLabel} Overview` : "Body System Overviews"}
+                          </h3>
+                          <div className="grid gap-3 sm:grid-cols-2">
+                            {visibleSystemGuides.map((guide) => {
+                              const Icon = guide.icon;
+                              const guideGroupLabel = peptideGroups.find(g => g.id === guide.group)?.label || guide.group;
+                              return (
+                                <Link key={guide.slug} href={guide.href}>
+                                  <Card
+                                    className="p-4 cursor-pointer hover:bg-muted/30 transition-all group h-full"
+                                    style={{ borderColor: `${guide.color}25` }}
+                                    data-testid={`card-body-system-guide-${guide.slug}`}
+                                  >
+                                    <div className="flex items-start gap-3">
+                                      <div
+                                        className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                                        style={{ backgroundColor: `${guide.color}20` }}
+                                      >
+                                        <Icon className="h-4 w-4" style={{ color: guide.color }} />
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <div className="flex items-start justify-between gap-2">
+                                          <h4 className="font-medium text-sm group-hover:text-foreground transition-colors line-clamp-2">
+                                            {guide.title}
+                                          </h4>
+                                          <ChevronRight
+                                            className="h-4 w-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all flex-shrink-0 mt-0.5"
+                                            style={{ color: guide.color }}
+                                          />
+                                        </div>
+                                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                                          {guide.description}
+                                        </p>
+                                        <div className="flex items-center gap-2 mt-2">
+                                          <Badge
+                                            variant="outline"
+                                            className="text-xs"
+                                            style={{ borderColor: `${guide.color}50`, color: guide.color }}
+                                          >
+                                            {guideGroupLabel}
+                                          </Badge>
+                                          <span className="text-xs text-muted-foreground ml-auto">
+                                            {guide.readTime} min
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </Card>
+                                </Link>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })()}
 
                       <div className="grid gap-3 sm:grid-cols-2">
                         {filteredArticles.length > 0 ? (
