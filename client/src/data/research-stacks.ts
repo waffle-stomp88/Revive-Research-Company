@@ -279,7 +279,9 @@ export const RESEARCH_STACKS_BY_ID: Record<string, ResearchStackData> = Object.f
  */
 export function getStacksByPeptideNames(peptideNames: string[]): ResearchStackData[] {
   const normalised = peptideNames.map((n) => n.toLowerCase());
-  return RESEARCH_STACKS_DATA.filter((stack) =>
-    stack.peptides.some((p) => normalised.includes(p.name.toLowerCase()))
-  );
+  const matchCount = (stack: ResearchStackData) =>
+    stack.peptides.filter((p) => normalised.includes(p.name.toLowerCase())).length;
+  return RESEARCH_STACKS_DATA
+    .filter((stack) => stack.peptides.some((p) => normalised.includes(p.name.toLowerCase())))
+    .sort((a, b) => matchCount(b) - matchCount(a));
 }
