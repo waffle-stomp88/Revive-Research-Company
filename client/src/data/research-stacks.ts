@@ -16,7 +16,7 @@ export interface StackPeptide {
 
 export type StackIconName = "Heart" | "Zap" | "Sparkles" | "Brain" | "Leaf" | "Crown" | "FlaskConical" | "Dumbbell";
 
-export type StackCategory = "Recovery" | "Cognitive" | "Metabolic" | "GH Axis" | "Longevity" | "Skin";
+export type StackCategory = "Recovery" | "Cognitive" | "Metabolic" | "GH Axis" | "Longevity" | "Skin" | "Hormonal";
 
 export const STACK_CATEGORIES: StackCategory[] = [
   "Recovery",
@@ -25,6 +25,7 @@ export const STACK_CATEGORIES: StackCategory[] = [
   "GH Axis",
   "Longevity",
   "Skin",
+  "Hormonal",
 ];
 
 export interface ResearchStackData {
@@ -264,6 +265,80 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
     synergy: {
       beginner: "AOD-9604 activates the specific part of the growth hormone receptor responsible for fat breakdown — without triggering the growth effects of full GH. 5-Amino-1MQ works completely differently: it blocks an enzyme that normally promotes fat storage and methyl group consumption, shifting cells toward fat burning. Two separate biological levers for fat metabolism, not competing with each other.",
       expert: "AOD-9604 (hGH 176-191) selectively activates GHR domains associated with adipocyte lipolysis (stimulating hormone-sensitive lipase and β-adrenergic signaling) and inhibits lipogenic enzyme activity, without engaging GHR domains responsible for IGF-1 induction or growth promotion. 5-Amino-1MQ inhibits NNMT, the enzyme that methylates nicotinamide to form 1-methylnicotinamide using SAM as methyl donor — its inhibition raises cellular SAM pools, which activates NNMT-dependent metabolic gene programs, promotes WAT browning (UCP1 expression), and reduces adipocyte lipid accumulation. The two compounds operate via entirely distinct molecular targets (GHR vs. NNMT), creating a non-competitive dual-pathway model for studying complementary mechanisms of fat oxidation and storage regulation.",
+    },
+  },
+  {
+    id: "melanocortin-arousal-stack",
+    category: "Hormonal",
+    name: "Melanocortin Arousal & Bonding Stack",
+    subtitle: "MC4R + Oxytocin Pathway Research Model",
+    description: "A two-compound hormonal research model targeting sexual arousal and social bonding through independent but convergent neuroendocrine pathways. PT-141 activates melanocortin receptors in the CNS, while Oxytocin modulates hypothalamic bonding and reward circuitry.",
+    longDescription: "PT-141 (Bremelanotide) is a cyclic heptapeptide melanocortin receptor agonist with selectivity for MC3R and MC4R subtypes expressed in the hypothalamus and spinal cord. Unlike PDE5 inhibitors, PT-141 acts centrally on CNS arousal circuits rather than peripheral vascular tissue, making it a unique model for studying melanocortin-mediated sexual response independent of gonadal hormone levels. Oxytocin is a nonapeptide synthesized in hypothalamic paraventricular and supraoptic nuclei and released from the posterior pituitary. It acts on oxytocin receptors (OXTR) in the limbic system, nucleus accumbens, and ventral tegmental area to modulate pair-bonding, social reward, and prosocial behavior. Research models combining PT-141 and Oxytocin investigate how melanocortin-mediated arousal signaling interacts with oxytocinergic bonding and reward pathways — two neurochemically distinct but functionally complementary axes of human social and sexual behavior.",
+    peptides: [
+      { name: "PT-141", description: "Cyclic melanocortin receptor agonist (MC3R/MC4R) studied for CNS arousal pathway activation independent of peripheral vascular mechanisms" },
+      { name: "Oxytocin", description: "Hypothalamic nonapeptide studied for OXTR-mediated social bonding, reward circuitry modulation, and prosocial behavior mechanisms" },
+    ],
+    keyBenefits: [
+      "Dual-pathway melanocortin and oxytocinergic signaling research",
+      "CNS arousal circuit activation investigation",
+      "Social bonding and reward pathway interaction studies",
+      "Neuroendocrine model independent of gonadal hormone status",
+    ],
+    researchApplications: [
+      "Melanocortin receptor pharmacology and CNS arousal studies",
+      "Oxytocinergic bonding and limbic reward circuit research",
+      "Neuroendocrine cross-talk in social and sexual behavior models",
+      "MC4R agonist interaction with hypothalamic neuropeptide systems",
+    ],
+    storageGuide: "Store PT-141 lyophilized powder at 2-8°C (36-46°F); reconstitute with bacteriostatic water and use within recommended timeframes. Store Oxytocin peptide refrigerated and protected from light; avoid repeated freeze-thaw cycles.",
+    educationLinks: [
+      { peptideName: "PT-141", articleUrl: "/guides/hormonal-peptides", articleTitle: "Hormonal Peptides: Melanocortin & HPG Axis Research" },
+      { peptideName: "Oxytocin", articleUrl: "/guides/hormonal-peptides", articleTitle: "Hormonal Peptides: Oxytocinergic Bonding Pathways" },
+    ],
+    iconName: "Heart",
+    color: "#f43f5e",
+    badge: "Hormonal",
+    badgeColor: "#f43f5e",
+    synergy: {
+      beginner: "PT-141 activates specific receptors in the brain that switch on arousal signals — completely separate from how blood flow medications work. Oxytocin is often called the 'bonding molecule' and works through a different set of brain receptors tied to trust, social closeness, and reward. Together they allow researchers to study how the brain's arousal system and bonding system interact and potentially reinforce each other.",
+      expert: "PT-141 (Bremelanotide) agonizes hypothalamic and spinal MC3R/MC4R, activating downstream cAMP/PKA pathways that modulate dopaminergic and serotonergic arousal circuits without peripheral vascular involvement. Oxytocin binds OXTR (a Gq-coupled GPCR) in limbic structures including the nucleus accumbens and VTA, potentiating dopamine release and modulating GABAergic inhibition in reward circuitry. The convergence point is mesolimbic dopamine signaling: MC4R activation disinhibits dopaminergic neurons while OXTR activation directly potentiates VTA dopamine release — creating a synergistic amplification of central reward and arousal signaling through complementary receptor systems that share no direct ligand competition.",
+    },
+  },
+  {
+    id: "hpg-axis-restore-stack",
+    category: "Hormonal",
+    name: "HPG Axis Research Stack",
+    subtitle: "Kisspeptin-10 + MT-2 Neuroendocrine Cross-Talk Model",
+    description: "A research model examining hypothalamic reproductive axis regulation through two converging neuroendocrine pathways. Kisspeptin-10 drives GnRH neuron activation via KISS1R, while MT-2 engages melanocortin receptors in the arcuate nucleus — enabling study of how the melanocortin system modulates the upstream HPG axis trigger.",
+    longDescription: "Kisspeptin-10 is the biologically active C-terminal decapeptide of the KISS1 gene product. It binds the kisspeptin receptor (KISS1R, formerly GPR54) on GnRH neurons in the hypothalamic arcuate and anteroventral periventricular nuclei, serving as the primary endogenous trigger for pulsatile GnRH secretion. The kisspeptin-GnRH connection is considered the master regulator of reproductive neuroendocrinology: KISS1R signaling is obligatory for puberty onset and sustained HPG axis function. MT-2 (Melanotan II) is a cyclic heptapeptide analog of alpha-MSH with broad melanocortin receptor agonism (MC1R, MC3R, MC4R). Hypothalamic arcuate nucleus neurons expressing MC3R and MC4R include populations that synapse on and modulate the excitability of kisspeptin neurons, forming a melanocortin-kisspeptin-GnRH relay. This stack enables researchers to investigate how melanocortin receptor activation in the arcuate nucleus influences kisspeptin circuit excitability and downstream GnRH secretion — modeling the neuroendocrine cross-talk between the melanocortin and HPG axis systems.",
+    peptides: [
+      { name: "Kisspeptin-10", description: "KISS1R agonist decapeptide studied for endogenous GnRH pulse triggering and hypothalamic HPG axis regulation" },
+      { name: "MT-2", description: "Melanocortin analog studied for MC1R/MC3R/MC4R interactions and neuroendocrine cross-talk with reproductive axis circuits" },
+    ],
+    keyBenefits: [
+      "Dual-entry HPG axis signaling research model",
+      "Kisspeptin-GnRH axis regulation investigation",
+      "Hypothalamic-to-pituitary cascade mechanism studies",
+      "Neuroendocrine reproductive axis pharmacology",
+    ],
+    researchApplications: [
+      "KISS1R agonist pharmacology and GnRH pulse dynamics",
+      "Melanocortin-HPG axis cross-talk investigation",
+      "Hypothalamic neuropeptide signaling cascade research",
+      "Reproductive neuroendocrinology and gonadotropin secretion models",
+    ],
+    storageGuide: "Store both Kisspeptin-10 and MT-2 lyophilized at 2-8°C (36-46°F). Reconstitute with bacteriostatic water; avoid repeated freeze-thaw cycles after reconstitution. Both peptides are sensitive to oxidation — minimize exposure to air during preparation.",
+    educationLinks: [
+      { peptideName: "Kisspeptin-10", articleUrl: "/guides/hormonal-peptides", articleTitle: "Hormonal Peptides: Kisspeptin & HPG Axis Research" },
+      { peptideName: "MT-2", articleUrl: "/guides/hormonal-peptides", articleTitle: "Hormonal Peptides: Melanocortin System Overview" },
+    ],
+    iconName: "FlaskConical",
+    color: "#a855f7",
+    badge: "Hormonal",
+    badgeColor: "#a855f7",
+    synergy: {
+      beginner: "Kisspeptin-10 is the brain's 'start signal' for the reproductive hormone system — it tells GnRH neurons to fire, which kicks off the entire hormonal cascade. MT-2 works on melanocortin receptors that overlap with reproductive circuits, providing researchers a window into how the arousal and reproductive systems interact at the neuroendocrine level. Together they allow investigation of both the upstream trigger and cross-system modulation of the HPG axis.",
+      expert: "Kisspeptin-10 agonizes KISS1R (Gq-coupled GPR54) on hypothalamic GnRH neurons, activating PLC/IP3/DAG second messenger cascades that depolarize GnRH neurons via TRPC channel opening, triggering pulsatile GnRH release into the hypophyseal portal system. MT-2 (Melanotan II) agonizes MC3R and MC4R expressed in hypothalamic arcuate nucleus neurons, including populations adjacent to and synapsing onto GnRH neurons, modulating kisspeptin neuron excitability and neuroendocrine integration. The dual-compound model captures hypothalamic reproductive axis regulation from two convergent angles: KISS1R-mediated GnRH neuron activation (obligate HPG signal) and MC3R/MC4R-mediated neuroendocrine modulation of kisspeptin circuit excitability — enabling study of melanocortin-kisspeptin-GnRH pathway integration in reproductive neuroendocrinology.",
     },
   },
 ];

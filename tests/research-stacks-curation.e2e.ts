@@ -4,12 +4,13 @@ import { test, expect } from "@playwright/test";
  * Browser-level e2e tests verifying the Research Stacks curation state.
  *
  * These tests guard against regressions where:
- *   - Extra stacks sneak back into the listing (count must be exactly 6)
+ *   - Extra stacks sneak back into the listing (count must be exactly 8)
  *   - The removed "Immune" category tab reappears as a filter option
  *   - Removed/retired stack URLs fail to redirect back to the listing
  *
- * The page renders 7 filter buttons (All + 6 categories) and exactly 6 stack
+ * The page renders 8 filter buttons (All + 7 categories) and exactly 8 stack
  * cards when the pre-built stacks view is active (the default on load).
+ * Categories: Recovery, Cognitive, Metabolic, GH Axis, Longevity, Skin, Hormonal
  */
 
 const EXPECTED_STACK_IDS = [
@@ -19,6 +20,8 @@ const EXPECTED_STACK_IDS = [
   "glow-protocol",
   "longevity-protocol",
   "fat-burner",
+  "melanocortin-arousal-stack",
+  "hpg-axis-restore-stack",
 ];
 
 const EXPECTED_FILTER_TESTIDS = [
@@ -29,20 +32,21 @@ const EXPECTED_FILTER_TESTIDS = [
   "filter-category-gh-axis",
   "filter-category-longevity",
   "filter-category-skin",
+  "filter-category-hormonal",
 ];
 
 test.describe("Research Stacks curation — /research-stacks", () => {
-  test("exactly 6 stack cards appear in the pre-built listing", async ({ page }) => {
+  test("exactly 8 stack cards appear in the pre-built listing", async ({ page }) => {
     await page.goto("/research-stacks");
 
     // The page defaults to the pre-built tab; wait for cards to appear
     await page.waitForSelector('[data-testid^="card-stack-"]', { timeout: 15000 });
 
     const cards = page.locator('[data-testid^="card-stack-"]');
-    await expect(cards).toHaveCount(6);
+    await expect(cards).toHaveCount(8);
   });
 
-  test("all 6 expected stack cards are individually present", async ({ page }) => {
+  test("all 8 expected stack cards are individually present", async ({ page }) => {
     await page.goto("/research-stacks");
 
     await page.waitForSelector('[data-testid^="card-stack-"]', { timeout: 15000 });
@@ -53,7 +57,7 @@ test.describe("Research Stacks curation — /research-stacks", () => {
     }
   });
 
-  test("exactly 7 category filter tabs appear (All + 6 categories)", async ({ page }) => {
+  test("exactly 8 category filter tabs appear (All + 7 categories)", async ({ page }) => {
     await page.goto("/research-stacks");
 
     // Wait for the filter buttons to render alongside the stack cards
@@ -65,7 +69,7 @@ test.describe("Research Stacks curation — /research-stacks", () => {
     }
 
     const allFilterButtons = page.locator('[data-testid^="filter-category-"]');
-    await expect(allFilterButtons).toHaveCount(7);
+    await expect(allFilterButtons).toHaveCount(8);
   });
 
   test("the Immune category filter tab is absent", async ({ page }) => {
