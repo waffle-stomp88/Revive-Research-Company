@@ -422,6 +422,28 @@ export const RESEARCH_STACKS_BY_ID: Record<string, ResearchStackData> = Object.f
 );
 
 /**
+ * Auto-derived map of article slug → peptide name(s) built from the educationLinks
+ * in RESEARCH_STACKS_DATA. Only links whose articleUrl path ends with a "what-is-*"
+ * slug are included; links pointing to generic guide pages are intentionally excluded
+ * so the map stays accurate.
+ *
+ * This map updates automatically whenever new stacks are added to RESEARCH_STACKS_DATA,
+ * eliminating the need to manually sync a separate slug map in education.tsx.
+ */
+export const STACKS_SLUG_TO_PEPTIDE_NAMES: Record<string, string[]> = (() => {
+  const map = new Map<string, Set<string>>();
+  for (const stack of RESEARCH_STACKS_DATA) {
+    for (const link of stack.educationLinks) {
+      const slug = link.articleUrl.split("/").pop();
+      if (!slug || !slug.startsWith("what-is-")) continue;
+      if (!map.has(slug)) map.set(slug, new Set());
+      map.get(slug)!.add(link.peptideName);
+    }
+  }
+  return Object.fromEntries([...map.entries()].map(([k, v]) => [k, [...v]]));
+})();
+
+/**
  * Returns all stacks that contain at least one peptide whose name matches
  * any entry in `peptideNames` (case-insensitive). Use this instead of
  * hardcoding stack IDs in guide pages so new stacks surface automatically.

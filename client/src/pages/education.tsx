@@ -101,23 +101,27 @@ import {
 import { PharmacokineticsChart } from "@/components/pharmacokinetics-chart";
 import { getHalfLifeByName, COMBO_STACK_CONSTITUENTS } from "@/data/pharmacokinetics";
 import { RelatedStacks } from "@/components/research-stacks/RelatedStacks";
+import { STACKS_SLUG_TO_PEPTIDE_NAMES } from "@/data/research-stacks";
 
 // Maps individual peptide article slugs to the peptide name(s) used in research-stacks data.
 // This drives the RelatedStacks component shown at the bottom of each article.
+//
+// The bulk of this map is auto-derived from educationLinks in RESEARCH_STACKS_DATA — new
+// stacks whose educationLinks point to a "what-is-*" article slug will surface here
+// automatically without any manual update.
+//
+// Static entries below handle two special cases that the auto-derivation cannot cover:
+//   1. Compounds whose stack educationLinks point to generic guide pages (e.g. /guides/hormonal-peptides)
+//      rather than individual "what-is-*" articles.
+//   2. Multi-compound complex articles (glow/klow) that should show stacks for all three
+//      constituent peptides.
 const SLUG_TO_PEPTIDE_NAMES: Record<string, string[]> = {
-  "what-is-bpc-157-peptide": ["BPC-157"],
-  "what-is-tb-500-peptide": ["TB-500"],
-  "what-is-ghk-cu-peptide": ["GHK-Cu"],
-  "what-is-ipamorelin-peptide": ["Ipamorelin"],
-  "what-is-cjc-1295-peptide": ["CJC-1295"],
-  "what-is-semax-peptide": ["Semax"],
-  "what-is-selank-peptide": ["Selank"],
-  "what-is-epithalon-peptide": ["Epithalon"],
-  "what-is-aod-9604-peptide": ["AOD-9604"],
-  "what-is-5-amino-1mq-peptide": ["5-Amino-1MQ"],
+  ...STACKS_SLUG_TO_PEPTIDE_NAMES,
+  // Hormonal compounds — educationLinks point to /guides/hormonal-peptides, not individual articles
   "what-is-pt-141-bremelanotide-peptide": ["PT-141"],
   "what-is-kisspeptin-peptide": ["Kisspeptin-10"],
   "what-is-melanotan-peptide": ["MT-2"],
+  // Multi-peptide complex articles
   "what-is-glow-peptide-complex": ["BPC-157", "TB-500", "GHK-Cu"],
   "what-is-klow-peptide-complex": ["BPC-157", "TB-500", "GHK-Cu"],
 };
