@@ -1462,6 +1462,43 @@ export default function ProductDetail() {
                     </Link>
                   </div>
                 )}
+
+                {/* Healing Peptides Guide CTA — BPC-157, TB-500, GHK-Cu */}
+                {["bpc-157", "tb-500", "ghk-cu"].includes(product.slug ?? "") && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.35, delay: 0.15 }}
+                    className="mt-8"
+                    data-testid="section-healing-guide-cta"
+                  >
+                    <div className="h-px bg-gradient-to-r from-[#22c55e]/40 via-[#21d8ff]/30 to-transparent mb-8" />
+                    <Link href="/guides/healing-peptides" data-testid="link-healing-peptides-guide">
+                      <Card className="p-5 border-[#22c55e]/30 cursor-pointer hover-elevate transition-all duration-300 hover:border-[#22c55e]/60 hover:shadow-[0_0_24px_rgba(34,197,94,0.18)]">
+                        <div className="flex items-start gap-4">
+                          <div className="p-2.5 rounded-lg bg-[#22c55e]/10 flex-shrink-0">
+                            <FlaskConical className="h-5 w-5 text-[#22c55e]" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1 flex-wrap">
+                              <Badge className="bg-[#22c55e]/15 text-[#22c55e] border border-[#22c55e]/30 text-xs no-default-hover-elevate no-default-active-elevate">
+                                Deep Dive
+                              </Badge>
+                              <span className="text-xs text-muted-foreground font-mono uppercase tracking-widest">Healing Peptides Guide</span>
+                            </div>
+                            <h4 className="font-display text-base md:text-lg font-bold leading-snug mb-1">
+                              Learn the Science Behind This Compound
+                            </h4>
+                            <p className="text-sm text-muted-foreground leading-relaxed">
+                              Explore the tissue repair cascade, angiogenesis signaling, and how healing peptides work at the molecular level.
+                            </p>
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-[#22c55e] flex-shrink-0 mt-0.5" />
+                        </div>
+                      </Card>
+                    </Link>
+                  </motion.div>
+                )}
               </section>}
 
               {/* Section: Pharmacokinetics */}

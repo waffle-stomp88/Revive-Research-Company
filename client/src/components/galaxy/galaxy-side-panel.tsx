@@ -37,10 +37,6 @@ const SYSTEM_GUIDE_LINKS: Record<string, { href: string; label: string }> = {
     href: "/guides/hormonal-peptides",
     label: "HPG Axis & Hormonal Peptide Guide",
   },
-  healing: {
-    href: "/guides/healing-peptides",
-    label: "Tissue Repair & Healing Peptide Guide",
-  },
 };
 
 interface GalaxySidePanelProps {
