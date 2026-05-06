@@ -100,6 +100,27 @@ import {
 } from "@/components/education";
 import { PharmacokineticsChart } from "@/components/pharmacokinetics-chart";
 import { getHalfLifeByName, COMBO_STACK_CONSTITUENTS } from "@/data/pharmacokinetics";
+import { RelatedStacks } from "@/components/research-stacks/RelatedStacks";
+
+// Maps individual peptide article slugs to the peptide name(s) used in research-stacks data.
+// This drives the RelatedStacks component shown at the bottom of each article.
+const SLUG_TO_PEPTIDE_NAMES: Record<string, string[]> = {
+  "what-is-bpc-157-peptide": ["BPC-157"],
+  "what-is-tb-500-peptide": ["TB-500"],
+  "what-is-ghk-cu-peptide": ["GHK-Cu"],
+  "what-is-ipamorelin-peptide": ["Ipamorelin"],
+  "what-is-cjc-1295-peptide": ["CJC-1295"],
+  "what-is-semax-peptide": ["Semax"],
+  "what-is-selank-peptide": ["Selank"],
+  "what-is-epithalon-peptide": ["Epithalon"],
+  "what-is-aod-9604-peptide": ["AOD-9604"],
+  "what-is-5-amino-1mq-peptide": ["5-Amino-1MQ"],
+  "what-is-pt-141-bremelanotide-peptide": ["PT-141"],
+  "what-is-kisspeptin-peptide": ["Kisspeptin-10"],
+  "what-is-melanotan-peptide": ["MT-2"],
+  "what-is-glow-peptide-complex": ["BPC-157", "TB-500", "GHK-Cu"],
+  "what-is-klow-peptide-complex": ["BPC-157", "TB-500", "GHK-Cu"],
+};
 
 // Articles that are part of the Academy curriculum (for cross-linking)
 const ACADEMY_ARTICLE_SLUGS = [
@@ -1290,6 +1311,13 @@ export default function Education() {
                                 </div>
                               </Card>
                             </Link>
+                          </div>
+                        )}
+
+                        {/* Related Research Stacks */}
+                        {article.slug && SLUG_TO_PEPTIDE_NAMES[article.slug] && (
+                          <div className="mt-8 pt-8 border-t border-border/50">
+                            <RelatedStacks peptideNames={SLUG_TO_PEPTIDE_NAMES[article.slug]} />
                           </div>
                         )}
 
