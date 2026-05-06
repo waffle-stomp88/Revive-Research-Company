@@ -73,6 +73,7 @@ import VerifyQuality from "@/pages/guides/verify-quality";
 import PurityExplained from "@/pages/guides/purity-explained";
 import CheapPeptides from "@/pages/guides/cheap-peptides";
 import HormonalPeptidesGuide from "@/pages/guides/hormonal-peptides";
+import HealingPeptidesGuide from "@/pages/guides/healing-peptides";
 
 const ChatBot = lazy(() => import("@/components/chatbot").then(m => ({ default: m.ChatBot })));
 const BackToTopButton = lazy(() => import("@/components/back-to-top-button").then(m => ({ default: m.BackToTopButton })));
@@ -210,6 +211,7 @@ function Router() {
         <Route path="/guides/peptide-purity-explained" component={PurityExplained} />
         <Route path="/guides/why-cheap-peptides-are-cheap" component={CheapPeptides} />
         <Route path="/guides/hormonal-peptides" component={HormonalPeptidesGuide} />
+        <Route path="/guides/healing-peptides" component={HealingPeptidesGuide} />
         <Route path="/guides/peptide-education-center" component={Education} />
         {/* Catch-all: compound-name guide URLs intentionally not routed — do not create */}
         {/* Catch-all for individual peptide article pages (e.g. /guides/what-is-bpc-157-peptide) */}
