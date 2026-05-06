@@ -15,6 +15,7 @@ interface GalaxyStarsProps {
   onClick: (id: string) => void;
   onDoubleClick: (id: string) => void;
   vfxVariant: GalaxyVfxVariant;
+  onHoveredScreenPos?: (pos: { x: number; y: number } | null) => void;
 }
 
 const SPRITE_VS = /* glsl */ `
@@ -22,11 +23,13 @@ const SPRITE_VS = /* glsl */ `
   attribute vec3 aColor;
   attribute float aBoost;
   attribute float aStreak;
+  attribute float aIsHub;
   uniform float uTime;
   uniform float uPxScale;
   varying vec3 vColor;
   varying float vBoost;
   varying float vStreak;
+  varying float vIsHub;
   void main() {
     vec4 mv = modelViewMatrix * vec4(position, 1.0);
     gl_Position = projectionMatrix * mv;
@@ -35,6 +38,7 @@ const SPRITE_VS = /* glsl */ `
     vColor = aColor;
     vBoost = aBoost;
     vStreak = aStreak;
+    vIsHub = aIsHub;
   }
 `;
 
@@ -43,17 +47,30 @@ const SPRITE_FS = /* glsl */ `
   varying vec3 vColor;
   varying float vBoost;
   varying float vStreak;
+  varying float vIsHub;
   void main() {
     vec2 uv = gl_PointCoord - vec2(0.5);
     float r = length(uv);
     if (r > 0.5) discard;
+
     float core = exp(-r * r * 110.0);
     float halo = exp(-r * r * 22.0) * 0.18;
+
     float axisFalloff = mix(70.0, 14.0, clamp(vStreak, 0.0, 1.0));
     float crossX = exp(-uv.y * uv.y * 2400.0) * exp(-abs(uv.x) * axisFalloff);
     float crossY = exp(-uv.x * uv.x * 2400.0) * exp(-abs(uv.y) * axisFalloff);
     float streaks = (crossX + crossY) * vStreak;
-    float intensity = core + halo + streaks;
+
+    // Hub star cross-flare: wider, longer rays visible from distance
+    float hubFlare = 0.0;
+    if (vIsHub > 0.5) {
+      float hubFalloff = 28.0;
+      float hubX = exp(-uv.y * uv.y * 900.0) * exp(-abs(uv.x) * hubFalloff) * 0.9;
+      float hubY = exp(-uv.x * uv.x * 900.0) * exp(-abs(uv.y) * hubFalloff) * 0.9;
+      hubFlare = (hubX + hubY) * (1.0 - vStreak * 0.5);
+    }
+
+    float intensity = core + halo + streaks + hubFlare;
     vec3 c = vColor * intensity * vBoost;
     float alphaMask = step(0.001, vBoost);
     gl_FragColor = vec4(c, intensity * alphaMask);
@@ -68,8 +85,7 @@ export function GalaxyStars(props: GalaxyStarsProps) {
 }
 
 // ---------------------------------------------------------------------------
-// Minimal variant: original instanced visible sphere renderer (unchanged
-// behavior — only the new cinematic VFX package introduces sprite stars).
+// Minimal variant (unchanged behavior)
 // ---------------------------------------------------------------------------
 function MinimalStars({
   nodes,
@@ -184,8 +200,7 @@ function MinimalStars({
 }
 
 // ---------------------------------------------------------------------------
-// Cinematic variant: invisible InstancedMesh picker + sprite Points cloud
-// with Gaussian core, soft halo, and 4-pointed diffraction streaks.
+// Cinematic variant: sprite Points cloud with hub flare + screen-pos projection
 // ---------------------------------------------------------------------------
 function CinematicStars({
   nodes,
@@ -197,21 +212,21 @@ function CinematicStars({
   onHover,
   onClick,
   onDoubleClick,
+  onHoveredScreenPos,
 }: GalaxyStarsProps) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const pointsRef = useRef<THREE.Points>(null);
   const matRef = useRef<THREE.ShaderMaterial>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const { size: viewportSize, camera } = useThree();
+  const projVec = useMemo(() => new THREE.Vector3(), []);
 
-  // Picker transforms — invisible (no color, no depth writes) but still
-  // raycastable so existing hover/click/double-click handlers work.
+  // Picker transforms (invisible, raycastable)
   useEffect(() => {
     if (!meshRef.current) return;
     for (let i = 0; i < nodes.length; i++) {
       const n = nodes[i];
       dummy.position.set(n.position[0], n.position[1], n.position[2]);
-      // Keep hit-sphere tight to the visual star core, not the glow.
       dummy.scale.setScalar(Math.max(n.size * 0.38, 0.22));
       dummy.updateMatrix();
       meshRef.current.setMatrixAt(i, dummy.matrix);
@@ -219,23 +234,26 @@ function CinematicStars({
     meshRef.current.instanceMatrix.needsUpdate = true;
   }, [nodes, dummy]);
 
-  const { positions, baseSizes, baseColors } = useMemo(() => {
+  const { positions, baseSizes, baseColors, hubFlags } = useMemo(() => {
     const pos = new Float32Array(nodes.length * 3);
     const siz = new Float32Array(nodes.length);
     const col = new Float32Array(nodes.length * 3);
+    const hub = new Float32Array(nodes.length);
     const tmp = new THREE.Color();
     for (let i = 0; i < nodes.length; i++) {
       const n = nodes[i];
       pos[i * 3] = n.position[0];
       pos[i * 3 + 1] = n.position[1];
       pos[i * 3 + 2] = n.position[2];
-      siz[i] = Math.max(0.8, n.size * 2.4);
+      // Hub stars are slightly larger by default
+      siz[i] = Math.max(0.8, n.size * (n.isHub ? 2.8 : 2.4));
       tmp.set(n.color);
       col[i * 3] = tmp.r;
       col[i * 3 + 1] = tmp.g;
       col[i * 3 + 2] = tmp.b;
+      hub[i] = n.isHub ? 1.0 : 0.0;
     }
-    return { positions: pos, baseSizes: siz, baseColors: col };
+    return { positions: pos, baseSizes: siz, baseColors: col, hubFlags: hub };
   }, [nodes]);
 
   const sizesAttr = useMemo(() => new Float32Array(baseSizes), [baseSizes]);
@@ -269,7 +287,7 @@ function CinematicStars({
       const dimNeighbor = hoveredId !== null && !isHover && !connected;
 
       let boost = 1.0;
-      let streak = 0.18;
+      let streak = n.isHub ? 0.35 : 0.18; // hub stars have baseline streak
       let size = baseSizes[i];
 
       if (!visible) {
@@ -291,7 +309,7 @@ function CinematicStars({
         streak = 0.05;
       } else if (highlight) {
         boost = 1.25;
-        streak = 0.25;
+        streak = n.isHub ? 0.45 : 0.25;
       }
 
       sizeA.setX(i, size);
@@ -314,6 +332,24 @@ function CinematicStars({
   useFrame((state) => {
     if (matRef.current) {
       matRef.current.uniforms.uTime.value = state.clock.elapsedTime;
+    }
+
+    // Project hovered node to screen space and send callback
+    if (onHoveredScreenPos) {
+      if (hoveredId) {
+        const hovNode = nodes.find((n) => n.id === hoveredId);
+        if (hovNode) {
+          projVec.set(hovNode.position[0], hovNode.position[1], hovNode.position[2]);
+          projVec.project(state.camera);
+          const sx = ((projVec.x + 1) / 2) * state.size.width;
+          const sy = ((-projVec.y + 1) / 2) * state.size.height;
+          onHoveredScreenPos({ x: sx, y: sy });
+        } else {
+          onHoveredScreenPos(null);
+        }
+      } else {
+        onHoveredScreenPos(null);
+      }
     }
   });
 
@@ -399,6 +435,12 @@ function CinematicStars({
           <bufferAttribute
             attach="attributes-aStreak"
             array={streaksAttr}
+            count={nodes.length}
+            itemSize={1}
+          />
+          <bufferAttribute
+            attach="attributes-aIsHub"
+            array={hubFlags}
             count={nodes.length}
             itemSize={1}
           />

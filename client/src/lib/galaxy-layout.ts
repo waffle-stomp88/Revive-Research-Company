@@ -15,6 +15,7 @@ export interface GalaxyNode {
   mechanisms: string[];
   systems: string[];
   synergyCount: number;
+  isHub: boolean;
 }
 
 export function toProductSlug(id: string): string {
@@ -65,7 +66,6 @@ const SYSTEM_ALIAS_MAP: Record<string, string> = {
   immune: "longevity",
   heart: "healing",
   vascular: "healing",
-  // Hormonal is now first-class
   hormonal: "hormonal",
   reproductive: "hormonal",
   fertility: "hormonal",
@@ -101,36 +101,50 @@ function hashString(s: string): number {
   return h >>> 0;
 }
 
-// Galaxy scale — much larger than the original "solar system" size
-const GALAXY_RADIUS = 60;
-const SYSTEM_RADIUS = 15;
-const RNG_SEED = 0xc0ffee;
-
-// Spiral arm angular offsets (radians) per body system index so clusters
-// fan out in distinct spiral arms rather than distributing as a sphere.
-const SPIRAL_ARM_OFFSETS = [0, 0.72, 1.44, 2.16, 2.88, 3.6, 4.32];
-
-function systemCenters(): Record<string, [number, number, number]> {
-  const result: Record<string, [number, number, number]> = {};
-  const n = BODY_SYSTEMS.length;
-  for (let i = 0; i < n; i++) {
-    const sys = BODY_SYSTEMS[i];
-    // Spread systems evenly around the galactic disc using the golden angle
-    const theta = Math.PI * (1 + Math.sqrt(5)) * (i + 0.5) + (SPIRAL_ARM_OFFSETS[i] ?? 0);
-    // Vary radial distance slightly per system so arms don't all overlap
-    const radialFraction = 0.55 + ((i * 0.618) % 1) * 0.45;
-    const r = GALAXY_RADIUS * radialFraction;
-    const x = r * Math.cos(theta);
-    // Y-axis flattened to 0.25 for a galactic disc appearance (was 0.6)
-    const y = r * Math.sin(theta) * 0.25;
-    const z = r * Math.sin(theta);
-    result[sys.id] = [x, y, z];
-  }
-  return result;
-}
-
 function normalizePeptideKey(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+// Galaxy scale constants
+const GALAXY_RADIUS = 60;
+const MIN_R = 8;
+const SPIRAL_OFFSET = 0.5; // radians — rotates all arms slightly for aesthetics
+const ARM_WIDTH = 4.5;     // perpendicular jitter (half-width of arm band)
+const RNG_SEED = 0xc0ffee;
+
+// Explicit hub peptide IDs (normalized for matching)
+const HUB_NAMES_NORMALIZED = new Set([
+  "bpc157", "tb500", "ipamorelin", "cjc1295", "epithalon", "semax",
+  "selank", "igf1lr3", "semaglutide", "nadprecursor", "ghkcu", "ss31",
+]);
+
+function isHubPeptide(id: string, synergyCount: number): boolean {
+  if (synergyCount >= 5) return true;
+  const norm = normalizePeptideKey(id);
+  return HUB_NAMES_NORMALIZED.has(norm);
+}
+
+/**
+ * Compute a logarithmic spiral arm position for a peptide.
+ * t ranges [0.15, 0.90] along the arm; theta is derived from r via log spiral.
+ */
+function spiralPosition(
+  t: number,
+  armBase: number,
+  rng: () => number
+): [number, number, number] {
+  const r = MIN_R + t * (GALAXY_RADIUS - MIN_R);
+  const theta = armBase + Math.log(r * 0.01 + 1) / 0.55;
+
+  // Perpendicular jitter to give arm some width
+  const perpAngle = theta + Math.PI / 2;
+  const perpDist = (rng() - 0.5) * 2 * ARM_WIDTH;
+
+  const x = r * Math.cos(theta) + perpDist * Math.cos(perpAngle);
+  const z = r * Math.sin(theta) + perpDist * Math.sin(perpAngle);
+  const y = (rng() - 0.5) * 2 * 1.8; // very thin disc on Y axis
+
+  return [x, y, z];
 }
 
 function findNodeIdForPeptideRef(
@@ -138,10 +152,8 @@ function findNodeIdForPeptideRef(
   nodes: { id: string; normalizedKey: string }[]
 ): string | undefined {
   const normRef = normalizePeptideKey(ref);
-  // Exact key match wins
   const exact = nodes.find((n) => n.id === ref || n.normalizedKey === normRef);
   if (exact) return exact.id;
-  // Substring match
   const partial = nodes.find(
     (n) =>
       n.normalizedKey.includes(normRef) || normRef.includes(n.normalizedKey)
@@ -154,7 +166,7 @@ let cachedLayout: GalaxyLayout | null = null;
 export function buildGalaxyLayout(): GalaxyLayout {
   if (cachedLayout) return cachedLayout;
 
-  const centers = systemCenters();
+  // Group peptides by primary body system
   const grouped: Record<string, string[]> = {};
   const peptideEntries = Object.entries(PEPTIDE_PATHWAYS).sort(([a], [b]) =>
     a.localeCompare(b)
@@ -166,7 +178,7 @@ export function buildGalaxyLayout(): GalaxyLayout {
     grouped[sys].push(id);
   }
 
-  // Count synergies per peptide first (across all KNOWN_STACKS)
+  // Count synergies per peptide (across all KNOWN_STACKS)
   const synergyCount: Record<string, number> = {};
   for (const stack of KNOWN_STACKS) {
     for (const p of stack.peptides) {
@@ -177,41 +189,45 @@ export function buildGalaxyLayout(): GalaxyLayout {
   const nodes: GalaxyNode[] = [];
   const nodeIndex: Record<string, number> = {};
 
-  for (const sysId of Object.keys(grouped).sort()) {
-    const ids = grouped[sysId];
-    const center = centers[sysId] ?? [0, 0, 0];
-    const sysColor =
-      getSystemColor(sysId) ??
-      BODY_SYSTEMS.find((b) => b.id === sysId)?.color ??
-      "#21d8ff";
-    const sysName =
-      BODY_SYSTEMS.find((b) => b.id === sysId)?.name ??
-      sysId.charAt(0).toUpperCase() + sysId.slice(1);
+  // Build spiral arms in BODY_SYSTEMS order so each system has a consistent arm
+  const numSystems = BODY_SYSTEMS.length;
 
-    for (let i = 0; i < ids.length; i++) {
-      const id = ids[i];
+  for (let sysIdx = 0; sysIdx < numSystems; sysIdx++) {
+    const sys = BODY_SYSTEMS[sysIdx];
+    const sysId = sys.id;
+    const ids = grouped[sysId] ?? [];
+    if (ids.length === 0) continue;
+
+    const armBase = (2 * Math.PI / numSystems) * sysIdx + SPIRAL_OFFSET;
+    const sysColor = getSystemColor(sysId) ?? sys.color ?? "#21d8ff";
+    const sysName = sys.name;
+
+    // Sort peptide IDs for stable ordering, then assign t-positions along the arm
+    const sortedIds = [...ids].sort();
+    const count = sortedIds.length;
+
+    for (let i = 0; i < count; i++) {
+      const id = sortedIds[i];
       const data: PeptidePathway = PEPTIDE_PATHWAYS[id];
       const rng = mulberry32(hashString(id) ^ RNG_SEED);
 
-      // Stable disc-shaped position around the system's center
-      // Use 2D disc distribution (uniform in XZ plane) with flattened Y
-      const angle = 2 * Math.PI * rng();
-      const radial = SYSTEM_RADIUS * Math.sqrt(rng()); // sqrt for uniform disc density
-      const yJitter = (rng() - 0.5) * 2 * SYSTEM_RADIUS * 0.18; // very flat Y spread
+      // t: evenly spaced along [0.15, 0.90] with a small deterministic jitter
+      const tBase = 0.15 + (i / Math.max(count - 1, 1)) * 0.75;
+      const tJitter = (rng() - 0.5) * (0.75 / Math.max(count, 1)) * 0.6;
+      const t = Math.max(0.05, Math.min(0.95, tBase + tJitter));
 
-      const ox = radial * Math.cos(angle);
-      const oy = yJitter;
-      const oz = radial * Math.sin(angle);
+      const position = spiralPosition(t, armBase, rng);
 
       const sCount = synergyCount[id] ?? 0;
       const size = 0.55 + Math.min(sCount, 8) * 0.13;
+      const hub = isHubPeptide(id, sCount);
 
       nodeIndex[id] = nodes.length;
       nodes.push({
         id,
         slug: toProductSlug(id),
         name: data.name,
-        position: [center[0] + ox, center[1] + oy, center[2] + oz],
+        position,
         color: sysColor,
         size,
         systemId: sysId,
@@ -220,8 +236,39 @@ export function buildGalaxyLayout(): GalaxyLayout {
         mechanisms: data.mechanisms,
         systems: data.systems,
         synergyCount: sCount,
+        isHub: hub,
       });
     }
+  }
+
+  // Handle any peptides that didn't map to a known system (use longevity as fallback)
+  const longevityArm = BODY_SYSTEMS.findIndex((s) => s.id === "longevity");
+  const fallbackArmBase = (2 * Math.PI / numSystems) * longevityArm + SPIRAL_OFFSET;
+  const fallbackColor = getSystemColor("longevity") ?? "#a855f7";
+
+  for (const [id, data] of peptideEntries) {
+    if (nodeIndex[id] !== undefined) continue;
+    const rng = mulberry32(hashString(id) ^ RNG_SEED);
+    const t = 0.15 + rng() * 0.75;
+    const position = spiralPosition(t, fallbackArmBase, rng);
+    const sCount = synergyCount[id] ?? 0;
+    const size = 0.55 + Math.min(sCount, 8) * 0.13;
+    nodeIndex[id] = nodes.length;
+    nodes.push({
+      id,
+      slug: toProductSlug(id),
+      name: data.name,
+      position,
+      color: fallbackColor,
+      size,
+      systemId: "longevity",
+      systemName: "Longevity",
+      pathways: data.pathways,
+      mechanisms: data.mechanisms,
+      systems: data.systems,
+      synergyCount: sCount,
+      isHub: isHubPeptide(id, sCount),
+    });
   }
 
   const lookup = nodes.map((n) => ({

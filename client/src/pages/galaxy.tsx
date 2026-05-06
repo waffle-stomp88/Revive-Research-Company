@@ -17,6 +17,8 @@ import { GalaxySidePanel } from "@/components/galaxy/galaxy-side-panel";
 import { resolveVfxVariant } from "@/components/galaxy/galaxy-vfx-config";
 import { useGalaxyAudio } from "@/hooks/useGalaxyAudio";
 import { GalaxyHyperspaceOverlay } from "@/components/galaxy/galaxy-hyperspace-overlay";
+import { GalaxyHoverHUD } from "@/components/galaxy/galaxy-hover-hud";
+import { WarpBanner } from "@/components/galaxy/galaxy-warp-banner";
 
 const GalaxyScene = lazy(() =>
   import("@/components/galaxy/galaxy-scene").then((m) => ({
@@ -61,20 +63,22 @@ export default function GalaxyPage() {
   const [rotationSpeed, setRotationSpeed] = useState(0.45);
   const [forceFallback, setForceFallback] = useState(false);
   const [nodeMeta, setNodeMeta] = useState<GalaxyNode[]>([]);
+  const [warpingToNode, setWarpingToNode] = useState<GalaxyNode | null>(null);
+  const [warpNonce, setWarpNonce] = useState(0);
+  const [hoveredScreenPos, setHoveredScreenPos] = useState<{ x: number; y: number } | null>(null);
+  const prevScreenPosRef = useRef<{ x: number; y: number } | null>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
 
-  // Audio hook — only active when 3D canvas is shown and reduced motion is off
+  // Audio hook
   const reducedMotion = useMemo(() => prefersReducedMotion(), []);
   const audio = useGalaxyAudio();
   const ambientStarted = useRef(false);
 
-  // Compute once: whether we should play the cinematic entry
   const doEntry = useMemo(() => !reducedMotion, [reducedMotion]);
 
-  // Entry phase state: loading → entry → done
   const [entryPhase, setEntryPhase] = useState<EntryPhase>("loading");
   const entryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Decide rendering path on mount
   const [useFallback, setUseFallback] = useState<boolean | null>(null);
   const [fallbackReason, setFallbackReason] = useState<
     "reduced-motion" | "no-webgl" | null
@@ -103,14 +107,12 @@ export default function GalaxyPage() {
     }
   }, []);
 
-  // Called when the 3D scene mounts — starts the UI-chrome timer
   const handleSceneLoaded = useCallback(() => {
     if (!doEntry) {
       setEntryPhase("done");
       return;
     }
     setEntryPhase("entry");
-    // 4.2s camera fly + 0.5s grace before UI chrome fades in
     entryTimerRef.current = setTimeout(() => setEntryPhase("done"), 4800);
   }, [doEntry]);
 
@@ -157,6 +159,10 @@ export default function GalaxyPage() {
     () => (selectedId ? nodes.find((n) => n.id === selectedId) ?? null : null),
     [selectedId, nodes]
   );
+  const hoveredNode = useMemo(
+    () => (hoveredId ? nodes.find((n) => n.id === hoveredId) ?? null : null),
+    [hoveredId, nodes]
+  );
 
   const toggleSystem = useCallback((id: string) => {
     setVisibleSystems((prev) => {
@@ -178,6 +184,29 @@ export default function GalaxyPage() {
     setSelectedId(id);
     setWarpToId(id);
   }, []);
+
+  const handleWarpStart = useCallback((node: GalaxyNode) => {
+    setWarpingToNode(node);
+    setWarpNonce((n) => n + 1);
+  }, []);
+
+  // Throttled screen-pos handler: only update React state when pos changes by >1px
+  const handleHoveredScreenPos = useCallback(
+    (pos: { x: number; y: number } | null) => {
+      if (pos === null) {
+        if (prevScreenPosRef.current !== null) {
+          prevScreenPosRef.current = null;
+          setHoveredScreenPos(null);
+        }
+        return;
+      }
+      const prev = prevScreenPosRef.current;
+      if (prev && Math.abs(prev.x - pos.x) < 1.5 && Math.abs(prev.y - pos.y) < 1.5) return;
+      prevScreenPosRef.current = pos;
+      setHoveredScreenPos({ x: pos.x, y: pos.y });
+    },
+    []
+  );
 
   // Inline galaxy search helpers
   const searchLower = searchTerm.trim().toLowerCase();
@@ -237,7 +266,6 @@ export default function GalaxyPage() {
     }
   }, [searchActiveIdx]);
 
-  // Start ambient on first canvas interaction (user gesture satisfies browser policy)
   const handleCanvasFirstClick = useCallback(() => {
     if (ambientStarted.current || reducedMotion) return;
     ambientStarted.current = true;
@@ -261,6 +289,20 @@ export default function GalaxyPage() {
     setForceFallback(false);
     setUseFallback(false);
     setFallbackReason(null);
+  }, []);
+
+  // Compute canvas dimensions for HUD positioning
+  const [canvasDims, setCanvasDims] = useState({ w: 0, h: 0 });
+  useEffect(() => {
+    function updateDims() {
+      if (canvasRef.current) {
+        const rect = canvasRef.current.getBoundingClientRect();
+        setCanvasDims({ w: rect.width, h: rect.height });
+      }
+    }
+    updateDims();
+    window.addEventListener("resize", updateDims);
+    return () => window.removeEventListener("resize", updateDims);
   }, []);
 
   return (
@@ -291,16 +333,16 @@ export default function GalaxyPage() {
           >
             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E7FB10]/10 border border-[#E7FB10]/30 mb-2">
               <Sparkles className="h-3 w-3 text-[#E7FB10]" />
-              <span className="text-[10px] uppercase tracking-wider font-semibold text-[#E7FB10]">
+              <span className="text-[10px] uppercase tracking-wider font-mono font-semibold text-[#E7FB10]">
                 Synergy Galaxy
               </span>
             </div>
-            <h1 className="font-display text-2xl md:text-3xl font-bold leading-tight">
+            <h1 className="font-mono text-2xl md:text-3xl font-bold leading-tight tracking-tight">
               The Peptide Universe
             </h1>
-            <p className="text-xs md:text-sm text-muted-foreground max-w-md mt-0.5">
+            <p className="text-xs md:text-sm text-muted-foreground max-w-md mt-0.5 font-mono">
               Each star is a peptide. Lines connect researched synergy pairs.
-              Drag to orbit, click a star to inspect.
+              Drag to orbit · click a star to inspect.
             </p>
 
             {/* Inline galaxy search */}
@@ -318,7 +360,7 @@ export default function GalaxyPage() {
                   onBlur={() => setTimeout(() => setSearchOpen(false), 150)}
                   onKeyDown={handleSearchKeyDown}
                   placeholder="Find a peptide — warp to it"
-                  className="h-9 pl-8 pr-8 text-sm bg-black/50 border-white/15 backdrop-blur-sm placeholder:text-white/30 focus-visible:border-[#21d8ff]/50 focus-visible:ring-0"
+                  className="h-9 pl-8 pr-8 text-sm font-mono bg-black/50 border-white/15 backdrop-blur-sm placeholder:text-white/30 focus-visible:border-[#21d8ff]/50 focus-visible:ring-0"
                   data-testid="galaxy-search-input"
                   aria-label="Search peptides"
                   aria-autocomplete="list"
@@ -362,10 +404,10 @@ export default function GalaxyPage() {
                           style={{ backgroundColor: node.color }}
                         />
                         <span className="flex-1 min-w-0">
-                          <span className="text-sm font-medium text-white/90 truncate block">
+                          <span className="text-sm font-mono font-medium text-white/90 truncate block">
                             {node.name}
                           </span>
-                          <span className="text-xs text-white/40">
+                          <span className="text-xs font-mono text-white/40">
                             {node.systemName}
                           </span>
                         </span>
@@ -419,9 +461,9 @@ export default function GalaxyPage() {
 
           {/* Canvas wrapper — captures first click to start ambient audio */}
           <div
+            ref={canvasRef}
             className="absolute inset-0"
             onClick={handleCanvasFirstClick}
-            style={{}}
           >
             <Suspense
               fallback={
@@ -431,7 +473,7 @@ export default function GalaxyPage() {
                 >
                   <div className="flex flex-col items-center gap-3">
                     <Loader2 className="h-8 w-8 animate-spin text-[#E7FB10]" />
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs font-mono text-muted-foreground">
                       Loading constellation...
                     </p>
                   </div>
@@ -457,6 +499,8 @@ export default function GalaxyPage() {
                   onExternalWarpConsumed={() => setWarpToId(null)}
                   rotationPaused={rotationPaused}
                   rotationSpeed={rotationSpeed}
+                  onHoveredScreenPos={handleHoveredScreenPos}
+                  onWarpStart={handleWarpStart}
                 />
               </ErrorBoundary>
             </Suspense>
@@ -469,6 +513,19 @@ export default function GalaxyPage() {
               totalDurationMs={3800}
             />
           )}
+
+          {/* Hover HUD — targeting brackets + telemetry panel */}
+          {uiVisible && (
+            <GalaxyHoverHUD
+              hoveredNode={hoveredNode}
+              hoveredScreenPos={hoveredScreenPos}
+              canvasWidth={canvasDims.w}
+              canvasHeight={canvasDims.h}
+            />
+          )}
+
+          {/* Warp flash banner */}
+          <WarpBanner warpingToNode={warpingToNode} warpNonce={warpNonce} />
 
           <AnimatePresence>
             {selectedNode && (
@@ -524,12 +581,12 @@ export default function GalaxyPage() {
               )}
             </Button>
 
-            {/* Speed slider — only interactive when not paused */}
+            {/* Speed slider */}
             <div
               className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-black/40 backdrop-blur-sm"
               data-testid="galaxy-rotation-speed-control"
             >
-              <span className="text-[10px] text-white/40 select-none whitespace-nowrap">Speed</span>
+              <span className="text-[10px] font-mono text-white/40 select-none whitespace-nowrap">Speed</span>
               <input
                 type="range"
                 min={0.05}
@@ -542,7 +599,7 @@ export default function GalaxyPage() {
                 data-testid="slider-galaxy-rotation-speed"
                 className="w-20 accent-[#E7FB10] cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
               />
-              <span className="text-[10px] text-white/50 w-6 text-right select-none tabular-nums">
+              <span className="text-[10px] font-mono text-white/50 w-6 text-right select-none tabular-nums">
                 {rotationSpeed.toFixed(1)}×
               </span>
             </div>
@@ -554,7 +611,7 @@ export default function GalaxyPage() {
             animate={{ opacity: uiVisible ? 1 : 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
           >
-            <div className="px-3 py-1.5 rounded-full bg-background/70 backdrop-blur-md border border-border text-[10px] text-muted-foreground">
+            <div className="px-3 py-1.5 rounded-full bg-background/70 backdrop-blur-md border border-border text-[10px] font-mono text-muted-foreground">
               Drag to orbit · scroll to zoom · click a star to inspect · double-click to warp in
             </div>
           </motion.div>
@@ -570,7 +627,7 @@ export default function GalaxyPage() {
               <Button
                 size="sm"
                 variant="outline"
-                className="gap-1.5"
+                className="gap-1.5 font-mono"
                 data-testid="galaxy-view-all-stacks"
               >
                 View all stacks

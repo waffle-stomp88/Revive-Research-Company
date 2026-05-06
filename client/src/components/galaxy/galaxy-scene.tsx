@@ -1,6 +1,5 @@
 import { useMemo, useState, useCallback, useRef, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Html } from "@react-three/drei";
 import * as THREE from "three";
 import {
   buildGalaxyLayout,
@@ -17,6 +16,7 @@ import { GalaxyNebula } from "./galaxy-nebula";
 import { GalaxyDistantGalaxy } from "./galaxy-distant-galaxy";
 import { GalaxyWarpStreaks } from "./galaxy-warp-streaks";
 import { GalaxyDustStars } from "./galaxy-dust-stars";
+import { GalaxyCore } from "./galaxy-core";
 import {
   GALAXY_VFX,
   type GalaxyVfxVariant,
@@ -40,6 +40,8 @@ interface GalaxySceneProps {
   onExternalWarpConsumed?: () => void;
   rotationPaused?: boolean;
   rotationSpeed?: number;
+  onHoveredScreenPos?: (pos: { x: number; y: number } | null) => void;
+  onWarpStart?: (node: GalaxyNode) => void;
 }
 
 export function GalaxyScene({
@@ -60,6 +62,8 @@ export function GalaxyScene({
   onExternalWarpConsumed,
   rotationPaused = false,
   rotationSpeed = 0.45,
+  onHoveredScreenPos,
+  onWarpStart,
 }: GalaxySceneProps) {
   const layout = useMemo(() => buildGalaxyLayout(), []);
   const { nodes, edges } = layout;
@@ -86,6 +90,7 @@ export function GalaxyScene({
     setIsWarping(true);
     setWarpKey((k) => k + 1);
     onWarp?.();
+    onWarpStart?.(n);
     onExternalWarpConsumed?.();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [externalWarpId]);
@@ -169,7 +174,6 @@ export function GalaxyScene({
   const handleUserInteract = useCallback(() => {
     setAutoRotate(false);
     if (idleTimer.current) clearTimeout(idleTimer.current);
-    // Only schedule the idle-resume if rotation is not manually paused
     if (!rotationPaused) {
       idleTimer.current = setTimeout(() => setAutoRotate(true), 6000);
     }
@@ -182,12 +186,12 @@ export function GalaxyScene({
       handleUserInteract();
       setFlyTarget({ position: [n.position[0], n.position[1], n.position[2]], mode: "warp" });
       onSelect(id);
-      // Trigger warp streaks
       setIsWarping(true);
       setWarpKey((k) => k + 1);
       onWarp?.();
+      onWarpStart?.(n);
     },
-    [nodes, onSelect, handleUserInteract, onWarp]
+    [nodes, onSelect, handleUserInteract, onWarp, onWarpStart]
   );
 
   const handleSelect = useCallback(
@@ -202,10 +206,6 @@ export function GalaxyScene({
     [nodes, onSelect, handleUserInteract]
   );
 
-  const hoveredNode = hoveredId ? nodes.find((x) => x.id === hoveredId) : null;
-
-  // Camera is pulled back further to accommodate the expanded galaxy radius (~60).
-  // Entry starts far out in deep space; normal view sits above the galactic disc.
   const initialCamPos: [number, number, number] = doEntry ? [0, 90, 900] : [0, 18, 160];
 
   return (
@@ -226,6 +226,7 @@ export function GalaxyScene({
         <pointLight position={[-20, -10, -20]} intensity={0.45} color="#21d8ff" />
         <GalaxyStarfield twinkle={vfx.twinkle} fog={vfx.fog} vfxVariant={vfxVariant} />
         <GalaxyDustStars count={2000} discRadius={120} ySpread={8} />
+        <GalaxyCore />
         <GalaxyNebula nodes={nodes} config={vfx.nebula} fog={vfx.fog} />
         <GalaxyDistantGalaxy config={vfx.distantGalaxy} />
         <GalaxyEdges
@@ -260,65 +261,10 @@ export function GalaxyScene({
           onClick={handleSelect}
           onDoubleClick={handleDoubleClick}
           vfxVariant={vfxVariant}
+          onHoveredScreenPos={onHoveredScreenPos}
         />
         <GalaxyEffects config={vfx.bloom} />
         <GalaxyWarpStreaks isWarping={isWarping} warpKey={warpKey} />
-
-        {/* Targeting reticle on hover */}
-        {hoveredNode && (
-          <Html
-            position={hoveredNode.position}
-            center
-            zIndexRange={[100, 200]}
-            style={{ pointerEvents: "none" }}
-          >
-            <div
-              className="galaxy-reticle"
-              style={{ color: hoveredNode.color }}
-              data-testid="galaxy-reticle"
-            >
-              <div className="galaxy-reticle-corner galaxy-reticle-corner-tl" style={{ borderColor: hoveredNode.color }} />
-              <div className="galaxy-reticle-corner galaxy-reticle-corner-tr" style={{ borderColor: hoveredNode.color }} />
-              <div className="galaxy-reticle-corner galaxy-reticle-corner-bl" style={{ borderColor: hoveredNode.color }} />
-              <div className="galaxy-reticle-corner galaxy-reticle-corner-br" style={{ borderColor: hoveredNode.color }} />
-              <div className="galaxy-reticle-dot" style={{ backgroundColor: hoveredNode.color }} />
-            </div>
-          </Html>
-        )}
-
-        {/* Star hover label */}
-        {hoveredId &&
-          (() => {
-            const n = nodes.find((x) => x.id === hoveredId);
-            if (!n) return null;
-            return (
-              <Html
-                position={n.position}
-                center
-                zIndexRange={[100, 0]}
-                style={{ pointerEvents: "none" }}
-              >
-                <div
-                  className="px-3 py-1.5 rounded-md bg-background/85 backdrop-blur-md border flex items-center gap-2 shadow-lg whitespace-nowrap -translate-y-8 transition-opacity duration-150"
-                  style={{ fontSize: "13px", borderColor: `${n.color}66` }}
-                  data-testid="galaxy-hover-label"
-                >
-                  <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: n.color }} />
-                  <span className="font-medium">{n.name}</span>
-                  <span className="text-muted-foreground">·</span>
-                  <span style={{ color: n.color }}>{n.systemName}</span>
-                  {n.synergyCount > 0 && (
-                    <>
-                      <span className="text-muted-foreground">·</span>
-                      <span className="text-muted-foreground">
-                        {n.synergyCount} link{n.synergyCount === 1 ? "" : "s"}
-                      </span>
-                    </>
-                  )}
-                </div>
-              </Html>
-            );
-          })()}
 
         <GalaxyCameraRig
           flyTarget={flyTarget}
@@ -344,11 +290,11 @@ export function GalaxyScene({
           <div className="px-3 py-1.5 rounded-md bg-background/90 border border-[#E7FB10]/40 text-xs shadow-lg max-w-xs">
             {edgeHover.edge.stacks.length > 1 ? (
               <div className="space-y-0.5">
-                <div className="text-muted-foreground text-[0.7rem] uppercase tracking-wide">
+                <div className="text-muted-foreground text-[0.7rem] uppercase tracking-wide font-mono">
                   Appears in {edgeHover.edge.stacks.length} stacks
                 </div>
                 {edgeHover.edge.stacks.map((s, i) => (
-                  <div key={`${s.name}-${i}`} className="flex items-center gap-2">
+                  <div key={`${s.name}-${i}`} className="flex items-center gap-2 font-mono">
                     <span className="font-medium text-[#E7FB10]">{s.name}</span>
                     <span className="text-muted-foreground">·</span>
                     <span className="text-muted-foreground">synergy {s.synergyBonus}</span>
@@ -356,7 +302,7 @@ export function GalaxyScene({
                 ))}
               </div>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 font-mono">
                 <span className="font-medium text-[#E7FB10]">{edgeHover.edge.stackName}</span>
                 <span className="text-muted-foreground">·</span>
                 <span className="text-muted-foreground">synergy {edgeHover.edge.synergyBonus}</span>

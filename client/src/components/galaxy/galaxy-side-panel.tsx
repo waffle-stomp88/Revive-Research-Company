@@ -144,7 +144,8 @@ export function GalaxySidePanel({ node, onClose }: GalaxySidePanelProps) {
               </span>
             </div>
             <h2
-              className="font-display font-mono text-2xl font-bold leading-tight text-white"
+              className="text-2xl font-bold leading-tight text-white"
+              style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
               data-testid="galaxy-panel-title"
             >
               {node.name}
