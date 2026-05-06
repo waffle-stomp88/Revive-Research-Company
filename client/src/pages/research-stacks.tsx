@@ -63,6 +63,17 @@ const STACK_ICON_MAP: Record<StackIconName, typeof FlaskConical> = {
   Dumbbell,
 };
 
+const CATEGORY_CHIP_COLORS: Record<string, string> = {
+  "All": "#a855f7",
+  "Recovery": "#22c55e",
+  "GH Axis": "#6366f1",
+  "Cognitive": "#21d8ff",
+  "Skin": "#ec4899",
+  "Longevity": "#a855f7",
+  "Metabolic": "#f59e0b",
+  "Hormonal": "#f43f5e",
+};
+
 const researchStacks: ResearchStack[] = RESEARCH_STACKS_DATA.map((s) => ({
   id: s.id,
   name: s.name,
@@ -3645,6 +3656,7 @@ function ResearchStacks() {
               {/* Category Filter */}
               <div className="flex flex-wrap justify-center gap-2 mb-8">
                 {(["All" as const, ...STACK_CATEGORIES]).map((cat) => {
+                  const chipColor = CATEGORY_CHIP_COLORS[cat] ?? "#a855f7";
                   const count = cat === "All" ? researchStacks.length : researchStacks.filter((s) => s.category === cat).length;
                   const isActive = activeCategory === cat;
                   return (
@@ -3654,9 +3666,25 @@ function ResearchStacks() {
                       data-testid={`filter-category-${cat.toLowerCase().replace(" ", "-")}`}
                       className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5 ${
                         isActive
-                          ? "bg-[#a855f7] text-white shadow-[0_0_16px_rgba(168,85,247,0.4)]"
-                          : "bg-[#1a1a1f] border border-[#2a2a32] text-muted-foreground hover:text-white hover:border-[#a855f7]/40"
+                          ? "text-white"
+                          : "bg-[#1a1a1f] border border-[#2a2a32] text-muted-foreground hover:text-white"
                       }`}
+                      style={isActive ? {
+                        backgroundColor: chipColor,
+                        boxShadow: `0 0 16px ${chipColor}66`,
+                      } : {
+                        borderColor: undefined,
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isActive) {
+                          (e.currentTarget as HTMLButtonElement).style.borderColor = `${chipColor}66`;
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isActive) {
+                          (e.currentTarget as HTMLButtonElement).style.borderColor = "";
+                        }
+                      }}
                     >
                       {cat}
                       <span className={`text-xs px-1.5 py-0.5 rounded-full ${isActive ? "bg-white/20 text-white" : "bg-[#2a2a32] text-muted-foreground"}`}>
