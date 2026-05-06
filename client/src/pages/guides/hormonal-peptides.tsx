@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Link } from "wouter";
-import { FlaskConical, BookOpen, Telescope, ShoppingBag, Activity, ArrowRight } from "lucide-react";
+import { FlaskConical, BookOpen, Telescope, ShoppingBag, Activity, ArrowRight, Zap, Ban, TrendingUp } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -294,9 +294,190 @@ function HormonalPeptideTable() {
   );
 }
 
+/* ─── Enclomiphene Compound Card ───────────────────────────────────────────── */
+
+function EnclomipheneCompoundCard() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  const SERM_COLOR = "#e11d48";
+
+  const mechanismSteps = [
+    {
+      icon: TrendingUp,
+      label: "Estrogens circulate",
+      detail: "Circulating estradiol (E2) binds ERα on hypothalamic KNDy neurons and anterior pituitary gonadotrophs, suppressing GnRH pulse amplitude and LH/FSH release.",
+      phase: "Baseline negative feedback",
+    },
+    {
+      icon: Ban,
+      label: "Enclomiphene blocks ERα",
+      detail: "As the trans-isomer of clomiphene, enclomiphene competitively occupies ERα at both sites. It acts as an ERα antagonist — occupying the receptor without activating it — and preventing estradiol from binding.",
+      phase: "SERM antagonism",
+    },
+    {
+      icon: Zap,
+      label: "Feedback brake lifts",
+      detail: "With ERα blocked, the hypothalamus interprets the signal as a low-estrogen state. GnRH pulse frequency and amplitude increase. The pituitary responds with elevated LH and FSH secretion, driving endogenous gonadal output.",
+      phase: "Axis disinhibition",
+    },
+  ];
+
+  const keyFacts = [
+    { label: "Class", value: "Selective Estrogen Receptor Modulator (SERM)" },
+    { label: "Isomer", value: "Trans-isomer of clomiphene citrate" },
+    { label: "Primary target", value: "ERα (hypothalamus + anterior pituitary)" },
+    { label: "Mechanism", value: "Competitive ERα antagonism → GnRH de-suppression" },
+    { label: "Net effect", value: "↑ LH, ↑ FSH, ↑ endogenous gonadal output" },
+    { label: "Distinguishing feature", value: "Acts on feedback loop — not on GnRH receptor directly" },
+  ];
+
+  return (
+    <div ref={ref} className="my-10 not-prose" data-testid="card-enclomiphene-compound">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.4 }}
+        className="mb-5"
+      >
+        <div className="flex items-center gap-3 mb-2">
+          <span
+            className="text-[10px] font-mono px-2 py-0.5 rounded-full border uppercase tracking-wider"
+            style={{ borderColor: `${SERM_COLOR}50`, color: SERM_COLOR, background: `${SERM_COLOR}15` }}
+          >
+            Compound Profile
+          </span>
+          <span
+            className="text-[10px] font-mono px-2 py-0.5 rounded-full border uppercase tracking-wider"
+            style={{ borderColor: `${SERM_COLOR}40`, color: SERM_COLOR, background: `${SERM_COLOR}0d` }}
+          >
+            SERM · ERα Antagonist
+          </span>
+        </div>
+        <h3 className="text-xl font-bold" style={{ color: SERM_COLOR }}>
+          Enclomiphene
+        </h3>
+        <p className="text-sm text-muted-foreground mt-1">
+          HPG axis de-suppression via hypothalamic &amp; pituitary ERα antagonism
+        </p>
+      </motion.div>
+
+      <div className="grid lg:grid-cols-2 gap-5">
+        {/* Left: ERα Blockade Mechanism flow */}
+        <motion.div
+          initial={{ opacity: 0, x: -12 }}
+          animate={isInView ? { opacity: 1, x: 0 } : {}}
+          transition={{ delay: 0.1, duration: 0.4 }}
+        >
+          <Card
+            className="p-5 h-full border"
+            style={{ borderColor: `${SERM_COLOR}35`, background: `${SERM_COLOR}08` }}
+          >
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+              ERα Blockade Mechanism
+            </p>
+            <div className="flex flex-col gap-3">
+              {mechanismSteps.map((step, i) => (
+                <motion.div
+                  key={step.label}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: 0.2 + i * 0.12 }}
+                  className="flex gap-3"
+                >
+                  <div
+                    className="mt-0.5 flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center"
+                    style={{ background: `${SERM_COLOR}20`, border: `1px solid ${SERM_COLOR}40` }}
+                  >
+                    <step.icon className="w-3.5 h-3.5" style={{ color: SERM_COLOR }} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <p className="text-xs font-semibold" style={{ color: SERM_COLOR }}>
+                        {step.label}
+                      </p>
+                      <span className="text-[9px] text-muted-foreground font-mono uppercase tracking-wider">
+                        {step.phase}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{step.detail}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </Card>
+        </motion.div>
+
+        {/* Right: Key facts + HPG positioning */}
+        <motion.div
+          initial={{ opacity: 0, x: 12 }}
+          animate={isInView ? { opacity: 1, x: 0 } : {}}
+          transition={{ delay: 0.15, duration: 0.4 }}
+          className="flex flex-col gap-4"
+        >
+          <Card
+            className="p-5 border"
+            style={{ borderColor: `${SERM_COLOR}35`, background: `${SERM_COLOR}08` }}
+          >
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+              Compound Facts
+            </p>
+            <div className="flex flex-col gap-2">
+              {keyFacts.map((fact, i) => (
+                <motion.div
+                  key={fact.label}
+                  initial={{ opacity: 0 }}
+                  animate={isInView ? { opacity: 1 } : {}}
+                  transition={{ delay: 0.25 + i * 0.06 }}
+                  className="flex gap-2 text-xs"
+                >
+                  <span className="text-muted-foreground shrink-0 w-36">{fact.label}</span>
+                  <span className="font-medium">{fact.value}</span>
+                </motion.div>
+              ))}
+            </div>
+          </Card>
+
+          <Card
+            className="p-5 border flex-1"
+            style={{ borderColor: `${SERM_COLOR}35`, background: `${SERM_COLOR}08` }}
+          >
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+              Position in the HPG Cascade
+            </p>
+            <div className="flex flex-col gap-2 text-xs text-muted-foreground leading-relaxed">
+              <p>
+                Every other GnRH-class compound on this page — Gonadorelin, Kisspeptin, Triptorelin,
+                Leuprolide — acts <span className="text-foreground font-medium">at or above the GnRH receptor</span>.
+                Enclomiphene operates at a different control point entirely: it acts{" "}
+                <span style={{ color: SERM_COLOR }} className="font-medium">at the estrogen receptor</span>{" "}
+                on the hypothalamus and pituitary, lifting the endocrine feedback brake rather than
+                supplying or mimicking a stimulatory signal.
+              </p>
+              <p>
+                This positional uniqueness is why the{" "}
+                <Link href="/research-stacks/triptorelin-enclomiphene-hpg-axis" style={{ color: SERM_COLOR }} className="underline underline-offset-2">
+                  Triptorelin + Enclomiphene HPG Axis Stack
+                </Link>{" "}
+                creates a dual-entry research model: one compound stimulates via GnRHR, the other
+                de-suppresses via ERα — two mechanistically independent axes acting on the same output.
+              </p>
+            </div>
+          </Card>
+        </motion.div>
+      </div>
+
+      <p className="text-[10px] text-muted-foreground mt-3 font-mono text-right">
+        Research compound profile · For research education only · Not medical advice
+      </p>
+    </div>
+  );
+}
+
 /* ─── Related Stacks Section ────────────────────────────────────────────── */
 
-const HORMONAL_PEPTIDE_NAMES = ["PT-141", "Kisspeptin-10", "MT-2", "Gonadorelin", "Triptorelin"];
+const HORMONAL_PEPTIDE_NAMES = ["PT-141", "Kisspeptin-10", "MT-2", "Gonadorelin", "Triptorelin", "Enclomiphene"];
 
 function RelatedStacks() {
   const ref = useRef(null);
@@ -577,23 +758,32 @@ export default function HormonalPeptidesGuide() {
         </p>
       </ArticleSection>
 
+      <EnclomipheneCompoundCard />
+
       <ArticleSection title="HPG Axis De-Suppression: Enclomiphene">
         <p>
-          Enclomiphene takes a fundamentally different approach. Rather than delivering
-          an exogenous GnRH signal, it removes the brake on endogenous GnRH pulsatility.
+          Enclomiphene takes a fundamentally different approach to HPG axis research.
+          Rather than delivering an exogenous GnRH signal, it removes the primary
+          hormonal brake on endogenous GnRH pulsatility — lifting the axis from within
+          rather than stimulating it from without.
         </p>
         <p>
           As the trans-isomer of clomiphene, enclomiphene is a{" "}
           <strong>selective estrogen receptor modulator (SERM)</strong> that competitively
-          antagonises estrogen receptors in the hypothalamus and pituitary. This blocks
-          the negative feedback signal from circulating estrogens, causing the
-          hypothalamus to increase GnRH pulse frequency and amplitude. The pituitary then
-          responds with elevated LH and FSH, driving endogenous gonadal hormone production.
+          antagonises estrogen receptors (ERα) at both the hypothalamus and the anterior
+          pituitary. Circulating estrogens normally suppress GnRH pulse generator activity
+          via ERα-mediated genomic signalling — when enclomiphene blocks this receptor,
+          the negative feedback brake is lifted. The hypothalamus responds by increasing
+          GnRH pulse frequency and amplitude; the pituitary, no longer dampened, releases
+          more LH and FSH; the gonads respond with increased sex hormone output.
         </p>
         <p>
-          Research interest centres on its potential to restore HPG axis function without
-          directly supplying exogenous sex hormones — effectively working through the
-          axis's own regulatory machinery.
+          This makes enclomiphene mechanistically distinct from every GnRH analog on this
+          page. Where Gonadorelin, Triptorelin, and Leuprolide act <em>at</em> the GnRH
+          receptor, enclomiphene acts upstream — at the estrogen receptor — to disinhibit
+          the cascade's own pulse generator. Research interest centres on how removing
+          the endocrine feedback brake compares to, and interacts with, direct GnRHR
+          agonism.
         </p>
       </ArticleSection>
 
