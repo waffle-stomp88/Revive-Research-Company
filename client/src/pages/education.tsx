@@ -191,6 +191,30 @@ const EDUCATION_TABS = [
   },
 ];
 
+// System / Deep-Dive guides — static long-form pages (not in the DB)
+const SYSTEM_GUIDES = [
+  {
+    slug: "healing-peptides",
+    title: "Healing Peptides: Tissue Repair & Angiogenesis",
+    description:
+      "A deep-dive into the tissue-repair cluster — BPC-157, TB-500, GHK-Cu, and how they coordinate angiogenesis, collagen remodelling, and immune resolution.",
+    href: "/guides/healing-peptides",
+    color: "#22c55e",
+    badgeLabel: "Healing",
+    readTime: 18,
+  },
+  {
+    slug: "hormonal-peptides",
+    title: "Hormonal Axis Peptides: HPG Cascade, GnRH Signaling, and Endocrine Research",
+    description:
+      "A comprehensive guide to the HPG axis — Kisspeptin, Gonadorelin, Triptorelin, and how pulsatile GnRH signaling regulates reproductive endocrinology.",
+    href: "/guides/hormonal-peptides",
+    color: "#21d8ff",
+    badgeLabel: "Hormonal",
+    readTime: 20,
+  },
+];
+
 // Trust & Verification guides - static pages for SEO entry
 const TRUST_GUIDES = [
   {
@@ -1206,6 +1230,54 @@ export default function Education() {
                         );
                       })}
                     </div>
+
+                    {/* System / Deep-Dive Guides section */}
+                    <div className="mb-6">
+                      <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <Activity className="h-3.5 w-3.5" />
+                        System Guides
+                      </h2>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        {SYSTEM_GUIDES.map((guide) => (
+                          <Link key={guide.slug} href={guide.href}>
+                            <Card
+                              className="p-4 cursor-pointer hover:bg-muted/30 transition-all group h-full"
+                              style={{ borderColor: `${guide.color}25` }}
+                              data-testid={`card-system-guide-${guide.slug}`}
+                            >
+                              <div className="flex flex-col gap-2 h-full">
+                                <div className="flex items-start justify-between gap-2">
+                                  <h4 className="font-medium text-sm group-hover:text-foreground transition-colors line-clamp-2">
+                                    {guide.title}
+                                  </h4>
+                                  <ChevronRight
+                                    className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform flex-shrink-0 mt-0.5"
+                                    style={{ color: guide.color }}
+                                  />
+                                </div>
+                                <p className="text-xs text-muted-foreground line-clamp-2 flex-1">
+                                  {guide.description}
+                                </p>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <Badge
+                                    variant="outline"
+                                    className="text-xs"
+                                    style={{ borderColor: `${guide.color}50`, color: guide.color }}
+                                  >
+                                    {guide.badgeLabel}
+                                  </Badge>
+                                  <span className="text-xs text-muted-foreground ml-auto">
+                                    {guide.readTime} min
+                                  </span>
+                                </div>
+                              </div>
+                            </Card>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+
+                    <Separator className="mb-5 opacity-30" />
 
                     <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
                       <p className="text-sm text-muted-foreground">
