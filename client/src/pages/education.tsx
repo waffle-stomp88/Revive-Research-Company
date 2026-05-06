@@ -1178,6 +1178,59 @@ export default function Education() {
                           );
                         })()}
 
+                        {/* Cognitive / Neuro System Guide cross-link */}
+                        {article.slug && [
+                          "what-is-semax-peptide",
+                          "what-is-selank-peptide",
+                          "what-is-dihexa-peptide",
+                          "what-is-dsip-peptide",
+                          "what-is-pt-141-bremelanotide-peptide",
+                        ].includes(article.slug) && (
+                          <div className="mt-8 pt-8 border-t border-border/50" data-testid="article-cognitive-system-guide-link">
+                            <h3 className="font-display text-xl font-bold mb-2 flex items-center gap-2">
+                              <Activity className="h-5 w-5 text-[#f97316]" />
+                              See Also
+                            </h3>
+                            <p className="text-xs text-muted-foreground mb-4">
+                              Understand how this compound fits into the broader Cognitive &amp; Neuro peptide system.
+                            </p>
+                            <Link href="/guides/cognitive-peptides">
+                              <Card
+                                className="p-4 cursor-pointer hover-elevate transition-all"
+                                style={{ borderColor: "rgba(249,115,22,0.25)" }}
+                                data-testid="card-cognitive-system-guide"
+                              >
+                                <div className="flex items-center gap-4">
+                                  <div
+                                    className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center"
+                                    style={{ backgroundColor: "rgba(249,115,22,0.12)" }}
+                                  >
+                                    <BookOpen className="h-5 w-5" style={{ color: "#f97316" }} />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                                      <Badge
+                                        className="text-[10px] border"
+                                        style={{ backgroundColor: "rgba(249,115,22,0.15)", color: "#f97316", borderColor: "rgba(249,115,22,0.35)" }}
+                                      >
+                                        Cognitive &amp; Neuro
+                                      </Badge>
+                                      <span className="text-[10px] text-muted-foreground">System Guide</span>
+                                    </div>
+                                    <h4 className="font-semibold text-sm text-foreground leading-snug">
+                                      Cognitive Peptides: Nootropic Mechanisms, BDNF Pathways, and Neuromodulatory Research Compounds
+                                    </h4>
+                                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                                      How Semax, Selank, Dihexa, DSIP, and PT-141 work across the cognitive and neuro-modulatory axis.
+                                    </p>
+                                  </div>
+                                  <ArrowRight className="h-4 w-4 flex-shrink-0" style={{ color: "#f97316" }} />
+                                </div>
+                              </Card>
+                            </Link>
+                          </div>
+                        )}
+
                         {/* Growth Hormone System Guide cross-link */}
                         {article.slug && [
                           "what-is-cjc-1295-peptide",
