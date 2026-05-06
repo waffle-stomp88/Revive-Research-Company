@@ -7,6 +7,7 @@ import {
   ArticleSection,
   BulletList,
 } from "@/components/entry-article-layout";
+import { GHStructuralComparison } from "@/components/infographics/gh-structural-comparison";
 
 const GH_COLOR = "#f59e0b";
 
@@ -444,6 +445,8 @@ export default function GrowthHormonePeptidesGuide() {
           sustained IGF-1 elevation with a more continuous rather than pulsatile GH profile.
         </p>
       </ArticleSection>
+
+      <GHStructuralComparison />
 
       <ArticleSection title="Ipamorelin — Selective Ghrelin Receptor Agonism">
         <p>
