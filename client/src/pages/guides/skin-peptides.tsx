@@ -21,6 +21,8 @@ function RelatedStacks() {
 
   const stacks = getStacksByPeptideNames(SKIN_PEPTIDE_NAMES);
 
+  if (stacks.length === 0) return null;
+
   return (
     <div ref={ref} className="my-8 not-prose" data-testid="section-related-stacks">
       <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-5">
