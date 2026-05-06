@@ -18,8 +18,8 @@ const SYSTEM_GUIDE_LINKS: Record<string, { href: string; label: string }> = {
     label: "AMPK, GLP-1 & Metabolic Peptide Guide",
   },
   growth: {
-    href: "/guides/growth-peptides",
-    label: "GH Axis & Growth Peptide Guide",
+    href: "/guides/growth-hormone-peptides",
+    label: "GH Secretagogue & Growth Hormone Peptide Guide",
   },
   cognitive: {
     href: "/guides/cognitive-peptides",

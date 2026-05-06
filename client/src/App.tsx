@@ -76,6 +76,7 @@ import HormonalPeptidesGuide from "@/pages/guides/hormonal-peptides";
 import HealingPeptidesGuide from "@/pages/guides/healing-peptides";
 import MetabolicPeptidesGuide from "@/pages/guides/metabolic-peptides";
 import GrowthPeptidesGuide from "@/pages/guides/growth-peptides";
+import GrowthHormonePeptidesGuide from "@/pages/guides/growth-hormone-peptides";
 import CognitivePeptidesGuide from "@/pages/guides/cognitive-peptides";
 import SkinPeptidesGuide from "@/pages/guides/skin-peptides";
 import LongevityPeptidesGuide from "@/pages/guides/longevity-peptides";
@@ -218,6 +219,7 @@ function Router() {
         <Route path="/guides/healing-peptides" component={HealingPeptidesGuide} />
         <Route path="/guides/metabolic-peptides" component={MetabolicPeptidesGuide} />
         <Route path="/guides/growth-peptides" component={GrowthPeptidesGuide} />
+        <Route path="/guides/growth-hormone-peptides" component={GrowthHormonePeptidesGuide} />
         <Route path="/guides/cognitive-peptides" component={CognitivePeptidesGuide} />
         <Route path="/guides/skin-peptides" component={SkinPeptidesGuide} />
         <Route path="/guides/longevity-peptides" component={LongevityPeptidesGuide} />

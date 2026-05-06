@@ -223,6 +223,16 @@ const SYSTEM_GUIDES = [
     badgeLabel: "Cognitive",
     readTime: 22,
   },
+  {
+    slug: "growth-hormone-peptides",
+    title: "Growth Hormone Peptides: GHRH/GHRP Axis, GH Secretagogue Mechanisms, and the GH → IGF-1 Cascade",
+    description:
+      "A comprehensive guide to the Growth Hormone cluster — CJC-1295, Ipamorelin, Tesamorelin, IGF-1 LR3, and IGF-DES — covering the GHRH/GHRP two-receptor synergy, the GH → IGF-1 cascade, and IGF-binding protein pharmacology.",
+    href: "/guides/growth-hormone-peptides",
+    color: "#f59e0b",
+    badgeLabel: "Growth Hormone",
+    readTime: 24,
+  },
 ];
 
 // Trust & Verification guides - static pages for SEO entry
