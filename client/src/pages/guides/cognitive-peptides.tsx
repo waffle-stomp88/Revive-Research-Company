@@ -402,7 +402,7 @@ export default function CognitivePeptidesGuide() {
       title="Cognitive Peptides: Neuropeptide Signaling, BDNF Pathways, and Neuro Cluster Research"
       metaTitle="Cognitive Peptides Guide: Semax, Selank, Dihexa, DSIP & Neuropeptide Research | Revive Research"
       metaDescription="An in-depth research guide covering the cognitive/neuro neuropeptide cluster — Semax, Selank, Dihexa, DSIP, PT-141, Noopept, NSI-189, and Khavinson bioregulators — their BDNF, GABA, melanocortin, and HGF receptor mechanisms."
-      canonicalPath="/guides/cognitive-peptides"
+      canonicalPath="/systems/cognitive"
       badgeText="Cognitive System"
       badgeColor={COGNITIVE_COLOR}
       publishDate="2026-05-06"

@@ -249,7 +249,7 @@ export default function SkinPeptidesGuide() {
       title="Skin Peptides: Collagen Synthesis, SNARE Modulation, and Dermal Research"
       metaTitle="Skin Peptides: Collagen, SNARE Modulation & Skin Aging Research Guide | Revive Research"
       metaDescription="An in-depth research guide covering skin-cluster peptides — Matrixyl, GHK-Cu, Argireline, Snap-8, Leuphasyl, Melanotan, Palmitoyl Tripeptide-1, and more — explaining collagen synthesis, matrikine signaling, neuromuscular modulation, and dermal aging mechanisms."
-      canonicalPath="/guides/skin-peptides"
+      canonicalPath="/systems/skin"
       badgeText="Skin System"
       badgeColor={SKIN_COLOR}
       publishDate="2026-05-06"

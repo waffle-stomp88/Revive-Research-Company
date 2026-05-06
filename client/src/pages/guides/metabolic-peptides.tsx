@@ -260,7 +260,7 @@ export default function MetabolicPeptidesGuide() {
       title="Metabolic Peptides: AMPK, Incretin Signaling, and Energy Research"
       metaTitle="Metabolic Peptides: AMPK, GLP-1 Signaling & Energy Research Guide | Revive Research"
       metaDescription="An in-depth research guide covering metabolic-cluster peptides — MOTS-C, AICAR, AOD-9604, GLP-1 agonists, 5-Amino-1MQ, SLU-PP-332, and more — and how they interact with AMPK activation, fat oxidation, incretin signaling, and mitochondrial biogenesis."
-      canonicalPath="/guides/metabolic-peptides"
+      canonicalPath="/systems/metabolic"
       badgeText="Metabolic System"
       badgeColor={METABOLIC_COLOR}
       publishDate="2026-05-06"

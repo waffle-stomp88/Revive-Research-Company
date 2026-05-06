@@ -370,7 +370,7 @@ export default function HealingPeptidesGuide() {
       title="Healing Peptides: Tissue Repair Pathways, Angiogenesis Signaling, and Growth Factor Cascades"
       metaTitle="Healing Peptides Guide: BPC-157, TB-500, GHK-Cu & Tissue Repair Pathways | Revive Research"
       metaDescription="An in-depth research guide covering the three-phase tissue repair cascade and how healing peptides — BPC-157, TB-500, GHK-Cu, KPV, LL-37, and KLOW Complex — interact with angiogenesis signaling, growth factor activation, and extracellular matrix remodelling."
-      canonicalPath="/guides/healing-peptides"
+      canonicalPath="/systems/healing"
       badgeText="Healing System"
       badgeColor={HEALING_COLOR}
       publishDate="2026-05-06"
