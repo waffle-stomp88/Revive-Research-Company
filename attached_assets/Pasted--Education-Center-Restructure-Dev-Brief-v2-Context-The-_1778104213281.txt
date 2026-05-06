@@ -1,0 +1,184 @@
+# Education Center Restructure — Dev Brief (v2)
+
+## Context
+
+The current Education Center forces fundamentally different content types (peptide profiles, body system overviews, lab guides, trust/verification, general education) into a single tabbed interface with the same card layout. This is causing organization issues, particularly with the recent addition of body system overviews — which are a different content tier (system hubs) sitting *above* individual peptide profiles, not alongside them.
+
+The fix is structural: introduce **Body Systems as hub pages** that act as the connective tissue between system-level concepts and individual peptide profiles, while preserving all existing peptide profile URLs.
+
+## Goals
+
+1. Make the library easy to navigate for three distinct user personas (newcomer, browser, researcher)
+2. Preserve all existing peptide profile URLs (no SEO migration risk)
+3. Build internal linking that compounds topical authority for body system queries
+4. Surface the Synergy Engine at the moment of highest relevance (when users are exploring a system)
+
+## Information Architecture
+
+```
+Education Center landing
+├── Start Here (pathway-based on-ramp + Research Academy CTA)
+├── Body Systems (NEW — hub pages, 7–8 systems)
+│   └── Each hub lists all child peptide profiles
+├── Peptide Library (existing — A–Z directory of all profiles)
+├── Lab & Research Guides (existing)
+└── Trust & Verification (existing)
+```
+
+**Key relationship:** Every peptide profile resolves to one canonical body system as its parent via the existing `resolvePrimarySystem()` function in `galaxy-layout.ts`. This function reads the `systems: string[]` array in `peptide-pathways.ts` and returns the canonical system. **No data model changes required.**
+
+## URL Structure
+
+- **Existing peptide profile URLs are preserved as-is** under `/guides/*`. No migration.
+- **New body system hub URLs:** `/systems/{slug}` (e.g., `/systems/tissue-repair`, `/systems/endocrine`).
+  - Decision rationale: top-level `/systems/` chosen over nested `/guides/systems/` for SEO clarity ("tissue repair peptides" maps to a clean canonical URL) and shareability. The mixed-route pattern is acceptable because the two route families serve different content tiers — flat profiles vs. system hubs — and that hierarchy is exactly what we want signaled.
+- The taxonomy lives in **breadcrumb logic, internal linking, and BreadcrumbList JSON-LD schema** — not in URL paths.
+
+## Data Layer (No Schema Changes)
+
+The `resolvePrimarySystem(data.systems)` function in `galaxy-layout.ts` is the single source of truth for the peptide → system mapping. Both new templates read from it:
+
+- **System hub template** filters `PEPTIDE_PATHWAYS` where `resolvePrimarySystem(data.systems) === slug`
+- **Peptide profile breadcrumb** computes the parent system via `resolvePrimarySystem(data.systems)`
+
+Single source of truth = automatic consistency across the two views. No data duplication, no backfill, no drift risk.
+
+If `resolvePrimarySystem()` is currently scoped to the galaxy layout file, the only refactor needed is to lift it into a shared utility module so both templates can import it.
+
+## Page Templates
+
+### Template A — Education Center Landing Page
+
+Replace the current tabbed view with a single scrollable page containing these sections in order:
+
+1. **Hero with search**
+   - Large search input (primary action)
+   - Two text CTAs below: "New here? Start the Academy" | "Researcher? Browse A–Z"
+
+2. **Browse by Body System** (the new hero section of the page)
+   - Grid of 6–8 large visual cards, one per system
+   - Each card shows: system icon, system name, 1-line description, peptide count (computed dynamically from filtered `PEPTIDE_PATHWAYS`)
+   - Clicking a card → routes to `/systems/{slug}` hub page
+
+3. **Featured Pathways** (curated editorial collections)
+   - Wrap in a feature flag or render as a TODO placeholder until pathway content is authored
+   - Implementation does not block landing page restructure deploy
+   - When content lands: 3–4 cards, each pathway = sequenced reading list (3–5 articles)
+
+4. **Peptide Library Preview**
+   - Compact A–Z grid showing ~8 sample peptides
+   - "View all 100+ profiles →" link to full A–Z view
+
+5. **Lab Guides + Trust & Verification** (lower priority, two-column layout)
+
+The four existing tabs (Peptide Research Guides / General Education / Lab Guides / Trust & Verification) become anchor links that scroll to those sections, OR move to a secondary sidebar nav. Do not keep them as a primary tab interface.
+
+### Template B — Body System Hub Page (NEW)
+
+Route: `/systems/{slug}`
+
+Data source: filter `PEPTIDE_PATHWAYS` by `resolvePrimarySystem(data.systems) === slug`. Zero new data plumbing.
+
+Sections in order:
+
+1. **Hero**: System name, one-paragraph description framing what the system is and why it matters
+2. **Quick Breakdown / Deep Dive toggle** for the system overview content itself (mirror the existing peptide profile toggle pattern for visual consistency)
+3. **Peptides in this System** — grid of every peptide profile where `resolvePrimarySystem === slug`. Use the same card style as the existing Peptide Library.
+4. **Common Research Stacks** — 2–3 pre-built stacks pulled from the Synergy Engine, each rendered as a stack card with "Build your own →" CTA linking to the full Synergy Engine
+5. **Related Lab Guides** — links to procedural content relevant to this system (manual curation per system)
+6. **Continue Learning** — link to next logical system or back to Education Center landing
+
+### Template C — Peptide Profile Page (EXISTING — minor additions only)
+
+The existing template stays. Two additions:
+
+1. **Breadcrumb at top:**
+   `Education Center › {System Name} › {Peptide Name}`
+   The middle item is computed via `resolvePrimarySystem(data.systems)` and routes to `/systems/{slug}`. Implement BreadcrumbList JSON-LD schema for SEO.
+
+2. **"Explore this system" footer module** at the bottom of every profile:
+   > "BPC-157 is part of the Tissue Repair system. Explore 7 other peptides in this category →"
+   Routes to `/systems/{slug}`.
+
+### Template D — Peptide Library (A–Z) Page
+
+Existing template. Two minor improvements:
+
+- Filter chip names should match body system names exactly (Tissue Repair, not "Tissue")
+- Each peptide card shows the system tag prominently so users learn the taxonomy passively
+
+## Body System Content (Required for Hub Pages)
+
+Each system hub needs:
+- `slug` (URL slug)
+- `name` (display name)
+- `description` (1-paragraph hero copy)
+- `iconKey` (reference to icon system)
+- `quickBreakdown` (rich text)
+- `deepDive` (rich text)
+- `recommendedStackIds` (array of stack IDs from Synergy Engine)
+- `relatedLabGuideSlugs` (array of guide slugs)
+
+Stored as a config module or CMS entries — content team owns the copy.
+
+## SEO Requirements
+
+- **BreadcrumbList JSON-LD** on all peptide profile pages and body system hubs (ships in Phase 1, Task 3)
+- **Internal linking:** Every peptide profile links UP to its parent system hub (in breadcrumb + footer module). Every system hub links DOWN to all child profiles. This is the topical authority flywheel — ~100 profiles linking into 7–8 hubs.
+- **No URL changes** to existing peptide profile pages
+- **New canonical URLs** for body system hubs (set rel=canonical to self)
+- **Sitemap.xml update** to include the new `/systems/*` routes
+- **Robots.txt** — already correctly configured; no changes needed
+
+## Phasing
+
+### Phase 1 — Three discrete tasks, deployable in order
+
+**Task 1.1 — Build the system hub template at `/systems/{slug}`**
+- New route handler
+- Reads system metadata from new config module
+- "Peptides in this System" grid filters `PEPTIDE_PATHWAYS` via `resolvePrimarySystem()`
+- "Common Research Stacks" module wired into Synergy Engine
+- Lift `resolvePrimarySystem()` into a shared utility if not already
+
+**Task 1.2 — Wire system hub links into the Education Center landing**
+- Add the "Browse by Body System" section as a new module
+- Existing tabs can stay in place initially — this is purely additive
+- Each system card routes to `/systems/{slug}`
+- Peptide counts computed dynamically
+
+**Task 1.3 — Add breadcrumbs + "Explore this system" footer to peptide profiles**
+- Breadcrumb at top of every profile, computed via `resolvePrimarySystem()`
+- BreadcrumbList JSON-LD schema injection
+- Footer module linking to parent system hub
+- This is the highest-SEO-leverage change in the project and should ship as part of Phase 1, not deferred
+
+### Phase 2 — Landing page restructure
+- Replace tabbed interface with sectioned scrollable layout (Template A)
+- Tabs become anchor links or secondary nav
+- Pathways section ships behind feature flag or TODO placeholder
+
+### Phase 3 — Pathways content + cross-linking refinement
+- Wire authored pathway content into Featured Pathways section
+- Refine cross-references on system hubs (related lab guides, etc.)
+
+## Out of Scope (v1)
+
+- Multi-system tagging for peptides (deferred — `resolvePrimarySystem()` returns a single canonical system, which is sufficient)
+- URL migration of existing peptide profiles (intentionally avoided)
+- Gamified pathway progress tracking (Research Academy already handles this for course content)
+
+## Success Metrics
+
+- Body system hub pages ranking for system-level queries within 60 days
+- Increased session depth from peptide profile landing pages (breadcrumb + footer module driving clicks UP into system hubs)
+- Synergy Engine engagement from the new "Common Research Stacks" module on system hubs
+- Reduced bounce rate on Education Center landing page
+
+## Changelog vs v1
+
+- URL pattern locked to `/systems/{slug}` (Option A)
+- No data model changes — `resolvePrimarySystem()` already exists in `galaxy-layout.ts`; lift into shared utility
+- Phase 1 split into three discrete deployable tasks; breadcrumbs moved into Phase 1 (was Phase 3)
+- Phase 2 decoupled from pathway content — landing page restructure can ship without authored pathways
+- System hub explicitly documented as a filtered view of `PEPTIDE_PATHWAYS`, not a separate data source
