@@ -25,6 +25,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { captureEmail } from "@/lib/waitlist-utils";
 import {
   ArrowLeft,
+  ArrowRight,
   FlaskConical,
   Shield,
   CheckCircle,
@@ -79,6 +80,9 @@ import { flagRetiredContent, RETIRED_PRODUCT_SLUGS } from "@/lib/retired-redirec
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { getCompoundProfile } from "@/data/compound-profiles";
 import { getStripeConfig } from "@/data/category-stripe-config";
+import { PEPTIDE_PATHWAYS } from "@/data/peptide-pathways";
+import { BODY_SYSTEM_HUBS } from "@/data/body-system-hubs";
+import { resolvePrimarySystem } from "@/lib/peptide-systems";
 
 
 // Badge priority system - max 2 badges per product
@@ -183,6 +187,53 @@ export default function ProductDetail() {
   });
 
   const productId = product?.id;
+
+  // Compute parent body system for breadcrumbs + footer module (Task 1.3)
+  // Computed before conditional returns so the useEffect below can run unconditionally.
+  const peptidePathwayData = product ? PEPTIDE_PATHWAYS[product.slug ?? ""] : undefined;
+  const systemId = peptidePathwayData ? resolvePrimarySystem(peptidePathwayData.systems) : null;
+  const systemHub = systemId ? BODY_SYSTEM_HUBS.find(h => h.slug === systemId) ?? null : null;
+  const systemPeptideCount = systemId
+    ? Object.values(PEPTIDE_PATHWAYS).filter(p => resolvePrimarySystem(p.systems) === systemId).length
+    : 0;
+
+  // Inject BreadcrumbList JSON-LD into <head> when system resolves (SEO)
+  useEffect(() => {
+    if (!systemHub || !product) return;
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = "breadcrumb-json-ld";
+    script.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Education Center",
+          "item": "https://reviveresearch.co/guides/peptide-education-center"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": systemHub.name,
+          "item": `https://reviveresearch.co/systems/${systemHub.slug}`
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": product.name,
+          "item": `https://reviveresearch.co/peptides/${product.slug || product.id}`
+        }
+      ]
+    });
+    // Remove any stale script first
+    document.getElementById("breadcrumb-json-ld")?.remove();
+    document.head.appendChild(script);
+    return () => {
+      document.getElementById("breadcrumb-json-ld")?.remove();
+    };
+  }, [systemHub, product]);
 
   // Query for selling fast products
   const { data: sellingFastIds = [] } = useQuery<string[]>({
@@ -688,6 +739,30 @@ export default function ProductDetail() {
               <span className="md:hidden">Back</span>
             </Button>
           </Link>
+          {systemHub && (
+            <nav aria-label="Breadcrumb" className="mt-2" data-testid="nav-breadcrumb">
+              <ol className="flex items-center gap-1 text-xs text-muted-foreground flex-wrap">
+                <li>
+                  <Link href="/guides/peptide-education-center" className="hover:text-foreground transition-colors" data-testid="link-breadcrumb-education">
+                    Education Center
+                  </Link>
+                </li>
+                <li><ChevronRight className="h-3 w-3 flex-shrink-0" /></li>
+                <li>
+                  <Link
+                    href={`/systems/${systemHub.slug}`}
+                    className="hover:opacity-80 transition-opacity font-medium"
+                    style={{ color: systemHub.color }}
+                    data-testid="link-breadcrumb-system"
+                  >
+                    {systemHub.name}
+                  </Link>
+                </li>
+                <li><ChevronRight className="h-3 w-3 flex-shrink-0" /></li>
+                <li className="text-foreground font-medium" data-testid="text-breadcrumb-current">{product.name}</li>
+              </ol>
+            </nav>
+          )}
         </motion.div>
 
         <div ref={twoColumnRef} className="grid md:grid-cols-2 gap-8 lg:gap-12 items-start relative [clip-path:inset(0)]">
@@ -1496,6 +1571,38 @@ export default function ProductDetail() {
                           <ChevronRight className="h-5 w-5 text-[#22c55e] flex-shrink-0 mt-0.5" />
                         </div>
                       </Card>
+                    </Link>
+                  </motion.div>
+                )}
+
+                {/* Explore This System footer module */}
+                {systemHub && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.2 }}
+                    className="mt-8"
+                    data-testid="section-explore-system"
+                  >
+                    <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent mb-8" />
+                    <Link href={`/systems/${systemHub.slug}`} data-testid="link-explore-system">
+                      <div
+                        className="flex items-center justify-between p-4 rounded-lg border cursor-pointer hover:opacity-90 transition-opacity"
+                        style={{ borderColor: `${systemHub.color}33`, background: `${systemHub.color}08` }}
+                      >
+                        <div>
+                          <p className="text-xs text-muted-foreground uppercase tracking-widest font-mono mb-0.5">Part of the</p>
+                          <p className="font-display font-semibold text-base" style={{ color: systemHub.color }} data-testid="text-system-name">
+                            {systemHub.name} system
+                          </p>
+                          {systemPeptideCount > 1 && (
+                            <p className="text-sm text-muted-foreground mt-0.5" data-testid="text-system-count">
+                              Explore {systemPeptideCount - 1} other compound{systemPeptideCount - 1 !== 1 ? "s" : ""} in this category
+                            </p>
+                          )}
+                        </div>
+                        <ArrowRight className="h-5 w-5 flex-shrink-0 ml-4" style={{ color: systemHub.color }} />
+                      </div>
                     </Link>
                   </motion.div>
                 )}
