@@ -9,17 +9,17 @@ import {
   ArticleSection,
   BulletList,
 } from "@/components/entry-article-layout";
-import { RESEARCH_STACKS_BY_ID } from "@/data/research-stacks";
+import { getStacksByPeptideNames } from "@/data/research-stacks";
 
 const GROWTH_COLOR = "#f59e0b";
 
-const RELATED_STACK_IDS = ["gh-amplifier"];
+const GROWTH_PEPTIDE_NAMES = ["Ipamorelin", "CJC-1295", "Sermorelin", "MK-677", "IGF-1 LR3", "IGF-DES", "MGF", "Follistatin-344", "Hexarelin", "GHRP-2", "GHRP-6"];
 
 function RelatedStacks() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
 
-  const stacks = RELATED_STACK_IDS.map((id) => RESEARCH_STACKS_BY_ID[id]).filter(Boolean);
+  const stacks = getStacksByPeptideNames(GROWTH_PEPTIDE_NAMES);
 
   return (
     <div ref={ref} className="my-8 not-prose" data-testid="section-related-stacks">

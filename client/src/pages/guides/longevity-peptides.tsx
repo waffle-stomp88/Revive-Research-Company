@@ -9,17 +9,17 @@ import {
   ArticleSection,
   BulletList,
 } from "@/components/entry-article-layout";
-import { RESEARCH_STACKS_BY_ID } from "@/data/research-stacks";
+import { getStacksByPeptideNames } from "@/data/research-stacks";
 
 const LONGEVITY_COLOR = "#a855f7";
 
-const RELATED_STACK_IDS = ["longevity-protocol"];
+const LONGEVITY_PEPTIDE_NAMES = ["Epithalon", "GHK-Cu", "FOXO4-DRI", "SS-31", "MOTS-C", "Humanin", "ARA-290", "Pinealon", "Cortagen", "Cardiogen"];
 
 function RelatedStacks() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
 
-  const stacks = RELATED_STACK_IDS.map((id) => RESEARCH_STACKS_BY_ID[id]).filter(Boolean);
+  const stacks = getStacksByPeptideNames(LONGEVITY_PEPTIDE_NAMES);
 
   return (
     <div ref={ref} className="my-8 not-prose" data-testid="section-related-stacks">
