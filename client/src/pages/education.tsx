@@ -44,6 +44,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArticleModeToggle, BeginnerBadge } from "@/components/education/article-mode-toggle";
+import { BrowseBySystem } from "@/components/education/browse-by-system";
 import { BeginnerArticleContent, WhatIsPeptideSection, hasQuickBreakdown } from "@/components/education/beginner-content";
 import { getPairingReasons } from "@/lib/pairing-intelligence";
 import type { EducationArticle, Product } from "@shared/schema";
@@ -198,7 +199,7 @@ const SYSTEM_GUIDES = [
     title: "Healing Peptides: Tissue Repair & Angiogenesis",
     description:
       "A deep-dive into the tissue-repair cluster — BPC-157, TB-500, GHK-Cu, and how they coordinate angiogenesis, collagen remodelling, and immune resolution.",
-    href: "/guides/healing-peptides",
+    href: "/systems/healing",
     color: "#22c55e",
     badgeLabel: "Healing",
     readTime: 18,
@@ -208,7 +209,7 @@ const SYSTEM_GUIDES = [
     title: "Hormonal Axis Peptides: HPG Cascade, GnRH Signaling, and Endocrine Research",
     description:
       "A comprehensive guide to the HPG axis — Kisspeptin, Gonadorelin, Triptorelin, and how pulsatile GnRH signaling regulates reproductive endocrinology.",
-    href: "/guides/hormonal-peptides",
+    href: "/systems/hormonal",
     color: "#21d8ff",
     badgeLabel: "Hormonal",
     readTime: 20,
@@ -830,6 +831,16 @@ export default function Education() {
             </div>
           </Link>
 
+        </motion.div>
+
+        {/* Browse by Body System — above tabs */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.08 }}
+          className="mt-10"
+        >
+          <BrowseBySystem />
         </motion.div>
 
         {/* Main Tabbed Content Area */}
