@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { X, ExternalLink, ArrowRight, Activity, Sparkles } from "lucide-react";
+import { X, ExternalLink, ArrowRight, Activity, Sparkles, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +7,13 @@ import {
   type GalaxyNode,
   getStacksForPeptide,
 } from "@/lib/galaxy-layout";
+
+const SYSTEM_GUIDE_LINKS: Record<string, { href: string; label: string }> = {
+  hormonal: {
+    href: "/guides/hormonal-peptides",
+    label: "HPG Axis & Hormonal Peptide Guide",
+  },
+};
 
 interface GalaxySidePanelProps {
   node: GalaxyNode | null;
@@ -305,6 +312,32 @@ export function GalaxySidePanel({ node, onClose }: GalaxySidePanelProps) {
               <ExternalLink className="h-4 w-4 ml-1.5" />
             </Button>
           </Link>
+
+          {/* System-specific guide link — check all systems, not just the primary */}
+          {(() => {
+            const matchedKey = node.systems
+              .map((s) => s.toLowerCase())
+              .find((s) => SYSTEM_GUIDE_LINKS[s]);
+            const guide = matchedKey ? SYSTEM_GUIDE_LINKS[matchedKey] : undefined;
+            if (!guide) return null;
+            return (
+              <Link href={guide.href}>
+                <Button
+                  size="default"
+                  variant="outline"
+                  className="w-full"
+                  style={{
+                    borderColor: `${accentColor}50`,
+                    color: accentColor,
+                  }}
+                  data-testid="galaxy-panel-guide-link"
+                >
+                  <BookOpen className="h-4 w-4 mr-1.5" />
+                  {guide.label}
+                </Button>
+              </Link>
+            );
+          })()}
         </div>
       </motion.div>
     </motion.aside>
