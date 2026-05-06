@@ -80,6 +80,7 @@ import GrowthHormonePeptidesGuide from "@/pages/guides/growth-hormone-peptides";
 import CognitivePeptidesGuide from "@/pages/guides/cognitive-peptides";
 import SkinPeptidesGuide from "@/pages/guides/skin-peptides";
 import LongevityPeptidesGuide from "@/pages/guides/longevity-peptides";
+import SystemHub from "@/pages/systems/system-hub";
 
 const ChatBot = lazy(() => import("@/components/chatbot").then(m => ({ default: m.ChatBot })));
 const BackToTopButton = lazy(() => import("@/components/back-to-top-button").then(m => ({ default: m.BackToTopButton })));
@@ -260,6 +261,8 @@ function Router() {
         <Route path="/lab-notes">{() => { window.location.replace("/guides/peptide-lab-research-archive"); return null; }}</Route>
         <Route path="/dosage-calculator">{() => { window.location.replace("/tools/peptide-reconstitution-calculator"); return null; }}</Route>
         <Route path="/resources">{() => { window.location.replace("/peptide-research-resources"); return null; }}</Route>
+        {/* Body System Hub pages */}
+        <Route path="/systems/:slug" component={SystemHub} />
         {/* Compound-name product URLs intentionally not routed — do not create */}
         <Route component={NotFound} />
       </Switch>
