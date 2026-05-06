@@ -1178,6 +1178,57 @@ export default function Education() {
                           );
                         })()}
 
+                        {/* Healing System Guide cross-link */}
+                        {article.slug && [
+                          "what-is-bpc-157-peptide",
+                          "what-is-tb-500-peptide",
+                          "what-is-ghk-cu-peptide",
+                        ].includes(article.slug) && (
+                          <div className="mt-8 pt-8 border-t border-border/50" data-testid="article-healing-system-guide-link">
+                            <h3 className="font-display text-xl font-bold mb-2 flex items-center gap-2">
+                              <Activity className="h-5 w-5 text-[#22c55e]" />
+                              See Also
+                            </h3>
+                            <p className="text-xs text-muted-foreground mb-4">
+                              Understand how this compound fits into the broader Healing &amp; Tissue Repair system.
+                            </p>
+                            <Link href="/guides/healing-peptides">
+                              <Card
+                                className="p-4 cursor-pointer hover-elevate transition-all"
+                                style={{ borderColor: "rgba(34,197,94,0.25)" }}
+                                data-testid="card-healing-system-guide"
+                              >
+                                <div className="flex items-center gap-4">
+                                  <div
+                                    className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center"
+                                    style={{ backgroundColor: "rgba(34,197,94,0.12)" }}
+                                  >
+                                    <BookOpen className="h-5 w-5" style={{ color: "#22c55e" }} />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                                      <Badge
+                                        className="text-[10px] border"
+                                        style={{ backgroundColor: "rgba(34,197,94,0.15)", color: "#22c55e", borderColor: "rgba(34,197,94,0.35)" }}
+                                      >
+                                        Healing
+                                      </Badge>
+                                      <span className="text-[10px] text-muted-foreground">System Guide</span>
+                                    </div>
+                                    <h4 className="font-semibold text-sm text-foreground leading-snug">
+                                      Healing &amp; Tissue Repair Peptides: Proliferative Phase, Remodelling, and the BPC-157 / TB-500 / GHK-Cu Axis
+                                    </h4>
+                                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                                      How BPC-157, TB-500, and GHK-Cu work together across the full tissue repair cascade.
+                                    </p>
+                                  </div>
+                                  <ArrowRight className="h-4 w-4 flex-shrink-0" style={{ color: "#22c55e" }} />
+                                </div>
+                              </Card>
+                            </Link>
+                          </div>
+                        )}
+
                         {/* Cognitive / Neuro System Guide cross-link */}
                         {article.slug && [
                           "what-is-semax-peptide",
