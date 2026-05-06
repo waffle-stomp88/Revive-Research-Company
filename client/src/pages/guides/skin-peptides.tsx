@@ -91,6 +91,15 @@ function RelatedStacks() {
       <p className="text-[10px] text-muted-foreground mt-3 font-mono">
         Research compound stacks · For research use only · Not medical advice
       </p>
+      <div className="mt-4 text-center">
+        <Link
+          href="/research-stacks"
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          data-testid="link-view-all-stacks"
+        >
+          Browse all research stacks →
+        </Link>
+      </div>
     </div>
   );
 }
