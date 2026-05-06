@@ -1,0 +1,306 @@
+# Peptide Galaxy — Implementation Brief
+
+**For:** Revive Research Replit dev team
+**Project:** The Peptide Universe — interactive 3D synergy visualization
+**Status:** Spec + working prototype reference. Ready for production rebuild.
+
+---
+
+## What we're building
+
+A 3D galaxy visualization where each peptide in the catalog is a star, organized into a spiral galaxy with six arms (one per category). Users drift through the galaxy, hover stars to see basic info, click to inspect a peptide deeply, and warp the camera between peptides to explore researched synergies as glowing beams between stars.
+
+The current site has a "stars in space" version. This brief defines the upgraded version: structured spiral galaxy with real galactic context, video-game-style camera and HUD, and warp-to-star navigation.
+
+---
+
+## Visual goals (the brief in one paragraph)
+
+It should feel like flying through a galaxy in a sci-fi video game (Mass Effect, No Man's Sky, Stellaris). NOT a network graph in space. NOT a board game with tilted markers. The user should immediately read it as: "I am inside a galaxy that contains the peptide universe." The Revive yellow accent is the brand thread; the rest of the palette is each category's color, used both for stars and for the nebula gas around their region of the galaxy.
+
+---
+
+## Recommended tech
+
+**Three.js + React Three Fiber** — this is the right tool for this job. The current iteration uses raw Canvas 2D math, which works for a prototype but doesn't scale. R3F gives you:
+
+- Real `PerspectiveCamera` with native lookAt, useful for camera-lock-to-star
+- `OrbitControls` / `MapControls` out of the box for drag-to-orbit, scroll-to-zoom
+- `@react-three/drei` for `Bloom`, `Stars`, `Trail`, lens flares with one line of code
+- Easy tween library integration (`@react-spring/three` or `gsap`) for warp animations
+- Particle systems via `Points` / `BufferGeometry` for 1000+ field stars at 60fps
+
+Everything below describes behavior, not implementation — the team can ship it however they like.
+
+---
+
+## Galactic structure
+
+### Six spiral arms, one per category
+
+| Arm | Category | Color (hex) | Notes |
+|-----|----------|-------------|-------|
+| 0 | Growth (GH secretagogues) | `#FFD400` | Brand yellow — primary identity |
+| 1 | Recovery | `#FF8A3D` | Warm orange |
+| 2 | Longevity | `#9B5BFF` | Purple |
+| 3 | Metabolic (GLP-1s) | `#3DD9FF` | Cyan |
+| 4 | Cognitive | `#FF3D8A` | Magenta |
+| 5 | Cosmetic | `#3DFF9B` | Green |
+
+### Spiral math
+
+A logarithmic spiral works well:
+
+```
+arm_offset = (2 * PI) / 6                  // 6 arms evenly spaced
+base_theta = arm_index * arm_offset        // starting angle per arm
+r = 80 + t * (GAL_RADIUS - 80)             // t = 0..1, GAL_RADIUS ~1100 units
+theta = base_theta + log(r * 0.01 + 1) / 0.55
+position = { x: cos(theta) * r, y: jitter_y, z: sin(theta) * r }
+```
+
+Add jitter perpendicular to the arm direction so stars aren't on a perfect curve. Disc thickness ~80 units (jitter on Y axis).
+
+### Star tiers
+
+- **Hub stars** (~12 total): the primary peptides — Ipamorelin, CJC-1295, BPC-157, TB-500, Epitalon, NAD+, Semaglutide, Tirzepatide, Selank, Semax, Melanotan II, etc. Larger, brighter, with subtle 4-point cross flare visible from medium distance. Placed closer to the core (t = 0.15-0.40).
+- **Standard stars** (~125 total — full catalog): smaller. Placed throughout the arm (t = 0.20-0.90).
+
+### Field stars (the population)
+
+The 137 named peptide stars alone won't read as a galaxy — there need to be **~1500 unnamed background field stars** filling out the spiral structure. About 65% of these should be placed *along* the arms (with wider jitter than the named stars), and 35% scattered across the disc. They're not interactive, just visual density.
+
+Plus **~250 dense core stars** packed within radius 130 of the origin to give the bright galactic center a granular texture.
+
+### Galactic core
+
+Three layered radial gradients at the origin:
+
+1. Outer halo: 380-unit radius, soft warm yellow `#FFE696` at ~18% peak opacity, fading to transparent
+2. Middle glow: 180-unit radius, bright warm `#FFE0A0` at ~55% peak
+3. Hot nucleus: 70-unit radius, near-white `#FFFFF0` at 95% peak
+
+Render the core *behind* the foreground stars but *in front of* far galaxies.
+
+### Dust clouds along arms
+
+Five soft colored gas clouds per arm (30 total), placed along the spiral path at t = 0.15, 0.30, 0.45, 0.60, 0.75. Each cloud is an elliptical radial gradient ~250-400 units across, color-matched to the arm, painted at ~10-12% peak opacity. **Critical: these are background paint, not bloom or glow effects.** The previous version's "blooming everything" problem came from applying global bloom; instead, paint clouds as their own pass that sits between the core and the field stars.
+
+### Far galaxies
+
+12 distant galaxies positioned far behind the main galaxy (z = -2200 to -3700). Tiny tilted ellipses in subtle pastel tints (`#C9A8FF`, `#FFB084`, `#88D4FF`, `#FFE0A8`) at 15-25% opacity. These give cosmic context — the user feels located in a vast universe, not floating in a void.
+
+### Slow rotation
+
+The galaxy rotates around the Y-axis at ~0.012 rad/sec. Imperceptibly slow on first glance, but over time you can see the spiral structure turning. The camera moves independently — user drifts/orbits, galaxy rotates underneath.
+
+---
+
+## Camera
+
+### Default state (overview)
+
+Position: `(0, -180, 1700)` — slightly above the galactic plane, pulled back enough to see the whole spiral.
+Pitch: ~0.55 radians — looking down at an angle, not flat top-down.
+Yaw: 0.
+
+### Drift behavior (idle)
+
+When no star is selected and the user isn't dragging, the camera drifts on three layered sine waves:
+
+```
+phase += dt * 0.16
+target_x = sin(phase) * 220
+target_y = -180 + sin(phase * 0.7) * 50
+target_z = 1700 + sin(phase * 0.5) * 220
+target_yaw = sin(phase * 0.45) * 0.18
+target_pitch = 0.55 + sin(phase * 0.35) * 0.06
+```
+
+Each frame, current camera lerps toward target at ~5%/frame. The result is gentle drifting motion that feels alive without being mechanical.
+
+### User input takes over
+
+- **Drag** = orbit (horizontal drag rotates yaw, vertical drag changes pitch). Pauses drift.
+- **Scroll wheel** = move camera forward/backward along its current sight line (scale total distance from origin).
+- **Pause/resume drift** button.
+- **Reset view** button to fly back to default.
+
+### Warp to star (the feature I couldn't ship cleanly)
+
+When a user clicks a star, the camera should fly to that star and lock onto it. The math is:
+
+1. Compute the camera offset position: along the radial direction from the galactic core, ~240 units beyond the star, raised ~50 units up from the disc.
+2. Compute look-at yaw so the star is centered in view.
+3. Tween position, pitch, and yaw to the new values over ~1.4s with an ease-in-out cubic curve.
+
+**The hard part — galaxy rotation.** The galaxy rotates while the camera flies. To avoid the camera flying to where the star *was* and missing it, treat the camera position as **galaxy-local** — the camera lives in the rotating reference frame. Each frame, transform the camera's local position by the current galaxy rotation to get its world position, then run the standard view matrix. The camera and the star rotate together; the relative position stays fixed.
+
+In Three.js terms: parent the camera to a `THREE.Group` that has the same rotation as the galaxy mesh, and animate the camera's local position within that group. Then `camera.lookAt(star.position)` in the same local space.
+
+**Double-click** = closer approach. ~130-unit offset instead of 240.
+
+**Click another star (e.g., from the side panel synergy list)** = warp to that one, breaking the previous lock.
+
+**Drag** while locked = breaks the lock and returns to free-look.
+
+**OVERVIEW button or close panel** = unlock and warp back to default position.
+
+---
+
+## Interactions
+
+### Hover a star
+
+- Star gets four corner brackets (game-style scan target reticle) in the category color.
+- Synergy beams fade in connecting the hovered star to all its researched synergy partners. Beams are gradient-colored (bright at hovered star, fading at destination).
+- Tooltip floats next to the star: name in category color, "{ARM} ARM · {N} LINKS" in mono small caps.
+- Top-right HUD telemetry panel fades in: `▸ TARGETING / SYS · {NAME} / ARM · {CAT} / LINKS · {N}`.
+
+### Click a star
+
+- Side panel slides in from right (290px wide).
+- Camera warps to the star (see above).
+- Panel contains:
+  - Category label in the category color
+  - Peptide name in serif heavy
+  - Link count
+  - **Mechanism** section with brief description
+  - **Top synergies** section — list of up to 6 synergistic peptides sorted by score, with score colored green ≥80, yellow ≥70, gray below. Each row clickable to warp to that peptide.
+  - **VIEW PRODUCT** CTA in brand yellow.
+
+### Click empty space or close panel
+
+Returns to overview, camera warps back.
+
+### Search bar (top-left)
+
+Type to filter — matching peptides surface in a dropdown, click to warp to that peptide. Non-matching stars dim to 18% opacity in the canvas.
+
+### Mini-map (bottom-right)
+
+Top-down view of the galaxy showing:
+- Subtle galactic core glow at center
+- All 137 stars as dots colored by category
+- A yellow circle showing camera position
+- The galaxy rotation reflected in real time
+
+Not interactive — purely orientation.
+
+### Legend toggle (bottom-left)
+
+Click `⊕ ARMS` button to expand a small panel showing the six arm/category color key. Click again to collapse. Stays out of the way at rest.
+
+---
+
+## HUD chrome
+
+The HUD should feel like a video game targeting interface, not a CMS dashboard. Most of it is *contextual* — appears when relevant, hides when not.
+
+**Always visible:**
+- Brand badge top-left: `⬢ SYNERGY GALAXY` in a yellow-bordered pill
+- Title: `THE PEPTIDE UNIVERSE` in serif heavy
+- Tagline: `drift through · click to inspect`
+- Search bar (small)
+- Drift / Reset buttons (bottom-center, dimmed at rest)
+- Mini-map (bottom-right)
+- Legend toggle (bottom-left, collapsed by default)
+- Corner brackets (decorative, four corners)
+- Center reticle (small crosshair, very faint)
+
+**Contextual (fade in on interaction):**
+- Star tooltip (on hover)
+- Targeting telemetry top-right (on hover)
+- Side panel (on click)
+- Warp banner — `▸ WARPING TO {STAR}` flashes briefly during camera transitions
+
+### Color rules
+
+- Brand yellow `#FFD400` is the UI accent (borders, labels, highlights). Use sparingly.
+- White for primary text content.
+- `#9B9BA8` for muted/secondary labels.
+- `#6B6B78` for tertiary hints.
+- Backgrounds for HUD panels: `rgba(0,0,0, 0.45-0.7)` — translucent black, never fully opaque so the galaxy bleeds through.
+- Border weight on UI: `0.5px` solid `rgba(255, 212, 0, 0.3-0.6)`.
+
+### Typography
+
+- UI labels and HUD: `ui-monospace, monospace` for the technical/sci-fi feel
+- Body content (panel text, etc.): `ui-sans-serif, system-ui, sans-serif`
+- Headers (peptide names, "THE PEPTIDE UNIVERSE"): `Georgia, serif`, weight 500
+- Sizes mostly 9-11px for HUD, 22px for the main title, 13-15px for panel content.
+
+---
+
+## Synergy data
+
+Each peptide has 0-15+ researched synergy connections. The current data model:
+
+```
+synergy = {
+  a: peptide_id,
+  b: peptide_id,
+  score: 60-95   // synergy score
+}
+```
+
+Connections are pre-computed based on:
+- Same-category proximity (high probability)
+- Hub-to-hub cross-category links (medium probability)
+- Other proximity links (low probability)
+
+In production, this should pull from the actual Synergy Engine data — the visualization should reflect researched stacks, not generated proximity.
+
+---
+
+## Performance considerations
+
+- 1500 field stars + 137 named stars + 12 far galaxies + 30 dust clouds = ~1700 draw items per frame.
+- In Three.js, render field stars as a single `Points` mesh with one draw call (use `BufferGeometry` with per-vertex color and size). Named stars as instanced mesh.
+- Synergy beams should use `LineSegments` instanced, only updated when hovered/selected changes.
+- Target 60fps on mid-range hardware; 30fps acceptable on mobile.
+
+---
+
+## Mobile
+
+The full version is desktop-first. Mobile should:
+- Default to a slightly more zoomed-out camera so the spiral is visible at smaller screen size
+- Replace drag-to-orbit with single-finger pan and pinch-to-zoom
+- Hide the mini-map or shrink it (it competes for screen real estate)
+- Tap a star = open side panel as a bottom sheet instead of side panel
+- Skip the warp animation on mobile if perf is tight; just teleport with a fade
+
+---
+
+## What's NOT in this scope (by design)
+
+- VR/AR — desktop and mobile web only
+- Multiplayer / shared sessions
+- User-saveable views or bookmarks
+- Animations of synergy data updating in real time (nightly batch refresh is fine)
+- Embeddable iframe version (could come later)
+
+---
+
+## Acceptance criteria
+
+The galaxy is shipped when:
+
+1. A user lands on the page and immediately reads "I am in a galaxy" within the first 3 seconds — clear spiral structure, bright core, dust lanes visible, stars at multiple depths.
+2. Drift mode runs at idle without input and feels alive (camera moves, galaxy rotates).
+3. Hovering any star shows the targeting bracket + tooltip + telemetry HUD + synergy beams.
+4. Clicking a star warps the camera to that star and opens the side panel; the star stays locked in view as the galaxy rotates.
+5. Clicking a synergy in the panel warps to that peptide cleanly.
+6. Search bar filters and navigates correctly.
+7. Reset view returns to default cinematically.
+8. Performance is 60fps desktop, 30fps minimum mobile.
+9. Color palette and HUD typography match this brief.
+
+---
+
+## Reference prototype
+
+A working Canvas 2D prototype with the spiral galaxy structure, drifting camera, hover/click interactions, side panel, mini-map, search, and HUD chrome was built and shared in the design conversation. It demonstrates the visual language but is not intended as the production code — Three.js will be cleaner, more performant, and easier to extend (especially for the warp-to-star camera lock that was the source of friction in the prototype).
+
+The prototype's structural math (spiral position function, density falloff, dust cloud placement, color tints) is correct and can be ported directly. The camera math should be rebuilt using Three.js primitives rather than transcribed.
