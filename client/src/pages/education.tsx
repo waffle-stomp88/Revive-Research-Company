@@ -213,6 +213,16 @@ const SYSTEM_GUIDES = [
     badgeLabel: "Hormonal",
     readTime: 20,
   },
+  {
+    slug: "cognitive-peptides",
+    title: "Cognitive Peptides: Neuropeptide Signaling, BDNF Pathways, and Neuro Cluster Research",
+    description:
+      "A deep-dive into the cognitive/neuro cluster — Semax, Selank, Dihexa, DSIP, and PT-141 — covering BDNF, HGF/MET synaptogenesis, GABAergic modulation, and shared melanocortin receptor architecture.",
+    href: "/guides/cognitive-peptides",
+    color: "#f97316",
+    badgeLabel: "Cognitive",
+    readTime: 22,
+  },
 ];
 
 // Trust & Verification guides - static pages for SEO entry
