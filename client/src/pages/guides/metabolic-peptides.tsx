@@ -1,12 +1,15 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Telescope, ShoppingBag, Activity, BookOpen } from "lucide-react";
+import { Telescope, ShoppingBag, Activity, BookOpen, ArrowRight } from "lucide-react";
+import { Link } from "wouter";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   EntryArticleLayout,
   ArticleSection,
   BulletList,
 } from "@/components/entry-article-layout";
+import { getStacksByPeptideNames } from "@/data/research-stacks";
 
 const METABOLIC_COLOR = "#E7FB10";
 const METABOLIC_COLOR_DIM = "#b8c80d";
@@ -182,6 +185,90 @@ function MetabolicPeptideTable() {
       </table>
       <p className="text-[10px] text-muted-foreground mt-2 font-mono">
         For research education only · Not medical advice
+      </p>
+    </div>
+  );
+}
+
+/* ─── Related Stacks Section ────────────────────────────────────────────── */
+
+const METABOLIC_PEPTIDE_NAMES = ["AOD-9604", "5-Amino-1MQ", "Semaglutide", "Tirzepatide", "MOTS-C"];
+
+function RelatedStacks() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-60px" });
+
+  const stacks = getStacksByPeptideNames(METABOLIC_PEPTIDE_NAMES);
+
+  if (stacks.length === 0) return null;
+
+  return (
+    <div ref={ref} className="my-8 not-prose" data-testid="section-related-stacks">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-5">
+        Research Stacks Featuring These Compounds
+      </h3>
+      <div className="grid sm:grid-cols-2 gap-4">
+        {stacks.map((stack, i) => (
+          <motion.div
+            key={stack.id}
+            initial={{ opacity: 0, y: 16 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: i * 0.12 }}
+          >
+            <Card
+              className="p-5 h-full border flex flex-col gap-3"
+              style={{
+                borderColor: `${stack.color}40`,
+                background: `${stack.color}0a`,
+              }}
+            >
+              <div>
+                <p
+                  className="text-xs font-semibold uppercase tracking-wider mb-1"
+                  style={{ color: stack.color }}
+                >
+                  {stack.subtitle}
+                </p>
+                <p className="font-semibold text-base leading-snug">{stack.name}</p>
+              </div>
+
+              <div className="flex flex-wrap gap-1.5">
+                {stack.peptides.map((peptide) => (
+                  <span
+                    key={peptide.name}
+                    className="text-xs px-2 py-0.5 rounded-full border font-mono"
+                    style={{
+                      borderColor: `${stack.color}50`,
+                      color: stack.color,
+                      background: `${stack.color}18`,
+                    }}
+                  >
+                    {peptide.name}
+                  </span>
+                ))}
+              </div>
+
+              <p className="text-xs text-muted-foreground leading-relaxed flex-1">
+                {stack.description}
+              </p>
+
+              <Link href={`/research-stacks/${stack.id}`} data-testid={`link-related-stack-${stack.id}`}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full mt-1"
+                  style={{ borderColor: `${stack.color}50`, color: stack.color }}
+                >
+                  View Stack Details
+                  <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                </Button>
+              </Link>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+      <p className="text-[10px] text-muted-foreground mt-3 font-mono">
+        Research compound stacks · For research use only · Not medical advice
       </p>
     </div>
   );
@@ -367,6 +454,8 @@ export default function MetabolicPeptidesGuide() {
           multiple nodes of fat accumulation simultaneously.
         </p>
       </ArticleSection>
+
+      <RelatedStacks />
     </EntryArticleLayout>
   );
 }
