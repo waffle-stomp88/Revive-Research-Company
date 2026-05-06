@@ -9,7 +9,7 @@ import {
   ArticleSection,
   BulletList,
 } from "@/components/entry-article-layout";
-import { RESEARCH_STACKS_BY_ID } from "@/data/research-stacks";
+import { getStacksByPeptideNames } from "@/data/research-stacks";
 
 const HEALING_COLOR = "#22c55e";
 
@@ -290,13 +290,13 @@ function HealingPeptideTable() {
 
 /* ─── Related Stacks Section ────────────────────────────────────────────── */
 
-const RELATED_STACK_IDS = ["recovery-tissue-stack", "glow-protocol"];
+const HEALING_PEPTIDE_NAMES = ["BPC-157", "TB-500", "GHK-Cu", "KPV", "LL-37", "KLOW Complex"];
 
 function RelatedStacks() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
 
-  const stacks = RELATED_STACK_IDS.map((id) => RESEARCH_STACKS_BY_ID[id]).filter(Boolean);
+  const stacks = getStacksByPeptideNames(HEALING_PEPTIDE_NAMES);
 
   return (
     <div ref={ref} className="my-8 not-prose" data-testid="section-related-stacks">

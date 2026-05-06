@@ -271,3 +271,15 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
 export const RESEARCH_STACKS_BY_ID: Record<string, ResearchStackData> = Object.fromEntries(
   RESEARCH_STACKS_DATA.map((s) => [s.id, s])
 );
+
+/**
+ * Returns all stacks that contain at least one peptide whose name matches
+ * any entry in `peptideNames` (case-insensitive). Use this instead of
+ * hardcoding stack IDs in guide pages so new stacks surface automatically.
+ */
+export function getStacksByPeptideNames(peptideNames: string[]): ResearchStackData[] {
+  const normalised = peptideNames.map((n) => n.toLowerCase());
+  return RESEARCH_STACKS_DATA.filter((stack) =>
+    stack.peptides.some((p) => normalised.includes(p.name.toLowerCase()))
+  );
+}
