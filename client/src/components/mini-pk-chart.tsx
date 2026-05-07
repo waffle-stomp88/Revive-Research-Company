@@ -22,7 +22,7 @@ const MINI_CHART = {
   get y0() { return this.pT; },
 };
 
-export const MINI_PK_COLORS = ["#39FF14", "#21d8ff", "#22c55e", "#f59e0b", "#a855f7"];
+export const MINI_PK_COLORS = ["#E4FF00", "#21d8ff", "#22c55e", "#f59e0b", "#a855f7"];
 
 const IV_OVERLAY_COLOR = "#f97316";
 
