@@ -46,6 +46,7 @@ import {
   AOD9604Visual,
   PT141Visual,
   GHAmplifierDualReceptorVisual,
+  GHPulseWaveformVisual,
 } from "@/components/education";
 
 type PurchaseType = "one-time" | "subscription";
@@ -130,7 +131,7 @@ export default function ResearchStackDetail() {
     "cognitive-edge-stack": [SemaxNeuralVisual, SelankVisual],
     "longevity-protocol": [EpithalonTelomeraseVisual, GHKCuCopperVisual],
     "fat-burner": [AOD9604Visual, Amino1MQNADVisual],
-    "gh-amplifier": [GHAmplifierDualReceptorVisual, CJC1295DACMechanism],
+    "gh-amplifier": [GHAmplifierDualReceptorVisual, CJC1295DACMechanism, GHPulseWaveformVisual],
   };
 
   const stackVisuals = STACK_VISUALS[stack.id] ?? [];

@@ -45,5 +45,6 @@ export { SLUPP332Visual, SLUPP332ComparisonTable } from "./slupp-visual";
 // Hormonal research compound visuals
 export { GonadorelinVisual, TriptorelinVisual, EnclomipheneVisual, OxytocinVisual } from "./hormonal-research-visuals";
 
-// GH Amplifier stack-specific synergy visual
+// GH Amplifier stack-specific synergy visuals
 export { GHAmplifierDualReceptorVisual } from "./gh-amplifier-dual-receptor-visual";
+export { GHPulseWaveformVisual } from "./gh-pulse-waveform-visual";
