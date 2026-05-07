@@ -32,6 +32,19 @@ import {
   OxytocinVisual,
   KisspeptinVisual,
   MelanotanReceptorVisual,
+  BPC157AngiogenesisVisual,
+  TB500ActinVisual,
+  GLOWSynergyVisual,
+  KLOWSynergyVisual,
+  SemaxNeuralVisual,
+  EpithalonTelomeraseVisual,
+  GHKCuCopperVisual,
+  Amino1MQNADVisual,
+  IpamorelinComparison,
+  CJC1295DACMechanism,
+  SelankVisual,
+  AOD9604Visual,
+  PT141Visual,
 } from "@/components/education";
 
 type PurchaseType = "one-time" | "subscription";
@@ -109,8 +122,14 @@ export default function ResearchStackDetail() {
   const STACK_VISUALS: Record<string, React.FC[]> = {
     "gonadorelin-kisspeptin-hpg-cascade": [GonadorelinVisual, KisspeptinVisual],
     "triptorelin-enclomiphene-hpg-axis": [TriptorelinVisual, EnclomipheneVisual],
-    "melanocortin-arousal-stack": [OxytocinVisual],
+    "melanocortin-arousal-stack": [PT141Visual, OxytocinVisual],
     "hpg-axis-restore-stack": [KisspeptinVisual, MelanotanReceptorVisual],
+    "recovery-tissue-stack": [BPC157AngiogenesisVisual, TB500ActinVisual],
+    "glow-protocol": [GLOWSynergyVisual, KLOWSynergyVisual],
+    "cognitive-edge-stack": [SemaxNeuralVisual, SelankVisual],
+    "longevity-protocol": [EpithalonTelomeraseVisual, GHKCuCopperVisual],
+    "fat-burner": [AOD9604Visual, Amino1MQNADVisual],
+    "gh-amplifier": [IpamorelinComparison, CJC1295DACMechanism],
   };
 
   const stackVisuals = STACK_VISUALS[stack.id] ?? [];
