@@ -22,9 +22,16 @@ const parseMarkdownTable = (tableText: string): { headers: string[]; rows: strin
   return { headers, rows };
 };
 
+const sanitizeCellContent = (cell: string): string => {
+  return cell.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, text, href) => {
+    const sanitizedHref = /^\s*(javascript|data|vbscript):/i.test(href) ? '#' : href;
+    return `<a href="${sanitizedHref}" class="text-[#21d8ff] underline underline-offset-2 hover:text-[#21d8ff]/80 transition-colors">${text}</a>`;
+  });
+};
+
 const renderTable = (table: { headers: string[]; rows: string[][] }): string => {
   const headerCells = table.headers
-    .map(h => `<th class="px-3 py-2 text-left text-xs font-bold uppercase tracking-wider text-[#21d8ff] border-b border-[#21d8ff]/30">${h}</th>`)
+    .map(h => `<th class="px-3 py-2 text-left text-xs font-bold uppercase tracking-wider text-[#21d8ff] border-b border-[#21d8ff]/30">${sanitizeCellContent(h)}</th>`)
     .join('');
 
   const bodyRows = table.rows
@@ -35,7 +42,7 @@ const renderTable = (table: { headers: string[]; rows: string[][] }): string => 
           const cellClass = isFirstCol
             ? 'px-3 py-2 text-xs font-medium text-foreground whitespace-nowrap'
             : 'px-3 py-2 text-xs text-muted-foreground';
-          return `<td class="${cellClass}">${cell}</td>`;
+          return `<td class="${cellClass}">${sanitizeCellContent(cell)}</td>`;
         })
         .join('');
       const rowClass = rowIdx % 2 === 0 ? 'bg-[#21d8ff]/5' : 'bg-transparent';
