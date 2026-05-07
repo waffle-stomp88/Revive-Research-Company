@@ -939,7 +939,6 @@ export default function PkCatalog() {
         title="Peptide Half-Life Catalog — IV vs SC Route Comparison | Revive Research"
         description="Compare pharmacokinetic half-lives for research peptides side-by-side. Filter by route, identify dual-route compounds, and see IV vs SC differences at a glance."
       />
-
       <div className={`min-h-screen bg-[#0a0a0f] text-foreground transition-all duration-300`}>
         <div className={`max-w-6xl mx-auto px-4 pt-24 pb-8${trayVisible ? " pb-56" : ""}`}>
           {/* Back link */}
@@ -954,7 +953,7 @@ export default function PkCatalog() {
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-2">
               <Activity className="h-5 w-5 text-[#21d8ff]" />
-              <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight">
+              <h1 className="font-display md:text-3xl font-bold tracking-tight text-[43px]">
                 Peptide Half-Life Catalog
               </h1>
             </div>
@@ -1274,7 +1273,6 @@ export default function PkCatalog() {
           </div>
         </div>
       </div>
-
       {/* Comparison tray — fixed at the bottom of the viewport */}
       <ComparisonTray
         selectedEntries={selectedEntries}
