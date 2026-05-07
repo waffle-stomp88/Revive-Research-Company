@@ -1323,6 +1323,58 @@ export class DatabaseStorage implements IStorage {
       db.select().from(products).where(eq(products.id, productId)).limit(1).then(r => r[0] ?? null),
     ]);
 
+    // Synonym / alias map: keys are canonical abbreviations (normalised, no hyphens),
+    // values are additional search phrases that should also match.  All strings are
+    // lowercase and will be matched via String#includes against the article haystack.
+    const ALIAS_MAP: Record<string, string[]> = {
+      // IGF family
+      "igf1":    ["insulin-like growth factor", "insulinlike growth factor", "igf-1"],
+      "igf":     ["insulin-like growth factor", "insulinlike growth factor"],
+      "igf1lr3": ["igf-1 lr3", "igf1lr3", "long r3"],
+      "lr3":     ["igf-1 lr3", "long r3", "insulin-like growth factor"],
+      "igfdes":  ["igf-1 des", "des igf", "des(1-3)igf"],
+      "mgf":     ["mechano growth factor", "mechano-growth factor"],
+      "pegmgf":  ["peg mgf", "pegylated mgf", "mechano growth factor"],
+      // GLP / metabolic
+      "glp1":    ["glp-1", "glucagon-like peptide", "glucagonlike peptide", "semaglutide", "tirzepatide"],
+      "glp":     ["glp-1", "glucagon-like peptide", "glucagonlike peptide"],
+      "sema":    ["semaglutide", "glp-1", "glucagon-like peptide"],
+      // GHRPs / secretagogues
+      "ghrp":    ["growth hormone releasing peptide", "ghrelin"],
+      "ghrp2":   ["ghrp-2", "growth hormone releasing peptide"],
+      "ghrp6":   ["ghrp-6", "growth hormone releasing peptide"],
+      "ghrh":    ["growth hormone releasing hormone", "sermorelin", "cjc"],
+      "cjc":     ["cjc-1295", "cjc1295", "growth hormone releasing hormone"],
+      "cjc1295": ["cjc-1295", "growth hormone releasing hormone", "ghrh"],
+      "ipamorelin": ["ipamorelin", "growth hormone releasing peptide"],
+      "sermorelin": ["sermorelin", "growth hormone releasing hormone", "ghrh"],
+      // BPC / healing peptides
+      "bpc":     ["bpc-157", "body protection compound"],
+      "bpc157":  ["bpc-157", "body protection compound"],
+      // TB / thymosin
+      "tb4":     ["tb-500", "thymosin beta", "thymosin-beta"],
+      "tb500":   ["tb-500", "thymosin beta", "thymosin-beta"],
+      "thymosin":["tb-500", "tb-4", "thymosin beta", "thymosin alpha"],
+      // PT-141 / sexual health
+      "pt141":   ["pt-141", "bremelanotide", "melanocortin"],
+      "bremelanotide": ["pt-141", "pt141", "melanocortin"],
+      // Epithalon
+      "epithalon":  ["epitalon", "epithalon", "epithalamin"],
+      "epitalon":   ["epithalon", "epithalamin"],
+      // Selank / Semax
+      "selank":  ["semax", "anxiolytic peptide"],
+      "semax":   ["selank", "nootropic peptide"],
+      // AOD
+      "aod":     ["aod-9604", "aod9604", "anti-obesity drug"],
+      "aod9604": ["aod-9604", "anti-obesity drug", "growth hormone fragment"],
+      // HGH fragment
+      "frag":    ["hgh fragment", "growth hormone fragment", "176-191"],
+      // Tesamorelin
+      "tesamorelin": ["tesamorelin", "growth hormone releasing hormone"],
+      // KPV / anti-inflammatory
+      "kpv":     ["kpv", "alpha-msh", "anti-inflammatory peptide"],
+    };
+
     // Build a set of lowercase keywords from the product name and slug for fuzzy matching.
     // Words shorter than 3 characters are skipped to avoid noisy matches (e.g. "mg", "5").
     const STOP_WORDS = new Set(["the", "and", "for", "with", "from", "this", "that", "vial", "kit"]);
@@ -1333,6 +1385,16 @@ export class DatabaseStorage implements IStorage {
       for (const t of tokens) {
         if (t.length >= 3 && !STOP_WORDS.has(t)) {
           productKeywords.push(t);
+          // Expand with aliases: look up by the token itself and also by stripping
+          // any trailing digit (e.g. "igf1" -> check "igf" as well).
+          const aliases = ALIAS_MAP[t] ?? [];
+          const stemmed = t.replace(/\d+$/, "");
+          const stemAliases = stemmed !== t ? (ALIAS_MAP[stemmed] ?? []) : [];
+          for (const alias of [...aliases, ...stemAliases]) {
+            if (!productKeywords.includes(alias)) {
+              productKeywords.push(alias);
+            }
+          }
         }
       }
     }
@@ -1342,7 +1404,7 @@ export class DatabaseStorage implements IStorage {
       if (article.relatedProductIds && article.relatedProductIds.includes(productId)) {
         return true;
       }
-      // 2. Keyword match against article slug and title
+      // 2. Keyword match against article slug and title (including alias expansions)
       if (productKeywords.length > 0) {
         const haystack = `${article.slug ?? ""} ${article.title ?? ""}`.toLowerCase();
         if (productKeywords.some(kw => haystack.includes(kw))) {
