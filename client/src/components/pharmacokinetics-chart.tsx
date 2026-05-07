@@ -1100,15 +1100,35 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                           {cit.label}
                         </a>
                       ))}
-                      {c.pk.altRoute && c.pk.altRoute.citations.map((cit, j) => (
-                        <a key={`alt-${j}`} href={cit.url} target="_blank" rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-xs text-[#21d8ff] hover:underline opacity-70 hover:opacity-100"
-                          onClick={e => e.stopPropagation()}
-                        >
-                          <ExternalLink className="h-2.5 w-2.5" />
-                          {cit.label}
-                        </a>
-                      ))}
+                      {c.pk.altRoute && (
+                        c.pk.altRoute.citations.length > 0
+                          ? c.pk.altRoute.citations.map((cit, j) => (
+                            <a key={`alt-${j}`} href={cit.url} target="_blank" rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-xs text-[#21d8ff] hover:underline opacity-70 hover:opacity-100"
+                              onClick={e => e.stopPropagation()}
+                            >
+                              <ExternalLink className="h-2.5 w-2.5" />
+                              {cit.label}
+                            </a>
+                          ))
+                          : c.pk.altRoute.note && (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span
+                                  className="inline-flex items-center gap-1 text-xs text-muted-foreground/60 italic cursor-help"
+                                  onClick={e => e.stopPropagation()}
+                                  data-testid={`label-no-citation-altroute-${toTestSlug(c.peptide.name)}`}
+                                >
+                                  <Info className="h-2.5 w-2.5 flex-shrink-0" />
+                                  No route-specific citation found — see note
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-[300px] text-xs leading-relaxed">
+                                {c.pk.altRoute.note}
+                              </TooltipContent>
+                            </Tooltip>
+                          )
+                      )}
                     </div>
                     {c.pk.ivHalfLifeLabel && (() => {
                       const scMid = c.pk.halfLifeMin !== undefined && c.pk.halfLifeMax !== undefined
@@ -1275,10 +1295,27 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                             <a key={j} href={cit.url} target="_blank" rel="noopener noreferrer"
                               className="text-[11px] text-[#21d8ff] hover:underline block">{cit.label}</a>
                           ))}
-                          {c.pk.altRoute && c.pk.altRoute.citations.map((cit, j) => (
-                            <a key={`alt-${j}`} href={cit.url} target="_blank" rel="noopener noreferrer"
-                              className="text-[11px] text-[#21d8ff] hover:underline block">{cit.label}</a>
-                          ))}
+                          {c.pk.altRoute && (
+                            c.pk.altRoute.citations.length > 0
+                              ? c.pk.altRoute.citations.map((cit, j) => (
+                                <a key={`alt-${j}`} href={cit.url} target="_blank" rel="noopener noreferrer"
+                                  className="text-[11px] text-[#21d8ff] hover:underline block">{cit.label}</a>
+                              ))
+                              : c.pk.altRoute.note && (
+                                <details className="mt-1">
+                                  <summary
+                                    className="inline-flex items-center gap-1 text-[11px] text-muted-foreground/60 italic cursor-pointer select-none hover:text-muted-foreground transition-colors list-none"
+                                    data-testid={`label-no-citation-altroute-popover-${toTestSlug(c.peptide.name)}`}
+                                  >
+                                    <Info className="h-2.5 w-2.5 flex-shrink-0" />
+                                    No route-specific citation found — see note
+                                  </summary>
+                                  <p className="mt-1.5 text-[10px] text-muted-foreground/70 leading-relaxed">
+                                    {c.pk.altRoute.note}
+                                  </p>
+                                </details>
+                              )
+                          )}
                         </div>
                       </div>
                     </PopoverContent>
@@ -1306,7 +1343,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                   )}
                 </div>
                 {/* Citations row — visible directly below each compound in the legend */}
-                {c.pk.citations.length > 0 && (
+                {(c.pk.citations.length > 0 || (c.pk.altRoute && (c.pk.altRoute.citations.length > 0 || !!c.pk.altRoute.note))) && (
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 pl-[18px]" onClick={e => e.stopPropagation()}>
                     {c.pk.citations.map((cit, j) => (
                       <a
@@ -1321,6 +1358,38 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                         {cit.label}
                       </a>
                     ))}
+                    {c.pk.altRoute && (
+                      c.pk.altRoute.citations.length > 0
+                        ? c.pk.altRoute.citations.map((cit, j) => (
+                          <a
+                            key={`alt-${j}`}
+                            href={cit.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-[10px] text-[#21d8ff]/70 hover:text-[#21d8ff] hover:underline transition-colors"
+                            data-testid={`link-citation-altroute-${toTestSlug(c.peptide.name)}-${j}`}
+                          >
+                            <ExternalLink className="h-2.5 w-2.5 flex-shrink-0" />
+                            {cit.label}
+                          </a>
+                        ))
+                        : c.pk.altRoute.note && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span
+                                className="inline-flex items-center gap-1 text-[10px] text-muted-foreground/55 italic cursor-help"
+                                data-testid={`label-no-citation-altroute-legend-${toTestSlug(c.peptide.name)}`}
+                              >
+                                <Info className="h-2.5 w-2.5 flex-shrink-0" />
+                                No SC-specific citation available
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-[300px] text-xs leading-relaxed">
+                              {c.pk.altRoute.note}
+                            </TooltipContent>
+                          </Tooltip>
+                        )
+                    )}
                   </div>
                 )}
               </div>
