@@ -663,46 +663,20 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                 </g>
               ))}
 
-              {/* IV bolus t½ vertical markers */}
+              {/* IV bolus t½ vertical markers — visual only, pointerEvents disabled */}
               {curves.map((c, idx) => c && c.ivHalfLifeXFrac !== null && c.ivHalfLifeXFrac !== undefined && (
                 <g
                   key={`iv-m-${c.peptide.name}`}
                   style={{ opacity: markerOpacity(idx), transition: "opacity 0.18s ease" }}
+                  pointerEvents="none"
                 >
                   <line
                     x1={CHART.x0 + c.ivHalfLifeXFrac * CHART.plotW} y1={CHART.y0}
                     x2={CHART.x0 + c.ivHalfLifeXFrac * CHART.plotW} y2={CHART.y1}
                     stroke="#f97316" strokeOpacity="0.22" strokeWidth="1" strokeDasharray="2 3"
-                    pointerEvents="none"
                   />
                   <text x={CHART.x0 + c.ivHalfLifeXFrac * CHART.plotW} y={CHART.y1 + 11}
-                    textAnchor="middle" fontSize="7" fill="#f97316" fillOpacity="0.65"
-                    pointerEvents="none">IV t½</text>
-                  {/* Wide invisible hit area for the IV marker — allows hover tooltip */}
-                  <rect
-                    x={CHART.x0 + c.ivHalfLifeXFrac * CHART.plotW - 7}
-                    y={CHART.y0}
-                    width={14}
-                    height={CHART.plotH + 14}
-                    fill="transparent"
-                    style={{ cursor: "help" }}
-                    data-testid={`iv-marker-hit-${toTestSlug(c.peptide.name)}`}
-                    onMouseEnter={e => {
-                      const cit = c.pk.citations[0];
-                      setIvMarkerTooltip({
-                        clientX: e.clientX,
-                        clientY: e.clientY,
-                        compoundName: c.peptide.name,
-                        ivHalfLifeLabel: c.pk.ivHalfLifeLabel!,
-                        citationLabel: cit?.label ?? "",
-                        citationUrl: cit?.url ?? "",
-                      });
-                    }}
-                    onMouseMove={e => {
-                      setIvMarkerTooltip(prev => prev ? { ...prev, clientX: e.clientX, clientY: e.clientY } : prev);
-                    }}
-                    onMouseLeave={() => setIvMarkerTooltip(null)}
-                  />
+                    textAnchor="middle" fontSize="7" fill="#f97316" fillOpacity="0.65">IV t½</text>
                 </g>
               ))}
 
@@ -846,6 +820,35 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                   />
                 ))}
               </g>
+
+              {/* IV marker hit-areas — rendered above the crosshair overlay so they intercept first */}
+              {curves.map((c, idx) => c && c.ivHalfLifeXFrac !== null && c.ivHalfLifeXFrac !== undefined && (
+                <rect
+                  key={`iv-hit-${c.peptide.name}`}
+                  x={CHART.x0 + c.ivHalfLifeXFrac * CHART.plotW - 7}
+                  y={CHART.y0}
+                  width={14}
+                  height={CHART.plotH + 14}
+                  fill="transparent"
+                  style={{ cursor: "help", opacity: markerOpacity(idx) }}
+                  data-testid={`iv-marker-hit-${toTestSlug(c.peptide.name)}`}
+                  onMouseEnter={e => {
+                    const cit = c.pk.citations[0];
+                    setIvMarkerTooltip({
+                      clientX: e.clientX,
+                      clientY: e.clientY,
+                      compoundName: c.peptide.name,
+                      ivHalfLifeLabel: c.pk.ivHalfLifeLabel!,
+                      citationLabel: cit?.label ?? "",
+                      citationUrl: cit?.url ?? "",
+                    });
+                  }}
+                  onMouseMove={e => {
+                    setIvMarkerTooltip(prev => prev ? { ...prev, clientX: e.clientX, clientY: e.clientY } : prev);
+                  }}
+                  onMouseLeave={() => setIvMarkerTooltip(null)}
+                />
+              ))}
 
               {/* Vertical crosshair line */}
               {crosshairSvgX !== null && (
