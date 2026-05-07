@@ -425,10 +425,13 @@
  *
  * Citation update (May 2026): First citations added for B12-injection and
  * L-Carnitine. These were the remaining uncited entries in the vitamins/amino-acid
- * supplement section of the catalog. VIP (main SC entry) and PEG-MGF retain empty
- * citation arrays pending dedicated follow-up searches (see confirmed-null audit
- * notes for both above). DSIP received its first citation — Graf & Kastin 1984,
- * PMID 6202839 — in the May 2026 ivHalfLife additions pass documented above.
+ * supplement section of the catalog. VIP (main SC entry) retains an empty citation
+ * array pending a dedicated follow-up search (see confirmed-null audit note above).
+ * PEG-MGF was subsequently upgraded from an empty citations array to an off-compound
+ * class proxy (Yang BB et al. 2004, PMID 15286081; see "Citation upgrade (May 2026):
+ * PEG-MGF upgraded from uncited to class proxy" block above). DSIP received its first
+ * citation — Graf & Kastin 1984, PMID 6202839 — in the May 2026 ivHalfLife additions
+ * pass documented above.
  *
  *  - B12-injection: Heyssel RM, Bozian RC, Darby WJ, Bell MC (1966) —
  *    "Vitamin B12 turnover in man: the assimilation of vitamin B12 from natural
@@ -1474,7 +1477,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
         "Yang et al. (2004) — Pharmacokinetics of pegfilgrastim in subjects with various degrees of renal function, J Clin Pharmacol [off-compound proxy: PEGylated G-CSF class PK]",
       ),
     ],
-    note: "No compound-specific PubMed-indexed pharmacokinetics study for PEG-MGF was identified during citation audit (May 2026). The cited reference (Yang et al. 2004, J Clin Pharmacol 44:1061–9, PMID 15286081) is an off-compound proxy: it is a primary plasma pharmacokinetics study of pegfilgrastim (PEGylated G-CSF) — a PEGylated growth-factor analogue in the same compound class as PEG-MGF — showing that PEGylation extends the plasma half-life approximately 10–100-fold relative to the unmodified parent protein by shielding protease cleavage sites and reducing renal filtration. This class mechanism directly supports the ~3–5 day half-life extrapolation for PEG-MGF relative to unmodified MGF (~20–30 min). No primary compound-specific PEG-MGF PK study is currently indexed in PubMed.",
+    note: "PEGylated peptide class proxy — not compound-specific. No compound-specific PubMed-indexed pharmacokinetics study for PEG-MGF was identified during citation audit (May 2026); the PubMed query '(PEG-MGF OR \"pegylated MGF\" OR \"pegylated mechano growth factor\" OR \"PEGylated IGF-1 Ec\") AND (pharmacokinetics OR half-life OR bioavailability OR clearance)' returned zero results. The cited reference (Yang BB et al. 2004, J Clin Pharmacol 44:1061–9, PMID 15286081) is an off-compound class proxy: a primary plasma pharmacokinetics study of pegfilgrastim (PEGylated G-CSF) — a PEGylated growth-factor analogue in the same compound class — showing that PEGylation extends the plasma half-life approximately 10–100-fold relative to the unmodified parent protein by shielding protease cleavage sites and reducing renal filtration. This class mechanism directly supports the ~3–5 day half-life extrapolation for PEG-MGF relative to unmodified MGF (~20–30 min). No primary compound-specific PEG-MGF PK study is currently indexed in PubMed.",
   },
   {
     slug: "foxo4-dri",
