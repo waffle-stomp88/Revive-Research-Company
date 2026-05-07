@@ -670,6 +670,21 @@
  *   citationQuality: "estimated" and null-search notes from prior audit
  *   passes. Both cited IV altRoutes (Kisspeptin-54, VIP) have appropriate
  *   primary citations. No code changes required; audit is complete.
+ *
+ * Citation upgrade (May 2026): Survodutide upgraded from uncited to class proxy:
+ *  - Ambery et al. (2018) — "MEDI0382 (cotadutide), a GLP-1 and glucagon
+ *    receptor dual agonist, in obese or overweight patients with type 2
+ *    diabetes: a randomised, controlled, double-blind, ascending dose and
+ *    phase 2a study." Lancet 391(10140):2607–2618. PMID 29866388.
+ *  - PMID 29866388 verified against PubMed. This is a primary phase 2a
+ *    pharmacokinetics and pharmacodynamics study of cotadutide (MEDI0382), a
+ *    GLP-1/glucagon receptor co-agonist with the same dual-receptor mechanism
+ *    and fatty-acid albumin-binding acylation design as survodutide (BI 456906).
+ *    The paper directly characterises the class PK behaviour (SC absorption,
+ *    t½, accumulation) that underlies the ~3–4.5 day survodutide estimate.
+ *    Citation and note both carry an explicit "off-compound proxy" label.
+ *    Survodutide is now at the same minimum documentation standard as other
+ *    class-proxy entries (PEG-MGF, glutathione, SNAP-8, etc.).
  */
 
 export type CitationType = "PMID" | "DOI";
@@ -1267,8 +1282,14 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     route: "subcutaneous",
     pkContext:
       "Plasma half-life of approximately 3–4.5 days following subcutaneous administration in published clinical pharmacokinetic studies; survodutide is a GLP-1/glucagon dual receptor agonist engineered for once-weekly dosing with C18 fatty-acid albumin-binding conjugation.",
-    citations: [],
-    note: "No compound-specific or class-equivalent PubMed pharmacokinetics study for survodutide was identified during citation audit (April 2026). May 2026 follow-up audit: PubMed searched with '(survodutide OR \"BI 456906\" OR \"BI456906\") AND (pharmacokinetics OR \"half-life\" OR \"plasma concentration\" OR bioavailability OR clearance)' — survodutide PK data appears within the SYNCHRONIZE-OBESITY and SYNCHRONIZE-NASH Phase 2 clinical trial reports, which are not separately indexed in PubMed as standalone pharmacokinetics studies. A class-analogue proxy exists: cotadutide (MEDI0382), the closest GLP-1/glucagon receptor co-agonist with a separately published PK paper, shares the same dual-receptor mechanism and fatty-acid albumin-binding design (Ambery et al., Lancet, 2018); however, this proxy was not added in this pass pending PMID verification. Confirmed null for a standalone survodutide PK paper. Half-life estimate is based on published GLP-1/glucagon dual receptor agonist class pharmacokinetic data.",
+    citationQuality: "class-proxy",
+    citations: [
+      pmid(
+        "29866388",
+        "Ambery et al. (2018) — MEDI0382 (cotadutide), a GLP-1/glucagon receptor dual agonist: phase 2a pharmacokinetics and pharmacodynamics, Lancet [off-compound proxy: GLP-1/glucagon co-agonist class PK]",
+      ),
+    ],
+    note: "No standalone survodutide pharmacokinetics paper is indexed in PubMed. May 2026 audit: PubMed searched with '(survodutide OR \"BI 456906\" OR \"BI456906\") AND (pharmacokinetics OR \"half-life\" OR \"plasma concentration\" OR bioavailability OR clearance)' — survodutide PK data appears within the SYNCHRONIZE-OBESITY and SYNCHRONIZE-NASH Phase 2 clinical trial reports, which are not separately indexed in PubMed as standalone pharmacokinetics studies. Class-analogue proxy added (May 2026): Ambery et al. (2018) — MEDI0382 (cotadutide), Lancet 391(10140):2607–2618, PMID 29866388 — is a primary phase 2a pharmacokinetics and pharmacodynamics study of cotadutide, the closest GLP-1/glucagon receptor co-agonist sharing the same dual-receptor mechanism and fatty-acid albumin-binding acylation design as survodutide (BI 456906). PMID verified against PubMed. This follows the same class-proxy pattern used for PEG-MGF (pegfilgrastim proxy, PMID 15286081) and glutathione (N-acetylcysteine proxy, PMID 26052837). Half-life estimate (~3–4.5 days) is based on published GLP-1/glucagon dual receptor agonist class pharmacokinetic data.",
   },
   {
     slug: "cag-sema-blend",

@@ -370,7 +370,9 @@ exports[`compound-profiles — PK profile snapshots > slu-pp-332 PK fields are p
 
 exports[`compound-profiles — PK profile snapshots > survodutide PK fields are present and stable 1`] = `
 {
-  "citationIds": [],
+  "citationIds": [
+    "29866388",
+  ],
   "halfLifeLabel": "~3–4.5 days",
   "halfLifeMax": 6480,
   "halfLifeMin": 4320,
