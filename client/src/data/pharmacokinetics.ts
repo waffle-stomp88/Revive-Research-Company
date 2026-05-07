@@ -653,6 +653,9 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
       "Plasma half-life of native GnRH (gonadorelin) following subcutaneous administration is approximately 5–10 minutes, reflecting a brief subcutaneous absorption phase before systemic entry; rapid enzymatic degradation by endopeptidases and dipeptidylpeptidase IV then clears the decapeptide from plasma within minutes. Pulsatile administration is used in research to mimic physiological hypothalamic secretion.",
     citations: [pmid("2467720", "Conn & Crowley (1991) — Gonadotropin-releasing hormone and its analogues, N Engl J Med")],
     note: "Proxy citation: Conn & Crowley (1991, N Engl J Med, PMID 2467720) is a clinical review article on GnRH and its analogues, not a primary plasma pharmacokinetics study. It is cited because it is the most widely indexed reference reporting GnRH plasma half-life parameters and enzymatic degradation routes; no dedicated English-indexed PubMed primary PK study for subcutaneous gonadorelin (native GnRH) was identified. IV route variant: following intravenous bolus administration, native GnRH has a plasma half-life of approximately 2–4 minutes in published clinical pharmacokinetic studies (Conn & Crowley 1991, PMID 2467720), compared with the ~5–10 minute effective window seen after subcutaneous injection where the absorption phase delays peak systemic entry. The markedly shorter IV half-life reflects direct exposure to plasma endopeptidases — principally dipeptidylpeptidase IV and endopeptidase 24.11 (neprilysin) — without any subcutaneous absorption delay. This SC/IV contrast is clinically significant for pulsatile GnRH research protocols: subcutaneous administration provides a slightly broader plasma pulse window than IV bolus delivery.",
+    ivHalfLifeMin: 2,
+    ivHalfLifeMax: 4,
+    ivHalfLifeLabel: "~2–4 min",
   },
   {
     slug: "triptorelin",
@@ -803,6 +806,9 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
       halfLifeLabel: "~1–2 min",
       citations: [pmid("7175453", "Domschke et al. (1979) — Vasoactive intestinal peptide in plasma — pharmacokinetics and clinical significance, Gut")],
     },
+    ivHalfLifeMin: 1,
+    ivHalfLifeMax: 2,
+    ivHalfLifeLabel: "~1–2 min",
   },
   {
     slug: "pinealon",
@@ -827,6 +833,9 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
       "Plasma half-life of oxytocin following subcutaneous administration is approximately 3–5 minutes in published pharmacokinetic studies; the nonapeptide undergoes rapid enzymatic degradation by plasma oxytocinase (leucyl-cystinyl aminopeptidase, LNPEP) and vasopressinase in plasma and peripheral tissues. The subcutaneous absorption phase provides a slightly extended effective window compared with intravenous bolus delivery.",
     citations: [pmid("11445820", "Gimpl & Fahrenholz (2001) — The oxytocin receptor system — structure, function, and regulation, Physiol Rev")],
     note: "Proxy citation: Gimpl & Fahrenholz (2001, Physiol Rev, PMID 11445820) is a comprehensive receptor-system review of oxytocin structure, function, and regulation, not a primary plasma pharmacokinetics study. It is cited because no dedicated primary English-indexed PubMed pharmacokinetics study for subcutaneous oxytocin administration was identified; the review summarises published PK parameters from clinical oxytocinase-degradation literature. IV route variant: following intravenous bolus administration, oxytocin has a plasma half-life of approximately 1–5 minutes in published clinical pharmacokinetic studies (Gimpl & Fahrenholz 2001, PMID 11445820), with the lower end of that range (~1–3 min) documented for rapid IV bolus injection and the upper end reflecting slower IV infusion kinetics. The markedly shorter IV elimination half-life compared with subcutaneous reflects direct systemic entry and immediate exposure to plasma oxytocinase without any absorption-phase delay. IV oxytocin reaches steady-state plasma concentrations within approximately 30–40 minutes of the start of a constant-rate IV infusion, consistent with a 1–5 minute plasma half-life.",
+    ivHalfLifeMin: 1,
+    ivHalfLifeMax: 5,
+    ivHalfLifeLabel: "~1–5 min",
   },
   {
     slug: "vasopressin",

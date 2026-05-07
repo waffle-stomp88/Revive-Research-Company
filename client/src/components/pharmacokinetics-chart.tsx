@@ -226,7 +226,16 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
     const tmaxSvgX = pts[peakIdx].x;
     const tmaxSvgY = pts[peakIdx].y;
     const showTmaxMarker = tmaxXFrac > 0.01 && tmaxXFrac < 1;
-    return { peptide, pk, color, pts, isExtended, extendsNote, halfLifeXFrac, lastY, curveD: ptsToD(pts), areaD: ptsToAreaD(pts), tmaxSvgX, tmaxSvgY, showTmaxMarker };
+    // IV bolus overlay curve
+    const ivMid = pk.ivHalfLifeLabel
+      ? (pk.ivHalfLifeMin !== undefined && pk.ivHalfLifeMax !== undefined
+          ? (pk.ivHalfLifeMin + pk.ivHalfLifeMax) / 2
+          : pk.ivHalfLifeMin ?? pk.ivHalfLifeMax ?? null)
+      : null;
+    const ivPts = ivMid !== null ? buildPKCurve(ivMid, xMaxMin, CHART) : null;
+    const ivCurveD = ivPts ? ptsToD(ivPts) : null;
+    const ivHalfLifeXFrac = ivMid !== null && ivMid <= xMaxMin ? ivMid / xMaxMin : null;
+    return { peptide, pk, color, pts, isExtended, extendsNote, halfLifeXFrac, lastY, curveD: ptsToD(pts), areaD: ptsToAreaD(pts), tmaxSvgX, tmaxSvgY, showTmaxMarker, ivCurveD, ivHalfLifeXFrac };
   });
 
   const definedPks = pksWithData;
@@ -245,6 +254,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
   const hasCurves = curves.some(Boolean);
   const hasNonSC = pksWithData.some(pk => isNonSCRoute(pk.route));
   const hasAnySC = pksWithData.some(pk => !isNonSCRoute(pk.route));
+  const hasIVOverlay = pksWithData.some(pk => !!pk.ivHalfLifeLabel);
   const clipId = "pk-clip-" + peptides.map(p => toTestSlug(p.name)).join("-");
 
   const effectiveIdx = pinnedIdx ?? hoveredIdx;
@@ -553,20 +563,30 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                 </button>
               ))}
             </div>
-            {hasNonSC && hasAnySC && (
-              <div className="flex items-center justify-end gap-3 mb-1.5 px-0.5" data-testid="pk-line-style-key">
+            {(hasNonSC && hasAnySC || hasIVOverlay) && (
+              <div className="flex items-center justify-end gap-3 mb-1.5 px-0.5 flex-wrap" data-testid="pk-line-style-key">
                 <div className="flex items-center gap-1.5">
                   <svg width="18" height="4" viewBox="0 0 18 4" aria-hidden="true">
                     <line x1="0" y1="2" x2="18" y2="2" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeOpacity="0.45" />
                   </svg>
                   <span className="text-[10px] text-white/40 font-medium">SC</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <svg width="18" height="4" viewBox="0 0 18 4" aria-hidden="true">
-                    <line x1="0" y1="2" x2="18" y2="2" stroke="#fff" strokeWidth="2" strokeDasharray="5 3" strokeLinecap="round" strokeOpacity="0.45" />
-                  </svg>
-                  <span className="text-[10px] text-white/40 font-medium">Other route</span>
-                </div>
+                {hasNonSC && hasAnySC && (
+                  <div className="flex items-center gap-1.5">
+                    <svg width="18" height="4" viewBox="0 0 18 4" aria-hidden="true">
+                      <line x1="0" y1="2" x2="18" y2="2" stroke="#fff" strokeWidth="2" strokeDasharray="5 3" strokeLinecap="round" strokeOpacity="0.45" />
+                    </svg>
+                    <span className="text-[10px] text-white/40 font-medium">Other route</span>
+                  </div>
+                )}
+                {hasIVOverlay && (
+                  <div className="flex items-center gap-1.5" data-testid="pk-iv-overlay-key">
+                    <svg width="18" height="4" viewBox="0 0 18 4" aria-hidden="true">
+                      <line x1="0" y1="2" x2="18" y2="2" stroke="#f97316" strokeWidth="2" strokeDasharray="3 2" strokeLinecap="round" strokeOpacity="0.7" />
+                    </svg>
+                    <span className="text-[10px] font-medium" style={{ color: "#f97316", opacity: 0.7 }}>IV bolus</span>
+                  </div>
+                )}
               </div>
             )}
             <svg
@@ -640,6 +660,46 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                     textAnchor="middle" fontSize="7.5" fill={c.color} fillOpacity="0.6">t½</text>
                 </g>
               ))}
+
+              {/* IV bolus t½ vertical markers */}
+              {curves.map((c, idx) => c && c.ivHalfLifeXFrac !== null && c.ivHalfLifeXFrac !== undefined && (
+                <g
+                  key={`iv-m-${c.peptide.name}`}
+                  style={{ opacity: markerOpacity(idx), transition: "opacity 0.18s ease" }}
+                >
+                  <line
+                    x1={CHART.x0 + c.ivHalfLifeXFrac * CHART.plotW} y1={CHART.y0}
+                    x2={CHART.x0 + c.ivHalfLifeXFrac * CHART.plotW} y2={CHART.y1}
+                    stroke="#f97316" strokeOpacity="0.22" strokeWidth="1" strokeDasharray="2 3"
+                  />
+                  <text x={CHART.x0 + c.ivHalfLifeXFrac * CHART.plotW} y={CHART.y1 + 11}
+                    textAnchor="middle" fontSize="7" fill="#f97316" fillOpacity="0.65">IV t½</text>
+                </g>
+              ))}
+
+              {/* IV bolus overlay curves — rendered before SC curves so SC sits on top */}
+              <g clipPath={`url(#${clipId})`}>
+                {curves.map((c, idx) => c && c.ivCurveD && (
+                  <g
+                    key={`iv-sg-${c.peptide.name}`}
+                    style={{ opacity: curveOpacity(idx) === 1 ? 0.6 : 0.06, transition: "opacity 0.18s ease" }}
+                  >
+                    <motion.path
+                      d={c.ivCurveD}
+                      fill="none"
+                      stroke="#f97316"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeDasharray="3 2"
+                      initial={{ pathLength: 0, opacity: 0 }}
+                      animate={{ pathLength: 1, opacity: 1 }}
+                      transition={{ duration: 1.2, delay: idx * 0.25 + 0.2, ease: "easeOut" }}
+                      data-testid={`iv-overlay-curve-${toTestSlug(c.peptide.name)}`}
+                    />
+                  </g>
+                ))}
+              </g>
 
               {/* Tmax peak markers — glowing dot with pulse ring */}
               {curves.map((c, idx) => c && c.showTmaxMarker && (
