@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import {
@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { SEOHead } from "@/components/seo-head";
-import { PEPTIDE_HALF_LIVES } from "@/data/pharmacokinetics";
+import { PEPTIDE_HALF_LIVES, getCitationQuality } from "@/data/pharmacokinetics";
 import type { HalfLifeEntry } from "@/data/pharmacokinetics";
 import { isEstimatedLabel, formatPKLabel, getEstimateTooltip } from "@/lib/pk-label";
 
@@ -152,6 +152,17 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
     : null;
 
   const isEstimate = isEstimatedLabel(entry.halfLifeLabel);
+  const isIndirectEvidence = getCitationQuality(entry) === "estimated";
+
+  const [pkExpanded, setPkExpanded] = useState(false);
+  const pkContextRef = useRef<HTMLParagraphElement>(null);
+
+  function handleCaveatClick() {
+    setPkExpanded(true);
+    setTimeout(() => {
+      pkContextRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }, 50);
+  }
 
   return (
     <motion.div
@@ -171,7 +182,25 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
           >
             {entry.name}
           </span>
-          <div className="flex items-center gap-1 shrink-0">
+          <div className="flex items-center gap-1 shrink-0 flex-wrap justify-end">
+            {isIndirectEvidence && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={handleCaveatClick}
+                    data-testid={`badge-indirect-evidence-${entry.slug}`}
+                    className="inline-flex items-center gap-0.5 rounded text-[9px] px-1.5 py-0.5 bg-amber-500/10 text-amber-400 border border-amber-500/25 cursor-pointer hover-elevate"
+                  >
+                    <AlertTriangle className="h-2.5 w-2.5 shrink-0" />
+                    Indirect evidence
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs text-xs leading-relaxed">
+                  No direct plasma concentration data. Half-life is inferred from indirect evidence. Click to read the full context.
+                </TooltipContent>
+              </Tooltip>
+            )}
             {(dual || ivOverlay) && (
               <Badge
                 className="text-[9px] px-1.5 py-0.5 gap-0.5 bg-[#E7FB10]/10 text-[#E7FB10] border border-[#E7FB10]/25 shrink-0"
@@ -236,10 +265,24 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
         {/* Spacer to push context to bottom */}
         <div className="flex-1" />
 
-        {/* Brief pk context teaser */}
-        <p className="text-[11px] text-muted-foreground/50 leading-snug mt-2 line-clamp-2">
+        {/* Brief pk context teaser — expands when caveat badge is clicked */}
+        <p
+          ref={pkContextRef}
+          className={`text-[11px] text-muted-foreground/50 leading-snug mt-2 ${pkExpanded ? "" : "line-clamp-2"}`}
+          data-testid={`text-pk-context-${entry.slug}`}
+        >
           {entry.pkContext}
         </p>
+        {pkExpanded && (
+          <button
+            type="button"
+            onClick={() => setPkExpanded(false)}
+            className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 mt-1 text-left transition-colors"
+            data-testid={`button-collapse-context-${entry.slug}`}
+          >
+            Show less
+          </button>
+        )}
 
         {/* Link to individual compound article if it exists */}
         <div className="mt-2 pt-2 border-t border-white/5 flex items-center justify-between">
