@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "wouter";
+import { Link, useSearch, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -174,65 +174,61 @@ const getPeptideGroup = (productName: string): { id: string; label: string; colo
 
 type ShopSection = "deals" | "bundles" | "products" | "bulk";
 
-const PRODUCTS_STATE_KEY = 'products_page_state';
-
-interface ProductsPageState {
-  searchQuery: string;
-  sortBy: SortOption;
-  stockFilter: "all" | "in-stock" | "out-of-stock";
-  selectedCategory: string;
-  peptideGroupFilter: string;
-  priceRange: [number, number];
-  currentPage: number;
-  scrollY: number;
-}
+const PRODUCTS_SCROLL_KEY = 'products_page_scroll';
 
 function ProductsComponent() {
   const { toast } = useToast();
-  // Restore state from sessionStorage if available (using useState so we can clear it)
-  const [savedState, setSavedState] = useState<ProductsPageState | null>(() => {
-    try {
-      const stored = sessionStorage.getItem(PRODUCTS_STATE_KEY);
-      if (stored) {
-        return JSON.parse(stored) as ProductsPageState;
-      }
-    } catch {}
-    return null;
-  });
 
-  const [searchQuery, setSearchQuery] = useState(savedState?.searchQuery ?? "");
-  const [sortBy, setSortBy] = useState<SortOption>(savedState?.sortBy ?? "featured");
-  const [stockFilter, setStockFilter] = useState<"all" | "in-stock" | "out-of-stock">(savedState?.stockFilter ?? "all");
+  // URL-driven filter state
+  const rawSearch = useSearch();
+  const [location, setLocation] = useLocation();
+  const params = useMemo(() => new URLSearchParams(rawSearch), [rawSearch]);
+
+  const VALID_SORT_OPTIONS: SortOption[] = ["name-asc", "name-desc", "price-asc", "price-desc", "featured"];
+  const VALID_STOCK_OPTIONS = ["all", "in-stock", "out-of-stock"] as const;
+
+  const searchQuery = params.get("q") ?? "";
+  const rawSort = params.get("sort") ?? "featured";
+  const sortBy: SortOption = VALID_SORT_OPTIONS.includes(rawSort as SortOption) ? (rawSort as SortOption) : "featured";
+  const rawStock = params.get("stock") ?? "all";
+  const stockFilter: "all" | "in-stock" | "out-of-stock" = (VALID_STOCK_OPTIONS as readonly string[]).includes(rawStock) ? (rawStock as "all" | "in-stock" | "out-of-stock") : "all";
+  const selectedCategory = params.get("cat") ?? "all";
+  const peptideGroupFilter = params.get("group") ?? "all";
+  const rawPage = parseInt(params.get("page") ?? "1", 10);
+  const currentPage = Math.max(1, isNaN(rawPage) ? 1 : rawPage);
+
+  const rawMinPrice = params.get("minPrice");
+  const rawMaxPrice = params.get("maxPrice");
+  const urlMinPrice = rawMinPrice !== null && !isNaN(parseInt(rawMinPrice, 10)) ? rawMinPrice : null;
+  const urlMaxPrice = rawMaxPrice !== null && !isNaN(parseInt(rawMaxPrice, 10)) ? rawMaxPrice : null;
+
   const [activeSection, setActiveSection] = useState<ShopSection>("deals");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>(savedState?.selectedCategory ?? "all");
-  const [peptideGroupFilter, setPeptideGroupFilter] = useState<string>(savedState?.peptideGroupFilter ?? "all");
-  const [priceRange, setPriceRange] = useState<[number, number]>(savedState?.priceRange ?? [0, 300]);
+  // Auto-open sidebar when URL already has active filter params (back button or shared link)
+  const normalizedSearch = rawSearch.replace(/^\?/, "");
+  const hasUrlFilters = normalizedSearch.length > 0 && normalizedSearch !== "page=1";
+  const [sidebarOpen, setSidebarOpen] = useState(hasUrlFilters);
   const [categoriesExpanded, setCategoriesExpanded] = useState(true);
   const [peptideGroupsExpanded, setPeptideGroupsExpanded] = useState(true);
-  const [stateRestored, setStateRestored] = useState(false);
-  
+
   // Collapsible section states
   const [productsOpen, setProductsOpen] = useState(true);
   const [bundlesOpen, setBundlesOpen] = useState(true);
   const [bulkOpen, setBulkOpen] = useState(true);
-  
+
   // Quick view modal state
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
-  
+
   // Mobile filter sheet state
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
-  
+
   // Display controls state - items per page and grid columns
   const itemsPerPage = 12; // Fixed at 12 items per page
-  const [currentPage, setCurrentPage] = useState<number>(savedState?.currentPage ?? 1);
   const [gridColumns, setGridColumns] = useState<2 | 3 | 4>(4);
 
   const dealsRef = useRef<HTMLDivElement>(null);
   const bundlesRef = useRef<HTMLDivElement>(null);
   const productsRef = useRef<HTMLDivElement>(null);
   const bulkRef = useRef<HTMLDivElement>(null);
-  const isRestoringStateRef = useRef(!!savedState);
 
   const { data: products, isLoading, error } = useQuery<ProductWithPriceRange[]>({
     queryKey: ["/api/products"],
@@ -255,36 +251,66 @@ function ProductsComponent() {
   }, []);
 
   // Restore scroll position after products have loaded and DOM is rendered
+  const scrollRestored = useRef(false);
   useEffect(() => {
-    if (savedState && !stateRestored && !isLoading && products) {
+    if (scrollRestored.current || isLoading || !products) return;
+    const savedScroll = sessionStorage.getItem(PRODUCTS_SCROLL_KEY);
+    if (savedScroll) {
+      scrollRestored.current = true;
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          if (savedState.scrollY > 0) {
-            window.scrollTo(0, savedState.scrollY);
-          }
-          setStateRestored(true);
-          isRestoringStateRef.current = false;
-          priceRangeInitializedRef.current = true;
-          sessionStorage.removeItem(PRODUCTS_STATE_KEY);
-          setSavedState(null);
+          window.scrollTo(0, parseInt(savedScroll, 10));
+          sessionStorage.removeItem(PRODUCTS_SCROLL_KEY);
         });
       });
     }
-  }, [savedState, stateRestored, isLoading, products]);
+  }, [isLoading, products]);
 
-  // Function to save current state before navigating to a product
+  // URL param helpers
+  const updateParams = (next: URLSearchParams) => {
+    const qs = next.toString();
+    const base = location.split("?")[0];
+    setLocation(qs ? `${base}?${qs}` : base, { replace: true });
+  };
+
+  const setSearchQuery = (q: string) => {
+    const next = new URLSearchParams(params);
+    if (q.trim()) next.set("q", q); else next.delete("q");
+    next.delete("page");
+    updateParams(next);
+  };
+
+  const setSortBy = (sort: SortOption) => {
+    const next = new URLSearchParams(params);
+    if (sort !== "featured") next.set("sort", sort); else next.delete("sort");
+    next.delete("page");
+    updateParams(next);
+  };
+
+  const setStockFilter = (stock: "all" | "in-stock" | "out-of-stock") => {
+    const next = new URLSearchParams(params);
+    if (stock !== "all") next.set("stock", stock); else next.delete("stock");
+    next.delete("page");
+    updateParams(next);
+  };
+
+  const setSelectedCategory = (cat: string) => {
+    const next = new URLSearchParams(params);
+    if (cat !== "all") next.set("cat", cat); else next.delete("cat");
+    next.delete("page");
+    updateParams(next);
+  };
+
+  const setPeptideGroupFilter = (group: string) => {
+    const next = new URLSearchParams(params);
+    if (group !== "all") next.set("group", group); else next.delete("group");
+    next.delete("page");
+    updateParams(next);
+  };
+
+  // Save only scroll position before navigating to a product
   const savePageState = () => {
-    const state: ProductsPageState = {
-      searchQuery,
-      sortBy,
-      stockFilter,
-      selectedCategory,
-      peptideGroupFilter,
-      priceRange,
-      currentPage,
-      scrollY: window.scrollY,
-    };
-    sessionStorage.setItem(PRODUCTS_STATE_KEY, JSON.stringify(state));
+    sessionStorage.setItem(PRODUCTS_SCROLL_KEY, String(window.scrollY));
   };
 
   // Query for selling fast products (5+ orders in last 7 days)
@@ -399,19 +425,19 @@ function ProductsComponent() {
     };
   }, [products]);
 
-  const priceRangeInitializedRef = useRef(!!savedState);
-  useEffect(() => {
-    if (priceRangeInitializedRef.current) return;
-    if (products && products.length > 0) {
-      const excludedCategories = ["Research Stacks"];
-      const displayedProducts = products.filter(p => !excludedCategories.includes(p.category));
-      if (displayedProducts.length === 0) return;
-      const prices = displayedProducts.map(p => Number(p.price));
-      const min = Math.floor(Math.min(...prices));
-      const max = Math.ceil(Math.max(...prices));
-      setPriceRange([min, max]);
-    }
-  }, [products]);
+  // Price range derived from URL params or priceStats defaults
+  const priceRange: [number, number] = [
+    urlMinPrice !== null ? parseInt(urlMinPrice, 10) : priceStats.min,
+    urlMaxPrice !== null ? parseInt(urlMaxPrice, 10) : priceStats.max,
+  ];
+
+  const setPriceRange = (range: [number, number]) => {
+    const next = new URLSearchParams(params);
+    if (range[0] !== priceStats.min) next.set("minPrice", String(range[0])); else next.delete("minPrice");
+    if (range[1] !== priceStats.max) next.set("maxPrice", String(range[1])); else next.delete("maxPrice");
+    next.delete("page");
+    updateParams(next);
+  };
 
   const categoryStats = useMemo(() => {
     if (!products) return {};
@@ -501,12 +527,7 @@ function ProductsComponent() {
   }, [products, searchQuery, sortBy, stockFilter, selectedCategory, peptideGroupFilter, priceRange]);
 
   const clearFilters = () => {
-    setSearchQuery("");
-    setSortBy("featured");
-    setStockFilter("all");
-    setSelectedCategory("all");
-    setPeptideGroupFilter("all");
-    setPriceRange([priceStats.min, priceStats.max]);
+    updateParams(new URLSearchParams());
   };
 
   const hasActiveFilters = searchQuery !== "" || sortBy !== "featured" || stockFilter !== "all" || selectedCategory !== "all" || peptideGroupFilter !== "all" || priceRange[0] !== priceStats.min || priceRange[1] !== priceStats.max;
@@ -518,17 +539,13 @@ function ProductsComponent() {
     return filteredAndSortedProducts.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredAndSortedProducts, currentPage, itemsPerPage]);
 
-  // Reset to page 1 when filters change, but skip while restoring saved state
-  useEffect(() => {
-    if (isRestoringStateRef.current) return;
-    setCurrentPage(1);
-  }, [searchQuery, sortBy, stockFilter, selectedCategory, peptideGroupFilter, priceRange]);
-
-  // Scroll to top of products section when page changes
+  // Scroll to top of products section when page changes (URL already updated by each setter)
   const handlePageChange = (page: number) => {
     const clampedPage = Math.max(1, Math.min(totalPages, page));
     if (clampedPage !== currentPage) {
-      setCurrentPage(clampedPage);
+      const next = new URLSearchParams(params);
+      if (clampedPage > 1) next.set("page", String(clampedPage)); else next.delete("page");
+      updateParams(next);
       productsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };

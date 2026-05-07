@@ -166,7 +166,7 @@ function Router() {
         <Route path="/shop" component={ProductsHub} />
         <Route path="/peptides" component={Products} />
         <Route path="/peptides/:id" component={ProductDetail} />
-        <Route path="/products">{() => { window.location.replace("/peptides"); return null; }}</Route>
+        <Route path="/products">{() => { window.location.replace("/peptides" + window.location.search); return null; }}</Route>
         <Route path="/products/:id">{({ id }) => { window.location.replace(`/peptides/${id}`); return null; }}</Route>
         <Route path="/bulk-packs" component={BulkPacks} />
         <Route path="/wholesale" component={Wholesale} />
