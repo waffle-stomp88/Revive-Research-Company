@@ -1268,7 +1268,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                           </a>
                         </span>
                       ))}
-                      {!isAltActive && c.basePk?.citationQuality === "proxy" && (
+                      {!isAltActive && c.basePk?.citationQuality === "estimated" && (
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span
@@ -1286,7 +1286,25 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                           </TooltipContent>
                         </Tooltip>
                       )}
-                      {isAltActive && c.basePk?.altRoute && c.basePk.altRoute.citations.length === 0 && c.basePk.altRoute.note && (
+                      {isAltActive && c.basePk?.altRoute?.citationQuality === "estimated" && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span
+                              className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-px rounded cursor-help"
+                              style={{ backgroundColor: "rgba(245,158,11,0.10)", color: "#f59e0b", border: "1px solid rgba(245,158,11,0.28)" }}
+                              data-testid={`badge-proxy-citation-altroute-${toTestSlug(c.peptide.name)}`}
+                              onClick={e => e.stopPropagation()}
+                            >
+                              <Info className="h-2.5 w-2.5 flex-shrink-0" />
+                              ~estimated
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-[280px] text-xs leading-relaxed">
+                            No compound-specific {c.basePk?.altRoute?.route ?? "alternate route"} pharmacokinetics study was identified. The half-life window is estimated from the closest available proxy rather than a direct plasma PK measurement. See the note below for details.
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                      {isAltActive && c.basePk?.altRoute && c.basePk.altRoute.citations.length === 0 && c.basePk.altRoute.note && c.basePk.altRoute.citationQuality !== "estimated" && (
                         <Popover>
                           <PopoverTrigger asChild>
                             <span
@@ -1525,7 +1543,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                                 </details>
                               )
                           )}
-                          {c.basePk?.citationQuality === "proxy" && (
+                          {c.basePk?.citationQuality === "estimated" && (
                             <div
                               className="mt-2 flex items-start gap-1.5 p-1.5 rounded"
                               style={{ backgroundColor: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.22)" }}
@@ -1534,6 +1552,18 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                               <Info className="h-3 w-3 flex-shrink-0 mt-px" style={{ color: "#f59e0b" }} />
                               <p className="text-[10px] leading-relaxed" style={{ color: "#f59e0b", opacity: 0.9 }}>
                                 <span className="font-semibold">~estimated</span> — No direct plasma PK study found. Half-life is inferred from a proxy citation (review article or related compound).
+                              </p>
+                            </div>
+                          )}
+                          {c.basePk?.altRoute?.citationQuality === "estimated" && (
+                            <div
+                              className="mt-2 flex items-start gap-1.5 p-1.5 rounded"
+                              style={{ backgroundColor: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.22)" }}
+                              data-testid={`proxy-notice-altroute-popover-${toTestSlug(c.peptide.name)}`}
+                            >
+                              <Info className="h-3 w-3 flex-shrink-0 mt-px" style={{ color: "#f59e0b" }} />
+                              <p className="text-[10px] leading-relaxed" style={{ color: "#f59e0b", opacity: 0.9 }}>
+                                <span className="font-semibold">~estimated ({c.basePk.altRoute.route})</span> — No direct {c.basePk.altRoute.route} PK study found. The half-life window is extrapolated from the closest available proxy rather than a compound-specific measurement.
                               </p>
                             </div>
                           )}
@@ -1564,7 +1594,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                   )}
                 </div>
                 {/* Citations row — visible directly below each compound in the legend */}
-                {(c.pk.citations.length > 0 || (c.pk.altRoute && (c.pk.altRoute.citations.length > 0 || !!c.pk.altRoute.note)) || c.basePk?.citationQuality === "proxy") && (
+                {(c.pk.citations.length > 0 || (c.pk.altRoute && (c.pk.altRoute.citations.length > 0 || !!c.pk.altRoute.note)) || c.basePk?.citationQuality === "estimated") && (
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 pl-[18px]" onClick={e => e.stopPropagation()}>
                     {c.pk.citations.map((cit, j) => (
                       <span key={j} className="inline-flex items-center gap-1">
@@ -1585,7 +1615,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                         </a>
                       </span>
                     ))}
-                    {c.basePk?.citationQuality === "proxy" && (
+                    {c.basePk?.citationQuality === "estimated" && (
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <span
@@ -1617,22 +1647,40 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                             {cit.label}
                           </a>
                         ))
-                        : c.pk.altRoute.note && (
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <span
-                                className="inline-flex items-center gap-1 text-[10px] text-muted-foreground/55 italic cursor-pointer"
-                                data-testid={`label-no-citation-altroute-legend-${toTestSlug(c.peptide.name)}`}
-                              >
-                                <Info className="h-2.5 w-2.5 flex-shrink-0" />
-                                No SC-specific citation available
-                              </span>
-                            </PopoverTrigger>
-                            <PopoverContent side="top" className="w-80 p-3 text-xs leading-relaxed text-muted-foreground">
-                              {c.pk.altRoute.note}
-                            </PopoverContent>
-                          </Popover>
-                        )
+                        : c.pk.altRoute.citationQuality === "estimated"
+                          ? (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span
+                                  className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-px rounded cursor-help"
+                                  style={{ backgroundColor: "rgba(245,158,11,0.10)", color: "#f59e0b", border: "1px solid rgba(245,158,11,0.28)" }}
+                                  data-testid={`badge-proxy-citation-altroute-legend-${toTestSlug(c.peptide.name)}`}
+                                >
+                                  <Info className="h-2.5 w-2.5 flex-shrink-0" />
+                                  ~estimated
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-[280px] text-xs leading-relaxed">
+                                No compound-specific {c.pk.altRoute.route} pharmacokinetics study was identified. The half-life window is estimated from the closest available proxy rather than a direct measurement. Click the t½ chip above for full details.
+                              </TooltipContent>
+                            </Tooltip>
+                          )
+                          : c.pk.altRoute.note && (
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <span
+                                  className="inline-flex items-center gap-1 text-[10px] text-muted-foreground/55 italic cursor-pointer"
+                                  data-testid={`label-no-citation-altroute-legend-${toTestSlug(c.peptide.name)}`}
+                                >
+                                  <Info className="h-2.5 w-2.5 flex-shrink-0" />
+                                  No SC-specific citation available
+                                </span>
+                              </PopoverTrigger>
+                              <PopoverContent side="top" className="w-80 p-3 text-xs leading-relaxed text-muted-foreground">
+                                {c.pk.altRoute.note}
+                              </PopoverContent>
+                            </Popover>
+                          )
                     )}
                   </div>
                 )}

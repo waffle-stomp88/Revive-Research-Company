@@ -727,7 +727,6 @@ export interface HalfLifeEntry {
   ivHalfLifeMin?: number;
   ivHalfLifeMax?: number;
   ivHalfLifeLabel?: string;
-  citationQuality?: "direct" | "proxy";
 }
 
 const pmid = (id: string, label: string, routeContext?: string): Citation => ({
@@ -911,7 +910,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 120,
     halfLifeLabel: "~1–2 h",
     route: "subcutaneous",
-    citationQuality: "proxy",
+    citationQuality: "estimated",
     pkContext:
       "Reported plasma half-life of approximately 1–2 hours following subcutaneous administration in published tetrapeptide pharmacokinetic studies.",
     citations: [pmid("12374906", "Khavinson (2002) — Peptides and Ageing, Neuro Endocrinol Lett")],
@@ -935,7 +934,6 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 120,
     halfLifeLabel: "~2 h",
     route: "subcutaneous",
-    citationQuality: "proxy",
     pkContext:
       "Documented plasma half-life of approximately 2 hours following subcutaneous administration in human pharmacokinetic studies; peak plasma concentrations observed within 1–2 hours of SC injection. Thymosin alpha-1 (thymalfasin) undergoes proteolytic clearance without accumulation.",
     citations: [pmid("11381492", "Ancell et al. (2001) — Thymosin alpha-1 pharmacological review, Am J Health Syst Pharm")],
@@ -971,6 +969,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
       halfLifeMax: 180,
       halfLifeLabel: "~1–3 h (SC estimate)",
       citations: [],
+      citationQuality: "estimated",
       note: "No compound-specific IM or SC pharmacokinetics citation was identified. A dedicated search of PubMed-indexed literature (query: '(cerebrolysin) AND (intramuscular OR subcutaneous) AND (pharmacokinetics OR absorption OR bioavailability)') and Eastern European / Russian-language sources returned no published IM or SC absorption or half-life study for Cerebrolysin. The SC half-life estimate of ~1–3 h is extrapolated from the expected subcutaneous depot absorption kinetics of a low-molecular-weight neuropeptide and amino acid mixture, by analogy with similar peptide hydrolysate preparations. The IV citation (PMID 29172008, Stepanichev et al.) has been removed from the SC altRoute citations as it does not characterise SC or IM absorption and its inclusion was not appropriate as a SC pharmacokinetics reference.",
     },
   },
@@ -1015,7 +1014,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 60,
     halfLifeLabel: "~30–60 min",
     route: "subcutaneous",
-    citationQuality: "proxy",
+    citationQuality: "estimated",
     pkContext:
       "Plasma half-life is estimated at approximately 30–60 minutes following subcutaneous administration based on the expected rapid proteolytic clearance of this C-terminal alpha-MSH-derived tripeptide (Lys-Pro-Val) in plasma; pharmacological anti-inflammatory activity of KPV has been documented in murine inflammatory bowel disease models.",
     citations: [pmid("18092346", "Kannengiesser et al. (2008) — Melanocortin-derived tripeptide KPV anti-inflammatory activity in IBD models, Inflamm Bowel Dis")],
@@ -1052,7 +1051,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 120,
     halfLifeLabel: "~1–2 h",
     route: "subcutaneous",
-    citationQuality: "proxy",
+    citationQuality: "estimated",
     pkContext:
       "Plasma half-life is estimated at approximately 1–2 hours following subcutaneous administration, consistent with the expected proteolytic clearance of low-molecular-weight thymic polypeptides; thymalin (polypeptide thymus extract) contains multiple short peptide constituents whose rapid clearance is well-established in published thymic peptide pharmacology literature.",
     citations: [pmid("9637345", "Morozov & Khavinson (1997) — Natural and synthetic thymic peptides as therapeutics for immune dysfunction, Int J Immunopharmacol")],
@@ -1065,7 +1064,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 480,
     halfLifeLabel: "~4–8 h (local)",
     route: "topical",
-    citationQuality: "proxy",
+    citationQuality: "estimated",
     pkContext:
       "Reported local tissue retention of approximately 4–8 hours following topical application in published pharmacokinetic studies of this acetylated octapeptide (acetyl glutamyl octapeptide-3); transdermal penetration and local epidermal half-life have been characterized for short acetylated neuropeptide fragments in skin pharmacokinetic models.",
     citations: [pmid("25497319", "Hoppel et al. (2015) — Topical delivery of acetyl hexapeptide-8 from different emulsions: influence of composition and internal structure, Eur J Pharm Sci")],
@@ -1089,6 +1088,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
       halfLifeMax: 30,
       halfLifeLabel: "~10–30 min (SC estimate)",
       citations: [],
+      citationQuality: "estimated",
       note: "No compound-specific SC pharmacokinetics citation was identified. The IV citation (PMID 26052837, Zhou et al. 2015) was removed from the SC altRoute citations because it characterises intravenous N-acetylcysteine and indirect IV glutathione pharmacokinetics and redox status — it does not measure subcutaneous absorption, depot-phase kinetics, or SC bioavailability for glutathione. A dedicated PubMed search ('(glutathione) AND (subcutaneous OR \"SC\") AND (pharmacokinetics OR absorption OR bioavailability OR \"half-life\")') returned no compound-specific SC PK study. The ~10–30 min SC estimate is extrapolated from small-peptide subcutaneous absorption models by analogy with similarly short tripeptides.",
     },
   },
@@ -1379,6 +1379,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 30,
     halfLifeLabel: "~10–30 min (inhaled-route proxy; SC estimate)",
     route: "subcutaneous",
+    citationQuality: "estimated",
     pkContext:
       "Vasoactive intestinal peptide (VIP) plasma half-life is extremely short — approximately 1–2 minutes intravenously — owing to rapid enzymatic degradation by endopeptidases in plasma and vascular endothelium. No compound-specific subcutaneous pharmacokinetics study for VIP has been published. The closest documented non-IV data come from two human studies in which VIP was administered by aerosol inhalation: Barnes PJ and Dixon CM (Am Rev Respir Dis, 1984) administered 100 µg VIP by inhalation to asthmatic subjects and observed bronchodilatory protection against histamine challenge with no measurable cardiovascular effects — documenting that systemic bioavailability after pulmonary inhalation is absorption-limited relative to IV administration; Bundgaard et al. (Eur J Respir Dis Suppl, 1983) similarly administered inhaled VIP as pretreatment in exercise-induced asthma. The absence of cardiovascular effects in both inhaled studies (tachycardia and flushing are prominent after IV VIP) indicates that pulmonary mucosal absorption rate-limits systemic VIP entry and substantially prolongs apparent plasma residence relative to the 1–2 min IV half-life. Subcutaneous administration creates an analogous depot-limited entry profile through slow transcapillary absorption; the effective plasma presence window is therefore estimated at approximately 10–30 minutes by analogy with the inhaled route data. The intrinsic plasma elimination rate of VIP (~1–2 min) is unchanged regardless of administration route.",
     citations: [
@@ -1584,6 +1585,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
       halfLifeMax: 240,
       halfLifeLabel: "~2–4 h (SC estimate, ascorbic acid component)",
       citations: [],
+      citationQuality: "estimated",
       note: "No compound-specific SC pharmacokinetics citation was identified for ascorbic acid administered subcutaneously. The two previously listed citations were removed: PMID 11340098 (Graumlich et al. 1997, 'Pharmacokinetics of ascorbic acid in healthy adults after intravenous and oral dosing') is the same as the parent IV entry citation and characterises IV and oral routes only; PMID 15068981 (Padayatty et al. 2004, 'Vitamin C pharmacokinetics: implications for oral and intravenous use') similarly covers only oral and intravenous use. Neither study measures subcutaneous depot absorption or SC bioavailability for ascorbic acid. A dedicated PubMed search ('(ascorbic acid OR vitamin C) AND (subcutaneous) AND (pharmacokinetics OR absorption OR bioavailability OR \"half-life\")') identified no primary SC PK study applicable to the Lipo-C context. The ~2–4 h SC estimate is extrapolated from the known relationship between IV clearance half-life and the absorption-phase delay typical of subcutaneous small-molecule injections.",
     },
   },
