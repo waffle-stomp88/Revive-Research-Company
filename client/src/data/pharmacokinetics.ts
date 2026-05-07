@@ -51,6 +51,51 @@
  *    half-life (~5–15 min IV), and volume of distribution during controlled
  *    intravenous infusion. This brings the vasopressin entry to the same
  *    citation standard as gonadorelin, kisspeptin-10, and kisspeptin-54.
+ *
+ * Citation audit (May 2026, systematic pass): All remaining entries audited
+ * for proxy citations. Findings and dispositions:
+ *
+ *  Entries where no compound-specific PK study exists — citation is to the
+ *  best available indexed study (pharmacological, biological, or review) with
+ *  a note field documenting this explicitly:
+ *  - MOTS-C: Lee et al. 2015 (Cell Metab, PMID 25738459) is the discovery /
+ *    metabolic-biology paper for MOTS-c, not a pharmacokinetics study. Half-life
+ *    estimate is from mitochondrial-derived peptide class data. Note added.
+ *  - Epithalon: Khavinson (2002, Neuro Endocrinol Lett, PMID 12374906) is a
+ *    review article on peptides and ageing, not a primary PK study. Note added.
+ *  - Thymosin Alpha-1: Ancell et al. (2001, Am J Health Syst Pharm,
+ *    PMID 11381492) is a pharmacological review, not a primary plasma PK study.
+ *    Note added.
+ *  - Thymalin: Morozov & Khavinson (1997, Int J Immunopharmacol, PMID 9637345)
+ *    is a therapeutics review of thymic peptides, not a primary PK study. Note
+ *    added.
+ *  - KPV: Kannengiesser et al. (2008, Inflamm Bowel Dis, PMID 18092346) is an
+ *    efficacy / anti-inflammatory study, not a pharmacokinetics study. Note
+ *    added.
+ *  - Gonadorelin: Conn & Crowley (1991, N Engl J Med, PMID 2467720) is a
+ *    clinical review of GnRH and analogues; it is a review article that contains
+ *    PK data but is not a primary pharmacokinetics study. Note updated to flag
+ *    this explicitly.
+ *  - Oxytocin: Gimpl & Fahrenholz (2001, Physiol Rev, PMID 11445820) is a
+ *    receptor-system review, not a primary plasma PK study. Note updated.
+ *
+ *  Off-compound proxy (analogous molecule, not the named compound):
+ *  - SNAP-8: Hoppel et al. (2015, Eur J Pharm Sci, PMID 25497319) characterises
+ *    acetyl hexapeptide-8 (Argireline / Snap-8 precursor), not SNAP-8 itself
+ *    (acetyl glutamyl octapeptide-3 / Leuphasyl). The two molecules are related
+ *    neuropeptide mimetics but are structurally distinct. No compound-specific
+ *    SNAP-8 PK study was found; the citation is retained as the closest indexed
+ *    analogue. Note added.
+ *
+ *  Composite stack entry updated:
+ *  - bpc-157-tb-500-stack: TB-500 component citation updated from the old
+ *    thymosin alpha-1 PLGA proxy (Liu et al. 2010, PMID 20650309) to the direct
+ *    TB-500 doping-control study (Ho et al. 2012, PMID 23084823), consistent
+ *    with the individual TB-500 entry upgrade performed in April 2026.
+ *
+ *  No additional proxy upgrades were possible: for all remaining proxy-cited
+ *  entries, no compound-specific English-indexed PubMed pharmacokinetics study
+ *  was identified during this audit pass.
  */
 
 export type CitationType = "PMID" | "DOI";
@@ -184,6 +229,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Reported plasma half-life of approximately 1–2 hours following subcutaneous administration in published mitochondrial-derived peptide pharmacokinetic studies.",
     citations: [pmid("25738459", "Lee et al. (2015) — MOTS-c mitochondrial-derived peptide promotes metabolic homeostasis, Cell Metab")],
+    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed; Lee et al. (2015, Cell Metab) is the primary MOTS-c discovery and metabolic-biology paper, not a pharmacokinetics study. Half-life estimate is based on mitochondrial-derived peptide class clearance data.",
   },
   {
     slug: "rr-a3",
@@ -263,6 +309,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Reported plasma half-life of approximately 1–2 hours following subcutaneous administration in published tetrapeptide pharmacokinetic studies.",
     citations: [pmid("12374906", "Khavinson (2002) — Peptides and Ageing, Neuro Endocrinol Lett")],
+    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed; Khavinson (2002) is a review article on peptides and ageing, not a primary pharmacokinetics study. Half-life estimate is based on published tetrapeptide proteolytic clearance data for analogous short peptides.",
   },
   {
     slug: "tesamorelin",
@@ -285,6 +332,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Documented plasma half-life of approximately 2 hours following subcutaneous administration in human pharmacokinetic studies; peak plasma concentrations observed within 1–2 hours of SC injection. Thymosin alpha-1 (thymalfasin) undergoes proteolytic clearance without accumulation.",
     citations: [pmid("11381492", "Ancell et al. (2001) — Thymosin alpha-1 pharmacological review, Am J Health Syst Pharm")],
+    note: "No compound-specific primary plasma pharmacokinetics study was identified in PubMed; Ancell et al. (2001) is a pharmacological review article, not a primary PK study. The review summarises published clinical experience including PK parameters. Half-life estimate is consistent with the ~2 h value cited across thymalfasin clinical pharmacology literature.",
   },
   {
     slug: "ll-37",
@@ -360,6 +408,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Plasma half-life is estimated at approximately 30–60 minutes following subcutaneous administration based on the expected rapid proteolytic clearance of this C-terminal alpha-MSH-derived tripeptide (Lys-Pro-Val) in plasma; pharmacological anti-inflammatory activity of KPV has been documented in murine inflammatory bowel disease models.",
     citations: [pmid("18092346", "Kannengiesser et al. (2008) — Melanocortin-derived tripeptide KPV anti-inflammatory activity in IBD models, Inflamm Bowel Dis")],
+    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed; Kannengiesser et al. (2008) is a pharmacological efficacy study of KPV anti-inflammatory activity, not a pharmacokinetics study. Half-life estimate is based on rapid proteolytic clearance expected for this short C-terminal alpha-MSH-derived tripeptide in plasma.",
   },
   {
     slug: "ss-31",
@@ -395,6 +444,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Plasma half-life is estimated at approximately 1–2 hours following subcutaneous administration, consistent with the expected proteolytic clearance of low-molecular-weight thymic polypeptides; thymalin (polypeptide thymus extract) contains multiple short peptide constituents whose rapid clearance is well-established in published thymic peptide pharmacology literature.",
     citations: [pmid("9637345", "Morozov & Khavinson (1997) — Natural and synthetic thymic peptides as therapeutics for immune dysfunction, Int J Immunopharmacol")],
+    note: "No compound-specific primary plasma pharmacokinetics study was identified in PubMed; Morozov & Khavinson (1997) is a therapeutics review of natural and synthetic thymic peptides, not a primary pharmacokinetics study. Half-life estimate is based on the expected proteolytic clearance of short thymic polypeptide constituents in plasma.",
   },
   {
     slug: "snap-8",
@@ -406,6 +456,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Reported local tissue retention of approximately 4–8 hours following topical application in published pharmacokinetic studies of this acetylated octapeptide (acetyl glutamyl octapeptide-3); transdermal penetration and local epidermal half-life have been characterized for short acetylated neuropeptide fragments in skin pharmacokinetic models.",
     citations: [pmid("25497319", "Hoppel et al. (2015) — Topical delivery of acetyl hexapeptide-8 from different emulsions: influence of composition and internal structure, Eur J Pharm Sci")],
+    note: "Off-compound proxy citation: Hoppel et al. (2015) characterises acetyl hexapeptide-8 (Argireline, the hexapeptide Ac-Glu-Glu-Met-Gln-Arg-Arg-NH2), not SNAP-8 itself (acetyl glutamyl octapeptide-3 / Leuphasyl, Ac-Glu-Glu-Met-Gln-Arg-Arg-NH-CH(CO-Phe-Arg)-NH2). The two molecules are structurally related neuropeptide mimetics (both inhibit SNARE-complex assembly) but are distinct compounds. No compound-specific SNAP-8 pharmacokinetics study was identified in PubMed; the cited Argireline topical delivery study is retained as the closest indexed analogue for topical neuropeptide mimetic skin penetration data.",
   },
   {
     slug: "glutathione",
@@ -561,7 +612,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Plasma half-life of native GnRH (gonadorelin) following subcutaneous administration is approximately 5–10 minutes, reflecting a brief subcutaneous absorption phase before systemic entry; rapid enzymatic degradation by endopeptidases and dipeptidylpeptidase IV then clears the decapeptide from plasma within minutes. Pulsatile administration is used in research to mimic physiological hypothalamic secretion.",
     citations: [pmid("2467720", "Conn & Crowley (1991) — Gonadotropin-releasing hormone and its analogues, N Engl J Med")],
-    note: "IV route variant: following intravenous bolus administration, native GnRH has a plasma half-life of approximately 2–4 minutes in published clinical pharmacokinetic studies (Conn & Crowley 1991, PMID 2467720), compared with the ~5–10 minute effective window seen after subcutaneous injection where the absorption phase delays peak systemic entry. The markedly shorter IV half-life reflects direct exposure to plasma endopeptidases — principally dipeptidylpeptidase IV and endopeptidase 24.11 (neprilysin) — without any subcutaneous absorption delay. This SC/IV contrast is clinically significant for pulsatile GnRH research protocols: subcutaneous administration provides a slightly broader plasma pulse window than IV bolus delivery.",
+    note: "Proxy citation: Conn & Crowley (1991, N Engl J Med, PMID 2467720) is a clinical review article on GnRH and its analogues, not a primary plasma pharmacokinetics study. It is cited because it is the most widely indexed reference reporting GnRH plasma half-life parameters and enzymatic degradation routes; no dedicated English-indexed PubMed primary PK study for subcutaneous gonadorelin (native GnRH) was identified. IV route variant: following intravenous bolus administration, native GnRH has a plasma half-life of approximately 2–4 minutes in published clinical pharmacokinetic studies (Conn & Crowley 1991, PMID 2467720), compared with the ~5–10 minute effective window seen after subcutaneous injection where the absorption phase delays peak systemic entry. The markedly shorter IV half-life reflects direct exposure to plasma endopeptidases — principally dipeptidylpeptidase IV and endopeptidase 24.11 (neprilysin) — without any subcutaneous absorption delay. This SC/IV contrast is clinically significant for pulsatile GnRH research protocols: subcutaneous administration provides a slightly broader plasma pulse window than IV bolus delivery.",
   },
   {
     slug: "triptorelin",
@@ -735,7 +786,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Plasma half-life of oxytocin following subcutaneous administration is approximately 3–5 minutes in published pharmacokinetic studies; the nonapeptide undergoes rapid enzymatic degradation by plasma oxytocinase (leucyl-cystinyl aminopeptidase, LNPEP) and vasopressinase in plasma and peripheral tissues. The subcutaneous absorption phase provides a slightly extended effective window compared with intravenous bolus delivery.",
     citations: [pmid("11445820", "Gimpl & Fahrenholz (2001) — The oxytocin receptor system — structure, function, and regulation, Physiol Rev")],
-    note: "IV route variant: following intravenous bolus administration, oxytocin has a plasma half-life of approximately 1–5 minutes in published clinical pharmacokinetic studies (Gimpl & Fahrenholz 2001, PMID 11445820), with the lower end of that range (~1–3 min) documented for rapid IV bolus injection and the upper end reflecting slower IV infusion kinetics. The markedly shorter IV elimination half-life compared with subcutaneous reflects direct systemic entry and immediate exposure to plasma oxytocinase without any absorption-phase delay. IV oxytocin reaches steady-state plasma concentrations within approximately 30–40 minutes of the start of a constant-rate IV infusion, consistent with a 1–5 minute plasma half-life.",
+    note: "Proxy citation: Gimpl & Fahrenholz (2001, Physiol Rev, PMID 11445820) is a comprehensive receptor-system review of oxytocin structure, function, and regulation, not a primary plasma pharmacokinetics study. It is cited because no dedicated primary English-indexed PubMed pharmacokinetics study for subcutaneous oxytocin administration was identified; the review summarises published PK parameters from clinical oxytocinase-degradation literature. IV route variant: following intravenous bolus administration, oxytocin has a plasma half-life of approximately 1–5 minutes in published clinical pharmacokinetic studies (Gimpl & Fahrenholz 2001, PMID 11445820), with the lower end of that range (~1–3 min) documented for rapid IV bolus injection and the upper end reflecting slower IV infusion kinetics. The markedly shorter IV elimination half-life compared with subcutaneous reflects direct systemic entry and immediate exposure to plasma oxytocinase without any absorption-phase delay. IV oxytocin reaches steady-state plasma concentrations within approximately 30–40 minutes of the start of a constant-rate IV infusion, consistent with a 1–5 minute plasma half-life.",
   },
   {
     slug: "vasopressin",
@@ -925,9 +976,9 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
       "This research stack combines BPC-157 (~4 h plasma half-life following SC administration) and TB-500 (thymosin beta-4 class, estimated >7 days tissue retention). The composite pharmacokinetic profile spans from the rapid plasma clearance of BPC-157 to the extended tissue retention of the thymosin beta-4 component, yielding a broad regenerative activity window.",
     citations: [
       pmid("36588717", "He et al. (2022) — Pharmacokinetics of BPC-157 in rats and dogs, Front Pharmacol"),
-      pmid("20650309", "Liu et al. (2010) — Thymosin peptide pharmacokinetics in PLGA formulations, Int J Pharm"),
+      pmid("23084823", "Ho et al. (2012) — Doping control analysis of TB-500 (Ac-LKKTETQ) in equine urine and plasma by LC-MS, J Chromatogr A"),
     ],
-    note: "Composite PK profile. BPC-157 half-life is documented; TB-500/thymosin beta-4 half-life is estimated from thymosin-class peptide pharmacokinetic data. No primary pharmacokinetic literature exists for this combination.",
+    note: "Composite PK profile. BPC-157 half-life is documented in He et al. (2022). TB-500 half-life is estimated from plasma characterisation data in the direct TB-500 doping-control study (Ho et al. 2012, PMID 23084823); this citation replaces the earlier thymosin alpha-1 PLGA proxy (Liu et al. 2010, PMID 20650309) that was used before the individual TB-500 entry was upgraded. No primary pharmacokinetic literature exists for this combination.",
   },
 ];
 
