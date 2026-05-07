@@ -966,10 +966,10 @@ export default function PkCatalog() {
           </div>
 
           {/* RUO disclaimer */}
-          <div className="flex gap-2 items-start rounded-md bg-amber-500/5 border border-amber-500/20 px-3 py-2.5 mb-6">
-            <AlertTriangle className="h-4 w-4 text-amber-500/60 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-foreground/65 leading-relaxed">
-              <span className="text-amber-500/80 font-medium">Research use only.</span>{" "}
+          <div className="ruo-flash flex gap-2 items-start rounded-md border px-3 py-2.5 mb-6">
+            <AlertTriangle className="h-4 w-4 text-white flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-white font-bold leading-relaxed">
+              <span className="uppercase tracking-wide">Research use only.</span>{" "}
               Pharmacokinetic data is drawn from published scientific literature and presented for
               informational purposes. We do not recommend, suggest, or endorse any specific dosage,
               administration protocol, or use of these compounds in humans or animals.

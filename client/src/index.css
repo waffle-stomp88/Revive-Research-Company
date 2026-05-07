@@ -460,6 +460,24 @@
     animation: ruo-pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
+  /* RUO Compliance Flash — alternates red fill ↔ dark for high-visibility warning */
+  @keyframes ruo-flash {
+    0%, 100% {
+      background-color: rgba(220, 38, 38, 0.85);
+      border-color: rgba(220, 38, 38, 1);
+      box-shadow: 0 0 18px rgba(220, 38, 38, 0.6);
+    }
+    50% {
+      background-color: rgba(30, 5, 5, 0.95);
+      border-color: rgba(220, 38, 38, 0.5);
+      box-shadow: 0 0 6px rgba(220, 38, 38, 0.2);
+    }
+  }
+
+  .ruo-flash {
+    animation: ruo-flash 1.1s ease-in-out infinite;
+  }
+
   /* Sale of the Week Red Glow Pulse - Subtle effect */
   @keyframes sale-glow-pulse {
     0%, 100% {
