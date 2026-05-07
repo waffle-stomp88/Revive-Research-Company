@@ -610,6 +610,50 @@
  *   not added in this pass pending PMID verification. The entry retains empty
  *   citations; the note documents this confirmed-null result with the search
  *   strategy.
+ *
+ * altRoute audit (May 2026): Complete enumeration of all altRoute entries
+ *
+ *   Scope: every object in PEPTIDE_HALF_LIVES that carries an `altRoute`
+ *   property. Objective: verify that all altRoute entries with empty citation
+ *   arrays carry an explicit `citationQuality: "estimated"` override and a
+ *   null-search note, and that no uncited estimated windows were silently
+ *   present without documentation.
+ *
+ *   Five altRoute objects exist in the dataset:
+ *
+ *   1. Cerebrolysin — SC altRoute (~1–3 h)
+ *      citations: [] (empty); citationQuality: "estimated" ✓; null-search
+ *      note present ✓ (PubMed + eLIBRARY.ru + CyberLeninka + EVER SmPC;
+ *      confirmed null in prior audit passes).
+ *
+ *   2. Glutathione — SC altRoute (~10–30 min)
+ *      citations: [] (empty); citationQuality: "estimated" ✓; null-search
+ *      note present ✓ (PubMed SC-specific query; IV citation removed; prior
+ *      audit confirmed null).
+ *
+ *   3. Kisspeptin-54 — IV altRoute (~10–20 min)
+ *      citations: [PMID 16278289 — Dhillo et al. 2005, J Clin Endocrinol
+ *      Metab] ✓; no citationQuality override needed (derives to "primary");
+ *      IV-only study correctly assigned to IV altRoute exclusively following
+ *      citation-reuse correction in May 2026 audit.
+ *
+ *   4. VIP — IV altRoute (~1–2 min)
+ *      citations: [PMID 7175453 — Domschke et al. 1979, Gut;
+ *      PMID 6139572 — Morice et al. 1983, Lancet] ✓; no citationQuality
+ *      override needed; both citations are primary IV pharmacokinetics studies
+ *      correctly assigned to the IV altRoute exclusively following citation
+ *      corrections in May 2026 audit.
+ *
+ *   5. Lipo-C — SC altRoute (~2–4 h)
+ *      citations: [] (empty); citationQuality: "estimated" ✓; null-search
+ *      note present ✓ (two previously listed IV/oral citations removed in
+ *      May 2026 audit; dedicated PubMed SC search confirmed null).
+ *
+ *   Result: No uncited estimated windows found without documentation. All
+ *   three empty-citation altRoutes (Cerebrolysin, Glutathione, Lipo-C) carry
+ *   citationQuality: "estimated" and null-search notes from prior audit
+ *   passes. Both cited IV altRoutes (Kisspeptin-54, VIP) have appropriate
+ *   primary citations. No code changes required; audit is complete.
  */
 
 export type CitationType = "PMID" | "DOI";
