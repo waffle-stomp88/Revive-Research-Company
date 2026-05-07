@@ -376,6 +376,8 @@ export interface Citation {
 
 export interface AltRouteHalfLife {
   route: string;
+  halfLifeMin?: number;
+  halfLifeMax?: number;
   halfLifeLabel: string;
   citations: Citation[];
   note?: string;
@@ -630,6 +632,8 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     note: "No compound-specific plasma pharmacokinetics study was identified in PubMed; citation is to a published cerebrolysin pharmacological study. SC route half-life is an estimate based on the expected delayed systemic entry of the low-molecular-weight neuropeptide and amino acid mixture following subcutaneous depot absorption; no compound-specific PubMed-indexed SC pharmacokinetics study for Cerebrolysin was identified. Multiple dedicated citation searches were conducted targeting IM and SC Cerebrolysin absorption studies: (1) PubMed query '(cerebrolysin) AND (intramuscular OR subcutaneous OR \"IM\" OR \"SC\") AND (pharmacokinetics OR absorption OR bioavailability OR \"half-life\")'; (2) eLIBRARY.ru (Russian Science Citation Index) searched using the Cyrillic query 'Церебролизин фармакокинетика внутримышечно' — no relevant IM or SC pharmacokinetics articles identified (access to individual full-text records requires registration); (3) CyberLeninka searched using the same Cyrillic query — multiple Cerebrolysin clinical articles found, none containing IM or SC bioavailability or half-life data; (4) EVER Neuro Pharma official prescribing information (SmPC, confirmed via rlsnet.ru Russian drug registry, April 2026) — the pharmacokinetics section of the official SmPC explicitly states that 'the complex composition of Cerebrolysin®, the active fraction of which consists of a balanced and stable mixture of biologically active oligopeptides with a total polyfunctional action, does not allow ordinary pharmacokinetic analysis of individual components.' No IM or SC PK data appears in the official dossier. Confirmed null result across all searched sources.",
     altRoute: {
       route: "subcutaneous",
+      halfLifeMin: 60,
+      halfLifeMax: 180,
       halfLifeLabel: "~1–3 h (SC estimate)",
       citations: [],
       note: "No compound-specific IM or SC pharmacokinetics citation was identified. A dedicated search of PubMed-indexed literature (query: '(cerebrolysin) AND (intramuscular OR subcutaneous) AND (pharmacokinetics OR absorption OR bioavailability)') and Eastern European / Russian-language sources returned no published IM or SC absorption or half-life study for Cerebrolysin. The SC half-life estimate of ~1–3 h is extrapolated from the expected subcutaneous depot absorption kinetics of a low-molecular-weight neuropeptide and amino acid mixture, by analogy with similar peptide hydrolysate preparations. The IV citation (PMID 29172008, Stepanichev et al.) has been removed from the SC altRoute citations as it does not characterise SC or IM absorption and its inclusion was not appropriate as a SC pharmacokinetics reference.",
@@ -742,6 +746,8 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     note: "SC route half-life is an estimate based on published small-peptide subcutaneous absorption models; no compound-specific PubMed-indexed SC pharmacokinetics study for glutathione was identified during citation audit (April 2026).",
     altRoute: {
       route: "subcutaneous",
+      halfLifeMin: 10,
+      halfLifeMax: 30,
       halfLifeLabel: "~10–30 min (SC estimate)",
       citations: [],
       note: "No compound-specific SC pharmacokinetics citation was identified. The IV citation (PMID 26052837, Zhou et al. 2015) was removed from the SC altRoute citations because it characterises intravenous N-acetylcysteine and indirect IV glutathione pharmacokinetics and redox status — it does not measure subcutaneous absorption, depot-phase kinetics, or SC bioavailability for glutathione. A dedicated PubMed search ('(glutathione) AND (subcutaneous OR \"SC\") AND (pharmacokinetics OR absorption OR bioavailability OR \"half-life\")') returned no compound-specific SC PK study. The ~10–30 min SC estimate is extrapolated from small-peptide subcutaneous absorption models by analogy with similarly short tripeptides.",
@@ -1039,6 +1045,8 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     note: "SC route half-life is an estimate based on published neuropeptide SC absorption models; no compound-specific PubMed-indexed SC pharmacokinetics study for VIP was identified during citation audit (May 2026). IV half-life (~1–2 min) is sourced from Domschke et al. (1979, PMID 7175453) who characterized plasma VIP pharmacokinetics during intravenous infusion; that citation is assigned exclusively to the IV altRoute citations array. The ~10–15-fold SC/IV difference reflects the dominant contribution of the subcutaneous absorption phase to the apparent SC half-life; the intrinsic plasma elimination rate of VIP is the same in both routes.",
     altRoute: {
       route: "intravenous",
+      halfLifeMin: 1,
+      halfLifeMax: 2,
       halfLifeLabel: "~1–2 min",
       citations: [pmid("7175453", "Domschke et al. (1979) — Vasoactive intestinal peptide in plasma — pharmacokinetics and clinical significance, Gut")],
     },
@@ -1220,6 +1228,8 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     note: "Cited half-life reflects the primary ascorbic acid component following IV administration. Other Lipo-C constituents have distinct pharmacokinetic profiles. SC route half-life is an estimate for the ascorbic acid component; no compound-specific PubMed-indexed SC pharmacokinetics study for ascorbic acid was identified (see altRoute.note). The SC estimate extrapolates from the known IV clearance kinetics and the additional absorption-phase delay typical of subcutaneous small-molecule injection.",
     altRoute: {
       route: "subcutaneous",
+      halfLifeMin: 120,
+      halfLifeMax: 240,
       halfLifeLabel: "~2–4 h (SC estimate, ascorbic acid component)",
       citations: [],
       note: "No compound-specific SC pharmacokinetics citation was identified for ascorbic acid administered subcutaneously. The two previously listed citations were removed: PMID 11340098 (Graumlich et al. 1997, 'Pharmacokinetics of ascorbic acid in healthy adults after intravenous and oral dosing') is the same as the parent IV entry citation and characterises IV and oral routes only; PMID 15068981 (Padayatty et al. 2004, 'Vitamin C pharmacokinetics: implications for oral and intravenous use') similarly covers only oral and intravenous use. Neither study measures subcutaneous depot absorption or SC bioavailability for ascorbic acid. A dedicated PubMed search ('(ascorbic acid OR vitamin C) AND (subcutaneous) AND (pharmacokinetics OR absorption OR bioavailability OR \"half-life\")') identified no primary SC PK study applicable to the Lipo-C context. The ~2–4 h SC estimate is extrapolated from the known relationship between IV clearance half-life and the absorption-phase delay typical of subcutaneous small-molecule injections.",

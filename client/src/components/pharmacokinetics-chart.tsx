@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { motion } from "framer-motion";
-import { Lock, Clock, Info, ExternalLink } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Lock, Clock, Info, ExternalLink, ArrowLeftRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -15,6 +15,19 @@ export interface StackPeptide {
 }
 
 const ROUTE_COLOR = "#ff2d8b";
+
+function getEffectivePk(pk: HalfLifeEntry, active: 'primary' | 'alt'): HalfLifeEntry {
+  if (active === 'alt' && pk.altRoute && pk.altRoute.halfLifeMin !== undefined) {
+    return {
+      ...pk,
+      halfLifeMin: pk.altRoute.halfLifeMin,
+      halfLifeMax: pk.altRoute.halfLifeMax,
+      halfLifeLabel: pk.altRoute.halfLifeLabel,
+      route: pk.altRoute.route,
+    };
+  }
+  return pk;
+}
 
 function routeAbbrev(route: string): string {
   const r = route.toLowerCase();
@@ -149,6 +162,7 @@ function AnimatedStat({ label, value, color, delay }: { label: string; value: st
 export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPeptide[]; stackId: string }) {
   const [selectedRange, setSelectedRange] = useState<number | null>(() => readStoredZoom(stackId));
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const [routeOverrides, setRouteOverrides] = useState<Record<string, 'primary' | 'alt'>>({});
   const [pinnedIdx, setPinnedIdx] = useState<number | null>(() => {
     const storedName = readStoredPin(stackId);
     if (storedName === null) return null;
@@ -174,6 +188,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
     setSelectedRange(readStoredZoom(stackId));
     setPinnedIdx(null);
     writeStoredPin(stackId, null);
+    setRouteOverrides({});
   }, [peptideKey, stackId]);
 
   useEffect(() => {
@@ -195,11 +210,29 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
     return () => window.removeEventListener('scroll', dismiss);
   }, []);
 
-  const entries = peptides.map((p, i) => ({
-    peptide: p,
-    pk: getHalfLifeByName(p.name),
-    color: PK_CURVE_COLORS[i % PK_CURVE_COLORS.length],
-  }));
+  const toggleRouteOverride = useCallback((name: string) => {
+    setRouteOverrides(prev => {
+      const current = prev[name] ?? 'primary';
+      return { ...prev, [name]: current === 'primary' ? 'alt' : 'primary' };
+    });
+    setSelectedRange(null);
+    writeStoredZoom(stackId, null);
+  }, [stackId]);
+
+  const entries = peptides.map((p, i) => {
+    const basePk = getHalfLifeByName(p.name);
+    const activeRoute = basePk?.altRoute && basePk.altRoute.halfLifeMin !== undefined
+      ? (routeOverrides[p.name] ?? 'primary')
+      : 'primary';
+    const pk = basePk ? getEffectivePk(basePk, activeRoute) : undefined;
+    return {
+      peptide: p,
+      pk,
+      basePk,
+      activeRoute,
+      color: PK_CURVE_COLORS[i % PK_CURVE_COLORS.length],
+    };
+  });
 
   const pksWithData = entries.map(e => e.pk).filter((pk): pk is HalfLifeEntry => pk !== undefined);
   const { xMaxMin: autoXMaxMin, shortFocus } = computeXMax(pksWithData);
@@ -213,7 +246,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
     return { frac: f, label: useHours ? (val < 10 ? val.toFixed(1) : Math.round(val).toString()) : Math.round(val).toString() };
   });
 
-  const curves = entries.map(({ peptide, pk, color }) => {
+  const curves = entries.map(({ peptide, pk, basePk, activeRoute, color }) => {
     if (!pk) return null;
     const mid = pkMidpoint(pk);
     const pts = buildPKCurve(mid, xMaxMin, CHART);
@@ -237,7 +270,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
     const ivPts = ivMid !== null ? buildPKCurve(ivMid, xMaxMin, CHART) : null;
     const ivCurveD = ivPts ? ptsToD(ivPts) : null;
     const ivHalfLifeXFrac = ivMid !== null && ivMid <= xMaxMin ? ivMid / xMaxMin : null;
-    return { peptide, pk, color, pts, isExtended, extendsNote, halfLifeXFrac, lastY, curveD: ptsToD(pts), areaD: ptsToAreaD(pts), tmaxSvgX, tmaxSvgY, showTmaxMarker, ivCurveD, ivHalfLifeXFrac };
+    return { peptide, pk, basePk, activeRoute, color, pts, isExtended, extendsNote, halfLifeXFrac, lastY, curveD: ptsToD(pts), areaD: ptsToAreaD(pts), tmaxSvgX, tmaxSvgY, showTmaxMarker, ivCurveD, ivHalfLifeXFrac };
   });
 
   const definedPks = pksWithData;
@@ -513,15 +546,34 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
             const tmaxLabel = tmaxMin < 60
               ? `~${Math.round(tmaxMin)} min`
               : `~${parseFloat((tmaxMin / 60).toFixed(1))} h`;
+            const hasAlt = !!(c.basePk?.altRoute && c.basePk.altRoute.halfLifeMin !== undefined);
+            const isAlt = c.activeRoute === 'alt';
             return (
               <div className="hidden md:flex flex-col gap-3 justify-center px-3 py-3 shrink-0 border-r border-white/5 w-24" data-testid="pk-stats-bar">
                 {[
-                  { label: "Plasma t½", value: c.pk.halfLifeLabel, delay: 0.1, color: c.color },
+                  { label: `${routeAbbrev(c.pk.route)} t½`, value: c.pk.halfLifeLabel, delay: 0.1, color: c.color },
                   { label: "Tmax", value: tmaxLabel, delay: 0.3, color: c.color },
                   { label: "Route", value: routeAbbrev(c.pk.route), delay: 0.5, color: ROUTE_COLOR },
                 ].map(s => (
                   <AnimatedStat key={s.label} label={s.label} value={s.value} color={s.color} delay={s.delay} />
                 ))}
+                {hasAlt && (
+                  <button
+                    className="mt-1 flex items-center justify-center gap-1 rounded text-[9px] font-medium px-1.5 py-1 transition-colors"
+                    style={{
+                      backgroundColor: isAlt ? `${c.color}20` : "rgba(255,255,255,0.06)",
+                      border: `1px solid ${isAlt ? c.color + "50" : "rgba(255,255,255,0.12)"}`,
+                      color: isAlt ? c.color : "rgba(255,255,255,0.5)",
+                    }}
+                    onClick={() => toggleRouteOverride(c.peptide.name)}
+                    data-testid={`btn-route-toggle-stats-${toTestSlug(c.peptide.name)}`}
+                    aria-pressed={isAlt}
+                    title={isAlt ? `Switch back to ${routeAbbrev(c.basePk!.route)} (primary)` : `Compare ${routeAbbrev(c.basePk!.altRoute!.route)} estimate`}
+                  >
+                    <ArrowLeftRight className="h-2.5 w-2.5 flex-shrink-0" />
+                    <span>{isAlt ? routeAbbrev(c.basePk!.altRoute!.route) : routeAbbrev(c.basePk!.route)} / {isAlt ? routeAbbrev(c.basePk!.route) : routeAbbrev(c.basePk!.altRoute!.route)}</span>
+                  </button>
+                )}
               </div>
             );
           })()}
@@ -1041,6 +1093,13 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
             const isDimmed = effectiveIdx !== null && !isActive;
 
             if (isSingleCompound) {
+              const hasAltToggle = !!(c.basePk?.altRoute && c.basePk.altRoute.halfLifeMin !== undefined);
+              const isAltActive = c.activeRoute === 'alt';
+              const primaryRouteAbbrev = c.basePk ? routeAbbrev(c.basePk.route) : routeAbbrev(c.pk.route);
+              const altRouteAbbrev = c.basePk?.altRoute ? routeAbbrev(c.basePk.altRoute.route) : "";
+              const activeCitations = isAltActive && c.basePk?.altRoute
+                ? c.basePk.altRoute.citations
+                : c.pk.citations;
               return (
                 <div
                   key={c.peptide.name}
@@ -1060,38 +1119,63 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                     >
                       {routeLabel(c.pk.route)}
                     </span>
+                    {hasAltToggle && (
+                      <button
+                        className="inline-flex items-center gap-1 rounded text-[10px] font-medium px-2 py-0.5 transition-colors"
+                        style={{
+                          backgroundColor: isAltActive ? `${c.color}20` : "rgba(255,255,255,0.06)",
+                          border: `1px solid ${isAltActive ? c.color + "50" : "rgba(255,255,255,0.15)"}`,
+                          color: isAltActive ? c.color : "rgba(255,255,255,0.55)",
+                        }}
+                        onClick={() => toggleRouteOverride(c.peptide.name)}
+                        data-testid={`btn-route-toggle-${toTestSlug(c.peptide.name)}`}
+                        aria-pressed={isAltActive}
+                        title={isAltActive
+                          ? `Switch back to ${primaryRouteAbbrev} (primary route)`
+                          : `View ${altRouteAbbrev} estimate`}
+                      >
+                        <ArrowLeftRight className="h-2.5 w-2.5 flex-shrink-0" />
+                        <span>{primaryRouteAbbrev} / {altRouteAbbrev}</span>
+                      </button>
+                    )}
                   </div>
                   <div className="flex flex-col pl-[18px]">
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <span className="flex items-center gap-1 text-xs font-medium cursor-help w-fit py-1" style={{ color: c.color }} data-testid={`chip-halflife-${toTestSlug(c.peptide.name)}`}>
                           <Clock className="h-3 w-3 flex-shrink-0" />
-                          {c.pk.altRoute ? <>{routeAbbrev(c.pk.route)} t½ {c.pk.halfLifeLabel}</> : <>Plasma t½ {c.pk.halfLifeLabel}</>}
+                          <AnimatePresence mode="wait">
+                            <motion.span
+                              key={c.pk.halfLifeLabel}
+                              initial={{ opacity: 0, y: -4 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: 4 }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              {routeAbbrev(c.pk.route)} t½ {c.pk.halfLifeLabel}
+                            </motion.span>
+                          </AnimatePresence>
                         </span>
                       </TooltipTrigger>
                       <TooltipContent side="top" className="max-w-[220px] text-xs leading-relaxed">
                         The half-life (t½) is how long it takes plasma concentration to fall to half its peak value — a measure of how quickly the compound clears the bloodstream.
+                        {hasAltToggle && <> Use the {primaryRouteAbbrev}/{altRouteAbbrev} toggle to compare route estimates.</>}
                       </TooltipContent>
                     </Tooltip>
-                    {c.pk.altRoute && (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <span
-                            className="flex items-center gap-1 text-xs font-medium cursor-help w-fit py-1 opacity-70"
-                            style={{ color: c.color }}
-                            data-testid={`chip-halflife-altroute-${toTestSlug(c.peptide.name)}`}
-                          >
-                            <Clock className="h-3 w-3 flex-shrink-0" />
-                            {routeAbbrev(c.pk.altRoute.route)} t½ {c.pk.altRoute.halfLifeLabel}
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent side="top" className="max-w-[220px] text-xs leading-relaxed">
-                          Half-life via {routeLabel(c.pk.altRoute.route).toLowerCase()} route.
-                        </TooltipContent>
-                      </Tooltip>
+                    {hasAltToggle && isAltActive && c.basePk?.note && (
+                      <motion.p
+                        className="text-[11px] text-muted-foreground/65 italic pb-1"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.25 }}
+                        data-testid="text-altroute-note"
+                      >
+                        {c.basePk.note}
+                      </motion.p>
                     )}
                     <div className="flex flex-wrap gap-3 border-t border-border/20 pt-2 mt-1">
-                      {c.pk.citations.map((cit, j) => (
+                      {activeCitations.map((cit, j) => (
                         <a key={j} href={cit.url} target="_blank" rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 text-xs text-[#21d8ff] hover:underline opacity-70 hover:opacity-100"
                           onClick={e => e.stopPropagation()}
@@ -1100,34 +1184,22 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                           {cit.label}
                         </a>
                       ))}
-                      {c.pk.altRoute && (
-                        c.pk.altRoute.citations.length > 0
-                          ? c.pk.altRoute.citations.map((cit, j) => (
-                            <a key={`alt-${j}`} href={cit.url} target="_blank" rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 text-xs text-[#21d8ff] hover:underline opacity-70 hover:opacity-100"
+                      {isAltActive && c.basePk?.altRoute && c.basePk.altRoute.citations.length === 0 && c.basePk.altRoute.note && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span
+                              className="inline-flex items-center gap-1 text-xs text-muted-foreground/60 italic cursor-help"
                               onClick={e => e.stopPropagation()}
+                              data-testid={`label-no-citation-altroute-${toTestSlug(c.peptide.name)}`}
                             >
-                              <ExternalLink className="h-2.5 w-2.5" />
-                              {cit.label}
-                            </a>
-                          ))
-                          : c.pk.altRoute.note && (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span
-                                  className="inline-flex items-center gap-1 text-xs text-muted-foreground/60 italic cursor-help"
-                                  onClick={e => e.stopPropagation()}
-                                  data-testid={`label-no-citation-altroute-${toTestSlug(c.peptide.name)}`}
-                                >
-                                  <Info className="h-2.5 w-2.5 flex-shrink-0" />
-                                  No route-specific citation found — see note
-                                </span>
-                              </TooltipTrigger>
-                              <TooltipContent side="top" className="max-w-[300px] text-xs leading-relaxed">
-                                {c.pk.altRoute.note}
-                              </TooltipContent>
-                            </Tooltip>
-                          )
+                              <Info className="h-2.5 w-2.5 flex-shrink-0" />
+                              No route-specific citation found — see note
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-[300px] text-xs leading-relaxed">
+                            {c.basePk.altRoute.note}
+                          </TooltipContent>
+                        </Tooltip>
                       )}
                     </div>
                     {c.pk.ivHalfLifeLabel && (() => {
@@ -1255,6 +1327,28 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                       <p className="text-xs">{routeLabel(c.pk.route)}</p>
                     </TooltipContent>
                   </Tooltip>
+                  {c.basePk?.altRoute && c.basePk.altRoute.halfLifeMin !== undefined && (() => {
+                    const isAltActive = c.activeRoute === 'alt';
+                    const primaryAbbrev = routeAbbrev(c.basePk.route);
+                    const altAbbrev = routeAbbrev(c.basePk.altRoute.route);
+                    return (
+                      <button
+                        className="inline-flex items-center gap-1 rounded text-[10px] font-medium px-1.5 py-0.5 transition-colors"
+                        style={{
+                          backgroundColor: isAltActive ? `${c.color}18` : "rgba(255,255,255,0.05)",
+                          border: `1px solid ${isAltActive ? c.color + "45" : "rgba(255,255,255,0.12)"}`,
+                          color: isAltActive ? c.color : "rgba(255,255,255,0.45)",
+                        }}
+                        onClick={e => { e.stopPropagation(); toggleRouteOverride(c.peptide.name); }}
+                        data-testid={`btn-route-toggle-${toTestSlug(c.peptide.name)}`}
+                        aria-pressed={isAltActive}
+                        title={isAltActive ? `Switch back to ${primaryAbbrev}` : `Compare ${altAbbrev} estimate`}
+                      >
+                        <ArrowLeftRight className="h-2.5 w-2.5 flex-shrink-0" />
+                        <span>{primaryAbbrev}/{altAbbrev}</span>
+                      </button>
+                    );
+                  })()}
                   <Popover>
                     <PopoverTrigger asChild>
                       <button
