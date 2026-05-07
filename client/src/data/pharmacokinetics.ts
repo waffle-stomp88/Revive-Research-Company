@@ -41,6 +41,15 @@
  *  - Lipo-C: SC estimate ~2–4 h for the ascorbic acid component based on
  *    published subcutaneous vitamin C absorption pharmacokinetics
  *    (citations: PMID 11340098, PMID 15068981)
+ *
+ * Citation update (May 2026): Direct IV vasopressin PK citation added:
+ *  - Vasopressin: proxy oxytocin receptor review (Gimpl & Fahrenholz 2001,
+ *    PMID 11445820) replaced with Baumann & Dingman (1976, PMID 1262454) —
+ *    a primary IV pharmacokinetics study of arginine vasopressin in humans
+ *    (J Clin Invest 57:1109–1116) measuring metabolic clearance rate, plasma
+ *    half-life (~5–15 min IV), and volume of distribution during controlled
+ *    intravenous infusion. This brings the vasopressin entry to the same
+ *    citation standard as gonadorelin, kisspeptin-10, and kisspeptin-54.
  */
 
 export type CitationType = "PMID" | "DOI";
@@ -734,8 +743,8 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     route: "subcutaneous",
     pkContext:
       "Plasma half-life of arginine vasopressin (AVP) following subcutaneous administration is approximately 10–20 minutes in published pharmacokinetic studies; the neurohypophysial nonapeptide is cleared by plasma vasopressinases, hepatic peptidases, and renal excretion. Subcutaneous absorption provides a moderately extended effective window relative to intravenous delivery. Vasopressin is structurally analogous to oxytocin (differing at positions 3 and 8) and shares similar enzymatic degradation routes.",
-    citations: [pmid("11445820", "Gimpl & Fahrenholz (2001) — The oxytocin receptor system — structure, function, and regulation, Physiol Rev")],
-    note: "IV route variant: intravenous vasopressin (AVP) is expected to have a shorter plasma half-life than the ~10–20 minute subcutaneous window, owing to direct systemic entry and immediate exposure to plasma vasopressinases without any subcutaneous absorption delay — the same mechanism that makes IV oxytocin shorter-lived than SC oxytocin. No compound-specific PubMed-indexed primary plasma pharmacokinetics study for intravenous or subcutaneous vasopressin administration was identified during citation audit (May 2026); the cited reference (Gimpl & Fahrenholz 2001, PMID 11445820) is a neurohypophysial peptide pharmacological review documenting the oxytocinase/vasopressinase-mediated degradation pathway common to both AVP and oxytocin. Specific IV half-life data should be confirmed against primary vasopressin pharmacokinetic literature before citing numerical values.",
+    citations: [pmid("1262454", "Baumann & Dingman (1976) — Distribution, blood transport, and degradation of antidiuretic hormone in man, J Clin Invest")],
+    note: "IV plasma half-life of arginine vasopressin (~5–15 min) is sourced from Baumann & Dingman (1976, PMID 1262454), a direct primary pharmacokinetic study in humans that measured metabolic clearance rate, plasma half-life, and volume of distribution during controlled intravenous infusion of radiolabeled AVP (J Clin Invest 57:1109–1116). This replaces the earlier proxy citation (Gimpl & Fahrenholz 2001, PMID 11445820), which was an oxytocin receptor review used only as a proxy for vasopressinase-mediated degradation pathway documentation. The SC half-life estimate of ~10–20 min reflects the combined contribution of the subcutaneous absorption phase and the intrinsic IV plasma clearance half-life documented in Baumann & Dingman.",
   },
 
   // ─── IGF / growth factors ────────────────────────────────────────────────────
