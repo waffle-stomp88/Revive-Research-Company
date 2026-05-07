@@ -37,7 +37,8 @@
  * SC altRoute additions (May 2026): Dual-route rows added for IV-primary entries
  * with clinically relevant SC use:
  *  - Cerebrolysin: SC estimate ~1–3 h based on neuropeptide mixture absorption
- *    models; no compound-specific SC PK study identified (citation: PMID 29172008)
+ *    models; no compound-specific SC PK study identified; dedicated IM/SC search
+ *    returned null result (see altRoute.note); no citation assigned to SC altRoute
  *  - Lipo-C: SC estimate ~2–4 h for the ascorbic acid component based on
  *    published subcutaneous vitamin C absorption pharmacokinetics
  *    (citations: PMID 11340098, PMID 15068981)
@@ -65,6 +66,7 @@ export interface AltRouteHalfLife {
   route: string;
   halfLifeLabel: string;
   citations: Citation[];
+  note?: string;
 }
 
 export interface HalfLifeEntry {
@@ -306,11 +308,12 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Plasma elimination half-life is estimated at approximately 30–60 minutes following intravenous administration based on the rapid plasma clearance expected for low-molecular-weight neuropeptides and amino acids; Cerebrolysin is a standardized mixture of such constituents. No compound-specific PubMed-indexed plasma pharmacokinetics study for Cerebrolysin was identified.",
     citations: [pmid("29172008", "Stepanichev et al. (2017) — Effects of cerebrolysin on nerve growth factor system in the aging rat brain, Restor Neurol Neurosci")],
-    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed; citation is to a published cerebrolysin pharmacological study. SC route half-life is an estimate based on the expected delayed systemic entry of the low-molecular-weight neuropeptide and amino acid mixture following subcutaneous depot absorption; no compound-specific PubMed-indexed SC pharmacokinetics study for Cerebrolysin was identified.",
+    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed; citation is to a published cerebrolysin pharmacological study. SC route half-life is an estimate based on the expected delayed systemic entry of the low-molecular-weight neuropeptide and amino acid mixture following subcutaneous depot absorption; no compound-specific PubMed-indexed SC pharmacokinetics study for Cerebrolysin was identified. A dedicated citation search was conducted targeting IM and SC Cerebrolysin absorption studies, including Eastern European and Russian clinical practice literature. No IM or SC bioavailability or pharmacokinetics study was found in PubMed-indexed sources. Recommended search strategy for future audits: PubMed query '(cerebrolysin) AND (intramuscular OR subcutaneous OR \"IM\" OR \"SC\") AND (pharmacokinetics OR absorption OR bioavailability OR \"half-life\")'; supplementary search in eLIBRARY.ru (Russian Science Citation Index) and CyberLeninka using the Cyrillic term 'Церебролизин' combined with 'фармакокинетика' (pharmacokinetics) or 'внутримышечно' (intramuscular).",
     altRoute: {
       route: "subcutaneous",
       halfLifeLabel: "~1–3 h (SC estimate)",
-      citations: [pmid("29172008", "Stepanichev et al. (2017) — Effects of cerebrolysin on nerve growth factor system in the aging rat brain, Restor Neurol Neurosci")],
+      citations: [],
+      note: "No compound-specific IM or SC pharmacokinetics citation was identified. A dedicated search of PubMed-indexed literature (query: '(cerebrolysin) AND (intramuscular OR subcutaneous) AND (pharmacokinetics OR absorption OR bioavailability)') and Eastern European / Russian-language sources returned no published IM or SC absorption or half-life study for Cerebrolysin. The SC half-life estimate of ~1–3 h is extrapolated from the expected subcutaneous depot absorption kinetics of a low-molecular-weight neuropeptide and amino acid mixture, by analogy with similar peptide hydrolysate preparations. The IV citation (PMID 29172008, Stepanichev et al.) has been removed from the SC altRoute citations as it does not characterise SC or IM absorption and its inclusion was not appropriate as a SC pharmacokinetics reference.",
     },
   },
   {
