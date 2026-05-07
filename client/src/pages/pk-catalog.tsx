@@ -100,7 +100,10 @@ function hasRouteContrast(entry: HalfLifeEntry): boolean {
   return hasDualRoute(entry) || hasIvOverlay(entry);
 }
 
-function EstimateBadge({ label, testId }: { label: string; testId?: string }) {
+function EstimateBadge({ label, shortNote, testId }: { label: string; shortNote?: string; testId?: string }) {
+  const tooltipText = shortNote
+    ? (shortNote.endsWith(".") ? shortNote : shortNote + ".")
+    : getEstimateTooltip(label);
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -114,7 +117,7 @@ function EstimateBadge({ label, testId }: { label: string; testId?: string }) {
         </span>
       </TooltipTrigger>
       <TooltipContent side="top" className="max-w-xs text-xs leading-relaxed">
-        {getEstimateTooltip(label)}
+        {tooltipText}
       </TooltipContent>
     </Tooltip>
   );
@@ -125,11 +128,13 @@ function DualRouteBar({
   primaryRoute,
   alt,
   altRoute,
+  altShortNote,
 }: {
   primary: string;
   primaryRoute: string;
   alt: string;
   altRoute: string;
+  altShortNote?: string;
 }) {
   const pc = routeColor(primaryRoute);
   const ac = routeColor(altRoute);
@@ -155,7 +160,7 @@ function DualRouteBar({
         </div>
         <div className={`flex items-center gap-1 text-sm font-bold tabular-nums leading-tight ${ac.text}`}>
           <span>{formatPKLabel(alt)}</span>
-          {altEst && <EstimateBadge label={alt} />}
+          {altEst && <EstimateBadge label={alt} shortNote={altShortNote} />}
         </div>
       </div>
     </div>
@@ -276,6 +281,7 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
             primaryRoute={entry.route}
             alt={entry.altRoute!.halfLifeLabel}
             altRoute={entry.altRoute!.route}
+            altShortNote={entry.altRoute!.shortNote}
           />
         )}
 

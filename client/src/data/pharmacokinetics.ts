@@ -853,6 +853,13 @@ export interface AltRouteHalfLife {
   citations: Citation[];
   pkContext?: string;
   note?: string;
+  /**
+   * Short, plain-language summary (≤ 2 sentences) for the Indirect Evidence
+   * badge popover. Preferred over first-sentence extraction from `note` when
+   * `citationQuality` resolves to "estimated". Mirrors the same field on
+   * HalfLifeEntry so altRoute popovers are as informative as main-entry ones.
+   */
+  shortNote?: string;
   citationQuality?: CitationQuality;
 }
 
@@ -1126,6 +1133,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
       halfLifeLabel: "~1–3 h (SC estimate)",
       citations: [],
       citationQuality: "estimated",
+      shortNote: "No SC pharmacokinetics study has been published for this neuropeptide mixture; extensive searches of PubMed, Russian-language databases, and the official prescribing information all confirmed a null result. The ~1–3 h window is inferred from expected depot absorption of similar peptide hydrolysate preparations.",
       pkContext:
         "The ~1–3 h subcutaneous half-life is extrapolated from the expected depot absorption kinetics of a low-molecular-weight neuropeptide and amino acid mixture by analogy with similar peptide hydrolysate preparations; no compound-specific subcutaneous pharmacokinetics study for Cerebrolysin has been identified, so this figure is an inference from indirect evidence, not a direct plasma measurement.",
       note: "No compound-specific IM or SC pharmacokinetics citation was identified. A dedicated search of PubMed-indexed literature (query: '(cerebrolysin) AND (intramuscular OR subcutaneous) AND (pharmacokinetics OR absorption OR bioavailability)') and Eastern European / Russian-language sources returned no published IM or SC absorption or half-life study for Cerebrolysin. The SC half-life estimate of ~1–3 h is extrapolated from the expected subcutaneous depot absorption kinetics of a low-molecular-weight neuropeptide and amino acid mixture, by analogy with similar peptide hydrolysate preparations. The IV citation (PMID 29172008, Stepanichev et al.) has been removed from the SC altRoute citations as it does not characterise SC or IM absorption and its inclusion was not appropriate as a SC pharmacokinetics reference.",
@@ -1247,6 +1255,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
       halfLifeLabel: "~10–30 min (SC estimate)",
       citations: [],
       citationQuality: "estimated",
+      shortNote: "No compound-specific SC pharmacokinetics study for glutathione has been identified; a dedicated PubMed search confirmed a null result and the previously listed IV citation was removed as it did not measure SC absorption. The ~10–30 min window is extrapolated from absorption models for similarly small tripeptides.",
       pkContext:
         "The ~10–30 min subcutaneous half-life is extrapolated from small-peptide subcutaneous absorption models by analogy with similarly short tripeptides; no compound-specific subcutaneous plasma pharmacokinetics study for glutathione has been identified, so this figure is an inference from indirect evidence, not a direct plasma measurement.",
       note: "No compound-specific SC pharmacokinetics citation was identified. The IV citation (PMID 26052837, Zhou et al. 2015) was removed from the SC altRoute citations because it characterises intravenous N-acetylcysteine and indirect IV glutathione pharmacokinetics and redox status — it does not measure subcutaneous absorption, depot-phase kinetics, or SC bioavailability for glutathione. A dedicated PubMed search ('(glutathione) AND (subcutaneous OR \"SC\") AND (pharmacokinetics OR absorption OR bioavailability OR \"half-life\")') returned no compound-specific SC PK study. The ~10–30 min SC estimate is extrapolated from small-peptide subcutaneous absorption models by analogy with similarly short tripeptides.",
@@ -1763,6 +1772,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
       halfLifeLabel: "~2–4 h (SC estimate, ascorbic acid component)",
       citations: [],
       citationQuality: "estimated",
+      shortNote: "No SC pharmacokinetics study for the ascorbic acid component of Lipo-C has been identified; two previously listed IV and oral citations were removed as neither measured SC depot absorption. The ~2–4 h window is extrapolated from the known IV clearance half-life with a typical subcutaneous absorption-phase delay added.",
       pkContext:
         "The ~2–4 h subcutaneous half-life estimate for the ascorbic acid component is extrapolated from the known intravenous clearance kinetics with an added absorption-phase delay typical of subcutaneous small-molecule injection; no compound-specific subcutaneous pharmacokinetics study for ascorbic acid has been identified, so this figure is an inference from indirect evidence, not a direct plasma measurement.",
       note: "No compound-specific SC pharmacokinetics citation was identified for ascorbic acid administered subcutaneously. The two previously listed citations were removed: PMID 9327438 (Graumlich et al. 1997, 'Pharmacokinetic model of ascorbic acid in healthy male volunteers during depletion and repletion', Pharm Res) is the same study as the parent IV entry citation and characterises IV/oral PK only; PMID 15068981 (Padayatty et al. 2004, 'Vitamin C pharmacokinetics: implications for oral and intravenous use') similarly covers only oral and intravenous use. Neither study measures subcutaneous depot absorption or SC bioavailability for ascorbic acid. A dedicated PubMed search ('(ascorbic acid OR vitamin C) AND (subcutaneous) AND (pharmacokinetics OR absorption OR bioavailability OR \"half-life\")') identified no primary SC PK study applicable to the Lipo-C context. The ~2–4 h SC estimate is extrapolated from the known relationship between IV clearance half-life and the absorption-phase delay typical of subcutaneous small-molecule injections. PMID correction note (May 2026): the parent IV citation was previously recorded as PMID 11340098 which resolves to Stahl et al. (2001, J Nutr — tomato paste UV erythema study), an unrelated paper; the correct Graumlich 1997 ascorbic acid PK paper is PMID 9327438 (Pharm Res), confirmed via NCBI eutils (note: the previous label stated 'Pharmacotherapy' but the actual journal is 'Pharm Res').",
