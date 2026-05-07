@@ -1067,6 +1067,51 @@ A proper COA comes from an independent, third-party laboratory - not the company
     takeaway: "Kisspeptin is a neuropeptide that controls the reproductive hormone cascade. It's the master switch that initiates puberty and regulates fertility, making it fundamental to reproductive biology research."
   },
 
+  "what-is-kisspeptin-54-peptide": {
+    icon: Heart,
+    iconColor: "#ec4899",
+    intro: `Kisspeptin-54 is the full-length version of a natural brain signal called kisspeptin. Your body actually makes several "sizes" of this signal — think of it like the same message written at different lengths. Kisspeptin-54 is the longest version, with 54 amino acids. Researchers study it to understand how the brain controls the body's reproductive hormone system, using it as a precise research tool that lets them trace the exact sequence of events from brain signal to hormone release.`,
+    sections: [
+      {
+        title: "The Kisspeptin Family — Different Lengths, Same Lock",
+        content: `Your body produces kisspeptin from a single gene, but enzymes in the body can clip it into shorter pieces. The result is a family of related signals:
+
+**Kisspeptin-54** — the full-length, intact version. It's the longest and has the slowest breakdown.
+
+**Kisspeptin-10** — a 10-amino-acid fragment clipped from the end of kisspeptin-54. It's the shortest active form and breaks down faster.
+
+**Kisspeptin-13 and -14** — intermediate lengths with properties between the two.
+
+Here's the key insight: all of these fragments share the same "business end" — the final 10 amino acids that fit into kisspeptin's receptor (called KISS1R). They all trigger the same receptor, like different-sized keys that all open the same lock. But because kisspeptin-54 is bigger, enzymes need longer to cut it apart, so it stays active in the body longer. This difference in how long each version lasts is one of the main reasons researchers study them separately.`
+      },
+      {
+        title: "How Kisspeptin-54 Fits Into the Hormonal Relay Race",
+        content: `Think of your reproductive hormone system like a relay race with several runners:
+
+**Runner 1 — Kisspeptin-54 neurons** - Kisspeptin-54 is released by specialized brain cells and acts as the very first signal in the chain. It fires a chemical message that says "reproductive system, wake up."
+
+**Runner 2 — GnRH neurons** - Kisspeptin-54 directly activates neurons that release GnRH (gonadotropin-releasing hormone). These neurons carry the baton to the next runner.
+
+**Runner 3 — The Pituitary** - GnRH tells the pituitary gland to release LH (luteinizing hormone) and FSH (follicle-stimulating hormone). These travel through the bloodstream.
+
+**Runner 4 — The Gonads** - LH and FSH reach the reproductive organs and trigger testosterone or estrogen production.
+
+Kisspeptin-54 is unique because it sits at the very beginning of this race. By giving researchers a tool to fire that first signal in a controlled way, it lets them observe everything that happens downstream — without needing to interfere at any other point in the chain.`
+      },
+      {
+        title: "Why Researchers Use Kisspeptin-54 Instead of Kisspeptin-10",
+        content: `Both kisspeptin-54 and kisspeptin-10 activate the same receptor, so why does the length matter to researchers?
+
+**Duration of Signal** - Kisspeptin-54 lasts about 28–35 minutes in the bloodstream (half-life). Kisspeptin-10 only lasts around 15–30 minutes. These aren't huge differences, but they change the shape of the downstream hormone response. Kisspeptin-54 produces a more prolonged, sustained rise in LH and FSH.
+
+**Studying Pulse Patterns** - The reproductive system normally works in pulses — brief waves of hormone release, not a steady stream. Because kisspeptin-54 lasts longer, it produces larger LH pulses with a higher total area under the curve. Researchers use this to study how pulse size and duration affect the system differently from pulse frequency.
+
+**Building Cascade Models** - Scientists often combine kisspeptin-54 with other compounds — like Gonadorelin (which works one step downstream) or Enclomiphene (which works on the feedback loop) — to map out each separate step in the hormonal relay race. Because each compound targets a different runner, combining them lets researchers isolate cause and effect at each point.`
+      }
+    ],
+    takeaway: "Kisspeptin-54 is the full-length version of the brain's reproductive hormone trigger signal. Researchers use it to study the very first step in the hormonal relay race — the signal that starts the chain leading to LH, FSH, and sex hormone production. Its longer duration compared to kisspeptin-10 makes it valuable for studying pulse dynamics and multi-step hormone cascade models."
+  },
+
   "what-is-pt-141-bremelanotide-peptide": {
     icon: Brain,
     iconColor: "#9d4edd",
