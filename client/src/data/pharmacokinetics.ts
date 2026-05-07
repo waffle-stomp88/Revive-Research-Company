@@ -779,16 +779,14 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
       "Plasma half-life of kisspeptin-54 (the full-length 54-amino-acid KISS1 gene product) is approximately 28–35 minutes following subcutaneous administration in published clinical pharmacokinetic studies; substantially longer than kisspeptin-10 (~15–30 min) owing to the larger molecular size and slower neprilysin-mediated cleavage of the intact 54-residue sequence. Kisspeptin-54 directly stimulates pulsatile GnRH secretion via KISS1R on hypothalamic GnRH neurons, with the pharmacokinetic profile documented in a randomized crossover comparison with kisspeptin-10 in healthy male volunteers. Intravenous bolus administration yields a markedly shorter plasma half-life of approximately 10–20 minutes, reflecting unimpeded systemic distribution and rapid neprilysin-mediated clearance without the absorption phase delay of subcutaneous injection; IV infusion data are reported in the clinical pharmacokinetic trials by Dhillo et al. (2005) and Chan et al. (2009).",
     citations: [
       pmid("24449855", "Jayasena et al. (2014) — Kisspeptin-54 and kisspeptin-10 compared for gonadotropin-stimulating activity in healthy men, J Clin Endocrinol Metab"),
-      pmid("16278289", "Dhillo et al. (2005) — Kisspeptin-54 stimulates the hypothalamic-pituitary gonadal axis in human males, J Clin Endocrinol Metab"),
       pmid("19237537", "Chan et al. (2009) — Kisspeptin-54 stimulates gonadotropin release most potently via a subcutaneous bolus route of administration with pharmacokinetic profiling, Eur J Endocrinol"),
     ],
-    note: "IV route variant: following intravenous bolus administration, plasma half-life is approximately 10–20 minutes (Dhillo et al. 2005, PMID 16278289; Chan et al. 2009, PMID 19237537), compared with ~28–35 minutes via the subcutaneous route. The shorter IV half-life reflects direct systemic entry and rapid neprilysin-mediated cleavage without a subcutaneous absorption phase.",
+    note: "IV route variant: following intravenous bolus administration, plasma half-life is approximately 10–20 minutes (Dhillo et al. 2005, PMID 16278289; Chan et al. 2009, PMID 19237537), compared with ~28–35 minutes via the subcutaneous route. The shorter IV half-life reflects direct systemic entry and rapid neprilysin-mediated cleavage without a subcutaneous absorption phase. Citation note: Dhillo et al. (2005, PMID 16278289) characterises IV administration only and is therefore assigned exclusively to the IV altRoute citations array. Chan et al. (2009, PMID 19237537) primarily documents the SC bolus PK profile and is assigned exclusively to the parent SC citations array; its IV comparison data are referenced here by note only.",
     altRoute: {
       route: "intravenous",
       halfLifeLabel: "~10–20 min",
       citations: [
         pmid("16278289", "Dhillo et al. (2005) — Kisspeptin-54 stimulates the hypothalamic-pituitary gonadal axis in human males, J Clin Endocrinol Metab"),
-        pmid("19237537", "Chan et al. (2009) — Kisspeptin-54 stimulates gonadotropin release most potently via a subcutaneous bolus route of administration with pharmacokinetic profiling, Eur J Endocrinol"),
       ],
     },
     ivHalfLifeMin: 10,
@@ -868,8 +866,8 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     route: "subcutaneous",
     pkContext:
       "Vasoactive intestinal peptide (VIP) plasma half-life is extremely short — approximately 1–2 minutes intravenously — owing to rapid enzymatic degradation by endopeptidases in plasma and vascular endothelium. Following subcutaneous administration, prolonged local absorption slows systemic entry; the effective plasma presence window is estimated at approximately 10–30 minutes. The IV half-life of 1–2 minutes is documented in published clinical pharmacokinetic studies measuring VIP clearance during continuous intravenous infusion.",
-    citations: [pmid("7175453", "Domschke et al. (1979) — Vasoactive intestinal peptide in plasma — pharmacokinetics and clinical significance, Gut")],
-    note: "SC route half-life is an estimate based on published neuropeptide SC absorption models; IV half-life (~1–2 min) is sourced from Domschke et al. (1979, PMID 7175453) who characterized plasma VIP pharmacokinetics during intravenous infusion. The ~10–15-fold SC/IV difference reflects the dominant contribution of the subcutaneous absorption phase to the apparent SC half-life; the intrinsic plasma elimination rate of VIP is the same in both routes.",
+    citations: [],
+    note: "SC route half-life is an estimate based on published neuropeptide SC absorption models; no compound-specific PubMed-indexed SC pharmacokinetics study for VIP was identified during citation audit (May 2026). IV half-life (~1–2 min) is sourced from Domschke et al. (1979, PMID 7175453) who characterized plasma VIP pharmacokinetics during intravenous infusion; that citation is assigned exclusively to the IV altRoute citations array. The ~10–15-fold SC/IV difference reflects the dominant contribution of the subcutaneous absorption phase to the apparent SC half-life; the intrinsic plasma elimination rate of VIP is the same in both routes.",
     altRoute: {
       route: "intravenous",
       halfLifeLabel: "~1–2 min",

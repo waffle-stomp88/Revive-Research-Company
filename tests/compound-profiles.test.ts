@@ -199,6 +199,51 @@ describe("pharmacokinetics — IV altRoute citations must not reuse parent IV ci
         : ""
     ).toHaveLength(0);
   });
+
+  // ─── Mirror case: SC-primary entries with an IV altRoute ─────────────────────
+  //
+  // The May 2026 audit reviewed kisspeptin-54 and VIP (both SC-primary entries
+  // that carry an IV altRoute) and found them clean.  This test prevents a
+  // future regression where an IV citation is accidentally copied into the
+  // SC-primary parent citations array and then re-cited inside the IV altRoute,
+  // or vice versa.
+  //
+  // Rule: for any entry whose top-level route is NOT "intravenous" and that
+  // carries an altRoute whose route IS "intravenous", no PMID in
+  // altRoute.citations may appear in the parent citations array.
+
+  const scPrimaryWithIvAltRoute = PEPTIDE_HALF_LIVES.filter(
+    (e) => e.route !== "intravenous" && e.altRoute?.route === "intravenous"
+  );
+
+  it("has at least one SC-primary entry with an IV altRoute (regression guard)", () => {
+    expect(scPrimaryWithIvAltRoute.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("no IV altRoute citation PMID duplicates its parent SC-primary entry's citation PMID", () => {
+    const violations: string[] = [];
+
+    for (const entry of scPrimaryWithIvAltRoute) {
+      const parentIds = new Set(entry.citations.map((c) => c.id));
+      const altCitations = entry.altRoute!.citations;
+
+      for (const altCitation of altCitations) {
+        if (parentIds.has(altCitation.id)) {
+          violations.push(
+            `[${entry.slug}] PMID ${altCitation.id} appears in both the parent SC citations and the IV altRoute citations — ` +
+              `this citation must belong to only one route block; remove it from the array where it does not characterise that administration route`
+          );
+        }
+      }
+    }
+
+    expect(
+      violations,
+      violations.length > 0
+        ? `Citation reuse detected in ${violations.length} SC-primary IV-altRoute entry/entries:\n${violations.join("\n")}`
+        : ""
+    ).toHaveLength(0);
+  });
 });
 
 // ─── 4. PK PROFILE SNAPSHOTS ─────────────────────────────────────────────────
