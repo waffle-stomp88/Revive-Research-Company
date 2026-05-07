@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lock, Clock, Info, ExternalLink, ArrowLeftRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { getHalfLifeByName, hasKineticMismatch, PK_VISIBLE_LOWER_RATIO, PK_VISIBLE_UPPER_RATIO, getCitationQuality } from "@/data/pharmacokinetics";
+import { getHalfLifeByName, hasKineticMismatch, PK_VISIBLE_LOWER_RATIO, PK_VISIBLE_UPPER_RATIO, getCitationQuality, computeCitationQualitySummary } from "@/data/pharmacokinetics";
 import type { HalfLifeEntry, CitationQuality } from "@/data/pharmacokinetics";
 import { isNonSCRoute, pkMidpoint, computeXMax, buildPKCurve, ptsToD } from "@/lib/pk-curve";
 import { readStoredZoom, writeStoredZoom } from "@/lib/zoom-storage";
@@ -260,6 +260,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
   const lastInteractionWasTouch = useRef(false);
 
   const isSingleCompound = peptides.length === 1;
+  const citationSummary = useMemo(() => computeCitationQualitySummary(), []);
 
   function handleRangeChange(value: number | null) {
     writeStoredZoom(stackId, value);
@@ -1311,7 +1312,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                           </a>
                         </span>
                       ))}
-                      {!isAltActive && c.basePk?.citationQuality === "estimated" && (
+                      {!isAltActive && c.basePk && getCitationQuality(c.basePk, "primary") !== "primary" && (
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span
@@ -1598,7 +1599,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                                 </details>
                               )
                           )}
-                          {c.basePk?.citationQuality === "estimated" && (
+                          {c.basePk && getCitationQuality(c.basePk, "primary") !== "primary" && (
                             <div
                               className="mt-2 flex items-start gap-1.5 p-1.5 rounded"
                               style={{ backgroundColor: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.22)" }}
@@ -1649,7 +1650,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                   )}
                 </div>
                 {/* Citations row — visible directly below each compound in the legend */}
-                {(c.pk.citations.length > 0 || (c.pk.altRoute && (c.pk.altRoute.citations.length > 0 || !!c.pk.altRoute.note)) || c.basePk?.citationQuality === "estimated") && (
+                {(c.pk.citations.length > 0 || (c.pk.altRoute && (c.pk.altRoute.citations.length > 0 || !!c.pk.altRoute.note)) || (c.basePk && getCitationQuality(c.basePk, "primary") !== "primary")) && (
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 pl-[18px]" onClick={e => e.stopPropagation()}>
                     {c.pk.citations.map((cit, j) => (
                       <span key={j} className="inline-flex items-center gap-1">
@@ -1670,7 +1671,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                         </a>
                       </span>
                     ))}
-                    {c.basePk?.citationQuality === "estimated" && (
+                    {c.basePk && getCitationQuality(c.basePk, "primary") !== "primary" && (
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <span
@@ -1780,6 +1781,101 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
             </div>
           </div>
           )}
+
+        {/* Citation quality summary — global dataset transparency footer */}
+        <div
+          className="mx-3 mb-3 mt-1 border-t border-white/5 pt-2.5"
+          data-testid="citation-quality-summary"
+        >
+          <Popover>
+            <PopoverTrigger asChild>
+              <button
+                className="w-full flex flex-wrap items-center gap-x-3 gap-y-1.5 group"
+                data-testid="button-citation-quality-summary"
+                aria-label="Dataset citation quality breakdown — click to learn more"
+              >
+                <span className="text-[10px] text-muted-foreground/40 uppercase tracking-widest shrink-0 group-hover:text-muted-foreground/60 transition-colors">
+                  Dataset quality
+                </span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {([
+                    { key: "primary", count: citationSummary.primary, label: "primary source" },
+                    { key: "class-proxy", count: citationSummary.classProxy, label: "class proxy" },
+                    { key: "estimated", count: citationSummary.estimated, label: "estimated" },
+                  ] as const).map(({ key, count, label }) => {
+                    const cfg = CITATION_QUALITY_CONFIG[key as CitationQuality];
+                    return (
+                      <span
+                        key={key}
+                        className="inline-flex items-center gap-1.5 text-[10px] font-medium"
+                        data-testid={`citation-summary-${key}`}
+                      >
+                        <span
+                          className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: cfg.color, boxShadow: `0 0 4px ${cfg.color}` }}
+                        />
+                        <span style={{ color: cfg.color }} className="tabular-nums font-semibold">{count}</span>
+                        <span className="text-muted-foreground/40">{label}</span>
+                      </span>
+                    );
+                  })}
+                  <span className="text-[10px] text-muted-foreground/25 tabular-nums">
+                    / {citationSummary.total} compounds
+                  </span>
+                </div>
+                <Info className="h-3 w-3 text-muted-foreground/25 group-hover:text-muted-foreground/50 transition-colors shrink-0 ml-auto" aria-hidden="true" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-4" side="top" align="start">
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm font-semibold mb-0.5">Dataset citation quality</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Across all {citationSummary.total} compounds in the PK database, {citationSummary.primary} have half-life values sourced directly from a compound-specific pharmacokinetics study.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  {([
+                    { key: "primary" as CitationQuality, count: citationSummary.primary },
+                    { key: "class-proxy" as CitationQuality, count: citationSummary.classProxy },
+                    { key: "estimated" as CitationQuality, count: citationSummary.estimated },
+                  ]).map(({ key, count }) => {
+                    const cfg = CITATION_QUALITY_CONFIG[key];
+                    const pct = Math.round((count / citationSummary.total) * 100);
+                    return (
+                      <div key={key} className="flex items-start gap-2">
+                        <span
+                          className="mt-0.5 shrink-0 text-[9px] font-semibold px-1.5 py-px rounded"
+                          style={{ color: cfg.color, backgroundColor: cfg.bg, border: `1px solid ${cfg.border}` }}
+                        >
+                          {cfg.label}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5 mb-0.5">
+                            <div className="flex-1 h-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
+                              <div
+                                className="h-full rounded-full"
+                                style={{ width: `${pct}%`, backgroundColor: cfg.color, opacity: 0.7 }}
+                              />
+                            </div>
+                            <span className="text-[10px] tabular-nums shrink-0" style={{ color: cfg.color }}>
+                              {count} <span className="text-muted-foreground/50">({pct}%)</span>
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-muted-foreground/70 leading-relaxed">{cfg.description}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <p className="text-[10px] text-muted-foreground/45 leading-relaxed border-t border-border/30 pt-2">
+                  Each compound is classified by its primary-route citation. Where no compound-specific pharmacokinetics study is indexed in PubMed, the best available proxy or class-level data is used and clearly labelled.
+                </p>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+
           </div>
           </div>
       </Card>
