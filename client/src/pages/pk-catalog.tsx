@@ -467,7 +467,7 @@ function CompoundCard({
           {/* PK context */}
           <p
             ref={pkContextRef}
-            className={`text-[11px] text-muted-foreground/45 leading-snug mt-3 ${pkExpanded ? "" : "line-clamp-2"}`}
+            className={`text-[11px] text-foreground/65 leading-snug mt-3 ${pkExpanded ? "" : "line-clamp-2"}`}
             data-testid={`text-pk-context-${entry.slug}`}
           >
             {(dual && entry.altRoute?.pkContext) ? entry.altRoute.pkContext : entry.pkContext}
@@ -476,7 +476,7 @@ function CompoundCard({
             <button
               type="button"
               onClick={() => setPkExpanded(false)}
-              className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 mt-1 text-left transition-colors"
+              className="text-[10px] text-muted-foreground/60 hover:text-foreground/70 mt-1 text-left transition-colors"
               data-testid={`button-collapse-context-${entry.slug}`}
             >
               Show less
@@ -491,7 +491,7 @@ function CompoundCard({
                   href={`/guides/what-is-${entry.slug}-peptide?from=pk-catalog`}
                   data-testid={`link-article-${entry.slug}`}
                 >
-                  <span className="text-[10px] text-[#21d8ff]/50 hover:text-[#21d8ff]/80 transition-colors cursor-pointer">
+                  <span className="text-[10px] text-[#21d8ff]/70 hover:text-[#21d8ff]/90 transition-colors cursor-pointer">
                     Read article →
                   </span>
                 </Link>
@@ -501,7 +501,7 @@ function CompoundCard({
                   href={sourceCitation.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors"
+                  className="text-[10px] text-muted-foreground/60 hover:text-foreground/70 transition-colors"
                   data-testid={`link-citation-${entry.slug}`}
                 >
                   Source ↗
@@ -958,7 +958,7 @@ export default function PkCatalog() {
                 Peptide Half-Life Catalog
               </h1>
             </div>
-            <p className="text-muted-foreground text-sm max-w-2xl">
+            <p className="text-foreground/70 text-sm max-w-2xl">
               Published pharmacokinetic half-life data for{" "}
               <span className="text-foreground font-medium">{CATALOG_ENTRIES.length} research compounds</span>.{" "}
               <span className="text-[#E7FB10]/80">{dualCount} compounds</span> have meaningful route-dependent
@@ -969,7 +969,7 @@ export default function PkCatalog() {
           {/* RUO disclaimer */}
           <div className="flex gap-2 items-start rounded-md bg-amber-500/5 border border-amber-500/20 px-3 py-2.5 mb-6">
             <AlertTriangle className="h-4 w-4 text-amber-500/60 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-sm text-foreground/65 leading-relaxed">
               <span className="text-amber-500/80 font-medium">Research use only.</span>{" "}
               Pharmacokinetic data is drawn from published scientific literature and presented for
               informational purposes. We do not recommend, suggest, or endorse any specific dosage,
@@ -980,7 +980,7 @@ export default function PkCatalog() {
           {/* PK info box */}
           <div className="flex gap-2 items-start rounded-md bg-[#21d8ff]/5 border border-[#21d8ff]/15 px-3 py-2.5 mb-6">
             <Info className="h-4 w-4 text-[#21d8ff]/60 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-sm text-foreground/65 leading-relaxed">
               <span className="text-[#21d8ff]/80 font-medium">About dual-route compounds.</span>{" "}
               Some compounds are studied via multiple administration routes (e.g. IV and SC). Route
               of administration affects the absorption phase, altering the apparent half-life
@@ -1243,7 +1243,7 @@ export default function PkCatalog() {
           )}
 
           {/* Bottom context */}
-          <div className="mt-12 border-t border-white/5 pt-8 text-xs text-muted-foreground/40 leading-relaxed space-y-2">
+          <div className="mt-12 border-t border-white/5 pt-8 text-xs text-foreground/50 leading-relaxed space-y-2">
             <p>
               Half-life values are sourced from PubMed-indexed pharmacokinetic studies. Where no
               compound-specific study was identified, values are estimated from structurally
