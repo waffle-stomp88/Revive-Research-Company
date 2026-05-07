@@ -100,6 +100,25 @@ function hasRouteContrast(entry: HalfLifeEntry): boolean {
   return hasDualRoute(entry) || hasIvOverlay(entry);
 }
 
+function EstimateBadge({ label, testId }: { label: string; testId?: string }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span
+          className="flex items-center gap-0.5 text-[10px] cursor-help leading-none"
+          style={{ color: "#f59e0b", opacity: 0.8 }}
+          data-testid={testId}
+        >
+          <Info className="h-3 w-3 flex-shrink-0" aria-hidden="true" />
+          {getEstimateShortLabel(label)}
+        </span>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="max-w-xs text-xs leading-relaxed">
+        {getEstimateTooltip(label)}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
 
 function DualRouteBar({
   primary,
@@ -124,22 +143,7 @@ function DualRouteBar({
         </div>
         <div className={`flex items-center gap-1 text-sm font-bold tabular-nums leading-tight ${pc.text}`}>
           <span>{formatPKLabel(primary)}</span>
-          {primaryEst && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span
-                  className="flex items-center gap-0.5 text-[10px] cursor-help leading-none"
-                  style={{ color: "#f59e0b", opacity: 0.8 }}
-                >
-                  <Info className="h-3 w-3 flex-shrink-0" aria-hidden="true" />
-                  {getEstimateShortLabel(primary)}
-                </span>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-xs text-xs">
-                {getEstimateTooltip(primary)}
-              </TooltipContent>
-            </Tooltip>
-          )}
+          {primaryEst && <EstimateBadge label={primary} />}
         </div>
       </div>
       <div className="flex items-center shrink-0">
@@ -151,22 +155,7 @@ function DualRouteBar({
         </div>
         <div className={`flex items-center gap-1 text-sm font-bold tabular-nums leading-tight ${ac.text}`}>
           <span>{formatPKLabel(alt)}</span>
-          {altEst && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span
-                  className="flex items-center gap-0.5 text-[10px] cursor-help leading-none"
-                  style={{ color: "#f59e0b", opacity: 0.8 }}
-                >
-                  <Info className="h-3 w-3 flex-shrink-0" aria-hidden="true" />
-                  {getEstimateShortLabel(alt)}
-                </span>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-xs text-xs">
-                {getEstimateTooltip(alt)}
-              </TooltipContent>
-            </Tooltip>
-          )}
+          {altEst && <EstimateBadge label={alt} />}
         </div>
       </div>
     </div>
@@ -262,21 +251,10 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
               {formatPKLabel(entry.halfLifeLabel)}
             </span>
             {isEstimate && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span
-                    className="flex items-center gap-0.5 text-[10px] cursor-help leading-none"
-                    style={{ color: "#f59e0b", opacity: 0.8 }}
-                    data-testid={`badge-estimate-${entry.slug}`}
-                  >
-                    <Info className="h-3 w-3 flex-shrink-0" aria-hidden="true" />
-                    {getEstimateShortLabel(entry.halfLifeLabel)}
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-xs text-xs leading-relaxed">
-                  {getEstimateTooltip(entry.halfLifeLabel)}
-                </TooltipContent>
-              </Tooltip>
+              <EstimateBadge
+                label={entry.halfLifeLabel}
+                testId={`badge-estimate-${entry.slug}`}
+              />
             )}
           </div>
         )}
