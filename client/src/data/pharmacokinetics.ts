@@ -387,8 +387,14 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeLabel: "~1–2 min (plasma)",
     route: "intravenous",
     pkContext:
-      "Plasma half-life of free reduced glutathione (GSH) following intravenous administration is estimated at approximately 1–2 minutes; plasma GSH is rapidly taken up by erythrocytes and peripheral tissues, with cellular GSH pools maintained through intracellular synthesis and the glutathione redox cycle. Intravenous N-acetylcysteine studies using stable isotope labeling confirm indirect GSH plasma kinetics on a similar timescale.",
+      "Plasma half-life of free reduced glutathione (GSH) following intravenous administration is estimated at approximately 1–2 minutes; plasma GSH is rapidly taken up by erythrocytes and peripheral tissues, with cellular GSH pools maintained through intracellular synthesis and the glutathione redox cycle. Intravenous N-acetylcysteine studies using stable isotope labeling confirm indirect GSH plasma kinetics on a similar timescale. Following subcutaneous administration, local absorption prolongs systemic entry; the effective plasma presence window for free GSH is estimated at approximately 10–30 minutes, though most GSH encountered systemically will still be rapidly sequestered by erythrocytes and tissues.",
     citations: [pmid("26052837", "Zhou et al. (2015) — Intravenous N-acetylcysteine and indirect glutathione pharmacokinetics and redox status, J Pharm Sci")],
+    note: "SC route half-life is an estimate based on published small-peptide subcutaneous absorption models; no compound-specific PubMed-indexed SC pharmacokinetics study for glutathione was identified during citation audit (April 2026).",
+    altRoute: {
+      route: "subcutaneous",
+      halfLifeLabel: "~10–30 min (SC estimate)",
+      citations: [pmid("26052837", "Zhou et al. (2015) — Intravenous N-acetylcysteine and indirect glutathione pharmacokinetics and redox status, J Pharm Sci")],
+    },
   },
   {
     slug: "nad-precursor",
@@ -638,9 +644,14 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeLabel: "~10–30 min (SC estimate)",
     route: "subcutaneous",
     pkContext:
-      "Vasoactive intestinal peptide (VIP) plasma half-life is extremely short — approximately 1–2 minutes intravenously — owing to rapid enzymatic degradation by endopeptidases in plasma and vascular endothelium. Following subcutaneous administration, prolonged local absorption slows systemic entry; the effective plasma presence window is estimated at approximately 10–30 minutes.",
+      "Vasoactive intestinal peptide (VIP) plasma half-life is extremely short — approximately 1–2 minutes intravenously — owing to rapid enzymatic degradation by endopeptidases in plasma and vascular endothelium. Following subcutaneous administration, prolonged local absorption slows systemic entry; the effective plasma presence window is estimated at approximately 10–30 minutes. The IV half-life of 1–2 minutes is documented in published clinical pharmacokinetic studies measuring VIP clearance during continuous intravenous infusion.",
     citations: [pmid("7175453", "Domschke et al. (1979) — Vasoactive intestinal peptide in plasma — pharmacokinetics and clinical significance, Gut")],
-    note: "Cited half-life data are from intravenous VIP pharmacokinetics; subcutaneous half-life is an estimate based on published neuropeptide SC absorption models.",
+    note: "SC route half-life is an estimate based on published neuropeptide SC absorption models; IV half-life (~1–2 min) is sourced from Domschke et al. (1979, PMID 7175453) who characterized plasma VIP pharmacokinetics during intravenous infusion.",
+    altRoute: {
+      route: "intravenous",
+      halfLifeLabel: "~1–2 min",
+      citations: [pmid("7175453", "Domschke et al. (1979) — Vasoactive intestinal peptide in plasma — pharmacokinetics and clinical significance, Gut")],
+    },
   },
   {
     slug: "pinealon",
