@@ -203,10 +203,12 @@ describe("pharmacokinetics — IV altRoute citations must not reuse parent IV ci
   // ─── Mirror case: SC-primary entries with an IV altRoute ─────────────────────
   //
   // The May 2026 audit reviewed kisspeptin-54 and VIP (both SC-primary entries
-  // that carry an IV altRoute) and found them clean.  This test prevents a
-  // future regression where an IV citation is accidentally copied into the
-  // SC-primary parent citations array and then re-cited inside the IV altRoute,
-  // or vice versa.
+  // that carry an IV altRoute) and found citation-reuse errors in both — PMIDs
+  // were duplicated between the parent SC citations array and the IV altRoute
+  // citations array.  Those errors were corrected by Task 518.  This test now
+  // guards against any future regression where an IV citation is accidentally
+  // copied into the SC-primary parent citations array and then re-cited inside
+  // the IV altRoute, or vice versa.
   //
   // Rule: for any entry whose top-level route is NOT "intravenous" and that
   // carries an altRoute whose route IS "intravenous", no PMID in
