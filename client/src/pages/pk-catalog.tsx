@@ -6,8 +6,8 @@ import {
   ArrowLeft,
   ArrowLeftRight,
   AlertTriangle,
+  ArrowUpDown,
   Clock,
-  Filter,
   Info,
   Search,
   SortAsc,
@@ -514,120 +514,132 @@ export default function PkCatalog() {
             </p>
           </div>
 
-          {/* Filters & search */}
-          <div className="flex flex-wrap gap-2 mb-6" data-testid="section-filters">
-            {/* Search */}
-            <div className="relative flex-1 min-w-[160px] max-w-xs">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/40 pointer-events-none" />
-              <Input
-                placeholder="Search compounds…"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-8 h-9 bg-white/5 border-white/10 text-sm"
-                data-testid="input-search-compound"
-              />
+          {/* ── Filters — two-row toolbar ─────────────────────────────── */}
+          <div className="mb-6 space-y-2" data-testid="section-filters">
+
+            {/* Row 1 — Search + result count + Sort */}
+            <div className="flex items-center gap-3">
+              {/* Search */}
+              <div className="relative w-56 shrink-0">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/40 pointer-events-none" />
+                <Input
+                  placeholder="Search compounds…"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-8 h-8 bg-white/5 border-white/10 text-xs"
+                  data-testid="input-search-compound"
+                />
+              </div>
+
+              {/* Result count */}
+              <span className="text-xs text-muted-foreground/40 tabular-nums" data-testid="text-result-count">
+                {filtered.length === CATALOG_ENTRIES.length
+                  ? `${CATALOG_ENTRIES.length} compounds`
+                  : `${filtered.length} / ${CATALOG_ENTRIES.length}`}
+              </span>
+
+              <div className="flex-1" />
+
+              {/* Sort */}
+              <div className="flex items-center gap-1.5">
+                <ArrowUpDown className="h-3 w-3 text-muted-foreground/30 shrink-0" />
+                {(["name", "half-life", "route"] as SortKey[]).map((key) => (
+                  <button
+                    key={key}
+                    onClick={() => toggleSort(key)}
+                    className={`inline-flex items-center gap-0.5 text-[11px] px-2 py-1 rounded border transition-colors ${
+                      sortKey === key
+                        ? "bg-white/10 text-foreground border-white/20"
+                        : "bg-transparent text-muted-foreground/60 border-white/8 hover:border-white/20 hover:text-muted-foreground"
+                    }`}
+                    data-testid={`button-sort-${key}`}
+                  >
+                    {key === "half-life" ? "t½" : key.charAt(0).toUpperCase() + key.slice(1)}
+                    {sortKey === key && <SortIcon className="h-2.5 w-2.5 ml-0.5" />}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* Dual route filter */}
-            <Button
-              variant="outline"
-              size="sm"
-              className={`gap-1.5 transition-colors ${
-                dualFilter === "dual-only"
-                  ? "border-[#E7FB10]/50 text-[#E7FB10] bg-[#E7FB10]/10"
-                  : "border-white/15 text-muted-foreground"
-              }`}
-              onClick={() =>
-                setDualFilter((f) => (f === "all" ? "dual-only" : "all"))
-              }
-              data-testid="button-filter-dual-route"
-            >
-              <ArrowLeftRight className="h-3.5 w-3.5" />
-              Dual Route Only
-              {dualFilter === "dual-only" && (
-                <Badge className="ml-0.5 bg-[#E7FB10]/20 text-[#E7FB10] text-[9px] px-1">
-                  {filtered.length}
-                </Badge>
-              )}
-            </Button>
+            {/* Row 2 — Filter chips */}
+            <div className="flex items-center gap-0 flex-wrap rounded-md border border-white/8 bg-white/[0.02] px-3 py-1.5">
 
-            {/* Route filter pills */}
-            <div className="flex items-center gap-1 flex-wrap">
-              <Filter className="h-3.5 w-3.5 text-muted-foreground/40 shrink-0" />
-              {(["all", ...routes] as (RouteFilter | string)[]).map((r) => {
-                const active = routeFilter === r;
-                const label = r === "all" ? "All Routes" : (ROUTE_ABBREV[r] ?? r);
-                const col = r !== "all" ? routeColor(r) : null;
-                return (
+              {/* Route group */}
+              <span className="text-[10px] text-muted-foreground/30 uppercase tracking-widest mr-2 shrink-0">Route</span>
+              <div className="flex items-center gap-1 flex-wrap">
+                {(["all", ...routes] as (RouteFilter | string)[]).map((r) => {
+                  const active = routeFilter === r;
+                  const label = r === "all" ? "All" : (ROUTE_ABBREV[r] ?? r);
+                  const col = r !== "all" ? routeColor(r) : null;
+                  return (
+                    <button
+                      key={r}
+                      onClick={() => setRouteFilter(r as RouteFilter)}
+                      style={active && col ? { backgroundColor: col.hex + "22", color: col.hex, borderColor: col.hex + "55" } : undefined}
+                      className={`text-[11px] px-2 py-0.5 rounded border transition-colors ${
+                        active && !col
+                          ? "bg-white/10 text-foreground border-white/20"
+                          : !active
+                          ? "bg-transparent text-muted-foreground/60 border-white/8 hover:border-white/20 hover:text-muted-foreground"
+                          : "border-transparent"
+                      }`}
+                      data-testid={`button-route-filter-${r}`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Divider */}
+              <div className="mx-3 h-4 w-px bg-white/10 shrink-0" />
+
+              {/* Duration group */}
+              <Clock className="h-3 w-3 text-muted-foreground/25 mr-1.5 shrink-0" />
+              <div className="flex items-center gap-1 flex-wrap">
+                {(
+                  [
+                    { key: "all",    label: "Any" },
+                    { key: "short",  label: "< 30 min" },
+                    { key: "medium", label: "30 min – 6 h" },
+                    { key: "long",   label: "> 6 h" },
+                  ] as const
+                ).map(({ key, label }) => (
                   <button
-                    key={r}
-                    onClick={() => setRouteFilter(r as RouteFilter)}
-                    className={`text-[11px] px-2 py-1 rounded border transition-colors ${
-                      active
-                        ? col
-                          ? `${col.bg} ${col.text} ${col.border}`
-                          : "bg-white/10 text-foreground border-white/20"
-                        : "bg-transparent text-muted-foreground border-white/10 hover:border-white/20"
+                    key={key}
+                    onClick={() => setDurationFilter(key)}
+                    className={`text-[11px] px-2 py-0.5 rounded border transition-colors ${
+                      durationFilter === key
+                        ? "bg-white/10 text-foreground border-white/20"
+                        : "bg-transparent text-muted-foreground/60 border-white/8 hover:border-white/20 hover:text-muted-foreground"
                     }`}
-                    data-testid={`button-route-filter-${r}`}
+                    data-testid={`button-duration-${key}`}
                   >
                     {label}
                   </button>
-                );
-              })}
-            </div>
+                ))}
+              </div>
 
-            {/* Duration filter pills */}
-            <div className="flex items-center gap-1 flex-wrap">
-              <Clock className="h-3.5 w-3.5 text-muted-foreground/40 shrink-0" />
-              {(
-                [
-                  { key: "all",    label: "Any length" },
-                  { key: "short",  label: "Short  <30m" },
-                  { key: "medium", label: "Medium  <6h" },
-                  { key: "long",   label: "Long  6h+" },
-                ] as const
-              ).map(({ key, label }) => (
-                <button
-                  key={key}
-                  onClick={() => setDurationFilter(key)}
-                  className={`text-[11px] px-2 py-1 rounded border transition-colors ${
-                    durationFilter === key
-                      ? "bg-white/10 text-foreground border-white/20"
-                      : "bg-transparent text-muted-foreground border-white/10 hover:border-white/20"
-                  }`}
-                  data-testid={`button-duration-${key}`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
+              {/* Divider */}
+              <div className="mx-3 h-4 w-px bg-white/10 shrink-0" />
 
-            {/* Sort controls */}
-            <div className="ml-auto flex items-center gap-1">
-              {(["name", "half-life", "route"] as SortKey[]).map((key) => (
-                <button
-                  key={key}
-                  onClick={() => toggleSort(key)}
-                  className={`text-[11px] px-2 py-1 rounded border transition-colors flex items-center gap-1 ${
-                    sortKey === key
-                      ? "bg-white/10 text-foreground border-white/20"
-                      : "bg-transparent text-muted-foreground border-white/10 hover:border-white/20"
-                  }`}
-                  data-testid={`button-sort-${key}`}
-                >
-                  {key === "half-life" ? "t½" : key.charAt(0).toUpperCase() + key.slice(1)}
-                  {sortKey === key && <SortIcon className="h-3 w-3" />}
-                </button>
-              ))}
+              {/* Dual Route toggle */}
+              <button
+                onClick={() => setDualFilter((f) => (f === "all" ? "dual-only" : "all"))}
+                className={`inline-flex items-center gap-1.5 text-[11px] px-2 py-0.5 rounded border transition-colors ${
+                  dualFilter === "dual-only"
+                    ? "bg-[#E7FB10]/10 text-[#E7FB10] border-[#E7FB10]/30"
+                    : "bg-transparent text-muted-foreground/60 border-white/8 hover:border-white/20 hover:text-muted-foreground"
+                }`}
+                data-testid="button-filter-dual-route"
+              >
+                <ArrowLeftRight className="h-3 w-3" />
+                Dual Route
+                {dualFilter === "dual-only" && (
+                  <span className="text-[9px] opacity-70 tabular-nums">{filtered.length}</span>
+                )}
+              </button>
             </div>
-          </div>
-
-          {/* Result count */}
-          <div className="text-xs text-muted-foreground/40 mb-4" data-testid="text-result-count">
-            {filtered.length === CATALOG_ENTRIES.length
-              ? `${CATALOG_ENTRIES.length} compounds`
-              : `${filtered.length} of ${CATALOG_ENTRIES.length} compounds`}
           </div>
 
           {/* Compound grid */}
