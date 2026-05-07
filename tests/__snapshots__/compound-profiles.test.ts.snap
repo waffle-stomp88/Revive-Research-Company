@@ -143,19 +143,6 @@ exports[`compound-profiles — PK profile snapshots > ghrp-6 PK fields are prese
 }
 `;
 
-exports[`compound-profiles — PK profile snapshots > ghrp-6 PK fields are present and stable 2`] = `
-{
-  "citationIds": [
-    "9879640",
-  ],
-  "halfLifeLabel": "~15–60 min",
-  "halfLifeMax": 60,
-  "halfLifeMin": 15,
-  "route": "subcutaneous",
-  "slug": "ghrp-6",
-}
-`;
-
 exports[`compound-profiles — PK profile snapshots > gonadorelin PK fields are present and stable 1`] = `
 {
   "citationIds": [

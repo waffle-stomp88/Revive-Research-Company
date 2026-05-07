@@ -19,7 +19,7 @@ export default defineConfig({
   retries: 0,
   workers: 1,
   webServer: {
-    command: "npm run dev",
+    command: 'sh -c "nc -z 127.0.0.1 5000 2>/dev/null && sleep infinity || exec npm run dev"',
     port: 5000,
     timeout: 60000,
     reuseExistingServer: true,

@@ -156,8 +156,10 @@ describe("compound-profiles — value snapshots (formula + MW)", () => {
 // ─── 3. IV → altRoute CITATION REUSE AUDIT ───────────────────────────────────
 //
 // Guards against the data quality error found during the May 2026 citation
-// audit: IV-primary entries (Glutathione, Lipo-C, Cerebrolysin) had their own
-// PMID citations copied verbatim into the SC altRoute citation list. Those
+// audit: IV-primary entries (Glutathione, Lipo-C) had their own PMID
+// citations copied verbatim into the SC altRoute citation list. Cerebrolysin
+// had the same pattern but was corrected in a prior audit before the May 2026
+// sweep (SC altRoute citations were already [] at audit time). Those
 // citations characterise the IV route only and are not appropriate references
 // for subcutaneous pharmacokinetics.
 //
@@ -351,7 +353,7 @@ describe("pharmacokinetics — IM altRoute citations must not reuse parent IM ci
 //     cjc-1295-w-dac
 //
 //   GH secretagogues:
-//     ghrp-6
+//     ghrp-6, hexarelin
 //
 //   Neuropeptides / CNS:
 //     oxytocin
@@ -462,10 +464,6 @@ describe("compound-profiles — PK profile snapshots", () => {
   });
 
   // ─── GH secretagogue cluster ─────────────────────────────────────────────────
-
-  it("ghrp-6 PK fields are present and stable", () => {
-    expect(pkSnapshot("ghrp-6")).toMatchSnapshot();
-  });
 
   it("hexarelin PK fields are present and stable", () => {
     expect(pkSnapshot("hexarelin")).toMatchSnapshot();
