@@ -21,7 +21,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { SEOHead } from "@/components/seo-head";
 import { PEPTIDE_HALF_LIVES, getCitationQuality } from "@/data/pharmacokinetics";
 import type { HalfLifeEntry } from "@/data/pharmacokinetics";
-import { isEstimatedLabel, formatPKLabel, getEstimateTooltip } from "@/lib/pk-label";
+import { isEstimatedLabel, formatPKLabel, getEstimateTooltip, getEstimateShortLabel } from "@/lib/pk-label";
 
 // Exclude composite multi-peptide stacks from the catalog
 const COMPOSITE_SLUGS = new Set([
@@ -108,7 +108,7 @@ function DualRouteBar({
           {primaryEst && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <Info className="h-3 w-3 flex-shrink-0 cursor-help" style={{ color: "#f59e0b", opacity: 0.8 }} />
+                <Info className="h-3 w-3 flex-shrink-0 cursor-help" style={{ color: "#f59e0b", opacity: 0.8 }} aria-label={getEstimateShortLabel(primary)} />
               </TooltipTrigger>
               <TooltipContent side="top" className="max-w-xs text-xs">
                 {getEstimateTooltip(primary)}
@@ -129,7 +129,7 @@ function DualRouteBar({
           {altEst && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <Info className="h-3 w-3 flex-shrink-0 cursor-help" style={{ color: "#f59e0b", opacity: 0.8 }} />
+                <Info className="h-3 w-3 flex-shrink-0 cursor-help" style={{ color: "#f59e0b", opacity: 0.8 }} aria-label={getEstimateShortLabel(alt)} />
               </TooltipTrigger>
               <TooltipContent side="top" className="max-w-xs text-xs">
                 {getEstimateTooltip(alt)}
@@ -232,7 +232,14 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
             {isEstimate && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Info className="h-3 w-3 cursor-help" style={{ color: "#f59e0b", opacity: 0.8 }} data-testid={`icon-estimate-${entry.slug}`} />
+                  <span
+                    className="flex items-center gap-0.5 text-[10px] cursor-help leading-none"
+                    style={{ color: "#f59e0b", opacity: 0.8 }}
+                    data-testid={`badge-estimate-${entry.slug}`}
+                  >
+                    <Info className="h-3 w-3 flex-shrink-0" aria-hidden="true" />
+                    {getEstimateShortLabel(entry.halfLifeLabel)}
+                  </span>
                 </TooltipTrigger>
                 <TooltipContent side="top" className="max-w-xs text-xs leading-relaxed">
                   {getEstimateTooltip(entry.halfLifeLabel)}
