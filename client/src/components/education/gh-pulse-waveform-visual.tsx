@@ -1,6 +1,6 @@
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
-import { TrendingUp, Activity, Zap } from "lucide-react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+import { useRef, useState } from "react";
+import { TrendingUp, Zap, Info } from "lucide-react";
 
 const IPAMORELIN_COLOR = "#E7FB10";
 const CJC_COLOR = "#21d8ff";
@@ -12,61 +12,115 @@ const CR = 418;  // right edge (x)
 const CT = 26;   // top edge (y)
 const CB = 204;  // bottom edge / baseline (y)
 
-// GH pulse waveform paths
-// Ipamorelin alone: discrete sharp pulses, amplitude ~58px
-const IPAMORELIN_PATH =
-  `M ${CL} ${CB} ` +
-  `C ${CL + 14} ${CB} ${CL + 28} 148 ${CL + 44} 146 ` +
-  `C ${CL + 60} 144 ${CL + 74} ${CB} ${CL + 90} ${CB} ` +
-  `L ${CL + 114} ${CB} ` +
-  `C ${CL + 128} ${CB} ${CL + 142} 148 ${CL + 158} 146 ` +
-  `C ${CL + 174} 144 ${CL + 188} ${CB} ${CL + 204} ${CB} ` +
-  `L ${CL + 234} ${CB} ` +
-  `C ${CL + 248} ${CB} ${CL + 262} 148 ${CL + 278} 146 ` +
-  `C ${CL + 294} 144 ${CL + 308} ${CB} ${CL + 324} ${CB} ` +
-  `L ${CR} ${CB}`;
+// ─── Path builders ──────────────────────────────────────────────────────────
 
-// CJC-1295 alone: broad, sustained raised baseline, moderate humps
-const CJC_PATH =
-  `M ${CL} ${CB} ` +
-  `C ${CL + 30} ${CB} ${CL + 64} 162 ${CL + 96} 158 ` +
-  `C ${CL + 130} 154 ${CL + 155} 153 ${CL + 188} 155 ` +
-  `C ${CL + 228} 157 ${CL + 268} 155 ${CL + 300} 157 ` +
-  `C ${CL + 336} 159 ${CL + 352} 166 ${CR} 170`;
+function buildIpamoPath(centers: number[]): string {
+  const PEAK_Y = 146;
+  let path = `M ${CL} ${CB}`;
+  let prev = CL;
+  for (const cx of centers) {
+    const left = cx - 45;
+    const right = cx + 45;
+    if (left > prev + 1) path += ` L ${left} ${CB}`;
+    path += ` C ${left + 14} ${CB} ${left + 28} ${PEAK_Y + 2} ${cx} ${PEAK_Y}`;
+    path += ` C ${cx + 16} ${PEAK_Y + 2} ${right - 14} ${CB} ${right} ${CB}`;
+    prev = right;
+  }
+  path += ` L ${CR} ${CB}`;
+  return path;
+}
 
-// Combined: very large amplitude pulses (multiplicative synergy)
-const COMBINED_PATH =
-  `M ${CL} ${CB} ` +
-  `C ${CL + 14} ${CB} ${CL + 26} 42 ${CL + 44} 38 ` +
-  `C ${CL + 62} 34 ${CL + 76} ${CB} ${CL + 90} ${CB} ` +
-  `L ${CL + 114} ${CB} ` +
-  `C ${CL + 128} ${CB} ${CL + 142} 42 ${CL + 158} 38 ` +
-  `C ${CL + 174} 34 ${CL + 188} ${CB} ${CL + 204} ${CB} ` +
-  `L ${CL + 234} ${CB} ` +
-  `C ${CL + 248} ${CB} ${CL + 262} 42 ${CL + 278} 38 ` +
-  `C ${CL + 294} 34 ${CL + 308} ${CB} ${CL + 324} ${CB} ` +
-  `L ${CR} ${CB}`;
+function buildCombinedPath(centers: number[], peakY: number = 38): string {
+  let path = `M ${CL} ${CB}`;
+  let prev = CL;
+  for (const cx of centers) {
+    const left = cx - 45;
+    const right = cx + 45;
+    if (left > prev + 1) path += ` L ${left} ${CB}`;
+    path += ` C ${left + 14} ${CB} ${left + 26} ${peakY + 4} ${cx} ${peakY}`;
+    path += ` C ${cx + 16} ${peakY + 4} ${right - 14} ${CB} ${right} ${CB}`;
+    prev = right;
+  }
+  path += ` L ${CR} ${CB}`;
+  return path;
+}
 
-// Approximate x-centers of each pulse (for injection & peak markers)
-const PULSE_CENTERS = [CL + 44, CL + 158, CL + 278];
-const DOSE_TRIGGERS = [CL + 10, CL + 124, CL + 244];
+function buildCjcPath(centers: number[]): string {
+  const n = centers.length;
+  if (n === 1) {
+    const cx = centers[0];
+    return (
+      `M ${CL} ${CB} ` +
+      `C ${CL + 30} ${CB} ${cx - 80} 162 ${cx} 158 ` +
+      `C ${cx + 80} 156 ${CR - 30} 164 ${CR} 168`
+    );
+  }
+  if (n === 2) {
+    const [cx1, cx2] = centers;
+    return (
+      `M ${CL} ${CB} ` +
+      `C ${CL + 30} ${CB} ${cx1 - 60} 162 ${cx1} 158 ` +
+      `C ${cx1 + 60} 154 ${cx2 - 60} 155 ${cx2} 157 ` +
+      `C ${cx2 + 60} 159 ${CR - 30} 162 ${CR} 166`
+    );
+  }
+  // 3 pulses — existing broad sustained path
+  return (
+    `M ${CL} ${CB} ` +
+    `C ${CL + 30} ${CB} ${CL + 64} 162 ${CL + 96} 158 ` +
+    `C ${CL + 130} 154 ${CL + 155} 153 ${CL + 188} 155 ` +
+    `C ${CL + 228} 157 ${CL + 268} 155 ${CL + 300} 157 ` +
+    `C ${CL + 336} 159 ${CL + 352} 166 ${CR} 170`
+  );
+}
 
-// Axis ticks
-const Y_TICKS = [
-  { y: CB, label: "0" },
-  { y: CB - (CB - CT) * 0.25, label: "25" },
-  { y: CB - (CB - CT) * 0.5, label: "50" },
-  { y: CB - (CB - CT) * 0.75, label: "75" },
-  { y: CT, label: "100" },
+// ─── Timing scenarios ────────────────────────────────────────────────────────
+
+type Scenario = {
+  id: string;
+  label: string;
+  xLabels: string[];
+  pulseCenters: number[];
+  doseTriggers: number[];
+  peakMultipliers: string[];
+  combinedPeakY: number;
+  note: string;
+};
+
+const SCENARIOS: Scenario[] = [
+  {
+    id: "single",
+    label: "Single dose",
+    xLabels: ["0", "1 h", "2 h", "3 h", "4 h"],
+    pulseCenters: [CL + 183],
+    doseTriggers: [CL + 10],
+    peakMultipliers: ["~4.5×"],
+    combinedPeakY: 32,
+    note: "One injection window — highest single-pulse amplitude, lowest total daily output.",
+  },
+  {
+    id: "twice",
+    label: "2× daily (AM/PM)",
+    xLabels: ["0", "2 h", "4 h", "6 h", "8 h"],
+    pulseCenters: [CL + 80, CL + 264],
+    doseTriggers: [CL + 10, CL + 184],
+    peakMultipliers: ["~3.8×", "~3.5×"],
+    combinedPeakY: 38,
+    note: "Morning and evening injection — slight second-pulse attenuation from residual CJC-1295 activity.",
+  },
+  {
+    id: "every8h",
+    label: "Every 8 h",
+    xLabels: ["0", "3 h", "6 h", "9 h", "12 h"],
+    pulseCenters: [CL + 44, CL + 158, CL + 278],
+    doseTriggers: [CL + 10, CL + 124, CL + 244],
+    peakMultipliers: ["~3.5×", "~3.3×", "~3.4×"],
+    combinedPeakY: 38,
+    note: "Three equal intervals — most consistent GH baseline across the full day.",
+  },
 ];
 
-const X_TICKS = [
-  { x: CL, label: "0" },
-  { x: CL + (CR - CL) * 0.25, label: "1h" },
-  { x: CL + (CR - CL) * 0.5, label: "2h" },
-  { x: CL + (CR - CL) * 0.75, label: "3h" },
-  { x: CR, label: "4h" },
-];
+// ─── Sub-components ──────────────────────────────────────────────────────────
 
 function WaveformPath({
   d,
@@ -91,7 +145,7 @@ function WaveformPath({
       style={{ filter: `drop-shadow(0 0 4px ${color}70)` }}
       initial={{ pathLength: 0, opacity: 0 }}
       animate={{ pathLength: 1, opacity }}
-      transition={{ duration: 1.6, delay, ease: "easeInOut" }}
+      transition={{ duration: 1.4, delay, ease: "easeInOut" }}
     />
   );
 }
@@ -112,18 +166,20 @@ function AreaFill({
       fill={color}
       fillOpacity={0}
       animate={{ fillOpacity: 0.07 }}
-      transition={{ duration: 0.8, delay: delay + 1.4 }}
+      transition={{ duration: 0.8, delay: delay + 1.2 }}
     />
   );
 }
 
 function PeakMarker({
   x,
+  y,
   color,
   label,
   delay,
 }: {
   x: number;
+  y: number;
   color: string;
   label: string;
   delay: number;
@@ -134,13 +190,13 @@ function PeakMarker({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4 }}
     >
-      <circle cx={x} cy={38} r={3.5} fill={color} style={{ filter: `drop-shadow(0 0 6px ${color})` }} />
+      <circle cx={x} cy={y} r={3.5} fill={color} style={{ filter: `drop-shadow(0 0 6px ${color})` }} />
       <rect
-        x={x - 16} y={14} width={32} height={14} rx={3}
+        x={x - 16} y={y - 24} width={32} height={14} rx={3}
         style={{ fill: "hsl(var(--background) / 0.85)" }}
         stroke={color} strokeWidth={0.8} strokeOpacity={0.6}
       />
-      <text x={x} y={24} textAnchor="middle" fill={color} fontSize={7.5} fontWeight="700">
+      <text x={x} y={y - 13} textAnchor="middle" fill={color} fontSize={7.5} fontWeight="700">
         {label}
       </text>
     </motion.g>
@@ -168,9 +224,36 @@ function DoseMarker({ x, delay }: { x: number; delay: number }) {
   );
 }
 
-function WaveformChart({ isInView }: { isInView: boolean }) {
+// Y axis ticks
+const Y_TICKS = [
+  { y: CB, label: "0" },
+  { y: CB - (CB - CT) * 0.25, label: "25" },
+  { y: CB - (CB - CT) * 0.5, label: "50" },
+  { y: CB - (CB - CT) * 0.75, label: "75" },
+  { y: CT, label: "100" },
+];
+
+function WaveformChart({
+  isInView,
+  scenario,
+  animKey,
+}: {
+  isInView: boolean;
+  scenario: Scenario;
+  animKey: string;
+}) {
+  const ipamoPath = buildIpamoPath(scenario.pulseCenters);
+  const cjcPath = buildCjcPath(scenario.pulseCenters);
+  const combinedPath = buildCombinedPath(scenario.pulseCenters, scenario.combinedPeakY);
+
+  const xTicks = scenario.xLabels.map((label, i) => ({
+    x: CL + (CR - CL) * (i / (scenario.xLabels.length - 1)),
+    label,
+  }));
+
   return (
     <svg
+      key={animKey}
       viewBox="0 0 470 240"
       className="w-full h-auto text-foreground"
       style={{ maxHeight: 280 }}
@@ -222,7 +305,7 @@ function WaveformChart({ isInView }: { isInView: boolean }) {
       <line x1={CL} y1={CB} x2={CR} y2={CB} stroke="currentColor" strokeOpacity={0.2} strokeWidth={1} />
 
       {/* X axis ticks & labels */}
-      {X_TICKS.map(({ x, label }) => (
+      {xTicks.map(({ x, label }) => (
         <g key={label}>
           <line x1={x} y1={CB} x2={x} y2={CB + 4} stroke="currentColor" strokeOpacity={0.25} strokeWidth={1} />
           <text x={x} y={CB + 14} textAnchor="middle" fill="currentColor" fillOpacity={0.35} fontSize={7}>
@@ -245,17 +328,17 @@ function WaveformChart({ isInView }: { isInView: boolean }) {
 
       {/* Dose trigger markers */}
       {isInView &&
-        DOSE_TRIGGERS.map((x, i) => (
-          <DoseMarker key={i} x={x} delay={0.3 + i * 0.1} />
+        scenario.doseTriggers.map((x, i) => (
+          <DoseMarker key={i} x={x} delay={0.2 + i * 0.1} />
         ))}
 
       {/* Area fills (draw under lines) */}
       <g clipPath="url(#chartClip)">
         {isInView && (
           <>
-            <AreaFill d={CJC_PATH} color={CJC_COLOR} delay={0.5} />
-            <AreaFill d={IPAMORELIN_PATH} color={IPAMORELIN_COLOR} delay={0.4} />
-            <AreaFill d={COMBINED_PATH} color={COMBINED_COLOR} delay={0.8} />
+            <AreaFill d={cjcPath} color={CJC_COLOR} delay={0.4} />
+            <AreaFill d={ipamoPath} color={IPAMORELIN_COLOR} delay={0.3} />
+            <AreaFill d={combinedPath} color={COMBINED_COLOR} delay={0.7} />
           </>
         )}
       </g>
@@ -264,22 +347,23 @@ function WaveformChart({ isInView }: { isInView: boolean }) {
       <g clipPath="url(#chartClip)">
         {isInView && (
           <>
-            <WaveformPath d={CJC_PATH} color={CJC_COLOR} delay={0.5} opacity={0.75} />
-            <WaveformPath d={IPAMORELIN_PATH} color={IPAMORELIN_COLOR} delay={0.4} opacity={0.75} />
-            <WaveformPath d={COMBINED_PATH} color={COMBINED_COLOR} delay={0.8} strokeWidth={2.5} />
+            <WaveformPath d={cjcPath} color={CJC_COLOR} delay={0.4} opacity={0.75} />
+            <WaveformPath d={ipamoPath} color={IPAMORELIN_COLOR} delay={0.3} opacity={0.75} />
+            <WaveformPath d={combinedPath} color={COMBINED_COLOR} delay={0.7} strokeWidth={2.5} />
           </>
         )}
       </g>
 
       {/* Peak markers for combined output */}
       {isInView &&
-        PULSE_CENTERS.map((x, i) => (
+        scenario.pulseCenters.map((x, i) => (
           <PeakMarker
             key={i}
             x={x}
+            y={scenario.combinedPeakY}
             color={COMBINED_COLOR}
-            label={i === 0 ? "~3.5×" : i === 1 ? "~3.3×" : "~3.4×"}
-            delay={2.0 + i * 0.15}
+            label={scenario.peakMultipliers[i] ?? scenario.peakMultipliers[0]}
+            delay={1.8 + i * 0.15}
           />
         ))}
 
@@ -306,6 +390,52 @@ function WaveformChart({ isInView }: { isInView: boolean }) {
   );
 }
 
+// ─── Timing toggle ───────────────────────────────────────────────────────────
+
+function TimingToggle({
+  selected,
+  onChange,
+}: {
+  selected: string;
+  onChange: (id: string) => void;
+}) {
+  return (
+    <div className="flex flex-col items-center gap-2" data-testid="timing-toggle">
+      <div className="flex items-center gap-1.5 flex-wrap justify-center">
+        {SCENARIOS.map((s) => {
+          const active = s.id === selected;
+          return (
+            <button
+              key={s.id}
+              onClick={() => onChange(s.id)}
+              data-testid={`timing-option-${s.id}`}
+              className="px-3 py-1.5 rounded-md text-xs font-semibold transition-colors"
+              style={{
+                background: active
+                  ? `${COMBINED_COLOR}22`
+                  : "rgba(255,255,255,0.05)",
+                border: `1px solid ${active ? COMBINED_COLOR + "70" : "rgba(255,255,255,0.12)"}`,
+                color: active ? COMBINED_COLOR : "rgba(255,255,255,0.55)",
+                boxShadow: active ? `0 0 10px ${COMBINED_COLOR}28` : "none",
+              }}
+            >
+              {s.label}
+            </button>
+          );
+        })}
+      </div>
+      <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted/25 border border-white/8">
+        <Info className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+        <span className="text-xs text-muted-foreground">
+          For illustration only — not a dosing recommendation
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// ─── Insight cards ───────────────────────────────────────────────────────────
+
 const insightCards = [
   {
     color: IPAMORELIN_COLOR,
@@ -324,9 +454,14 @@ const insightCards = [
   },
 ];
 
+// ─── Main export ─────────────────────────────────────────────────────────────
+
 export function GHPulseWaveformVisual() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-60px" });
+  const [scenarioId, setScenarioId] = useState("every8h");
+
+  const scenario = SCENARIOS.find((s) => s.id === scenarioId) ?? SCENARIOS[2];
 
   return (
     <div ref={containerRef} className="relative" data-testid="gh-pulse-waveform-visual">
@@ -369,9 +504,19 @@ export function GHPulseWaveformVisual() {
         </p>
       </motion.div>
 
+      {/* Timing toggle */}
+      <motion.div
+        className="mb-4"
+        initial={{ opacity: 0, y: 10 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ delay: 0.15 }}
+      >
+        <TimingToggle selected={scenarioId} onChange={setScenarioId} />
+      </motion.div>
+
       {/* Chart */}
       <motion.div
-        className="rounded-xl border p-4 mb-6"
+        className="rounded-xl border p-4 mb-4"
         style={{
           borderColor: `${COMBINED_COLOR}28`,
           background: "linear-gradient(135deg, rgba(34,197,94,0.03) 0%, transparent 60%)",
@@ -380,8 +525,33 @@ export function GHPulseWaveformVisual() {
         animate={isInView ? { opacity: 1 } : {}}
         transition={{ delay: 0.1 }}
       >
-        <WaveformChart isInView={isInView} />
+        <WaveformChart isInView={isInView} scenario={scenario} animKey={scenarioId} />
       </motion.div>
+
+      {/* Scenario note */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={scenarioId}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.25 }}
+          className="flex items-start gap-2 px-4 py-2.5 rounded-lg border mb-6"
+          style={{
+            borderColor: `${COMBINED_COLOR}25`,
+            background: `${COMBINED_COLOR}08`,
+          }}
+          data-testid="scenario-note"
+        >
+          <Zap className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" style={{ color: COMBINED_COLOR }} />
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            <strong className="font-semibold" style={{ color: COMBINED_COLOR }}>
+              {scenario.label}:{" "}
+            </strong>
+            {scenario.note}
+          </p>
+        </motion.div>
+      </AnimatePresence>
 
       {/* Insight cards */}
       <div className="grid md:grid-cols-3 gap-4 mb-6">
