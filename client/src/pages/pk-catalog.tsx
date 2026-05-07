@@ -81,7 +81,16 @@ function hasRouteContrast(entry: HalfLifeEntry): boolean {
 }
 
 function formatHalfLifeLabel(label: string): string {
-  return label.replace(/\s*\(SC estimate\)/i, "").replace(/\s*\(inhaled-route proxy.*?\)/i, "").trim();
+  return label
+    .replace(/\s*\(SC estimate\)/i, "")
+    .replace(/\s*\(estimated\)/i, "")
+    .replace(/\s*\(inhaled-route proxy.*?\)/i, "")
+    .trim();
+}
+
+function isEstimatedLabel(label?: string): boolean {
+  if (!label) return false;
+  return /\(SC estimate\)/i.test(label) || /\(estimated\)/i.test(label);
 }
 
 function DualRouteBar({
@@ -97,14 +106,26 @@ function DualRouteBar({
 }) {
   const pc = routeColor(primaryRoute);
   const ac = routeColor(altRoute);
+  const primaryEst = isEstimatedLabel(primary);
+  const altEst = isEstimatedLabel(alt);
   return (
     <div className="flex items-stretch gap-1.5 mt-2.5" data-testid="dual-route-bar">
       <div className={`flex-1 rounded px-2 py-1.5 border ${pc.bg} ${pc.border}`}>
         <div className="text-[9px] uppercase tracking-widest text-muted-foreground/50 mb-0.5">
           {ROUTE_ABBREV[primaryRoute.toLowerCase()] ?? primaryRoute}
         </div>
-        <div className={`text-sm font-bold tabular-nums leading-tight ${pc.text}`}>
-          {formatHalfLifeLabel(primary)}
+        <div className={`flex items-center gap-1 text-sm font-bold tabular-nums leading-tight ${pc.text}`}>
+          <span>{formatHalfLifeLabel(primary)}</span>
+          {primaryEst && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="h-3 w-3 flex-shrink-0 cursor-help" style={{ color: "#f59e0b", opacity: 0.8 }} />
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-xs text-xs">
+                SC estimate — extrapolated from IV data or class-level pharmacokinetics; no direct SC plasma PK study was identified.
+              </TooltipContent>
+            </Tooltip>
+          )}
         </div>
       </div>
       <div className="flex items-center shrink-0">
@@ -114,8 +135,18 @@ function DualRouteBar({
         <div className="text-[9px] uppercase tracking-widest text-muted-foreground/50 mb-0.5">
           {ROUTE_ABBREV[altRoute.toLowerCase()] ?? altRoute}
         </div>
-        <div className={`text-sm font-bold tabular-nums leading-tight ${ac.text}`}>
-          {formatHalfLifeLabel(alt)}
+        <div className={`flex items-center gap-1 text-sm font-bold tabular-nums leading-tight ${ac.text}`}>
+          <span>{formatHalfLifeLabel(alt)}</span>
+          {altEst && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="h-3 w-3 flex-shrink-0 cursor-help" style={{ color: "#f59e0b", opacity: 0.8 }} />
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-xs text-xs">
+                SC estimate — extrapolated from IV data or class-level pharmacokinetics; no direct SC plasma PK study was identified.
+              </TooltipContent>
+            </Tooltip>
+          )}
         </div>
       </div>
     </div>
@@ -131,10 +162,7 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
     ? (ROUTE_ABBREV[entry.altRoute.route.toLowerCase()] ?? entry.altRoute.route)
     : null;
 
-  const isEstimate =
-    entry.halfLifeLabel.includes("estimate") ||
-    entry.halfLifeLabel.includes("proxy") ||
-    entry.altRoute?.halfLifeLabel.includes("estimate");
+  const isEstimate = isEstimatedLabel(entry.halfLifeLabel);
 
   return (
     <motion.div
@@ -186,11 +214,10 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
             {isEstimate && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Info className="h-3 w-3 text-muted-foreground/30 cursor-help" />
+                  <Info className="h-3 w-3 cursor-help" style={{ color: "#f59e0b", opacity: 0.8 }} data-testid={`icon-estimate-${entry.slug}`} />
                 </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-xs text-xs">
-                  Half-life is an estimate extrapolated from class data; no
-                  compound-specific PK study was identified.
+                <TooltipContent side="top" className="max-w-xs text-xs leading-relaxed">
+                  <span className="font-semibold text-amber-400">SC estimate</span> — this half-life is extrapolated from IV data or class-level pharmacokinetics. No direct SC plasma PK study was identified for this compound.
                 </TooltipContent>
               </Tooltip>
             )}

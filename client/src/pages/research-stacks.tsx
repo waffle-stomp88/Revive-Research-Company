@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
 import { STACK_COMPONENTS, buildPriceLookup, calculateStackPricing } from "@/lib/stack-pricing";
 import { CategoryTabs } from "@/components/category-tabs";
-import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, X, Check, ShoppingCart, Beaker, Brain, Target, Rocket, Activity, Moon, Dumbbell, Timer, Save, Share2, Trash2, Copy, Users, LucideIcon, Search, AlertCircle, ChevronUp, ChevronDown, Monitor, GitMerge, Clock, ExternalLink } from "lucide-react";
+import { Layers, FlaskConical, ArrowRight, Sparkles, Zap, Heart, Leaf, Star, Crown, Shield, X, Check, ShoppingCart, Beaker, Brain, Target, Rocket, Activity, Moon, Dumbbell, Timer, Save, Share2, Trash2, Copy, Users, LucideIcon, Search, AlertCircle, ChevronUp, ChevronDown, Monitor, GitMerge, Clock, ExternalLink, Info } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -3191,11 +3191,21 @@ function CustomStackBuilder({ onSwitchToPreBuilt, templatePeptideNames, onTempla
                                   {pkEntry && (
                                     <span
                                       className="inline-flex items-center gap-1 w-fit px-1.5 py-0.5 rounded-full text-[10px] font-medium border border-[#21d8ff]/30 bg-[#21d8ff]/10 text-[#21d8ff]"
-                                      title={`Documented plasma half-life: ${pkEntry.halfLifeLabel} (${pkEntry.route})`}
+                                      title={`Plasma half-life: ${pkEntry.halfLifeLabel.replace(/\s*\(SC estimate\)/i, "").trim()} (${pkEntry.route})`}
                                       data-testid={`chip-halflife-builder-${builderSlug}`}
                                     >
                                       <Clock className="h-2.5 w-2.5" />
-                                      t&#189; {pkEntry.halfLifeLabel}
+                                      t&#189; {pkEntry.halfLifeLabel.replace(/\s*\(SC estimate\)/i, "").replace(/\s*\(estimated\)/i, "").trim()}
+                                      {(/\(SC estimate\)/i.test(pkEntry.halfLifeLabel) || /\(estimated\)/i.test(pkEntry.halfLifeLabel)) && (
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <Info className="h-2.5 w-2.5 flex-shrink-0 cursor-help" style={{ color: "#f59e0b", opacity: 0.85 }} />
+                                          </TooltipTrigger>
+                                          <TooltipContent side="top" className="max-w-[220px] text-xs leading-relaxed">
+                                            <span className="font-semibold text-amber-400">SC estimate</span> — extrapolated from IV data or class-level pharmacokinetics; no direct SC plasma PK study was identified.
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      )}
                                     </span>
                                   )}
                                 </div>

@@ -9,6 +9,18 @@ import type { HalfLifeEntry, CitationQuality } from "@/data/pharmacokinetics";
 import { isNonSCRoute, pkMidpoint, computeXMax, buildPKCurve, ptsToD } from "@/lib/pk-curve";
 import { readStoredZoom, writeStoredZoom } from "@/lib/zoom-storage";
 
+function isEstimatedLabel(label?: string): boolean {
+  if (!label) return false;
+  return /\(SC estimate\)/i.test(label) || /\(estimated\)/i.test(label);
+}
+
+function formatHLLabel(label: string): string {
+  return label
+    .replace(/\s*\(SC estimate\)/gi, "")
+    .replace(/\s*\(estimated\)/gi, "")
+    .trim();
+}
+
 export interface StackPeptide {
   name: string;
   description: string;
@@ -619,15 +631,29 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
               : `~${parseFloat((tmaxMin / 60).toFixed(1))} h`;
             const hasAlt = !!(c.basePk?.altRoute && c.basePk.altRoute.halfLifeMin !== undefined);
             const isAlt = c.activeRoute === 'alt';
+            const hlIsEstimate = isEstimatedLabel(c.pk.halfLifeLabel);
             return (
               <div className="hidden md:flex flex-col gap-3 justify-center px-3 py-3 shrink-0 border-r border-white/5 w-24" data-testid="pk-stats-bar">
                 {[
-                  { label: `${routeAbbrev(c.pk.route)} t½`, value: c.pk.halfLifeLabel, delay: 0.1, color: c.color },
+                  { label: `${routeAbbrev(c.pk.route)} t½`, value: formatHLLabel(c.pk.halfLifeLabel), delay: 0.1, color: c.color },
                   { label: "Tmax", value: tmaxLabel, delay: 0.3, color: c.color },
                   { label: "Route", value: routeAbbrev(c.pk.route), delay: 0.5, color: ROUTE_COLOR },
                 ].map(s => (
                   <AnimatedStat key={s.label} label={s.label} value={s.value} color={s.color} delay={s.delay} />
                 ))}
+                {hlIsEstimate && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="flex items-center justify-center gap-0.5 text-[9px] cursor-help" style={{ color: "#f59e0b", opacity: 0.75 }} data-testid="badge-estimate-stats">
+                        <Info className="h-2.5 w-2.5 flex-shrink-0" />
+                        SC estimate
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" className="max-w-[200px] text-xs leading-relaxed">
+                      This half-life is an estimate extrapolated from IV data or class-level pharmacokinetics — no direct SC plasma PK study was identified for this compound.
+                    </TooltipContent>
+                  </Tooltip>
+                )}
                 {hasAlt && (
                   <button
                     className="mt-1 flex items-center justify-center gap-1 rounded text-[9px] font-medium px-1.5 py-1 transition-colors"
@@ -1132,7 +1158,10 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                           <span className="text-[10px] opacity-60">at {tooltip.timeDisp}</span>
                         </div>
                       )}
-                      <span className="block opacity-40 text-[10px] mt-1">t½ {tooltip.halfLife}</span>
+                      <span className="block opacity-40 text-[10px] mt-1">
+                        t½ {formatHLLabel(tooltip.halfLife)}
+                        {isEstimatedLabel(tooltip.halfLife) && <span style={{ color: "#f59e0b", opacity: 0.9 }}> *est.</span>}
+                      </span>
                     </>
                   )}
                 </div>
@@ -1217,6 +1246,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                     )}
                   </div>
                   <div className="flex flex-col pl-[18px]">
+                    <div className="flex items-center gap-1.5">
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <span className="flex items-center gap-1 text-xs font-medium cursor-help w-fit py-1" style={{ color: c.color }} data-testid={`chip-halflife-${toTestSlug(c.peptide.name)}`}>
@@ -1229,7 +1259,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                               exit={{ opacity: 0, y: 4 }}
                               transition={{ duration: 0.2 }}
                             >
-                              {routeAbbrev(c.pk.route)} t½ {c.pk.halfLifeLabel}
+                              {routeAbbrev(c.pk.route)} t½ {formatHLLabel(c.pk.halfLifeLabel)}
                             </motion.span>
                           </AnimatePresence>
                         </span>
@@ -1239,6 +1269,19 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                         {hasAltToggle && <> Use the {primaryRouteAbbrev}/{altRouteAbbrev} toggle to compare route estimates.</>}
                       </TooltipContent>
                     </Tooltip>
+                    {isEstimatedLabel(c.pk.halfLifeLabel) && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="cursor-help" data-testid={`icon-estimate-${toTestSlug(c.peptide.name)}`}>
+                            <Info className="h-3 w-3" style={{ color: "#f59e0b", opacity: 0.8 }} />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-[240px] text-xs leading-relaxed">
+                          <span className="font-semibold text-amber-400">SC estimate</span> — this half-life is extrapolated from IV data or class-level pharmacokinetics. No direct SC plasma PK study was identified for this compound.
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                    </div>
                     {hasAltToggle && isAltActive && c.basePk?.note && (
                       <motion.p
                         className="text-[11px] text-muted-foreground/65 italic pb-1"
@@ -1368,8 +1411,11 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                                     className="text-[11px] font-medium tabular-nums shrink-0"
                                     style={{ color: row.color }}
                                   >
-                                    {row.halfLifeLabel}
+                                    {formatHLLabel(row.halfLifeLabel ?? "")}
                                   </span>
+                                  {isEstimatedLabel(row.halfLifeLabel ?? "") && (
+                                    <Info className="h-2.5 w-2.5 flex-shrink-0" style={{ color: "#f59e0b", opacity: 0.75 }} aria-label="SC estimate" />
+                                  )}
                                 </div>
                               </div>
                             ))}
@@ -1485,7 +1531,10 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                         onClick={e => e.stopPropagation()}
                       >
                         <Clock className="h-3 w-3" />
-                        <span>t½ {c.pk.halfLifeLabel}</span>
+                        <span>t½ {formatHLLabel(c.pk.halfLifeLabel)}</span>
+                        {isEstimatedLabel(c.pk.halfLifeLabel) && (
+                          <Info className="h-2.5 w-2.5 flex-shrink-0" style={{ color: "#f59e0b", opacity: 0.85 }} aria-label="SC estimate" />
+                        )}
                         <ExternalLink className="h-2.5 w-2.5 opacity-60 ml-0.5" />
                       </button>
                     </PopoverTrigger>
@@ -1495,15 +1544,21 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                           <div className="flex items-center gap-1.5">
                             <Clock className="h-3 w-3 flex-shrink-0 text-muted-foreground" />
                             <p className="text-sm font-semibold">
-                              {c.pk.altRoute ? routeAbbrev(c.pk.route) : "Plasma"} t½: {c.pk.halfLifeLabel}
+                              {c.pk.altRoute ? routeAbbrev(c.pk.route) : "Plasma"} t½: {formatHLLabel(c.pk.halfLifeLabel)}
                             </p>
+                            {isEstimatedLabel(c.pk.halfLifeLabel) && (
+                              <Info className="h-3 w-3 flex-shrink-0" style={{ color: "#f59e0b", opacity: 0.85 }} aria-label="SC estimate" />
+                            )}
                           </div>
                           {c.pk.altRoute && (
                             <div className="flex items-center gap-1.5">
                               <Clock className="h-3 w-3 flex-shrink-0 text-muted-foreground opacity-60" />
                               <p className="text-sm font-semibold text-muted-foreground">
-                                {routeAbbrev(c.pk.altRoute.route)} t½: {c.pk.altRoute.halfLifeLabel}
+                                {routeAbbrev(c.pk.altRoute.route)} t½: {formatHLLabel(c.pk.altRoute.halfLifeLabel)}
                               </p>
+                              {isEstimatedLabel(c.pk.altRoute.halfLifeLabel) && (
+                                <Info className="h-3 w-3 flex-shrink-0" style={{ color: "#f59e0b", opacity: 0.7 }} aria-label="SC estimate" />
+                              )}
                             </div>
                           )}
                         </div>
