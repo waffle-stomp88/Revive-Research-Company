@@ -44,6 +44,8 @@ import {
   type DeadLinkHit,
   type CitationDismissal,
   type StripePreset, type InsertStripePreset,
+  labNotes,
+  type LabNote, type InsertLabNote,
   waitlistSignups,
   priceChangeReasons
 } from "@shared/schema";
@@ -391,6 +393,11 @@ export interface IStorage {
   deleteStripePreset(id: string): Promise<boolean>;
   getStripePresetsCount(): Promise<number>;
   seedStripePresets(presets: InsertStripePreset[]): Promise<void>;
+
+  // Lab Notes
+  getAllLabNotes(): Promise<LabNote[]>;
+  createLabNote(note: InsertLabNote): Promise<LabNote>;
+  seedLabNotes(notes: InsertLabNote[]): Promise<void>;
 }
 
 export function resolveDisplayPrice(
@@ -2724,6 +2731,23 @@ export class DatabaseStorage implements IStorage {
     if (presets.length === 0) return;
     await db.insert(stripePresets).values(presets).onConflictDoNothing();
   }
+
+  async getAllLabNotes(): Promise<LabNote[]> {
+    return db.select().from(labNotes)
+      .where(eq(labNotes.isPublished, true))
+      .orderBy(labNotes.sortOrder, desc(labNotes.publishedAt));
+  }
+
+  async createLabNote(note: InsertLabNote): Promise<LabNote> {
+    const [newNote] = await db.insert(labNotes).values(note).returning();
+    return newNote;
+  }
+
+  async seedLabNotes(notes: InsertLabNote[]): Promise<void> {
+    for (const note of notes) {
+      await db.insert(labNotes).values(note).onConflictDoNothing();
+    }
+  }
 }
 
 export const storage = new DatabaseStorage();
@@ -2933,4 +2957,190 @@ Research interest in oxytocin centers on its role as a neuromodulator of prosoci
         },
       });
   }
+}
+
+/**
+ * Ensures the lab_notes table exists. Uses CREATE TABLE IF NOT EXISTS so it is
+ * safe to call on every startup and in any environment (development or
+ * production) where drizzle-kit push has not yet been run.
+ */
+export async function ensureLabNotesTable(): Promise<void> {
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS lab_notes (
+      id varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+      title text NOT NULL,
+      category text NOT NULL,
+      content text NOT NULL,
+      icon_name text NOT NULL DEFAULT 'Beaker',
+      accent_color text NOT NULL DEFAULT '#21d8ff',
+      published_at timestamp DEFAULT now(),
+      sort_order integer DEFAULT 0,
+      is_published boolean DEFAULT true
+    )
+  `);
+}
+
+/**
+ * Seeds the lab_notes table with the default research archive entries if it is
+ * currently empty. Runs once at startup and is a no-op on subsequent restarts.
+ */
+export async function seedLabNotesIfEmpty(): Promise<void> {
+  const [{ cnt }] = await db.select({ cnt: count() }).from(labNotes);
+  if (Number(cnt) > 0) return;
+
+  const DEFAULT_LAB_NOTES = [
+    {
+      title: "Why We Test for Endotoxins",
+      iconName: "Microscope",
+      accentColor: "#ef4444",
+      publishedAt: new Date("2024-11-15"),
+      category: "Testing",
+      sortOrder: 1,
+      content: `Endotoxins are bacterial cell wall components that can cause severe immune reactions in research subjects. Even small amounts (measured in EU/mg) can compromise research results.
+
+We test every batch to ensure levels remain well below research-safe thresholds, typically targeting **<0.5 EU/mg**.
+
+## Why This Matters
+
+The [LAL (Limulus Amebocyte Lysate) test](https://en.wikipedia.org/wiki/Limulus_amebocyte_lysate) is the gold standard for endotoxin detection. Our third-party labs use this assay on every batch before release.
+
+- Detection threshold: 0.005 EU/mL
+- Our target: <0.5 EU/mg per vial
+- Result: included on every COA`,
+    },
+    {
+      title: "Understanding Lyophilization",
+      iconName: "Thermometer",
+      accentColor: "#21d8ff",
+      publishedAt: new Date("2024-11-10"),
+      category: "Process",
+      sortOrder: 2,
+      content: `Lyophilization (freeze-drying) removes water from peptide solutions while frozen. This process preserves molecular structure and creates a stable powder that can be stored for years.
+
+The key is controlled freezing at **-80°C** followed by vacuum sublimation — a process that takes 24–48 hours per batch.
+
+## The Three Phases
+
+1. **Freezing** — the sample is cooled below its eutectic point
+2. **Primary drying** — sublimation removes ~95% of water under vacuum
+3. **Secondary drying** — desorption removes bound water to target <1% residual moisture
+
+This technique is also used in pharmaceutical manufacturing and long-term biological sample preservation.`,
+    },
+    {
+      title: "What Purity Percentage Really Means",
+      iconName: "FlaskConical",
+      accentColor: "#E7FB10",
+      publishedAt: new Date("2024-11-05"),
+      category: "Quality",
+      sortOrder: 3,
+      content: `When we say **98%+ purity**, we're measuring via HPLC (High-Performance Liquid Chromatography). This tells us what percentage of the sample is the target peptide versus synthesis byproducts or impurities.
+
+For research applications, 95%+ is acceptable; we target 98%+ for consistency.
+
+## How HPLC Works
+
+HPLC separates compounds based on their interaction with a stationary phase column. The detector measures absorbance at 214–220 nm (the peptide bond absorption range), and the area under each peak corresponds to the relative quantity of that component.
+
+> **Note:** Purity percentage does not directly measure biological activity — it measures chemical composition only.`,
+    },
+    {
+      title: "Why Peptide Color Can Vary",
+      iconName: "Droplets",
+      accentColor: "#9d4edd",
+      publishedAt: new Date("2024-10-28"),
+      category: "Quality",
+      sortOrder: 4,
+      content: `Lyophilized peptides range from pure white to off-white to slightly cream-colored. This variation is **normal** and depends on several factors:
+
+- Amino acid sequence composition
+- Synthesis conditions and resin used
+- Lyophilization parameters (rate, final temperature)
+- Residual counter-ions from salt forms (e.g. acetate vs TFA)
+
+Color alone doesn't indicate purity — that's what COA testing confirms. A cream-colored peptide at 99% purity is superior to a white peptide at 90% purity.`,
+    },
+    {
+      title: "How We Prevent Cross-Contamination",
+      iconName: "Shield",
+      accentColor: "#22c55e",
+      publishedAt: new Date("2024-10-20"),
+      category: "Process",
+      sortOrder: 5,
+      content: `Each compound is handled in **dedicated ISO-standard synthesis facilities** with strict protocols to ensure no batch carries traces of another compound.
+
+As a distributor, we only partner with facilities that maintain these rigorous cross-contamination safeguards to protect research integrity.
+
+## Facility Standards We Require
+
+- Dedicated synthesis lines per compound class
+- Documented cleaning validation between batches
+- Environmental monitoring (particle counts, surface swabs)
+- Personnel gowning and airlock entry procedures
+
+These requirements align with [ICH Q7 Good Manufacturing Practice](https://www.ich.org/page/quality-guidelines) guidelines for active pharmaceutical ingredient facilities.`,
+    },
+    {
+      title: "The Role of Mass Spectrometry",
+      iconName: "Beaker",
+      accentColor: "#f97316",
+      publishedAt: new Date("2024-10-15"),
+      category: "Testing",
+      sortOrder: 6,
+      content: `Mass spectrometry (MS) confirms molecular identity by measuring exact molecular weight. While HPLC tells us purity percentage, MS tells us we have the **right molecule**.
+
+The observed mass should match the expected mass within **0.5 daltons** — any significant deviation indicates a synthesis error.
+
+## Interpreting MS Results
+
+| Parameter | Acceptable Range |
+|-----------|-----------------|
+| Mass error | +/- 0.5 Da |
+| Charge states | 2+ to 4+ typical |
+| Isotope pattern | Matches theoretical |
+
+We use ESI-MS (electrospray ionization) which is particularly well-suited for large polar molecules like peptides.`,
+    },
+    {
+      title: "Why Storage Temperature Matters",
+      iconName: "Thermometer",
+      accentColor: "#ec4899",
+      publishedAt: new Date("2024-10-08"),
+      category: "Storage",
+      sortOrder: 7,
+      content: `Peptides degrade through **hydrolysis** and **oxidation** — both accelerated by heat and moisture.
+
+## Storage Guidelines
+
+- **Lyophilized powder at -20°C** — extremely stable (2+ years)
+- **Reconstituted solution at 2-8°C** — 2–4 weeks typical
+- **Avoid freeze-thaw cycles** — aliquot before first use
+
+After reconstitution, 2–8°C storage limits bacterial growth and slows degradation. Bacteriostatic water (containing 0.9% benzyl alcohol) extends reconstituted stability compared to plain sterile water by inhibiting microbial growth.
+
+> Always store away from light. Several peptides (including those with aromatic residues) are photosensitive.`,
+    },
+    {
+      title: "Batch-to-Batch Consistency",
+      iconName: "Sparkles",
+      accentColor: "#21d8ff",
+      publishedAt: new Date("2024-10-01"),
+      category: "Quality",
+      sortOrder: 8,
+      content: `Every batch undergoes identical synthesis protocols, quality checks, and testing procedures.
+
+While minor variations in **appearance** are normal, the purity, identity, and potency should be consistent. This is why we test every batch individually rather than relying on historical data.
+
+## What We Track Across Batches
+
+- HPLC purity (target 98%+)
+- MS identity confirmation
+- Endotoxin levels (<0.5 EU/mg)
+- Net peptide content (accounts for water and counter-ions)
+
+Batch-specific COAs are available for every product we carry — accessible directly from the [COA Library](/coa-library).`,
+    },
+  ];
+
+  await storage.seedLabNotes(DEFAULT_LAB_NOTES);
 }

@@ -4,7 +4,7 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import { getMetaForUrl, getPreRenderedContent, injectMetaTags, shouldReturn404 } from "./seo";
-import { fixBlendProductSlugs, seedStripePresetsIfEmpty, seedHormonalEducationArticlesIfMissing } from "./storage";
+import { fixBlendProductSlugs, seedStripePresetsIfEmpty, seedHormonalEducationArticlesIfMissing, ensureLabNotesTable, seedLabNotesIfEmpty } from "./storage";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -123,6 +123,14 @@ export function log(message: string, source = "express") {
 
   await seedHormonalEducationArticlesIfMissing().catch((err) => {
     console.warn("[startup] seedHormonalEducationArticlesIfMissing failed (non-fatal):", err?.message ?? err);
+  });
+
+  await ensureLabNotesTable().catch((err) => {
+    console.warn("[startup] ensureLabNotesTable failed (non-fatal):", err?.message ?? err);
+  });
+
+  await seedLabNotesIfEmpty().catch((err) => {
+    console.warn("[startup] seedLabNotesIfEmpty failed (non-fatal):", err?.message ?? err);
   });
 
   await registerRoutes(httpServer, app);

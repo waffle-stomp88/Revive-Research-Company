@@ -1,5 +1,14 @@
 export const sanitizeHref = (href: string): string => {
-  return /^\s*(javascript|data|vbscript):/i.test(href) ? '#' : href;
+  if (/^\s*(javascript|data|vbscript):/i.test(href)) return '#';
+  // Escape attribute-breaking characters to prevent href="..." breakout attacks.
+  return href.replace(/"/g, '%22').replace(/'/g, '%27').replace(/`/g, '%60');
+};
+
+const escapeHtml = (str: string): string => {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 };
 
 const parseMarkdownTable = (tableText: string): { headers: string[]; rows: string[][] } | null => {
@@ -57,15 +66,33 @@ const renderTable = (table: { headers: string[]; rows: string[][] }): string => 
 };
 
 export const renderMarkdown = (content: string): string => {
+  // Step 1: Extract Markdown table blocks before escaping, render them, then
+  // replace with placeholders so the HTML isn't escaped in step 2.
+  const tablePlaceholders: string[] = [];
   const tableRegex = /(^\s*\|[^\n]+\|[ \t]*\n?)+/gm;
-  let processedContent = content.replace(tableRegex, (match) => {
+  let contentWithPlaceholders = content.replace(tableRegex, (match) => {
     const table = parseMarkdownTable(match);
     if (table && table.headers.length > 0 && table.rows.length > 0) {
-      return renderTable(table);
+      const placeholder = `\x00TABLE${tablePlaceholders.length}\x00`;
+      tablePlaceholders.push(renderTable(table));
+      return placeholder;
     }
     return match;
   });
 
+  // Step 2: Escape all raw HTML in the remaining content so injected tags
+  // (e.g. <script>, onerror attributes) cannot reach the DOM.
+  // Blockquote lines start with "> " — after escaping, ">" becomes "&gt;",
+  // so the blockquote regex below matches "&gt; " instead.
+  contentWithPlaceholders = escapeHtml(contentWithPlaceholders);
+
+  // Step 3: Re-insert rendered table HTML (already safe, built from our own templates).
+  let processedContent = contentWithPlaceholders.replace(
+    /\x00TABLE(\d+)\x00/g,
+    (_, idx) => tablePlaceholders[Number(idx)],
+  );
+
+  // Remove separator-only table rows that survived escaping.
   processedContent = processedContent.replace(/^\s*\|?[\s\-:]+\|[\s\-:|]+\s*$/gm, '');
 
   processedContent = processedContent.replace(
@@ -90,8 +117,9 @@ export const renderMarkdown = (content: string): string => {
     }
   );
 
+  // Blockquote: match "&gt; " (escaped "> ") at line start.
   processedContent = processedContent.replace(
-    /^> (.+)$/gm,
+    /^&gt; (.+)$/gm,
     '<div class="my-3 pl-3 border-l-2 border-[#E7FB10]/50 bg-[#E7FB10]/5 py-2 pr-3 rounded-r text-sm italic text-muted-foreground">$1</div>'
   );
 

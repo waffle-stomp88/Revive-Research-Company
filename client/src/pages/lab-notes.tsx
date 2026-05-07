@@ -3,6 +3,7 @@ import { SEOHead } from "@/components/seo-head";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Beaker,
   FlaskConical,
@@ -13,81 +14,20 @@ import {
   Sparkles,
   Clock,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { renderMarkdown } from "@/lib/render-markdown";
+import type { LabNote } from "@shared/schema";
 
-const labNotes = [
-  {
-    id: 1,
-    title: "Why We Test for Endotoxins",
-    icon: Microscope,
-    color: "#ef4444",
-    date: "2024-11-15",
-    content: "Endotoxins are bacterial cell wall components that can cause severe immune reactions in research subjects. Even small amounts (measured in EU/mg) can compromise research results. We test every batch to ensure levels remain well below research-safe thresholds, typically targeting <0.5 EU/mg.",
-    category: "Testing",
-  },
-  {
-    id: 2,
-    title: "Understanding Lyophilization",
-    icon: Thermometer,
-    color: "#21d8ff",
-    date: "2024-11-10",
-    content: "Lyophilization (freeze-drying) removes water from peptide solutions while frozen. This process preserves molecular structure and creates a stable powder that can be stored for years. The key is controlled freezing at -80°C followed by vacuum sublimation—a process that takes 24-48 hours per batch.",
-    category: "Process",
-  },
-  {
-    id: 3,
-    title: "What Purity Percentage Really Means",
-    icon: FlaskConical,
-    color: "#E7FB10",
-    date: "2024-11-05",
-    content: "When we say 98%+ purity, we're measuring via HPLC (High-Performance Liquid Chromatography). This tells us what percentage of the sample is the target peptide versus synthesis byproducts or impurities. For research applications, 95%+ is acceptable; we target 98%+ for consistency.",
-    category: "Quality",
-  },
-  {
-    id: 4,
-    title: "Why Peptide Color Can Vary",
-    icon: Droplets,
-    color: "#9d4edd",
-    date: "2024-10-28",
-    content: "Lyophilized peptides range from pure white to off-white to slightly cream-colored. This variation is normal and depends on the amino acid sequence, synthesis conditions, and lyophilization parameters. Color alone doesn't indicate purity—that's what COA testing confirms.",
-    category: "Quality",
-  },
-  {
-    id: 5,
-    title: "How We Prevent Cross-Contamination",
-    icon: Shield,
-    color: "#22c55e",
-    date: "2024-10-20",
-    content: "Each compound is handled in dedicated ISO-standard synthesis facilities with strict protocols to ensure no batch carries traces of another compound. As a distributor, we only partner with facilities that maintain these rigorous cross-contamination safeguards to protect research integrity.",
-    category: "Process",
-  },
-  {
-    id: 6,
-    title: "The Role of Mass Spectrometry",
-    icon: Beaker,
-    color: "#f97316",
-    date: "2024-10-15",
-    content: "Mass spectrometry (MS) confirms molecular identity by measuring exact molecular weight. While HPLC tells us purity percentage, MS tells us we have the right molecule. The observed mass should match the expected mass within 0.5 daltons—any significant deviation indicates a synthesis error.",
-    category: "Testing",
-  },
-  {
-    id: 7,
-    title: "Why Storage Temperature Matters",
-    icon: Thermometer,
-    color: "#ec4899",
-    date: "2024-10-08",
-    content: "Peptides degrade through hydrolysis and oxidation—both accelerated by heat and moisture. Lyophilized powder at -20°C is extremely stable (2+ years). After reconstitution, 2-8°C storage limits bacterial growth and slows degradation, giving you 2-4 weeks of reliable use.",
-    category: "Storage",
-  },
-  {
-    id: 8,
-    title: "Batch-to-Batch Consistency",
-    icon: Sparkles,
-    color: "#21d8ff",
-    date: "2024-10-01",
-    content: "Every batch undergoes identical synthesis protocols, quality checks, and testing procedures. While minor variations in appearance are normal, the purity, identity, and potency should be consistent. This is why we test every batch individually rather than relying on historical data.",
-    category: "Quality",
-  },
-];
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
+  Beaker,
+  FlaskConical,
+  Microscope,
+  Thermometer,
+  Shield,
+  Droplets,
+  Sparkles,
+  Clock,
+};
 
 const getCategoryColor = (category: string) => {
   switch (category) {
@@ -99,7 +39,88 @@ const getCategoryColor = (category: string) => {
   }
 };
 
+function LabNoteCard({ note, index }: { note: LabNote; index: number }) {
+  const Icon = ICON_MAP[note.iconName] ?? Beaker;
+  const renderedContent = renderMarkdown(note.content);
+  const publishedDate = note.publishedAt ? new Date(note.publishedAt) : null;
+
+  return (
+    <motion.div
+      key={note.id}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.1 + index * 0.05 }}
+    >
+      <Card
+        className="p-6"
+        style={{ borderColor: `${note.accentColor}30` }}
+        data-testid={`card-note-${note.id}`}
+      >
+        <div className="flex items-start gap-4">
+          <div
+            className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
+            style={{ backgroundColor: `${note.accentColor}20` }}
+          >
+            <Icon className="h-6 w-6" style={{ color: note.accentColor }} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              <Badge
+                variant="outline"
+                className="text-xs"
+                style={{ borderColor: getCategoryColor(note.category), color: getCategoryColor(note.category) }}
+              >
+                {note.category}
+              </Badge>
+              {publishedDate && (
+                <span className="flex items-center text-xs text-muted-foreground">
+                  <Clock className="h-3 w-3 mr-1" />
+                  {publishedDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                </span>
+              )}
+            </div>
+            <h3 className="font-display text-lg font-bold mb-2" style={{ color: note.accentColor }}>
+              {note.title}
+            </h3>
+            <div
+              className="text-muted-foreground leading-relaxed prose-sm max-w-none"
+              dangerouslySetInnerHTML={{ __html: renderedContent }}
+            />
+          </div>
+        </div>
+      </Card>
+    </motion.div>
+  );
+}
+
+function LabNotesSkeleton() {
+  return (
+    <div className="space-y-6">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <Card key={i} className="p-6">
+          <div className="flex items-start gap-4">
+            <Skeleton className="w-12 h-12 rounded-lg flex-shrink-0" />
+            <div className="flex-1 space-y-2">
+              <div className="flex gap-2">
+                <Skeleton className="h-5 w-16" />
+                <Skeleton className="h-5 w-24" />
+              </div>
+              <Skeleton className="h-5 w-48" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-4/5" />
+            </div>
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
 export default function LabNotes() {
+  const { data: notes, isLoading, isError } = useQuery<LabNote[]>({
+    queryKey: ["/api/lab-notes"],
+  });
+
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
       <SEOHead title="Lab Notes" description="Technical research updates and compound insights. Stay informed with our scientific archive." canonicalPath="/guides/peptide-lab-research-archive" />
@@ -116,7 +137,7 @@ export default function LabNotes() {
             Research Archive
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Technical insights regarding peptide synthesis standards, third-party verification, and research protocols. 
+            Technical insights regarding peptide synthesis standards, third-party verification, and research protocols.
             Understanding the specifications of your research compounds.
           </p>
         </motion.div>
@@ -133,10 +154,10 @@ export default function LabNotes() {
               <div>
                 <h2 className="font-display text-xl font-bold mb-2">What Is The Research Archive?</h2>
                 <p className="text-muted-foreground">
-                  This archive provides technical explanations regarding the industry-standard synthesis protocols, 
-                  third-party verification methods, and storage science for research peptides. Revive Research is a 
-                  specialized distributor of premium compounds; we do not manufacture these products in-house. 
-                  All production is handled by world-class synthesis facilities and verified by independent, 
+                  This archive provides technical explanations regarding the industry-standard synthesis protocols,
+                  third-party verification methods, and storage science for research peptides. Revive Research is a
+                  specialized distributor of premium compounds; we do not manufacture these products in-house.
+                  All production is handled by world-class synthesis facilities and verified by independent,
                   third-party laboratories.
                 </p>
               </div>
@@ -144,55 +165,27 @@ export default function LabNotes() {
           </Card>
         </motion.div>
 
-        <div className="space-y-6">
-          {labNotes.map((note, index) => {
-            const Icon = note.icon;
-            return (
-              <motion.div
-                key={note.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + index * 0.05 }}
-              >
-                <Card 
-                  className="p-6"
-                  style={{ borderColor: `${note.color}30` }}
-                  data-testid={`card-note-${note.id}`}
-                >
-                  <div className="flex items-start gap-4">
-                    <div 
-                      className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{ backgroundColor: `${note.color}20` }}
-                    >
-                      <Icon className="h-6 w-6" style={{ color: note.color }} />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2 flex-wrap">
-                        <Badge 
-                          variant="outline" 
-                          className="text-xs"
-                          style={{ borderColor: getCategoryColor(note.category), color: getCategoryColor(note.category) }}
-                        >
-                          {note.category}
-                        </Badge>
-                        <span className="flex items-center text-xs text-muted-foreground">
-                          <Clock className="h-3 w-3 mr-1" />
-                          {new Date(note.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                        </span>
-                      </div>
-                      <h3 className="font-display text-lg font-bold mb-2" style={{ color: note.color }}>
-                        {note.title}
-                      </h3>
-                      <p className="text-muted-foreground leading-relaxed">
-                        {note.content}
-                      </p>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-            );
-          })}
-        </div>
+        {isLoading && <LabNotesSkeleton />}
+
+        {isError && (
+          <div className="text-center py-12 text-muted-foreground">
+            Unable to load research archive entries. Please try again later.
+          </div>
+        )}
+
+        {notes && notes.length > 0 && (
+          <div className="space-y-6">
+            {notes.map((note, index) => (
+              <LabNoteCard key={note.id} note={note} index={index} />
+            ))}
+          </div>
+        )}
+
+        {notes && notes.length === 0 && (
+          <div className="text-center py-12 text-muted-foreground">
+            No research archive entries available yet.
+          </div>
+        )}
 
         <Separator className="my-12" />
 

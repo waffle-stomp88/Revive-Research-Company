@@ -990,3 +990,20 @@ export const insertStripePresetSchema = createInsertSchema(stripePresets)
   });
 export type InsertStripePreset = z.infer<typeof insertStripePresetSchema>;
 export type StripePreset = typeof stripePresets.$inferSelect;
+
+// Lab Notes table - database-driven blog posts with Markdown support
+export const labNotes = pgTable("lab_notes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  category: text("category").notNull(),
+  content: text("content").notNull(),
+  iconName: text("icon_name").notNull().default("Beaker"),
+  accentColor: text("accent_color").notNull().default("#21d8ff"),
+  publishedAt: timestamp("published_at").defaultNow(),
+  sortOrder: integer("sort_order").default(0),
+  isPublished: boolean("is_published").default(true),
+});
+
+export const insertLabNoteSchema = createInsertSchema(labNotes).omit({ id: true });
+export type InsertLabNote = z.infer<typeof insertLabNoteSchema>;
+export type LabNote = typeof labNotes.$inferSelect;

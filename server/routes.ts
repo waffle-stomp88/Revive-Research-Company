@@ -3530,6 +3530,20 @@ export async function registerRoutes(
   });
   
   // ============================================
+  // LAB NOTES ROUTES
+  // ============================================
+
+  app.get("/api/lab-notes", async (_req, res) => {
+    try {
+      const notes = await storage.getAllLabNotes();
+      res.json(notes);
+    } catch (error) {
+      console.error("Error fetching lab notes:", error);
+      res.status(500).json({ error: "Failed to fetch lab notes" });
+    }
+  });
+
+  // ============================================
   // COA GLOSSARY ROUTES
   // ============================================
   
