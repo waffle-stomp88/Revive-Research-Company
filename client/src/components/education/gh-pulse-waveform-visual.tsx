@@ -1,6 +1,6 @@
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
-import { TrendingUp, Zap, Info } from "lucide-react";
+import { TrendingUp, Zap, Info, SlidersHorizontal } from "lucide-react";
 
 const IPAMORELIN_COLOR = "#E7FB10";
 const CJC_COLOR = "#21d8ff";
@@ -72,6 +72,74 @@ function buildCjcPath(centers: number[]): string {
     `C ${CL + 228} 157 ${CL + 268} 155 ${CL + 300} 157 ` +
     `C ${CL + 336} 159 ${CL + 352} 166 ${CR} 170`
   );
+}
+
+/** Dynamic CJC sustained-elevation path for arbitrary pulse counts (4+) */
+function buildDynamicCjcPath(centers: number[]): string {
+  const n = centers.length;
+  if (n <= 3) return buildCjcPath(centers);
+  const sustY = 157;
+  const first = centers[0];
+  const last = centers[n - 1];
+  let path = `M ${CL} ${CB} C ${CL + 30} ${CB} ${first - 50} ${sustY + 8} ${first} ${sustY}`;
+  for (let i = 1; i < n; i++) {
+    const prev = centers[i - 1];
+    const curr = centers[i];
+    const span = curr - prev;
+    path += ` C ${prev + span * 0.35} ${sustY - 2} ${curr - span * 0.35} ${sustY - 2} ${curr} ${sustY}`;
+  }
+  path += ` C ${last + 50} ${sustY + 4} ${CR - 30} ${sustY + 8} ${CR} ${sustY + 12}`;
+  return path;
+}
+
+// ─── Custom scenario computation ─────────────────────────────────────────────
+
+function buildCustomScenario(intervalH: number): Scenario {
+  const chartWidth = CR - CL;
+  // Number of visible pulses: show enough to fill ~12h equivalent display
+  const numPulses = Math.max(1, Math.min(6, Math.round(12 / intervalH)));
+  const displayHours = numPulses * intervalH;
+  const unitsPerHour = chartWidth / displayHours;
+
+  // Lag from dose to peak: 40% of the interval, capped at 1h
+  const lagUnits = Math.min(unitsPerHour * Math.min(intervalH * 0.4, 1.0), 70);
+  const spacing = intervalH * unitsPerHour;
+
+  const pulseCenters: number[] = [];
+  const doseTriggers: number[] = [];
+
+  for (let i = 0; i < numPulses; i++) {
+    const doseX = CL + i * spacing + 10;
+    doseTriggers.push(Math.min(doseX, CR - 30));
+    pulseCenters.push(Math.min(doseX + lagUnits, CR - 20));
+  }
+
+  // X labels: 5 evenly spaced ticks
+  const xLabels = Array.from({ length: 5 }, (_, i) => {
+    const h = (displayHours / 4) * i;
+    if (h === 0) return "0";
+    return Number.isInteger(h) ? `${h} h` : `${h.toFixed(1)} h`;
+  });
+
+  // Peak multipliers: highest on first pulse, slight attenuation on subsequent
+  const baseMultiplier = 4.5 - (numPulses - 1) * 0.25;
+  const peakMultipliers = Array.from({ length: numPulses }, (_, i) =>
+    `~${Math.max(3.0, baseMultiplier - i * 0.1).toFixed(1)}×`
+  );
+
+  const intervalLabel = Number.isInteger(intervalH) ? `${intervalH}` : intervalH.toFixed(1);
+  const pulseWord = numPulses === 1 ? "pulse" : "pulses";
+
+  return {
+    id: "custom",
+    label: `Every ${intervalLabel} h`,
+    xLabels,
+    pulseCenters,
+    doseTriggers,
+    peakMultipliers,
+    combinedPeakY: numPulses >= 4 ? 44 : 38,
+    note: `Custom ${intervalLabel}-hour interval — ${numPulses} ${pulseWord} shown over a ${displayHours % 1 === 0 ? displayHours : displayHours.toFixed(1)}-hour window.`,
+  };
 }
 
 // ─── Timing scenarios ────────────────────────────────────────────────────────
@@ -243,7 +311,9 @@ function WaveformChart({
   animKey: string;
 }) {
   const ipamoPath = buildIpamoPath(scenario.pulseCenters);
-  const cjcPath = buildCjcPath(scenario.pulseCenters);
+  const cjcPath = scenario.id === "custom"
+    ? buildDynamicCjcPath(scenario.pulseCenters)
+    : buildCjcPath(scenario.pulseCenters);
   const combinedPath = buildCombinedPath(scenario.pulseCenters, scenario.combinedPeakY);
 
   const xTicks = scenario.xLabels.map((label, i) => ({
@@ -392,15 +462,23 @@ function WaveformChart({
 
 // ─── Timing toggle ───────────────────────────────────────────────────────────
 
+const CUSTOM_ID = "custom";
+
 function TimingToggle({
   selected,
   onChange,
+  customIntervalH,
+  onCustomIntervalChange,
 }: {
   selected: string;
   onChange: (id: string) => void;
+  customIntervalH: number;
+  onCustomIntervalChange: (h: number) => void;
 }) {
+  const isCustom = selected === CUSTOM_ID;
+
   return (
-    <div className="flex flex-col items-center gap-2" data-testid="timing-toggle">
+    <div className="flex flex-col items-center gap-3" data-testid="timing-toggle">
       <div className="flex items-center gap-1.5 flex-wrap justify-center">
         {SCENARIOS.map((s) => {
           const active = s.id === selected;
@@ -423,7 +501,89 @@ function TimingToggle({
             </button>
           );
         })}
+
+        {/* Custom option */}
+        <button
+          onClick={() => onChange(CUSTOM_ID)}
+          data-testid="timing-option-custom"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors"
+          style={{
+            background: isCustom
+              ? `${COMBINED_COLOR}22`
+              : "rgba(255,255,255,0.05)",
+            border: `1px solid ${isCustom ? COMBINED_COLOR + "70" : "rgba(255,255,255,0.12)"}`,
+            color: isCustom ? COMBINED_COLOR : "rgba(255,255,255,0.55)",
+            boxShadow: isCustom ? `0 0 10px ${COMBINED_COLOR}28` : "none",
+          }}
+        >
+          <SlidersHorizontal className="h-3 w-3" />
+          Custom…
+        </button>
       </div>
+
+      {/* Custom interval input — visible only when "Custom…" is selected */}
+      <AnimatePresence>
+        {isCustom && (
+          <motion.div
+            key="custom-input"
+            initial={{ opacity: 0, height: 0, marginTop: 0 }}
+            animate={{ opacity: 1, height: "auto", marginTop: 0 }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.22 }}
+            className="overflow-hidden"
+          >
+            <div
+              className="flex items-center gap-3 px-4 py-3 rounded-lg border"
+              style={{
+                borderColor: `${COMBINED_COLOR}40`,
+                background: `${COMBINED_COLOR}08`,
+              }}
+            >
+              <label
+                htmlFor="custom-interval-input"
+                className="text-xs font-semibold whitespace-nowrap"
+                style={{ color: COMBINED_COLOR }}
+              >
+                Injection interval
+              </label>
+              <input
+                id="custom-interval-input"
+                data-testid="custom-interval-input"
+                type="number"
+                min={1}
+                max={24}
+                step={0.5}
+                value={customIntervalH}
+                onChange={(e) => {
+                  const raw = parseFloat(e.target.value);
+                  if (!isNaN(raw)) {
+                    onCustomIntervalChange(Math.min(24, Math.max(1, raw)));
+                  }
+                }}
+                className="w-20 px-2 py-1 rounded-md text-xs font-mono text-center focus:outline-none"
+                style={{
+                  background: "rgba(255,255,255,0.06)",
+                  border: `1px solid ${COMBINED_COLOR}50`,
+                  color: COMBINED_COLOR,
+                }}
+              />
+              <span className="text-xs text-muted-foreground">hours &nbsp;(1 – 24)</span>
+              <input
+                data-testid="custom-interval-slider"
+                type="range"
+                min={1}
+                max={24}
+                step={0.5}
+                value={customIntervalH}
+                onChange={(e) => onCustomIntervalChange(parseFloat(e.target.value))}
+                className="flex-1 min-w-0 accent-[#22c55e]"
+                style={{ minWidth: 80 }}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted/25 border border-white/8">
         <Info className="h-3 w-3 text-muted-foreground flex-shrink-0" />
         <span className="text-xs text-muted-foreground">
@@ -460,8 +620,15 @@ export function GHPulseWaveformVisual() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-60px" });
   const [scenarioId, setScenarioId] = useState("every8h");
+  const [customIntervalH, setCustomIntervalH] = useState(6);
 
-  const scenario = SCENARIOS.find((s) => s.id === scenarioId) ?? SCENARIOS[2];
+  const isCustom = scenarioId === CUSTOM_ID;
+  const scenario = isCustom
+    ? buildCustomScenario(customIntervalH)
+    : (SCENARIOS.find((s) => s.id === scenarioId) ?? SCENARIOS[2]);
+
+  // For custom mode, re-animate on every interval change
+  const animKey = isCustom ? `custom-${customIntervalH}` : scenarioId;
 
   return (
     <div ref={containerRef} className="relative" data-testid="gh-pulse-waveform-visual">
@@ -511,7 +678,12 @@ export function GHPulseWaveformVisual() {
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ delay: 0.15 }}
       >
-        <TimingToggle selected={scenarioId} onChange={setScenarioId} />
+        <TimingToggle
+          selected={scenarioId}
+          onChange={setScenarioId}
+          customIntervalH={customIntervalH}
+          onCustomIntervalChange={setCustomIntervalH}
+        />
       </motion.div>
 
       {/* Chart */}
@@ -525,13 +697,13 @@ export function GHPulseWaveformVisual() {
         animate={isInView ? { opacity: 1 } : {}}
         transition={{ delay: 0.1 }}
       >
-        <WaveformChart isInView={isInView} scenario={scenario} animKey={scenarioId} />
+        <WaveformChart isInView={isInView} scenario={scenario} animKey={animKey} />
       </motion.div>
 
       {/* Scenario note */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={scenarioId}
+          key={animKey}
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -4 }}
