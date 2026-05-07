@@ -121,7 +121,13 @@ function DualRouteBar({
           {primaryEst && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <Info className="h-3 w-3 flex-shrink-0 cursor-help" style={{ color: "#f59e0b", opacity: 0.8 }} aria-label={getEstimateShortLabel(primary)} />
+                <span
+                  className="flex items-center gap-0.5 text-[10px] cursor-help leading-none"
+                  style={{ color: "#f59e0b", opacity: 0.8 }}
+                >
+                  <Info className="h-3 w-3 flex-shrink-0" aria-hidden="true" />
+                  {getEstimateShortLabel(primary)}
+                </span>
               </TooltipTrigger>
               <TooltipContent side="top" className="max-w-xs text-xs">
                 {getEstimateTooltip(primary)}
@@ -142,7 +148,13 @@ function DualRouteBar({
           {altEst && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <Info className="h-3 w-3 flex-shrink-0 cursor-help" style={{ color: "#f59e0b", opacity: 0.8 }} aria-label={getEstimateShortLabel(alt)} />
+                <span
+                  className="flex items-center gap-0.5 text-[10px] cursor-help leading-none"
+                  style={{ color: "#f59e0b", opacity: 0.8 }}
+                >
+                  <Info className="h-3 w-3 flex-shrink-0" aria-hidden="true" />
+                  {getEstimateShortLabel(alt)}
+                </span>
               </TooltipTrigger>
               <TooltipContent side="top" className="max-w-xs text-xs">
                 {getEstimateTooltip(alt)}
