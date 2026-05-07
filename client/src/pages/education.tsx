@@ -98,7 +98,12 @@ import {
   DihexaSynapseVisual,
   GlutathioneRedoxVisual,
   B12MethylationVisual,
-  MelanotanReceptorVisual
+  MelanotanReceptorVisual,
+  // Hormonal research compound visuals
+  GonadorelinVisual,
+  TriptorelinVisual,
+  EnclomipheneVisual,
+  OxytocinVisual
 } from "@/components/education";
 import { PharmacokineticsChart } from "@/components/pharmacokinetics-chart";
 import { getHalfLifeByName, COMBO_STACK_CONSTITUENTS } from "@/data/pharmacokinetics";
@@ -170,6 +175,10 @@ const articleVisuals: Record<string, () => JSX.Element> = {
   "what-is-vitamin-b12": () => <B12MethylationVisual />,
   "what-is-melanotan-peptide": () => <MelanotanReceptorVisual />,
   "what-is-slu-pp-332-peptide": () => <SLUPP332Visual />,
+  "what-is-gonadorelin-peptide": () => <GonadorelinVisual />,
+  "what-is-triptorelin-peptide": () => <TriptorelinVisual />,
+  "what-is-enclomiphene-peptide": () => <EnclomipheneVisual />,
+  "what-is-oxytocin-peptide": () => <OxytocinVisual />,
 };
 
 const categories = [

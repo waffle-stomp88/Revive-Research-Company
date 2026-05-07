@@ -41,3 +41,6 @@ export { GlutathioneRedoxVisual } from "./glutathione-redox-visual";
 export { B12MethylationVisual } from "./b12-methylation-visual";
 export { MelanotanReceptorVisual } from "./melanotan-receptor-visual";
 export { SLUPP332Visual, SLUPP332ComparisonTable } from "./slupp-visual";
+
+// Hormonal research compound visuals
+export { GonadorelinVisual, TriptorelinVisual, EnclomipheneVisual, OxytocinVisual } from "./hormonal-research-visuals";
