@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
@@ -47,6 +47,7 @@ import {
   GraduationCap,
   BookOpen,
   ExternalLink,
+  ChevronRight,
 } from "lucide-react";
 import type { Coa } from "@shared/schema";
 
@@ -67,6 +68,41 @@ export default function CoaVerification() {
   const { toast } = useToast();
   const [searchedCoa, setSearchedCoa] = useState<Coa | null>(null);
   const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = "breadcrumb-json-ld-coa-verify";
+    script.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Education Center",
+          "item": "https://reviveresearch.co/guides/peptide-education-center"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Quality & Trust",
+          "item": "https://reviveresearch.co/guides/peptide-education-center?tab=trust"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Verify Certificate of Analysis",
+          "item": "https://reviveresearch.co/coa/verify-certificate-of-analysis"
+        }
+      ]
+    });
+    document.getElementById("breadcrumb-json-ld-coa-verify")?.remove();
+    document.head.appendChild(script);
+    return () => {
+      document.getElementById("breadcrumb-json-ld-coa-verify")?.remove();
+    };
+  }, []);
 
   const form = useForm<SearchFormData>({
     resolver: zodResolver(searchSchema),
@@ -136,8 +172,31 @@ export default function CoaVerification() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
-      <SEOHead title="COA Verifier" description="Verify your Certificate of Analysis. Every batch is third-party tested for purity, identity, and sterility." canonicalPath="/coa" />
+      <SEOHead title="COA Verifier" description="Verify your Certificate of Analysis. Every batch is third-party tested for purity, identity, and sterility." canonicalPath="/coa/verify-certificate-of-analysis" />
       <div className="max-w-4xl mx-auto px-4 md:px-8">
+        <nav aria-label="Breadcrumb" className="mb-6" data-testid="nav-breadcrumb">
+          <ol className="flex items-center gap-1 text-xs text-muted-foreground flex-wrap">
+            <li>
+              <Link href="/guides/peptide-education-center" className="hover:text-foreground transition-colors" data-testid="link-breadcrumb-education">
+                Education Center
+              </Link>
+            </li>
+            <li><ChevronRight className="h-3 w-3 flex-shrink-0" /></li>
+            <li>
+              <Link
+                href="/guides/peptide-education-center?tab=trust"
+                className="hover:text-foreground transition-colors font-medium"
+                style={{ color: "#21d8ff" }}
+                data-testid="link-breadcrumb-trust"
+              >
+                Quality &amp; Trust
+              </Link>
+            </li>
+            <li><ChevronRight className="h-3 w-3 flex-shrink-0" /></li>
+            <li className="text-foreground font-medium" data-testid="text-breadcrumb-current">Verify Certificate of Analysis</li>
+          </ol>
+        </nav>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

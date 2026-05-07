@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
@@ -15,10 +16,45 @@ import {
   Info,
   ArrowRight,
   Search,
+  ChevronRight,
 } from "lucide-react";
 import type { Coa } from "@shared/schema";
 
 export default function BatchArchive() {
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = "breadcrumb-json-ld-batch-archive";
+    script.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Education Center",
+          "item": "https://reviveresearch.co/guides/peptide-education-center"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Quality & Trust",
+          "item": "https://reviveresearch.co/guides/peptide-education-center?tab=trust"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Batch Testing Archive",
+          "item": "https://reviveresearch.co/coa/batch-testing-archive"
+        }
+      ]
+    });
+    document.getElementById("breadcrumb-json-ld-batch-archive")?.remove();
+    document.head.appendChild(script);
+    return () => {
+      document.getElementById("breadcrumb-json-ld-batch-archive")?.remove();
+    };
+  }, []);
   const { data: coas = [], isLoading } = useQuery<Coa[]>({
     queryKey: ["/api/coas"],
   });
@@ -41,6 +77,29 @@ export default function BatchArchive() {
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
       <SEOHead title="Batch Archive" description="Historical batch records and testing data. Full transparency on all research compounds we've produced." canonicalPath="/coa/batch-testing-archive" />
       <div className="max-w-6xl mx-auto px-4 md:px-8">
+        <nav aria-label="Breadcrumb" className="mb-6" data-testid="nav-breadcrumb">
+          <ol className="flex items-center gap-1 text-xs text-muted-foreground flex-wrap">
+            <li>
+              <Link href="/guides/peptide-education-center" className="hover:text-foreground transition-colors" data-testid="link-breadcrumb-education">
+                Education Center
+              </Link>
+            </li>
+            <li><ChevronRight className="h-3 w-3 flex-shrink-0" /></li>
+            <li>
+              <Link
+                href="/guides/peptide-education-center?tab=trust"
+                className="hover:text-foreground transition-colors font-medium"
+                style={{ color: "#21d8ff" }}
+                data-testid="link-breadcrumb-trust"
+              >
+                Quality &amp; Trust
+              </Link>
+            </li>
+            <li><ChevronRight className="h-3 w-3 flex-shrink-0" /></li>
+            <li className="text-foreground font-medium" data-testid="text-breadcrumb-current">Batch Testing Archive</li>
+          </ol>
+        </nav>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
