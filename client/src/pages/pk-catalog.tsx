@@ -68,6 +68,19 @@ function pkMidpointMin(entry: HalfLifeEntry): number {
   return entry.halfLifeMin ?? entry.halfLifeMax ?? Infinity;
 }
 
+/** Extracts a 1–2 sentence preview from entry.note for the indirect-evidence popover. */
+function getIndirectNote(entry: HalfLifeEntry): string {
+  const raw = entry.note?.trim();
+  if (!raw) {
+    return "No direct plasma concentration data. Half-life is inferred from indirect or analogous-compound evidence.";
+  }
+  // Split on sentence boundaries (". " or ".\n") and take the first two sentences.
+  const sentences = raw.split(/\.(?:\s|\n)+/).filter(Boolean);
+  const preview = sentences.slice(0, 2).join(". ").trim();
+  // Ensure it ends with a period.
+  return preview.endsWith(".") ? preview : preview + ".";
+}
+
 function hasDualRoute(entry: HalfLifeEntry): boolean {
   return !!(entry.altRoute && entry.altRoute.halfLifeMin !== undefined);
 }
@@ -196,8 +209,9 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
                     Indirect evidence
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-xs text-xs leading-relaxed">
-                  No direct plasma concentration data. Half-life is inferred from indirect evidence. Click to read the full context.
+                <TooltipContent side="top" className="max-w-xs text-xs leading-relaxed space-y-1">
+                  <p>{getIndirectNote(entry)}</p>
+                  <p className="text-muted-foreground/60">Click to read the full context.</p>
                 </TooltipContent>
               </Tooltip>
             )}
