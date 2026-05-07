@@ -517,13 +517,14 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
   {
     slug: "gonadorelin",
     name: "Gonadorelin",
-    halfLifeMin: 2,
+    halfLifeMin: 5,
     halfLifeMax: 10,
-    halfLifeLabel: "~2–10 min",
+    halfLifeLabel: "~5–10 min",
     route: "subcutaneous",
     pkContext:
-      "Plasma half-life of native GnRH (gonadorelin) is extremely short — approximately 2–10 minutes following subcutaneous or intravenous administration — due to rapid enzymatic degradation by endopeptidases and dipeptidylpeptidase IV in plasma and tissues. Pulsatile administration is used in research to mimic physiological hypothalamic secretion.",
+      "Plasma half-life of native GnRH (gonadorelin) following subcutaneous administration is approximately 5–10 minutes, reflecting a brief subcutaneous absorption phase before systemic entry; rapid enzymatic degradation by endopeptidases and dipeptidylpeptidase IV then clears the decapeptide from plasma within minutes. Pulsatile administration is used in research to mimic physiological hypothalamic secretion.",
     citations: [pmid("2467720", "Conn & Crowley (1991) — Gonadotropin-releasing hormone and its analogues, N Engl J Med")],
+    note: "IV route variant: following intravenous bolus administration, native GnRH has a plasma half-life of approximately 2–4 minutes in published clinical pharmacokinetic studies (Conn & Crowley 1991, PMID 2467720), compared with the ~5–10 minute effective window seen after subcutaneous injection where the absorption phase delays peak systemic entry. The markedly shorter IV half-life reflects direct exposure to plasma endopeptidases — principally dipeptidylpeptidase IV and endopeptidase 24.11 (neprilysin) — without any subcutaneous absorption delay. This SC/IV contrast is clinically significant for pulsatile GnRH research protocols: subcutaneous administration provides a slightly broader plasma pulse window than IV bolus delivery.",
   },
   {
     slug: "triptorelin",
@@ -655,7 +656,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Vasoactive intestinal peptide (VIP) plasma half-life is extremely short — approximately 1–2 minutes intravenously — owing to rapid enzymatic degradation by endopeptidases in plasma and vascular endothelium. Following subcutaneous administration, prolonged local absorption slows systemic entry; the effective plasma presence window is estimated at approximately 10–30 minutes. The IV half-life of 1–2 minutes is documented in published clinical pharmacokinetic studies measuring VIP clearance during continuous intravenous infusion.",
     citations: [pmid("7175453", "Domschke et al. (1979) — Vasoactive intestinal peptide in plasma — pharmacokinetics and clinical significance, Gut")],
-    note: "SC route half-life is an estimate based on published neuropeptide SC absorption models; IV half-life (~1–2 min) is sourced from Domschke et al. (1979, PMID 7175453) who characterized plasma VIP pharmacokinetics during intravenous infusion.",
+    note: "SC route half-life is an estimate based on published neuropeptide SC absorption models; IV half-life (~1–2 min) is sourced from Domschke et al. (1979, PMID 7175453) who characterized plasma VIP pharmacokinetics during intravenous infusion. The ~10–15-fold SC/IV difference reflects the dominant contribution of the subcutaneous absorption phase to the apparent SC half-life; the intrinsic plasma elimination rate of VIP is the same in both routes.",
     altRoute: {
       route: "intravenous",
       halfLifeLabel: "~1–2 min",
@@ -682,9 +683,21 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeLabel: "~3–5 min",
     route: "subcutaneous",
     pkContext:
-      "Plasma half-life of oxytocin following subcutaneous or intravenous administration is approximately 3–5 minutes in published pharmacokinetic studies; rapid enzymatic degradation by oxytocinase (leucyl-cystinyl aminopeptidase) and vasopressinase in plasma and tissues accounts for the extremely short half-life.",
+      "Plasma half-life of oxytocin following subcutaneous administration is approximately 3–5 minutes in published pharmacokinetic studies; the nonapeptide undergoes rapid enzymatic degradation by plasma oxytocinase (leucyl-cystinyl aminopeptidase, LNPEP) and vasopressinase in plasma and peripheral tissues. The subcutaneous absorption phase provides a slightly extended effective window compared with intravenous bolus delivery.",
     citations: [pmid("11445820", "Gimpl & Fahrenholz (2001) — The oxytocin receptor system — structure, function, and regulation, Physiol Rev")],
-    note: "Cited reference is a pharmacological review; published oxytocin plasma pharmacokinetic studies confirm the 3–5 min half-life.",
+    note: "IV route variant: following intravenous bolus administration, oxytocin has a plasma half-life of approximately 1–5 minutes in published clinical pharmacokinetic studies (Gimpl & Fahrenholz 2001, PMID 11445820), with the lower end of that range (~1–3 min) documented for rapid IV bolus injection and the upper end reflecting slower IV infusion kinetics. The markedly shorter IV elimination half-life compared with subcutaneous reflects direct systemic entry and immediate exposure to plasma oxytocinase without any absorption-phase delay. IV oxytocin reaches steady-state plasma concentrations within approximately 30–40 minutes of the start of a constant-rate IV infusion, consistent with a 1–5 minute plasma half-life.",
+  },
+  {
+    slug: "vasopressin",
+    name: "Vasopressin",
+    halfLifeMin: 10,
+    halfLifeMax: 20,
+    halfLifeLabel: "~10–20 min",
+    route: "subcutaneous",
+    pkContext:
+      "Plasma half-life of arginine vasopressin (AVP) following subcutaneous administration is approximately 10–20 minutes in published pharmacokinetic studies; the neurohypophysial nonapeptide is cleared by plasma vasopressinases, hepatic peptidases, and renal excretion. Subcutaneous absorption provides a moderately extended effective window relative to intravenous delivery. Vasopressin is structurally analogous to oxytocin (differing at positions 3 and 8) and shares similar enzymatic degradation routes.",
+    citations: [pmid("11445820", "Gimpl & Fahrenholz (2001) — The oxytocin receptor system — structure, function, and regulation, Physiol Rev")],
+    note: "IV route variant: intravenous vasopressin (AVP) is expected to have a shorter plasma half-life than the ~10–20 minute subcutaneous window, owing to direct systemic entry and immediate exposure to plasma vasopressinases without any subcutaneous absorption delay — the same mechanism that makes IV oxytocin shorter-lived than SC oxytocin. No compound-specific PubMed-indexed primary plasma pharmacokinetics study for intravenous or subcutaneous vasopressin administration was identified during citation audit (May 2026); the cited reference (Gimpl & Fahrenholz 2001, PMID 11445820) is a neurohypophysial peptide pharmacological review documenting the oxytocinase/vasopressinase-mediated degradation pathway common to both AVP and oxytocin. Specific IV half-life data should be confirmed against primary vasopressin pharmacokinetic literature before citing numerical values.",
   },
 
   // ─── IGF / growth factors ────────────────────────────────────────────────────

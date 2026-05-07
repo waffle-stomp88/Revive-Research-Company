@@ -70,9 +70,9 @@ exports[`compound-profiles — PK profile snapshots > gonadorelin PK fields are 
   "citationIds": [
     "2467720",
   ],
-  "halfLifeLabel": "~2–10 min",
+  "halfLifeLabel": "~5–10 min",
   "halfLifeMax": 10,
-  "halfLifeMin": 2,
+  "halfLifeMin": 5,
   "route": "subcutaneous",
   "slug": "gonadorelin",
 }
