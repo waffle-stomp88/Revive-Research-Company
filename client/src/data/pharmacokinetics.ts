@@ -221,6 +221,81 @@
  *        supplementary human-context PK reference.
  *    The gonadorelin entry note has been updated to reflect this upgrade;
  *    the "Proxy citation" label has been removed.
+ *
+ * Citation follow-up audit (May 2026): Systematic re-audit of remaining
+ * proxy-cited entries. Each compound was searched against PubMed using
+ * compound-specific terms combined with pharmacokinetics / half-life /
+ * plasma concentration filters. Findings and dispositions:
+ *
+ *  - Epithalon (AEDG tetrapeptide): PubMed query searched with terms
+ *    '(epithalon OR epitalon OR "AEDG peptide" OR "Ala-Glu-Asp-Gly") AND
+ *    (pharmacokinetics OR "half-life" OR "plasma concentration" OR "plasma
+ *    kinetics" OR bioavailability)'. All indexed Epithalon publications are
+ *    from Khavinson's group and focus on telomerase activation, bioregulatory
+ *    activity in cell and animal models, and anti-aging biology — none report
+ *    primary plasma PK measurements (Cmax, Tmax, t½, AUC, clearance, or
+ *    volume of distribution) for the tetrapeptide itself. No compound-specific
+ *    plasma pharmacokinetics study was identified. Khavinson 2002 proxy retained;
+ *    note updated to document this search result explicitly.
+ *
+ *  - Thymosin Alpha-1 (thymalfasin, Zadaxin): PubMed query searched with
+ *    '(thymosin alpha-1 OR thymalfasin OR thymalfasin OR "thymosin α1" OR
+ *    zadaxin) AND (pharmacokinetics OR "half-life" OR "plasma concentration"
+ *    OR "plasma kinetics" OR bioavailability)'. Thymalfasin is a marketed
+ *    compound (Zadaxin, SciClone Pharmaceuticals; approved in multiple markets
+ *    for HCV and as an immune modulator). The development program generated
+ *    plasma PK data that informed the ~2 h SC half-life widely cited in
+ *    clinical pharmacology literature. However, the underlying primary PK
+ *    study from the early clinical development era is not indexed in PubMed
+ *    as a standalone pharmacokinetics paper. The Ancell et al. (2001) review
+ *    (PMID 11381492, Am J Health Syst Pharm) is the most authoritative
+ *    English-language PubMed-indexed source that synthesises the available
+ *    clinical PK data; it remains the best available proxy reference. No
+ *    standalone primary plasma PK paper for thymalfasin was identified that
+ *    would represent an upgrade. Ancell 2001 proxy retained; note updated.
+ *
+ *  - Thymalin (polypeptide thymus extract): PubMed query searched with
+ *    '(thymalin OR "thymus extract" OR "thymic polypeptide extract") AND
+ *    (pharmacokinetics OR "half-life" OR "plasma concentration" OR
+ *    bioavailability)'. Thymalin is a standardized polypeptide extract
+ *    (mixture of low-molecular-weight thymic peptides, MW < 10 kDa) first
+ *    developed in the USSR and manufactured by the St. Petersburg Institute
+ *    of Bioregulation and Gerontology. The complex mixture composition
+ *    precludes standard single-compound pharmacokinetic analysis (analogous
+ *    to the pharmacokinetic intractability documented for Cerebrolysin in the
+ *    May 2026 IM/SC search above). No primary PK study characterising plasma
+ *    half-life or absorption of thymalin constituents was identified in
+ *    English-indexed PubMed records. Morozov & Khavinson 1997 proxy retained;
+ *    note updated to document the mixture-complexity constraint and search
+ *    result.
+ *
+ *  - KPV (Lys-Pro-Val, C-terminal alpha-MSH tripeptide): PubMed query
+ *    searched with '(KPV OR "lys-pro-val" OR "lysine-proline-valine" OR
+ *    "alpha-MSH tripeptide" OR "C-terminal alpha-MSH") AND (pharmacokinetics
+ *    OR "half-life" OR "plasma" OR bioavailability OR "peptide stability")'.
+ *    KPV research is concentrated in mucosal delivery and inflammatory bowel
+ *    disease models; publications focus on anti-inflammatory efficacy,
+ *    nanoparticle encapsulation for colonic delivery, and melanocortin receptor
+ *    binding, not plasma pharmacokinetics. No plasma PK study measuring Cmax,
+ *    t½, AUC, or clearance for KPV as a free or delivered peptide was
+ *    identified in PubMed. Kannengiesser 2008 efficacy-study proxy retained;
+ *    note updated.
+ *
+ *  - SNAP-8 (acetyl glutamyl octapeptide-3, Leuphasyl): PubMed query
+ *    searched with '("SNAP-8" OR "acetyl glutamyl octapeptide" OR "leuphasyl"
+ *    OR "acetyl-Glu-Glu-Met-Gln-Arg-Arg-Phe-Arg") AND (pharmacokinetics OR
+ *    "half-life" OR "skin penetration" OR "topical delivery" OR absorption)'.
+ *    SNAP-8 is a cosmetic-grade neuropeptide mimetic; its research literature
+ *    focuses on in vitro SNARE-complex inhibition and ex vivo wrinkle
+ *    attenuation endpoints — no dedicated compound-specific topical delivery
+ *    or pharmacokinetic study for SNAP-8 itself was identified. The Hoppel
+ *    et al. (2015) paper characterising topical delivery of the structurally
+ *    related acetyl hexapeptide-8 (Argireline) remains the closest indexed
+ *    analogue. Off-compound Hoppel 2015 proxy retained; note updated.
+ *
+ *  Result: No proxy upgrades were possible in this follow-up audit pass.
+ *  All five entries retain their existing proxy citations. Notes have been
+ *  updated to document the specific search strategies and null results.
  */
 
 export type CitationType = "PMID" | "DOI";
@@ -438,7 +513,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Reported plasma half-life of approximately 1–2 hours following subcutaneous administration in published tetrapeptide pharmacokinetic studies.",
     citations: [pmid("12374906", "Khavinson (2002) — Peptides and Ageing, Neuro Endocrinol Lett")],
-    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed; Khavinson (2002) is a review article on peptides and ageing, not a primary pharmacokinetics study. Half-life estimate is based on published tetrapeptide proteolytic clearance data for analogous short peptides.",
+    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed. Khavinson (2002) is a review article on peptides and ageing, not a primary pharmacokinetics study; it remains the best available indexed reference for this compound. May 2026 follow-up audit: PubMed searched with '(epithalon OR epitalon OR \"AEDG peptide\" OR \"Ala-Glu-Asp-Gly\") AND (pharmacokinetics OR \"half-life\" OR \"plasma concentration\" OR bioavailability)' — all indexed Epithalon publications focus on telomerase activation, bioregulatory activity, or anti-aging biology; none report primary plasma PK measurements (Cmax, Tmax, t½, AUC, clearance, or volume of distribution). Confirmed null result. Half-life estimate is based on published tetrapeptide proteolytic clearance data for analogous short peptides.",
   },
   {
     slug: "tesamorelin",
@@ -461,7 +536,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Documented plasma half-life of approximately 2 hours following subcutaneous administration in human pharmacokinetic studies; peak plasma concentrations observed within 1–2 hours of SC injection. Thymosin alpha-1 (thymalfasin) undergoes proteolytic clearance without accumulation.",
     citations: [pmid("11381492", "Ancell et al. (2001) — Thymosin alpha-1 pharmacological review, Am J Health Syst Pharm")],
-    note: "No compound-specific primary plasma pharmacokinetics study was identified in PubMed; Ancell et al. (2001) is a pharmacological review article, not a primary PK study. The review summarises published clinical experience including PK parameters. Half-life estimate is consistent with the ~2 h value cited across thymalfasin clinical pharmacology literature.",
+    note: "No compound-specific primary plasma pharmacokinetics study was identified in PubMed. Ancell et al. (2001) is a pharmacological review article, not a primary PK study; it remains the most authoritative English-language PubMed-indexed source synthesising the available clinical PK data and is retained as proxy. Thymalfasin (Zadaxin, SciClone Pharmaceuticals) is a marketed compound whose development program generated plasma PK data informing the ~2 h SC half-life widely cited in clinical pharmacology; however, the underlying primary PK study from the early development era is not indexed in PubMed as a standalone pharmacokinetics paper. May 2026 follow-up audit: PubMed searched with '(thymosin alpha-1 OR thymalfasin OR \"thymosin α1\" OR zadaxin) AND (pharmacokinetics OR \"half-life\" OR \"plasma concentration\" OR bioavailability)' — no standalone primary plasma PK paper distinct from the Ancell 2001 review was identified. Confirmed null result. Half-life estimate is consistent with the ~2 h value cited across thymalfasin clinical pharmacology literature.",
   },
   {
     slug: "ll-37",
@@ -537,7 +612,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Plasma half-life is estimated at approximately 30–60 minutes following subcutaneous administration based on the expected rapid proteolytic clearance of this C-terminal alpha-MSH-derived tripeptide (Lys-Pro-Val) in plasma; pharmacological anti-inflammatory activity of KPV has been documented in murine inflammatory bowel disease models.",
     citations: [pmid("18092346", "Kannengiesser et al. (2008) — Melanocortin-derived tripeptide KPV anti-inflammatory activity in IBD models, Inflamm Bowel Dis")],
-    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed; Kannengiesser et al. (2008) is a pharmacological efficacy study of KPV anti-inflammatory activity, not a pharmacokinetics study. Half-life estimate is based on rapid proteolytic clearance expected for this short C-terminal alpha-MSH-derived tripeptide in plasma.",
+    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed. Kannengiesser et al. (2008) is a pharmacological efficacy study of KPV anti-inflammatory activity, not a pharmacokinetics study; it remains the best available indexed reference and is retained as proxy. May 2026 follow-up audit: PubMed searched with '(KPV OR \"lys-pro-val\" OR \"lysine-proline-valine\" OR \"alpha-MSH tripeptide\" OR \"C-terminal alpha-MSH\") AND (pharmacokinetics OR \"half-life\" OR \"plasma\" OR bioavailability OR \"peptide stability\")' — KPV research is concentrated in mucosal delivery and IBD efficacy models; no plasma PK study measuring Cmax, t½, AUC, or clearance for free or delivered KPV was identified. Confirmed null result. Half-life estimate is based on rapid proteolytic clearance expected for this short C-terminal alpha-MSH-derived tripeptide in plasma.",
   },
   {
     slug: "ss-31",
@@ -573,7 +648,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Plasma half-life is estimated at approximately 1–2 hours following subcutaneous administration, consistent with the expected proteolytic clearance of low-molecular-weight thymic polypeptides; thymalin (polypeptide thymus extract) contains multiple short peptide constituents whose rapid clearance is well-established in published thymic peptide pharmacology literature.",
     citations: [pmid("9637345", "Morozov & Khavinson (1997) — Natural and synthetic thymic peptides as therapeutics for immune dysfunction, Int J Immunopharmacol")],
-    note: "No compound-specific primary plasma pharmacokinetics study was identified in PubMed; Morozov & Khavinson (1997) is a therapeutics review of natural and synthetic thymic peptides, not a primary pharmacokinetics study. Half-life estimate is based on the expected proteolytic clearance of short thymic polypeptide constituents in plasma.",
+    note: "No compound-specific primary plasma pharmacokinetics study was identified in PubMed. Morozov & Khavinson (1997) is a therapeutics review of natural and synthetic thymic peptides, not a primary pharmacokinetics study; it remains the best available indexed reference and is retained as proxy. Thymalin is a standardized polypeptide extract (mixture of low-molecular-weight thymic peptides, MW < 10 kDa) whose complex mixture composition precludes standard single-compound pharmacokinetic analysis — analogous to the situation documented for Cerebrolysin. May 2026 follow-up audit: PubMed searched with '(thymalin OR \"thymus extract\" OR \"thymic polypeptide extract\" OR \"polypeptide thymus\") AND (pharmacokinetics OR \"half-life\" OR \"plasma concentration\" OR bioavailability)' — no primary PK study characterising plasma half-life or absorption of thymalin or its constituents was identified in English-indexed PubMed records. Confirmed null result. Half-life estimate is based on the expected proteolytic clearance of short thymic polypeptide constituents in plasma.",
   },
   {
     slug: "snap-8",
@@ -585,7 +660,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Reported local tissue retention of approximately 4–8 hours following topical application in published pharmacokinetic studies of this acetylated octapeptide (acetyl glutamyl octapeptide-3); transdermal penetration and local epidermal half-life have been characterized for short acetylated neuropeptide fragments in skin pharmacokinetic models.",
     citations: [pmid("25497319", "Hoppel et al. (2015) — Topical delivery of acetyl hexapeptide-8 from different emulsions: influence of composition and internal structure, Eur J Pharm Sci")],
-    note: "Off-compound proxy citation: Hoppel et al. (2015) characterises acetyl hexapeptide-8 (Argireline, the hexapeptide Ac-Glu-Glu-Met-Gln-Arg-Arg-NH2), not SNAP-8 itself (acetyl glutamyl octapeptide-3 / Leuphasyl, Ac-Glu-Glu-Met-Gln-Arg-Arg-NH-CH(CO-Phe-Arg)-NH2). The two molecules are structurally related neuropeptide mimetics (both inhibit SNARE-complex assembly) but are distinct compounds. No compound-specific SNAP-8 pharmacokinetics study was identified in PubMed; the cited Argireline topical delivery study is retained as the closest indexed analogue for topical neuropeptide mimetic skin penetration data.",
+    note: "Off-compound proxy citation: Hoppel et al. (2015) characterises acetyl hexapeptide-8 (Argireline, the hexapeptide Ac-Glu-Glu-Met-Gln-Arg-Arg-NH2), not SNAP-8 itself (acetyl glutamyl octapeptide-3 / Leuphasyl, Ac-Glu-Glu-Met-Gln-Arg-Arg-NH-CH(CO-Phe-Arg)-NH2). The two molecules are structurally related neuropeptide mimetics (both inhibit SNARE-complex assembly) but are distinct compounds. May 2026 follow-up audit: PubMed searched with '(\"SNAP-8\" OR \"acetyl glutamyl octapeptide\" OR \"leuphasyl\") AND (pharmacokinetics OR \"half-life\" OR \"skin penetration\" OR \"topical delivery\" OR absorption)' — SNAP-8 literature focuses on in vitro SNARE-complex inhibition assays and ex vivo wrinkle-attenuation endpoints; no dedicated compound-specific topical delivery or pharmacokinetics study for SNAP-8 itself was identified. Confirmed null result. The cited Argireline topical delivery study is retained as the closest indexed analogue for topical neuropeptide mimetic skin penetration data.",
   },
   {
     slug: "glutathione",
