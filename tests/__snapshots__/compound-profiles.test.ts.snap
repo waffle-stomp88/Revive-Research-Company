@@ -1,5 +1,19 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`compound-profiles — PK profile snapshots > kisspeptin-54 PK fields are present and stable 1`] = `
+{
+  "citationIds": [
+    "24449855",
+    "16278289",
+  ],
+  "halfLifeLabel": "~28–35 min",
+  "halfLifeMax": 35,
+  "halfLifeMin": 28,
+  "route": "subcutaneous",
+  "slug": "kisspeptin-54",
+}
+`;
+
 exports[`compound-profiles — value snapshots (formula + MW) > formula and molecularWeight are stable for all entries with real formulas 1`] = `
 [
   {

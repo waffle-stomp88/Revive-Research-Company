@@ -24,6 +24,7 @@
 
 import { describe, it, expect } from "vitest";
 import { compoundProfiles } from "@/data/compound-profiles";
+import { PEPTIDE_HALF_LIVES } from "@/data/pharmacokinetics";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -149,5 +150,32 @@ describe("compound-profiles — value snapshots (formula + MW)", () => {
     expect(entries.length).toBeGreaterThanOrEqual(35);
 
     expect(entries).toMatchSnapshot();
+  });
+});
+
+// ─── 3. PK PROFILE SNAPSHOTS ─────────────────────────────────────────────────
+//
+// Locks in the pharmacokinetic fields (halfLifeMin, halfLifeMax, halfLifeLabel,
+// route, and citation IDs) for specific compounds that have been verified
+// against published clinical literature.  Any accidental removal or edit of
+// these fields will fail CI and require an explicit `vitest --update-snapshots`
+// to accept the change.
+
+describe("compound-profiles — PK profile snapshots", () => {
+  it("kisspeptin-54 PK fields are present and stable", () => {
+    const entry = PEPTIDE_HALF_LIVES.find((e) => e.slug === "kisspeptin-54");
+
+    expect(entry, "kisspeptin-54 must exist in PEPTIDE_HALF_LIVES").toBeDefined();
+
+    const snapshot = {
+      slug: entry!.slug,
+      halfLifeMin: entry!.halfLifeMin,
+      halfLifeMax: entry!.halfLifeMax,
+      halfLifeLabel: entry!.halfLifeLabel,
+      route: entry!.route,
+      citationIds: entry!.citations.map((c) => c.id),
+    };
+
+    expect(snapshot).toMatchSnapshot();
   });
 });
