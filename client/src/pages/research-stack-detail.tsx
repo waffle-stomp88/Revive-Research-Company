@@ -31,6 +31,7 @@ import {
   EnclomipheneVisual,
   OxytocinVisual,
   KisspeptinVisual,
+  MelanotanReceptorVisual,
 } from "@/components/education";
 
 type PurchaseType = "one-time" | "subscription";
@@ -109,6 +110,7 @@ export default function ResearchStackDetail() {
     "gonadorelin-kisspeptin-hpg-cascade": [GonadorelinVisual, KisspeptinVisual],
     "triptorelin-enclomiphene-hpg-axis": [TriptorelinVisual, EnclomipheneVisual],
     "melanocortin-arousal-stack": [OxytocinVisual],
+    "hpg-axis-restore-stack": [KisspeptinVisual, MelanotanReceptorVisual],
   };
 
   const stackVisuals = STACK_VISUALS[stack.id] ?? [];
