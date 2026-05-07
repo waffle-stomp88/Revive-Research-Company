@@ -41,7 +41,9 @@ exports[`compound-profiles — PK profile snapshots > aod-9604 PK fields are pre
 
 exports[`compound-profiles — PK profile snapshots > b12-injection PK fields are present and stable 1`] = `
 {
-  "citationIds": [],
+  "citationIds": [
+    "5908537",
+  ],
   "halfLifeLabel": "~4–6 days (plasma terminal t½)",
   "halfLifeMax": 8640,
   "halfLifeMin": 5760,
@@ -211,7 +213,9 @@ exports[`compound-profiles — PK profile snapshots > kisspeptin-54 PK fields ar
 
 exports[`compound-profiles — PK profile snapshots > l-carnitine PK fields are present and stable 1`] = `
 {
-  "citationIds": [],
+  "citationIds": [
+    "12908852",
+  ],
   "halfLifeLabel": "~3–5 h",
   "halfLifeMax": 300,
   "halfLifeMin": 180,

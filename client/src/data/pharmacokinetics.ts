@@ -393,6 +393,31 @@
  *   including Graumlich 1997 and Padayatty 2004 review). No additional search
  *   was required in this pass; "(SC estimate)" halfLifeLabels, empty citations,
  *   and null-search notes are all unchanged and constitute the audit trail.
+ *
+ * Citation update (May 2026): First citations added for B12-injection and
+ * L-Carnitine. These were the remaining uncited entries in the vitamins/amino-acid
+ * supplement section of the catalog. VIP (main SC entry) and PEG-MGF retain empty
+ * citation arrays pending dedicated follow-up searches (see confirmed-null audit
+ * notes for both above). DSIP received its first citation — Graf & Kastin 1984,
+ * PMID 6202839 — in the May 2026 ivHalfLife additions pass documented above.
+ *
+ *  - B12-injection: Heyssel RM, Bozian RC, Darby WJ, Bell MC (1966) —
+ *    "Vitamin B12 turnover in man: the assimilation of vitamin B12 from natural
+ *    foodstuff by man and estimates of minimal daily dietary requirements",
+ *    Am J Clin Nutr 18(3):176–184. PMID 5908537. This study measured whole-body
+ *    B12 turnover and plasma cobalamin kinetics following parenteral administration
+ *    in human subjects and provides the empirical basis for the multi-day terminal
+ *    plasma half-life of injectable cyanocobalamin. Documented as closest indexed
+ *    kinetics study for the injectable route; not a compound-specific SC depot
+ *    absorption study.
+ *
+ *  - L-Carnitine: Evans AM, Fornasini G (2003) — "Pharmacokinetics of
+ *    L-carnitine", Clin Pharmacokinet 42(11):941–967. PMID 12908852. This is a
+ *    comprehensive review of published IV and oral L-carnitine pharmacokinetics
+ *    in humans, documenting the plasma half-life range of approximately 3–5 hours
+ *    for the IV route. Documented as a secondary review source compiling primary
+ *    IV/IM L-carnitine PK data; no SC depot absorption study for L-carnitine was
+ *    identified.
  */
 
 export type CitationType = "PMID" | "DOI";
@@ -1235,8 +1260,8 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     route: "subcutaneous",
     pkContext:
       "Cyanocobalamin (vitamin B12) following intramuscular or subcutaneous injection demonstrates a terminal plasma half-life of approximately 4–6 days; the initial distribution phase is rapid, with liver uptake within 1 hour. Long-term tissue stores in the liver have an effective biological half-life of years, but plasma pharmacokinetics reflect a multi-day terminal phase.",
-    citations: [],
-    note: "No single definitive compound-specific PubMed-indexed plasma pharmacokinetics study for cyanocobalamin SC injection was identified in the citation audit (April 2026). Plasma half-life estimate is based on established clinical pharmacokinetic knowledge of injectable cyanocobalamin.",
+    citations: [pmid("5908537", "Heyssel et al. (1966) — Vitamin B12 turnover in man: assimilation from natural foodstuff and minimal daily requirements, Am J Clin Nutr")],
+    note: "No compound-specific SC plasma pharmacokinetics study for cyanocobalamin injection was identified in the citation audit (April 2026). The cited Heyssel et al. (1966, PMID 5908537) study measured vitamin B12 whole-body turnover and plasma kinetics following parenteral administration in human subjects, providing the primary empirical basis for the multi-day plasma terminal half-life of injectable cyanocobalamin. This is the closest published PubMed-indexed kinetics study available for the injectable B12 route; it is not a compound-specific SC depot absorption study.",
   },
   {
     slug: "l-carnitine",
@@ -1247,8 +1272,8 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     route: "subcutaneous",
     pkContext:
       "L-Carnitine plasma half-life following intravenous or intramuscular administration is approximately 3–5 hours in published pharmacokinetic studies; renal tubular reabsorption plays a major role in maintaining plasma levels, and urinary excretion increases markedly above the renal transport maximum.",
-    citations: [],
-    note: "No compound-specific subcutaneous injection pharmacokinetics study for L-Carnitine was identified in the citation audit (April 2026). Half-life estimate based on published IV and IM L-carnitine pharmacokinetic data.",
+    citations: [pmid("12908852", "Evans & Fornasini (2003) — Pharmacokinetics of L-carnitine, Clin Pharmacokinet")],
+    note: "No compound-specific subcutaneous injection pharmacokinetics study for L-Carnitine was identified in the citation audit (April 2026). The cited Evans & Fornasini (2003, PMID 12908852) paper is a comprehensive review of published IV and oral L-carnitine pharmacokinetics in humans, documenting the plasma half-life range of approximately 3–5 hours for the IV route and providing the basis for the half-life estimate used here. This is a secondary review source compiling primary IV/IM L-carnitine PK data; no SC depot absorption study for L-carnitine was identified.",
   },
   {
     slug: "lipo-c",
