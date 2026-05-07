@@ -522,6 +522,18 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     note: "Half-life refers to the base peptide form, not slow-release depot formulations.",
   },
   {
+    slug: "enclomiphene",
+    name: "Enclomiphene",
+    halfLifeMin: 480,
+    halfLifeMax: 720,
+    halfLifeLabel: "~8–12 h",
+    route: "oral",
+    pkContext:
+      "Plasma half-life of enclomiphene (the trans-isomer of clomiphene) is approximately 8–12 hours following oral administration, as characterized in published pharmacokinetic and pharmacodynamic studies of enclomiphene citrate; enclomiphene undergoes hepatic metabolism and enterohepatic recirculation, yielding a substantially longer half-life than the cis-isomer (zuclomiphene). Selective ERα antagonist activity at the hypothalamus and anterior pituitary persists over the dosing interval consistent with this plasma half-life.",
+    citations: [pmid("22355298", "Wiehle et al. (2013) — Enclomiphene citrate stimulates testosterone and LH secretion pharmacokinetics and pharmacodynamics study, Int J Impot Res")],
+    note: "Half-life refers to the trans-isomer (enclomiphene) specifically; the cis-isomer (zuclomiphene) has a markedly shorter half-life. Cited study documents enclomiphene pharmacokinetics and pharmacodynamics following oral administration.",
+  },
+  {
     slug: "kisspeptin-10",
     name: "Kisspeptin-10",
     halfLifeMin: 15,
@@ -872,6 +884,7 @@ const NAME_SLUG_OVERRIDES: Record<string, string> = {
   // GnRH / gonadal axis
   "gonadorelin": "gonadorelin",
   "triptorelin": "triptorelin",
+  "enclomiphene": "enclomiphene",
   "kisspeptin-10": "kisspeptin-10",
 
   // GH secretagogues
