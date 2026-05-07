@@ -35,10 +35,23 @@
  *    (PMID 34304009, Awosemo et al. 2021, J Pharm Biomed Anal)
  *
  * SC altRoute additions (May 2026): Dual-route rows added for IV-primary entries
- * with clinically relevant SC use:
+ * with clinically evident SC use:
  *  - Cerebrolysin: SC estimate ~1–3 h based on neuropeptide mixture absorption
  *    models; no compound-specific SC PK study identified; dedicated IM/SC search
  *    returned null result (see altRoute.note); no citation assigned to SC altRoute
+ *
+ * Cerebrolysin IM PK search (May 2026): Extended search of Russian and Eastern
+ * European clinical databases performed per task specification:
+ *  - eLIBRARY.ru (RSCI) searched using Cyrillic query
+ *    'Церебролизин фармакокинетика внутримышечно' — no relevant IM/SC PK
+ *    articles identified (full-text access requires registration)
+ *  - CyberLeninka searched with same Cyrillic query — multiple Cerebrolysin
+ *    clinical articles found, none containing IM/SC absorption or half-life data
+ *  - EVER Neuro Pharma official SmPC confirmed via rlsnet.ru (Russian drug
+ *    registry, April 2026) — pharmacokinetics section explicitly states PK
+ *    analysis of individual components is not possible due to mixture complexity;
+ *    no IM or SC data in the official dossier
+ *  Result: confirmed null. No code change to citations; note updated in entry.
  *  - Lipo-C: SC estimate ~2–4 h for the ascorbic acid component; initially
  *    cited PMID 11340098 and PMID 15068981 as SC references (see correction
  *    below in the May 2026 citation audit block)
@@ -382,7 +395,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Plasma elimination half-life is estimated at approximately 30–60 minutes following intravenous administration based on the rapid plasma clearance expected for low-molecular-weight neuropeptides and amino acids; Cerebrolysin is a standardized mixture of such constituents. No compound-specific PubMed-indexed plasma pharmacokinetics study for Cerebrolysin was identified.",
     citations: [pmid("29172008", "Stepanichev et al. (2017) — Effects of cerebrolysin on nerve growth factor system in the aging rat brain, Restor Neurol Neurosci")],
-    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed; citation is to a published cerebrolysin pharmacological study. SC route half-life is an estimate based on the expected delayed systemic entry of the low-molecular-weight neuropeptide and amino acid mixture following subcutaneous depot absorption; no compound-specific PubMed-indexed SC pharmacokinetics study for Cerebrolysin was identified. A dedicated citation search was conducted targeting IM and SC Cerebrolysin absorption studies, including Eastern European and Russian clinical practice literature. No IM or SC bioavailability or pharmacokinetics study was found in PubMed-indexed sources. Recommended search strategy for future audits: PubMed query '(cerebrolysin) AND (intramuscular OR subcutaneous OR \"IM\" OR \"SC\") AND (pharmacokinetics OR absorption OR bioavailability OR \"half-life\")'; supplementary search in eLIBRARY.ru (Russian Science Citation Index) and CyberLeninka using the Cyrillic term 'Церебролизин' combined with 'фармакокинетика' (pharmacokinetics) or 'внутримышечно' (intramuscular).",
+    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed; citation is to a published cerebrolysin pharmacological study. SC route half-life is an estimate based on the expected delayed systemic entry of the low-molecular-weight neuropeptide and amino acid mixture following subcutaneous depot absorption; no compound-specific PubMed-indexed SC pharmacokinetics study for Cerebrolysin was identified. Multiple dedicated citation searches were conducted targeting IM and SC Cerebrolysin absorption studies: (1) PubMed query '(cerebrolysin) AND (intramuscular OR subcutaneous OR \"IM\" OR \"SC\") AND (pharmacokinetics OR absorption OR bioavailability OR \"half-life\")'; (2) eLIBRARY.ru (Russian Science Citation Index) searched using the Cyrillic query 'Церебролизин фармакокинетика внутримышечно' — no relevant IM or SC pharmacokinetics articles identified (access to individual full-text records requires registration); (3) CyberLeninka searched using the same Cyrillic query — multiple Cerebrolysin clinical articles found, none containing IM or SC bioavailability or half-life data; (4) EVER Neuro Pharma official prescribing information (SmPC, confirmed via rlsnet.ru Russian drug registry, April 2026) — the pharmacokinetics section of the official SmPC explicitly states that 'the complex composition of Cerebrolysin®, the active fraction of which consists of a balanced and stable mixture of biologically active oligopeptides with a total polyfunctional action, does not allow ordinary pharmacokinetic analysis of individual components.' No IM or SC PK data appears in the official dossier. Confirmed null result across all searched sources.",
     altRoute: {
       route: "subcutaneous",
       halfLifeLabel: "~1–3 h (SC estimate)",
