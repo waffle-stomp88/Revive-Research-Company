@@ -32,7 +32,7 @@ export { GLOWSynergyVisual } from "./glow-synergy-visual";
 export { KLOWSynergyVisual } from "./klow-synergy-visual";
 
 // Educational peptide visuals (compounds not carried by company)
-export { KisspeptinVisual, PT141Visual, ThymosinAlpha1Visual, DSIPVisual, SelankVisual, AOD9604Visual, ThymulinVisual } from "./educational-peptide-visuals";
+export { KisspeptinVisual, Kisspeptin54Visual, PT141Visual, ThymosinAlpha1Visual, DSIPVisual, SelankVisual, AOD9604Visual, ThymulinVisual } from "./educational-peptide-visuals";
 
 // New compound research visuals
 export { Amino1MQNADVisual } from "./amino1mq-nad-visual";

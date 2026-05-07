@@ -87,6 +87,7 @@ import {
   SLUPP332Visual,
   // Educational peptide visuals (compounds not carried by company)
   KisspeptinVisual,
+  Kisspeptin54Visual,
   PT141Visual,
   ThymosinAlpha1Visual,
   DSIPVisual,
@@ -163,7 +164,7 @@ const articleVisuals: Record<string, () => JSX.Element> = {
   "what-is-semax-peptide": () => <SemaxNeuralVisual />,
   "what-is-hcg-peptide": () => <HCGHormonalVisual />,
   "what-is-kisspeptin-peptide": () => <KisspeptinVisual />,
-  "what-is-kisspeptin-54-peptide": () => <KisspeptinVisual />,
+  "what-is-kisspeptin-54-peptide": () => <Kisspeptin54Visual />,
   "what-is-pt-141-bremelanotide-peptide": () => <PT141Visual />,
   "what-is-thymosin-alpha-1-peptide": () => <ThymosinAlpha1Visual />,
   "what-is-dsip-peptide": () => <DSIPVisual />,

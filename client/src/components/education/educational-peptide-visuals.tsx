@@ -1554,3 +1554,363 @@ export function ThymulinVisual() {
     </div>
   );
 }
+
+// ─── Kisspeptin-54 KISS1R Signaling Pathway ───────────────────────────────────
+
+function Kisspeptin54SignalingAnimation({ isInView }: { isInView: boolean }) {
+  const PINK = "#ec4899";
+  const VIOLET = "#9d4edd";
+  const CYAN = "#21d8ff";
+  const AMBER = "#f59e0b";
+
+  return (
+    <div className="relative w-full h-80 flex items-center justify-center overflow-hidden">
+      <div
+        className="absolute inset-0 rounded-xl"
+        style={{
+          background:
+            "radial-gradient(ellipse at 30% 50%, rgba(236,72,153,0.12) 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, rgba(157,78,221,0.10) 0%, transparent 60%)",
+        }}
+      />
+
+      <svg viewBox="0 0 380 240" className="w-full h-full">
+        <defs>
+          <filter id="kp54Glow">
+            <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+            <feMerge>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <marker id="kp54Arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill={PINK} />
+          </marker>
+          <marker id="kp54ArrowV" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill={VIOLET} />
+          </marker>
+          <marker id="kp54ArrowC" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill={CYAN} />
+          </marker>
+          <marker id="kp54ArrowA" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill={AMBER} />
+          </marker>
+        </defs>
+
+        {/* ── ISOFORM COMPARISON PANEL (left column) ── */}
+
+        {/* KP-54 bar */}
+        <motion.text x="12" y="24" fill={PINK} fontSize="7.5" fontWeight="bold"
+          initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 0.1 }}>
+          KP-54
+        </motion.text>
+        <motion.rect x="12" y="28" height="12" rx="3"
+          fill={`${PINK}30`} stroke={PINK} strokeWidth="1.5"
+          initial={{ width: 0 }} animate={isInView ? { width: 110 } : {}} transition={{ delay: 0.2, duration: 0.8 }}
+          style={{ filter: `drop-shadow(0 0 4px ${PINK}66)` }}
+        />
+        <motion.text x="126" y="37" fill={PINK} fontSize="6.5"
+          initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 1.1 }}>
+          54 aa
+        </motion.text>
+
+        {/* KP-10 bar */}
+        <motion.text x="12" y="54" fill={VIOLET} fontSize="7.5" fontWeight="bold"
+          initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 0.3 }}>
+          KP-10
+        </motion.text>
+        <motion.rect x="12" y="58" height="12" rx="3"
+          fill={`${VIOLET}25`} stroke={VIOLET} strokeWidth="1.5"
+          initial={{ width: 0 }} animate={isInView ? { width: 20 } : {}} transition={{ delay: 0.35, duration: 0.4 }}
+          style={{ filter: `drop-shadow(0 0 4px ${VIOLET}55)` }}
+        />
+        <motion.text x="36" y="67" fill={VIOLET} fontSize="6.5"
+          initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 0.9 }}>
+          10 aa
+        </motion.text>
+
+        {/* label */}
+        <motion.text x="12" y="84" fill="rgba(255,255,255,0.4)" fontSize="6"
+          initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 1.2 }}>
+          Isoform length
+        </motion.text>
+
+        {/* Neprilysin cleavage arrow */}
+        <motion.text x="12" y="102" fill={AMBER} fontSize="6.5" fontWeight="bold"
+          initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 1.4 }}>
+          Neprilysin
+        </motion.text>
+        <motion.text x="12" y="112" fill="rgba(255,255,255,0.45)" fontSize="5.8"
+          initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 1.5 }}>
+          cleaves KP-54 → KP-10
+        </motion.text>
+        <motion.line x1="75" y1="38" x2="75" y2="62" stroke={AMBER} strokeWidth="1" strokeDasharray="3 2"
+          initial={{ pathLength: 0 }} animate={isInView ? { pathLength: 1 } : {}} transition={{ delay: 1.6 }}
+        />
+
+        {/* ── RECEPTOR NODE (center) ── */}
+        <motion.ellipse cx="205" cy="80" rx="40" ry="22"
+          fill={`${PINK}20`} stroke={PINK} strokeWidth="2"
+          initial={{ scale: 0 }} animate={isInView ? { scale: 1 } : {}} transition={{ delay: 0.5 }}
+          style={{ filter: `drop-shadow(0 0 10px ${PINK}55)` }}
+        />
+        <motion.text x="205" y="77" textAnchor="middle" fill={PINK} fontSize="8" fontWeight="bold"
+          initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 0.7 }}>
+          KISS1R
+        </motion.text>
+        <motion.text x="205" y="88" textAnchor="middle" fill={PINK} fontSize="6"
+          initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 0.8 }}>
+          GPR54
+        </motion.text>
+
+        {/* Occupancy bars under receptor */}
+        <motion.text x="165" y="114" fill="rgba(255,255,255,0.5)" fontSize="5.5"
+          initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 1.2 }}>
+          Receptor occupancy
+        </motion.text>
+
+        {/* KP-54 occupancy (long) */}
+        <motion.text x="165" y="124" fill={PINK} fontSize="5.5"
+          initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 1.3 }}>
+          KP-54 ▶
+        </motion.text>
+        <motion.rect x="192" y="118" height="8" rx="2"
+          fill={`${PINK}40`} stroke={PINK} strokeWidth="1"
+          initial={{ width: 0 }} animate={isInView ? { width: 50 } : {}} transition={{ delay: 1.3, duration: 0.7 }}
+        />
+
+        {/* KP-10 occupancy (short) */}
+        <motion.text x="165" y="138" fill={VIOLET} fontSize="5.5"
+          initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 1.5 }}>
+          KP-10 ▶
+        </motion.text>
+        <motion.rect x="192" y="132" height="8" rx="2"
+          fill={`${VIOLET}30`} stroke={VIOLET} strokeWidth="1"
+          initial={{ width: 0 }} animate={isInView ? { width: 14 } : {}} transition={{ delay: 1.5, duration: 0.3 }}
+        />
+
+        {/* connection line: isoform panel → receptor */}
+        <motion.line x1="145" y1="80" x2="162" y2="80"
+          stroke={PINK} strokeWidth="1.5" markerEnd="url(#kp54Arrow)"
+          initial={{ pathLength: 0 }} animate={isInView ? { pathLength: 1 } : {}} transition={{ delay: 0.9 }}
+        />
+
+        {/* ── Gq/11 ── */}
+        <motion.rect x="248" y="62" width="48" height="22" rx="6"
+          fill={`${VIOLET}20`} stroke={VIOLET} strokeWidth="1.5"
+          initial={{ scale: 0 }} animate={isInView ? { scale: 1 } : {}} transition={{ delay: 0.9 }}
+          style={{ filter: `drop-shadow(0 0 8px ${VIOLET}44)` }}
+        />
+        <motion.text x="272" y="76" textAnchor="middle" fill={VIOLET} fontSize="8" fontWeight="bold"
+          initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 1.0 }}>
+          Gq/11
+        </motion.text>
+
+        {/* KISS1R → Gq/11 */}
+        <motion.line x1="245" y1="78" x2="249" y2="75"
+          stroke={VIOLET} strokeWidth="1.5" markerEnd="url(#kp54ArrowV)"
+          initial={{ pathLength: 0 }} animate={isInView ? { pathLength: 1 } : {}} transition={{ delay: 1.1 }}
+        />
+
+        {/* ── PLCβ ── */}
+        <motion.rect x="310" y="55" width="46" height="22" rx="6"
+          fill={`${CYAN}18`} stroke={CYAN} strokeWidth="1.5"
+          initial={{ scale: 0 }} animate={isInView ? { scale: 1 } : {}} transition={{ delay: 1.1 }}
+          style={{ filter: `drop-shadow(0 0 8px ${CYAN}33)` }}
+        />
+        <motion.text x="333" y="69" textAnchor="middle" fill={CYAN} fontSize="8" fontWeight="bold"
+          initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 1.2 }}>
+          PLCβ
+        </motion.text>
+
+        {/* Gq/11 → PLCβ */}
+        <motion.line x1="296" y1="73" x2="311" y2="68"
+          stroke={CYAN} strokeWidth="1.5" markerEnd="url(#kp54ArrowC)"
+          initial={{ pathLength: 0 }} animate={isInView ? { pathLength: 1 } : {}} transition={{ delay: 1.3 }}
+        />
+
+        {/* ── IP3 / DAG ── */}
+        <motion.rect x="305" y="98" width="28" height="18" rx="5"
+          fill={`${CYAN}18`} stroke={CYAN} strokeWidth="1.2"
+          initial={{ scale: 0 }} animate={isInView ? { scale: 1 } : {}} transition={{ delay: 1.4 }}
+        />
+        <motion.text x="319" y="110" textAnchor="middle" fill={CYAN} fontSize="6.5" fontWeight="bold"
+          initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 1.5 }}>
+          IP₃
+        </motion.text>
+
+        <motion.rect x="339" y="98" width="28" height="18" rx="5"
+          fill={`${AMBER}18`} stroke={AMBER} strokeWidth="1.2"
+          initial={{ scale: 0 }} animate={isInView ? { scale: 1 } : {}} transition={{ delay: 1.5 }}
+        />
+        <motion.text x="353" y="110" textAnchor="middle" fill={AMBER} fontSize="6.5" fontWeight="bold"
+          initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 1.6 }}>
+          DAG
+        </motion.text>
+
+        {/* PLCβ → IP3 + DAG */}
+        <motion.line x1="333" y1="77" x2="333" y2="99"
+          stroke={CYAN} strokeWidth="1.2" strokeDasharray="3 2"
+          markerEnd="url(#kp54ArrowC)"
+          initial={{ pathLength: 0 }} animate={isInView ? { pathLength: 1 } : {}} transition={{ delay: 1.4 }}
+        />
+
+        {/* ── Ca2+ release ── */}
+        <motion.text x="319" y="130" textAnchor="middle" fill={CYAN} fontSize="5.5"
+          initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 1.7 }}>
+          Ca²⁺↑
+        </motion.text>
+
+        {/* ── GnRH Pulse (bottom center) ── */}
+        <motion.ellipse cx="205" cy="195" rx="52" ry="22"
+          fill={`${AMBER}18`} stroke={AMBER} strokeWidth="2"
+          initial={{ scale: 0 }} animate={isInView ? { scale: 1 } : {}} transition={{ delay: 1.8 }}
+          style={{ filter: `drop-shadow(0 0 12px ${AMBER}55)` }}
+        />
+        <motion.text x="205" y="192" textAnchor="middle" fill={AMBER} fontSize="8.5" fontWeight="bold"
+          initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 2.0 }}>
+          GnRH Pulse
+        </motion.text>
+        <motion.text x="205" y="203" textAnchor="middle" fill={AMBER} fontSize="6"
+          initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 2.1 }}>
+          Sustained (KP-54)
+        </motion.text>
+
+        {/* Receptor → GnRH */}
+        <motion.line x1="205" y1="102" x2="205" y2="173"
+          stroke={AMBER} strokeWidth="2" markerEnd="url(#kp54ArrowA)"
+          initial={{ pathLength: 0 }} animate={isInView ? { pathLength: 1 } : {}} transition={{ delay: 1.9 }}
+        />
+
+        {/* Ca2+ / IP3 side link down to GnRH */}
+        <motion.line x1="319" y1="134" x2="260" y2="182"
+          stroke={CYAN} strokeWidth="1" strokeDasharray="3 2"
+          markerEnd="url(#kp54ArrowC)"
+          initial={{ pathLength: 0 }} animate={isInView ? { pathLength: 1 } : {}} transition={{ delay: 2.1 }}
+        />
+
+        {/* pituitary label */}
+        <motion.text x="205" y="225" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="6"
+          initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 2.2 }}>
+          → LH / FSH release
+        </motion.text>
+      </svg>
+    </div>
+  );
+}
+
+export function Kisspeptin54Visual() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { once: true, margin: "-50px" });
+
+  return (
+    <div ref={containerRef} className="relative">
+      <div
+        className="absolute inset-0 h-full w-full rounded-2xl blur-3xl -z-10"
+        style={{
+          background:
+            "radial-gradient(ellipse at 30% 40%, rgba(236,72,153,0.10) 0%, transparent 60%), radial-gradient(ellipse at 70% 60%, rgba(157,78,221,0.08) 0%, transparent 60%)",
+        }}
+      />
+
+      <motion.div
+        className="text-center mb-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+      >
+        <div
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-4"
+          style={{
+            background:
+              "linear-gradient(135deg, rgba(236,72,153,0.15) 0%, rgba(157,78,221,0.08) 100%)",
+            borderColor: "#ec4899",
+            boxShadow: "0 0 20px rgba(236,72,153,0.3)",
+          }}
+        >
+          <Heart
+            className="h-5 w-5 text-[#ec4899]"
+            style={{ filter: "drop-shadow(0 0 4px rgba(236,72,153,0.6))" }}
+          />
+          <span className="text-sm font-bold bg-gradient-to-r from-[#ec4899] to-[#9d4edd] bg-clip-text text-transparent">
+            Kisspeptin-54 KISS1R Signaling Pathway
+          </span>
+        </div>
+        <p className="text-sm text-muted-foreground max-w-lg mx-auto">
+          Full-length KP-54 isoform vs KP-10 fragment — extended receptor occupancy, neprilysin cleavage kinetics, and the Gq/11 cascade that drives GnRH pulsatility
+        </p>
+      </motion.div>
+
+      <div
+        className="rounded-xl border p-6 mb-6"
+        style={{
+          borderColor: "rgba(236,72,153,0.3)",
+          background:
+            "linear-gradient(135deg, rgba(236,72,153,0.06) 0%, rgba(157,78,221,0.04) 60%, transparent 100%)",
+        }}
+      >
+        <Kisspeptin54SignalingAnimation isInView={isInView} />
+
+        <div className="mt-6 grid md:grid-cols-3 gap-4">
+          {[
+            {
+              title: "Extended Half-Life",
+              desc: "The 54-residue full-length isoform resists rapid degradation compared to KP-10, resulting in a longer receptor-occupancy window and more sustained GnRH pulsatility.",
+              color: "#ec4899",
+              icon: Clock,
+            },
+            {
+              title: "Neprilysin Cleavage",
+              desc: "Neprilysin (NEP/CD10) is the primary protease responsible for converting KP-54 to the shorter KP-10 fragment in vivo, governing the kinetics of isoform interconversion.",
+              color: "#f59e0b",
+              icon: FlaskConical,
+            },
+            {
+              title: "Gq/11 → GnRH Cascade",
+              desc: "KISS1R couples to Gq/11 proteins, activating PLCβ to generate IP₃ and DAG. IP₃-driven Ca²⁺ mobilisation triggers coordinated GnRH pulse release to the pituitary.",
+              color: "#21d8ff",
+              icon: Zap,
+            },
+          ].map((item, idx) => {
+            const Icon = item.icon;
+            return (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: 1.2 + idx * 0.15 }}
+                className="p-4 rounded-lg"
+                style={{
+                  backgroundColor: `${item.color}10`,
+                  border: `1px solid ${item.color}30`,
+                }}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center"
+                    style={{ backgroundColor: `${item.color}20` }}
+                  >
+                    <Icon className="h-4 w-4" style={{ color: item.color }} />
+                  </div>
+                  <span className="text-sm font-bold" style={{ color: item.color }}>
+                    {item.title}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground">{item.desc}</p>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+
+      <motion.div
+        className="text-center text-xs text-muted-foreground"
+        initial={{ opacity: 0 }}
+        animate={isInView ? { opacity: 1 } : {}}
+        transition={{ delay: 2.2 }}
+      >
+        <span className="px-3 py-1 rounded-full bg-muted/30">
+          Kisspeptin-54 KISS1R signaling mechanism • For research education only
+        </span>
+      </motion.div>
+    </div>
+  );
+}
