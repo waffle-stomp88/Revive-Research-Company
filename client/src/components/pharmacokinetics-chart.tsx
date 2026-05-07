@@ -831,8 +831,15 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                     x2={CHART.x0 + c.halfLifeXFrac * CHART.plotW} y2={CHART.y1}
                     stroke={c.color} strokeOpacity="0.25" strokeWidth="1" strokeDasharray="3 3"
                   />
-                  <text x={CHART.x0 + c.halfLifeXFrac * CHART.plotW} y={CHART.y1 + 11}
-                    textAnchor="middle" fontSize="7.5" fill={c.color} fillOpacity="0.6">t½</text>
+                  {isEstimatedLabel(c.pk.halfLifeLabel) ? (
+                    <text x={CHART.x0 + c.halfLifeXFrac * CHART.plotW} y={CHART.y1 + 11}
+                      textAnchor="middle" fontSize="7.5" fill="#f59e0b" fillOpacity="0.75"
+                      data-testid={`pk-half-life-label-estimate-${toTestSlug(c.peptide.name)}`}>t½*</text>
+                  ) : (
+                    <text x={CHART.x0 + c.halfLifeXFrac * CHART.plotW} y={CHART.y1 + 11}
+                      textAnchor="middle" fontSize="7.5" fill={c.color} fillOpacity="0.6"
+                      data-testid={`pk-half-life-label-${toTestSlug(c.peptide.name)}`}>t½</text>
+                  )}
                 </g>
               ))}
 
@@ -1080,6 +1087,13 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                 Time ({useHours ? "hours" : "min"})
               </text>
             </svg>
+
+            {/* Estimate footnote — shown when any visible curve has an estimated half-life */}
+            {curves.some(c => c && c.halfLifeXFrac !== null && isEstimatedLabel(c.pk.halfLifeLabel)) && (
+              <p className="text-[10px] leading-snug mt-0.5 mb-0 px-0.5" style={{ color: "#f59e0b", opacity: 0.6 }} data-testid="pk-estimate-footnote">
+                * SC estimate — half-life extrapolated from IV data or class-level pharmacokinetics; no direct SC plasma PK study identified.
+              </p>
+            )}
 
             {/* IV marker tooltip — fixed positioning, shown on hover of IV t½ dashed-line markers */}
             {ivMarkerTooltip && (() => {
