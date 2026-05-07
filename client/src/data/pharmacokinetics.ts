@@ -404,12 +404,22 @@
  *  - B12-injection: Heyssel RM, Bozian RC, Darby WJ, Bell MC (1966) —
  *    "Vitamin B12 turnover in man: the assimilation of vitamin B12 from natural
  *    foodstuff by man and estimates of minimal daily dietary requirements",
- *    Am J Clin Nutr 18(3):176–184. PMID 5908537. This study measured whole-body
+ *    Am J Clin Nutr 18(3):176–184. PMID 5948742. This study measured whole-body
  *    B12 turnover and plasma cobalamin kinetics following parenteral administration
  *    in human subjects and provides the empirical basis for the multi-day terminal
  *    plasma half-life of injectable cyanocobalamin. Documented as closest indexed
  *    kinetics study for the injectable route; not a compound-specific SC depot
  *    absorption study.
+ *    [PMID CORRECTION — May 2026 verification]: The originally recorded PMID
+ *    5908537 was wrong; that UID resolves to Le Minor L (1966) "[Antigenic
+ *    conversions in Salmonella. IX…]", Ann Inst Pasteur (Paris) — an entirely
+ *    unrelated microbiology paper. PubMed eutils esearch for
+ *    Heyssel[Author]+1966+Am J Clin Nutr returned UID 5948742, confirmed via
+ *    esummary: title "Vitamin B12 turnover in man…", authors Heyssel RM et al.,
+ *    source Am J Clin Nutr, pubdate 1966 Mar. Corrected to PMID 5948742. The
+ *    active citations[] array for this entry had already been upgraded to Hotta
+ *    & Mano 2024 (PMID 39245417) in the May 2026 quality sweep, so no runtime
+ *    data change was required; only this header record is corrected.
  *
  *  - L-Carnitine: Evans AM, Fornasini G (2003) — "Pharmacokinetics of
  *    L-carnitine", Clin Pharmacokinet 42(11):941–967. PMID 12908852. This is a
@@ -418,6 +428,13 @@
  *    for the IV route. Documented as a secondary review source compiling primary
  *    IV/IM L-carnitine PK data; no SC depot absorption study for L-carnitine was
  *    identified.
+ *    [PMID VERIFIED — May 2026 verification]: PMID 12908852 confirmed correct
+ *    via PubMed eutils esummary: title "Pharmacokinetics of L-carnitine.",
+ *    authors Evans AM & Fornasini G, source Clin Pharmacokinet, pubdate 2003.
+ *    Author, journal, and year all match. The active citations[] array for this
+ *    entry had already been upgraded to Jennaro et al. 2023 (PMID 37775945) in
+ *    the May 2026 quality sweep; this record is retained as the audit trail for
+ *    the original first-citation pass.
  *
  * Citation audit (May 2026): SC-inferred-from-IV systematic pass
  *
