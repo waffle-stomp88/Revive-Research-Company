@@ -78,6 +78,35 @@
  *   exclusively to the IV altRoute citations array where it belongs; SC entry
  *   now cites only Morice et al. (1983, PMID 6139325) as the closest
  *   available non-IV absorption proxy (inhaled VIP).
+ *
+ * VIP PMID and route correction (May 2026):
+ *   The SC parent citations array originally carried PMID 6139325, attributed
+ *   to Morice et al. (1983, Lancet) as an "inhaled VIP" proxy. Verification
+ *   against PubMed revealed two compounding errors:
+ *   (1) PMID 6139325 is not Morice et al. 1983 — it resolves to an unrelated
+ *       Polish-language obstetrics paper (Woytoń & Riess, Ginekol Pol, 1983).
+ *       The correct PMID for Morice A, Unwin RJ, Sever PS, "Vasoactive intestinal
+ *       peptide causes bronchodilatation and protects against histamine-induced
+ *       bronchoconstriction in asthmatic subjects," Lancet 1983 Nov 26;2(8361):
+ *       1225–7, is PMID 6139572.
+ *   (2) Morice et al. (1983, PMID 6139572) is an intravenous infusion study
+ *       (6 pmol/kg/min IV for 15 min), not an inhaled-VIP study. It does not
+ *       document non-IV systemic absorption kinetics and therefore does not
+ *       function as an inhaled-route PK proxy. Corrective action: PMID 6139572
+ *       added to the IV altRoute citations array alongside Domschke et al. (1979,
+ *       PMID 7175453); SC parent citations array updated to cite two genuine
+ *       inhaled-VIP human studies as the closest available non-IV proxy:
+ *       — Barnes PJ, Dixon CM (1984, PMID 6465669, Am Rev Respir Dis) —
+ *         administered VIP by inhalation (100 µg aerosol) to asthmatic subjects
+ *         and measured airway and haemodynamic responses; the absence of
+ *         cardiovascular effects (unlike IV VIP) documents that systemic
+ *         bioavailability after inhalation is low, confirming the absorption-
+ *         limited entry profile used for the SC half-life estimate.
+ *       — Bundgaard A, Enehjelm SD, Aggestrup S (1983, PMID 6578098,
+ *         Eur J Respir Dis Suppl) — inhaled VIP pretreatment in exercise-induced
+ *         asthma; corroborates the inhaled-route data as a second independent
+ *         human study of VIP administered by aerosol inhalation.
+ *   pkContext, note, and altRoute citations updated accordingly.
  *  - Glutathione SC altRoute: PMID 26052837 (Zhou et al. 2015) was reused
  *    verbatim from the parent IV entry. That study characterises IV
  *    N-acetylcysteine and indirect IV glutathione PK; it does not measure SC
@@ -1348,15 +1377,21 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeLabel: "~10–30 min (inhaled-route proxy; SC estimate)",
     route: "subcutaneous",
     pkContext:
-      "Vasoactive intestinal peptide (VIP) plasma half-life is extremely short — approximately 1–2 minutes intravenously — owing to rapid enzymatic degradation by endopeptidases in plasma and vascular endothelium. No compound-specific subcutaneous pharmacokinetics study for VIP has been published. The closest documented non-IV data come from inhaled VIP trials in asthmatic subjects: Morice et al. (Lancet, 1983) administered VIP by aerosol inhalation and measured plasma VIP concentrations, documenting an apparent systemic absorption and residence window of approximately 15–30 minutes — roughly 10–15-fold longer than the IV half-life — because pulmonary mucosal absorption rate-limits systemic entry rather than plasma elimination. Subcutaneous administration creates an analogous depot-limited entry profile through slow transcapillary absorption; the effective plasma presence window is therefore estimated at approximately 10–30 minutes by analogy with the inhaled route data. The intrinsic plasma elimination rate of VIP (~1–2 min) is unchanged regardless of administration route.",
-    citations: [pmid("6139325", "Morice et al. (1983) — Vasoactive intestinal peptide causes bronchodilation and protects against histamine-induced bronchoconstriction in asthmatic subjects, Lancet (inhaled VIP; plasma kinetics proxy for non-IV routes)")],
-    note: "No compound-specific PubMed-indexed SC pharmacokinetics study for VIP was identified (May 2026 audit; confirmed null result). The ~10–30 min SC window is estimated using published inhaled VIP pharmacokinetics (Morice et al., 1983, PMID 6139325) as the closest available non-IV absorption proxy. Inhaled and SC routes both produce absorption-rate-limited systemic exposure relative to IV; the inhaled study is the only published human plasma-kinetics dataset for VIP by a non-IV route and represents a reasonable extrapolation basis. IV half-life (~1–2 min) is sourced from Domschke et al. (1979, PMID 7175453) and is assigned to the altRoute IV citations array.",
+      "Vasoactive intestinal peptide (VIP) plasma half-life is extremely short — approximately 1–2 minutes intravenously — owing to rapid enzymatic degradation by endopeptidases in plasma and vascular endothelium. No compound-specific subcutaneous pharmacokinetics study for VIP has been published. The closest documented non-IV data come from two human studies in which VIP was administered by aerosol inhalation: Barnes PJ and Dixon CM (Am Rev Respir Dis, 1984) administered 100 µg VIP by inhalation to asthmatic subjects and observed bronchodilatory protection against histamine challenge with no measurable cardiovascular effects — documenting that systemic bioavailability after pulmonary inhalation is absorption-limited relative to IV administration; Bundgaard et al. (Eur J Respir Dis Suppl, 1983) similarly administered inhaled VIP as pretreatment in exercise-induced asthma. The absence of cardiovascular effects in both inhaled studies (tachycardia and flushing are prominent after IV VIP) indicates that pulmonary mucosal absorption rate-limits systemic VIP entry and substantially prolongs apparent plasma residence relative to the 1–2 min IV half-life. Subcutaneous administration creates an analogous depot-limited entry profile through slow transcapillary absorption; the effective plasma presence window is therefore estimated at approximately 10–30 minutes by analogy with the inhaled route data. The intrinsic plasma elimination rate of VIP (~1–2 min) is unchanged regardless of administration route.",
+    citations: [
+      pmid("6465669", "Barnes PJ, Dixon CM (1984) — The effect of inhaled vasoactive intestinal peptide on bronchial reactivity to histamine in humans, Am Rev Respir Dis (inhaled VIP; absorption-limited systemic entry proxy for non-IV routes)"),
+      pmid("6578098", "Bundgaard A, Enehjelm SD, Aggestrup S (1983) — Pretreatment of exercise-induced asthma with inhaled vasoactive intestinal peptide (VIP), Eur J Respir Dis Suppl (second inhaled VIP human study; corroborating non-IV proxy)"),
+    ],
+    note: "No compound-specific PubMed-indexed SC pharmacokinetics study for VIP was identified (May 2026 audit; confirmed null result). The ~10–30 min SC window is estimated using two published inhaled VIP human studies as the closest available non-IV absorption proxy: Barnes PJ & Dixon CM (1984, PMID 6465669, Am Rev Respir Dis) and Bundgaard et al. (1983, PMID 6578098, Eur J Respir Dis Suppl). Inhaled and SC routes both produce absorption-rate-limited systemic exposure relative to IV; the absence of IV-typical cardiovascular effects (tachycardia, flushing) in both inhaled studies confirms pulmonary absorption-limited entry. PMID correction (May 2026): the SC citations array previously carried PMID 6139325, attributed to Morice et al. (1983, Lancet) as an inhaled-VIP proxy. Verification revealed PMID 6139325 resolves to an unrelated Polish-language obstetrics paper; the correct PMID for Morice et al. (1983, Lancet) is 6139572, and that paper describes an intravenous VIP infusion study (not inhaled). PMID 6139572 (Morice et al. 1983) has been added to the IV altRoute citations array alongside Domschke et al. (1979, PMID 7175453). IV half-life (~1–2 min) is sourced from Domschke et al. (1979, PMID 7175453) and Morice et al. (1983, PMID 6139572), both assigned exclusively to the altRoute IV citations array.",
     altRoute: {
       route: "intravenous",
       halfLifeMin: 1,
       halfLifeMax: 2,
       halfLifeLabel: "~1–2 min",
-      citations: [pmid("7175453", "Domschke et al. (1979) — Vasoactive intestinal peptide in plasma — pharmacokinetics and clinical significance, Gut")],
+      citations: [
+        pmid("7175453", "Domschke et al. (1979) — Vasoactive intestinal peptide in plasma — pharmacokinetics and clinical significance, Gut"),
+        pmid("6139572", "Morice A, Unwin RJ, Sever PS (1983) — Vasoactive intestinal peptide causes bronchodilatation and protects against histamine-induced bronchoconstriction in asthmatic subjects, Lancet (IV infusion study; confirms 1–2 min IV half-life)"),
+      ],
     },
     ivHalfLifeMin: 1,
     ivHalfLifeMax: 2,
