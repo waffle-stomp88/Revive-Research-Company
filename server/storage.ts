@@ -2761,8 +2761,9 @@ export async function seedStripePresetsIfEmpty(): Promise<void> {
 /**
  * Ensures the four hormonal compound education articles introduced with the
  * HPG Cascade and Triptorelin+Enclomiphene research stacks are present and
- * published in the database. Runs at startup and is a no-op once the records
- * exist (uses INSERT … ON CONFLICT DO NOTHING).
+ * published in the database. Runs at startup and upserts content on conflict
+ * (uses INSERT … ON CONFLICT DO UPDATE) so cross-links and content updates
+ * in the seed propagate to existing DB records without manual intervention.
  */
 export async function seedHormonalEducationArticlesIfMissing(): Promise<void> {
   const HORMONAL_ARTICLES: Array<{
@@ -2773,6 +2774,23 @@ export async function seedHormonalEducationArticlesIfMissing(): Promise<void> {
     readTimeMinutes: number;
     sortOrder: number;
   }> = [
+    {
+      slug: "what-is-kisspeptin-peptide",
+      title: "Kisspeptin: KISS1 Gene Peptide Family Research Guide",
+      summary:
+        "Kisspeptin is the collective name for a family of neuropeptides encoded by the KISS1 gene that activate the kisspeptin receptor (KISS1R/GPR54) on hypothalamic GnRH neurons to drive pulsatile GnRH secretion. Researchers use kisspeptin isoforms — ranging from the 10-amino-acid fragment (kisspeptin-10) to the full 54-residue precursor (kisspeptin-54) — to interrogate the upstream hypothalamic gate of the HPG reproductive axis.",
+      content: `Kisspeptin refers to a family of neuropeptides produced by cleavage of the KISS1 gene product, a 145-amino-acid precursor protein (prepro-kisspeptin). Proteolytic processing of the precursor by tissue kallikrein and related endopeptidases generates a series of bioactive C-terminal fragments: kisspeptin-54 (the longest naturally occurring isoform, also called metastin), kisspeptin-14, kisspeptin-13, and kisspeptin-10. All isoforms share a conserved C-terminal RF-amide decapeptide sequence (the kisspeptin-10 region) that is essential for binding and activating the kisspeptin receptor — KISS1R, also known as GPR54 — a Gq/11-protein-coupled GPCR expressed predominantly on hypothalamic GnRH neurons in the arcuate nucleus (ARC) and anteroventral periventricular nucleus (AVPV).
+
+KISS1R engagement by any kisspeptin isoform triggers the canonical Gq/11 signaling cascade: receptor-coupled Gαq activates phospholipase C-β (PLCβ), hydrolyzing PIP2 into IP3 and DAG. IP3-driven calcium release from the endoplasmic reticulum, together with DAG-mediated PKC activation, depolarizes GnRH neuron axon terminals and drives pulsatile GnRH release into the hypophyseal portal circulation. This kisspeptin → KISS1R → GnRH → LH/FSH axis represents the principal molecular gate of the hypothalamic-pituitary-gonadal (HPG) reproductive cascade, making kisspeptin compounds indispensable tools for studying upstream neuroendocrine control of gonadotropin secretion.
+
+Kisspeptin neurons in the ARC are the primary pulse generators; they co-express neurokinin B (NKB) and dynorphin (forming the KNDy neuron population) and integrate sex steroid negative feedback to set GnRH pulse frequency. AVPV kisspeptin neurons, by contrast, mediate estrogen-positive feedback and are implicated in the preovulatory LH surge. This anatomical and functional heterogeneity makes the kisspeptin system a rich target for studying hypothalamic circuit regulation.
+
+Research applications include: HPG axis neuroendocrine pharmacology; isoform-selective KISS1R activation studies; pulsatile GnRH and LH/FSH secretion modeling; estrogen feedback pathway dissection; and multi-compound HPG cascade experiments pairing kisspeptin (upstream hypothalamic relay) with downstream tools such as Gonadorelin (direct GnRHR agonist at the pituitary) or Triptorelin (high-affinity GnRHR analog).
+
+**See also:** [Kisspeptin-54: Full-Length KISS1 Isoform Research Guide](/guides/what-is-kisspeptin-54-peptide) — a detailed comparison of the 54-amino-acid precursor isoform versus kisspeptin-10, covering pharmacokinetic differences, receptor occupancy kinetics, and extended GnRH pulse modeling applications.`,
+      readTimeMinutes: 7,
+      sortOrder: 46,
+    },
     {
       slug: "what-is-gonadorelin-peptide",
       title: "Gonadorelin: Synthetic GnRH Research Guide",
@@ -2829,7 +2847,9 @@ KISS1R activation by kisspeptin-54 triggers the canonical Gq/11 signaling cascad
 
 The pharmacokinetic distinction between kisspeptin-54 and kisspeptin-10 is central to their comparative research utility. Kisspeptin-54 has a plasma half-life of approximately 28–35 minutes following subcutaneous administration — substantially longer than the ~15–30 minutes reported for kisspeptin-10 under matched conditions — owing to its larger molecular size and correspondingly slower neprilysin (neutral endopeptidase, NEP/CD10)-mediated cleavage of the intact 54-residue sequence. This extended circulatory residence time produces a more prolonged pulsatile GnRH stimulus with a correspondingly greater LH area-under-the-curve (AUC), a difference directly quantified in randomized crossover pharmacodynamic studies comparing isoform-specific gonadotropin profiles in human volunteers.
 
-Research applications include: KISS1R agonism and Gq/11-pathway pharmacology; comparative isoform studies examining how peptide length alters receptor occupancy kinetics and GnRH pulse amplitude; pulsatile LH/FSH secretion modeling across dose frequencies; and multi-compound HPG cascade models combining kisspeptin-54 (upstream hypothalamic node) with downstream components — such as Gonadorelin (direct GnRHR agonist at the pituitary), Triptorelin (high-affinity GnRHR analog), or Enclomiphene (estrogen-feedback removal) — to dissect consecutive signaling steps at defined relay points within the same experimental model.`,
+Research applications include: KISS1R agonism and Gq/11-pathway pharmacology; comparative isoform studies examining how peptide length alters receptor occupancy kinetics and GnRH pulse amplitude; pulsatile LH/FSH secretion modeling across dose frequencies; and multi-compound HPG cascade models combining kisspeptin-54 (upstream hypothalamic node) with downstream components — such as Gonadorelin (direct GnRHR agonist at the pituitary), Triptorelin (high-affinity GnRHR analog), or Enclomiphene (estrogen-feedback removal) — to dissect consecutive signaling steps at defined relay points within the same experimental model.
+
+**See also:** [Kisspeptin: KISS1 Gene Peptide Family Research Guide](/guides/what-is-kisspeptin-peptide) — a broader overview of the full kisspeptin isoform family (kisspeptin-10, -13, -14, and -54), KISS1R signaling, KNDy neuron biology, and the dual ARC/AVPV circuit architecture that governs HPG pulse generation and the preovulatory LH surge.`,
       readTimeMinutes: 7,
       sortOrder: 51,
     },
@@ -2861,6 +2881,15 @@ Research interest in oxytocin centers on its role as a neuromodulator of prosoci
         sortOrder: article.sortOrder,
         isPublished: true,
       })
-      .onConflictDoNothing();
+      .onConflictDoUpdate({
+        target: educationArticles.slug,
+        set: {
+          title: article.title,
+          summary: article.summary,
+          content: article.content,
+          readTimeMinutes: article.readTimeMinutes,
+          sortOrder: article.sortOrder,
+        },
+      });
   }
 }

@@ -335,7 +335,7 @@ const peptideGroups = [
   { id: "skin-regeneration", label: "Skin & Regeneration", color: "#ec4899", slugs: ["ghk-cu", "glow-peptide-complex", "klow-peptide-complex", "melanotan"] },
   { id: "longevity", label: "Longevity & Cellular", color: "#9d4edd", slugs: ["epithalon", "mots-c", "nad-precursor", "thymosin-alpha-1", "thymulin", "glutathione", "vitamin-b12"] },
   { id: "cognitive", label: "Cognitive / Neuro", color: "#f97316", slugs: ["semax", "pt-141", "dsip", "selank", "dihexa"] },
-  { id: "hormonal", label: "Hormonal", color: "#21d8ff", slugs: ["hcg", "kisspeptin"] },
+  { id: "hormonal", label: "Hormonal", color: "#21d8ff", slugs: ["hcg", "kisspeptin", "kisspeptin-54"] },
 ];
 
 // Body-system overview guides — static pages linked from the Education Center
@@ -488,6 +488,7 @@ const renderMarkdown = (content: string) => {
     .replace(/^# (.*$)/gim, '<h1 class="text-lg font-bold mt-5 mb-3 text-foreground">$1</h1>')
     .replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground font-semibold">$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-[#21d8ff] underline underline-offset-2 hover:text-[#21d8ff]/80 transition-colors">$1</a>')
     .replace(/\n\n/g, '</p><p class="mb-2 text-sm leading-relaxed">')
     .replace(/^(?!\s*<)/gm, '<p class="mb-2 text-sm leading-relaxed">'); // Skip lines starting with HTML tags (with optional whitespace)
 };
