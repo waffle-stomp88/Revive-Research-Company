@@ -2,6 +2,16 @@ import { getHalfLifeByName } from "@/data/pharmacokinetics";
 import type { HalfLifeEntry } from "@/data/pharmacokinetics";
 import { isNonSCRoute, pkMidpoint, computeXMax, buildPKCurve, ptsToD } from "@/lib/pk-curve";
 
+function routeAbbrev(route: string): string {
+  const r = route.toLowerCase();
+  if (r === "subcutaneous") return "SC";
+  if (r === "intravenous") return "IV";
+  if (r === "intranasal") return "IN";
+  if (r === "oral") return "Oral";
+  if (r === "topical") return "Topical";
+  return route;
+}
+
 const MINI_CHART = {
   vbW: 300, vbH: 64,
   pT: 4, pR: 4, pB: 4, pL: 4,
@@ -29,6 +39,21 @@ export function MiniPKChart({ peptideNames, stackId }: { peptideNames: string[];
   const hasNonSC = pksWithData.some(pk => isNonSCRoute(pk.route));
   const hasAnySC = pksWithData.some(pk => !isNonSCRoute(pk.route));
   const hasIVOverlay = pksWithData.some(pk => !!pk.ivHalfLifeLabel);
+
+  // Derive the label and line style for the primary-route key entry.
+  // When there are SC compounds the solid line represents SC routes.
+  // When ALL compounds are non-SC every curve is dashed, so the key entry
+  // should reflect the actual route (e.g. "IN" for intranasal) and be dashed.
+  let primaryRouteLabel: string;
+  let primaryRouteDashed: boolean;
+  if (hasAnySC) {
+    primaryRouteLabel = "SC";
+    primaryRouteDashed = false;
+  } else {
+    const uniqueRoutes = [...new Set(pksWithData.map(pk => pk.route))];
+    primaryRouteLabel = uniqueRoutes.length === 1 ? routeAbbrev(uniqueRoutes[0]) : "Primary route";
+    primaryRouteDashed = true;
+  }
 
   const curves = entries.flatMap(({ name, pk, color }) => {
     if (!pk) return [];
@@ -88,11 +113,18 @@ export function MiniPKChart({ peptideNames, stackId }: { peptideNames: string[];
       </svg>
       {showLegend && (
         <div className="flex items-center justify-end gap-3 mt-1" data-testid={`pk-line-style-key-${stackId}`}>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5" data-testid={`pk-primary-route-key-${stackId}`}>
             <svg width="14" height="4" viewBox="0 0 14 4" aria-hidden="true">
-              <line x1="0" y1="2" x2="14" y2="2" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeOpacity="0.45" />
+              <line
+                x1="0" y1="2" x2="14" y2="2"
+                stroke="#fff"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeOpacity="0.45"
+                strokeDasharray={primaryRouteDashed ? "4 2" : undefined}
+              />
             </svg>
-            <span className="text-[9px] text-white/40 font-medium">SC</span>
+            <span className="text-[9px] text-white/40 font-medium" data-testid={`pk-primary-route-label-${stackId}`}>{primaryRouteLabel}</span>
           </div>
           {hasNonSC && hasAnySC && (
             <div className="flex items-center gap-1.5">

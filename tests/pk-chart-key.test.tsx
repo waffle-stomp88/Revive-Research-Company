@@ -77,6 +77,27 @@ describe("MiniPKChart — listing-page rendering", () => {
     // Specifically the IV bolus overlay key should be present
     const ivKey = screen.getByTestId(`pk-iv-overlay-key-${cognitiveStack!.id}`);
     expect(ivKey).toBeInTheDocument();
+
+    // The primary-route label must reflect the actual route ("IN") not the
+    // hardcoded "SC" that existed before this fix.
+    const routeLabelEl = screen.getByTestId(`pk-primary-route-label-${cognitiveStack!.id}`);
+    expect(routeLabelEl).toBeInTheDocument();
+    expect(routeLabelEl.textContent).toBe("IN");
+    expect(routeLabelEl.textContent).not.toBe("SC");
+  });
+
+  it("shows 'SC' primary-route label for a mixed-route stack (fat-burner: AOD-9604 SC + 5-Amino-1MQ oral)", () => {
+    // When the stack contains at least one SC compound, the solid-line key entry
+    // correctly shows "SC" (unchanged behaviour, regression guard).
+    const fatBurnerStack = RESEARCH_STACKS_DATA.find(s => s.id === "fat-burner");
+    expect(fatBurnerStack).toBeDefined();
+
+    const peptideNames = fatBurnerStack!.peptides.map(p => p.name);
+    render(<MiniPKChart peptideNames={peptideNames} stackId={fatBurnerStack!.id} />);
+
+    const routeLabelEl = screen.getByTestId(`pk-primary-route-label-${fatBurnerStack!.id}`);
+    expect(routeLabelEl).toBeInTheDocument();
+    expect(routeLabelEl.textContent).toBe("SC");
   });
 
   it("does NOT render pk-line-style-key for all-SC stacks (recovery-tissue-stack: BPC-157 + TB-500)", () => {
