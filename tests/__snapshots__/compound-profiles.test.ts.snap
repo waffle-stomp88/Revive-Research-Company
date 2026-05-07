@@ -216,7 +216,7 @@ exports[`compound-profiles — PK profile snapshots > l-carnitine PK fields are 
   "citationIds": [
     "37775945",
   ],
-  "halfLifeLabel": "~3–5 h",
+  "halfLifeLabel": "~3–5 h (SC estimate)",
   "halfLifeMax": 300,
   "halfLifeMin": 180,
   "route": "subcutaneous",

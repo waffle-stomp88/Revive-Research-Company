@@ -570,6 +570,7 @@ export interface HalfLifeEntry {
   ivHalfLifeMin?: number;
   ivHalfLifeMax?: number;
   ivHalfLifeLabel?: string;
+  citationQuality?: "direct" | "proxy";
 }
 
 const pmid = (id: string, label: string, routeContext?: string): Citation => ({
@@ -753,6 +754,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 120,
     halfLifeLabel: "~1–2 h",
     route: "subcutaneous",
+    citationQuality: "proxy",
     pkContext:
       "Reported plasma half-life of approximately 1–2 hours following subcutaneous administration in published tetrapeptide pharmacokinetic studies.",
     citations: [pmid("12374906", "Khavinson (2002) — Peptides and Ageing, Neuro Endocrinol Lett")],
@@ -776,6 +778,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 120,
     halfLifeLabel: "~2 h",
     route: "subcutaneous",
+    citationQuality: "proxy",
     pkContext:
       "Documented plasma half-life of approximately 2 hours following subcutaneous administration in human pharmacokinetic studies; peak plasma concentrations observed within 1–2 hours of SC injection. Thymosin alpha-1 (thymalfasin) undergoes proteolytic clearance without accumulation.",
     citations: [pmid("11381492", "Ancell et al. (2001) — Thymosin alpha-1 pharmacological review, Am J Health Syst Pharm")],
@@ -854,6 +857,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 60,
     halfLifeLabel: "~30–60 min",
     route: "subcutaneous",
+    citationQuality: "proxy",
     pkContext:
       "Plasma half-life is estimated at approximately 30–60 minutes following subcutaneous administration based on the expected rapid proteolytic clearance of this C-terminal alpha-MSH-derived tripeptide (Lys-Pro-Val) in plasma; pharmacological anti-inflammatory activity of KPV has been documented in murine inflammatory bowel disease models.",
     citations: [pmid("18092346", "Kannengiesser et al. (2008) — Melanocortin-derived tripeptide KPV anti-inflammatory activity in IBD models, Inflamm Bowel Dis")],
@@ -890,6 +894,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 120,
     halfLifeLabel: "~1–2 h",
     route: "subcutaneous",
+    citationQuality: "proxy",
     pkContext:
       "Plasma half-life is estimated at approximately 1–2 hours following subcutaneous administration, consistent with the expected proteolytic clearance of low-molecular-weight thymic polypeptides; thymalin (polypeptide thymus extract) contains multiple short peptide constituents whose rapid clearance is well-established in published thymic peptide pharmacology literature.",
     citations: [pmid("9637345", "Morozov & Khavinson (1997) — Natural and synthetic thymic peptides as therapeutics for immune dysfunction, Int J Immunopharmacol")],
@@ -902,6 +907,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 480,
     halfLifeLabel: "~4–8 h (local)",
     route: "topical",
+    citationQuality: "proxy",
     pkContext:
       "Reported local tissue retention of approximately 4–8 hours following topical application in published pharmacokinetic studies of this acetylated octapeptide (acetyl glutamyl octapeptide-3); transdermal penetration and local epidermal half-life have been characterized for short acetylated neuropeptide fragments in skin pharmacokinetic models.",
     citations: [pmid("25497319", "Hoppel et al. (2015) — Topical delivery of acetyl hexapeptide-8 from different emulsions: influence of composition and internal structure, Eur J Pharm Sci")],
