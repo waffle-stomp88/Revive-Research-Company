@@ -207,6 +207,9 @@ function ProductsComponent() {
   const normalizedSearch = rawSearch.replace(/^\?/, "");
   const hasUrlFilters = normalizedSearch.length > 0 && normalizedSearch !== "page=1";
   const [sidebarOpen, setSidebarOpen] = useState(hasUrlFilters);
+
+  // Local price range state for immediate slider visual feedback (debounced URL sync below)
+  const [localPriceRange, setLocalPriceRange] = useState<[number, number] | null>(null);
   const [categoriesExpanded, setCategoriesExpanded] = useState(true);
   const [peptideGroupsExpanded, setPeptideGroupsExpanded] = useState(true);
 
@@ -426,18 +429,36 @@ function ProductsComponent() {
   }, [products]);
 
   // Price range derived from URL params or priceStats defaults
-  const priceRange: [number, number] = [
+  const urlPriceRange: [number, number] = [
     urlMinPrice !== null ? parseInt(urlMinPrice, 10) : priceStats.min,
     urlMaxPrice !== null ? parseInt(urlMaxPrice, 10) : priceStats.max,
   ];
 
-  const setPriceRange = (range: [number, number]) => {
+  // The "live" price range used for filtering — local state takes priority while dragging
+  const priceRange: [number, number] = localPriceRange ?? urlPriceRange;
+
+  const commitPriceRange = useCallback((range: [number, number]) => {
     const next = new URLSearchParams(params);
     if (range[0] !== priceStats.min) next.set("minPrice", String(range[0])); else next.delete("minPrice");
     if (range[1] !== priceStats.max) next.set("maxPrice", String(range[1])); else next.delete("maxPrice");
     next.delete("page");
     updateParams(next);
-  };
+  }, [params, priceStats]);
+
+  // Debounce price range URL updates (~400 ms) so slider dragging doesn't flood history
+  useEffect(() => {
+    if (localPriceRange === null) return;
+    const timer = setTimeout(() => {
+      commitPriceRange(localPriceRange);
+      setLocalPriceRange(null);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [localPriceRange, commitPriceRange]);
+
+  // When URL price range changes externally (e.g. Back button), clear any pending local state
+  useEffect(() => {
+    setLocalPriceRange(null);
+  }, [urlMinPrice, urlMaxPrice]);
 
   const categoryStats = useMemo(() => {
     if (!products) return {};
@@ -683,7 +704,7 @@ function ProductsComponent() {
                     <label className="text-sm font-medium">Filter by Price</label>
                     <Slider
                       value={priceRange}
-                      onValueChange={(value) => setPriceRange(value as [number, number])}
+                      onValueChange={(value) => setLocalPriceRange(value as [number, number])}
                       min={priceStats.min}
                       max={priceStats.max}
                       step={5}
@@ -862,8 +883,23 @@ function ProductsComponent() {
                   </div>
                 </div>
                 
-                {/* Right: Category filter dropdown */}
-                <div className="ml-auto">
+                {/* Right: Sort + Category filter dropdowns */}
+                <div className="ml-auto flex items-center gap-2">
+                  {/* Sort dropdown */}
+                  <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
+                    <SelectTrigger className="w-auto min-w-[130px] h-8 text-sm" data-testid="select-sort-by">
+                      <SelectValue placeholder="Sort" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="featured">Featured</SelectItem>
+                      <SelectItem value="name-asc">Name: A → Z</SelectItem>
+                      <SelectItem value="name-desc">Name: Z → A</SelectItem>
+                      <SelectItem value="price-asc">Price: Low → High</SelectItem>
+                      <SelectItem value="price-desc">Price: High → Low</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  {/* Category / peptide group filter dropdown */}
                   <Select value={peptideGroupFilter} onValueChange={(value) => setPeptideGroupFilter(value)}>
                     <SelectTrigger className="w-auto min-w-[160px] h-8 text-sm" data-testid="select-category-filter">
                       <SelectValue placeholder="Category" />
