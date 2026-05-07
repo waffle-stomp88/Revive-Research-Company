@@ -885,6 +885,14 @@ export interface HalfLifeEntry {
   ivHalfLifeMin?: number;
   ivHalfLifeMax?: number;
   ivHalfLifeLabel?: string;
+  /**
+   * Primary body system for this compound, derived from the first entry in the
+   * `systems[]` array in peptide-pathways.ts. Populated at module initialization
+   * from BODY_SYSTEM_MAP below — no runtime join with the galaxy data layer needed.
+   * Compounds not matched to a known system will have this field undefined (shown
+   * under "Other" in the PK catalog grouped view).
+   */
+  bodySystem?: string;
 }
 
 const pmid = (id: string, label: string, routeContext?: string): Citation => ({
@@ -1826,6 +1834,121 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     note: "Composite PK profile. BPC-157 half-life is documented in He et al. (2022). TB-500 half-life is estimated from plasma characterisation data in the direct TB-500 doping-control study (Ho et al. 2012, PMID 23084823); this citation replaces the earlier thymosin alpha-1 PLGA proxy (Liu et al. 2010, PMID 20650309) that was used before the individual TB-500 entry was upgraded. No primary pharmacokinetic literature exists for this combination.",
   },
 ];
+
+// ─── Body-system annotation ────────────────────────────────────────────────────
+// Primary body system for each PK slug, derived from systems[0] in
+// peptide-pathways.ts. Maintained here as a static map so the catalog can use
+// it without importing the galaxy data layer at runtime.
+// Canonical section order: Healing → Metabolic → Growth → Cognitive →
+//   Skin → Longevity → Hormonal → Immune → Other
+const BODY_SYSTEM_MAP: Record<string, string> = {
+  // Healing
+  "bpc-157":          "Healing",
+  "tb-500":           "Healing",
+  "kpv":              "Healing",
+  "klow-peptide-complex": "Healing",
+  "vesugen":          "Healing",
+  "ventfort":         "Healing",
+  "ara-290":          "Healing",
+  "thymosin-alpha-4": "Healing",
+  "substance-p":      "Healing",
+  "relaxin-2":        "Healing",
+  // Metabolic
+  "mots-c":           "Metabolic",
+  "rr-a3":            "Metabolic",
+  "aod-9604":         "Metabolic",
+  "5-amino-1mq":      "Metabolic",
+  "aicar":            "Metabolic",
+  "cagrilintide":     "Metabolic",
+  "mazdutide":        "Metabolic",
+  "survodutide":      "Metabolic",
+  "slu-pp-332":       "Metabolic",
+  "retatrutide":      "Metabolic",
+  "semaglutide":      "Metabolic",
+  "tirzepatide":      "Metabolic",
+  "pancragen":        "Metabolic",
+  "crystagen":        "Metabolic",
+  "c-peptide":        "Metabolic",
+  "somatostatin":     "Metabolic",
+  // Growth
+  "ipamorelin":       "Growth",
+  "cjc-1295-no-dac":  "Growth",
+  "cjc-1295-w-dac":   "Growth",
+  "sermorelin":       "Growth",
+  "tesamorelin":      "Growth",
+  "igf-1-lr3":        "Growth",
+  "igf-des":          "Growth",
+  "ghrp-2":           "Growth",
+  "ghrp-6":           "Growth",
+  "hexarelin":        "Growth",
+  "ace-031":          "Growth",
+  "mgf":              "Growth",
+  "peg-mgf":          "Growth",
+  "mk-677":           "Growth",
+  "mod-grf-1-29":     "Growth",
+  "follistatin-344":  "Growth",
+  // Cognitive
+  "semax":            "Cognitive",
+  "selank":           "Cognitive",
+  "cerebrolysin":     "Cognitive",
+  "pinealon":         "Cognitive",
+  "cortagen":         "Cognitive",
+  "dihexa":           "Cognitive",
+  "nsi-189":          "Cognitive",
+  "p21-peptide":      "Cognitive",
+  "cortexin":         "Cognitive",
+  "noopept":          "Cognitive",
+  "cortistatin":      "Cognitive",
+  "neuropeptide-y":   "Cognitive",
+  "neurotensin":      "Cognitive",
+  "galanin":          "Cognitive",
+  // Skin
+  "ghk-cu":                  "Skin",
+  "snap-8":                  "Skin",
+  "melanotan-i":             "Skin",
+  "melanotan-ii":            "Skin",
+  "glow-peptide-complex":    "Skin",
+  "palmitoyl-tripeptide-1":  "Skin",
+  "leuphasyl":               "Skin",
+  "argireline":              "Skin",
+  "matrixyl":                "Skin",
+  "collagen-tripeptide":     "Skin",
+  // Longevity
+  "epithalon":        "Longevity",
+  "ss-31":            "Longevity",
+  "glutathione":      "Longevity",
+  "nad-precursor":    "Longevity",
+  "foxo4-dri":        "Longevity",
+  "humanin":          "Longevity",
+  "klotho-peptide":   "Longevity",
+  // Hormonal
+  "gonadorelin":      "Hormonal",
+  "triptorelin":      "Hormonal",
+  "enclomiphene":     "Hormonal",
+  "kisspeptin-10":    "Hormonal",
+  "kisspeptin-54":    "Hormonal",
+  "oxytocin":         "Hormonal",
+  "pt-141":           "Hormonal",
+  "bremelanotide":    "Hormonal",
+  "leuprolide":       "Hormonal",
+  "thyroid-releasing-hormone": "Hormonal",
+  // Immune
+  "thymosin-alpha-1": "Immune",
+  "ll-37":            "Immune",
+  "thymalin":         "Immune",
+  "vilon":            "Immune",
+  "chonluten":        "Immune",
+  "thymulin":         "Immune",
+  "thymopentin":      "Immune",
+};
+
+// Apply bodySystem to every entry at module initialisation time.
+// Entries not listed in BODY_SYSTEM_MAP have bodySystem === undefined
+// and appear under "Other" in the grouped catalog view.
+PEPTIDE_HALF_LIVES.forEach((e) => {
+  const sys = BODY_SYSTEM_MAP[e.slug];
+  if (sys) e.bodySystem = sys;
+});
 
 const HALF_LIFE_MAP = new Map<string, HalfLifeEntry>(
   PEPTIDE_HALF_LIVES.map((e) => [e.slug, e])

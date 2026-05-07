@@ -11,6 +11,7 @@ import {
   Download,
   GitCompareArrows,
   Info,
+  Layers,
   Link2,
   Search,
   SortAsc,
@@ -47,6 +48,32 @@ type SortDir = "asc" | "desc";
 type RouteFilter = "all" | "subcutaneous" | "intravenous" | "intranasal" | "oral" | "topical";
 type DualRouteFilter = "all" | "dual-only";
 type DurationFilter = "all" | "short" | "medium" | "long";
+
+// Canonical section order for the group-by-system view.
+// Any compound whose bodySystem is not in this list falls under "Other".
+const SYSTEM_ORDER = [
+  "Healing",
+  "Metabolic",
+  "Growth",
+  "Cognitive",
+  "Skin",
+  "Longevity",
+  "Hormonal",
+  "Immune",
+] as const;
+
+type CanonicalSystem = typeof SYSTEM_ORDER[number];
+
+const SYSTEM_COLORS: Record<CanonicalSystem, string> = {
+  Healing:   "#21d8ff",
+  Metabolic: "#E7FB10",
+  Growth:    "#a78bfa",
+  Cognitive: "#34d399",
+  Skin:      "#f472b6",
+  Longevity: "#fbbf24",
+  Hormonal:  "#fb923c",
+  Immune:    "#60a5fa",
+};
 
 const ROUTE_ABBREV: Record<string, string> = {
   subcutaneous: "SC",
@@ -717,6 +744,7 @@ export default function PkCatalog() {
   const [sortKey, setSortKey] = useState<SortKey>("name");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
   const [highlightedSlug, setHighlightedSlug] = useState<string | null>(null);
+  const [groupBySystem, setGroupBySystem] = useState(false);
 
   // Comparison mode state
   const [comparisonMode, setComparisonMode] = useState(false);
@@ -847,6 +875,33 @@ export default function PkCatalog() {
     return entries;
   }, [search, routeFilter, dualFilter, durationFilter, sortKey, sortDir]);
 
+  // Build grouped sections when groupBySystem is on.
+  // Sections with zero visible compounds are excluded automatically.
+  const groupedSections = useMemo(() => {
+    if (!groupBySystem) return null;
+    const buckets = new Map<string, HalfLifeEntry[]>();
+    // Seed canonical buckets in order so iteration order is preserved
+    SYSTEM_ORDER.forEach((s) => buckets.set(s, []));
+    buckets.set("Other", []);
+
+    filtered.forEach((e) => {
+      const sys = e.bodySystem;
+      const canonical = sys && (SYSTEM_ORDER as readonly string[]).includes(sys) ? sys : "Other";
+      buckets.get(canonical)!.push(e);
+    });
+
+    // Return only non-empty sections; "Other" appended at the end if non-empty
+    const sections: Array<{ system: string; entries: HalfLifeEntry[] }> = [];
+    SYSTEM_ORDER.forEach((s) => {
+      const list = buckets.get(s)!;
+      if (list.length > 0) sections.push({ system: s, entries: list });
+    });
+    const other = buckets.get("Other")!;
+    if (other.length > 0) sections.push({ system: "Other", entries: other });
+
+    return sections;
+  }, [groupBySystem, filtered]);
+
   function toggleSort(key: SortKey) {
     if (sortKey === key) {
       setSortDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -962,6 +1017,22 @@ export default function PkCatalog() {
               </span>
 
               <div className="flex-1" />
+
+              {/* Group by system toggle */}
+              <button
+                type="button"
+                onClick={() => setGroupBySystem((v) => !v)}
+                className={`inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded border transition-colors ${
+                  groupBySystem
+                    ? "bg-[#E7FB10]/10 text-[#E7FB10] border-[#E7FB10]/30"
+                    : "bg-transparent text-muted-foreground/60 border-white/15 hover:border-white/30 hover:text-muted-foreground"
+                }`}
+                data-testid="button-group-by-system"
+                aria-pressed={groupBySystem}
+              >
+                <Layers className="h-3.5 w-3.5" />
+                Group by system
+              </button>
 
               {/* Compare toggle */}
               <button
@@ -1097,10 +1168,60 @@ export default function PkCatalog() {
             </div>
           </div>
 
-          {/* Compound grid */}
+          {/* Compound grid — flat or grouped by body system */}
           {filtered.length === 0 ? (
             <div className="text-center py-16 text-muted-foreground/40 text-sm" data-testid="text-no-results">
               No compounds match your filters.
+            </div>
+          ) : groupedSections ? (
+            <div className="space-y-10" data-testid="grid-compounds-grouped">
+              {groupedSections.map(({ system, entries }) => {
+                const accentColor =
+                  system !== "Other"
+                    ? (SYSTEM_COLORS[system as CanonicalSystem] ?? "#E7FB10")
+                    : "#ffffff44";
+                const sectionTestId = `section-system-${system.toLowerCase()}`;
+                // Running index for stagger animation — continues across sections
+                return (
+                  <section
+                    key={system}
+                    data-testid={sectionTestId}
+                    aria-label={`${system} compounds`}
+                  >
+                    {/* Section header */}
+                    <div className="flex items-center gap-3 mb-4">
+                      <span
+                        className="font-['Bebas_Neue'] text-xl tracking-widest"
+                        style={{ color: accentColor, textShadow: `0 0 16px ${accentColor}55` }}
+                      >
+                        {system}
+                      </span>
+                      <span className="text-xs text-muted-foreground/40 tabular-nums">
+                        {entries.length} compound{entries.length !== 1 ? "s" : ""}
+                      </span>
+                      <div
+                        className="flex-1 h-px"
+                        style={{ background: `linear-gradient(to right, ${accentColor}40, transparent)` }}
+                      />
+                    </div>
+
+                    {/* Compound grid for this section */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {entries.map((entry, i) => (
+                        <CompoundCard
+                          key={entry.slug}
+                          entry={entry}
+                          index={i}
+                          highlighted={highlightedSlug === entry.slug}
+                          comparisonMode={comparisonMode}
+                          isSelected={selectedSlugs.has(entry.slug)}
+                          onToggleCompare={handleToggleCompare}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                );
+              })}
             </div>
           ) : (
             <div
