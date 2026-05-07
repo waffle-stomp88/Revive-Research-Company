@@ -48,6 +48,8 @@ import {
   GHAmplifierDualReceptorVisual,
   GHPulseWaveformVisual,
   CognitiveEdgeSynergyVisual,
+  HPGAxisRestoreSynergyVisual,
+  MelanocortinArousalSynergyVisual,
 } from "@/components/education";
 
 type PurchaseType = "one-time" | "subscription";
@@ -125,8 +127,8 @@ export default function ResearchStackDetail() {
   const STACK_VISUALS: Record<string, React.FC[]> = {
     "gonadorelin-kisspeptin-hpg-cascade": [GonadorelinVisual, KisspeptinVisual],
     "triptorelin-enclomiphene-hpg-axis": [TriptorelinVisual, EnclomipheneVisual],
-    "melanocortin-arousal-stack": [PT141Visual, OxytocinVisual],
-    "hpg-axis-restore-stack": [KisspeptinVisual, MelanotanReceptorVisual],
+    "melanocortin-arousal-stack": [MelanocortinArousalSynergyVisual],
+    "hpg-axis-restore-stack": [HPGAxisRestoreSynergyVisual],
     "recovery-tissue-stack": [BPC157AngiogenesisVisual, TB500ActinVisual],
     "glow-protocol": [GLOWSynergyVisual, KLOWSynergyVisual],
     "cognitive-edge-stack": [CognitiveEdgeSynergyVisual],

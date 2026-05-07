@@ -59,7 +59,10 @@ describe("MiniPKChart — listing-page rendering", () => {
     expect(keyEl).toBeInTheDocument();
   });
 
-  it("renders pk-line-style-key for cognitive-edge-stack because Selank has an IV overlay variant", () => {
+  it("renders pk-line-style-key for cognitive-edge-stack (Selank has published IV bolus PK data → hasIVOverlay)", () => {
+    // Selank has ivHalfLifeLabel set ("~2–3 min") from the Zolotarev 2006 citation audit, so
+    // hasIVOverlay is true and the legend correctly shows the IV bolus overlay key even though
+    // both primary administration routes are intranasal.
     const cognitiveStack = RESEARCH_STACKS_DATA.find(s => s.id === "cognitive-edge-stack");
     expect(cognitiveStack).toBeDefined();
 
@@ -70,6 +73,10 @@ describe("MiniPKChart — listing-page rendering", () => {
     // is visible even though both compounds are intranasal as their primary route.
     const keyEl = screen.getByTestId(`pk-line-style-key-${cognitiveStack!.id}`);
     expect(keyEl).toBeInTheDocument();
+
+    // Specifically the IV bolus overlay key should be present
+    const ivKey = screen.getByTestId(`pk-iv-overlay-key-${cognitiveStack!.id}`);
+    expect(ivKey).toBeInTheDocument();
   });
 
   it("does NOT render pk-line-style-key for all-SC stacks (recovery-tissue-stack: BPC-157 + TB-500)", () => {

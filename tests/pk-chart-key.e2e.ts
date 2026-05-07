@@ -46,9 +46,12 @@ test.describe("MiniPKChart — browser rendering on /research-stacks", () => {
     await expect(key).toBeVisible({ timeout: 5000 });
   });
 
-  test("cognitive-edge-stack renders the pk-line-style-key because Selank has an IV overlay variant", async ({
+  test("cognitive-edge-stack renders the pk-line-style-key with IV bolus overlay (Selank has published IV PK data)", async ({
     page,
   }) => {
+    // Selank has ivHalfLifeLabel ("~2–3 min") from the Zolotarev 2006 citation audit,
+    // so hasIVOverlay is true and the legend correctly shows even though both primary
+    // administration routes are intranasal.
     await page.goto("/research-stacks");
 
     await page.waitForSelector('[data-testid="card-stack-cognitive-edge-stack"]', {
@@ -58,5 +61,8 @@ test.describe("MiniPKChart — browser rendering on /research-stacks", () => {
     // Selank carries an ivHalfLifeLabel (~2–3 min IV bolus), which triggers the legend.
     const key = page.locator('[data-testid="pk-line-style-key-cognitive-edge-stack"]');
     await expect(key).toBeVisible({ timeout: 5000 });
+
+    const ivKey = page.locator('[data-testid="pk-iv-overlay-key-cognitive-edge-stack"]');
+    await expect(ivKey).toBeVisible({ timeout: 5000 });
   });
 });

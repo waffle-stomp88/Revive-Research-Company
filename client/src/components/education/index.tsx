@@ -51,3 +51,9 @@ export { GHPulseWaveformVisual } from "./gh-pulse-waveform-visual";
 
 // Cognitive Edge stack-specific synergy visual
 export { CognitiveEdgeSynergyVisual } from "./cognitive-edge-synergy-visual";
+
+// HPG Axis Restore stack-specific synergy visual
+export { HPGAxisRestoreSynergyVisual } from "./hpg-axis-restore-synergy-visual";
+
+// Melanocortin Arousal stack-specific synergy visual
+export { MelanocortinArousalSynergyVisual } from "./melanocortin-arousal-synergy-visual";
