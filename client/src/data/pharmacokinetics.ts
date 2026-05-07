@@ -418,6 +418,53 @@
  *    for the IV route. Documented as a secondary review source compiling primary
  *    IV/IM L-carnitine PK data; no SC depot absorption study for L-carnitine was
  *    identified.
+ *
+ * Citation audit (May 2026): SC-inferred-from-IV systematic pass
+ *
+ *   Scope: all remaining SC entries whose note or pkContext explicitly states
+ *   the SC half-life is derived from IV or IM data, or from an IV-plus-
+ *   absorption-phase model, and which had not received a documented dedicated
+ *   PubMed SC search in any prior audit pass. Two entries fell into this
+ *   category after the prior systematic passes above were completed:
+ *
+ *  L-Carnitine — halfLifeLabel "~3–5 h", route subcutaneous:
+ *   The pkContext references "L-Carnitine plasma half-life following
+ *   intravenous or intramuscular administration" and the note explicitly
+ *   stated "Half-life estimate based on published IV and IM L-carnitine
+ *   pharmacokinetic data." This is an unambiguous IV/IM-inference applied to
+ *   a subcutaneous route entry; no dedicated SC search had been documented.
+ *   PubMed query: '(l-carnitine OR levocarnitine OR carnitine) AND
+ *   (subcutaneous OR "SC injection") AND (pharmacokinetics OR absorption OR
+ *   bioavailability OR "half-life" OR "plasma concentration")'.
+ *   The indexed L-carnitine pharmacokinetic literature is concentrated in
+ *   intravenous infusion studies in haemodialysis patients (where IV
+ *   supplementation is the clinical route) and oral bioavailability studies
+ *   comparing IV versus oral routes. Subcutaneous administration is not
+ *   documented as a clinical route in the PubMed-indexed literature; no
+ *   primary SC plasma pharmacokinetics study measuring depot absorption,
+ *   SC bioavailability, or SC half-life for L-carnitine was identified.
+ *   Confirmed null. halfLifeLabel updated to "(SC estimate)" suffix; pkContext
+ *   updated to clarify the IV/IM basis; note updated with standardised
+ *   confirmed-null and search-strategy language.
+ *
+ *  DSIP — halfLifeLabel "~20–30 min", route subcutaneous:
+ *   The April 2026 citation audit noted "no compound-specific PubMed-indexed
+ *   plasma pharmacokinetics study for DSIP subcutaneous administration was
+ *   identified" but did not document a search strategy. The SC estimate of
+ *   ~20–30 min is derived from the IV half-life (10–20 min, Graf & Kastin
+ *   1984) by adding the expected subcutaneous absorption-phase extension for
+ *   a nine-amino-acid neuropeptide — an IV-plus-absorption-phase model
+ *   qualitatively identical to the VIP inference documented above.
+ *   PubMed query: '(DSIP OR "delta sleep-inducing peptide" OR "delta
+ *   sleep inducing peptide" OR "Trp-Ala-Gly-Gly-Asp-Ala-Ser-Gly-Glu")
+ *   AND (subcutaneous OR "SC") AND (pharmacokinetics OR absorption OR
+ *   bioavailability OR "half-life" OR "plasma concentration")'.
+ *   The DSIP pharmacokinetic literature consists almost entirely of IV-
+ *   administered preclinical studies reviewed by Graf & Kastin (1984) and
+ *   sleep-induction efficacy studies; no primary SC plasma pharmacokinetics
+ *   study for DSIP was identified. Confirmed null. halfLifeLabel updated to
+ *   "(SC estimate)" suffix; note updated with search strategy and confirmed-
+ *   null language consistent with VIP and other confirmed-null entries.
  */
 
 export type CitationType = "PMID" | "DOI";
@@ -1079,12 +1126,12 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     name: "DSIP",
     halfLifeMin: 20,
     halfLifeMax: 30,
-    halfLifeLabel: "~20–30 min",
+    halfLifeLabel: "~20–30 min (SC estimate)",
     route: "subcutaneous",
     pkContext:
-      "Delta sleep-inducing peptide (DSIP) plasma half-life is estimated at approximately 20–30 minutes following subcutaneous administration based on rapid enzymatic degradation of this nonapeptide (Trp-Ala-Gly-Gly-Asp-Ala-Ser-Gly-Glu) in plasma. Intravenous administration of DSIP in preclinical pharmacokinetics studies yields a markedly shorter plasma half-life of approximately 10–20 minutes, as reviewed by Graf & Kastin (1984), reflecting the rapid multi-enzymatic clearance of this endogenous neuropeptide upon direct systemic entry; the SC half-life is extended by the additional absorption phase.",
+      "Delta sleep-inducing peptide (DSIP) plasma half-life is estimated at approximately 20–30 minutes following subcutaneous administration based on the IV half-life (10–20 min, Graf & Kastin 1984) extended by the subcutaneous absorption-phase delay expected for this nine-amino-acid neuropeptide (Trp-Ala-Gly-Gly-Asp-Ala-Ser-Gly-Glu). Intravenous administration of DSIP in preclinical pharmacokinetics studies yields a plasma half-life of approximately 10–20 minutes, as reviewed by Graf & Kastin (1984), reflecting rapid multi-enzymatic clearance upon direct systemic entry; the SC estimate adds the absorption-phase extension. No compound-specific SC plasma pharmacokinetics study has been identified.",
     citations: [pmid("6202839", "Graf & Kastin (1984) — Delta-sleep-inducing peptide (DSIP): a review, Neurosci Biobehav Rev")],
-    note: "SC half-life estimated from neuropeptide class clearance data; no compound-specific PubMed-indexed plasma pharmacokinetics study for DSIP subcutaneous administration was identified during citation audit (April 2026). IV route variant: plasma half-life of approximately 10–20 minutes following intravenous administration, as compiled in Graf & Kastin (1984, PMID 6202839), a comprehensive DSIP review covering preclinical pharmacokinetics studies of intravenously administered DSIP. The Graf & Kastin review is a secondary source compiling primary IV DSIP pharmacokinetics data.",
+    note: "SC half-life is an estimate derived from the published IV half-life (10–20 min, Graf & Kastin 1984) plus the absorption-phase extension expected for subcutaneous injection of a nine-amino-acid neuropeptide — the same IV-plus-absorption-phase modelling used for VIP (see VIP note). No compound-specific PubMed-indexed plasma pharmacokinetics study for DSIP subcutaneous administration was identified in the April 2026 citation audit or in the May 2026 SC-inferred-from-IV systematic pass. Dedicated PubMed search (May 2026): '(DSIP OR \"delta sleep-inducing peptide\" OR \"delta sleep inducing peptide\" OR \"Trp-Ala-Gly-Gly-Asp-Ala-Ser-Gly-Glu\") AND (subcutaneous OR \"SC\") AND (pharmacokinetics OR absorption OR bioavailability OR \"half-life\" OR \"plasma concentration\")' — DSIP pharmacokinetic literature consists of IV-administered preclinical studies reviewed by Graf & Kastin (1984) and sleep-induction efficacy studies; no primary SC plasma pharmacokinetics study was identified. Confirmed null. IV route variant: plasma half-life of approximately 10–20 minutes following intravenous administration, as compiled in Graf & Kastin (1984, PMID 6202839), a comprehensive DSIP review covering preclinical pharmacokinetics studies of intravenously administered DSIP. The Graf & Kastin review is a secondary source compiling primary IV DSIP pharmacokinetics data.",
     ivHalfLifeMin: 10,
     ivHalfLifeMax: 20,
     ivHalfLifeLabel: "~10–20 min",
@@ -1270,12 +1317,12 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     name: "L-Carnitine",
     halfLifeMin: 180,
     halfLifeMax: 300,
-    halfLifeLabel: "~3–5 h",
+    halfLifeLabel: "~3–5 h (SC estimate)",
     route: "subcutaneous",
     pkContext:
-      "L-Carnitine plasma half-life following intravenous or intramuscular administration is approximately 3–5 hours in published pharmacokinetic studies; renal tubular reabsorption plays a major role in maintaining plasma levels, and urinary excretion increases markedly above the renal transport maximum.",
+      "L-Carnitine plasma half-life following subcutaneous administration is estimated at approximately 3–5 hours, extrapolated from published intravenous and intramuscular pharmacokinetic data; renal tubular reabsorption plays a major role in maintaining plasma levels, and urinary excretion increases markedly above the renal transport maximum. No compound-specific SC plasma pharmacokinetics study has been identified.",
     citations: [pmid("12908852", "Evans & Fornasini (2003) — Pharmacokinetics of L-carnitine, Clin Pharmacokinet")],
-    note: "No compound-specific subcutaneous injection pharmacokinetics study for L-Carnitine was identified in the citation audit (April 2026). The cited Evans & Fornasini (2003, PMID 12908852) paper is a comprehensive review of published IV and oral L-carnitine pharmacokinetics in humans, documenting the plasma half-life range of approximately 3–5 hours for the IV route and providing the basis for the half-life estimate used here. This is a secondary review source compiling primary IV/IM L-carnitine PK data; no SC depot absorption study for L-carnitine was identified.",
+    note: "No compound-specific subcutaneous injection pharmacokinetics study for L-Carnitine was identified in the April 2026 citation audit or in the May 2026 SC-inferred-from-IV systematic pass. The half-life estimate is based on published IV and IM L-carnitine pharmacokinetic data — an explicit IV/IM-to-SC inference. The cited Evans & Fornasini (2003, PMID 12908852) paper is a comprehensive review of published IV and oral L-carnitine pharmacokinetics in humans, documenting the plasma half-life range of approximately 3–5 hours for the IV route; it is retained as a proxy for the baseline elimination rate. Dedicated PubMed search (May 2026): '(l-carnitine OR levocarnitine OR carnitine) AND (subcutaneous OR \"SC injection\") AND (pharmacokinetics OR absorption OR bioavailability OR \"half-life\" OR \"plasma concentration\")' — the indexed L-carnitine pharmacokinetic literature is concentrated in intravenous infusion studies in haemodialysis patients and oral bioavailability studies comparing IV versus oral routes; subcutaneous administration is not documented as a clinical route in the PubMed-indexed literature. No primary SC plasma pharmacokinetics study measuring depot absorption, SC bioavailability, or SC half-life for L-carnitine was identified. Confirmed null.",
   },
   {
     slug: "lipo-c",
