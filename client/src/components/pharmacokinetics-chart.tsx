@@ -227,6 +227,29 @@ function CitationAuditBadge({
   );
 }
 
+function AltRouteNoteToggle({ note, testId }: { note: string; testId: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="mt-1">
+      <button
+        type="button"
+        onClick={() => setOpen(v => !v)}
+        className="inline-flex items-center gap-1 text-[11px] text-muted-foreground/60 italic cursor-pointer select-none hover:text-muted-foreground transition-colors min-h-[28px] py-0.5 px-0 bg-transparent border-none"
+        data-testid={testId}
+        aria-expanded={open}
+      >
+        <Info className="h-2.5 w-2.5 flex-shrink-0" />
+        No route-specific citation found — see note
+      </button>
+      {open && (
+        <p className="mt-1.5 text-[10px] text-muted-foreground/70 leading-relaxed">
+          {note}
+        </p>
+      )}
+    </div>
+  );
+}
+
 function AnimatedStat({ label, value, color, delay }: { label: string; value: string; color: string; delay: number }) {
   const counted = useCountUp(value, delay);
   return (
@@ -1585,18 +1608,10 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                                   className="text-[11px] text-[#21d8ff] hover:underline block">{cit.label}</a>
                               ))
                               : c.pk.altRoute.note && (
-                                <details className="mt-1">
-                                  <summary
-                                    className="inline-flex items-center gap-1 text-[11px] text-muted-foreground/60 italic cursor-pointer select-none hover:text-muted-foreground transition-colors list-none"
-                                    data-testid={`label-no-citation-altroute-popover-${toTestSlug(c.peptide.name)}`}
-                                  >
-                                    <Info className="h-2.5 w-2.5 flex-shrink-0" />
-                                    No route-specific citation found — see note
-                                  </summary>
-                                  <p className="mt-1.5 text-[10px] text-muted-foreground/70 leading-relaxed">
-                                    {c.pk.altRoute.note}
-                                  </p>
-                                </details>
+                                <AltRouteNoteToggle
+                                  note={c.pk.altRoute.note}
+                                  testId={`label-no-citation-altroute-popover-${toTestSlug(c.peptide.name)}`}
+                                />
                               )
                           )}
                           {c.basePk && getCitationQuality(c.basePk, "primary") !== "primary" && (
