@@ -270,9 +270,11 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
   const [tooltip, setTooltip] = useState<{ clientX: number; clientY: number; label: string; halfLife: string; concentration: number; timeDisp: string } | null>(null);
   const [ivMarkerTooltip, setIvMarkerTooltip] = useState<{ clientX: number; clientY: number; compoundName: string; ivHalfLifeLabel: string; citationLabel: string } | null>(null);
   const [crosshairSvgX, setCrosshairSvgX] = useState<number | null>(null);
+  const [isChartAreaHovered, setIsChartAreaHovered] = useState(false);
   const chartWrapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const lastInteractionWasTouch = useRef(false);
+  const isFinePointer = useRef<boolean | null>(null);
 
   const isSingleCompound = peptides.length === 1;
   const citationSummary = useMemo(() => computeCitationQualitySummary(), []);
@@ -308,6 +310,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
     window.addEventListener('scroll', dismiss, { passive: true });
     return () => window.removeEventListener('scroll', dismiss);
   }, []);
+
 
   const toggleRouteOverride = useCallback((name: string) => {
     setRouteOverrides(prev => {
@@ -390,6 +393,15 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
   const hasAnySC = pksWithData.some(pk => !isNonSCRoute(pk.route));
   const hasIVOverlay = pksWithData.some(pk => !!pk.ivHalfLifeLabel);
   const clipId = "pk-clip-" + peptides.map(p => toTestSlug(p.name)).join("-");
+
+  const ivScTooltipEntries = curves
+    .filter((c): c is NonNullable<typeof c> => c !== null && !!c.pk.ivHalfLifeLabel)
+    .map(c => ({
+      name: c.peptide.name,
+      color: c.color,
+      scLabel: c.pk.halfLifeLabel,
+      ivLabel: c.pk.ivHalfLifeLabel!,
+    }));
 
   const effectiveIdx = pinnedIdx ?? hoveredIdx;
 
@@ -756,6 +768,61 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                 )}
               </div>
             )}
+            <div
+              className="relative"
+              onMouseEnter={() => {
+                if (isFinePointer.current === null) {
+                  isFinePointer.current = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+                }
+                if (isFinePointer.current) setIsChartAreaHovered(true);
+              }}
+              onMouseLeave={() => setIsChartAreaHovered(false)}
+            >
+            {ivScTooltipEntries.length > 0 && (
+              <div
+                role="tooltip"
+                data-testid={`pk-chart-iv-sc-tooltip-${stackId}`}
+                className="absolute top-0.5 right-0.5 z-20 pointer-events-none select-none rounded-md border border-white/10 px-2.5 py-2 shadow-xl"
+                style={{
+                  background: "rgba(10,10,16,0.96)",
+                  minWidth: 140,
+                  opacity: isChartAreaHovered ? 1 : 0,
+                  visibility: isChartAreaHovered ? "visible" : "hidden",
+                  transition: "opacity 0.15s ease",
+                }}
+              >
+                <p className="text-[9px] uppercase tracking-widest mb-1.5" style={{ color: "rgba(255,255,255,0.35)" }}>
+                  Route comparison
+                </p>
+                {ivScTooltipEntries.map(entry => (
+                  <div key={entry.name} className="mb-1.5 last:mb-0">
+                    {ivScTooltipEntries.length > 1 && (
+                      <p className="text-[9px] font-semibold mb-0.5 truncate max-w-[150px]" style={{ color: entry.color }}>
+                        {entry.name}
+                      </p>
+                    )}
+                    <div className="flex flex-col gap-0.5">
+                      <div className="flex items-center gap-1.5">
+                        <svg width="10" height="3" viewBox="0 0 10 3" aria-hidden="true">
+                          <line x1="0" y1="1.5" x2="10" y2="1.5" stroke={entry.color} strokeWidth="2" strokeLinecap="round" strokeOpacity="0.75" />
+                        </svg>
+                        <span className="text-[10px] font-medium tabular-nums" style={{ color: entry.color }}>
+                          SC t½ {entry.scLabel}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <svg width="10" height="3" viewBox="0 0 10 3" aria-hidden="true">
+                          <line x1="0" y1="1.5" x2="10" y2="1.5" stroke="#f97316" strokeWidth="2" strokeDasharray="3 2" strokeLinecap="round" strokeOpacity="0.75" />
+                        </svg>
+                        <span className="text-[10px] font-medium tabular-nums" style={{ color: "#f97316" }}>
+                          IV t½ {entry.ivLabel}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
             <svg
               ref={svgRef}
               viewBox={`0 0 ${CHART.vbW} ${CHART.vbH}`}
@@ -1079,6 +1146,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                 Time ({useHours ? "hours" : "min"})
               </text>
             </svg>
+            </div>
 
             {/* Estimate footnote — shown when any visible curve has an estimated half-life */}
             {(() => {
