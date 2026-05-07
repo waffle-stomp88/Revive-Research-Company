@@ -58,9 +58,26 @@
  *
  * Citation audit (May 2026) — IV-primary SC altRoute citation reuse review:
  *   Audit scope: all altRoute entries in IV-primary rows (glutathione, lipo-c).
- *   SC-primary rows with IV altRoutes (kisspeptin-54, VIP) were reviewed and
- *   found to be correctly cited (IV citations used for the IV altRoute).
+ *   SC-primary rows with IV altRoutes (kisspeptin-54, VIP) were also reviewed
+ *   and found to have citation reuse errors requiring correction (see below).
  *   Cerebrolysin was already corrected in a prior audit (citations: []).
+ *
+ *   Kisspeptin-54 citation reuse (corrected): PMID 16278289 (Dhillo et al.
+ *   2005) and PMID 19237537 (Chan et al. 2009) were both present in the SC
+ *   parent citations array and in the IV altRoute citations array.
+ *   Corrective action: Dhillo 2005 (IV-only study) moved exclusively to the
+ *   IV altRoute citations array; Chan 2009 (SC bolus PK study) restricted
+ *   exclusively to the SC parent citations array; IV comparison data from
+ *   Chan 2009 retained by note reference only.
+ *
+ *   VIP citation reuse (corrected): PMID 7175453 (Domschke et al. 1979) was
+ *   present in both the SC parent citations array and the IV altRoute
+ *   citations array. That study characterises IV VIP pharmacokinetics only
+ *   and is not a SC measurement. Corrective action: SC parent citations array
+ *   cleared (no SC-specific VIP PK citation exists); PMID 7175453 assigned
+ *   exclusively to the IV altRoute citations array where it belongs; SC entry
+ *   now cites only Morice et al. (1983, PMID 6139325) as the closest
+ *   available non-IV absorption proxy (inhaled VIP).
  *  - Glutathione SC altRoute: PMID 26052837 (Zhou et al. 2015) was reused
  *    verbatim from the parent IV entry. That study characterises IV
  *    N-acetylcysteine and indirect IV glutathione PK; it does not measure SC
