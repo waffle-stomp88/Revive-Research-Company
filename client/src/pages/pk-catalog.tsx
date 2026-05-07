@@ -272,13 +272,13 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
         {/* Spacer to push context to bottom */}
         <div className="flex-1" />
 
-        {/* Brief pk context teaser — expands when caveat badge is clicked */}
+        {/* Brief pk context teaser — expands when caveat badge is clicked; prefer altRoute pkContext when the alt route is active */}
         <p
           ref={pkContextRef}
           className={`text-[11px] text-muted-foreground/50 leading-snug mt-2 ${pkExpanded ? "" : "line-clamp-2"}`}
           data-testid={`text-pk-context-${entry.slug}`}
         >
-          {entry.pkContext}
+          {(dual && entry.altRoute?.pkContext) ? entry.altRoute.pkContext : entry.pkContext}
         </p>
         {pkExpanded && (
           <button
