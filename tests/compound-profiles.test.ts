@@ -153,7 +153,55 @@ describe("compound-profiles — value snapshots (formula + MW)", () => {
   });
 });
 
-// ─── 3. PK PROFILE SNAPSHOTS ─────────────────────────────────────────────────
+// ─── 3. IV → altRoute CITATION REUSE AUDIT ───────────────────────────────────
+//
+// Guards against the data quality error found during the May 2026 citation
+// audit: IV-primary entries (Glutathione, Lipo-C, Cerebrolysin) had their own
+// PMID citations copied verbatim into the SC altRoute citation list. Those
+// citations characterise the IV route only and are not appropriate references
+// for subcutaneous pharmacokinetics.
+//
+// Rule: for any entry whose top-level route is "intravenous" and that carries
+// an altRoute, no PMID in altRoute.citations may appear in the parent
+// citations array. If a PMID appears in both arrays the test fails loudly,
+// naming the slug and the duplicate PMID so the regression can be fixed.
+
+describe("pharmacokinetics — IV altRoute citations must not reuse parent IV citations", () => {
+  const ivEntriesWithAltRoute = PEPTIDE_HALF_LIVES.filter(
+    (e) => e.route === "intravenous" && e.altRoute !== undefined
+  );
+
+  it("has at least one IV-primary entry with an altRoute (regression guard)", () => {
+    expect(ivEntriesWithAltRoute.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("no altRoute citation PMID duplicates its parent IV entry's citation PMID", () => {
+    const violations: string[] = [];
+
+    for (const entry of ivEntriesWithAltRoute) {
+      const parentIds = new Set(entry.citations.map((c) => c.id));
+      const altCitations = entry.altRoute!.citations;
+
+      for (const altCitation of altCitations) {
+        if (parentIds.has(altCitation.id)) {
+          violations.push(
+            `[${entry.slug}] PMID ${altCitation.id} appears in both the parent IV citations and the altRoute citations — ` +
+              `this citation characterises the IV route and must not be reused as an altRoute reference`
+          );
+        }
+      }
+    }
+
+    expect(
+      violations,
+      violations.length > 0
+        ? `Citation reuse detected in ${violations.length} IV altRoute entry/entries:\n${violations.join("\n")}`
+        : ""
+    ).toHaveLength(0);
+  });
+});
+
+// ─── 4. PK PROFILE SNAPSHOTS ─────────────────────────────────────────────────
 //
 // Locks in the pharmacokinetic fields (halfLifeMin, halfLifeMax, halfLifeLabel,
 // route, and citation IDs) for specific compounds that have been verified
