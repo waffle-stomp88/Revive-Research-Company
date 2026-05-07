@@ -155,7 +155,8 @@ exports[`compound-profiles — PK profile snapshots > ghrp-6 PK fields are prese
 exports[`compound-profiles — PK profile snapshots > gonadorelin PK fields are present and stable 1`] = `
 {
   "citationIds": [
-    "2467720",
+    "3278187",
+    "3007081",
   ],
   "halfLifeLabel": "~5–10 min",
   "halfLifeMax": 10,

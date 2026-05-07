@@ -47,6 +47,7 @@ import {
   PT141Visual,
   GHAmplifierDualReceptorVisual,
   GHPulseWaveformVisual,
+  CognitiveEdgeSynergyVisual,
 } from "@/components/education";
 
 type PurchaseType = "one-time" | "subscription";
@@ -128,7 +129,7 @@ export default function ResearchStackDetail() {
     "hpg-axis-restore-stack": [KisspeptinVisual, MelanotanReceptorVisual],
     "recovery-tissue-stack": [BPC157AngiogenesisVisual, TB500ActinVisual],
     "glow-protocol": [GLOWSynergyVisual, KLOWSynergyVisual],
-    "cognitive-edge-stack": [SemaxNeuralVisual, SelankVisual],
+    "cognitive-edge-stack": [CognitiveEdgeSynergyVisual],
     "longevity-protocol": [EpithalonTelomeraseVisual, GHKCuCopperVisual],
     "fat-burner": [AOD9604Visual, Amino1MQNADVisual],
     "gh-amplifier": [GHAmplifierDualReceptorVisual, CJC1295DACMechanism, GHPulseWaveformVisual],

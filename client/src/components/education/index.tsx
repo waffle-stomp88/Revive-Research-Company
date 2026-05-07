@@ -48,3 +48,6 @@ export { GonadorelinVisual, TriptorelinVisual, EnclomipheneVisual, OxytocinVisua
 // GH Amplifier stack-specific synergy visuals
 export { GHAmplifierDualReceptorVisual } from "./gh-amplifier-dual-receptor-visual";
 export { GHPulseWaveformVisual } from "./gh-pulse-waveform-visual";
+
+// Cognitive Edge stack-specific synergy visual
+export { CognitiveEdgeSynergyVisual } from "./cognitive-edge-synergy-visual";
