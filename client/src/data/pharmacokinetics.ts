@@ -360,6 +360,19 @@
  *   estimated here (20–30 min → 3–5 days). Citations remain empty; note
  *   unchanged. Confirmed null.
  *
+ * Citation upgrade (May 2026): PEG-MGF upgraded from uncited to class proxy:
+ *  - PEG-MGF was the only entry in the catalog with a completely empty
+ *    citations array. Yang BB et al. (2004, J Clin Pharmacol 44:1061–9,
+ *    PMID 15286081) — "Pharmacokinetics of pegfilgrastim in subjects with
+ *    various degrees of renal function" — has been added as an off-compound
+ *    proxy. This is a primary plasma pharmacokinetics study of pegfilgrastim
+ *    (PEGylated G-CSF), the same compound class referenced in the audit above.
+ *    The paper directly characterises the PEGylation-extended plasma half-life
+ *    mechanism (protease shielding + reduced renal filtration) that underlies
+ *    the ~3–5 day PEG-MGF estimate. The citation and note both carry an
+ *    explicit "off-compound proxy" label. PEG-MGF is now at the same minimum
+ *    documentation standard as other estimated entries.
+ *
  *  Pinealon — halfLifeLabel "~1–2 h":
  *   PubMed query: '(pinealon OR "Ala-Glu-Asp-Gly" OR AEDG OR "tetrapeptide
  *   AEDG") AND (pharmacokinetics OR half-life OR "plasma clearance" OR
@@ -1142,8 +1155,13 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     route: "subcutaneous",
     pkContext:
       "PEGylated MGF (PEG-MGF) demonstrates a substantially extended plasma half-life of approximately 3–5 days following subcutaneous administration; PEGylation of the E-peptide domain shields protease cleavage sites and markedly reduces renal clearance relative to unmodified MGF (~20–30 min).",
-    citations: [],
-    note: "No compound-specific PubMed-indexed pharmacokinetics study for PEG-MGF was identified during citation audit (April 2026). Half-life is estimated from published PEGylated peptide pharmacokinetic class data.",
+    citations: [
+      pmid(
+        "15286081",
+        "Yang et al. (2004) — Pharmacokinetics of pegfilgrastim in subjects with various degrees of renal function, J Clin Pharmacol [off-compound proxy: PEGylated G-CSF class PK]",
+      ),
+    ],
+    note: "No compound-specific PubMed-indexed pharmacokinetics study for PEG-MGF was identified during citation audit (May 2026). The cited reference (Yang et al. 2004, J Clin Pharmacol 44:1061–9, PMID 15286081) is an off-compound proxy: it is a primary plasma pharmacokinetics study of pegfilgrastim (PEGylated G-CSF) — a PEGylated growth-factor analogue in the same compound class as PEG-MGF — showing that PEGylation extends the plasma half-life approximately 10–100-fold relative to the unmodified parent protein by shielding protease cleavage sites and reducing renal filtration. This class mechanism directly supports the ~3–5 day half-life extrapolation for PEG-MGF relative to unmodified MGF (~20–30 min). No primary compound-specific PEG-MGF PK study is currently indexed in PubMed.",
   },
   {
     slug: "foxo4-dri",

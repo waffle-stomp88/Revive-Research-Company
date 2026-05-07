@@ -301,7 +301,9 @@ exports[`compound-profiles — PK profile snapshots > oxytocin PK fields are pre
 
 exports[`compound-profiles — PK profile snapshots > peg-mgf PK fields are present and stable 1`] = `
 {
-  "citationIds": [],
+  "citationIds": [
+    "15286081",
+  ],
   "halfLifeLabel": "~3–5 days",
   "halfLifeMax": 7200,
   "halfLifeMin": 4320,
