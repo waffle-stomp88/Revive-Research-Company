@@ -13,7 +13,6 @@ import {
   SortAsc,
   SortDesc,
 } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,6 +39,7 @@ type SortKey = "name" | "half-life" | "route";
 type SortDir = "asc" | "desc";
 type RouteFilter = "all" | "subcutaneous" | "intravenous" | "intranasal" | "oral" | "topical";
 type DualRouteFilter = "all" | "dual-only";
+type DurationFilter = "all" | "short" | "medium" | "long";
 
 const ROUTE_ABBREV: Record<string, string> = {
   subcutaneous: "SC",
@@ -67,6 +67,19 @@ function pkMidpointMin(entry: HalfLifeEntry): number {
   }
   return entry.halfLifeMin ?? entry.halfLifeMax ?? Infinity;
 }
+
+// Duration bar helpers
+// Log-scale ceiling at 24 h (1440 min) — compounds ≥ 24 h get a full bar.
+// Using log scale so short-acting compounds still show a visible bar.
+const BAR_CEILING_MIN = 1440;
+function pkBarPct(entry: HalfLifeEntry): number {
+  const mid = pkMidpointMin(entry);
+  if (!isFinite(mid) || mid <= 0) return 0;
+  return Math.min(Math.log(mid + 1) / Math.log(BAR_CEILING_MIN + 1), 1) * 100;
+}
+
+// Duration bucket thresholds (minutes)
+const DURATION_THRESHOLDS = { short: 30, medium: 360 } as const;
 
 /** Returns the plain-language summary for the indirect-evidence popover.
  *  Prefers the dedicated `shortNote` field; falls back to extracting the first
@@ -309,6 +322,18 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
             />
           )}
 
+          {/* Duration bar — proportional t½ relative to 24 h ceiling, log-scaled */}
+          <div
+            className="mt-2 mb-1 h-[3px] rounded-full bg-white/5 overflow-hidden"
+            data-testid={`bar-duration-${entry.slug}`}
+            title={`~${Math.round(pkBarPct(entry))}% of 24 h ceiling`}
+          >
+            <div
+              className="h-full rounded-full"
+              style={{ width: `${pkBarPct(entry)}%`, backgroundColor: rc.hex, opacity: 0.55 }}
+            />
+          </div>
+
           <div className="flex-1" />
 
           {/* PK context */}
@@ -361,6 +386,7 @@ export default function PkCatalog() {
   const [search, setSearch] = useState("");
   const [routeFilter, setRouteFilter] = useState<RouteFilter>("all");
   const [dualFilter, setDualFilter] = useState<DualRouteFilter>("all");
+  const [durationFilter, setDurationFilter] = useState<DurationFilter>("all");
   const [sortKey, setSortKey] = useState<SortKey>("name");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
 
@@ -393,6 +419,16 @@ export default function PkCatalog() {
       entries = entries.filter(hasRouteContrast);
     }
 
+    if (durationFilter !== "all") {
+      entries = entries.filter((e) => {
+        const mid = pkMidpointMin(e);
+        if (durationFilter === "short")  return mid < DURATION_THRESHOLDS.short;
+        if (durationFilter === "medium") return mid >= DURATION_THRESHOLDS.short && mid <= DURATION_THRESHOLDS.medium;
+        if (durationFilter === "long")   return mid > DURATION_THRESHOLDS.medium;
+        return true;
+      });
+    }
+
     entries.sort((a, b) => {
       let cmp = 0;
       if (sortKey === "name") {
@@ -406,7 +442,7 @@ export default function PkCatalog() {
     });
 
     return entries;
-  }, [search, routeFilter, dualFilter, sortKey, sortDir]);
+  }, [search, routeFilter, dualFilter, durationFilter, sortKey, sortDir]);
 
   function toggleSort(key: SortKey) {
     if (sortKey === key) {
@@ -539,6 +575,32 @@ export default function PkCatalog() {
                   </button>
                 );
               })}
+            </div>
+
+            {/* Duration filter pills */}
+            <div className="flex items-center gap-1 flex-wrap">
+              <Clock className="h-3.5 w-3.5 text-muted-foreground/40 shrink-0" />
+              {(
+                [
+                  { key: "all",    label: "Any length" },
+                  { key: "short",  label: "Short  <30m" },
+                  { key: "medium", label: "Medium  <6h" },
+                  { key: "long",   label: "Long  6h+" },
+                ] as const
+              ).map(({ key, label }) => (
+                <button
+                  key={key}
+                  onClick={() => setDurationFilter(key)}
+                  className={`text-[11px] px-2 py-1 rounded border transition-colors ${
+                    durationFilter === key
+                      ? "bg-white/10 text-foreground border-white/20"
+                      : "bg-transparent text-muted-foreground border-white/10 hover:border-white/20"
+                  }`}
+                  data-testid={`button-duration-${key}`}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
 
             {/* Sort controls */}
