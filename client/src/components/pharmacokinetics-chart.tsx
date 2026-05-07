@@ -927,16 +927,42 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                       <TooltipTrigger asChild>
                         <span className="flex items-center gap-1 text-xs font-medium cursor-help w-fit py-1" style={{ color: c.color }} data-testid={`chip-halflife-${toTestSlug(c.peptide.name)}`}>
                           <Clock className="h-3 w-3 flex-shrink-0" />
-                          Plasma t½ {c.pk.halfLifeLabel}
+                          {c.pk.altRoute ? <>{routeAbbrev(c.pk.route)} t½ {c.pk.halfLifeLabel}</> : <>Plasma t½ {c.pk.halfLifeLabel}</>}
                         </span>
                       </TooltipTrigger>
                       <TooltipContent side="top" className="max-w-[220px] text-xs leading-relaxed">
                         The half-life (t½) is how long it takes plasma concentration to fall to half its peak value — a measure of how quickly the compound clears the bloodstream.
                       </TooltipContent>
                     </Tooltip>
+                    {c.pk.altRoute && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span
+                            className="flex items-center gap-1 text-xs font-medium cursor-help w-fit py-1 opacity-70"
+                            style={{ color: c.color }}
+                            data-testid={`chip-halflife-altroute-${toTestSlug(c.peptide.name)}`}
+                          >
+                            <Clock className="h-3 w-3 flex-shrink-0" />
+                            {routeAbbrev(c.pk.altRoute.route)} t½ {c.pk.altRoute.halfLifeLabel}
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-[220px] text-xs leading-relaxed">
+                          Half-life via {routeLabel(c.pk.altRoute.route).toLowerCase()} route.
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
                     <div className="flex flex-wrap gap-3 border-t border-border/20 pt-2 mt-1">
                       {c.pk.citations.map((cit, j) => (
                         <a key={j} href={cit.url} target="_blank" rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-xs text-[#21d8ff] hover:underline opacity-70 hover:opacity-100"
+                          onClick={e => e.stopPropagation()}
+                        >
+                          <ExternalLink className="h-2.5 w-2.5" />
+                          {cit.label}
+                        </a>
+                      ))}
+                      {c.pk.altRoute && c.pk.altRoute.citations.map((cit, j) => (
+                        <a key={`alt-${j}`} href={cit.url} target="_blank" rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 text-xs text-[#21d8ff] hover:underline opacity-70 hover:opacity-100"
                           onClick={e => e.stopPropagation()}
                         >
@@ -1028,13 +1054,32 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                     </PopoverTrigger>
                     <PopoverContent className="w-80 p-4" side="top" align="start">
                       <div className="space-y-2">
-                        <p className="text-sm font-semibold">Plasma half-life: {c.pk.halfLifeLabel} ({c.pk.route})</p>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-1.5">
+                            <Clock className="h-3 w-3 flex-shrink-0 text-muted-foreground" />
+                            <p className="text-sm font-semibold">
+                              {c.pk.altRoute ? routeAbbrev(c.pk.route) : "Plasma"} t½: {c.pk.halfLifeLabel}
+                            </p>
+                          </div>
+                          {c.pk.altRoute && (
+                            <div className="flex items-center gap-1.5">
+                              <Clock className="h-3 w-3 flex-shrink-0 text-muted-foreground opacity-60" />
+                              <p className="text-sm font-semibold text-muted-foreground">
+                                {routeAbbrev(c.pk.altRoute.route)} t½: {c.pk.altRoute.halfLifeLabel}
+                              </p>
+                            </div>
+                          )}
+                        </div>
                         <p className="text-xs text-muted-foreground leading-relaxed">{c.pk.pkContext}</p>
                         {c.pk.note && <p className="text-[11px] text-muted-foreground/80 italic">{c.pk.note}</p>}
                         <div className="pt-1 border-t border-border/40">
-                          <p className="text-[10px] text-muted-foreground mb-1">Primary citation:</p>
+                          <p className="text-[10px] text-muted-foreground mb-1">Citations:</p>
                           {c.pk.citations.map((cit, j) => (
                             <a key={j} href={cit.url} target="_blank" rel="noopener noreferrer"
+                              className="text-[11px] text-[#21d8ff] hover:underline block">{cit.label}</a>
+                          ))}
+                          {c.pk.altRoute && c.pk.altRoute.citations.map((cit, j) => (
+                            <a key={`alt-${j}`} href={cit.url} target="_blank" rel="noopener noreferrer"
                               className="text-[11px] text-[#21d8ff] hover:underline block">{cit.label}</a>
                           ))}
                         </div>

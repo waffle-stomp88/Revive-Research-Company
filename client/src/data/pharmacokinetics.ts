@@ -44,6 +44,12 @@ export interface Citation {
   label: string;
 }
 
+export interface AltRouteHalfLife {
+  route: string;
+  halfLifeLabel: string;
+  citations: Citation[];
+}
+
 export interface HalfLifeEntry {
   slug: string;
   name: string;
@@ -54,6 +60,7 @@ export interface HalfLifeEntry {
   pkContext: string;
   citations: Citation[];
   note?: string;
+  altRoute?: AltRouteHalfLife;
 }
 
 const pmid = (id: string, label: string): Citation => ({
@@ -563,6 +570,14 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
       pmid("19237537", "Chan et al. (2009) — Kisspeptin-54 stimulates gonadotropin release most potently via a subcutaneous bolus route of administration with pharmacokinetic profiling, Eur J Endocrinol"),
     ],
     note: "IV route variant: following intravenous bolus administration, plasma half-life is approximately 10–20 minutes (Dhillo et al. 2005, PMID 16278289; Chan et al. 2009, PMID 19237537), compared with ~28–35 minutes via the subcutaneous route. The shorter IV half-life reflects direct systemic entry and rapid neprilysin-mediated cleavage without a subcutaneous absorption phase.",
+    altRoute: {
+      route: "intravenous",
+      halfLifeLabel: "~10–20 min",
+      citations: [
+        pmid("16278289", "Dhillo et al. (2005) — Kisspeptin-54 stimulates the hypothalamic-pituitary gonadal axis in human males, J Clin Endocrinol Metab"),
+        pmid("19237537", "Chan et al. (2009) — Kisspeptin-54 stimulates gonadotropin release most potently via a subcutaneous bolus route of administration with pharmacokinetic profiling, Eur J Endocrinol"),
+      ],
+    },
   },
 
   // ─── GH secretagogues ────────────────────────────────────────────────────────
