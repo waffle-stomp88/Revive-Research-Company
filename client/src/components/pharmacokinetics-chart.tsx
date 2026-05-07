@@ -156,6 +156,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
     return idx >= 0 ? idx : null;
   });
   const [tooltip, setTooltip] = useState<{ clientX: number; clientY: number; label: string; halfLife: string; concentration: number; timeDisp: string } | null>(null);
+  const [ivMarkerTooltip, setIvMarkerTooltip] = useState<{ clientX: number; clientY: number; compoundName: string; ivHalfLifeLabel: string; citationLabel: string; citationUrl: string } | null>(null);
   const [crosshairSvgX, setCrosshairSvgX] = useState<number | null>(null);
   const chartWrapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -187,6 +188,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
   useEffect(() => {
     const dismiss = () => {
       setTooltip(null);
+      setIvMarkerTooltip(null);
       setCrosshairSvgX(null);
     };
     window.addEventListener('scroll', dismiss, { passive: true });
@@ -671,9 +673,36 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                     x1={CHART.x0 + c.ivHalfLifeXFrac * CHART.plotW} y1={CHART.y0}
                     x2={CHART.x0 + c.ivHalfLifeXFrac * CHART.plotW} y2={CHART.y1}
                     stroke="#f97316" strokeOpacity="0.22" strokeWidth="1" strokeDasharray="2 3"
+                    pointerEvents="none"
                   />
                   <text x={CHART.x0 + c.ivHalfLifeXFrac * CHART.plotW} y={CHART.y1 + 11}
-                    textAnchor="middle" fontSize="7" fill="#f97316" fillOpacity="0.65">IV t½</text>
+                    textAnchor="middle" fontSize="7" fill="#f97316" fillOpacity="0.65"
+                    pointerEvents="none">IV t½</text>
+                  {/* Wide invisible hit area for the IV marker — allows hover tooltip */}
+                  <rect
+                    x={CHART.x0 + c.ivHalfLifeXFrac * CHART.plotW - 7}
+                    y={CHART.y0}
+                    width={14}
+                    height={CHART.plotH + 14}
+                    fill="transparent"
+                    style={{ cursor: "help" }}
+                    data-testid={`iv-marker-hit-${toTestSlug(c.peptide.name)}`}
+                    onMouseEnter={e => {
+                      const cit = c.pk.citations[0];
+                      setIvMarkerTooltip({
+                        clientX: e.clientX,
+                        clientY: e.clientY,
+                        compoundName: c.peptide.name,
+                        ivHalfLifeLabel: c.pk.ivHalfLifeLabel!,
+                        citationLabel: cit?.label ?? "",
+                        citationUrl: cit?.url ?? "",
+                      });
+                    }}
+                    onMouseMove={e => {
+                      setIvMarkerTooltip(prev => prev ? { ...prev, clientX: e.clientX, clientY: e.clientY } : prev);
+                    }}
+                    onMouseLeave={() => setIvMarkerTooltip(null)}
+                  />
                 </g>
               ))}
 
@@ -874,6 +903,52 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                 Time ({useHours ? "hours" : "min"})
               </text>
             </svg>
+
+            {/* IV marker tooltip — fixed positioning, shown on hover of IV t½ dashed-line markers */}
+            {ivMarkerTooltip && (() => {
+              const IV_COLOR = "#f97316";
+              const TOOLTIP_WIDTH = 200;
+              const rawLeft = ivMarkerTooltip.clientX + 14 + TOOLTIP_WIDTH > window.innerWidth
+                ? ivMarkerTooltip.clientX - TOOLTIP_WIDTH - 8
+                : ivMarkerTooltip.clientX + 14;
+              const tooltipLeft = Math.max(8, Math.min(rawLeft, window.innerWidth - TOOLTIP_WIDTH - 8));
+              const rawTop = ivMarkerTooltip.clientY - 42;
+              const tooltipTop = Math.max(8, rawTop < 0 ? ivMarkerTooltip.clientY + 8 : rawTop);
+              return (
+                <div
+                  className="pointer-events-none fixed z-50 px-3 py-2 rounded-md text-xs font-medium leading-tight"
+                  style={{
+                    left: tooltipLeft,
+                    top: tooltipTop,
+                    background: "rgba(10,10,16,0.94)",
+                    border: `1px solid ${IV_COLOR}40`,
+                    color: "#fff",
+                    boxShadow: `0 2px 14px rgba(0,0,0,0.65), 0 0 0 1px ${IV_COLOR}18`,
+                    backdropFilter: "blur(6px)",
+                    whiteSpace: "nowrap",
+                    minWidth: 160,
+                  }}
+                  role="tooltip"
+                  data-testid="iv-marker-tooltip"
+                >
+                  <span className="block font-semibold text-[11px] mb-1" style={{ color: IV_COLOR }}>
+                    {ivMarkerTooltip.compoundName} — IV bolus t½
+                  </span>
+                  <span className="block text-sm font-bold tabular-nums" style={{ color: IV_COLOR }}>
+                    {ivMarkerTooltip.ivHalfLifeLabel}
+                  </span>
+                  <p className="text-[10px] opacity-55 mt-1 leading-relaxed whitespace-normal max-w-[190px]">
+                    Intravenous route bypasses the SC absorption phase, producing a shorter observed plasma half-life.
+                  </p>
+                  {ivMarkerTooltip.citationLabel && (
+                    <div className="flex items-center gap-1 mt-1.5 pt-1.5 border-t border-white/10">
+                      <ExternalLink className="h-2.5 w-2.5 flex-shrink-0" style={{ color: "#21d8ff", opacity: 0.7 }} />
+                      <span className="text-[10px]" style={{ color: "#21d8ff", opacity: 0.7 }}>{ivMarkerTooltip.citationLabel}</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* Floating tooltip — fixed positioning so it's never clipped by overflow:hidden */}
             {tooltip && (() => {
