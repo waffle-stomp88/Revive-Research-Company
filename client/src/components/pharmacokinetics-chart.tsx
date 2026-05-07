@@ -25,6 +25,9 @@ function getEffectivePk(pk: HalfLifeEntry, active: 'primary' | 'alt'): HalfLifeE
       halfLifeMax: pk.altRoute.halfLifeMax,
       halfLifeLabel: pk.altRoute.halfLifeLabel,
       route: pk.altRoute.route,
+      ...(pk.altRoute.pkContext !== undefined ? { pkContext: pk.altRoute.pkContext } : {}),
+      ...(pk.altRoute.note !== undefined ? { note: pk.altRoute.note } : {}),
+      ...(pk.altRoute.citationQuality !== undefined ? { citationQuality: pk.altRoute.citationQuality } : {}),
     };
   }
   return pk;
