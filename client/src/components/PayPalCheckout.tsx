@@ -88,10 +88,10 @@ export default function PayPalCheckout({
   };
 
   const handleApprove = async (data: any) => {
-    console.log("PayPal onApprove", data);
+    if (import.meta.env.DEV) { console.log("PayPal onApprove", data); }
     try {
       const orderData = await captureOrder(data.orderId);
-      console.log("PayPal capture result", orderData);
+      if (import.meta.env.DEV) { console.log("PayPal capture result", orderData); }
       onSuccess?.(orderData, data.orderId);
     } catch (e) {
       console.error("PayPal capture error:", e);
@@ -100,7 +100,7 @@ export default function PayPalCheckout({
   };
 
   const handleCancel = async (data: any) => {
-    console.log("PayPal onCancel", data);
+    if (import.meta.env.DEV) { console.log("PayPal onCancel", data); }
     onCancel?.();
   };
 
@@ -262,7 +262,7 @@ export default function PayPalCheckout({
         onSuccess?.(captureResult, result.orderId || orderResult.orderId);
       } else if (result.status === 'PAYER_ACTION_REQUIRED') {
         // 3D Secure required - PayPal will handle this
-        console.log("3D Secure required", result);
+        if (import.meta.env.DEV) { console.log("3D Secure required", result); }
       } else {
         throw new Error("Card payment failed. Please try again.");
       }

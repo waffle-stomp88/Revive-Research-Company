@@ -58,17 +58,17 @@ export default function PayPalButton({
   };
 
   const onApprove = async (data: any) => {
-    console.log("onApprove", data);
+    if (import.meta.env.DEV) { console.log("onApprove", data); }
     const orderData = await captureOrder(data.orderId);
-    console.log("Capture result", orderData);
+    if (import.meta.env.DEV) { console.log("Capture result", orderData); }
   };
 
   const onCancel = async (data: any) => {
-    console.log("onCancel", data);
+    if (import.meta.env.DEV) { console.log("onCancel", data); }
   };
 
   const onError = async (data: any) => {
-    console.log("onError", data);
+    console.error("onError", data);
   };
 
   useEffect(() => {

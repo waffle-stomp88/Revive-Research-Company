@@ -1,0 +1,51 @@
+Diff review — I've gone through both files line by line.
+
+## Verdict
+
+The mechanical wrapping is **clean**. All 8 `console.log` calls correctly wrapped, no `console.error` touched, no other logic modified. The `import.meta.env.DEV` syntax is correct for Vite. Comment header concern (point #1) is a non-issue — the warning exists to protect SDK integration logic, and log gating doesn't touch any of that.
+
+## But the assistant caught something important — and I want to push back harder on it
+
+The `onError` log in `PayPalButton.tsx` line 71 is **not** a "follow your call" situation. It's a real bug, and wrapping it in `import.meta.env.DEV` makes it worse, not better.
+
+Here's what's actually happening:
+
+- The handler is named `onError` — it fires when PayPal's SDK encounters an error during checkout (network failure, payment declined by issuer, fraud block, etc.)
+- The original code uses `console.log` instead of `console.error` — that's already a mistake, but at least the error was visible
+- If we wrap it in `import.meta.env.DEV`, **PayPal errors in production will be completely silent.** A customer's payment fails, you have zero record of it, no way to debug.
+
+This matters more now because you just flipped from sandbox to live. Real customers, real money, real failures you'll need to investigate.
+
+**The right fix is to change it to `console.error`** — which the instructions explicitly said not to wrap. That keeps it logging in production where you actually need it.
+
+## Recommendation
+
+Tell Replit to do **two** things:
+
+1. Apply all 7 of the other log wraps as shown (PayPalCheckout.tsx ×4, PayPalButton.tsx ×3 — the `onApprove`, `Capture result`, and `onCancel` ones)
+2. For the `onError` log specifically: **don't wrap it — change `console.log` to `console.error`**
+
+This way you get the cleanup you wanted everywhere it's safe, and you actually *fix* a latent bug instead of burying it.
+
+## Paste this back to Replit:
+
+> **Updated approval — one change:**
+>
+> Apply the diff as shown for all logs **except** the `onError` log in `PayPalButton.tsx` line 71.
+>
+> For that one, instead of wrapping it in `import.meta.env.DEV`, **change `console.log` to `console.error`**. The handler fires on real PayPal SDK errors (payment failures, network issues, fraud blocks). Wrapping it would silence production errors on a live payment integration — that's the opposite of what we want.
+>
+> So the change for that line is:
+>
+> ```diff
+> - console.log("onError", data);
+> + console.error("onError", data);
+> ```
+>
+> All other 7 log wraps stay as you proposed.
+>
+> Show me the updated diff before applying.
+
+---
+
+Once Replit pastes the updated diff back, paste it here and I'll do a final check before you approve. Then we'll move to the `alert()` → toast fix.

@@ -1,0 +1,53 @@
+Here's the instruction to paste into your Replit assistant. It's written so the assistant follows your standard workflow (show diff, wait for approval, apply, restart, hand back) and doesn't go off-script.
+
+---
+
+## Paste this into Replit:
+
+> **Task: Production-gate console logging in PayPal components**
+>
+> **Files to modify:**
+> - `client/src/components/PayPalCheckout.tsx` (or wherever the PayPal checkout component lives)
+> - `client/src/components/PayPalButton.tsx` (or wherever the PayPal button component lives)
+>
+> **What to do:**
+>
+> 1. Find every `console.log(...)` call in both files.
+> 2. Wrap each one in a development-only guard so it only runs in dev:
+>
+>    ```ts
+>    if (import.meta.env.DEV) {
+>      console.log(...);
+>    }
+>    ```
+>
+> 3. **Do not modify `console.error(...)` calls.** Errors should still log in production so we can debug live failures.
+> 4. **Do not modify `console.warn(...)` calls** unless they're clearly debug noise (in which case ask me first — don't just delete).
+> 5. **Do not change any other logic, formatting, imports, types, or variable names.** This is a pure log-gating change.
+>
+> **Workflow:**
+>
+> - Show me the full diff first.
+> - Wait for my explicit approval before applying.
+> - After approval, apply the diff and restart the app.
+> - Hand back to me for browser verification — do not declare the fix complete yourself.
+>
+> **Verification I'll perform after you apply:**
+>
+> - Open dev tools on the live site, walk through PayPal checkout, confirm no `console.log` output appears in production.
+> - Open dev tools on the Replit dev environment, walk through PayPal checkout, confirm logs DO still appear.
+>
+> Show me the diff.
+
+---
+
+## What to do when Replit responds
+
+The assistant will paste a diff. **Before you approve it in Replit**, paste the diff here and I'll review it for:
+
+- Whether all the logs got caught (it's easy to miss async/promise-chain logs)
+- Whether any `console.error` got accidentally wrapped (would suppress production errors — bad)
+- Whether the `import.meta.env.DEV` syntax is right for your Vite version
+- Whether anything outside the log-gating got touched
+
+Once I confirm the diff is clean, you approve in Replit, it applies, you verify in the browser, and we move to the toast fix.
