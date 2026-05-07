@@ -68,8 +68,14 @@ function pkMidpointMin(entry: HalfLifeEntry): number {
   return entry.halfLifeMin ?? entry.halfLifeMax ?? Infinity;
 }
 
-/** Extracts a 1–2 sentence preview from entry.note for the indirect-evidence popover. */
+/** Returns the plain-language summary for the indirect-evidence popover.
+ *  Prefers the dedicated `shortNote` field; falls back to extracting the first
+ *  1–2 sentences from `entry.note` when `shortNote` is absent. */
 function getIndirectNote(entry: HalfLifeEntry): string {
+  if (entry.shortNote?.trim()) {
+    const s = entry.shortNote.trim();
+    return s.endsWith(".") ? s : s + ".";
+  }
   const raw = entry.note?.trim();
   if (!raw) {
     return "No direct plasma concentration data. Half-life is inferred from indirect or analogous-compound evidence.";

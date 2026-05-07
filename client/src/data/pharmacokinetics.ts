@@ -866,6 +866,13 @@ export interface HalfLifeEntry {
   pkContext: string;
   citations: Citation[];
   note?: string;
+  /**
+   * Short, plain-language summary (≤ 2 sentences) for the Indirect Evidence
+   * badge popover. Preferred over first-sentence extraction from `note` when
+   * `citationQuality` resolves to "estimated". Intended for researchers who
+   * want a quick, jargon-light explanation of why a direct PK study is absent.
+   */
+  shortNote?: string;
   citationQuality?: CitationQuality;
   altRoute?: AltRouteHalfLife;
   ivHalfLifeMin?: number;
@@ -926,6 +933,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 20,
     halfLifeLabel: "~15–20 min",
     route: "intranasal",
+    shortNote: "No published plasma PK study for Semax has been indexed in PubMed; the half-life is estimated from proteolytic clearance data for intranasal heptapeptides of similar structure, not from direct plasma concentration measurements.",
     pkContext:
       "Plasma half-life is estimated at approximately 15–20 minutes following intranasal administration based on rapid proteolytic clearance observed for intranasal neuropeptides of similar structure; no compound-specific English-indexed PubMed pharmacokinetics study for Semax was identified.",
     citations: [pmid("41479572", "Radchenko et al. (2025) — Pharmacological effects of Semax and derivatives in Alzheimer's disease models, Acta Naturae")],
@@ -1043,6 +1051,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 1440,
     halfLifeLabel: "~24 h (systemic)",
     route: "subcutaneous",
+    shortNote: "No published plasma PK study for GHK-Cu has been indexed in PubMed; the ~24 h estimate is extrapolated from copper-binding tripeptide pharmacological studies, not from direct plasma concentration measurements.",
     pkContext:
       "Systemic plasma half-life is estimated at approximately 24 hours following subcutaneous administration based on published copper-binding tripeptide pharmacological studies; local tissue concentrations may vary. No compound-specific PubMed-indexed plasma pharmacokinetics study for GHK-Cu was identified.",
     citations: [pmid("2244543", "Miller et al. (1990) — Biological effects of glycyl-histidyl-lysyl chelated Cu(II), Adv Exp Med Biol")],
@@ -1092,6 +1101,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 180,
     halfLifeLabel: "~1–3 h",
     route: "subcutaneous",
+    shortNote: "No published plasma PK study for LL-37 has been indexed in PubMed; the half-life is estimated from the known serine-protease susceptibility of cathelicidin peptides in plasma, not from direct plasma concentration data.",
     pkContext:
       "Plasma half-life is estimated at approximately 1–3 hours following subcutaneous administration based on the known susceptibility of LL-37 to serine-protease-mediated degradation in plasma and tissue; no compound-specific PubMed-indexed plasma pharmacokinetics study for LL-37 was identified.",
     citations: [pmid("19817855", "Auvynet & Rosenstein (2009) — Multifunctional host defense peptides: pharmacological properties and innate immunity roles, FEBS J [off-compound proxy: host defense peptide class review, not LL-37-specific PK data]")],
@@ -1104,6 +1114,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 60,
     halfLifeLabel: "~30–60 min",
     route: "intravenous",
+    shortNote: "No published plasma PK study for Cerebrolysin has been indexed in PubMed; the half-life is estimated from the expected rapid clearance of its low-molecular-weight neuropeptide and amino acid constituents.",
     pkContext:
       "Plasma elimination half-life is estimated at approximately 30–60 minutes following intravenous administration based on the rapid plasma clearance expected for low-molecular-weight neuropeptides and amino acids; Cerebrolysin is a standardized mixture of such constituents. No compound-specific PubMed-indexed plasma pharmacokinetics study for Cerebrolysin was identified.",
     citations: [pmid("29172008", "Stepanichev et al. (2017) — Effects of cerebrolysin on nerve growth factor system in the aging rat brain, Restor Neurol Neurosci")],
@@ -1520,6 +1531,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 30,
     halfLifeLabel: "~20–30 min (SC estimate)",
     route: "subcutaneous",
+    shortNote: "No subcutaneous plasma PK study for DSIP has been published; the ~20–30 min window is extrapolated from the published IV half-life (10–20 min) by adding the absorption-phase delay expected for a nine-amino-acid neuropeptide.",
     pkContext:
       "Delta sleep-inducing peptide (DSIP) plasma half-life is estimated at approximately 20–30 minutes following subcutaneous administration based on the IV half-life (10–20 min, Graf & Kastin 1984) extended by the subcutaneous absorption-phase delay expected for this nine-amino-acid neuropeptide (Trp-Ala-Gly-Gly-Asp-Ala-Ser-Gly-Glu). Intravenous administration of DSIP in preclinical pharmacokinetics studies yields a plasma half-life of approximately 10–20 minutes, as reviewed by Graf & Kastin (1984), reflecting rapid multi-enzymatic clearance upon direct systemic entry; the SC estimate adds the absorption-phase extension. No compound-specific SC plasma pharmacokinetics study has been identified.",
     citations: [pmid("6145137", "Graf & Kastin (1984) — Delta-sleep-inducing peptide (DSIP): a review, Neurosci Biobehav Rev")],
@@ -1536,6 +1548,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeLabel: "~10–30 min (inhaled-route proxy; SC estimate)",
     route: "subcutaneous",
     citationQuality: "estimated",
+    shortNote: "No subcutaneous plasma PK study for VIP has been published; the ~10–30 min window is estimated from inhaled VIP human studies used as a non-IV absorption proxy — neither inhaled study measured plasma VIP concentrations directly.",
     pkContext:
       "Vasoactive intestinal peptide (VIP) plasma half-life is extremely short — approximately 1–2 minutes intravenously — owing to rapid enzymatic degradation by endopeptidases in plasma and vascular endothelium. No compound-specific subcutaneous pharmacokinetics study for VIP has been published. The closest documented non-IV data come from two human studies in which VIP was administered by aerosol inhalation: Barnes PJ and Dixon CM (Am Rev Respir Dis, 1984) administered 100 µg VIP by inhalation to asthmatic subjects and observed bronchodilatory protection against histamine challenge with no measurable cardiovascular effects — documenting that systemic bioavailability after pulmonary inhalation is absorption-limited relative to IV administration; Bundgaard et al. (Eur J Respir Dis Suppl, 1983) similarly administered inhaled VIP as pretreatment in exercise-induced asthma. The absence of cardiovascular effects in both inhaled studies (tachycardia and flushing are prominent after IV VIP) indicates that pulmonary mucosal absorption rate-limits systemic VIP entry and substantially prolongs apparent plasma residence relative to the 1–2 min IV half-life. Subcutaneous administration creates an analogous depot-limited entry profile through slow transcapillary absorption; the effective plasma presence window is therefore estimated at approximately 10–30 minutes by analogy with the inhaled route data. The intrinsic plasma elimination rate of VIP (~1–2 min) is unchanged regardless of administration route. Important: neither inhaled study measured plasma VIP concentrations — both tracked haemodynamic and airway outcomes only — so the 10–30 min SC estimate is an inference from indirect evidence, not a direct plasma measurement; researchers should calibrate expectations accordingly.",
     citations: [
@@ -1564,6 +1577,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 120,
     halfLifeLabel: "~1–2 h",
     route: "subcutaneous",
+    shortNote: "No published plasma PK study for Pinealon has been indexed in PubMed; the ~1–2 h half-life is estimated by class analogy with other short hydrophilic Khavinson tetrapeptides.",
     pkContext:
       "Plasma half-life of Pinealon (Ala-Glu-Asp-Gly tetrapeptide) is estimated at approximately 1–2 hours following subcutaneous administration, consistent with the expected proteolytic clearance of short hydrophilic tetrapeptides in plasma; no compound-specific PubMed-indexed pharmacokinetics study for Pinealon was identified.",
     citations: [pmid("22376166", "Khavinson et al. (2012) — Neuroprotective effects of tetrapeptide AEDG (pinealon) and other peptide bioregulators, CNS Neurol Disord Drug Targets")],
@@ -1614,6 +1628,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 30,
     halfLifeLabel: "~20–30 min",
     route: "subcutaneous",
+    shortNote: "No published plasma PK study for MGF has been indexed in PubMed; the ~20–30 min half-life is estimated from IGF-1 fragment class clearance data, reflecting rapid serum protease cleavage of the E-peptide extension.",
     pkContext:
       "Mechano Growth Factor (MGF, an IGF-1 splice variant with a unique 49-amino-acid E-peptide extension) has a plasma half-life estimated at approximately 20–30 minutes following subcutaneous administration; the unprotected E-peptide domain is rapidly cleaved by serum proteases, yielding rapid plasma clearance analogous to IGF-1 des(1–3).",
     citations: [pmid("12095637", "Yang & Goldspink (2002) — Different roles of the IGF-I Ec peptide (MGF) and mature IGF-I in myoblast proliferation and differentiation, FEBS Lett")],
@@ -1626,6 +1641,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 7200,
     halfLifeLabel: "~3–5 days",
     route: "subcutaneous",
+    shortNote: "No published plasma PK study for PEG-MGF has been indexed in PubMed; the ~3–5 day half-life is estimated from PEGylated peptide class data, where PEGylation typically extends plasma half-life 10–100-fold relative to the unmodified parent peptide.",
     pkContext:
       "PEGylated MGF (PEG-MGF) demonstrates a substantially extended plasma half-life of approximately 3–5 days following subcutaneous administration; PEGylation of the E-peptide domain shields protease cleavage sites and markedly reduces renal clearance relative to unmodified MGF (~20–30 min).",
     citations: [
@@ -1643,6 +1659,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 60,
     halfLifeLabel: "~30–60 min",
     route: "subcutaneous",
+    shortNote: "No published plasma PK study for FOXO4-DRI has been indexed in PubMed; the half-life is estimated from D-amino acid peptide class clearance data, where D-retro-inverso substitution confers partial proteolytic resistance.",
     pkContext:
       "FOXO4-DRI (a D-retro-inverso FOXO4 peptide engineered to disrupt the FOXO4–p53 interaction in senescent cells) has an estimated plasma half-life of approximately 30–60 minutes following subcutaneous administration; D-amino acid substitution confers proteolytic resistance relative to L-form peptides but plasma clearance remains relatively rapid.",
     citations: [pmid("28340339", "Baar et al. (2017) — Targeted apoptosis of senescent cells restores tissue homeostasis in response to chemotoxicity and ageing, Cell")],
@@ -1668,6 +1685,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 60,
     halfLifeLabel: "~30–60 min",
     route: "subcutaneous",
+    shortNote: "No plasma PK study for Adipotide has been indexed in PubMed across multiple search strategies; the half-life is estimated from proapoptotic cationic targeting peptide class clearance data only.",
     pkContext:
       "Adipotide (CKGGRAKDC-GG-D(KLAKLAK)2 proapoptotic targeting peptide) plasma half-life is estimated at approximately 30–60 minutes following subcutaneous administration based on the expected rapid proteolytic clearance of unmodified cationic targeting peptides in plasma.",
     citations: [],
@@ -1680,6 +1698,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 240,
     halfLifeLabel: "~2–4 h",
     route: "subcutaneous",
+    shortNote: "No subcutaneous plasma PK study for AICAR has been published; the half-life is extrapolated from published IV nucleoside analogue kinetics (MCSAAS/GUARDIAN clinical program) with an expected SC absorption-phase extension.",
     pkContext:
       "AICAR (5-aminoimidazole-4-carboxamide ribonucleoside, an AMPK activator) plasma half-life is estimated at approximately 2–4 hours following subcutaneous administration based on the pharmacokinetic behaviour of nucleoside analogues with similar renal clearance profiles; intracellular conversion to the active monophosphate form (ZMP) occurs within minutes of cellular uptake. The published AICAR/acadesine pharmacokinetic literature used intravenous administration exclusively (MCSAAS/GUARDIAN clinical development program); SC half-life is extrapolated from IV kinetics plus the expected SC absorption-phase delay for a charged nucleoside ribotide.",
     citations: [],
@@ -1692,6 +1711,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 240,
     halfLifeLabel: "~2–4 h (estimated)",
     route: "oral",
+    shortNote: "No in vivo plasma PK study for SLU-PP-332 has been indexed in PubMed; the half-life is estimated from small-molecule nuclear receptor agonist class data with similar molecular weight and lipophilicity.",
     pkContext:
       "SLU-PP-332 (a synthetic ERR alpha/gamma agonist) plasma half-life is estimated at approximately 2–4 hours following oral administration based on preclinical pharmacokinetic modelling of small-molecule nuclear receptor agonists with similar molecular weight and lipophilicity profiles; no compound-specific PubMed-indexed pharmacokinetics study has been identified.",
     citations: [pmid("33207103", "Dufour et al. (2021) — Synthetic ERRα/γ agonist induces an ERRα/γ target gene program and relevant metabolic tissue changes, Cell Chem Biol")],
@@ -1719,6 +1739,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 300,
     halfLifeLabel: "~3–5 h (SC estimate)",
     route: "subcutaneous",
+    shortNote: "No subcutaneous plasma PK study for L-Carnitine has been indexed in PubMed; the half-life is extrapolated from published IV and IM levocarnitine kinetics with an added SC absorption phase.",
     pkContext:
       "L-Carnitine (levocarnitine) plasma half-life following intravenous administration is approximately 3–5 hours; renal tubular reabsorption plays a major role in maintaining plasma levels, and urinary excretion increases markedly above the renal transport maximum. A population pharmacokinetics study of high-dose IV L-carnitine (6–18 g) in patients with vasopressor-dependent septic shock (Jennaro et al. 2023, Pharmacotherapy) demonstrated that a two-compartment model with linear elimination and a fixed volume of distribution of 17.1 L best described the data, with kidney function as the primary covariate driving elimination rate variability.",
     citations: [pmid("37775945", "Jennaro et al. (2023) — Kidney function as a key driver of the pharmacokinetic response to high-dose L-carnitine in septic shock, Pharmacotherapy")],
