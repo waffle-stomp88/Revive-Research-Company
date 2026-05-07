@@ -1850,17 +1850,35 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                     {c.pk.altRoute && (
                       c.pk.altRoute.citations.length > 0
                         ? c.pk.altRoute.citations.map((cit, j) => (
-                          <a
-                            key={`alt-${j}`}
-                            href={cit.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-[10px] text-[#21d8ff]/70 hover:text-[#21d8ff] hover:underline transition-colors"
-                            data-testid={`link-citation-altroute-${toTestSlug(c.peptide.name)}-${j}`}
-                          >
-                            <ExternalLink className="h-2.5 w-2.5 flex-shrink-0" />
-                            {cit.label}
-                          </a>
+                          <span key={`alt-${j}`} className="inline-flex items-center gap-1">
+                            {cit.isOffCompoundProxy && (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span
+                                    className="inline-flex items-center gap-0.5 text-[9px] font-semibold px-1 py-px rounded cursor-help select-none shrink-0"
+                                    style={{ backgroundColor: "rgba(251,146,60,0.14)", color: "#fb923c", border: "1px solid rgba(251,146,60,0.35)" }}
+                                    data-testid={`badge-proxy-citation-altroute-legend-row-${toTestSlug(c.peptide.name)}-${j}`}
+                                  >
+                                    <Info className="h-2 w-2 flex-shrink-0" />
+                                    Proxy
+                                  </span>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="max-w-[260px] p-3 text-xs leading-relaxed">
+                                  This citation is from a related compound class, not the compound itself. No compound-specific pharmacokinetics study was identified; the closest indexed analogue study is used as an off-compound proxy.
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
+                            <a
+                              href={cit.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-[10px] text-[#21d8ff]/70 hover:text-[#21d8ff] hover:underline transition-colors"
+                              data-testid={`link-citation-altroute-${toTestSlug(c.peptide.name)}-${j}`}
+                            >
+                              <ExternalLink className="h-2.5 w-2.5 flex-shrink-0" />
+                              {cit.label}
+                            </a>
+                          </span>
                         ))
                         : c.pk.altRoute.citationQuality === "estimated"
                           ? (
