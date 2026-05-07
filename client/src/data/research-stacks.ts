@@ -292,8 +292,8 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
     ],
     storageGuide: "Store PT-141 lyophilized powder at 2-8°C (36-46°F); reconstitute with bacteriostatic water and use within recommended timeframes. Store Oxytocin peptide refrigerated and protected from light; avoid repeated freeze-thaw cycles.",
     educationLinks: [
-      { peptideName: "PT-141", articleUrl: "/guides/hormonal-peptides", articleTitle: "Hormonal Peptides: Melanocortin & HPG Axis Research" },
-      { peptideName: "Oxytocin", articleUrl: "/guides/hormonal-peptides", articleTitle: "Hormonal Peptides: Oxytocinergic Bonding Pathways" },
+      { peptideName: "PT-141", articleUrl: "/guides/what-is-pt-141-bremelanotide-peptide", articleTitle: "PT-141 (Bremelanotide): Melanocortin Receptor Research Guide" },
+      { peptideName: "Oxytocin", articleUrl: "/guides/what-is-oxytocin-peptide", articleTitle: "Oxytocin: Bonding Neuropeptide Research Guide" },
     ],
     iconName: "Heart",
     color: "#f43f5e",
@@ -329,8 +329,8 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
     ],
     storageGuide: "Store Kisspeptin-10 and Gonadorelin lyophilized at 2–8°C (36–46°F). Reconstitute with bacteriostatic water. Both peptides are sensitive to proteolytic degradation; avoid repeated freeze-thaw cycles and minimize ambient exposure after reconstitution.",
     educationLinks: [
-      { peptideName: "Kisspeptin-10", articleUrl: "/guides/hormonal-peptides", articleTitle: "Hormonal Peptides: Kisspeptin & HPG Axis Research" },
-      { peptideName: "Gonadorelin", articleUrl: "/guides/hormonal-peptides", articleTitle: "Hormonal Peptides: GnRH Signaling & the HPG Axis" },
+      { peptideName: "Kisspeptin-10", articleUrl: "/guides/what-is-kisspeptin-peptide", articleTitle: "Kisspeptin-10: KISS1R Agonist & HPG Axis Research Guide" },
+      { peptideName: "Gonadorelin", articleUrl: "/guides/what-is-gonadorelin-peptide", articleTitle: "Gonadorelin: Synthetic GnRH Research Guide" },
     ],
     iconName: "FlaskConical",
     color: "#f97316",
@@ -366,8 +366,8 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
     ],
     storageGuide: "Store Triptorelin lyophilized at 2–8°C (36–46°F) and protect from light; reconstitute with bacteriostatic water. Store Enclomiphene in a cool, dry location per product labeling. Avoid freeze-thaw cycling for both compounds after reconstitution.",
     educationLinks: [
-      { peptideName: "Triptorelin", articleUrl: "/guides/hormonal-peptides", articleTitle: "Hormonal Peptides: GnRH Analogs & HPG Axis Research" },
-      { peptideName: "Enclomiphene", articleUrl: "/guides/hormonal-peptides", articleTitle: "Hormonal Peptides: SERMs and Estrogen Feedback Modulation" },
+      { peptideName: "Triptorelin", articleUrl: "/guides/what-is-triptorelin-peptide", articleTitle: "Triptorelin: High-Affinity GnRH Analog Research Guide" },
+      { peptideName: "Enclomiphene", articleUrl: "/guides/what-is-enclomiphene-peptide", articleTitle: "Enclomiphene: SERM & Estrogen Feedback Research Guide" },
     ],
     iconName: "Crown",
     color: "#e11d48",
@@ -403,8 +403,8 @@ export const RESEARCH_STACKS_DATA: ResearchStackData[] = [
     ],
     storageGuide: "Store both Kisspeptin-10 and MT-2 lyophilized at 2-8°C (36-46°F). Reconstitute with bacteriostatic water; avoid repeated freeze-thaw cycles after reconstitution. Both peptides are sensitive to oxidation — minimize exposure to air during preparation.",
     educationLinks: [
-      { peptideName: "Kisspeptin-10", articleUrl: "/guides/hormonal-peptides", articleTitle: "Hormonal Peptides: Kisspeptin & HPG Axis Research" },
-      { peptideName: "MT-2", articleUrl: "/guides/hormonal-peptides", articleTitle: "Hormonal Peptides: Melanocortin System Overview" },
+      { peptideName: "Kisspeptin-10", articleUrl: "/guides/what-is-kisspeptin-peptide", articleTitle: "Kisspeptin-10: KISS1R Agonist & HPG Axis Research Guide" },
+      { peptideName: "MT-2", articleUrl: "/guides/what-is-melanotan-peptide", articleTitle: "Melanotan II (MT-2): Melanocortin Receptor Research Guide" },
     ],
     iconName: "FlaskConical",
     color: "#a855f7",

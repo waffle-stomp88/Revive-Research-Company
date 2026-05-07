@@ -110,18 +110,13 @@ import { STACKS_SLUG_TO_PEPTIDE_NAMES } from "@/data/research-stacks";
 // stacks whose educationLinks point to a "what-is-*" article slug will surface here
 // automatically without any manual update.
 //
-// Static entries below handle two special cases that the auto-derivation cannot cover:
-//   1. Compounds whose stack educationLinks point to generic guide pages (e.g. /guides/hormonal-peptides)
-//      rather than individual "what-is-*" articles.
-//   2. Multi-compound complex articles (glow/klow) that should show stacks for all three
-//      constituent peptides.
+// Static entries below handle multi-compound complex articles (glow/klow) that should show
+// stacks for all three constituent peptides — a case the auto-derivation cannot cover because
+// no single educationLink slug maps to all three peptides simultaneously.
 const SLUG_TO_PEPTIDE_NAMES: Record<string, string[]> = {
   ...STACKS_SLUG_TO_PEPTIDE_NAMES,
-  // Hormonal compounds — educationLinks point to /guides/hormonal-peptides, not individual articles
-  "what-is-pt-141-bremelanotide-peptide": ["PT-141"],
-  "what-is-kisspeptin-peptide": ["Kisspeptin-10"],
-  "what-is-melanotan-peptide": ["MT-2"],
-  // Multi-peptide complex articles
+  // Multi-peptide complex articles (auto-derivation cannot handle these because no single
+  // educationLink slug maps to all three constituent peptides)
   "what-is-glow-peptide-complex": ["BPC-157", "TB-500", "GHK-Cu"],
   "what-is-klow-peptide-complex": ["BPC-157", "TB-500", "GHK-Cu"],
 };
