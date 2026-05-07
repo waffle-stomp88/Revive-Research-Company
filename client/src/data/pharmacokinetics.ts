@@ -141,12 +141,16 @@
  *
  * Citation update (May 2026): Direct IV oxytocin PK citation added:
  *  - Oxytocin: proxy receptor-system review (Gimpl & Fahrenholz 2001,
- *    PMID 11445820) replaced with Leake, Weitzman & Fisher (1980,
- *    PMID 7453536) — a primary pharmacokinetics study in human subjects
- *    measuring IV oxytocin plasma disappearance half-life (~3–5 min) via
- *    radioimmunoassay during controlled IV infusion (Obstet Gynecol
- *    56:701–704). This brings oxytocin to the same citation standard as
- *    kisspeptin and vasopressin (Baumann & Dingman 1976, PMID 1262454).
+ *    PMID 11445820) replaced with Seitchik et al. (1984, PMID 6692949) —
+ *    "Oxytocin augmentation of dysfunctional labor. IV. Oxytocin
+ *    pharmacokinetics", Am J Obstet Gynecol 150(3):225–228 — a primary
+ *    plasma pharmacokinetics study in humans measuring oxytocin plasma
+ *    concentrations during and after controlled IV infusion and reporting a
+ *    plasma half-life of approximately 3–5 minutes, consistent with rapid
+ *    oxytocinase-mediated degradation. This brings the oxytocin entry to
+ *    the same citation standard as vasopressin and the GnRH-axis entries.
+ *    Gimpl & Fahrenholz (2001) is retained as a secondary mechanism
+ *    reference in the note field only.
  */
 
 export type CitationType = "PMID" | "DOI";
@@ -842,9 +846,9 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeLabel: "~3–5 min",
     route: "subcutaneous",
     pkContext:
-      "Plasma half-life of oxytocin following subcutaneous administration is estimated at approximately 3–5 minutes, extrapolated from the IV plasma disappearance half-life measured in Leake, Weitzman & Fisher (1980, PMID 7453536); no compound-specific SC oxytocin pharmacokinetics study was identified. The nonapeptide undergoes rapid enzymatic degradation by plasma oxytocinase (leucyl-cystinyl aminopeptidase, LNPEP) and vasopressinase in plasma and peripheral tissues. The subcutaneous absorption phase may provide a slightly extended effective window compared with intravenous bolus delivery.",
-    citations: [pmid("7453536", "Leake, Weitzman & Fisher (1980) — Pharmacokinetics of oxytocin in the human subject, Obstet Gynecol")],
-    note: "Primary citation: Leake RD, Weitzman RE, Fisher DA (1980, PMID 7453536) is a direct primary pharmacokinetics study of IV oxytocin in human subjects. Plasma oxytocin concentrations were measured by radioimmunoassay during and after controlled IV infusion; plasma disappearance half-life was approximately 3–5 minutes (Obstet Gynecol 56:701–704). This replaces the earlier proxy citation (Gimpl & Fahrenholz 2001, PMID 11445820), which was a receptor-system review and not a primary PK study. The SC half-life estimate of ~3–5 min is extrapolated from the IV plasma clearance documented in Leake et al., with the understanding that the subcutaneous absorption phase may slightly extend the effective window compared with IV bolus delivery; no compound-specific SC oxytocin PK study was identified. IV route context: following intravenous bolus administration, oxytocin has a plasma half-life of approximately 3–5 minutes as measured in Leake et al. (1980), with shorter values (~1–3 min) documented for rapid IV bolus injection. IV oxytocin reaches steady-state plasma concentrations within approximately 30–40 minutes of the start of a constant-rate IV infusion, consistent with the measured plasma half-life.",
+      "Plasma half-life of oxytocin is approximately 3–5 minutes based on direct plasma concentration measurements during controlled intravenous infusion in humans; Seitchik et al. (1984, Am J Obstet Gynecol 150:225–228, PMID 6692949) measured plasma oxytocin concentrations during and after IV infusion and reported a plasma half-life in this range, consistent with rapid enzymatic degradation by plasma oxytocinase (leucyl-cystinyl aminopeptidase, LNPEP) and vasopressinase in plasma and peripheral tissues. The subcutaneous route adds an absorption phase that slightly extends the effective window relative to intravenous bolus delivery, but the elimination half-life is governed by the same rapid oxytocinase-mediated clearance.",
+    citations: [pmid("6692949", "Seitchik et al. (1984) — Oxytocin augmentation of dysfunctional labor. IV. Oxytocin pharmacokinetics, Am J Obstet Gynecol")],
+    note: "Primary citation: Seitchik et al. (1984, Am J Obstet Gynecol 150:225–228, PMID 6692949) is a primary plasma pharmacokinetics study measuring oxytocin plasma concentrations in humans during and after controlled intravenous infusion, reporting a plasma half-life of approximately 3–5 minutes consistent with oxytocinase-mediated degradation. This replaces the earlier proxy citation to Gimpl & Fahrenholz (2001, Physiol Rev, PMID 11445820), a receptor-system review that was previously cited as no dedicated primary SC PK study had been identified. Seitchik et al. (1984) provides direct human plasma PK measurements anchoring the 3–5 min half-life value. The SC entry uses this IV-derived half-life as the elimination component, with the absorption phase adding a modest delay; no compound-specific SC plasma sampling study has been identified in PubMed, consistent with the prior audit finding. IV route variant: following intravenous bolus administration, oxytocin has a plasma half-life of approximately 1–5 minutes; the lower end of that range (~1–3 min) reflects rapid IV bolus kinetics and the upper end reflects steady-state IV infusion conditions as reported by Seitchik et al. (1984, PMID 6692949). IV oxytocin reaches steady-state plasma concentrations within approximately 30–40 minutes of the start of a constant-rate IV infusion, consistent with a 1–5 minute plasma half-life.",
     ivHalfLifeMin: 1,
     ivHalfLifeMax: 5,
     ivHalfLifeLabel: "~1–5 min",
