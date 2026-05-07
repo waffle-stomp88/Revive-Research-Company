@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
 import { Card } from "@/components/ui/card";
@@ -6,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import {
   ArrowRight,
+  ChevronRight,
   Shield,
   Sparkles,
   QrCode,
@@ -15,10 +17,68 @@ import { ProcessPipeline } from "@/components/infographics/process-pipeline";
 import { VerificationJourneyCompact } from "@/components/infographics/verification-journey";
 
 export default function QualityProcess() {
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = "breadcrumb-json-ld-quality-process";
+    script.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Education Center",
+          "item": "https://reviveresearch.co/guides/peptide-education-center"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Quality & Trust",
+          "item": "https://reviveresearch.co/guides/peptide-education-center?tab=trust"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Our Quality & Production Process",
+          "item": "https://reviveresearch.co/guides/peptide-quality-assurance-process"
+        }
+      ]
+    });
+    document.getElementById("breadcrumb-json-ld-quality-process")?.remove();
+    document.head.appendChild(script);
+    return () => {
+      document.getElementById("breadcrumb-json-ld-quality-process")?.remove();
+    };
+  }, []);
+
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
       <SEOHead title="Quality Process" description="Our 6-step quality assurance process. From sourcing to shipping, every step is verified and documented." canonicalPath="/guides/peptide-quality-assurance-process" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
+        <nav aria-label="Breadcrumb" className="mb-6" data-testid="nav-breadcrumb-quality">
+          <ol className="flex items-center gap-1 text-xs text-muted-foreground flex-wrap">
+            <li>
+              <Link href="/guides/peptide-education-center" className="hover:text-foreground transition-colors" data-testid="link-breadcrumb-education">
+                Education Center
+              </Link>
+            </li>
+            <li><ChevronRight className="h-3 w-3 flex-shrink-0" /></li>
+            <li>
+              <Link
+                href="/guides/peptide-education-center?tab=trust"
+                className="hover:text-foreground transition-colors font-medium"
+                style={{ color: "#21d8ff" }}
+                data-testid="link-breadcrumb-trust"
+              >
+                Quality &amp; Trust
+              </Link>
+            </li>
+            <li><ChevronRight className="h-3 w-3 flex-shrink-0" /></li>
+            <li className="text-foreground font-medium" data-testid="text-breadcrumb-current">Our Quality &amp; Production Process</li>
+          </ol>
+        </nav>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

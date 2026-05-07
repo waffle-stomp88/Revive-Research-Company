@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
@@ -56,6 +56,41 @@ export default function CoaLibrary() {
   const [searchBatch, setSearchBatch] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<string>("all");
   const [showGlossary, setShowGlossary] = useState(false);
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = "breadcrumb-json-ld-coa-library";
+    script.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Education Center",
+          "item": "https://reviveresearch.co/guides/peptide-education-center"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Quality & Trust",
+          "item": "https://reviveresearch.co/guides/peptide-education-center?tab=trust"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "COA Library",
+          "item": "https://reviveresearch.co/coa-library"
+        }
+      ]
+    });
+    document.getElementById("breadcrumb-json-ld-coa-library")?.remove();
+    document.head.appendChild(script);
+    return () => {
+      document.getElementById("breadcrumb-json-ld-coa-library")?.remove();
+    };
+  }, []);
 
   const { data: products = [] } = useQuery<Product[]>({
     queryKey: ["/api/products"],
@@ -131,6 +166,29 @@ export default function CoaLibrary() {
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
       <SEOHead title="COA Library" description="Access all COAs for our research compounds. Independent lab verification ensures 98%+ purity on every batch." canonicalPath="/coa-library" />
       <div className="max-w-7xl mx-auto px-4 md:px-8">
+        <nav aria-label="Breadcrumb" className="mb-6" data-testid="nav-breadcrumb-coa-library">
+          <ol className="flex items-center gap-1 text-xs text-muted-foreground flex-wrap">
+            <li>
+              <Link href="/guides/peptide-education-center" className="hover:text-foreground transition-colors" data-testid="link-breadcrumb-education">
+                Education Center
+              </Link>
+            </li>
+            <li><ChevronRight className="h-3 w-3 flex-shrink-0" /></li>
+            <li>
+              <Link
+                href="/guides/peptide-education-center?tab=trust"
+                className="hover:text-foreground transition-colors font-medium"
+                style={{ color: "#21d8ff" }}
+                data-testid="link-breadcrumb-trust"
+              >
+                Quality &amp; Trust
+              </Link>
+            </li>
+            <li><ChevronRight className="h-3 w-3 flex-shrink-0" /></li>
+            <li className="text-foreground font-medium" data-testid="text-breadcrumb-current">COA Library</li>
+          </ol>
+        </nav>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
