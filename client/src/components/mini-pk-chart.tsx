@@ -142,9 +142,8 @@ export function MiniPKChart({ peptideNames, stackId }: { peptideNames: string[];
         >
           <defs>
             <filter id={`neon-glow-${stackId}`} x="-10%" y="-60%" width="120%" height="220%">
-              <feGaussianBlur stdDeviation="2.5" result="blur" />
+              <feGaussianBlur stdDeviation="1.5" result="blur" />
               <feMerge>
-                <feMergeNode in="blur" />
                 <feMergeNode in="blur" />
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
@@ -158,11 +157,11 @@ export function MiniPKChart({ peptideNames, stackId }: { peptideNames: string[];
               d={c.d}
               fill="none"
               stroke={c.color}
-              strokeWidth="5"
+              strokeWidth="3.5"
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeDasharray={c.isNonSC ? "6 3" : undefined}
-              strokeOpacity="0.25"
+              strokeOpacity="0.15"
               filter={`url(#neon-glow-${stackId})`}
             />
           ))}
