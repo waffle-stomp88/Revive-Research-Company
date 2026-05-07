@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
+import { useLocation, useSearch } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
 import { Card } from "@/components/ui/card";
@@ -130,24 +131,52 @@ export default function LabNotes() {
     queryKey: ["/api/lab-notes"],
   });
 
-  const [activeCategories, setActiveCategories] = useState<Set<Category>>(new Set());
-  const [searchQuery, setSearchQuery] = useState("");
+  const rawSearch = useSearch();
+  const [location, setLocation] = useLocation();
+
+  const params = useMemo(() => new URLSearchParams(rawSearch), [rawSearch]);
+
+  const activeCategories = useMemo<Set<Category>>(() => {
+    const raw = params.get("category") ?? "";
+    const cats = raw.split(",").filter((c): c is Category => (CATEGORIES as readonly string[]).includes(c));
+    return new Set(cats);
+  }, [params]);
+
+  const searchQuery = params.get("q") ?? "";
+
+  const updateParams = (next: URLSearchParams) => {
+    const qs = next.toString();
+    setLocation(qs ? `${location.split("?")[0]}?${qs}` : location.split("?")[0], { replace: true });
+  };
 
   const toggleCategory = (cat: Category) => {
-    setActiveCategories((prev) => {
-      const next = new Set(prev);
-      if (next.has(cat)) {
-        next.delete(cat);
-      } else {
-        next.add(cat);
-      }
-      return next;
-    });
+    const next = new URLSearchParams(params);
+    const current = new Set(activeCategories);
+    if (current.has(cat)) {
+      current.delete(cat);
+    } else {
+      current.add(cat);
+    }
+    if (current.size > 0) {
+      next.set("category", Array.from(current).join(","));
+    } else {
+      next.delete("category");
+    }
+    updateParams(next);
+  };
+
+  const setSearchQuery = (q: string) => {
+    const next = new URLSearchParams(params);
+    if (q.trim()) {
+      next.set("q", q);
+    } else {
+      next.delete("q");
+    }
+    updateParams(next);
   };
 
   const clearAll = () => {
-    setActiveCategories(new Set());
-    setSearchQuery("");
+    updateParams(new URLSearchParams());
   };
 
   const filteredNotes = useMemo(() => {
