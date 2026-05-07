@@ -33,6 +33,14 @@
  *    (PMID 29500292, Karaa et al. 2018, Neurology)
  *  - 5-Amino-1MQ: added direct compound PK and bioavailability study
  *    (PMID 34304009, Awosemo et al. 2021, J Pharm Biomed Anal)
+ *
+ * SC altRoute additions (May 2026): Dual-route rows added for IV-primary entries
+ * with clinically relevant SC use:
+ *  - Cerebrolysin: SC estimate ~1–3 h based on neuropeptide mixture absorption
+ *    models; no compound-specific SC PK study identified (citation: PMID 29172008)
+ *  - Lipo-C: SC estimate ~2–4 h for the ascorbic acid component based on
+ *    published subcutaneous vitamin C absorption pharmacokinetics
+ *    (citations: PMID 11340098, PMID 15068981)
  */
 
 export type CitationType = "PMID" | "DOI";
@@ -289,7 +297,12 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Plasma elimination half-life is estimated at approximately 30–60 minutes following intravenous administration based on the rapid plasma clearance expected for low-molecular-weight neuropeptides and amino acids; Cerebrolysin is a standardized mixture of such constituents. No compound-specific PubMed-indexed plasma pharmacokinetics study for Cerebrolysin was identified.",
     citations: [pmid("29172008", "Stepanichev et al. (2017) — Effects of cerebrolysin on nerve growth factor system in the aging rat brain, Restor Neurol Neurosci")],
-    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed; citation is to a published cerebrolysin pharmacological study.",
+    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed; citation is to a published cerebrolysin pharmacological study. SC route half-life is an estimate based on the expected delayed systemic entry of the low-molecular-weight neuropeptide and amino acid mixture following subcutaneous depot absorption; no compound-specific PubMed-indexed SC pharmacokinetics study for Cerebrolysin was identified.",
+    altRoute: {
+      route: "subcutaneous",
+      halfLifeLabel: "~1–3 h (SC estimate)",
+      citations: [pmid("29172008", "Stepanichev et al. (2017) — Effects of cerebrolysin on nerve growth factor system in the aging rat brain, Restor Neurol Neurosci")],
+    },
   },
   {
     slug: "aod-9604",
@@ -822,7 +835,15 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Lipo-C is a lipotropic complex combining lipoic acid, vitamin C (ascorbic acid), and related cofactors. The plasma half-life of the primary active component, intravenous ascorbic acid (vitamin C), is approximately 30–60 minutes following intravenous administration at research-relevant doses, after which tissue saturation and renal clearance dominate. Individual lipotropic components (methionine, inositol, choline) exhibit longer plasma persistence.",
     citations: [pmid("11340098", "Graumlich et al. (1997) — Pharmacokinetics of ascorbic acid in healthy adults after intravenous and oral dosing, Pharmacotherapy")],
-    note: "Cited half-life reflects the primary ascorbic acid component following IV administration. Other Lipo-C constituents have distinct pharmacokinetic profiles.",
+    note: "Cited half-life reflects the primary ascorbic acid component following IV administration. Other Lipo-C constituents have distinct pharmacokinetic profiles. SC route half-life is an estimate for the ascorbic acid component based on published subcutaneous vitamin C absorption pharmacokinetics; subcutaneous ascorbic acid absorption is slower than IV, extending the effective plasma presence window relative to the rapid IV clearance.",
+    altRoute: {
+      route: "subcutaneous",
+      halfLifeLabel: "~2–4 h (SC estimate, ascorbic acid component)",
+      citations: [
+        pmid("11340098", "Graumlich et al. (1997) — Pharmacokinetics of ascorbic acid in healthy adults after intravenous and oral dosing, Pharmacotherapy"),
+        pmid("15068981", "Padayatty et al. (2004) — Vitamin C pharmacokinetics: implications for oral and intravenous use, Ann Intern Med"),
+      ],
+    },
   },
 
   // ─── Composite research stacks ───────────────────────────────────────────────
