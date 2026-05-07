@@ -702,6 +702,45 @@
  *    Citation and note both carry an explicit "off-compound proxy" label.
  *    Survodutide is now at the same minimum documentation standard as other
  *    class-proxy entries (PEG-MGF, glutathione, SNAP-8, etc.).
+ *
+ * altRoute off-compound proxy audit (May 2026):
+ *
+ *   Scope: every altRoute.citations[] array in PEPTIDE_HALF_LIVES, reviewed
+ *   to determine whether any citation references a different compound rather
+ *   than the named entry compound. If a different compound is cited, the
+ *   "[off-compound proxy: ...]" suffix must appear in the label and
+ *   isOffCompoundProxy must be set to true (auto-derived by the pmid()
+ *   helper from the label text).
+ *
+ *   Five altRoute objects exist in the dataset; three carry empty citation
+ *   arrays (Cerebrolysin, Glutathione, Lipo-C) and were already confirmed
+ *   null in prior audit passes. The two non-empty altRoute citation arrays
+ *   were reviewed:
+ *
+ *   1. Kisspeptin-54 — IV altRoute (citations: 1 entry)
+ *      PMID 16278289 — Dhillo WS et al. (2005), "Kisspeptin-54 stimulates
+ *      the hypothalamic-pituitary gonadal axis in human males", J Clin
+ *      Endocrinol Metab. This is a direct compound-specific pharmacokinetic
+ *      study of Kisspeptin-54 administered intravenously.
+ *      Verdict: NOT an off-compound proxy. No label change required.
+ *
+ *   2. VIP — IV altRoute (citations: 2 entries)
+ *      PMID 7175453 — Domschke W et al. (1979), "Vasoactive intestinal
+ *      peptide in plasma — pharmacokinetics and clinical significance", Gut.
+ *      Direct compound-specific plasma pharmacokinetics study of VIP.
+ *      Verdict: NOT an off-compound proxy. No label change required.
+ *
+ *      PMID 6139572 — Morice A, Unwin RJ, Sever PS (1983), "Vasoactive
+ *      intestinal peptide causes bronchodilatation and protects against
+ *      histamine-induced bronchoconstriction in asthmatic subjects", Lancet.
+ *      Direct VIP IV infusion study; confirms 1–2 min IV half-life.
+ *      Verdict: NOT an off-compound proxy. No label change required.
+ *
+ *   Result: All three altRoute citations are direct compound-specific
+ *   references. No "[off-compound proxy: ...]" suffixes are needed on any
+ *   altRoute citation. The existing unit tests in
+ *   tests/pk-proxy-citation-badge.test.ts continue to pass without any
+ *   data changes.
  */
 
 export type CitationType = "PMID" | "DOI";
