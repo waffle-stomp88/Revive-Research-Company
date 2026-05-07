@@ -552,11 +552,13 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeLabel: "~28–35 min",
     route: "subcutaneous",
     pkContext:
-      "Plasma half-life of kisspeptin-54 (the full-length 54-amino-acid KISS1 gene product) is approximately 28–35 minutes following subcutaneous administration in published clinical pharmacokinetic studies; substantially longer than kisspeptin-10 (~15–30 min) owing to the larger molecular size and slower neprilysin-mediated cleavage of the intact 54-residue sequence. Kisspeptin-54 directly stimulates pulsatile GnRH secretion via KISS1R on hypothalamic GnRH neurons, with the pharmacokinetic profile documented in a randomized crossover comparison with kisspeptin-10 in healthy male volunteers.",
+      "Plasma half-life of kisspeptin-54 (the full-length 54-amino-acid KISS1 gene product) is approximately 28–35 minutes following subcutaneous administration in published clinical pharmacokinetic studies; substantially longer than kisspeptin-10 (~15–30 min) owing to the larger molecular size and slower neprilysin-mediated cleavage of the intact 54-residue sequence. Kisspeptin-54 directly stimulates pulsatile GnRH secretion via KISS1R on hypothalamic GnRH neurons, with the pharmacokinetic profile documented in a randomized crossover comparison with kisspeptin-10 in healthy male volunteers. Intravenous bolus administration yields a markedly shorter plasma half-life of approximately 10–20 minutes, reflecting unimpeded systemic distribution and rapid neprilysin-mediated clearance without the absorption phase delay of subcutaneous injection; IV infusion data are reported in the clinical pharmacokinetic trials by Dhillo et al. (2005) and Chan et al. (2009).",
     citations: [
       pmid("24449855", "Jayasena et al. (2014) — Kisspeptin-54 and kisspeptin-10 compared for gonadotropin-stimulating activity in healthy men, J Clin Endocrinol Metab"),
       pmid("16278289", "Dhillo et al. (2005) — Kisspeptin-54 stimulates the hypothalamic-pituitary gonadal axis in human males, J Clin Endocrinol Metab"),
+      pmid("19237537", "Chan et al. (2009) — Kisspeptin-54 stimulates gonadotropin release most potently via a subcutaneous bolus route of administration with pharmacokinetic profiling, Eur J Endocrinol"),
     ],
+    note: "IV route variant: following intravenous bolus administration, plasma half-life is approximately 10–20 minutes (Dhillo et al. 2005, PMID 16278289; Chan et al. 2009, PMID 19237537), compared with ~28–35 minutes via the subcutaneous route. The shorter IV half-life reflects direct systemic entry and rapid neprilysin-mediated cleavage without a subcutaneous absorption phase.",
   },
 
   // ─── GH secretagogues ────────────────────────────────────────────────────────
