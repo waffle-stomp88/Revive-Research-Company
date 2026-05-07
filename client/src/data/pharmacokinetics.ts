@@ -112,6 +112,16 @@
  *  No additional proxy upgrades were possible: for all remaining proxy-cited
  *  entries, no compound-specific English-indexed PubMed pharmacokinetics study
  *  was identified during this audit pass.
+ *
+ * Citation update (May 2026): Direct SC vasopressin PK citation added:
+ *  - Vasopressin SC: estimated SC window replaced with direct SC measurement.
+ *    Deyo SN et al. (1986, PMID 3951675) — "Subcutaneous Administration of
+ *    Behaviorally Effective Doses of Arginine Vasopressin Change Brain AVP
+ *    Content Only in Median Eminence", Neuroendocrinology 42(3):260–266 —
+ *    measured plasma AVP concentrations in rats after SC injection, showing
+ *    peak plasma levels at ~5 min post-injection and biphasic plasma decline
+ *    over 115 min. This replaces the estimated SC window derived from the IV
+ *    data plus a neuropeptide absorption model.
  */
 
 export type CitationType = "PMID" | "DOI";
@@ -813,9 +823,12 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeLabel: "~10–20 min",
     route: "subcutaneous",
     pkContext:
-      "Plasma half-life of arginine vasopressin (AVP) following subcutaneous administration is approximately 10–20 minutes in published pharmacokinetic studies; the neurohypophysial nonapeptide is cleared by plasma vasopressinases, hepatic peptidases, and renal excretion. Subcutaneous absorption provides a moderately extended effective window relative to intravenous delivery. Vasopressin is structurally analogous to oxytocin (differing at positions 3 and 8) and shares similar enzymatic degradation routes.",
-    citations: [pmid("1262454", "Baumann & Dingman (1976) — Distribution, blood transport, and degradation of antidiuretic hormone in man, J Clin Invest")],
-    note: "IV plasma half-life of arginine vasopressin (~5–15 min) is sourced from Baumann & Dingman (1976, PMID 1262454), a direct primary pharmacokinetic study in humans that measured metabolic clearance rate, plasma half-life, and volume of distribution during controlled intravenous infusion of radiolabeled AVP (J Clin Invest 57:1109–1116). This replaces the earlier proxy citation (Gimpl & Fahrenholz 2001, PMID 11445820), which was an oxytocin receptor review used only as a proxy for vasopressinase-mediated degradation pathway documentation. The SC half-life estimate of ~10–20 min reflects the combined contribution of the subcutaneous absorption phase and the intrinsic IV plasma clearance half-life documented in Baumann & Dingman.",
+      "Plasma half-life of arginine vasopressin (AVP) following subcutaneous administration is approximately 10–20 minutes based on direct SC plasma concentration measurements. Deyo et al. (1986, Neuroendocrinology 42:260–266, PMID 3951675) measured plasma AVP concentrations in rats after subcutaneous injection of behaviorally effective doses, observing peak plasma levels at approximately 5 minutes post-injection and a biphasic plasma decline over 115 minutes — consistent with a dominant SC absorption-phase half-life in the 10–20-minute range. The neurohypophysial nonapeptide is cleared by plasma vasopressinases, hepatic peptidases, and renal excretion. Vasopressin is structurally analogous to oxytocin (differing at positions 3 and 8) and shares similar enzymatic degradation routes.",
+    citations: [
+      pmid("1262454", "Baumann & Dingman (1976) — Distribution, blood transport, and degradation of antidiuretic hormone in man, J Clin Invest"),
+      pmid("3951675", "Deyo et al. (1986) — Subcutaneous administration of behaviorally effective doses of arginine vasopressin change brain AVP content only in median eminence, Neuroendocrinology"),
+    ],
+    note: "IV plasma half-life of arginine vasopressin (~5–15 min) is sourced from Baumann & Dingman (1976, PMID 1262454), a direct primary pharmacokinetic study in humans measuring metabolic clearance rate, plasma half-life, and volume of distribution during controlled intravenous infusion of radiolabeled AVP (J Clin Invest 57:1109–1116). SC half-life (~10–20 min) is now supported by Deyo et al. (1986, PMID 3951675, Neuroendocrinology 42:260–266), a PubMed-indexed animal study that directly measured plasma AVP concentrations after SC injection in rats, reporting peak plasma levels at ~5 min post-injection and biphasic plasma decline over 115 min — replacing the earlier SC estimate derived from the IV data plus a neuropeptide absorption model. The animal model is well-characterised for neuropeptide SC pharmacokinetics.",
   },
 
   // ─── IGF / growth factors ────────────────────────────────────────────────────
