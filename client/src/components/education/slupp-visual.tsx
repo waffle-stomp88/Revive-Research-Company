@@ -75,16 +75,16 @@ export function SLUPP332Visual() {
       >
         <div className="grid md:grid-cols-2 gap-0">
           {/* Left: Mechanism Pathway */}
-          <div className="p-6 border-r border-white/5">
+          <div className="p-6 border-r border-border/5">
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-sm font-bold text-[#E7FB10]">Mechanism of Action</h4>
               <button
                 onClick={() => setIsPlaying(!isPlaying)}
                 className="text-[10px] px-2 py-1 rounded-full transition-all"
                 style={{
-                  backgroundColor: isPlaying ? 'rgba(231, 251, 16, 0.2)' : 'rgba(255,255,255,0.1)',
-                  color: isPlaying ? '#E7FB10' : 'rgba(255,255,255,0.6)',
-                  border: `1px solid ${isPlaying ? '#E7FB10' : 'rgba(255,255,255,0.2)'}`
+                  backgroundColor: isPlaying ? 'rgba(231, 251, 16, 0.2)' : 'hsl(var(--foreground) / 0.1)',
+                  color: isPlaying ? '#E7FB10' : 'hsl(var(--foreground) / 0.6)',
+                  border: `1px solid ${isPlaying ? '#E7FB10' : 'hsl(var(--foreground) / 0.2)'}`
                 }}
               >
                 {isPlaying ? 'Pause' : 'Play'}
@@ -113,8 +113,8 @@ export function SLUPP332Visual() {
                       <motion.div
                         className="w-8 h-8 rounded-full flex items-center justify-center"
                         style={{ 
-                          backgroundColor: isActive || isPast ? `${phase.color}30` : 'rgba(255,255,255,0.05)',
-                          border: `2px solid ${isActive ? phase.color : isPast ? `${phase.color}60` : 'rgba(255,255,255,0.1)'}`,
+                          backgroundColor: isActive || isPast ? `${phase.color}30` : 'hsl(var(--foreground) / 0.05)',
+                          border: `2px solid ${isActive ? phase.color : isPast ? `${phase.color}60` : 'hsl(var(--foreground) / 0.1)'}`,
                           boxShadow: isActive ? `0 0 15px ${phase.color}50` : 'none'
                         }}
                         animate={{ scale: isActive ? 1.1 : 1 }}
@@ -124,7 +124,7 @@ export function SLUPP332Visual() {
                       {index < phases.length - 1 && (
                         <div 
                           className="w-0.5 h-6 mt-1"
-                          style={{ backgroundColor: isPast ? phase.color : 'rgba(255,255,255,0.1)' }}
+                          style={{ backgroundColor: isPast ? phase.color : 'hsl(var(--foreground) / 0.1)' }}
                         />
                       )}
                     </div>
@@ -160,8 +160,8 @@ export function SLUPP332Visual() {
                   key={i}
                   className="p-3 rounded-lg"
                   style={{ 
-                    backgroundColor: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.08)'
+                    backgroundColor: 'hsl(var(--foreground) / 0.03)',
+                    border: '1px solid hsl(var(--foreground) / 0.08)'
                   }}
                   initial={{ opacity: 0, y: 10 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -253,7 +253,7 @@ export function SLUPP332ComparisonTable() {
               </div>
               <span className="text-[10px] font-bold" style={{ color: path.color }}>{path.percent}% Activation</span>
             </div>
-            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+            <div className="h-1.5 w-full bg-foreground/5 rounded-full overflow-hidden">
               <motion.div
                 className="h-full rounded-full"
                 style={{ backgroundColor: path.color, boxShadow: `0 0 10px ${path.color}40` }}
@@ -267,7 +267,7 @@ export function SLUPP332ComparisonTable() {
       </div>
 
       <motion.div 
-        className="mt-6 p-3 rounded-lg bg-white/5 border border-white/10 text-center"
+        className="mt-6 p-3 rounded-lg bg-foreground/5 border border-border/10 text-center"
         initial={{ opacity: 0 }}
         animate={isInView ? { opacity: 1 } : {}}
         transition={{ delay: 1 }}

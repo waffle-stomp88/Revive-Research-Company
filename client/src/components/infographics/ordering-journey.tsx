@@ -154,7 +154,7 @@ export function OrderingJourney() {
                   <motion.div
                     className="ml-24 bg-card border-2 rounded-xl p-3 cursor-pointer overflow-hidden transition-all duration-300"
                     style={{ 
-                      borderColor: isActive ? step.color : 'rgba(255,255,255,0.1)',
+                      borderColor: isActive ? step.color : 'hsl(var(--foreground) / 0.1)',
                       boxShadow: isActive ? `0 0 30px ${step.color}40, inset 0 0 20px ${step.color}10` : 'none'
                     }}
                     whileHover={{ x: 10, scale: 1.02 }}

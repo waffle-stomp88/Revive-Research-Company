@@ -119,7 +119,7 @@ export function StorageTemperatureGuide() {
           animate={isInView ? { opacity: 1, scale: 1 } : {}}
           transition={{ duration: 0.8, delay: 0.2 }}
           className="relative bg-card border rounded-xl p-6"
-          style={{ borderColor: "rgba(255,255,255,0.1)" }}
+          style={{ borderColor: "hsl(var(--border))" }}
         >
           <div className="relative h-16 mb-8">
             <div 

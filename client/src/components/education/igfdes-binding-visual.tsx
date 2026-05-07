@@ -63,7 +63,7 @@ function MolecularComparisonSVG({ isInView }: { isInView: boolean }) {
           </feMerge>
         </filter>
         <marker id="desArrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-          <polygon points="0 0, 8 3, 0 6" fill="rgba(255,255,255,0.4)" />
+          <polygon points="0 0, 8 3, 0 6" fill="currentColor" fillOpacity="0.4" />
         </marker>
       </defs>
 
@@ -130,17 +130,17 @@ function MolecularComparisonSVG({ isInView }: { isInView: boolean }) {
                     width={seg.width}
                     height={16}
                     rx="3"
-                    fill={seg.highlight ? `${v.color}30` : "rgba(255,255,255,0.06)"}
-                    stroke={seg.highlight ? v.color : "rgba(255,255,255,0.15)"}
+                    fill={seg.highlight ? `${v.color}30` : "hsl(var(--foreground) / 0.06)"}
+                    stroke={seg.highlight ? v.color : "hsl(var(--foreground) / 0.15)"}
                     strokeWidth={seg.highlight ? 1.5 : 1}
                   />
                   <text x={rx + seg.width / 2} y={y + 11} textAnchor="middle"
-                    fill={seg.highlight ? v.color : "rgba(255,255,255,0.6)"} fontSize="5.5" fontWeight="bold">
+                    fill={seg.highlight ? v.color : "hsl(var(--foreground) / 0.6)"} fontSize="5.5" fontWeight="bold">
                     {seg.label}
                   </text>
                   {seg.desc ? (
                     <text x={rx + seg.width / 2} y={y + 26} textAnchor="middle"
-                      fill="rgba(255,255,255,0.35)" fontSize="5">
+                      fill="currentColor" fillOpacity="0.35" fontSize="5">
                       {seg.desc}
                     </text>
                   ) : null}
@@ -176,21 +176,21 @@ function MolecularComparisonSVG({ isInView }: { isInView: boolean }) {
               transition={{ delay: 0.6 + vi * 0.2, duration: 0.6 }}
               style={{ transformOrigin: "280px center" }}
             />
-            <text x={280} y={y + 10} fill="rgba(255,255,255,0.3)" fontSize="5.5">
+            <text x={280} y={y + 10} fill="currentColor" fillOpacity="0.3" fontSize="5.5">
               {v.affinity >= 1000 ? "~10× ↑ affinity" : v.affinity === 100 ? "baseline" : "~1.1× affinity"}
             </text>
           </motion.g>
         );
       })}
 
-      <text x="220" y="195" textAnchor="middle" fill="rgba(255,255,255,0.35)" fontSize="6">
+      <text x="220" y="195" textAnchor="middle" fill="currentColor" fillOpacity="0.35" fontSize="6">
         Half-life
       </text>
-      <text x="307" y="195" textAnchor="middle" fill="rgba(255,255,255,0.35)" fontSize="6">
+      <text x="307" y="195" textAnchor="middle" fill="currentColor" fillOpacity="0.35" fontSize="6">
         IGF-1R affinity
       </text>
 
-      <line x1="8" y1="190" x2="332" y2="190" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+      <line x1="8" y1="190" x2="332" y2="190" stroke="currentColor" strokeOpacity="0.08" strokeWidth="1" />
     </svg>
   );
 }
@@ -338,7 +338,7 @@ function IGFBPBypassAnimation({ isInView }: { isInView: boolean }) {
           </motion.text>
         )}
 
-        <text x="150" y="120" textAnchor="middle" fill="rgba(255,255,255,0.25)" fontSize="5.5">
+        <text x="150" y="120" textAnchor="middle" fill="currentColor" fillOpacity="0.25" fontSize="5.5">
           {isDes
             ? "N-terminal truncation reduces IGFBP-3 affinity ~85%"
             : "Native IGF-1 largely sequestered by circulating IGFBPs"}

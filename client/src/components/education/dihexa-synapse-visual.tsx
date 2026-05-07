@@ -95,8 +95,8 @@ function SynapseFormationAnimation({ isInView, activePhase }: { isInView: boolea
           <motion.g key={`spine-${i}`}>
             <motion.circle
               cx={spine.cx} cy={spine.cy} r="6"
-              fill={activePhase >= 2 ? "rgba(33, 216, 255, 0.3)" : "rgba(255,255,255,0.1)"}
-              stroke={activePhase >= 2 ? "#21d8ff" : "rgba(255,255,255,0.3)"}
+              fill={activePhase >= 2 ? "rgba(33, 216, 255, 0.3)" : "hsl(var(--foreground) / 0.1)"}
+              stroke={activePhase >= 2 ? "#21d8ff" : "hsl(var(--foreground) / 0.3)"}
               strokeWidth="1.5"
               initial={{ scale: 0, opacity: 0 }}
               animate={isInView && activePhase >= 2 ? { 
@@ -292,9 +292,9 @@ export function DihexaSynapseVisual() {
               onClick={() => setIsPlaying(!isPlaying)}
               className="text-xs px-3 py-1 rounded-full transition-all"
               style={{
-                backgroundColor: isPlaying ? 'rgba(157, 77, 221, 0.2)' : 'rgba(255,255,255,0.1)',
-                color: isPlaying ? '#9d4edd' : 'rgba(255,255,255,0.5)',
-                border: `1px solid ${isPlaying ? 'rgba(157, 77, 221, 0.4)' : 'rgba(255,255,255,0.1)'}`
+                backgroundColor: isPlaying ? 'rgba(157, 77, 221, 0.2)' : 'hsl(var(--foreground) / 0.1)',
+                color: isPlaying ? '#9d4edd' : 'hsl(var(--foreground) / 0.5)',
+                border: `1px solid ${isPlaying ? 'rgba(157, 77, 221, 0.4)' : 'hsl(var(--foreground) / 0.1)'}`
               }}
               data-testid="button-toggle-animation"
             >
@@ -316,8 +316,8 @@ export function DihexaSynapseVisual() {
                   }}
                   className="relative p-3 rounded-lg text-center transition-all cursor-pointer"
                   style={{
-                    backgroundColor: isActive ? `${phase.color}20` : 'rgba(255,255,255,0.03)',
-                    border: `1.5px solid ${isActive ? phase.color : 'rgba(255,255,255,0.1)'}`,
+                    backgroundColor: isActive ? `${phase.color}20` : 'hsl(var(--foreground) / 0.03)',
+                    border: `1.5px solid ${isActive ? phase.color : 'hsl(var(--foreground) / 0.1)'}`,
                     boxShadow: isActive ? `0 0 20px ${phase.color}30` : 'none'
                   }}
                   whileHover={{ scale: 1.02 }}
@@ -332,7 +332,7 @@ export function DihexaSynapseVisual() {
                   >
                     <Icon className="h-4 w-4" style={{ color: phase.color, filter: `drop-shadow(0 0 4px ${phase.color})` }} />
                   </motion.div>
-                  <span className="text-[10px] font-bold block" style={{ color: isActive ? phase.color : 'rgba(255,255,255,0.6)' }}>
+                  <span className="text-[10px] font-bold block" style={{ color: isActive ? phase.color : 'hsl(var(--foreground) / 0.6)' }}>
                     {phase.label}
                   </span>
                 </motion.button>

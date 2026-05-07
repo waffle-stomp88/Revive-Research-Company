@@ -59,7 +59,7 @@ function GHRPReceptorComparison({ isInView, showIpamorelin }: { isInView: boolea
           const isActive = showIpamorelin ? receptor.ipaActive : receptor.otherActive;
           const activeColor = showIpamorelin && receptor.ipaActive ? '#E7FB10' : 
                              !showIpamorelin && receptor.otherActive ? receptor.color : 
-                             'rgba(255,255,255,0.2)';
+                             'hsl(var(--foreground) / 0.2)';
           
           return (
             <motion.g key={receptor.id}>
@@ -68,7 +68,7 @@ function GHRPReceptorComparison({ isInView, showIpamorelin }: { isInView: boolea
                 y1="70"
                 x2={receptor.x}
                 y2="110"
-                stroke={isActive ? activeColor : 'rgba(255,255,255,0.1)'}
+                stroke={isActive ? activeColor : 'hsl(var(--foreground) / 0.1)'}
                 strokeWidth={isActive ? 3 : 1}
                 strokeDasharray={isActive ? "0" : "4,4"}
                 initial={{ pathLength: 0 }}
@@ -81,8 +81,8 @@ function GHRPReceptorComparison({ isInView, showIpamorelin }: { isInView: boolea
                 cx={receptor.x}
                 cy="130"
                 r="25"
-                fill={isActive ? `${activeColor}20` : 'rgba(255,255,255,0.03)'}
-                stroke={isActive ? activeColor : 'rgba(255,255,255,0.15)'}
+                fill={isActive ? `${activeColor}20` : 'hsl(var(--foreground) / 0.03)'}
+                stroke={isActive ? activeColor : 'hsl(var(--foreground) / 0.15)'}
                 strokeWidth={isActive ? 2.5 : 1}
                 initial={{ scale: 0 }}
                 animate={isInView ? { scale: 1 } : {}}
@@ -94,7 +94,7 @@ function GHRPReceptorComparison({ isInView, showIpamorelin }: { isInView: boolea
                 x={receptor.x}
                 y="128"
                 textAnchor="middle"
-                fill={isActive ? activeColor : 'rgba(255,255,255,0.3)'}
+                fill={isActive ? activeColor : 'hsl(var(--foreground) / 0.3)'}
                 fontSize="8"
                 fontWeight="bold"
                 initial={{ opacity: 0 }}
@@ -107,7 +107,7 @@ function GHRPReceptorComparison({ isInView, showIpamorelin }: { isInView: boolea
                 x={receptor.x}
                 y="138"
                 textAnchor="middle"
-                fill={isActive ? activeColor : 'rgba(255,255,255,0.3)'}
+                fill={isActive ? activeColor : 'hsl(var(--foreground) / 0.3)'}
                 fontSize="7"
               >
                 {receptor.name.split(' ')[1]}
@@ -311,9 +311,9 @@ export function IpamorelinSelectivityVisual() {
             onClick={() => setShowIpamorelin(true)}
             className="px-5 py-2 rounded-lg text-sm font-semibold transition-all"
             style={{
-              backgroundColor: showIpamorelin ? 'rgba(231, 251, 16, 0.2)' : 'rgba(255,255,255,0.03)',
-              border: `1.5px solid ${showIpamorelin ? '#E7FB10' : 'rgba(255,255,255,0.1)'}`,
-              color: showIpamorelin ? '#E7FB10' : 'rgba(255,255,255,0.5)',
+              backgroundColor: showIpamorelin ? 'rgba(231, 251, 16, 0.2)' : 'hsl(var(--foreground) / 0.03)',
+              border: `1.5px solid ${showIpamorelin ? '#E7FB10' : 'hsl(var(--foreground) / 0.1)'}`,
+              color: showIpamorelin ? '#E7FB10' : 'hsl(var(--foreground) / 0.5)',
               boxShadow: showIpamorelin ? '0 0 15px rgba(231, 251, 16, 0.3)' : 'none'
             }}
             whileHover={{ scale: 1.02 }}
@@ -325,9 +325,9 @@ export function IpamorelinSelectivityVisual() {
             onClick={() => setShowIpamorelin(false)}
             className="px-5 py-2 rounded-lg text-sm font-semibold transition-all"
             style={{
-              backgroundColor: !showIpamorelin ? 'rgba(157, 78, 221, 0.2)' : 'rgba(255,255,255,0.03)',
-              border: `1.5px solid ${!showIpamorelin ? '#9d4edd' : 'rgba(255,255,255,0.1)'}`,
-              color: !showIpamorelin ? '#9d4edd' : 'rgba(255,255,255,0.5)',
+              backgroundColor: !showIpamorelin ? 'rgba(157, 78, 221, 0.2)' : 'hsl(var(--foreground) / 0.03)',
+              border: `1.5px solid ${!showIpamorelin ? '#9d4edd' : 'hsl(var(--foreground) / 0.1)'}`,
+              color: !showIpamorelin ? '#9d4edd' : 'hsl(var(--foreground) / 0.5)',
               boxShadow: !showIpamorelin ? '0 0 15px rgba(157, 78, 221, 0.3)' : 'none'
             }}
             whileHover={{ scale: 1.02 }}
@@ -340,7 +340,7 @@ export function IpamorelinSelectivityVisual() {
         {/* Timer progress bar */}
         <div className="flex items-center justify-center gap-2 mb-4">
           <span className="text-[10px] text-muted-foreground">Auto-switching in</span>
-          <div className="w-32 h-1.5 rounded-full bg-white/10 overflow-hidden">
+          <div className="w-32 h-1.5 rounded-full bg-foreground/10 overflow-hidden">
             <motion.div 
               className="h-full rounded-full"
               style={{ 
@@ -386,7 +386,7 @@ export function IpamorelinSelectivityVisual() {
           </motion.div>
           
           {/* Column headers */}
-          <div className="grid grid-cols-3 gap-4 mb-2 pb-2 border-b" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+          <div className="grid grid-cols-3 gap-4 mb-2 pb-2 border-b" style={{ borderColor: 'hsl(var(--border))' }}>
             <div></div>
             <div className="text-center">
               <span className="text-xs font-bold text-[#E7FB10]">Ipamorelin</span>
@@ -411,8 +411,8 @@ export function IpamorelinSelectivityVisual() {
                   transition={{ delay: 0.5 + idx * 0.08 }}
                   className="p-3 rounded-lg transition-all cursor-pointer"
                   style={{
-                    backgroundColor: hoveredRow === idx ? 'rgba(231, 251, 16, 0.1)' : 'rgba(255,255,255,0.02)',
-                    border: `1px solid ${hoveredRow === idx ? 'rgba(231, 251, 16, 0.3)' : 'rgba(255,255,255,0.05)'}`
+                    backgroundColor: hoveredRow === idx ? 'rgba(231, 251, 16, 0.1)' : 'hsl(var(--foreground) / 0.02)',
+                    border: `1px solid ${hoveredRow === idx ? 'rgba(231, 251, 16, 0.3)' : 'hsl(var(--foreground) / 0.05)'}`
                   }}
                   onMouseEnter={() => setHoveredRow(idx)}
                   onMouseLeave={() => setHoveredRow(null)}
@@ -472,7 +472,7 @@ export function IpamorelinSelectivityVisual() {
             })}
           </div>
           
-          <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+          <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t" style={{ borderColor: 'hsl(var(--border))' }}>
             <div></div>
             <div className="text-center">
               <span className="text-xs font-bold text-[#E7FB10]">Ipamorelin</span>

@@ -291,8 +291,8 @@ function GeneExpressionBar({ category, isActive, progress }: {
     <motion.div
       className="p-3 rounded-lg cursor-pointer transition-all"
       style={{
-        backgroundColor: isActive ? `${category.color}15` : 'rgba(255,255,255,0.02)',
-        border: `1px solid ${isActive ? category.color : 'rgba(255,255,255,0.05)'}`,
+        backgroundColor: isActive ? `${category.color}15` : 'hsl(var(--foreground) / 0.02)',
+        border: `1px solid ${isActive ? category.color : 'hsl(var(--foreground) / 0.05)'}`,
       }}
       whileHover={{ scale: 1.01 }}
     >

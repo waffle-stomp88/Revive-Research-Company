@@ -14,7 +14,7 @@ function GLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
         </defs>
         
         {/* Title */}
-        <motion.text x="250" y="25" textAnchor="middle" fill="rgba(255,255,255,0.8)" fontSize="12" fontWeight="700"
+        <motion.text x="250" y="25" textAnchor="middle" fill="currentColor" fillOpacity="0.8" fontSize="12" fontWeight="700"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
         >
@@ -30,8 +30,8 @@ function GLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
           <circle cx="80" cy="80" r="18" fill="#ec4899" style={{ filter: 'drop-shadow(0 0 10px rgba(236, 72, 153, 0.7))' }} />
           <text x="80" y="85" textAnchor="middle" fill="white" fontSize="9" fontWeight="700">TB</text>
           <text x="80" y="125" textAnchor="middle" fill="#ec4899" fontSize="8" fontWeight="600">TB-500</text>
-          <text x="80" y="140" textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="7">Tissue Repair</text>
-          <text x="80" y="150" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="6.5">Actin dynamics</text>
+          <text x="80" y="140" textAnchor="middle" fill="currentColor" fillOpacity="0.6" fontSize="7">Tissue Repair</text>
+          <text x="80" y="150" textAnchor="middle" fill="currentColor" fillOpacity="0.5" fontSize="6.5">Actin dynamics</text>
         </motion.g>
 
         {/* PEPTIDE 2: BPC-157 */}
@@ -43,8 +43,8 @@ function GLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
           <circle cx="250" cy="80" r="18" fill="#21d8ff" style={{ filter: 'drop-shadow(0 0 10px rgba(33, 216, 255, 0.7))' }} />
           <text x="250" y="85" textAnchor="middle" fill="white" fontSize="9" fontWeight="700">BP</text>
           <text x="250" y="125" textAnchor="middle" fill="#21d8ff" fontSize="8" fontWeight="600">BPC-157</text>
-          <text x="250" y="140" textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="7">Angiogenesis</text>
-          <text x="250" y="150" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="6.5">Blood vessel growth</text>
+          <text x="250" y="140" textAnchor="middle" fill="currentColor" fillOpacity="0.6" fontSize="7">Angiogenesis</text>
+          <text x="250" y="150" textAnchor="middle" fill="currentColor" fillOpacity="0.5" fontSize="6.5">Blood vessel growth</text>
         </motion.g>
 
         {/* PEPTIDE 3: GHK-Cu */}
@@ -56,8 +56,8 @@ function GLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
           <circle cx="420" cy="80" r="18" fill="#E7FB10" style={{ filter: 'drop-shadow(0 0 10px rgba(231, 251, 16, 0.7))' }} />
           <text x="420" y="85" textAnchor="middle" fill="black" fontSize="9" fontWeight="700">GK</text>
           <text x="420" y="125" textAnchor="middle" fill="#E7FB10" fontSize="8" fontWeight="600">GHK-Cu</text>
-          <text x="420" y="140" textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="7">Collagen Boost</text>
-          <text x="420" y="150" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="6.5">Copper peptide</text>
+          <text x="420" y="140" textAnchor="middle" fill="currentColor" fillOpacity="0.6" fontSize="7">Collagen Boost</text>
+          <text x="420" y="150" textAnchor="middle" fill="currentColor" fillOpacity="0.5" fontSize="6.5">Copper peptide</text>
         </motion.g>
 
         {/* Arrows pointing down to convergence - TB-500 (pink) curves into oval */}
@@ -160,7 +160,7 @@ function GLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
             <text x="120" y="345" textAnchor="middle" fill="#22c55e" fontSize="9" fontWeight="700">
               Collagen Synthesis
             </text>
-            <text x="120" y="360" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="7">
+            <text x="120" y="360" textAnchor="middle" fill="currentColor" fillOpacity="0.5" fontSize="7">
               Strong structural support
             </text>
           </motion.g>
@@ -189,7 +189,7 @@ function GLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
             <text x="380" y="345" textAnchor="middle" fill="#f97316" fontSize="9" fontWeight="700">
               Elastin Activation
             </text>
-            <text x="380" y="360" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="7">
+            <text x="380" y="360" textAnchor="middle" fill="currentColor" fillOpacity="0.5" fontSize="7">
               Flexible, bouncy skin
             </text>
           </motion.g>

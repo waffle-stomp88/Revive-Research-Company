@@ -242,7 +242,7 @@ function HPGAxisAnimation({ isInView }: { isInView: boolean }) {
         <text x={163} y={230} textAnchor="middle" fill={KISSPEPTIN_COLOR} fontSize={7} fontWeight="700">
           Gq / IP3 / PKC
         </text>
-        <text x={163} y={241} textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize={6.5}>
+        <text x={163} y={241} textAnchor="middle" fill="currentColor" fillOpacity="0.5" fontSize={6.5}>
           GnRH pulse trigger
         </text>
       </motion.g>
@@ -256,7 +256,7 @@ function HPGAxisAnimation({ isInView }: { isInView: boolean }) {
         <text x={277} y={230} textAnchor="middle" fill={MELANOTAN_COLOR} fontSize={7} fontWeight="700">
           Gs / cAMP
         </text>
-        <text x={277} y={241} textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize={6.5}>
+        <text x={277} y={241} textAnchor="middle" fill="currentColor" fillOpacity="0.5" fontSize={6.5}>
           HPG sensitization
         </text>
       </motion.g>

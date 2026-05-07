@@ -94,7 +94,7 @@ export function GHAxisDiagram() {
           animate={isInView ? { opacity: 1, scale: 1 } : {}}
           transition={{ duration: 0.8, delay: 0.2 }}
           className="relative bg-card border rounded-xl p-6"
-          style={{ borderColor: "rgba(255,255,255,0.1)" }}
+          style={{ borderColor: "hsl(var(--border))" }}
         >
           <div className="relative" style={{ height: "350px" }}>
             <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 0 }}>
@@ -105,7 +105,7 @@ export function GHAxisDiagram() {
                   <stop offset="100%" stopColor="#E7FB10" stopOpacity="0.5" />
                 </linearGradient>
                 <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                  <polygon points="0 0, 10 3.5, 0 7" fill="rgba(255,255,255,0.3)" />
+                  <polygon points="0 0, 10 3.5, 0 7" fill="currentColor" fillOpacity="0.3" />
                 </marker>
               </defs>
               
@@ -127,7 +127,7 @@ export function GHAxisDiagram() {
                 y1="25%"
                 x2="50%"
                 y2="42%"
-                stroke="rgba(255,255,255,0.3)"
+                stroke="currentColor" strokeOpacity="0.3"
                 strokeWidth="2"
                 markerEnd="url(#arrowhead)"
                 initial={{ opacity: 0 }}
@@ -139,7 +139,7 @@ export function GHAxisDiagram() {
                 y1="55%"
                 x2="50%"
                 y2="72%"
-                stroke="rgba(255,255,255,0.3)"
+                stroke="currentColor" strokeOpacity="0.3"
                 strokeWidth="2"
                 markerEnd="url(#arrowhead)"
                 initial={{ opacity: 0 }}

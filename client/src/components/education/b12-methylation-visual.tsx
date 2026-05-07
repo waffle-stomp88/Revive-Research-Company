@@ -46,8 +46,8 @@ function B12PathwayAnimation({ isInView, activePhase }: { isInView: boolean; act
         <motion.g>
           <motion.ellipse
             cx="60" cy="100" rx="35" ry="25"
-            fill={activePhase >= 0 ? "rgba(239, 68, 68, 0.15)" : "rgba(255,255,255,0.05)"}
-            stroke={activePhase >= 0 ? "#ef4444" : "rgba(255,255,255,0.2)"}
+            fill={activePhase >= 0 ? "rgba(239, 68, 68, 0.15)" : "hsl(var(--foreground) / 0.05)"}
+            stroke={activePhase >= 0 ? "#ef4444" : "hsl(var(--foreground) / 0.2)"}
             strokeWidth="2"
             initial={{ scale: 0 }}
             animate={isInView ? { scale: 1 } : {}}
@@ -59,7 +59,7 @@ function B12PathwayAnimation({ isInView, activePhase }: { isInView: boolean; act
           >
             GI TRACT
           </motion.text>
-          <motion.text x="60" y="108" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="6"
+          <motion.text x="60" y="108" textAnchor="middle" fill="currentColor" fillOpacity="0.5" fontSize="6"
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
           >
@@ -102,8 +102,8 @@ function B12PathwayAnimation({ isInView, activePhase }: { isInView: boolean; act
         <motion.g>
           <motion.circle
             cx="160" cy="100" r="28"
-            fill={activePhase >= 1 ? "rgba(231, 251, 16, 0.2)" : "rgba(255,255,255,0.05)"}
-            stroke={activePhase >= 1 ? "#E7FB10" : "rgba(255,255,255,0.2)"}
+            fill={activePhase >= 1 ? "rgba(231, 251, 16, 0.2)" : "hsl(var(--foreground) / 0.05)"}
+            stroke={activePhase >= 1 ? "#E7FB10" : "hsl(var(--foreground) / 0.2)"}
             strokeWidth={activePhase >= 1 ? 3 : 2}
             initial={{ scale: 0 }}
             animate={isInView ? { 
@@ -142,8 +142,8 @@ function B12PathwayAnimation({ isInView, activePhase }: { isInView: boolean; act
         <motion.g>
           <motion.rect
             x="220" y="50" width="60" height="40" rx="8"
-            fill={activePhase >= 2 ? "rgba(33, 216, 255, 0.2)" : "rgba(255,255,255,0.05)"}
-            stroke={activePhase >= 2 ? "#21d8ff" : "rgba(255,255,255,0.2)"}
+            fill={activePhase >= 2 ? "rgba(33, 216, 255, 0.2)" : "hsl(var(--foreground) / 0.05)"}
+            stroke={activePhase >= 2 ? "#21d8ff" : "hsl(var(--foreground) / 0.2)"}
             strokeWidth="2"
             initial={{ scale: 0 }}
             animate={isInView ? { scale: 1 } : {}}
@@ -178,8 +178,8 @@ function B12PathwayAnimation({ isInView, activePhase }: { isInView: boolean; act
         <motion.g>
           <motion.rect
             x="220" y="110" width="60" height="40" rx="8"
-            fill={activePhase >= 2 ? "rgba(33, 216, 255, 0.15)" : "rgba(255,255,255,0.05)"}
-            stroke={activePhase >= 2 ? "#21d8ff" : "rgba(255,255,255,0.2)"}
+            fill={activePhase >= 2 ? "rgba(33, 216, 255, 0.15)" : "hsl(var(--foreground) / 0.05)"}
+            stroke={activePhase >= 2 ? "#21d8ff" : "hsl(var(--foreground) / 0.2)"}
             strokeWidth="2"
             initial={{ scale: 0 }}
             animate={isInView ? { scale: 1 } : {}}
@@ -214,8 +214,8 @@ function B12PathwayAnimation({ isInView, activePhase }: { isInView: boolean; act
         <motion.g>
           <motion.ellipse
             cx="340" cy="100" rx="40" ry="35"
-            fill={activePhase >= 3 ? "rgba(236, 72, 153, 0.15)" : "rgba(255,255,255,0.05)"}
-            stroke={activePhase >= 3 ? "#ec4899" : "rgba(255,255,255,0.2)"}
+            fill={activePhase >= 3 ? "rgba(236, 72, 153, 0.15)" : "hsl(var(--foreground) / 0.05)"}
+            stroke={activePhase >= 3 ? "#ec4899" : "hsl(var(--foreground) / 0.2)"}
             strokeWidth="2"
             initial={{ scale: 0 }}
             animate={isInView ? { 
@@ -279,7 +279,7 @@ function B12PathwayAnimation({ isInView, activePhase }: { isInView: boolean; act
         <motion.text
           x="200" y="185"
           textAnchor="middle"
-          fill="rgba(255,255,255,0.6)"
+          fill="currentColor" fillOpacity="0.6"
           fontSize="9"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
@@ -358,9 +358,9 @@ export function B12MethylationVisual() {
               onClick={() => setIsPlaying(!isPlaying)}
               className="text-xs px-3 py-1 rounded-full transition-all"
               style={{
-                backgroundColor: isPlaying ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255,255,255,0.1)',
-                color: isPlaying ? '#ef4444' : 'rgba(255,255,255,0.5)',
-                border: `1px solid ${isPlaying ? 'rgba(239, 68, 68, 0.4)' : 'rgba(255,255,255,0.1)'}`
+                backgroundColor: isPlaying ? 'rgba(239, 68, 68, 0.2)' : 'hsl(var(--foreground) / 0.1)',
+                color: isPlaying ? '#ef4444' : 'hsl(var(--foreground) / 0.5)',
+                border: `1px solid ${isPlaying ? 'rgba(239, 68, 68, 0.4)' : 'hsl(var(--foreground) / 0.1)'}`
               }}
               data-testid="button-toggle-animation"
             >
@@ -382,8 +382,8 @@ export function B12MethylationVisual() {
                   }}
                   className="relative p-3 rounded-lg text-center transition-all cursor-pointer"
                   style={{
-                    backgroundColor: isActive ? `${phase.color}20` : 'rgba(255,255,255,0.03)',
-                    border: `1.5px solid ${isActive ? phase.color : 'rgba(255,255,255,0.1)'}`,
+                    backgroundColor: isActive ? `${phase.color}20` : 'hsl(var(--foreground) / 0.03)',
+                    border: `1.5px solid ${isActive ? phase.color : 'hsl(var(--foreground) / 0.1)'}`,
                     boxShadow: isActive ? `0 0 20px ${phase.color}30` : 'none'
                   }}
                   whileHover={{ scale: 1.02 }}
@@ -398,7 +398,7 @@ export function B12MethylationVisual() {
                   >
                     <Icon className="h-4 w-4" style={{ color: phase.color, filter: `drop-shadow(0 0 4px ${phase.color})` }} />
                   </motion.div>
-                  <span className="text-[10px] font-bold block" style={{ color: isActive ? phase.color : 'rgba(255,255,255,0.6)' }}>
+                  <span className="text-[10px] font-bold block" style={{ color: isActive ? phase.color : 'hsl(var(--foreground) / 0.6)' }}>
                     {phase.label}
                   </span>
                 </motion.button>
@@ -422,7 +422,7 @@ export function B12MethylationVisual() {
           </motion.div>
         </div>
 
-        <div className="mt-6 pt-6 border-t" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+        <div className="mt-6 pt-6 border-t" style={{ borderColor: 'hsl(var(--border))' }}>
           <div className="flex items-center gap-2 mb-3">
             <Activity className="h-4 w-4 text-[#21d8ff]" />
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">

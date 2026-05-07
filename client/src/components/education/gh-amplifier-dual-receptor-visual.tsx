@@ -223,7 +223,7 @@ function DualReceptorAnimation({ isInView }: { isInView: boolean }) {
         <rect x={140} y={208} width={56} height={28} rx={4}
           fill={`${IPAMORELIN_COLOR}15`} stroke={`${IPAMORELIN_COLOR}55`} strokeWidth={1} />
         <text x={168} y={220} textAnchor="middle" fill={IPAMORELIN_COLOR} fontSize={7} fontWeight="700">Gq / PKC</text>
-        <text x={168} y={231} textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize={6.5}>cascade</text>
+        <text x={168} y={231} textAnchor="middle" fill="currentColor" fillOpacity="0.5" fontSize={6.5}>cascade</text>
       </motion.g>
       <motion.g
         initial={{ opacity: 0, x: 10 }}
@@ -233,7 +233,7 @@ function DualReceptorAnimation({ isInView }: { isInView: boolean }) {
         <rect x={244} y={208} width={56} height={28} rx={4}
           fill={`${CJC_COLOR}15`} stroke={`${CJC_COLOR}55`} strokeWidth={1} />
         <text x={272} y={220} textAnchor="middle" fill={CJC_COLOR} fontSize={7} fontWeight="700">Gs / cAMP</text>
-        <text x={272} y={231} textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize={6.5}>cascade</text>
+        <text x={272} y={231} textAnchor="middle" fill="currentColor" fillOpacity="0.5" fontSize={6.5}>cascade</text>
       </motion.g>
 
       {/* Convergence arrows inside cell toward GH output */}

@@ -100,8 +100,8 @@ export function HPLCExplainer() {
                 </mask>
               </defs>
 
-              <line x1="5" y1="55" x2="95" y2="55" stroke="rgba(255,255,255,0.2)" strokeWidth="0.3" />
-              <line x1="5" y1="55" x2="5" y2="5" stroke="rgba(255,255,255,0.2)" strokeWidth="0.3" />
+              <line x1="5" y1="55" x2="95" y2="55" stroke="currentColor" strokeOpacity="0.2" strokeWidth="0.3" />
+              <line x1="5" y1="55" x2="5" y2="5" stroke="currentColor" strokeOpacity="0.2" strokeWidth="0.3" />
 
               <motion.path
                 d={`
@@ -232,8 +232,8 @@ export function HPLCExplainer() {
                 </text>
               </motion.g>
 
-              <text x="5" y="59" fill="rgba(255,255,255,0.5)" fontSize="3">0</text>
-              <text x="90" y="59" fill="rgba(255,255,255,0.5)" fontSize="3">Time →</text>
+              <text x="5" y="59" fill="currentColor" fillOpacity="0.5" fontSize="3">0</text>
+              <text x="90" y="59" fill="currentColor" fillOpacity="0.5" fontSize="3">Time →</text>
             </svg>
           </div>
 

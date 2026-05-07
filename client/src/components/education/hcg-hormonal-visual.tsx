@@ -281,9 +281,9 @@ export function HCGHormonalVisual() {
             onClick={() => setShowHCG(!showHCG)}
             className="px-5 py-2 rounded-lg text-sm font-semibold transition-all"
             style={{
-              backgroundColor: showHCG ? 'rgba(236, 72, 153, 0.2)' : 'rgba(255,255,255,0.03)',
-              border: `1.5px solid ${showHCG ? '#ec4899' : 'rgba(255,255,255,0.1)'}`,
-              color: showHCG ? '#ec4899' : 'rgba(255,255,255,0.5)',
+              backgroundColor: showHCG ? 'rgba(236, 72, 153, 0.2)' : 'hsl(var(--foreground) / 0.03)',
+              border: `1.5px solid ${showHCG ? '#ec4899' : 'hsl(var(--foreground) / 0.1)'}`,
+              color: showHCG ? '#ec4899' : 'hsl(var(--foreground) / 0.5)',
               boxShadow: showHCG ? '0 0 15px rgba(236, 72, 153, 0.3)' : 'none'
             }}
             whileHover={{ scale: 1.02 }}

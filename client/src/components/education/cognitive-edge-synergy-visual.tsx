@@ -242,7 +242,7 @@ function CognitiveEdgeAnimation({ isInView }: { isInView: boolean }) {
         <text x={163} y={227} textAnchor="middle" fill={SEMAX_COLOR} fontSize={7} fontWeight="700">
           MAPK / CREB
         </text>
-        <text x={163} y={238} textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize={6.5}>
+        <text x={163} y={238} textAnchor="middle" fill="currentColor" fillOpacity="0.5" fontSize={6.5}>
           neuroplasticity
         </text>
       </motion.g>
@@ -256,7 +256,7 @@ function CognitiveEdgeAnimation({ isInView }: { isInView: boolean }) {
         <text x={278} y={227} textAnchor="middle" fill={SELANK_COLOR} fontSize={7} fontWeight="700">
           GABAergic calm
         </text>
-        <text x={278} y={238} textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize={6.5}>
+        <text x={278} y={238} textAnchor="middle" fill="currentColor" fillOpacity="0.5" fontSize={6.5}>
           stress gating
         </text>
       </motion.g>

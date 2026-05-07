@@ -68,7 +68,7 @@ function StructureComparisonSVG({ isInView }: { isInView: boolean }) {
           </feMerge>
         </filter>
         <marker id="lr3Arrow" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto">
-          <polygon points="0 0, 7 2.5, 0 5" fill="rgba(255,255,255,0.35)" />
+          <polygon points="0 0, 7 2.5, 0 5" fill="currentColor" fillOpacity="0.35" />
         </marker>
       </defs>
 
@@ -112,12 +112,12 @@ function StructureComparisonSVG({ isInView }: { isInView: boolean }) {
                     fill={
                       seg.highlight
                         ? `${segColor}25`
-                        : "rgba(255,255,255,0.05)"
+                        : "hsl(var(--foreground) / 0.05)"
                     }
                     stroke={
                       seg.highlight
                         ? segColor
-                        : "rgba(255,255,255,0.12)"
+                        : "hsl(var(--foreground) / 0.12)"
                     }
                     strokeWidth={seg.highlight ? 1.8 : 1}
                     strokeDasharray={isExt ? "4,2" : undefined}
@@ -126,7 +126,7 @@ function StructureComparisonSVG({ isInView }: { isInView: boolean }) {
                     x={rx + seg.width / 2}
                     y={y + 12}
                     textAnchor="middle"
-                    fill={seg.highlight ? segColor : "rgba(255,255,255,0.55)"}
+                    fill={seg.highlight ? segColor : "hsl(var(--foreground) / 0.55)"}
                     fontSize="5.2"
                     fontWeight="bold"
                   >
@@ -137,7 +137,7 @@ function StructureComparisonSVG({ isInView }: { isInView: boolean }) {
                       x={rx + seg.width / 2}
                       y={y + 28}
                       textAnchor="middle"
-                      fill="rgba(255,255,255,0.3)"
+                      fill="currentColor" fillOpacity="0.3"
                       fontSize="4.8"
                     >
                       {seg.desc}
@@ -171,7 +171,7 @@ function StructureComparisonSVG({ isInView }: { isInView: boolean }) {
             <text
               x={326}
               y={y - 3}
-              fill="rgba(255,255,255,0.25)"
+              fill="currentColor" fillOpacity="0.25"
               fontSize="5"
             >
               IGFBP
@@ -182,8 +182,8 @@ function StructureComparisonSVG({ isInView }: { isInView: boolean }) {
               width={46}
               height={9}
               rx="2"
-              fill="rgba(255,255,255,0.04)"
-              stroke="rgba(255,255,255,0.1)"
+              fill="currentColor" fillOpacity="0.04"
+              stroke="currentColor" strokeOpacity="0.1"
               strokeWidth="0.8"
             />
             <motion.rect
@@ -212,14 +212,14 @@ function StructureComparisonSVG({ isInView }: { isInView: boolean }) {
         );
       })}
 
-      <text x="258" y="158" textAnchor="middle" fill="rgba(255,255,255,0.25)" fontSize="5.5">
+      <text x="258" y="158" textAnchor="middle" fill="currentColor" fillOpacity="0.25" fontSize="5.5">
         Half-life
       </text>
-      <text x="349" y="158" textAnchor="middle" fill="rgba(255,255,255,0.25)" fontSize="5.5">
+      <text x="349" y="158" textAnchor="middle" fill="currentColor" fillOpacity="0.25" fontSize="5.5">
         IGFBP affinity
       </text>
 
-      <line x1="6" y1="153" x2="376" y2="153" stroke="rgba(255,255,255,0.07)" strokeWidth="1" />
+      <line x1="6" y1="153" x2="376" y2="153" stroke="currentColor" strokeOpacity="0.07" strokeWidth="1" />
     </svg>
   );
 }
@@ -361,7 +361,7 @@ function ExtensionMechanismAnimation({ isInView }: { isInView: boolean }) {
           </motion.text>
         )}
 
-        <text x="155" y="122" textAnchor="middle" fill="rgba(255,255,255,0.22)" fontSize="5.5">
+        <text x="155" y="122" textAnchor="middle" fill="currentColor" fillOpacity="0.22" fontSize="5.5">
           {isLR3
             ? "N-terminal extension + Arg³→Glu reduces IGFBP affinity ~90%"
             : "Native IGF-1 largely sequestered by circulating IGFBPs"}

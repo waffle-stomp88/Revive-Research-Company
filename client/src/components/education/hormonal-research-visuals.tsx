@@ -300,11 +300,11 @@ function TriptorelinAnimation({ isInView }: { isInView: boolean }) {
         <motion.line x1="148" y1="181" x2="190" y2="181"
           stroke="#ffffff" strokeWidth="1.5" strokeDasharray="4,2" markerEnd="url(#tripArrowRed)"
           initial={{ pathLength: 0 }} animate={isInView ? { pathLength: 1 } : {}} transition={{ delay: 1.5 }} />
-        <motion.text x="169" y="175" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="6"
+        <motion.text x="169" y="175" textAnchor="middle" fill="currentColor" fillOpacity="0.5" fontSize="6"
           initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 1.7 }}>
           sustained
         </motion.text>
-        <motion.text x="169" y="184" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="6"
+        <motion.text x="169" y="184" textAnchor="middle" fill="currentColor" fillOpacity="0.5" fontSize="6"
           initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 1.7 }}>
           exposure
         </motion.text>

@@ -242,7 +242,7 @@ function MelanocortinArousalAnimation({ isInView }: { isInView: boolean }) {
         <text x={163} y={230} textAnchor="middle" fill={PT141_COLOR} fontSize={7} fontWeight="700">
           Gs / cAMP / PKA
         </text>
-        <text x={163} y={241} textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize={6.5}>
+        <text x={163} y={241} textAnchor="middle" fill="currentColor" fillOpacity="0.5" fontSize={6.5}>
           central arousal drive
         </text>
       </motion.g>
@@ -256,7 +256,7 @@ function MelanocortinArousalAnimation({ isInView }: { isInView: boolean }) {
         <text x={277} y={230} textAnchor="middle" fill={OXYTOCIN_COLOR} fontSize={7} fontWeight="700">
           Gq / Ca²⁺ / PKC
         </text>
-        <text x={277} y={241} textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize={6.5}>
+        <text x={277} y={241} textAnchor="middle" fill="currentColor" fillOpacity="0.5" fontSize={6.5}>
           bonding / reward
         </text>
       </motion.g>

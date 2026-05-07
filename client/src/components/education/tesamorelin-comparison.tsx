@@ -73,9 +73,9 @@ export function TesomorellinComparison() {
           animate={isInView ? { opacity: 1, scale: 1 } : {}}
           transition={{ duration: 0.8, delay: 0.2 }}
           className="bg-card border rounded-xl overflow-hidden"
-          style={{ borderColor: "rgba(255,255,255,0.1)" }}
+          style={{ borderColor: "hsl(var(--border))" }}
         >
-          <div className="grid grid-cols-2 border-b" style={{ borderColor: "rgba(255,255,255,0.1)" }}>
+          <div className="grid grid-cols-2 border-b" style={{ borderColor: "hsl(var(--border))" }}>
             {approaches.map((approach) => (
               <motion.button
                 key={approach.id}

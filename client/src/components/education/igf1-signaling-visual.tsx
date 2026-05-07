@@ -30,7 +30,7 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
             </feMerge>
           </filter>
           <marker id="cascadeArrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-            <polygon points="0 0, 8 3, 0 6" fill="rgba(255,255,255,0.4)" />
+            <polygon points="0 0, 8 3, 0 6" fill="currentColor" fillOpacity="0.4" />
           </marker>
         </defs>
         
@@ -46,7 +46,7 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
                   y1={step.y + 12}
                   x2="160"
                   y2={cascadeSteps[idx + 1].y - 12}
-                  stroke={isActive ? step.color : 'rgba(255,255,255,0.1)'}
+                  stroke={isActive ? step.color : 'hsl(var(--foreground) / 0.1)'}
                   strokeWidth="2"
                   strokeDasharray={isActive ? "0" : "4,4"}
                   markerEnd="url(#cascadeArrow)"
@@ -63,8 +63,8 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
                 width="120"
                 height="18"
                 rx="5"
-                fill={isActive ? `${step.color}25` : 'rgba(255,255,255,0.03)'}
-                stroke={isActive ? step.color : 'rgba(255,255,255,0.1)'}
+                fill={isActive ? `${step.color}25` : 'hsl(var(--foreground) / 0.03)'}
+                stroke={isActive ? step.color : 'hsl(var(--foreground) / 0.1)'}
                 strokeWidth={isCurrent ? 2 : 1.2}
                 initial={{ scale: 0, opacity: 0 }}
                 animate={isInView ? { scale: 1, opacity: 1 } : {}}
@@ -76,7 +76,7 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
                 x="160"
                 y={step.y + 2}
                 textAnchor="middle"
-                fill={isActive ? step.color : 'rgba(255,255,255,0.3)'}
+                fill={isActive ? step.color : 'hsl(var(--foreground) / 0.3)'}
                 fontSize="8"
                 fontWeight="bold"
                 initial={{ opacity: 0 }}
@@ -144,19 +144,19 @@ function SignalingCascadeAnimation({ isInView, activeStep }: { isInView: boolean
         >
           LR3 Modification:
         </motion.text>
-        <motion.text x="20" y="34" fill="rgba(255,255,255,0.5)" fontSize="5.5"
+        <motion.text x="20" y="34" fill="currentColor" fillOpacity="0.5" fontSize="5.5"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
         >
           • Arg→Glu substitution
         </motion.text>
-        <motion.text x="20" y="43" fill="rgba(255,255,255,0.5)" fontSize="5.5"
+        <motion.text x="20" y="43" fill="currentColor" fillOpacity="0.5" fontSize="5.5"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
         >
           • 13 AA extension
         </motion.text>
-        <motion.text x="20" y="52" fill="rgba(255,255,255,0.5)" fontSize="5.5"
+        <motion.text x="20" y="52" fill="currentColor" fillOpacity="0.5" fontSize="5.5"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
         >
@@ -290,7 +290,7 @@ export function IGF1SignalingVisual() {
                 key={idx}
                 className="w-8 h-2 rounded-full transition-all"
                 style={{
-                  backgroundColor: activeStep >= idx ? pathwayDetails[idx].color : 'rgba(255,255,255,0.1)'
+                  backgroundColor: activeStep >= idx ? pathwayDetails[idx].color : 'hsl(var(--foreground) / 0.1)'
                 }}
               />
             ))}

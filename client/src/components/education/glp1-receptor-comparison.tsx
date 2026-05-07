@@ -96,7 +96,7 @@ export function GLP1ReceptorComparison() {
                   animate={isActive ? { scale: 1.02, y: -5 } : { scale: 1, y: 0 }}
                   className="relative bg-card border rounded-xl p-5 h-full transition-all duration-300"
                   style={{ 
-                    borderColor: isActive ? peptide.color : 'rgba(255,255,255,0.1)',
+                    borderColor: isActive ? peptide.color : 'hsl(var(--foreground) / 0.1)',
                     boxShadow: isActive ? `0 10px 40px ${peptide.color}20` : "none"
                   }}
                 >
@@ -148,7 +148,7 @@ export function GLP1ReceptorComparison() {
                             style={{ 
                               border: receptor.active 
                                 ? `2px solid ${peptide.color}` 
-                                : "2px solid rgba(255,255,255,0.1)"
+                                : "2px solid hsl(var(--foreground) / 0.1)"
                             }}
                           >
                             {receptor.active && (

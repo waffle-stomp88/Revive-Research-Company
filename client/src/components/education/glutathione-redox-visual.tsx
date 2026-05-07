@@ -47,7 +47,7 @@ function RedoxCycleAnimation({ isInView, activePhase }: { isInView: boolean; act
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
         />
-        <motion.text x="200" y="115" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="8"
+        <motion.text x="200" y="115" textAnchor="middle" fill="currentColor" fillOpacity="0.4" fontSize="8"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
         >
@@ -244,7 +244,7 @@ function RedoxCycleAnimation({ isInView, activePhase }: { isInView: boolean; act
         <motion.text
           x="200" y="215"
           textAnchor="middle"
-          fill="rgba(255,255,255,0.6)"
+          fill="currentColor" fillOpacity="0.6"
           fontSize="9"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
@@ -323,9 +323,9 @@ export function GlutathioneRedoxVisual() {
               onClick={() => setIsPlaying(!isPlaying)}
               className="text-xs px-3 py-1 rounded-full transition-all"
               style={{
-                backgroundColor: isPlaying ? 'rgba(231, 251, 16, 0.2)' : 'rgba(255,255,255,0.1)',
-                color: isPlaying ? '#E7FB10' : 'rgba(255,255,255,0.5)',
-                border: `1px solid ${isPlaying ? 'rgba(231, 251, 16, 0.4)' : 'rgba(255,255,255,0.1)'}`
+                backgroundColor: isPlaying ? 'rgba(231, 251, 16, 0.2)' : 'hsl(var(--foreground) / 0.1)',
+                color: isPlaying ? '#E7FB10' : 'hsl(var(--foreground) / 0.5)',
+                border: `1px solid ${isPlaying ? 'rgba(231, 251, 16, 0.4)' : 'hsl(var(--foreground) / 0.1)'}`
               }}
               data-testid="button-toggle-animation"
             >
@@ -347,8 +347,8 @@ export function GlutathioneRedoxVisual() {
                   }}
                   className="relative p-3 rounded-lg text-center transition-all cursor-pointer"
                   style={{
-                    backgroundColor: isActive ? `${phase.color}20` : 'rgba(255,255,255,0.03)',
-                    border: `1.5px solid ${isActive ? phase.color : 'rgba(255,255,255,0.1)'}`,
+                    backgroundColor: isActive ? `${phase.color}20` : 'hsl(var(--foreground) / 0.03)',
+                    border: `1.5px solid ${isActive ? phase.color : 'hsl(var(--foreground) / 0.1)'}`,
                     boxShadow: isActive ? `0 0 20px ${phase.color}30` : 'none'
                   }}
                   whileHover={{ scale: 1.02 }}
@@ -363,7 +363,7 @@ export function GlutathioneRedoxVisual() {
                   >
                     <Icon className="h-4 w-4" style={{ color: phase.color, filter: `drop-shadow(0 0 4px ${phase.color})` }} />
                   </motion.div>
-                  <span className="text-[10px] font-bold block" style={{ color: isActive ? phase.color : 'rgba(255,255,255,0.6)' }}>
+                  <span className="text-[10px] font-bold block" style={{ color: isActive ? phase.color : 'hsl(var(--foreground) / 0.6)' }}>
                     {phase.label}
                   </span>
                 </motion.button>
@@ -387,7 +387,7 @@ export function GlutathioneRedoxVisual() {
           </motion.div>
         </div>
 
-        <div className="mt-6 pt-6 border-t" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+        <div className="mt-6 pt-6 border-t" style={{ borderColor: 'hsl(var(--border))' }}>
           <div className="flex items-center gap-2 mb-3">
             <Zap className="h-4 w-4 text-[#21d8ff]" />
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">

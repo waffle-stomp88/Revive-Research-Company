@@ -149,9 +149,9 @@ function PeptideVial() {
         </linearGradient>
         <linearGradient id="glassShine" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="transparent" />
-          <stop offset="30%" stopColor="rgba(255,255,255,0.05)" />
-          <stop offset="50%" stopColor="rgba(255,255,255,0.1)" />
-          <stop offset="70%" stopColor="rgba(255,255,255,0.05)" />
+          <stop offset="30%" stopColor="currentColor" stopOpacity="0.05" />
+          <stop offset="50%" stopColor="currentColor" stopOpacity="0.1" />
+          <stop offset="70%" stopColor="currentColor" stopOpacity="0.05" />
           <stop offset="100%" stopColor="transparent" />
         </linearGradient>
       </defs>
@@ -199,7 +199,7 @@ function PeptideVial() {
         fill="url(#glassShine)"
       />
       
-      <rect x="24" y="72" width="32" height="28" rx="2" fill="rgba(255,255,255,0.9)" />
+      <rect x="24" y="72" width="32" height="28" rx="2" fill="currentColor" fillOpacity="0.9" />
       
       <text x="40" y="84" textAnchor="middle" fill="#1a1a1f" fontSize="8" fontWeight="bold" fontFamily="sans-serif">
         REVIVE

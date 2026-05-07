@@ -81,21 +81,21 @@ function ReceptorComparisonChart({ isInView, activeType }: { isInView: boolean; 
                     {receptor.effect}
                   </span>
                 </div>
-                <span className="text-xs font-semibold" style={{ color: receptor.level >= 80 ? mt.color : 'rgba(255,255,255,0.5)' }}>
+                <span className="text-xs font-semibold" style={{ color: receptor.level >= 80 ? mt.color : 'hsl(var(--foreground) / 0.5)' }}>
                   {receptor.level}%
                 </span>
               </div>
               
               <div 
                 className="h-3 rounded-full overflow-hidden"
-                style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
+                style={{ backgroundColor: 'hsl(var(--foreground) / 0.1)' }}
               >
                 <motion.div
                   className="h-full rounded-full"
                   style={{ 
                     background: receptor.level >= 80 
                       ? `linear-gradient(90deg, ${mt.color}80, ${mt.color})` 
-                      : `linear-gradient(90deg, rgba(255,255,255,0.2), rgba(255,255,255,0.4))`,
+                      : `linear-gradient(90deg, hsl(var(--foreground) / 0.2), hsl(var(--foreground) / 0.4))`,
                     boxShadow: receptor.level >= 80 ? `0 0 10px ${mt.color}50` : 'none'
                   }}
                   initial={{ width: 0 }}
@@ -283,9 +283,9 @@ export function MelanotanReceptorVisual() {
             onClick={() => setIsPlaying(!isPlaying)}
             className="text-xs px-3 py-1 rounded-full transition-all"
             style={{
-              backgroundColor: isPlaying ? `${melanotanTypes[activeType].color}20` : 'rgba(255,255,255,0.1)',
-              color: isPlaying ? melanotanTypes[activeType].color : 'rgba(255,255,255,0.5)',
-              border: `1px solid ${isPlaying ? `${melanotanTypes[activeType].color}40` : 'rgba(255,255,255,0.1)'}`
+              backgroundColor: isPlaying ? `${melanotanTypes[activeType].color}20` : 'hsl(var(--foreground) / 0.1)',
+              color: isPlaying ? melanotanTypes[activeType].color : 'hsl(var(--foreground) / 0.5)',
+              border: `1px solid ${isPlaying ? `${melanotanTypes[activeType].color}40` : 'hsl(var(--foreground) / 0.1)'}`
             }}
             data-testid="button-toggle-animation"
           >
@@ -303,8 +303,8 @@ export function MelanotanReceptorVisual() {
               }}
               className="relative p-3 rounded-lg text-center transition-all cursor-pointer"
               style={{
-                backgroundColor: activeType === mt.id ? `${mt.color}20` : 'rgba(255,255,255,0.03)',
-                border: `2px solid ${activeType === mt.id ? mt.color : 'rgba(255,255,255,0.1)'}`,
+                backgroundColor: activeType === mt.id ? `${mt.color}20` : 'hsl(var(--foreground) / 0.03)',
+                border: `2px solid ${activeType === mt.id ? mt.color : 'hsl(var(--foreground) / 0.1)'}`,
                 boxShadow: activeType === mt.id ? `0 0 20px ${mt.color}30` : 'none'
               }}
               whileHover={{ scale: 1.02 }}
@@ -313,7 +313,7 @@ export function MelanotanReceptorVisual() {
             >
               <span 
                 className="text-sm font-bold"
-                style={{ color: activeType === mt.id ? mt.color : 'rgba(255,255,255,0.6)' }}
+                style={{ color: activeType === mt.id ? mt.color : 'hsl(var(--foreground) / 0.6)' }}
               >
                 {mt.name}
               </span>
@@ -326,7 +326,7 @@ export function MelanotanReceptorVisual() {
         
         <ReceptorComparisonChart isInView={isInView} activeType={activeType} />
 
-        <div className="mt-6 pt-6 border-t" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+        <div className="mt-6 pt-6 border-t" style={{ borderColor: 'hsl(var(--border))' }}>
           <div className="flex items-center gap-2 mb-3">
             <Palette className="h-4 w-4 text-[#21d8ff]" />
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">

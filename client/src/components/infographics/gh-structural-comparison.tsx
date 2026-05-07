@@ -107,9 +107,9 @@ function DACMechanismDiagram({ isInView }: { isInView: boolean }) {
             data-testid={`button-cjc-tab-${k}`}
             className="px-4 py-1.5 rounded-lg text-xs font-semibold transition-all"
             style={{
-              backgroundColor: tab === k ? (k === "dac" ? `${C.dac}22` : `${C.nonDac}22`) : "rgba(255,255,255,0.03)",
-              border: `1.5px solid ${tab === k ? (k === "dac" ? C.dac : C.nonDac) : "rgba(255,255,255,0.1)"}`,
-              color: tab === k ? (k === "dac" ? C.dac : C.nonDac) : "rgba(255,255,255,0.45)",
+              backgroundColor: tab === k ? (k === "dac" ? `${C.dac}22` : `${C.nonDac}22`) : "hsl(var(--foreground) / 0.03)",
+              border: `1.5px solid ${tab === k ? (k === "dac" ? C.dac : C.nonDac) : "hsl(var(--foreground) / 0.1)"}`,
+              color: tab === k ? (k === "dac" ? C.dac : C.nonDac) : "hsl(var(--foreground) / 0.45)",
               boxShadow: tab === k ? `0 0 12px ${k === "dac" ? C.dac : C.nonDac}30` : "none",
             }}
           >
@@ -204,7 +204,7 @@ function DACMechanismDiagram({ isInView }: { isInView: boolean }) {
             <text x="270" y="108" textAnchor="middle" fill={C.nonDac} fontSize="7" fontWeight="bold">
               Pulsatile — t½ ~30 min
             </text>
-            <text x="270" y="118" textAnchor="middle" fill="rgba(255,255,255,0.35)" fontSize="5.5">
+            <text x="270" y="118" textAnchor="middle" fill="currentColor" fillOpacity="0.35" fontSize="5.5">
               DPP-IV resistant · physiologic GH pulse
             </text>
           </motion.g>
@@ -217,8 +217,8 @@ function DACMechanismDiagram({ isInView }: { isInView: boolean }) {
           strokeWidth="1.5"
         />
         <text x="38" y="71" textAnchor="middle" fill={isDac ? C.dac : C.nonDac} fontSize="6" fontWeight="bold">GHRHR</text>
-        <text x="38" y="81" textAnchor="middle" fill="rgba(255,255,255,0.45)" fontSize="5">Pituitary</text>
-        <text x="38" y="90" textAnchor="middle" fill="rgba(255,255,255,0.45)" fontSize="5">receptor</text>
+        <text x="38" y="81" textAnchor="middle" fill="currentColor" fillOpacity="0.45" fontSize="5">Pituitary</text>
+        <text x="38" y="90" textAnchor="middle" fill="currentColor" fillOpacity="0.45" fontSize="5">receptor</text>
 
         {isDac && (
           <motion.path
@@ -387,9 +387,9 @@ function IGFDistributionSVG({ isInView }: { isInView: boolean }) {
             data-testid={`button-igf-tab-${k}`}
             className="px-4 py-1.5 rounded-lg text-xs font-semibold transition-all"
             style={{
-              backgroundColor: mode === k ? (k === "lr3" ? `${C.lr3}20` : `${C.des}20`) : "rgba(255,255,255,0.03)",
-              border: `1.5px solid ${mode === k ? (k === "lr3" ? C.lr3 : C.des) : "rgba(255,255,255,0.1)"}`,
-              color: mode === k ? (k === "lr3" ? C.lr3 : C.des) : "rgba(255,255,255,0.45)",
+              backgroundColor: mode === k ? (k === "lr3" ? `${C.lr3}20` : `${C.des}20`) : "hsl(var(--foreground) / 0.03)",
+              border: `1.5px solid ${mode === k ? (k === "lr3" ? C.lr3 : C.des) : "hsl(var(--foreground) / 0.1)"}`,
+              color: mode === k ? (k === "lr3" ? C.lr3 : C.des) : "hsl(var(--foreground) / 0.45)",
               boxShadow: mode === k ? `0 0 12px ${(k === "lr3" ? C.lr3 : C.des)}30` : "none",
             }}
           >
@@ -417,9 +417,9 @@ function IGFDistributionSVG({ isInView }: { isInView: boolean }) {
         </defs>
 
         {/* Injection site */}
-        <circle cx="32" cy="80" r="20" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" />
-        <text x="32" y="76" textAnchor="middle" fill="rgba(255,255,255,0.55)" fontSize="6.5" fontWeight="bold">Injection</text>
-        <text x="32" y="85" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="5.5">site</text>
+        <circle cx="32" cy="80" r="20" fill="currentColor" fillOpacity="0.04" stroke="currentColor" strokeOpacity="0.18" strokeWidth="1.5" />
+        <text x="32" y="76" textAnchor="middle" fill="currentColor" fillOpacity="0.55" fontSize="6.5" fontWeight="bold">Injection</text>
+        <text x="32" y="85" textAnchor="middle" fill="currentColor" fillOpacity="0.4" fontSize="5.5">site</text>
 
         {/* IGFBP cloud */}
         <ellipse cx="130" cy="80" rx="30" ry="22"
@@ -509,7 +509,7 @@ function IGFDistributionSVG({ isInView }: { isInView: boolean }) {
           />
         )}
 
-        <text x="170" y="148" textAnchor="middle" fill="rgba(255,255,255,0.22)" fontSize="5.5">
+        <text x="170" y="148" textAnchor="middle" fill="currentColor" fillOpacity="0.22" fontSize="5.5">
           {isLR3
             ? "LR3: ~90% ↓ IGFBP binding → systemic half-life 20–30 h"
             : "IGF-DES: ~85% ↓ IGFBP binding at site → potent local free fraction"}

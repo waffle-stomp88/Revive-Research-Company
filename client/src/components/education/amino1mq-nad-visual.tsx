@@ -46,8 +46,8 @@ function NADSalvageAnimation({ isInView, activeStep }: { isInView: boolean; acti
 
         <motion.rect
           x="20" y="70" width="70" height="50" rx="8"
-          fill={activeStep >= 0 ? "rgba(239, 68, 68, 0.2)" : "rgba(255,255,255,0.05)"}
-          stroke={activeStep >= 0 ? "#ef4444" : "rgba(255,255,255,0.2)"}
+          fill={activeStep >= 0 ? "rgba(239, 68, 68, 0.2)" : "hsl(var(--foreground) / 0.05)"}
+          stroke={activeStep >= 0 ? "#ef4444" : "hsl(var(--foreground) / 0.2)"}
           strokeWidth="2"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={isInView ? { opacity: 1, scale: 1 } : {}}
@@ -60,7 +60,7 @@ function NADSalvageAnimation({ isInView, activeStep }: { isInView: boolean; acti
         >
           NNMT
         </motion.text>
-        <motion.text x="55" y="105" textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="7"
+        <motion.text x="55" y="105" textAnchor="middle" fill="currentColor" fillOpacity="0.6" fontSize="7"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ delay: 0.5 }}
@@ -96,7 +96,7 @@ function NADSalvageAnimation({ isInView, activeStep }: { isInView: boolean; acti
 
         <motion.path
           d="M 95 95 L 130 95"
-          stroke={activeStep >= 1 ? "#E7FB10" : "rgba(255,255,255,0.3)"}
+          stroke={activeStep >= 1 ? "#E7FB10" : "hsl(var(--foreground) / 0.3)"}
           strokeWidth="2"
           strokeDasharray={activeStep >= 1 ? "0" : "5,5"}
           fill="none"
@@ -118,8 +118,8 @@ function NADSalvageAnimation({ isInView, activeStep }: { isInView: boolean; acti
 
         <motion.rect
           x="210" y="70" width="70" height="50" rx="8"
-          fill={activeStep >= 2 ? "rgba(33, 216, 255, 0.2)" : "rgba(255,255,255,0.05)"}
-          stroke={activeStep >= 2 ? "#21d8ff" : "rgba(255,255,255,0.2)"}
+          fill={activeStep >= 2 ? "rgba(33, 216, 255, 0.2)" : "hsl(var(--foreground) / 0.05)"}
+          stroke={activeStep >= 2 ? "#21d8ff" : "hsl(var(--foreground) / 0.2)"}
           strokeWidth="2"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={isInView ? { opacity: 1, scale: 1 } : {}}
@@ -131,7 +131,7 @@ function NADSalvageAnimation({ isInView, activeStep }: { isInView: boolean; acti
         >
           NAD+
         </motion.text>
-        <motion.text x="245" y="105" textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="7"
+        <motion.text x="245" y="105" textAnchor="middle" fill="currentColor" fillOpacity="0.6" fontSize="7"
           initial={{ opacity: 0 }}
           animate={isInView && activeStep >= 2 ? { opacity: 1 } : {}}
         >
@@ -140,7 +140,7 @@ function NADSalvageAnimation({ isInView, activeStep }: { isInView: boolean; acti
 
         <motion.path
           d="M 185 95 L 205 95"
-          stroke={activeStep >= 2 ? "#21d8ff" : "rgba(255,255,255,0.3)"}
+          stroke={activeStep >= 2 ? "#21d8ff" : "hsl(var(--foreground) / 0.3)"}
           strokeWidth="2"
           fill="none"
           initial={{ pathLength: 0 }}
@@ -150,8 +150,8 @@ function NADSalvageAnimation({ isInView, activeStep }: { isInView: boolean; acti
 
         <motion.rect
           x="310" y="70" width="70" height="50" rx="8"
-          fill={activeStep >= 3 ? "rgba(236, 72, 153, 0.2)" : "rgba(255,255,255,0.05)"}
-          stroke={activeStep >= 3 ? "#ec4899" : "rgba(255,255,255,0.2)"}
+          fill={activeStep >= 3 ? "rgba(236, 72, 153, 0.2)" : "hsl(var(--foreground) / 0.05)"}
+          stroke={activeStep >= 3 ? "#ec4899" : "hsl(var(--foreground) / 0.2)"}
           strokeWidth="2"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={isInView ? { opacity: 1, scale: 1 } : {}}
@@ -169,7 +169,7 @@ function NADSalvageAnimation({ isInView, activeStep }: { isInView: boolean; acti
         >
           BOOST
         </motion.text>
-        <motion.text x="345" y="112" textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="6"
+        <motion.text x="345" y="112" textAnchor="middle" fill="currentColor" fillOpacity="0.6" fontSize="6"
           initial={{ opacity: 0 }}
           animate={isInView && activeStep >= 3 ? { opacity: 1 } : {}}
         >
@@ -178,7 +178,7 @@ function NADSalvageAnimation({ isInView, activeStep }: { isInView: boolean; acti
 
         <motion.path
           d="M 285 95 L 305 95"
-          stroke={activeStep >= 3 ? "#ec4899" : "rgba(255,255,255,0.3)"}
+          stroke={activeStep >= 3 ? "#ec4899" : "hsl(var(--foreground) / 0.3)"}
           strokeWidth="2"
           fill="none"
           initial={{ pathLength: 0 }}
@@ -291,9 +291,9 @@ export function Amino1MQNADVisual() {
               onClick={() => setIsPlaying(!isPlaying)}
               className="text-xs px-3 py-1 rounded-full transition-all"
               style={{
-                backgroundColor: isPlaying ? 'rgba(231, 251, 16, 0.2)' : 'rgba(255,255,255,0.1)',
-                color: isPlaying ? '#E7FB10' : 'rgba(255,255,255,0.5)',
-                border: `1px solid ${isPlaying ? 'rgba(231, 251, 16, 0.4)' : 'rgba(255,255,255,0.1)'}`
+                backgroundColor: isPlaying ? 'rgba(231, 251, 16, 0.2)' : 'hsl(var(--foreground) / 0.1)',
+                color: isPlaying ? '#E7FB10' : 'hsl(var(--foreground) / 0.5)',
+                border: `1px solid ${isPlaying ? 'rgba(231, 251, 16, 0.4)' : 'hsl(var(--foreground) / 0.1)'}`
               }}
               data-testid="button-toggle-animation"
             >
@@ -315,8 +315,8 @@ export function Amino1MQNADVisual() {
                   }}
                   className="relative p-3 rounded-lg text-center transition-all cursor-pointer"
                   style={{
-                    backgroundColor: isActive ? `${step.color}20` : 'rgba(255,255,255,0.03)',
-                    border: `1.5px solid ${isActive ? step.color : 'rgba(255,255,255,0.1)'}`,
+                    backgroundColor: isActive ? `${step.color}20` : 'hsl(var(--foreground) / 0.03)',
+                    border: `1.5px solid ${isActive ? step.color : 'hsl(var(--foreground) / 0.1)'}`,
                     boxShadow: isActive ? `0 0 20px ${step.color}30` : 'none'
                   }}
                   whileHover={{ scale: 1.02 }}
@@ -331,7 +331,7 @@ export function Amino1MQNADVisual() {
                   >
                     <Icon className="h-4 w-4" style={{ color: step.color, filter: `drop-shadow(0 0 4px ${step.color})` }} />
                   </motion.div>
-                  <span className="text-[10px] font-bold block" style={{ color: isActive ? step.color : 'rgba(255,255,255,0.6)' }}>
+                  <span className="text-[10px] font-bold block" style={{ color: isActive ? step.color : 'hsl(var(--foreground) / 0.6)' }}>
                     {step.label}
                   </span>
                 </motion.button>
@@ -355,7 +355,7 @@ export function Amino1MQNADVisual() {
           </motion.div>
         </div>
 
-        <div className="mt-6 pt-6 border-t" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+        <div className="mt-6 pt-6 border-t" style={{ borderColor: 'hsl(var(--border))' }}>
           <div className="flex items-center gap-2 mb-3">
             <TrendingUp className="h-4 w-4 text-[#21d8ff]" />
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">

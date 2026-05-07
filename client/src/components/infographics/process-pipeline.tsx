@@ -85,7 +85,7 @@ export function ProcessPipeline() {
           {[...Array(20)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white/50"
+              className="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-foreground/50"
               style={{ left: `${(i + 1) * 5}%` }}
               initial={{ scale: 0, opacity: 0 }}
               animate={isInView ? { 
@@ -120,7 +120,7 @@ export function ProcessPipeline() {
               <motion.div
                 className="relative bg-card border rounded-xl p-4 cursor-pointer overflow-hidden h-full"
                 style={{ 
-                  borderColor: isActive ? step.color : 'rgba(255,255,255,0.1)',
+                  borderColor: isActive ? step.color : 'hsl(var(--foreground) / 0.1)',
                   boxShadow: isActive ? `0 0 30px ${step.color}30` : 'none'
                 }}
                 whileHover={{ y: -5 }}

@@ -231,7 +231,7 @@ function TelomereTimeline({ isInView, currentStage }: { isInView: boolean; curre
             <div className="w-16 text-right">
               <span 
                 className="text-xs font-bold"
-                style={{ color: isActive ? stage.color : 'rgba(255,255,255,0.5)' }}
+                style={{ color: isActive ? stage.color : 'hsl(var(--foreground) / 0.5)' }}
               >
                 {stage.age}
               </span>

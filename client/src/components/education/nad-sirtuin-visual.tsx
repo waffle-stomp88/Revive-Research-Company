@@ -167,7 +167,7 @@ function MitochondriaAnimation({ isInView, activePathway }: { isInView: boolean;
           );
         })}
         
-        <motion.text x="160" y="190" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="8"
+        <motion.text x="160" y="190" textAnchor="middle" fill="currentColor" fillOpacity="0.5" fontSize="8"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ delay: 2 }}
@@ -295,7 +295,7 @@ export function NADSirtuinVisual() {
         {/* Auto-play progress bar */}
         <div className="flex items-center justify-center gap-2 mb-4">
           <span className="text-[10px] text-muted-foreground">Auto-playing pathway {activePathway + 1}/4</span>
-          <div className="w-24 h-1 rounded-full bg-white/10 overflow-hidden">
+          <div className="w-24 h-1 rounded-full bg-foreground/10 overflow-hidden">
             <motion.div 
               className="h-full rounded-full"
               style={{ 
@@ -322,8 +322,8 @@ export function NADSirtuinVisual() {
                   onClick={() => setActivePathway(pathway.id)}
                   className="p-3 rounded-lg text-center transition-all cursor-pointer"
                   style={{
-                    backgroundColor: isActive ? `${pathway.color}20` : 'rgba(255,255,255,0.02)',
-                    border: `1.5px solid ${isActive ? pathway.color : 'rgba(255,255,255,0.08)'}`,
+                    backgroundColor: isActive ? `${pathway.color}20` : 'hsl(var(--foreground) / 0.02)',
+                    border: `1.5px solid ${isActive ? pathway.color : 'hsl(var(--foreground) / 0.08)'}`,
                     boxShadow: isActive ? `0 0 15px ${pathway.color}30` : 'none'
                   }}
                   whileHover={{ scale: 1.02 }}
@@ -337,7 +337,7 @@ export function NADSirtuinVisual() {
                   >
                     <Icon className="h-5 w-5" style={{ color: pathway.color, filter: `drop-shadow(0 0 4px ${pathway.color})` }} />
                   </motion.div>
-                  <span className="text-[10px] font-bold" style={{ color: isActive ? pathway.color : 'rgba(255,255,255,0.6)' }}>
+                  <span className="text-[10px] font-bold" style={{ color: isActive ? pathway.color : 'hsl(var(--foreground) / 0.6)' }}>
                     {pathway.name}
                   </span>
                 </motion.button>

@@ -1629,7 +1629,7 @@ function Kisspeptin54SignalingAnimation({ isInView }: { isInView: boolean }) {
         </motion.text>
 
         {/* label */}
-        <motion.text x="12" y="84" fill="rgba(255,255,255,0.4)" fontSize="6"
+        <motion.text x="12" y="84" fill="currentColor" fillOpacity="0.4" fontSize="6"
           initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 1.2 }}>
           Isoform length
         </motion.text>
@@ -1639,7 +1639,7 @@ function Kisspeptin54SignalingAnimation({ isInView }: { isInView: boolean }) {
           initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 1.4 }}>
           Neprilysin
         </motion.text>
-        <motion.text x="12" y="112" fill="rgba(255,255,255,0.45)" fontSize="5.8"
+        <motion.text x="12" y="112" fill="currentColor" fillOpacity="0.45" fontSize="5.8"
           initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 1.5 }}>
           cleaves KP-54 → KP-10
         </motion.text>
@@ -1663,7 +1663,7 @@ function Kisspeptin54SignalingAnimation({ isInView }: { isInView: boolean }) {
         </motion.text>
 
         {/* Occupancy bars under receptor */}
-        <motion.text x="165" y="114" fill="rgba(255,255,255,0.5)" fontSize="5.5"
+        <motion.text x="165" y="114" fill="currentColor" fillOpacity="0.5" fontSize="5.5"
           initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 1.2 }}>
           Receptor occupancy
         </motion.text>
@@ -1789,7 +1789,7 @@ function Kisspeptin54SignalingAnimation({ isInView }: { isInView: boolean }) {
         />
 
         {/* pituitary label */}
-        <motion.text x="205" y="225" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="6"
+        <motion.text x="205" y="225" textAnchor="middle" fill="currentColor" fillOpacity="0.4" fontSize="6"
           initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}} transition={{ delay: 2.2 }}>
           → LH / FSH release
         </motion.text>

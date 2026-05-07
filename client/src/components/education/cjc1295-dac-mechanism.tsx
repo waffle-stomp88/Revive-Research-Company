@@ -127,7 +127,7 @@ export function CJC1295DACMechanism() {
         animate={isInView ? { opacity: 1 } : {}}
         transition={{ delay: 0.8 }}
         className="mt-8 p-4 rounded-lg border"
-        style={{ borderColor: "rgba(255,255,255,0.1)" }}
+        style={{ borderColor: "hsl(var(--border))" }}
       >
         <p className="text-xs text-muted-foreground text-center">
           <span className="font-semibold text-[#E7FB10]">Result:</span> CJC-1295 with DAC allows for less frequent dosing (typically 1-2x weekly) while maintaining steady GH stimulation

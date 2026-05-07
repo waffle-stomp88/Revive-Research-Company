@@ -348,9 +348,9 @@ export function CJC1295AlbuminVisual() {
             onClick={() => setShowDAC(false)}
             className="px-5 py-2 rounded-lg text-sm font-semibold transition-all"
             style={{
-              backgroundColor: !showDAC ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255,255,255,0.03)',
-              border: `1.5px solid ${!showDAC ? '#ef4444' : 'rgba(255,255,255,0.1)'}`,
-              color: !showDAC ? '#ef4444' : 'rgba(255,255,255,0.5)',
+              backgroundColor: !showDAC ? 'rgba(239, 68, 68, 0.2)' : 'hsl(var(--foreground) / 0.03)',
+              border: `1.5px solid ${!showDAC ? '#ef4444' : 'hsl(var(--foreground) / 0.1)'}`,
+              color: !showDAC ? '#ef4444' : 'hsl(var(--foreground) / 0.5)',
               boxShadow: !showDAC ? '0 0 15px rgba(239, 68, 68, 0.3)' : 'none'
             }}
             whileHover={{ scale: 1.02 }}
@@ -362,9 +362,9 @@ export function CJC1295AlbuminVisual() {
             onClick={() => setShowDAC(true)}
             className="px-5 py-2 rounded-lg text-sm font-semibold transition-all"
             style={{
-              backgroundColor: showDAC ? 'rgba(33, 216, 255, 0.2)' : 'rgba(255,255,255,0.03)',
-              border: `1.5px solid ${showDAC ? '#21d8ff' : 'rgba(255,255,255,0.1)'}`,
-              color: showDAC ? '#21d8ff' : 'rgba(255,255,255,0.5)',
+              backgroundColor: showDAC ? 'rgba(33, 216, 255, 0.2)' : 'hsl(var(--foreground) / 0.03)',
+              border: `1.5px solid ${showDAC ? '#21d8ff' : 'hsl(var(--foreground) / 0.1)'}`,
+              color: showDAC ? '#21d8ff' : 'hsl(var(--foreground) / 0.5)',
               boxShadow: showDAC ? '0 0 15px rgba(33, 216, 255, 0.3)' : 'none'
             }}
             whileHover={{ scale: 1.02 }}
@@ -394,7 +394,7 @@ export function CJC1295AlbuminVisual() {
           </p>
         </motion.div>
 
-        <div className="mt-6 pt-6 border-t" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+        <div className="mt-6 pt-6 border-t" style={{ borderColor: 'hsl(var(--border))' }}>
           <HalfLifeComparison isInView={isInView} />
         </div>
 

@@ -32,13 +32,13 @@ function CellMembraneWithReceptors({ isInView, activeReceptors, peptide }: {
             </feMerge>
           </filter>
           <linearGradient id="membraneGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="rgba(255,255,255,0.1)" />
-            <stop offset="50%" stopColor="rgba(255,255,255,0.05)" />
-            <stop offset="100%" stopColor="rgba(255,255,255,0.1)" />
+            <stop offset="0%" stopColor="currentColor" stopOpacity="0.1" />
+            <stop offset="50%" stopColor="currentColor" stopOpacity="0.05" />
+            <stop offset="100%" stopColor="currentColor" stopOpacity="0.1" />
           </linearGradient>
           <pattern id="phospholipid" patternUnits="userSpaceOnUse" width="20" height="40">
-            <circle cx="10" cy="8" r="6" fill="rgba(255,255,255,0.15)" />
-            <line x1="10" y1="14" x2="10" y2="32" stroke="rgba(255,255,255,0.1)" strokeWidth="2" />
+            <circle cx="10" cy="8" r="6" fill="currentColor" fillOpacity="0.15" />
+            <line x1="10" y1="14" x2="10" y2="32" stroke="currentColor" strokeOpacity="0.1" strokeWidth="2" />
           </pattern>
         </defs>
         
@@ -57,10 +57,10 @@ function CellMembraneWithReceptors({ isInView, activeReceptors, peptide }: {
           transition={{ duration: 0.8 }}
         />
         
-        <motion.text x="10" y="95" fill="rgba(255,255,255,0.4)" fontSize="8">
+        <motion.text x="10" y="95" fill="currentColor" fillOpacity="0.4" fontSize="8">
           Extracellular
         </motion.text>
-        <motion.text x="10" y="165" fill="rgba(255,255,255,0.4)" fontSize="8">
+        <motion.text x="10" y="165" fill="currentColor" fillOpacity="0.4" fontSize="8">
           Intracellular
         </motion.text>
         
@@ -75,8 +75,8 @@ function CellMembraneWithReceptors({ isInView, activeReceptors, peptide }: {
                 width="24"
                 height="80"
                 rx="8"
-                fill={isActive ? `${receptor.color}30` : 'rgba(255,255,255,0.08)'}
-                stroke={isActive ? receptor.color : 'rgba(255,255,255,0.2)'}
+                fill={isActive ? `${receptor.color}30` : 'hsl(var(--foreground) / 0.08)'}
+                stroke={isActive ? receptor.color : 'hsl(var(--foreground) / 0.2)'}
                 strokeWidth={isActive ? 2.5 : 1.5}
                 initial={{ scaleY: 0 }}
                 animate={isInView ? { 
@@ -94,8 +94,8 @@ function CellMembraneWithReceptors({ isInView, activeReceptors, peptide }: {
                 cx={receptor.x}
                 cy="75"
                 r={isActive ? 12 : 10}
-                fill={isActive ? `${receptor.color}50` : 'rgba(255,255,255,0.1)'}
-                stroke={isActive ? receptor.color : 'rgba(255,255,255,0.3)'}
+                fill={isActive ? `${receptor.color}50` : 'hsl(var(--foreground) / 0.1)'}
+                stroke={isActive ? receptor.color : 'hsl(var(--foreground) / 0.3)'}
                 strokeWidth={isActive ? 2 : 1}
                 initial={{ scale: 0 }}
                 animate={isInView ? { 
@@ -126,7 +126,7 @@ function CellMembraneWithReceptors({ isInView, activeReceptors, peptide }: {
                 x={receptor.x}
                 y="180"
                 textAnchor="middle"
-                fill={isActive ? receptor.color : 'rgba(255,255,255,0.4)'}
+                fill={isActive ? receptor.color : 'hsl(var(--foreground) / 0.4)'}
                 fontSize="9"
                 fontWeight="bold"
                 initial={{ opacity: 0 }}
@@ -294,9 +294,9 @@ export function GLP1ReceptorVisual() {
               onClick={() => setActivePeptide(peptide)}
               className="px-4 py-2 rounded-lg text-sm font-semibold transition-all"
               style={{
-                backgroundColor: activePeptide.id === peptide.id ? `${peptide.color}20` : 'rgba(255,255,255,0.03)',
-                border: `1.5px solid ${activePeptide.id === peptide.id ? peptide.color : 'rgba(255,255,255,0.1)'}`,
-                color: activePeptide.id === peptide.id ? peptide.color : 'rgba(255,255,255,0.5)',
+                backgroundColor: activePeptide.id === peptide.id ? `${peptide.color}20` : 'hsl(var(--foreground) / 0.03)',
+                border: `1.5px solid ${activePeptide.id === peptide.id ? peptide.color : 'hsl(var(--foreground) / 0.1)'}`,
+                color: activePeptide.id === peptide.id ? peptide.color : 'hsl(var(--foreground) / 0.5)',
                 boxShadow: activePeptide.id === peptide.id ? `0 0 15px ${peptide.color}30` : 'none'
               }}
               whileHover={{ scale: 1.02 }}
@@ -350,8 +350,8 @@ export function GLP1ReceptorVisual() {
           <div 
             className="p-4 rounded-lg"
             style={{
-              backgroundColor: 'rgba(255,255,255,0.02)',
-              border: '1px solid rgba(255,255,255,0.05)'
+              backgroundColor: 'hsl(var(--foreground) / 0.02)',
+              border: '1px solid hsl(var(--foreground) / 0.05)'
             }}
           >
             <div className="flex items-center gap-2 mb-3">

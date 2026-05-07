@@ -38,7 +38,7 @@ function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boole
           <motion.text
             x="100" y="20"
             textAnchor="middle"
-            fill="rgba(255,255,255,0.6)"
+            fill="currentColor" fillOpacity="0.6"
             fontSize="8"
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
@@ -48,7 +48,7 @@ function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boole
           </motion.text>
           <motion.path
             d="M 100 25 L 100 40"
-            stroke="rgba(255,255,255,0.3)"
+            stroke="currentColor" strokeOpacity="0.3"
             strokeWidth="1"
             initial={{ pathLength: 0 }}
             animate={isInView ? { pathLength: 1 } : {}}
@@ -293,7 +293,7 @@ function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boole
               <motion.text
                 x="195" y="130"
                 textAnchor="middle"
-                fill="rgba(255,255,255,0.7)"
+                fill="currentColor" fillOpacity="0.7"
                 fontSize="9"
                 fontWeight="500"
                 initial={{ opacity: 0 }}
@@ -465,7 +465,7 @@ function ActinFilamentAnimation({ isInView, activeMechanism }: { isInView: boole
           <motion.text
             x="100" y="172"
             textAnchor="middle"
-            fill="rgba(255,255,255,0.4)"
+            fill="currentColor" fillOpacity="0.4"
             fontSize="6"
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
@@ -506,7 +506,7 @@ function WoundClosureVisual({ isInView, progress }: { isInView: boolean; progres
       <div className="mb-4 text-center space-y-1.5">
         <motion.div 
           className="text-sm font-semibold"
-          style={{ color: 'rgba(255,255,255,0.7)' }}
+          style={{ color: 'hsl(var(--foreground) / 0.7)' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
@@ -732,7 +732,7 @@ export function TB500ActinVisual() {
         {/* Auto-play progress bar */}
         <div className="flex items-center justify-center gap-2 mb-4">
           <span className="text-[10px] text-muted-foreground">Auto-playing mechanism {mechanismIds.indexOf(activeMechanism) + 1}/4</span>
-          <div className="w-24 h-1 rounded-full bg-white/10 overflow-hidden">
+          <div className="w-24 h-1 rounded-full bg-foreground/10 overflow-hidden">
             <motion.div 
               className="h-full rounded-full"
               style={{ 
@@ -759,8 +759,8 @@ export function TB500ActinVisual() {
                   onClick={() => setActiveMechanism(mechanism.id)}
                   className="relative p-3 rounded-lg text-center transition-all cursor-pointer"
                   style={{
-                    backgroundColor: isActive ? `${mechanism.color}20` : 'rgba(255,255,255,0.03)',
-                    border: `1.5px solid ${isActive ? mechanism.color : 'rgba(255,255,255,0.1)'}`,
+                    backgroundColor: isActive ? `${mechanism.color}20` : 'hsl(var(--foreground) / 0.03)',
+                    border: `1.5px solid ${isActive ? mechanism.color : 'hsl(var(--foreground) / 0.1)'}`,
                     boxShadow: isActive ? `0 0 15px ${mechanism.color}30` : 'none'
                   }}
                   whileHover={{ scale: 1.02 }}
@@ -774,7 +774,7 @@ export function TB500ActinVisual() {
                   >
                     <Icon className="h-5 w-5" style={{ color: mechanism.color, filter: `drop-shadow(0 0 4px ${mechanism.color})` }} />
                   </motion.div>
-                  <span className="text-[10px] font-bold" style={{ color: isActive ? mechanism.color : 'rgba(255,255,255,0.6)' }}>
+                  <span className="text-[10px] font-bold" style={{ color: isActive ? mechanism.color : 'hsl(var(--foreground) / 0.6)' }}>
                     {mechanism.name}
                   </span>
                 </motion.button>
@@ -798,7 +798,7 @@ export function TB500ActinVisual() {
           </motion.div>
         </div>
 
-        <div ref={woundRef} className="mt-6 pt-6 border-t" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+        <div ref={woundRef} className="mt-6 pt-6 border-t" style={{ borderColor: 'hsl(var(--border))' }}>
           <div className="flex items-center gap-2 mb-3">
             <ArrowRight className="h-4 w-4 text-[#22c55e]" />
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">

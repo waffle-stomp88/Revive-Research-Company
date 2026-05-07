@@ -28,16 +28,16 @@ function GHPulseWaveAnimation({ isInView, mode }: { isInView: boolean; mode: 'te
         
         <motion.line
           x1="30" y1="130" x2="290" y2="130"
-          stroke="rgba(255,255,255,0.2)"
+          stroke="currentColor" strokeOpacity="0.2"
           strokeWidth="1"
         />
         <motion.line
           x1="30" y1="20" x2="30" y2="130"
-          stroke="rgba(255,255,255,0.2)"
+          stroke="currentColor" strokeOpacity="0.2"
           strokeWidth="1"
         />
-        <motion.text x="15" y="25" fill="rgba(255,255,255,0.4)" fontSize="7">GH</motion.text>
-        <motion.text x="280" y="145" fill="rgba(255,255,255,0.4)" fontSize="7">Time</motion.text>
+        <motion.text x="15" y="25" fill="currentColor" fillOpacity="0.4" fontSize="7">GH</motion.text>
+        <motion.text x="280" y="145" fill="currentColor" fillOpacity="0.4" fontSize="7">Time</motion.text>
         
         {isPulsatile ? (
           <motion.g>
@@ -132,7 +132,7 @@ function GHPulseWaveAnimation({ isInView, mode }: { isInView: boolean; mode: 'te
           </motion.g>
         )}
         
-        <motion.text x="30" y="145" fill="rgba(255,255,255,0.5)" fontSize="7">
+        <motion.text x="30" y="145" fill="currentColor" fillOpacity="0.5" fontSize="7">
           {isPulsatile ? 'Natural rhythm preserved' : 'Feedback overridden'}
         </motion.text>
       </svg>
@@ -226,9 +226,9 @@ export function TesomorelinPulseVisual() {
             onClick={() => setActiveMode('tesamorelin')}
             className="px-5 py-2 rounded-lg text-sm font-semibold transition-all"
             style={{
-              backgroundColor: activeMode === 'tesamorelin' ? 'rgba(236, 72, 153, 0.2)' : 'rgba(255,255,255,0.03)',
-              border: `1.5px solid ${activeMode === 'tesamorelin' ? '#ec4899' : 'rgba(255,255,255,0.1)'}`,
-              color: activeMode === 'tesamorelin' ? '#ec4899' : 'rgba(255,255,255,0.5)',
+              backgroundColor: activeMode === 'tesamorelin' ? 'rgba(236, 72, 153, 0.2)' : 'hsl(var(--foreground) / 0.03)',
+              border: `1.5px solid ${activeMode === 'tesamorelin' ? '#ec4899' : 'hsl(var(--foreground) / 0.1)'}`,
+              color: activeMode === 'tesamorelin' ? '#ec4899' : 'hsl(var(--foreground) / 0.5)',
               boxShadow: activeMode === 'tesamorelin' ? '0 0 15px rgba(236, 72, 153, 0.3)' : 'none'
             }}
             whileHover={{ scale: 1.02 }}
@@ -240,9 +240,9 @@ export function TesomorelinPulseVisual() {
             onClick={() => setActiveMode('direct')}
             className="px-5 py-2 rounded-lg text-sm font-semibold transition-all"
             style={{
-              backgroundColor: activeMode === 'direct' ? 'rgba(249, 115, 22, 0.2)' : 'rgba(255,255,255,0.03)',
-              border: `1.5px solid ${activeMode === 'direct' ? '#f97316' : 'rgba(255,255,255,0.1)'}`,
-              color: activeMode === 'direct' ? '#f97316' : 'rgba(255,255,255,0.5)',
+              backgroundColor: activeMode === 'direct' ? 'rgba(249, 115, 22, 0.2)' : 'hsl(var(--foreground) / 0.03)',
+              border: `1.5px solid ${activeMode === 'direct' ? '#f97316' : 'hsl(var(--foreground) / 0.1)'}`,
+              color: activeMode === 'direct' ? '#f97316' : 'hsl(var(--foreground) / 0.5)',
               boxShadow: activeMode === 'direct' ? '0 0 15px rgba(249, 115, 22, 0.3)' : 'none'
             }}
             whileHover={{ scale: 1.02 }}

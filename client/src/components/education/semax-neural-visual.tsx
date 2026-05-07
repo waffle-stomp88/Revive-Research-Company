@@ -144,8 +144,8 @@ function NeuralSynapseAnimation({ isInView, activeFactor }: { isInView: boolean;
                 width="10"
                 height="10"
                 rx="2"
-                fill={isActive ? `${colors[i]}40` : 'rgba(255,255,255,0.1)'}
-                stroke={isActive ? colors[i] : 'rgba(255,255,255,0.2)'}
+                fill={isActive ? `${colors[i]}40` : 'hsl(var(--foreground) / 0.1)'}
+                stroke={isActive ? colors[i] : 'hsl(var(--foreground) / 0.2)'}
                 strokeWidth={isActive ? 2 : 1}
                 initial={{ scale: 0 }}
                 animate={isInView ? { scale: 1 } : {}}
@@ -327,7 +327,7 @@ export function SemaxNeuralVisual() {
         {/* Auto-play progress bar */}
         <div className="flex items-center justify-center gap-2 mb-4">
           <span className="text-[10px] text-muted-foreground">Auto-playing factor {activeFactor + 1}/3</span>
-          <div className="w-24 h-1 rounded-full bg-white/10 overflow-hidden">
+          <div className="w-24 h-1 rounded-full bg-foreground/10 overflow-hidden">
             <motion.div 
               className="h-full rounded-full"
               style={{ 
@@ -354,8 +354,8 @@ export function SemaxNeuralVisual() {
                   onClick={() => setActiveFactor(factor.id)}
                   className="p-4 rounded-lg text-left transition-all cursor-pointer"
                   style={{
-                    backgroundColor: isActive ? `${factor.color}20` : 'rgba(255,255,255,0.02)',
-                    border: `1.5px solid ${isActive ? factor.color : 'rgba(255,255,255,0.08)'}`,
+                    backgroundColor: isActive ? `${factor.color}20` : 'hsl(var(--foreground) / 0.02)',
+                    border: `1.5px solid ${isActive ? factor.color : 'hsl(var(--foreground) / 0.08)'}`,
                     boxShadow: isActive ? `0 0 20px ${factor.color}30` : 'none'
                   }}
                   whileHover={{ scale: 1.02 }}

@@ -13,7 +13,7 @@ function KLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
           </radialGradient>
         </defs>
         
-        <motion.text x="250" y="30" textAnchor="middle" fill="rgba(255,255,255,0.9)" fontSize="18" fontWeight="700"
+        <motion.text x="250" y="30" textAnchor="middle" fill="currentColor" fillOpacity="0.9" fontSize="18" fontWeight="700"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
         >
@@ -29,7 +29,7 @@ function KLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
           <circle cx="60" cy="80" r="22" fill="#ec4899" style={{ filter: 'drop-shadow(0 0 10px rgba(236, 72, 153, 0.7))' }} />
           <text x="60" y="86" textAnchor="middle" fill="white" fontSize="12" fontWeight="700">TB</text>
           <text x="60" y="120" textAnchor="middle" fill="#ec4899" fontSize="12" fontWeight="600">TB-500</text>
-          <text x="60" y="136" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="10">Tissue Repair</text>
+          <text x="60" y="136" textAnchor="middle" fill="currentColor" fillOpacity="0.7" fontSize="10">Tissue Repair</text>
         </motion.g>
 
         {/* PEPTIDE 2: BPC-157 */}
@@ -41,7 +41,7 @@ function KLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
           <circle cx="175" cy="80" r="22" fill="#21d8ff" style={{ filter: 'drop-shadow(0 0 10px rgba(33, 216, 255, 0.7))' }} />
           <text x="175" y="86" textAnchor="middle" fill="white" fontSize="12" fontWeight="700">BP</text>
           <text x="175" y="120" textAnchor="middle" fill="#21d8ff" fontSize="12" fontWeight="600">BPC-157</text>
-          <text x="175" y="136" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="10">Angiogenesis</text>
+          <text x="175" y="136" textAnchor="middle" fill="currentColor" fillOpacity="0.7" fontSize="10">Angiogenesis</text>
         </motion.g>
 
         {/* PEPTIDE 3: GHK-Cu */}
@@ -53,7 +53,7 @@ function KLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
           <circle cx="325" cy="80" r="22" fill="#E7FB10" style={{ filter: 'drop-shadow(0 0 10px rgba(231, 251, 16, 0.7))' }} />
           <text x="325" y="86" textAnchor="middle" fill="black" fontSize="12" fontWeight="700">GK</text>
           <text x="325" y="120" textAnchor="middle" fill="#E7FB10" fontSize="12" fontWeight="600">GHK-Cu</text>
-          <text x="325" y="136" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="10">Collagen</text>
+          <text x="325" y="136" textAnchor="middle" fill="currentColor" fillOpacity="0.7" fontSize="10">Collagen</text>
         </motion.g>
 
         {/* PEPTIDE 4: KPV - The differentiator */}
@@ -65,7 +65,7 @@ function KLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
           <circle cx="440" cy="80" r="22" fill="#22c55e" style={{ filter: 'drop-shadow(0 0 10px rgba(34, 197, 94, 0.7))' }} />
           <text x="440" y="86" textAnchor="middle" fill="white" fontSize="12" fontWeight="700">KPV</text>
           <text x="440" y="120" textAnchor="middle" fill="#22c55e" fontSize="12" fontWeight="600">KPV</text>
-          <text x="440" y="136" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="10">Anti-Inflam.</text>
+          <text x="440" y="136" textAnchor="middle" fill="currentColor" fillOpacity="0.7" fontSize="10">Anti-Inflam.</text>
         </motion.g>
 
         {/* Arrows converging to tissue target */}
@@ -125,7 +125,7 @@ function KLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
             <text x="110" y="355" textAnchor="middle" fill="#ec4899" fontSize="13" fontWeight="700">
               Cellular Regeneration
             </text>
-            <text x="110" y="372" textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="11">
+            <text x="110" y="372" textAnchor="middle" fill="currentColor" fillOpacity="0.6" fontSize="11">
               TB-500 + BPC-157
             </text>
           </motion.g>
@@ -151,7 +151,7 @@ function KLOWSynergyAnimation({ isInView, activationLevel }: { isInView: boolean
             <text x="390" y="355" textAnchor="middle" fill="#22c55e" fontSize="13" fontWeight="700">
               Inflammation Control
             </text>
-            <text x="390" y="372" textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="11">
+            <text x="390" y="372" textAnchor="middle" fill="currentColor" fillOpacity="0.6" fontSize="11">
               KPV NF-κB Block
             </text>
           </motion.g>
