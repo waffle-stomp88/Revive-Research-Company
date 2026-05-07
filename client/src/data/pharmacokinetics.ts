@@ -274,7 +274,7 @@
  *    "alpha-MSH tripeptide" OR "C-terminal alpha-MSH") AND (pharmacokinetics
  *    OR "half-life" OR "plasma" OR bioavailability OR "peptide stability")'.
  *    KPV research is concentrated in mucosal delivery and inflammatory bowel
- *    disease models; publications focus on anti-inflammatory efficacy,
+ disease models; publications focus on anti-inflammatory efficacy,
  *    nanoparticle encapsulation for colonic delivery, and melanocortin receptor
  *    binding, not plasma pharmacokinetics. No plasma PK study measuring Cmax,
  *    t½, AUC, or clearance for KPV as a free or delivered peptide was
@@ -296,6 +296,73 @@
  *  Result: No proxy upgrades were possible in this follow-up audit pass.
  *  All five entries retain their existing proxy citations. Notes have been
  *  updated to document the specific search strategies and null results.
+ *
+ * Citation audit (May 2026): Systematic pass for remaining SC-estimate entries
+ *
+ *   Scope: all halfLifeLabel fields carrying the "(SC estimate)" suffix and all
+ *   per-entry notes stating "no compound-specific PK study was found." This audit
+ *   follows the same methodology as the oxytocin and vasopressin upgrades above:
+ *   each compound received a dedicated PubMed search before a disposition was
+ *   recorded. The following compounds were reviewed in this pass:
+ *
+ *  VIP — primary route SC, halfLifeLabel "~10–30 min (SC estimate)":
+ *   PubMed query: '(vasoactive intestinal peptide OR VIP) AND (subcutaneous OR
+ *   "SC") AND (pharmacokinetics OR absorption OR bioavailability OR half-life)'.
+ *   The existing IV citation (Domschke et al. 1979, PMID 7175453) characterises
+ *   plasma VIP clearance during intravenous infusion and establishes the 1–2 min
+ *   IV half-life. No compound-specific subcutaneous VIP pharmacokinetics study
+ *   was identified in PubMed. Subcutaneous VIP administration is uncommon in the
+ *   published literature because the peptide's intrinsic plasma half-life is
+ *   measured in minutes even by the IV route; inhaled and depot-stabilised
+ *   formulations dominate the clinical VIP literature. The ~10–30 min SC window
+ *   is extrapolated from the IV half-life plus the subcutaneous absorption-phase
+ *   delay expected for a 28-amino-acid neuropeptide. SC estimate retained;
+ *   halfLifeLabel and note left unchanged. Confirmed null.
+ *
+ *  MGF — halfLifeLabel "~20–30 min":
+ *   PubMed query: '(mechano growth factor OR MGF OR "IGF-1 Ec" OR IGF1Ec) AND
+ *   (pharmacokinetics OR half-life OR "plasma clearance" OR bioavailability)'.
+ *   Yang & Goldspink (2002, PMID 12011461, FEBS Lett) is the primary molecular
+ *   characterisation study of MGF splice-variant protein forms; it does not
+ *   report plasma half-life. A secondary query targeting IGF-1 splice-variant
+ *   pharmacokinetics also returned no compound-specific MGF PK study. The
+ *   ~20–30 min estimate is derived from the rapid serum-protease cleavage of
+ *   the unprotected 49-amino-acid E-peptide domain, by analogy with des(1–3)
+ *   IGF-1 SC clearance (Gillespie et al. 1996, PMID 8897852). Existing citation
+ *   and note left unchanged. Confirmed null.
+ *
+ *  PEG-MGF — halfLifeLabel "~3–5 days":
+ *   PubMed query: '(PEG-MGF OR "pegylated MGF" OR "pegylated mechano growth
+ *   factor" OR "PEGylated IGF-1 Ec") AND (pharmacokinetics OR half-life OR
+ *   bioavailability OR clearance)'. No PubMed-indexed pharmacokinetics study
+ *   for PEG-MGF was identified. The ~3–5 day half-life estimate is extrapolated
+ *   from published PEGylated peptide pharmacokinetic class data: PEGylation of
+ *   comparably sized growth-factor peptides (PEGylated G-CSF, PEGylated
+ *   erythropoietin fragments) extends plasma half-life by 10–100-fold relative
+ *   to the parent unprotected peptide, consistent with the ~100× extension
+ *   estimated here (20–30 min → 3–5 days). Citations remain empty; note
+ *   unchanged. Confirmed null.
+ *
+ *  Pinealon — halfLifeLabel "~1–2 h":
+ *   PubMed query: '(pinealon OR "Ala-Glu-Asp-Gly" OR AEDG OR "tetrapeptide
+ *   AEDG") AND (pharmacokinetics OR half-life OR "plasma clearance" OR
+ *   bioavailability OR absorption)'. Khavinson et al. (2012, PMID 22376166,
+ *   CNS Neurol Disord Drug Targets) is a neuroprotective pharmacology study,
+ *   not a pharmacokinetics study. An extended Khavinson-group bibliography
+ *   search returned additional biological-activity papers (receptor binding,
+ *   epigenetic modulation, cognitive neuroprotection) but no primary plasma
+ *   pharmacokinetics data for Pinealon. Half-life estimate (~1–2 h) is by
+ *   class analogy with Epithalon (another Khavinson tetrapeptide, same entry
+ *   standard). Existing citation and note left unchanged. Confirmed null.
+ *
+ *  Cerebrolysin SC altRoute (~1–3 h), Glutathione SC altRoute (~10–30 min),
+ *  Lipo-C SC altRoute (~2–4 h):
+ *   These three altRoute entries were confirmed null in prior audit passes
+ *   documented above (Cerebrolysin: extended Russian-language and PubMed search;
+ *   Glutathione SC: dedicated PubMed search; Lipo-C SC: dedicated PubMed search
+ *   including Graumlich 1997 and Padayatty 2004 review). No additional search
+ *   was required in this pass; "(SC estimate)" halfLifeLabels, empty citations,
+ *   and null-search notes are all unchanged and constitute the audit trail.
  */
 
 export type CitationType = "PMID" | "DOI";
