@@ -251,7 +251,7 @@ export const PEPTIDE_PATHWAYS: Record<string, PeptidePathway> = {
     name: "Oxytocin",
     pathways: ["Oxytocin Receptor", "Social Bonding", "Anti-Inflammatory"],
     mechanisms: ["Hypothalamic neuropeptide", "Stress reduction", "Uterine contraction regulation"],
-    systems: ["Mood", "Healing", "Hormonal"],
+    systems: ["Hormonal", "Mood", "Healing"],
   },
   "pt-141": {
     name: "PT-141",
