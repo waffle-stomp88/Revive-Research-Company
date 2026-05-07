@@ -59,15 +59,17 @@ describe("MiniPKChart — listing-page rendering", () => {
     expect(keyEl).toBeInTheDocument();
   });
 
-  it("does NOT render pk-line-style-key for all-intranasal stacks (cognitive-edge-stack: Semax + Selank)", () => {
+  it("renders pk-line-style-key for cognitive-edge-stack because Selank has an IV overlay variant", () => {
     const cognitiveStack = RESEARCH_STACKS_DATA.find(s => s.id === "cognitive-edge-stack");
     expect(cognitiveStack).toBeDefined();
 
     const peptideNames = cognitiveStack!.peptides.map(p => p.name);
     render(<MiniPKChart peptideNames={peptideNames} stackId={cognitiveStack!.id} />);
 
-    const keyEl = screen.queryByTestId(`pk-line-style-key-${cognitiveStack!.id}`);
-    expect(keyEl).toBeNull();
+    // Selank carries an ivHalfLifeLabel (IV bolus variant ~2–3 min), so the key
+    // is visible even though both compounds are intranasal as their primary route.
+    const keyEl = screen.getByTestId(`pk-line-style-key-${cognitiveStack!.id}`);
+    expect(keyEl).toBeInTheDocument();
   });
 
   it("does NOT render pk-line-style-key for all-SC stacks (recovery-tissue-stack: BPC-157 + TB-500)", () => {

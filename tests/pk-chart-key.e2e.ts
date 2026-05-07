@@ -46,7 +46,7 @@ test.describe("MiniPKChart — browser rendering on /research-stacks", () => {
     await expect(key).toBeVisible({ timeout: 5000 });
   });
 
-  test("cognitive-edge-stack does NOT render the pk-line-style-key (all intranasal — no SC curves)", async ({
+  test("cognitive-edge-stack renders the pk-line-style-key because Selank has an IV overlay variant", async ({
     page,
   }) => {
     await page.goto("/research-stacks");
@@ -55,7 +55,8 @@ test.describe("MiniPKChart — browser rendering on /research-stacks", () => {
       timeout: 15000,
     });
 
+    // Selank carries an ivHalfLifeLabel (~2–3 min IV bolus), which triggers the legend.
     const key = page.locator('[data-testid="pk-line-style-key-cognitive-edge-stack"]');
-    await expect(key).not.toBeVisible({ timeout: 5000 });
+    await expect(key).toBeVisible({ timeout: 5000 });
   });
 });

@@ -105,7 +105,6 @@ function AreaFill({
   color: string;
   delay: number;
 }) {
-  // Close the path by adding a line to the bottom corners
   const closed = `${d} L ${CR} ${CB} L ${CL} ${CB} Z`;
   return (
     <motion.path
@@ -136,8 +135,11 @@ function PeakMarker({
       transition={{ delay, duration: 0.4 }}
     >
       <circle cx={x} cy={38} r={3.5} fill={color} style={{ filter: `drop-shadow(0 0 6px ${color})` }} />
-      <rect x={x - 16} y={14} width={32} height={14} rx={3}
-        fill="rgba(0,0,0,0.65)" stroke={color} strokeWidth={0.8} strokeOpacity={0.6} />
+      <rect
+        x={x - 16} y={14} width={32} height={14} rx={3}
+        style={{ fill: "hsl(var(--background) / 0.85)" }}
+        stroke={color} strokeWidth={0.8} strokeOpacity={0.6}
+      />
       <text x={x} y={24} textAnchor="middle" fill={color} fontSize={7.5} fontWeight="700">
         {label}
       </text>
@@ -154,11 +156,12 @@ function DoseMarker({ x, delay }: { x: number; delay: number }) {
     >
       <line
         x1={x} y1={CT + 4} x2={x} y2={CB}
-        stroke="rgba(255,255,255,0.18)"
+        stroke="currentColor"
+        strokeOpacity={0.18}
         strokeWidth={1}
         strokeDasharray="3,3"
       />
-      <text x={x} y={CB + 16} textAnchor="middle" fill="rgba(255,255,255,0.35)" fontSize={6.5}>
+      <text x={x} y={CB + 16} textAnchor="middle" fill="currentColor" fillOpacity={0.35} fontSize={6.5}>
         Dose
       </text>
     </motion.g>
@@ -167,7 +170,11 @@ function DoseMarker({ x, delay }: { x: number; delay: number }) {
 
 function WaveformChart({ isInView }: { isInView: boolean }) {
   return (
-    <svg viewBox="0 0 470 240" className="w-full h-auto" style={{ maxHeight: 280 }}>
+    <svg
+      viewBox="0 0 470 240"
+      className="w-full h-auto text-foreground"
+      style={{ maxHeight: 280 }}
+    >
       <defs>
         <clipPath id="chartClip">
           <rect x={CL} y={CT - 4} width={CR - CL} height={CB - CT + 8} />
@@ -182,7 +189,8 @@ function WaveformChart({ isInView }: { isInView: boolean }) {
           y1={y}
           x2={CR}
           y2={y}
-          stroke="rgba(255,255,255,0.06)"
+          stroke="currentColor"
+          strokeOpacity={0.06}
           strokeWidth={1}
         />
       ))}
@@ -193,7 +201,8 @@ function WaveformChart({ isInView }: { isInView: boolean }) {
         x={14}
         y={(CT + CB) / 2 + 4}
         textAnchor="middle"
-        fill="rgba(255,255,255,0.35)"
+        fill="currentColor"
+        fillOpacity={0.35}
         fontSize={7.5}
       >
         GH (% relative output)
@@ -202,21 +211,21 @@ function WaveformChart({ isInView }: { isInView: boolean }) {
       {/* Y axis ticks & labels */}
       {Y_TICKS.map(({ y, label }) => (
         <g key={label}>
-          <line x1={CL - 4} y1={y} x2={CL} y2={y} stroke="rgba(255,255,255,0.25)" strokeWidth={1} />
-          <text x={CL - 7} y={y + 3} textAnchor="end" fill="rgba(255,255,255,0.35)" fontSize={7}>
+          <line x1={CL - 4} y1={y} x2={CL} y2={y} stroke="currentColor" strokeOpacity={0.25} strokeWidth={1} />
+          <text x={CL - 7} y={y + 3} textAnchor="end" fill="currentColor" fillOpacity={0.35} fontSize={7}>
             {label}
           </text>
         </g>
       ))}
 
       {/* X axis */}
-      <line x1={CL} y1={CB} x2={CR} y2={CB} stroke="rgba(255,255,255,0.2)" strokeWidth={1} />
+      <line x1={CL} y1={CB} x2={CR} y2={CB} stroke="currentColor" strokeOpacity={0.2} strokeWidth={1} />
 
       {/* X axis ticks & labels */}
       {X_TICKS.map(({ x, label }) => (
         <g key={label}>
-          <line x1={x} y1={CB} x2={x} y2={CB + 4} stroke="rgba(255,255,255,0.25)" strokeWidth={1} />
-          <text x={x} y={CB + 14} textAnchor="middle" fill="rgba(255,255,255,0.35)" fontSize={7}>
+          <line x1={x} y1={CB} x2={x} y2={CB + 4} stroke="currentColor" strokeOpacity={0.25} strokeWidth={1} />
+          <text x={x} y={CB + 14} textAnchor="middle" fill="currentColor" fillOpacity={0.35} fontSize={7}>
             {label}
           </text>
         </g>
@@ -227,7 +236,8 @@ function WaveformChart({ isInView }: { isInView: boolean }) {
         x={(CL + CR) / 2}
         y={CB + 26}
         textAnchor="middle"
-        fill="rgba(255,255,255,0.35)"
+        fill="currentColor"
+        fillOpacity={0.35}
         fontSize={7.5}
       >
         Time post-administration
@@ -275,8 +285,11 @@ function WaveformChart({ isInView }: { isInView: boolean }) {
 
       {/* Legend */}
       <g transform={`translate(${CL + 4}, ${CT + 6})`}>
-        <rect x={0} y={0} width={250} height={50} rx={5}
-          fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.08)" strokeWidth={0.8} />
+        <rect
+          x={0} y={0} width={250} height={50} rx={5}
+          style={{ fill: "hsl(var(--background) / 0.6)" }}
+          stroke="currentColor" strokeOpacity={0.08} strokeWidth={0.8}
+        />
         {[
           { color: COMBINED_COLOR, label: "Ipamorelin + CJC-1295 (combined)", sw: 2.5 },
           { color: IPAMORELIN_COLOR, label: "Ipamorelin alone", sw: 2 },
@@ -285,7 +298,7 @@ function WaveformChart({ isInView }: { isInView: boolean }) {
           <g key={i} transform={`translate(8, ${10 + i * 14})`}>
             <line x1={0} y1={4} x2={18} y2={4} stroke={color} strokeWidth={sw}
               style={{ filter: `drop-shadow(0 0 3px ${color}80)` }} />
-            <text x={24} y={8} fill="rgba(255,255,255,0.7)" fontSize={7.5}>{label}</text>
+            <text x={24} y={8} fill="currentColor" fillOpacity={0.7} fontSize={7.5}>{label}</text>
           </g>
         ))}
       </g>
