@@ -1176,13 +1176,20 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                     )}
                     <div className="flex flex-wrap gap-3 border-t border-border/20 pt-2 mt-1">
                       {activeCitations.map((cit, j) => (
-                        <a key={j} href={cit.url} target="_blank" rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-xs text-[#21d8ff] hover:underline opacity-70 hover:opacity-100"
-                          onClick={e => e.stopPropagation()}
-                        >
-                          <ExternalLink className="h-2.5 w-2.5" />
-                          {cit.label}
-                        </a>
+                        <span key={j} className="inline-flex items-center gap-1">
+                          {cit.routeContext && (
+                            <span className="text-[10px] font-medium px-1 py-px rounded" style={{ backgroundColor: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.45)", border: "1px solid rgba(255,255,255,0.12)" }}>
+                              {cit.routeContext}
+                            </span>
+                          )}
+                          <a href={cit.url} target="_blank" rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-xs text-[#21d8ff] hover:underline opacity-70 hover:opacity-100"
+                            onClick={e => e.stopPropagation()}
+                          >
+                            <ExternalLink className="h-2.5 w-2.5" />
+                            {cit.label}
+                          </a>
+                        </span>
                       ))}
                       {isAltActive && c.basePk?.altRoute && c.basePk.altRoute.citations.length === 0 && c.basePk.altRoute.note && (
                         <Tooltip>
@@ -1386,8 +1393,15 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                         <div className="pt-1 border-t border-border/40">
                           <p className="text-[10px] text-muted-foreground mb-1">Citations:</p>
                           {c.pk.citations.map((cit, j) => (
-                            <a key={j} href={cit.url} target="_blank" rel="noopener noreferrer"
-                              className="text-[11px] text-[#21d8ff] hover:underline block">{cit.label}</a>
+                            <span key={j} className="flex items-center gap-1 mb-0.5">
+                              {cit.routeContext && (
+                                <span className="text-[10px] font-medium px-1 py-px rounded shrink-0" style={{ backgroundColor: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.45)", border: "1px solid rgba(255,255,255,0.12)" }}>
+                                  {cit.routeContext}
+                                </span>
+                              )}
+                              <a href={cit.url} target="_blank" rel="noopener noreferrer"
+                                className="text-[11px] text-[#21d8ff] hover:underline">{cit.label}</a>
+                            </span>
                           ))}
                           {c.pk.altRoute && (
                             c.pk.altRoute.citations.length > 0
@@ -1440,17 +1454,23 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                 {(c.pk.citations.length > 0 || (c.pk.altRoute && (c.pk.altRoute.citations.length > 0 || !!c.pk.altRoute.note))) && (
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 pl-[18px]" onClick={e => e.stopPropagation()}>
                     {c.pk.citations.map((cit, j) => (
-                      <a
-                        key={j}
-                        href={cit.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-[10px] text-[#21d8ff]/70 hover:text-[#21d8ff] hover:underline transition-colors"
-                        data-testid={`link-citation-${toTestSlug(c.peptide.name)}-${j}`}
-                      >
-                        <ExternalLink className="h-2.5 w-2.5 flex-shrink-0" />
-                        {cit.label}
-                      </a>
+                      <span key={j} className="inline-flex items-center gap-1">
+                        {cit.routeContext && (
+                          <span className="text-[10px] font-medium px-1 py-px rounded shrink-0" style={{ backgroundColor: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.45)", border: "1px solid rgba(255,255,255,0.12)" }}>
+                            {cit.routeContext}
+                          </span>
+                        )}
+                        <a
+                          href={cit.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[10px] text-[#21d8ff]/70 hover:text-[#21d8ff] hover:underline transition-colors"
+                          data-testid={`link-citation-${toTestSlug(c.peptide.name)}-${j}`}
+                        >
+                          <ExternalLink className="h-2.5 w-2.5 flex-shrink-0" />
+                          {cit.label}
+                        </a>
+                      </span>
                     ))}
                     {c.pk.altRoute && (
                       c.pk.altRoute.citations.length > 0
