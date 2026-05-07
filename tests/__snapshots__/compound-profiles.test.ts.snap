@@ -1,5 +1,31 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`compound-profiles — PK profile snapshots > gonadorelin PK fields are present and stable 1`] = `
+{
+  "citationIds": [
+    "2467720",
+  ],
+  "halfLifeLabel": "~2–10 min",
+  "halfLifeMax": 10,
+  "halfLifeMin": 2,
+  "route": "subcutaneous",
+  "slug": "gonadorelin",
+}
+`;
+
+exports[`compound-profiles — PK profile snapshots > kisspeptin-10 PK fields are present and stable 1`] = `
+{
+  "citationIds": [
+    "24449855",
+  ],
+  "halfLifeLabel": "~15–30 min",
+  "halfLifeMax": 30,
+  "halfLifeMin": 15,
+  "route": "subcutaneous",
+  "slug": "kisspeptin-10",
+}
+`;
+
 exports[`compound-profiles — PK profile snapshots > kisspeptin-54 PK fields are present and stable 1`] = `
 {
   "citationIds": [
@@ -12,6 +38,32 @@ exports[`compound-profiles — PK profile snapshots > kisspeptin-54 PK fields ar
   "halfLifeMin": 28,
   "route": "subcutaneous",
   "slug": "kisspeptin-54",
+}
+`;
+
+exports[`compound-profiles — PK profile snapshots > oxytocin PK fields are present and stable 1`] = `
+{
+  "citationIds": [
+    "11445820",
+  ],
+  "halfLifeLabel": "~3–5 min",
+  "halfLifeMax": 5,
+  "halfLifeMin": 3,
+  "route": "subcutaneous",
+  "slug": "oxytocin",
+}
+`;
+
+exports[`compound-profiles — PK profile snapshots > triptorelin PK fields are present and stable 1`] = `
+{
+  "citationIds": [
+    "9652178",
+  ],
+  "halfLifeLabel": "~3–8 h",
+  "halfLifeMax": 480,
+  "halfLifeMin": 180,
+  "route": "subcutaneous",
+  "slug": "triptorelin",
 }
 `;
 

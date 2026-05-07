@@ -162,12 +162,10 @@ describe("compound-profiles — value snapshots (formula + MW)", () => {
 // to accept the change.
 
 describe("compound-profiles — PK profile snapshots", () => {
-  it("kisspeptin-54 PK fields are present and stable", () => {
-    const entry = PEPTIDE_HALF_LIVES.find((e) => e.slug === "kisspeptin-54");
-
-    expect(entry, "kisspeptin-54 must exist in PEPTIDE_HALF_LIVES").toBeDefined();
-
-    const snapshot = {
+  function pkSnapshot(slug: string) {
+    const entry = PEPTIDE_HALF_LIVES.find((e) => e.slug === slug);
+    expect(entry, `${slug} must exist in PEPTIDE_HALF_LIVES`).toBeDefined();
+    return {
       slug: entry!.slug,
       halfLifeMin: entry!.halfLifeMin,
       halfLifeMax: entry!.halfLifeMax,
@@ -175,7 +173,25 @@ describe("compound-profiles — PK profile snapshots", () => {
       route: entry!.route,
       citationIds: entry!.citations.map((c) => c.id),
     };
+  }
 
-    expect(snapshot).toMatchSnapshot();
+  it("kisspeptin-54 PK fields are present and stable", () => {
+    expect(pkSnapshot("kisspeptin-54")).toMatchSnapshot();
+  });
+
+  it("kisspeptin-10 PK fields are present and stable", () => {
+    expect(pkSnapshot("kisspeptin-10")).toMatchSnapshot();
+  });
+
+  it("gonadorelin PK fields are present and stable", () => {
+    expect(pkSnapshot("gonadorelin")).toMatchSnapshot();
+  });
+
+  it("triptorelin PK fields are present and stable", () => {
+    expect(pkSnapshot("triptorelin")).toMatchSnapshot();
+  });
+
+  it("oxytocin PK fields are present and stable", () => {
+    expect(pkSnapshot("oxytocin")).toMatchSnapshot();
   });
 });
