@@ -241,7 +241,7 @@ const SYSTEM_GUIDES = [
     title: "Cognitive Peptides: Neuropeptide Signaling, BDNF Pathways, and Neuro Cluster Research",
     description:
       "A deep-dive into the cognitive/neuro cluster — Semax, Selank, Dihexa, DSIP, and PT-141 — covering BDNF, HGF/MET synaptogenesis, GABAergic modulation, and shared melanocortin receptor architecture.",
-    href: "/guides/cognitive-peptides",
+    href: "/systems/cognitive",
     color: "#f97316",
     badgeLabel: "Cognitive",
     readTime: 22,
@@ -251,7 +251,7 @@ const SYSTEM_GUIDES = [
     title: "Growth Hormone Peptides: GHRH/GHRP Axis, GH Secretagogue Mechanisms, and the GH → IGF-1 Cascade",
     description:
       "A comprehensive guide to the Growth Hormone cluster — CJC-1295, Ipamorelin, Tesamorelin, IGF-1 LR3, and IGF-DES — covering the GHRH/GHRP two-receptor synergy, the GH → IGF-1 cascade, and IGF-binding protein pharmacology.",
-    href: "/guides/growth-hormone-peptides",
+    href: "/systems/growth",
     color: "#f59e0b",
     badgeLabel: "Growth Hormone",
     readTime: 24,
@@ -333,7 +333,7 @@ const BODY_SYSTEM_GUIDES = [
     slug: "hormonal-peptides",
     title: "Hormonal Peptides: HPG Axis & Endocrine Support",
     description: "How kisspeptin, HCG, gonadorelin, and related compounds interact with the hypothalamic-pituitary-gonadal axis.",
-    href: "/guides/hormonal-peptides",
+    href: "/systems/hormonal",
     icon: Activity,
     color: "#21d8ff",
     readTime: 12,
@@ -1312,7 +1312,7 @@ export default function Education() {
                             <p className="text-xs text-muted-foreground mb-4">
                               Understand how this compound fits into the broader Healing &amp; Tissue Repair system.
                             </p>
-                            <Link href="/guides/healing-peptides">
+                            <Link href="/systems/healing">
                               <Card
                                 className="p-4 cursor-pointer hover-elevate transition-all"
                                 style={{ borderColor: "rgba(34,197,94,0.25)" }}
@@ -1365,7 +1365,7 @@ export default function Education() {
                             <p className="text-xs text-muted-foreground mb-4">
                               Understand how this compound fits into the broader Cognitive &amp; Neuro peptide system.
                             </p>
-                            <Link href="/guides/cognitive-peptides">
+                            <Link href="/systems/cognitive">
                               <Card
                                 className="p-4 cursor-pointer hover-elevate transition-all"
                                 style={{ borderColor: "rgba(249,115,22,0.25)" }}
@@ -1425,7 +1425,7 @@ export default function Education() {
                             <p className="text-xs text-muted-foreground mb-4">
                               Understand how this compound fits into the broader Growth Hormone system.
                             </p>
-                            <Link href="/guides/growth-hormone-peptides">
+                            <Link href="/systems/growth">
                               <Card
                                 className="p-4 cursor-pointer hover-elevate transition-all"
                                 style={{ borderColor: "rgba(245,158,11,0.25)" }}
