@@ -198,4 +198,46 @@ describe("compound-profiles — PK profile snapshots", () => {
   it("enclomiphene PK fields are present and stable", () => {
     expect(pkSnapshot("enclomiphene")).toMatchSnapshot();
   });
+
+  // ─── Metabolic-axis cluster ───────────────────────────────────────────────────
+
+  it("rr-a1 PK fields are present and stable", () => {
+    expect(pkSnapshot("rr-a1")).toMatchSnapshot();
+  });
+
+  it("rr-a2 PK fields are present and stable", () => {
+    expect(pkSnapshot("rr-a2")).toMatchSnapshot();
+  });
+
+  it("rr-a3 PK fields are present and stable", () => {
+    expect(pkSnapshot("rr-a3")).toMatchSnapshot();
+  });
+
+  it("cagrilintide PK fields are present and stable", () => {
+    expect(pkSnapshot("cagrilintide")).toMatchSnapshot();
+  });
+
+  it("mazdutide PK fields are present and stable", () => {
+    expect(pkSnapshot("mazdutide")).toMatchSnapshot();
+  });
+
+  it("cag-sema-blend PK fields are present and stable", () => {
+    expect(pkSnapshot("cag-sema-blend")).toMatchSnapshot();
+  });
+
+  it("mots-c PK fields are present and stable", () => {
+    expect(pkSnapshot("mots-c")).toMatchSnapshot();
+  });
+
+  it("5-amino-1mq PK fields are present and stable", () => {
+    expect(pkSnapshot("5-amino-1mq")).toMatchSnapshot();
+  });
+
+  it("aod-9604 PK fields are present and stable", () => {
+    expect(pkSnapshot("aod-9604")).toMatchSnapshot();
+  });
+
+  it("slu-pp-332 PK fields are present and stable", () => {
+    expect(pkSnapshot("slu-pp-332")).toMatchSnapshot();
+  });
 });

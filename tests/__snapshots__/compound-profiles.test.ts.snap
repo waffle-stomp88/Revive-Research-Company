@@ -1,5 +1,57 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`compound-profiles — PK profile snapshots > 5-amino-1mq PK fields are present and stable 1`] = `
+{
+  "citationIds": [
+    "34304009",
+  ],
+  "halfLifeLabel": "~2–4 h",
+  "halfLifeMax": 240,
+  "halfLifeMin": 120,
+  "route": "oral",
+  "slug": "5-amino-1mq",
+}
+`;
+
+exports[`compound-profiles — PK profile snapshots > aod-9604 PK fields are present and stable 1`] = `
+{
+  "citationIds": [
+    "11146367",
+  ],
+  "halfLifeLabel": "~30 min",
+  "halfLifeMax": 30,
+  "halfLifeMin": 30,
+  "route": "subcutaneous",
+  "slug": "aod-9604",
+}
+`;
+
+exports[`compound-profiles — PK profile snapshots > cag-sema-blend PK fields are present and stable 1`] = `
+{
+  "citationIds": [
+    "34555300",
+  ],
+  "halfLifeLabel": "~7 days (both components)",
+  "halfLifeMax": undefined,
+  "halfLifeMin": undefined,
+  "route": "subcutaneous",
+  "slug": "cag-sema-blend",
+}
+`;
+
+exports[`compound-profiles — PK profile snapshots > cagrilintide PK fields are present and stable 1`] = `
+{
+  "citationIds": [
+    "34555300",
+  ],
+  "halfLifeLabel": "~7 days",
+  "halfLifeMax": undefined,
+  "halfLifeMin": undefined,
+  "route": "subcutaneous",
+  "slug": "cagrilintide",
+}
+`;
+
 exports[`compound-profiles — PK profile snapshots > enclomiphene PK fields are present and stable 1`] = `
 {
   "citationIds": [
@@ -55,6 +107,32 @@ exports[`compound-profiles — PK profile snapshots > kisspeptin-54 PK fields ar
 }
 `;
 
+exports[`compound-profiles — PK profile snapshots > mazdutide PK fields are present and stable 1`] = `
+{
+  "citationIds": [
+    "37086042",
+  ],
+  "halfLifeLabel": "~4.5–6 days",
+  "halfLifeMax": 8640,
+  "halfLifeMin": 6480,
+  "route": "subcutaneous",
+  "slug": "mazdutide",
+}
+`;
+
+exports[`compound-profiles — PK profile snapshots > mots-c PK fields are present and stable 1`] = `
+{
+  "citationIds": [
+    "25738459",
+  ],
+  "halfLifeLabel": "~1–2 h",
+  "halfLifeMax": 120,
+  "halfLifeMin": 60,
+  "route": "subcutaneous",
+  "slug": "mots-c",
+}
+`;
+
 exports[`compound-profiles — PK profile snapshots > oxytocin PK fields are present and stable 1`] = `
 {
   "citationIds": [
@@ -65,6 +143,58 @@ exports[`compound-profiles — PK profile snapshots > oxytocin PK fields are pre
   "halfLifeMin": 3,
   "route": "subcutaneous",
   "slug": "oxytocin",
+}
+`;
+
+exports[`compound-profiles — PK profile snapshots > rr-a1 PK fields are present and stable 1`] = `
+{
+  "citationIds": [
+    "27906128",
+  ],
+  "halfLifeLabel": "~7 days",
+  "halfLifeMax": 11040,
+  "halfLifeMin": 9600,
+  "route": "subcutaneous",
+  "slug": "rr-a1",
+}
+`;
+
+exports[`compound-profiles — PK profile snapshots > rr-a2 PK fields are present and stable 1`] = `
+{
+  "citationIds": [
+    "35143108",
+  ],
+  "halfLifeLabel": "~5 days",
+  "halfLifeMax": 7200,
+  "halfLifeMin": 6480,
+  "route": "subcutaneous",
+  "slug": "rr-a2",
+}
+`;
+
+exports[`compound-profiles — PK profile snapshots > rr-a3 PK fields are present and stable 1`] = `
+{
+  "citationIds": [
+    "36354040",
+  ],
+  "halfLifeLabel": "~5–6 days",
+  "halfLifeMax": 8640,
+  "halfLifeMin": 7200,
+  "route": "subcutaneous",
+  "slug": "rr-a3",
+}
+`;
+
+exports[`compound-profiles — PK profile snapshots > slu-pp-332 PK fields are present and stable 1`] = `
+{
+  "citationIds": [
+    "33207103",
+  ],
+  "halfLifeLabel": "~2–4 h (estimated)",
+  "halfLifeMax": 240,
+  "halfLifeMin": 120,
+  "route": "oral",
+  "slug": "slu-pp-332",
 }
 `;
 
