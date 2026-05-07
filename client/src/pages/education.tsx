@@ -1051,6 +1051,23 @@ export default function Education() {
                                 peptides={articlePkPeptides!}
                                 stackId={`article-${expandedArticleObj?.slug}`}
                               />
+                              <Link href="/tools/peptide-pk-catalog">
+                                <div
+                                  className="mt-4 flex items-center gap-3 p-3 rounded-lg bg-[#21d8ff]/5 border border-[#21d8ff]/20 hover-elevate cursor-pointer group"
+                                  data-testid="link-pk-catalog-education"
+                                >
+                                  <div className="p-2 rounded-md bg-[#21d8ff]/10 flex-shrink-0">
+                                    <Activity className="h-4 w-4 text-[#21d8ff]" />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-[#21d8ff]">Peptide Half-Life Catalog</p>
+                                    <p className="text-xs text-muted-foreground mt-0.5">
+                                      Compare IV vs SC half-lives for 57 compounds in one view.
+                                    </p>
+                                  </div>
+                                  <ChevronRight className="h-4 w-4 text-[#21d8ff]/60 flex-shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                                </div>
+                              </Link>
                             </motion.div>
                           ) : hasQuickBreakdown(article.slug) && articleMode === "quick-breakdown" ? (
                             <motion.div

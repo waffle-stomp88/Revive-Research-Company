@@ -19,6 +19,7 @@ import {
   CheckCircle,
   Calculator,
   RotateCcw,
+  Activity,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -396,15 +397,21 @@ export default function ReconstitutionWizard() {
               </div>
               <SummaryRows state={state} result={result} />
 
-              <div className="mt-5 pt-4 border-t border-border">
+              <div className="mt-5 pt-4 border-t border-border space-y-2">
                 <Link href="/tools/peptide-reconstitution-calculator">
                   <Button variant="outline" size="sm" className="w-full gap-2" data-testid="link-quick-calculator">
                     <Calculator className="h-3.5 w-3.5" />
                     Quick calculator
                   </Button>
                 </Link>
-                <p className="text-[10px] text-muted-foreground mt-2 text-center">
-                  Need plain math, no wizard? Use the calculator.
+                <Link href="/tools/peptide-pk-catalog">
+                  <Button variant="outline" size="sm" className="w-full gap-2 border-[#21d8ff]/30 text-[#21d8ff]" data-testid="link-pk-catalog-wizard">
+                    <Activity className="h-3.5 w-3.5" />
+                    Half-Life Catalog
+                  </Button>
+                </Link>
+                <p className="text-[10px] text-muted-foreground mt-1 text-center">
+                  Compare IV vs SC half-lives for 57 compounds.
                 </p>
               </div>
             </Card>

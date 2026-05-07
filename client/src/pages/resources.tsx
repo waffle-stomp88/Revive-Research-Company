@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { SEOHead } from "@/components/seo-head";
 import { Card } from "@/components/ui/card";
-import { FileCheck, GraduationCap, Scale, BookOpen, ArrowRight, Shield, HelpCircle } from "lucide-react";
+import { FileCheck, GraduationCap, Scale, BookOpen, ArrowRight, Shield, HelpCircle, Activity } from "lucide-react";
 
 const resources = [
   {
@@ -39,6 +39,13 @@ const resources = [
     href: "/guides/peptide-vendor-ethics-standards",
     icon: BookOpen,
     color: "#ec4899",
+  },
+  {
+    title: "Peptide Half-Life Catalog",
+    description: "Compare IV and SC half-lives side-by-side for 57 research compounds. Essential reference for understanding dosing intervals and compound clearance.",
+    href: "/tools/peptide-pk-catalog",
+    icon: Activity,
+    color: "#21d8ff",
   },
   {
     title: "FAQ",
