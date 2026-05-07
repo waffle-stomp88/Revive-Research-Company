@@ -9,10 +9,12 @@ import {
   ArrowUpDown,
   Clock,
   Info,
+  Link2,
   Search,
   SortAsc,
   SortDesc,
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -182,10 +184,32 @@ function DualRouteBar({
   );
 }
 
-function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number }) {
+function CompoundCard({
+  entry,
+  index,
+  highlighted,
+}: {
+  entry: HalfLifeEntry;
+  index: number;
+  highlighted?: boolean;
+}) {
+  const { toast } = useToast();
   const dual = hasDualRoute(entry);
   const ivOverlay = !dual && hasIvOverlay(entry);
   const rc = routeColor(entry.route);
+
+  // Derive the primary source citation (first non-proxy citation)
+  const sourceCitation = entry.citations.find((c) => !c.isOffCompoundProxy) ?? null;
+
+  function handleCopyLink() {
+    const url =
+      window.location.origin +
+      "/tools/peptide-pk-catalog?compound=" +
+      entry.slug;
+    navigator.clipboard.writeText(url).then(() => {
+      toast({ description: "Link copied", duration: 2000 });
+    });
+  }
 
   const altRouteAbbrev = entry.altRoute
     ? (ROUTE_ABBREV[entry.altRoute.route.toLowerCase()] ?? entry.altRoute.route)
@@ -243,7 +267,7 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
       transition={{ delay: index < 12 ? index * 0.02 : 0, duration: 0.3 }}
     >
       <div
-        className="relative h-full flex flex-col rounded-md bg-[#07070b] border border-white/8 overflow-hidden"
+        className={`relative h-full flex flex-col rounded-md bg-[#07070b] border border-white/8 overflow-hidden${highlighted ? " pk-highlight-pulse" : ""}`}
         style={{ borderLeft: `3px solid ${rc.hex}` }}
         data-testid={`card-compound-${entry.slug}`}
       >
@@ -266,6 +290,20 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
               {entry.name}
             </span>
             <div className="flex items-center gap-1 shrink-0 flex-wrap justify-end">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={handleCopyLink}
+                    className="inline-flex items-center justify-center rounded p-0.5 text-muted-foreground/30 hover:text-muted-foreground/70 transition-colors"
+                    data-testid={`button-copy-link-${entry.slug}`}
+                    aria-label="Copy link to this compound"
+                  >
+                    <Link2 className="h-3 w-3" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="text-xs">Copy link</TooltipContent>
+              </Tooltip>
               {isIndirectEvidence && (
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -388,19 +426,30 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
           )}
 
           {/* Footer */}
-          <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between">
-            {ARTICLE_VISUAL_SLUGS.has(`what-is-${entry.slug}-peptide`) ? (
-              <Link
-                href={`/guides/what-is-${entry.slug}-peptide?from=pk-catalog`}
-                data-testid={`link-article-${entry.slug}`}
-              >
-                <span className="text-[10px] text-[#21d8ff]/50 hover:text-[#21d8ff]/80 transition-colors cursor-pointer">
-                  Read article →
-                </span>
-              </Link>
-            ) : (
-              <span />
-            )}
+          <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-3">
+              {ARTICLE_VISUAL_SLUGS.has(`what-is-${entry.slug}-peptide`) ? (
+                <Link
+                  href={`/guides/what-is-${entry.slug}-peptide?from=pk-catalog`}
+                  data-testid={`link-article-${entry.slug}`}
+                >
+                  <span className="text-[10px] text-[#21d8ff]/50 hover:text-[#21d8ff]/80 transition-colors cursor-pointer">
+                    Read article →
+                  </span>
+                </Link>
+              ) : null}
+              {sourceCitation && (
+                <a
+                  href={sourceCitation.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors"
+                  data-testid={`link-citation-${entry.slug}`}
+                >
+                  Source ↗
+                </a>
+              )}
+            </div>
             {altRouteAbbrev && dual && (
               <span className="text-[10px] text-muted-foreground/30">
                 {ROUTE_ABBREV[entry.route.toLowerCase()] ?? entry.route} vs {altRouteAbbrev}
@@ -425,6 +474,35 @@ export default function PkCatalog() {
   const [durationFilter, setDurationFilter] = useState<DurationFilter>("all");
   const [sortKey, setSortKey] = useState<SortKey>("name");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
+  const [highlightedSlug, setHighlightedSlug] = useState<string | null>(null);
+
+  // Read ?compound= param on mount, clear filters so the card is visible, then scroll to it
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get("compound");
+    if (!slug) return;
+
+    // Make sure the card is visible by clearing all filters
+    setSearch("");
+    setRouteFilter("all");
+    setDualFilter("all");
+    setDurationFilter("all");
+    setSortKey("name");
+    setSortDir("asc");
+    setHighlightedSlug(slug);
+
+    // Scroll after a tick so the grid has rendered with cleared filters
+    const timer = setTimeout(() => {
+      const el = document.querySelector(`[data-testid="card-compound-${slug}"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      // Remove highlight after animation completes (1.5 s)
+      setTimeout(() => setHighlightedSlug(null), 1800);
+    }, 80);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const routes = useMemo(() => {
     const seen = new Set<string>();
@@ -493,6 +571,17 @@ export default function PkCatalog() {
 
   return (
     <>
+      <style>{`
+        @keyframes pk-card-highlight {
+          0%   { box-shadow: 0 0 0 0 rgba(33, 216, 255, 0); }
+          20%  { box-shadow: 0 0 0 4px rgba(33, 216, 255, 0.45), 0 0 20px rgba(33, 216, 255, 0.25); }
+          80%  { box-shadow: 0 0 0 4px rgba(33, 216, 255, 0.15), 0 0 10px rgba(33, 216, 255, 0.10); }
+          100% { box-shadow: 0 0 0 0 rgba(33, 216, 255, 0); }
+        }
+        .pk-highlight-pulse {
+          animation: pk-card-highlight 1.6s ease-out forwards;
+        }
+      `}</style>
       <SEOHead
         title="Peptide Half-Life Catalog — IV vs SC Route Comparison | Revive Research"
         description="Compare pharmacokinetic half-lives for research peptides side-by-side. Filter by route, identify dual-route compounds, and see IV vs SC differences at a glance."
@@ -689,7 +778,12 @@ export default function PkCatalog() {
               data-testid="grid-compounds"
             >
               {filtered.map((entry, i) => (
-                <CompoundCard key={entry.slug} entry={entry} index={i} />
+                <CompoundCard
+                  key={entry.slug}
+                  entry={entry}
+                  index={i}
+                  highlighted={highlightedSlug === entry.slug}
+                />
               ))}
             </div>
           )}
