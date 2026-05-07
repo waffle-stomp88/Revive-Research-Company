@@ -39,9 +39,25 @@
  *  - Cerebrolysin: SC estimate ~1–3 h based on neuropeptide mixture absorption
  *    models; no compound-specific SC PK study identified; dedicated IM/SC search
  *    returned null result (see altRoute.note); no citation assigned to SC altRoute
- *  - Lipo-C: SC estimate ~2–4 h for the ascorbic acid component based on
- *    published subcutaneous vitamin C absorption pharmacokinetics
- *    (citations: PMID 11340098, PMID 15068981)
+ *  - Lipo-C: SC estimate ~2–4 h for the ascorbic acid component; initially
+ *    cited PMID 11340098 and PMID 15068981 as SC references (see correction
+ *    below in the May 2026 citation audit block)
+ *
+ * Citation audit (May 2026) — IV-primary SC altRoute citation reuse review:
+ *   Audit scope: all altRoute entries in IV-primary rows (glutathione, lipo-c).
+ *   SC-primary rows with IV altRoutes (kisspeptin-54, VIP) were reviewed and
+ *   found to be correctly cited (IV citations used for the IV altRoute).
+ *   Cerebrolysin was already corrected in a prior audit (citations: []).
+ *  - Glutathione SC altRoute: PMID 26052837 (Zhou et al. 2015) was reused
+ *    verbatim from the parent IV entry. That study characterises IV
+ *    N-acetylcysteine and indirect IV glutathione PK; it does not measure SC
+ *    depot absorption or SC bioavailability. Citation removed; altRoute.note
+ *    documents the null search result and the removal rationale.
+ *  - Lipo-C SC altRoute: PMID 11340098 (Graumlich et al. 1997) was reused
+ *    verbatim from the parent IV entry; PMID 15068981 (Padayatty et al. 2004)
+ *    is an oral/IV study added at initial authoring. Neither paper measures SC
+ *    ascorbic acid depot absorption or bioavailability. Both citations removed;
+ *    altRoute.note documents the null search result and removal rationale.
  *
  * Citation update (May 2026): Direct IV vasopressin PK citation added:
  *  - Vasopressin: proxy oxytocin receptor review (Gimpl & Fahrenholz 2001,
@@ -472,7 +488,8 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     altRoute: {
       route: "subcutaneous",
       halfLifeLabel: "~10–30 min (SC estimate)",
-      citations: [pmid("26052837", "Zhou et al. (2015) — Intravenous N-acetylcysteine and indirect glutathione pharmacokinetics and redox status, J Pharm Sci")],
+      citations: [],
+      note: "No compound-specific SC pharmacokinetics citation was identified. The IV citation (PMID 26052837, Zhou et al. 2015) was removed from the SC altRoute citations because it characterises intravenous N-acetylcysteine and indirect IV glutathione pharmacokinetics and redox status — it does not measure subcutaneous absorption, depot-phase kinetics, or SC bioavailability for glutathione. A dedicated PubMed search ('(glutathione) AND (subcutaneous OR \"SC\") AND (pharmacokinetics OR absorption OR bioavailability OR \"half-life\")') returned no compound-specific SC PK study. The ~10–30 min SC estimate is extrapolated from small-peptide subcutaneous absorption models by analogy with similarly short tripeptides.",
     },
   },
   {
@@ -923,14 +940,12 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Lipo-C is a lipotropic complex combining lipoic acid, vitamin C (ascorbic acid), and related cofactors. The plasma half-life of the primary active component, intravenous ascorbic acid (vitamin C), is approximately 30–60 minutes following intravenous administration at research-relevant doses, after which tissue saturation and renal clearance dominate. Individual lipotropic components (methionine, inositol, choline) exhibit longer plasma persistence.",
     citations: [pmid("11340098", "Graumlich et al. (1997) — Pharmacokinetics of ascorbic acid in healthy adults after intravenous and oral dosing, Pharmacotherapy")],
-    note: "Cited half-life reflects the primary ascorbic acid component following IV administration. Other Lipo-C constituents have distinct pharmacokinetic profiles. SC route half-life is an estimate for the ascorbic acid component based on published subcutaneous vitamin C absorption pharmacokinetics; subcutaneous ascorbic acid absorption is slower than IV, extending the effective plasma presence window relative to the rapid IV clearance.",
+    note: "Cited half-life reflects the primary ascorbic acid component following IV administration. Other Lipo-C constituents have distinct pharmacokinetic profiles. SC route half-life is an estimate for the ascorbic acid component; no compound-specific PubMed-indexed SC pharmacokinetics study for ascorbic acid was identified (see altRoute.note). The SC estimate extrapolates from the known IV clearance kinetics and the additional absorption-phase delay typical of subcutaneous small-molecule injection.",
     altRoute: {
       route: "subcutaneous",
       halfLifeLabel: "~2–4 h (SC estimate, ascorbic acid component)",
-      citations: [
-        pmid("11340098", "Graumlich et al. (1997) — Pharmacokinetics of ascorbic acid in healthy adults after intravenous and oral dosing, Pharmacotherapy"),
-        pmid("15068981", "Padayatty et al. (2004) — Vitamin C pharmacokinetics: implications for oral and intravenous use, Ann Intern Med"),
-      ],
+      citations: [],
+      note: "No compound-specific SC pharmacokinetics citation was identified for ascorbic acid administered subcutaneously. The two previously listed citations were removed: PMID 11340098 (Graumlich et al. 1997, 'Pharmacokinetics of ascorbic acid in healthy adults after intravenous and oral dosing') is the same as the parent IV entry citation and characterises IV and oral routes only; PMID 15068981 (Padayatty et al. 2004, 'Vitamin C pharmacokinetics: implications for oral and intravenous use') similarly covers only oral and intravenous use. Neither study measures subcutaneous depot absorption or SC bioavailability for ascorbic acid. A dedicated PubMed search ('(ascorbic acid OR vitamin C) AND (subcutaneous) AND (pharmacokinetics OR absorption OR bioavailability OR \"half-life\")') identified no primary SC PK study applicable to the Lipo-C context. The ~2–4 h SC estimate is extrapolated from the known relationship between IV clearance half-life and the absorption-phase delay typical of subcutaneous small-molecule injections.",
     },
   },
 
