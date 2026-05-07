@@ -21,6 +21,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { SEOHead } from "@/components/seo-head";
 import { PEPTIDE_HALF_LIVES } from "@/data/pharmacokinetics";
 import type { HalfLifeEntry } from "@/data/pharmacokinetics";
+import { isEstimatedLabel, formatPKLabel, getEstimateTooltip } from "@/lib/pk-label";
 
 // Exclude composite multi-peptide stacks from the catalog
 const COMPOSITE_SLUGS = new Set([
@@ -80,18 +81,6 @@ function hasRouteContrast(entry: HalfLifeEntry): boolean {
   return hasDualRoute(entry) || hasIvOverlay(entry);
 }
 
-function formatHalfLifeLabel(label: string): string {
-  return label
-    .replace(/\s*\(SC estimate\)/i, "")
-    .replace(/\s*\(estimated\)/i, "")
-    .replace(/\s*\(inhaled-route proxy.*?\)/i, "")
-    .trim();
-}
-
-function isEstimatedLabel(label?: string): boolean {
-  if (!label) return false;
-  return /\(SC estimate\)/i.test(label) || /\(estimated\)/i.test(label);
-}
 
 function DualRouteBar({
   primary,
@@ -115,14 +104,14 @@ function DualRouteBar({
           {ROUTE_ABBREV[primaryRoute.toLowerCase()] ?? primaryRoute}
         </div>
         <div className={`flex items-center gap-1 text-sm font-bold tabular-nums leading-tight ${pc.text}`}>
-          <span>{formatHalfLifeLabel(primary)}</span>
+          <span>{formatPKLabel(primary)}</span>
           {primaryEst && (
             <Tooltip>
               <TooltipTrigger asChild>
                 <Info className="h-3 w-3 flex-shrink-0 cursor-help" style={{ color: "#f59e0b", opacity: 0.8 }} />
               </TooltipTrigger>
               <TooltipContent side="top" className="max-w-xs text-xs">
-                SC estimate — extrapolated from IV data or class-level pharmacokinetics; no direct SC plasma PK study was identified.
+                {getEstimateTooltip(primary)}
               </TooltipContent>
             </Tooltip>
           )}
@@ -136,14 +125,14 @@ function DualRouteBar({
           {ROUTE_ABBREV[altRoute.toLowerCase()] ?? altRoute}
         </div>
         <div className={`flex items-center gap-1 text-sm font-bold tabular-nums leading-tight ${ac.text}`}>
-          <span>{formatHalfLifeLabel(alt)}</span>
+          <span>{formatPKLabel(alt)}</span>
           {altEst && (
             <Tooltip>
               <TooltipTrigger asChild>
                 <Info className="h-3 w-3 flex-shrink-0 cursor-help" style={{ color: "#f59e0b", opacity: 0.8 }} />
               </TooltipTrigger>
               <TooltipContent side="top" className="max-w-xs text-xs">
-                SC estimate — extrapolated from IV data or class-level pharmacokinetics; no direct SC plasma PK study was identified.
+                {getEstimateTooltip(alt)}
               </TooltipContent>
             </Tooltip>
           )}
@@ -209,7 +198,7 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
               className={`text-sm font-bold tabular-nums ${rc.text}`}
               data-testid={`text-halflife-${entry.slug}`}
             >
-              {formatHalfLifeLabel(entry.halfLifeLabel)}
+              {formatPKLabel(entry.halfLifeLabel)}
             </span>
             {isEstimate && (
               <Tooltip>
@@ -217,7 +206,7 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
                   <Info className="h-3 w-3 cursor-help" style={{ color: "#f59e0b", opacity: 0.8 }} data-testid={`icon-estimate-${entry.slug}`} />
                 </TooltipTrigger>
                 <TooltipContent side="top" className="max-w-xs text-xs leading-relaxed">
-                  <span className="font-semibold text-amber-400">SC estimate</span> — this half-life is extrapolated from IV data or class-level pharmacokinetics. No direct SC plasma PK study was identified for this compound.
+                  {getEstimateTooltip(entry.halfLifeLabel)}
                 </TooltipContent>
               </Tooltip>
             )}

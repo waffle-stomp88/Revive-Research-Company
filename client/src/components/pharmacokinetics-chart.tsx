@@ -8,18 +8,7 @@ import { getHalfLifeByName, hasKineticMismatch, PK_VISIBLE_LOWER_RATIO, PK_VISIB
 import type { HalfLifeEntry, CitationQuality } from "@/data/pharmacokinetics";
 import { isNonSCRoute, pkMidpoint, computeXMax, buildPKCurve, ptsToD } from "@/lib/pk-curve";
 import { readStoredZoom, writeStoredZoom } from "@/lib/zoom-storage";
-
-function isEstimatedLabel(label?: string): boolean {
-  if (!label) return false;
-  return /\(SC estimate\)/i.test(label) || /\(estimated\)/i.test(label);
-}
-
-function formatHLLabel(label: string): string {
-  return label
-    .replace(/\s*\(SC estimate\)/gi, "")
-    .replace(/\s*\(estimated\)/gi, "")
-    .trim();
-}
+import { isEstimatedLabel, formatPKLabel as formatHLLabel } from "@/lib/pk-label";
 
 export interface StackPeptide {
   name: string;
