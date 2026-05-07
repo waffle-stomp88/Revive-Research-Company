@@ -2819,6 +2819,21 @@ Research applications include: estrogen negative-feedback pathway dissection, go
       sortOrder: 49,
     },
     {
+      slug: "what-is-kisspeptin-54-peptide",
+      title: "Kisspeptin-54: Full-Length KISS1 Isoform Research Guide",
+      summary:
+        "Kisspeptin-54 is the full-length 54-amino-acid KISS1 gene product and the longest naturally occurring kisspeptin isoform. Researchers use it to directly activate KISS1R on hypothalamic GnRH neurons, stimulate pulsatile GnRH secretion, and study HPG axis regulation with a pharmacokinetic profile distinct from the shorter kisspeptin-10 fragment.",
+      content: `Kisspeptin-54 (also designated metastin-54 or KP-54) is the 54-amino-acid C-terminal fragment of the KISS1 gene product — the longest naturally occurring isoform of the kisspeptin peptide family. Unlike the truncated kisspeptin-10 fragment (a 10-amino-acid C-terminal decapeptide cleaved from the same precursor by tissue kallikrein and related endopeptidases), kisspeptin-54 retains the complete sequence of the KISS1 protein's bioactive region. Both isoforms share the critical C-terminal RF-amide decapeptide sequence that engages the kisspeptin receptor (KISS1R, also termed GPR54) — a Gq/11-protein-coupled GPCR expressed predominantly on hypothalamic GnRH neurons in the arcuate and anteroventral periventricular nuclei.
+
+KISS1R activation by kisspeptin-54 triggers the canonical Gq/11 signaling cascade: receptor-coupled Gαq activates phospholipase C-β (PLCβ), hydrolyzing membrane phosphatidylinositol-4,5-bisphosphate (PIP2) into inositol trisphosphate (IP3) and diacylglycerol (DAG). IP3-mediated calcium mobilization from the endoplasmic reticulum, amplified by DAG-driven protein kinase C (PKC) activation, depolarizes GnRH neuron terminals and drives pulsatile GnRH release into the hypophyseal portal circulation. This kisspeptin → KISS1R → GnRH pulse axis is the principal molecular gate of the HPG reproductive cascade, positioning kisspeptin-54 as a direct pharmacological tool for interrogating the upstream hypothalamic relay node that controls gonadotropin secretion.
+
+The pharmacokinetic distinction between kisspeptin-54 and kisspeptin-10 is central to their comparative research utility. Kisspeptin-54 has a plasma half-life of approximately 28–35 minutes following subcutaneous administration — substantially longer than the ~15–30 minutes reported for kisspeptin-10 under matched conditions — owing to its larger molecular size and correspondingly slower neprilysin (neutral endopeptidase, NEP/CD10)-mediated cleavage of the intact 54-residue sequence. This extended circulatory residence time produces a more prolonged pulsatile GnRH stimulus with a correspondingly greater LH area-under-the-curve (AUC), a difference directly quantified in randomized crossover pharmacodynamic studies comparing isoform-specific gonadotropin profiles in human volunteers.
+
+Research applications include: KISS1R agonism and Gq/11-pathway pharmacology; comparative isoform studies examining how peptide length alters receptor occupancy kinetics and GnRH pulse amplitude; pulsatile LH/FSH secretion modeling across dose frequencies; and multi-compound HPG cascade models combining kisspeptin-54 (upstream hypothalamic node) with downstream components — such as Gonadorelin (direct GnRHR agonist at the pituitary), Triptorelin (high-affinity GnRHR analog), or Enclomiphene (estrogen-feedback removal) — to dissect consecutive signaling steps at defined relay points within the same experimental model.`,
+      readTimeMinutes: 7,
+      sortOrder: 51,
+    },
+    {
       slug: "what-is-oxytocin-peptide",
       title: "Oxytocin: Bonding Neuropeptide Research Guide",
       summary:

@@ -5653,6 +5653,7 @@ Return ONLY valid JSON in this exact format:
         { url: "/guides/what-is-slu-pp-332-peptide", priority: "0.7", changefreq: "monthly" },
         { url: "/guides/what-is-aod-9604-peptide", priority: "0.7", changefreq: "monthly" },
         { url: "/guides/what-is-kisspeptin-peptide", priority: "0.7", changefreq: "monthly" },
+        { url: "/guides/what-is-kisspeptin-54-peptide", priority: "0.7", changefreq: "monthly" },
         { url: "/guides/what-is-pt-141-bremelanotide-peptide", priority: "0.7", changefreq: "monthly" },
         { url: "/guides/what-is-gonadorelin-peptide", priority: "0.7", changefreq: "monthly" },
         { url: "/guides/what-is-triptorelin-peptide", priority: "0.7", changefreq: "monthly" },
