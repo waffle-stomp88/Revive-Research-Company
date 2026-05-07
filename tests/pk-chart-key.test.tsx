@@ -1,7 +1,26 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MiniPKChart } from "@/components/mini-pk-chart";
 import { RESEARCH_STACKS_DATA } from "@/data/research-stacks";
+
+// jsdom does not implement window.matchMedia — stub it so MiniPKChart's
+// hover-capability guard (matchMedia("(hover: hover) and (pointer: fine)"))
+// can run without throwing. Return true to simulate a desktop hover device.
+beforeAll(() => {
+  Object.defineProperty(window, "matchMedia", {
+    writable: true,
+    value: (query: string) => ({
+      matches: query.includes("hover: hover"),
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    }),
+  });
+});
 
 /**
  * Rendering tests for the listing-page mini PK chart and SC/Other-route key.

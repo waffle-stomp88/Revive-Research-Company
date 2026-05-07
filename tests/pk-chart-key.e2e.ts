@@ -65,4 +65,101 @@ test.describe("MiniPKChart — browser rendering on /research-stacks", () => {
     const ivKey = page.locator('[data-testid="pk-iv-overlay-key-cognitive-edge-stack"]');
     await expect(ivKey).toBeVisible({ timeout: 5000 });
   });
+
+  test("cognitive-edge-stack IV vs SC tooltip is present in DOM and becomes visible on hover", async ({
+    page,
+  }) => {
+    // Bypass the age-gate modal so we can interact with page content directly.
+    // The modal checks sessionStorage.getItem("revive-research-age-verified").
+    await page.addInitScript(() => {
+      sessionStorage.setItem("revive-research-age-verified", "true");
+    });
+
+    await page.goto("/research-stacks");
+
+    await page.waitForSelector('[data-testid="card-stack-cognitive-edge-stack"]', {
+      timeout: 15000,
+    });
+
+    // The tooltip is always in the DOM (opacity-0 by default) when hasIVOverlay is true.
+    // Selank has ivHalfLifeLabel, so cognitive-edge-stack always renders this tooltip.
+    const tooltip = page.locator('[data-testid="mini-pk-chart-tooltip-cognitive-edge-stack"]');
+    await expect(tooltip).toBeAttached({ timeout: 5000 });
+
+    // Verify tooltip content regardless of visibility state.
+    await expect(tooltip).toContainText("Route comparison");
+    await expect(tooltip).toContainText("SC t½");
+    await expect(tooltip).toContainText("IV t½");
+
+    // Before hovering, the tooltip should be invisible (opacity: 0 via CSS).
+    const hoverWrapper = page.locator('[data-testid="pk-mini-hover-cognitive-edge-stack"]');
+    await hoverWrapper.scrollIntoViewIfNeeded();
+
+    const opacityBefore = await tooltip.evaluate(
+      (el) => window.getComputedStyle(el).opacity
+    );
+    expect(opacityBefore).toBe("0");
+
+    // Hover the chart wrapper — native mouseenter listener sets tooltip opacity to 1 instantly.
+    await hoverWrapper.hover();
+
+    const opacityAfter = await tooltip.evaluate(
+      (el) => window.getComputedStyle(el).opacity
+    );
+    expect(opacityAfter).toBe("1");
+  });
+
+  test("cognitive-edge-stack IV vs SC tooltip stays hidden on touch-only devices", async ({
+    browser,
+  }) => {
+    // Emulate a touch-only mobile device — pointer:coarse, no hover capability.
+    // The matchMedia("(hover: hover) and (pointer: fine)") guard in MiniPKChart
+    // must prevent the mouseenter listener from being attached, so the tooltip
+    // should remain at opacity 0 even after a simulated touch tap.
+    const context = await browser.newContext({
+      ...{ isMobile: true, hasTouch: true },
+      viewport: { width: 390, height: 844 },
+    });
+    const mobilePage = await context.newPage();
+
+    await mobilePage.addInitScript(() => {
+      sessionStorage.setItem("revive-research-age-verified", "true");
+    });
+
+    await mobilePage.goto("/research-stacks");
+
+    await mobilePage.waitForSelector('[data-testid="card-stack-cognitive-edge-stack"]', {
+      timeout: 15000,
+    });
+
+    const tooltip = mobilePage.locator(
+      '[data-testid="mini-pk-chart-tooltip-cognitive-edge-stack"]'
+    );
+    await expect(tooltip).toBeAttached({ timeout: 5000 });
+
+    const hoverWrapper = mobilePage.locator(
+      '[data-testid="pk-mini-hover-cognitive-edge-stack"]'
+    );
+    await hoverWrapper.scrollIntoViewIfNeeded();
+
+    // On touch-only devices, matchMedia("(hover: hover) and (pointer: fine)") is false,
+    // so MiniPKChart never attaches its mouseenter listener.
+    // We dispatch mouseenter programmatically to confirm no listener is active —
+    // the tooltip should remain hidden (opacity 0) because nothing is wired up.
+    await mobilePage.evaluate(() => {
+      const wrapper = document.querySelector(
+        '[data-testid="pk-mini-hover-cognitive-edge-stack"]'
+      );
+      if (wrapper) {
+        wrapper.dispatchEvent(new MouseEvent("mouseenter", { bubbles: true }));
+      }
+    });
+
+    const opacityAfterEvent = await tooltip.evaluate(
+      (el) => window.getComputedStyle(el).opacity
+    );
+    expect(opacityAfterEvent).toBe("0");
+
+    await context.close();
+  });
 });
