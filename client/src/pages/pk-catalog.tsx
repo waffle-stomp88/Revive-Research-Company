@@ -49,16 +49,16 @@ const ROUTE_ABBREV: Record<string, string> = {
   topical: "Topical",
 };
 
-const ROUTE_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  subcutaneous: { bg: "bg-[#21d8ff]/10", text: "text-[#21d8ff]", border: "border-[#21d8ff]/30" },
-  intravenous:  { bg: "bg-purple-500/10",  text: "text-purple-400",  border: "border-purple-500/30" },
-  intranasal:   { bg: "bg-emerald-500/10", text: "text-emerald-400", border: "border-emerald-500/30" },
-  oral:         { bg: "bg-amber-500/10",   text: "text-amber-400",   border: "border-amber-500/30" },
-  topical:      { bg: "bg-pink-500/10",    text: "text-pink-400",    border: "border-pink-500/30" },
+const ROUTE_COLORS: Record<string, { bg: string; text: string; border: string; hex: string }> = {
+  subcutaneous: { bg: "bg-[#21d8ff]/10", text: "text-[#21d8ff]", border: "border-[#21d8ff]/30", hex: "#21d8ff" },
+  intravenous:  { bg: "bg-purple-500/10",  text: "text-purple-400",  border: "border-purple-500/30", hex: "#a78bfa" },
+  intranasal:   { bg: "bg-emerald-500/10", text: "text-emerald-400", border: "border-emerald-500/30", hex: "#34d399" },
+  oral:         { bg: "bg-amber-500/10",   text: "text-amber-400",   border: "border-amber-500/30", hex: "#fbbf24" },
+  topical:      { bg: "bg-pink-500/10",    text: "text-pink-400",    border: "border-pink-500/30", hex: "#f472b6" },
 };
 
 function routeColor(route: string) {
-  return ROUTE_COLORS[route.toLowerCase()] ?? { bg: "bg-white/5", text: "text-muted-foreground", border: "border-white/10" };
+  return ROUTE_COLORS[route.toLowerCase()] ?? { bg: "bg-white/5", text: "text-muted-foreground", border: "border-white/10", hex: "#ffffff33" };
 }
 
 function pkMidpointMin(entry: HalfLifeEntry): number {
@@ -181,7 +181,6 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
   const altIsIndirect = dual && getCitationQuality(entry, "alt") === "estimated";
   const isIndirectEvidence = primaryIsIndirect || altIsIndirect;
 
-  // When the altRoute is the sole reason the badge is shown, prefer its shortNote.
   const indirectNote = (!primaryIsIndirect && altIsIndirect && entry.altRoute?.shortNote?.trim())
     ? (() => { const s = entry.altRoute!.shortNote!.trim(); return s.endsWith(".") ? s : s + "."; })()
     : getIndirectNote(entry);
@@ -196,146 +195,164 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
     }, 50);
   }
 
+  const routeAbbrev = ROUTE_ABBREV[entry.route.toLowerCase()] ?? entry.route;
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      className="h-full"
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.02, duration: 0.3 }}
     >
-      <Card
-        className="border-border/30 bg-[#07070b] p-3 h-full flex flex-col"
+      <div
+        className="relative h-full flex flex-col rounded-md bg-[#07070b] border border-white/8 overflow-hidden"
+        style={{ borderLeft: `3px solid ${rc.hex}` }}
         data-testid={`card-compound-${entry.slug}`}
       >
-        {/* Header row */}
-        <div className="flex items-start justify-between gap-2 mb-1">
-          <span
-            className="font-semibold text-sm leading-tight"
-            data-testid={`text-compound-name-${entry.slug}`}
-          >
-            {entry.name}
-          </span>
-          <div className="flex items-center gap-1 shrink-0 flex-wrap justify-end">
-            {isIndirectEvidence && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    onClick={handleCaveatClick}
-                    data-testid={`badge-indirect-evidence-${entry.slug}`}
-                    className="inline-flex items-center gap-0.5 rounded text-[9px] px-1.5 py-0.5 bg-amber-500/10 text-amber-400 border border-amber-500/25 cursor-pointer hover-elevate"
-                  >
-                    <AlertTriangle className="h-2.5 w-2.5 shrink-0" />
-                    Indirect evidence{!primaryIsIndirect && altIsIndirect && altRouteAbbrev ? ` (${altRouteAbbrev})` : ""}
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-xs text-xs leading-relaxed space-y-1">
-                  <p>{indirectNote}</p>
-                  <p className="text-muted-foreground/60">Click to read the full context.</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
-            {(dual || ivOverlay) && (
-              <Badge
-                className="text-[9px] px-1.5 py-0.5 gap-0.5 bg-[#E7FB10]/10 text-[#E7FB10] border border-[#E7FB10]/25 shrink-0"
-                data-testid={`badge-dual-route-${entry.slug}`}
-              >
-                <ArrowLeftRight className="h-2.5 w-2.5" />
-                Dual Route
-              </Badge>
-            )}
-            <Badge
-              className={`text-[9px] px-1.5 py-0.5 border ${rc.bg} ${rc.text} ${rc.border} shrink-0`}
-              data-testid={`badge-route-${entry.slug}`}
-            >
-              {ROUTE_ABBREV[entry.route.toLowerCase()] ?? entry.route}
-            </Badge>
-          </div>
-        </div>
-
-        {/* Primary half-life — shown only for single-route compounds */}
-        {!dual && !ivOverlay && (
-          <div className="mt-1 flex items-center gap-1.5">
-            <Clock className="h-3 w-3 text-muted-foreground/40 shrink-0" />
-            <span
-              className={`text-sm font-bold tabular-nums ${rc.text}`}
-              data-testid={`text-halflife-${entry.slug}`}
-            >
-              {formatPKLabel(entry.halfLifeLabel)}
-            </span>
-            {isEstimate && (
-              <EstimateBadge
-                label={entry.halfLifeLabel}
-                testId={`badge-estimate-${entry.slug}`}
-              />
-            )}
-          </div>
-        )}
-
-        {/* IV bolus overlay — for compounds with ivHalfLifeLabel but no altRoute */}
-        {ivOverlay && (
-          <DualRouteBar
-            primary={entry.halfLifeLabel}
-            primaryRoute={entry.route}
-            alt={entry.ivHalfLifeLabel!}
-            altRoute="intravenous"
-          />
-        )}
-
-        {/* Full dual-route comparison for altRoute compounds */}
-        {dual && (
-          <DualRouteBar
-            primary={entry.halfLifeLabel}
-            primaryRoute={entry.route}
-            alt={entry.altRoute!.halfLifeLabel}
-            altRoute={entry.altRoute!.route}
-            altShortNote={entry.altRoute!.shortNote}
-          />
-        )}
-
-        {/* Spacer to push context to bottom */}
-        <div className="flex-1" />
-
-        {/* Brief pk context teaser — expands when caveat badge is clicked; prefer altRoute pkContext when the alt route is active */}
-        <p
-          ref={pkContextRef}
-          className={`text-[11px] text-muted-foreground/50 leading-snug mt-2 ${pkExpanded ? "" : "line-clamp-2"}`}
-          data-testid={`text-pk-context-${entry.slug}`}
+        {/* Route watermark */}
+        <span
+          className="absolute right-2 top-1 font-['Bebas_Neue'] text-[4.5rem] leading-none select-none pointer-events-none"
+          style={{ color: rc.hex, opacity: 0.05 }}
+          aria-hidden="true"
         >
-          {(dual && entry.altRoute?.pkContext) ? entry.altRoute.pkContext : entry.pkContext}
-        </p>
-        {pkExpanded && (
-          <button
-            type="button"
-            onClick={() => setPkExpanded(false)}
-            className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 mt-1 text-left transition-colors"
-            data-testid={`button-collapse-context-${entry.slug}`}
-          >
-            Show less
-          </button>
-        )}
+          {routeAbbrev}
+        </span>
 
-        {/* Link to individual compound article if it exists */}
-        <div className="mt-2 pt-2 border-t border-white/5 flex items-center justify-between">
-          <Link
-            href={`/guides/what-is-${entry.slug}-peptide`}
-            data-testid={`link-article-${entry.slug}`}
-          >
-            <span className="text-[10px] text-[#21d8ff]/50 hover:text-[#21d8ff]/80 transition-colors cursor-pointer">
-              Read article →
+        <div className="relative flex flex-col flex-1 p-4">
+          {/* Top row: name + badges */}
+          <div className="flex items-start justify-between gap-2 mb-3">
+            <span
+              className="font-semibold text-sm leading-snug pr-10"
+              data-testid={`text-compound-name-${entry.slug}`}
+            >
+              {entry.name}
             </span>
-          </Link>
-          {altRouteAbbrev && dual && (
-            <span className="text-[10px] text-muted-foreground/30">
-              {ROUTE_ABBREV[entry.route.toLowerCase()] ?? entry.route} vs {altRouteAbbrev}
-            </span>
+            <div className="flex items-center gap-1 shrink-0 flex-wrap justify-end">
+              {isIndirectEvidence && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={handleCaveatClick}
+                      data-testid={`badge-indirect-evidence-${entry.slug}`}
+                      className="inline-flex items-center gap-0.5 rounded text-[9px] px-1.5 py-0.5 bg-amber-500/10 text-amber-400 border border-amber-500/25 cursor-pointer hover-elevate"
+                    >
+                      <AlertTriangle className="h-2.5 w-2.5 shrink-0" />
+                      Indirect{!primaryIsIndirect && altIsIndirect && altRouteAbbrev ? ` (${altRouteAbbrev})` : ""}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-xs text-xs leading-relaxed space-y-1">
+                    <p>{indirectNote}</p>
+                    <p className="text-muted-foreground/60">Click to read the full context.</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+              {(dual || ivOverlay) && (
+                <Badge
+                  className="text-[9px] px-1.5 py-0.5 gap-0.5 bg-[#E7FB10]/10 text-[#E7FB10] border border-[#E7FB10]/25 shrink-0"
+                  data-testid={`badge-dual-route-${entry.slug}`}
+                >
+                  <ArrowLeftRight className="h-2.5 w-2.5" />
+                  Dual
+                </Badge>
+              )}
+              <Badge
+                className={`text-[9px] px-1.5 py-0.5 border ${rc.bg} ${rc.text} ${rc.border} shrink-0`}
+                data-testid={`badge-route-${entry.slug}`}
+              >
+                {routeAbbrev}
+              </Badge>
+            </div>
+          </div>
+
+          {/* Hero half-life — single route */}
+          {!dual && !ivOverlay && (
+            <div className="mb-3 flex items-end gap-2">
+              <span
+                className="font-['Bebas_Neue'] text-4xl leading-none tabular-nums"
+                style={{ color: rc.hex, textShadow: `0 0 24px ${rc.hex}55` }}
+                data-testid={`text-halflife-${entry.slug}`}
+              >
+                {formatPKLabel(entry.halfLifeLabel)}
+              </span>
+              <span className="text-[10px] text-muted-foreground/40 mb-0.5 flex items-center gap-1">
+                <Clock className="h-2.5 w-2.5" />
+                t½
+                {isEstimate && (
+                  <EstimateBadge
+                    label={entry.halfLifeLabel}
+                    testId={`badge-estimate-${entry.slug}`}
+                  />
+                )}
+              </span>
+            </div>
           )}
+
+          {/* IV bolus overlay */}
           {ivOverlay && (
-            <span className="text-[10px] text-muted-foreground/30">
-              {ROUTE_ABBREV[entry.route.toLowerCase()] ?? entry.route} vs IV
-            </span>
+            <DualRouteBar
+              primary={entry.halfLifeLabel}
+              primaryRoute={entry.route}
+              alt={entry.ivHalfLifeLabel!}
+              altRoute="intravenous"
+            />
           )}
+
+          {/* Full dual-route comparison */}
+          {dual && (
+            <DualRouteBar
+              primary={entry.halfLifeLabel}
+              primaryRoute={entry.route}
+              alt={entry.altRoute!.halfLifeLabel}
+              altRoute={entry.altRoute!.route}
+              altShortNote={entry.altRoute!.shortNote}
+            />
+          )}
+
+          <div className="flex-1" />
+
+          {/* PK context */}
+          <p
+            ref={pkContextRef}
+            className={`text-[11px] text-muted-foreground/45 leading-snug mt-3 ${pkExpanded ? "" : "line-clamp-2"}`}
+            data-testid={`text-pk-context-${entry.slug}`}
+          >
+            {(dual && entry.altRoute?.pkContext) ? entry.altRoute.pkContext : entry.pkContext}
+          </p>
+          {pkExpanded && (
+            <button
+              type="button"
+              onClick={() => setPkExpanded(false)}
+              className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 mt-1 text-left transition-colors"
+              data-testid={`button-collapse-context-${entry.slug}`}
+            >
+              Show less
+            </button>
+          )}
+
+          {/* Footer */}
+          <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between">
+            <Link
+              href={`/guides/what-is-${entry.slug}-peptide`}
+              data-testid={`link-article-${entry.slug}`}
+            >
+              <span className="text-[10px] text-[#21d8ff]/50 hover:text-[#21d8ff]/80 transition-colors cursor-pointer">
+                Read article →
+              </span>
+            </Link>
+            {altRouteAbbrev && dual && (
+              <span className="text-[10px] text-muted-foreground/30">
+                {ROUTE_ABBREV[entry.route.toLowerCase()] ?? entry.route} vs {altRouteAbbrev}
+              </span>
+            )}
+            {ivOverlay && (
+              <span className="text-[10px] text-muted-foreground/30">
+                {ROUTE_ABBREV[entry.route.toLowerCase()] ?? entry.route} vs IV
+              </span>
+            )}
+          </div>
         </div>
-      </Card>
+      </div>
     </motion.div>
   );
 }
@@ -410,7 +427,7 @@ export default function PkCatalog() {
       />
 
       <div className="min-h-screen bg-[#0a0a0f] text-foreground">
-        <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto px-4 pt-24 pb-8">
           {/* Back link */}
           <Link href="/tools/peptide-reconstitution-calculator" data-testid="link-back-tools">
             <Button variant="ghost" size="sm" className="mb-6 gap-2 text-muted-foreground">
