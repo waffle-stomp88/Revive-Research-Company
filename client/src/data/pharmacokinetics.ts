@@ -107,6 +107,22 @@
  *         asthma; corroborates the inhaled-route data as a second independent
  *         human study of VIP administered by aerosol inhalation.
  *   pkContext, note, and altRoute citations updated accordingly.
+ *
+ * VIP plasma-concentration audit (May 2026):
+ *   A dedicated PubMed search was conducted using the strategy
+ *   '("vasoactive intestinal peptide" OR VIP) AND (inhaled OR inhalation OR
+ *   aerosol) AND ("plasma concentration" OR pharmacokinetics OR "half-life"
+ *   OR bioavailability OR absorption)' to identify any inhaled VIP study that
+ *   directly measured plasma VIP concentrations after inhalation. No such
+ *   study was found. Neither Barnes & Dixon (1984, PMID 6465669) nor
+ *   Bundgaard et al. (1983, PMID 6578098) measured plasma VIP concentrations —
+ *   both studies measured airway functional outcomes and haemodynamic
+ *   endpoints only. The SC half-life estimate therefore rests entirely on
+ *   indirect evidence (absence of IV-typical cardiovascular effects as a
+ *   surrogate for absorption-limited systemic entry). Confirmed null result
+ *   as of May 2026; no inhaled VIP human study with direct plasma
+ *   concentration measurements is available in the published literature.
+ *   Finding documented in the VIP note field.
  *  - Glutathione SC altRoute: PMID 26052837 (Zhou et al. 2015) was reused
  *    verbatim from the parent IV entry. That study characterises IV
  *    N-acetylcysteine and indirect IV glutathione PK; it does not measure SC
