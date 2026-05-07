@@ -270,4 +270,66 @@ describe("compound-profiles — PK profile snapshots", () => {
   it("slu-pp-332 PK fields are present and stable", () => {
     expect(pkSnapshot("slu-pp-332")).toMatchSnapshot();
   });
+
+  // ─── GH secretagogue cluster ─────────────────────────────────────────────────
+
+  it("ghrp-6 PK fields are present and stable", () => {
+    expect(pkSnapshot("ghrp-6")).toMatchSnapshot();
+  });
+
+  it("hexarelin PK fields are present and stable", () => {
+    expect(pkSnapshot("hexarelin")).toMatchSnapshot();
+  });
+
+  // ─── Melanocortin / skin cluster ─────────────────────────────────────────────
+
+  it("melanotan-i PK fields are present and stable", () => {
+    expect(pkSnapshot("melanotan-i")).toMatchSnapshot();
+  });
+
+  it("melanotan-ii PK fields are present and stable", () => {
+    expect(pkSnapshot("melanotan-ii")).toMatchSnapshot();
+  });
+
+  // ─── Neuropeptide cluster ─────────────────────────────────────────────────────
+
+  it("dsip PK fields are present and stable", () => {
+    expect(pkSnapshot("dsip")).toMatchSnapshot();
+  });
+
+  it("vip PK fields are present and stable", () => {
+    expect(pkSnapshot("vip")).toMatchSnapshot();
+  });
+
+  it("pinealon PK fields are present and stable", () => {
+    expect(pkSnapshot("pinealon")).toMatchSnapshot();
+  });
+
+  // ─── IGF / growth factor cluster ─────────────────────────────────────────────
+
+  it("mgf PK fields are present and stable", () => {
+    expect(pkSnapshot("mgf")).toMatchSnapshot();
+  });
+
+  it("peg-mgf PK fields are present and stable", () => {
+    expect(pkSnapshot("peg-mgf")).toMatchSnapshot();
+  });
+
+  it("ace-031 PK fields are present and stable", () => {
+    expect(pkSnapshot("ace-031")).toMatchSnapshot();
+  });
+
+  it("foxo4-dri PK fields are present and stable", () => {
+    expect(pkSnapshot("foxo4-dri")).toMatchSnapshot();
+  });
+
+  // ─── Vitamins / supplements cluster ──────────────────────────────────────────
+
+  it("b12-injection PK fields are present and stable", () => {
+    expect(pkSnapshot("b12-injection")).toMatchSnapshot();
+  });
+
+  it("l-carnitine PK fields are present and stable", () => {
+    expect(pkSnapshot("l-carnitine")).toMatchSnapshot();
+  });
 });
