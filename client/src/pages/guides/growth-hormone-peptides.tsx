@@ -7,6 +7,7 @@ import {
   ArticleSection,
   BulletList,
 } from "@/components/entry-article-layout";
+import { BODY_SYSTEM_HUBS_BY_SLUG } from "@/data/body-system-hubs";
 import { GHStructuralComparison } from "@/components/infographics/gh-structural-comparison";
 
 const GH_COLOR = "#f59e0b";
@@ -374,6 +375,7 @@ export default function GrowthHormonePeptidesGuide() {
       badgeColor={GH_COLOR}
       publishDate="2026-05-06"
       modifiedDate="2026-05-06"
+      systemHub={BODY_SYSTEM_HUBS_BY_SLUG["growth"]}
       introText={
         <>
           <p className="mb-4">

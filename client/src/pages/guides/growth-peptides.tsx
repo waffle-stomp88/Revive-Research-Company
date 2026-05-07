@@ -9,6 +9,7 @@ import {
   ArticleSection,
   BulletList,
 } from "@/components/entry-article-layout";
+import { BODY_SYSTEM_HUBS_BY_SLUG } from "@/data/body-system-hubs";
 import { RelatedStacks } from "@/components/research-stacks/RelatedStacks";
 
 const GROWTH_COLOR = "#f59e0b";
@@ -289,6 +290,7 @@ export default function GrowthPeptidesGuide() {
       badgeColor={GROWTH_COLOR}
       publishDate="2026-05-06"
       modifiedDate="2026-05-06"
+      systemHub={BODY_SYSTEM_HUBS_BY_SLUG["growth"]}
       introText={
         <>
           <p className="mb-4">

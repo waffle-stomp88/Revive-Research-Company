@@ -9,6 +9,7 @@ import {
   ArticleSection,
   BulletList,
 } from "@/components/entry-article-layout";
+import { BODY_SYSTEM_HUBS_BY_SLUG } from "@/data/body-system-hubs";
 import { RelatedStacks } from "@/components/research-stacks/RelatedStacks";
 
 /* ─── HPG Axis Cascade Diagram ────────────────────────────────────────────── */
@@ -557,6 +558,7 @@ export default function HormonalPeptidesGuide() {
       badgeColor="#f43f5e"
       publishDate="2026-05-06"
       modifiedDate="2026-05-06"
+      systemHub={BODY_SYSTEM_HUBS_BY_SLUG["hormonal"]}
       introText={
         <>
           <p className="mb-4">

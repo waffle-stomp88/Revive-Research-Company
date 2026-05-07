@@ -4,6 +4,7 @@ import { Telescope, ShoppingBag, Activity, BookOpen } from "lucide-react";
 import { Link } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { BODY_SYSTEM_HUBS_BY_SLUG } from "@/data/body-system-hubs";
 import {
   EntryArticleLayout,
   ArticleSection,
@@ -252,6 +253,7 @@ export default function SkinPeptidesGuide() {
       canonicalPath="/systems/skin"
       badgeText="Skin System"
       badgeColor={SKIN_COLOR}
+      systemHub={BODY_SYSTEM_HUBS_BY_SLUG["skin"]}
       publishDate="2026-05-06"
       modifiedDate="2026-05-06"
       introText={

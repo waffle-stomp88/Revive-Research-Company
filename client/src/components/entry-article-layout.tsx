@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { SEOHead } from "@/components/seo-head";
@@ -5,9 +6,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowLeft, ArrowRight, FileCheck, BookOpen, Layers, Archive, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronRight, FileCheck, BookOpen, Layers, Archive, CheckCircle2 } from "lucide-react";
 import type { ReactNode } from "react";
 import { EmailCapture } from "@/components/email-capture";
+import type { BodySystemHub } from "@/data/body-system-hubs";
 
 interface FAQItem {
   question: string;
@@ -34,6 +36,7 @@ interface EntryArticleLayoutProps {
   ctaLinks: CTALink[];
   publishDate?: string;
   modifiedDate?: string;
+  systemHub?: BodySystemHub;
 }
 
 export function EntryArticleLayout({
@@ -49,7 +52,44 @@ export function EntryArticleLayout({
   ctaLinks,
   publishDate = "2026-02-05",
   modifiedDate = "2026-02-05",
+  systemHub,
 }: EntryArticleLayoutProps) {
+  useEffect(() => {
+    if (!systemHub) return;
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = "breadcrumb-json-ld-entry";
+    script.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Education Center",
+          "item": "https://reviveresearch.co/guides/peptide-education-center"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": systemHub.name,
+          "item": `https://reviveresearch.co/systems/${systemHub.slug}`
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": title,
+          "item": `https://reviveresearch.co${canonicalPath}`
+        }
+      ]
+    });
+    document.getElementById("breadcrumb-json-ld-entry")?.remove();
+    document.head.appendChild(script);
+    return () => {
+      document.getElementById("breadcrumb-json-ld-entry")?.remove();
+    };
+  }, [systemHub, title, canonicalPath]);
+
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -103,12 +143,46 @@ export function EntryArticleLayout({
       />
       
       <article className="max-w-4xl mx-auto px-4 md:px-8">
-        <Link href="/guides/peptide-education-center?tab=trust">
-          <Button variant="ghost" size="sm" className="mb-6 gap-2 text-muted-foreground" data-testid="button-back-to-education">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Trust & Verification
-          </Button>
-        </Link>
+        {systemHub ? (
+          <Link href="/guides/peptide-education-center">
+            <Button variant="ghost" size="sm" className="mb-3 gap-2 text-muted-foreground" data-testid="button-back-to-education">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Education Center
+            </Button>
+          </Link>
+        ) : (
+          <Link href="/guides/peptide-education-center?tab=trust">
+            <Button variant="ghost" size="sm" className="mb-6 gap-2 text-muted-foreground" data-testid="button-back-to-education">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Trust & Verification
+            </Button>
+          </Link>
+        )}
+
+        {systemHub && (
+          <nav aria-label="Breadcrumb" className="mb-6" data-testid="nav-breadcrumb">
+            <ol className="flex items-center gap-1 text-xs text-muted-foreground flex-wrap">
+              <li>
+                <Link href="/guides/peptide-education-center" className="hover:text-foreground transition-colors" data-testid="link-breadcrumb-education">
+                  Education Center
+                </Link>
+              </li>
+              <li><ChevronRight className="h-3 w-3 flex-shrink-0" /></li>
+              <li>
+                <Link
+                  href={`/systems/${systemHub.slug}`}
+                  className="hover:opacity-80 transition-opacity font-medium"
+                  style={{ color: systemHub.color }}
+                  data-testid="link-breadcrumb-system"
+                >
+                  {systemHub.name}
+                </Link>
+              </li>
+              <li><ChevronRight className="h-3 w-3 flex-shrink-0" /></li>
+              <li className="text-foreground font-medium" data-testid="text-breadcrumb-current">{title}</li>
+            </ol>
+          </nav>
+        )}
 
         <motion.header
           initial={{ opacity: 0, y: 20 }}
@@ -215,6 +289,35 @@ export function EntryArticleLayout({
             })}
           </div>
         </motion.section>
+
+        {systemHub && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.35 }}
+            className="mt-8 mb-10"
+            data-testid="section-explore-system"
+          >
+            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent mb-6" />
+            <Link href={`/systems/${systemHub.slug}`} data-testid="link-explore-system">
+              <div
+                className="flex items-center justify-between p-4 rounded-lg border cursor-pointer hover:opacity-90 transition-opacity"
+                style={{ borderColor: `${systemHub.color}33`, background: `${systemHub.color}08` }}
+              >
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest font-mono mb-0.5">Part of the</p>
+                  <p className="font-display font-semibold text-base" style={{ color: systemHub.color }} data-testid="text-system-name">
+                    {systemHub.name} system
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-0.5">
+                    Explore more compounds, stacks, and research in this category
+                  </p>
+                </div>
+                <ArrowRight className="h-5 w-5 flex-shrink-0 ml-4" style={{ color: systemHub.color }} />
+              </div>
+            </Link>
+          </motion.div>
+        )}
 
         <EmailCapture
           heading="Join our research community"

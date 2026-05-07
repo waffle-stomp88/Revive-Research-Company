@@ -10,6 +10,7 @@ import {
   BulletList,
 } from "@/components/entry-article-layout";
 import { RelatedStacks } from "@/components/research-stacks/RelatedStacks";
+import { BODY_SYSTEM_HUBS_BY_SLUG } from "@/data/body-system-hubs";
 
 const METABOLIC_COLOR = "#E7FB10";
 const METABOLIC_COLOR_DIM = "#b8c80d";
@@ -265,6 +266,7 @@ export default function MetabolicPeptidesGuide() {
       badgeColor={METABOLIC_COLOR}
       publishDate="2026-05-06"
       modifiedDate="2026-05-06"
+      systemHub={BODY_SYSTEM_HUBS_BY_SLUG["metabolic"]}
       introText={
         <>
           <p className="mb-4">

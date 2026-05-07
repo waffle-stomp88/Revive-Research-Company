@@ -49,6 +49,8 @@ import { BeginnerArticleContent, WhatIsPeptideSection, hasQuickBreakdown } from 
 import { getPairingReasons } from "@/lib/pairing-intelligence";
 import type { EducationArticle, Product } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
+import { BODY_SYSTEM_HUBS_BY_SLUG } from "@/data/body-system-hubs";
+import type { BodySystemHub } from "@/data/body-system-hubs";
 import { flagRetiredContent, consumeRetiredFlag, RETIRED_GUIDE_SLUGS } from "@/lib/retired-redirects";
 import { OrderingJourney } from "@/components/infographics/ordering-journey";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
@@ -523,6 +525,25 @@ const getPubMedSearchTerm = (slug: string, _title: string): string => {
 
 type ArticleMode = "deep-dive" | "quick-breakdown" | "pharmacokinetics";
 
+const PEPTIDE_GROUP_TO_SYSTEM_SLUG: Record<string, string> = {
+  "metabolic": "metabolic",
+  "growth-hormone": "growth",
+  "tissue-repair": "healing",
+  "skin-regeneration": "skin",
+  "longevity": "longevity",
+  "cognitive": "cognitive",
+  "hormonal": "hormonal",
+};
+
+function getSystemHubForArticle(slug: string | null | undefined): BodySystemHub | null {
+  if (!slug) return null;
+  const group = getPeptideGroup(slug);
+  if (group === "all") return null;
+  const systemSlug = PEPTIDE_GROUP_TO_SYSTEM_SLUG[group];
+  if (!systemSlug) return null;
+  return BODY_SYSTEM_HUBS_BY_SLUG[systemSlug] ?? null;
+}
+
 function articleSlugToCompoundKey(articleSlug: string): string {
   return articleSlug
     .replace(/^what-is-/, "")
@@ -739,6 +760,47 @@ export default function Education() {
     return counts;
   }, [articles]);
 
+  // Inject BreadcrumbList JSON-LD for expanded articles that belong to a body system
+  useEffect(() => {
+    const systemHub = getSystemHubForArticle(expandedArticleObj?.slug);
+    if (!systemHub || !expandedArticleObj) {
+      document.getElementById("breadcrumb-json-ld-education")?.remove();
+      return;
+    }
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = "breadcrumb-json-ld-education";
+    script.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Education Center",
+          "item": "https://reviveresearch.co/guides/peptide-education-center"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": systemHub.name,
+          "item": `https://reviveresearch.co/systems/${systemHub.slug}`
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": expandedArticleObj.title,
+          "item": `https://reviveresearch.co/education/${expandedArticleObj.slug}`
+        }
+      ]
+    });
+    document.getElementById("breadcrumb-json-ld-education")?.remove();
+    document.head.appendChild(script);
+    return () => {
+      document.getElementById("breadcrumb-json-ld-education")?.remove();
+    };
+  }, [expandedArticleObj]);
+
   // Get articles for a specific tab
   const getTabArticles = (tabId: string) => {
     const tab = EDUCATION_TABS.find(t => t.id === tabId);
@@ -915,17 +977,44 @@ export default function Education() {
                   const catColor = getCategoryColor(article.category);
                   const CategoryIcon = getCategoryIcon(article.category);
 
+                  const articleSystemHub = getSystemHubForArticle(article.slug);
+
                   return (
                     <Card id="expanded-article" className="overflow-hidden" style={{ borderColor: `${catColor}30` }}>
                       <div className="p-6 border-b" style={{ borderColor: `${catColor}20` }}>
                         <button
                           onClick={handleBackToArticles}
-                          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4 cursor-pointer"
+                          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-3 cursor-pointer"
                           data-testid="button-back-to-articles"
                         >
                           <ArrowLeft className="h-4 w-4" />
                           Back to {getCategoryLabel(activeCategory)}
                         </button>
+
+                        {articleSystemHub && (
+                          <nav aria-label="Breadcrumb" className="mb-4" data-testid="nav-breadcrumb">
+                            <ol className="flex items-center gap-1 text-xs text-muted-foreground flex-wrap">
+                              <li>
+                                <Link href="/guides/peptide-education-center" className="hover:text-foreground transition-colors" data-testid="link-breadcrumb-education">
+                                  Education Center
+                                </Link>
+                              </li>
+                              <li><ChevronRight className="h-3 w-3 flex-shrink-0" /></li>
+                              <li>
+                                <Link
+                                  href={`/systems/${articleSystemHub.slug}`}
+                                  className="hover:opacity-80 transition-opacity font-medium"
+                                  style={{ color: articleSystemHub.color }}
+                                  data-testid="link-breadcrumb-system"
+                                >
+                                  {articleSystemHub.name}
+                                </Link>
+                              </li>
+                              <li><ChevronRight className="h-3 w-3 flex-shrink-0" /></li>
+                              <li className="text-foreground font-medium truncate max-w-[200px] sm:max-w-none" data-testid="text-breadcrumb-current">{article.title}</li>
+                            </ol>
+                          </nav>
+                        )}
 
                         <div className="flex items-center gap-2 mb-3 flex-wrap">
                           <Badge
@@ -1369,6 +1458,30 @@ export default function Education() {
                                   <ArrowRight className="h-4 w-4 flex-shrink-0" style={{ color: "#f59e0b" }} />
                                 </div>
                               </Card>
+                            </Link>
+                          </div>
+                        )}
+
+                        {/* Explore this system footer */}
+                        {articleSystemHub && (
+                          <div className="mt-8 pt-6 border-t border-border/50" data-testid="section-explore-system">
+                            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent mb-5" />
+                            <Link href={`/systems/${articleSystemHub.slug}`} data-testid="link-explore-system">
+                              <div
+                                className="flex items-center justify-between p-4 rounded-lg border cursor-pointer hover:opacity-90 transition-opacity"
+                                style={{ borderColor: `${articleSystemHub.color}33`, background: `${articleSystemHub.color}08` }}
+                              >
+                                <div>
+                                  <p className="text-xs text-muted-foreground uppercase tracking-widest font-mono mb-0.5">Part of the</p>
+                                  <p className="font-display font-semibold text-base" style={{ color: articleSystemHub.color }} data-testid="text-system-name">
+                                    {articleSystemHub.name} system
+                                  </p>
+                                  <p className="text-sm text-muted-foreground mt-0.5">
+                                    Explore more compounds, stacks, and research in this category
+                                  </p>
+                                </div>
+                                <ArrowRight className="h-5 w-5 flex-shrink-0 ml-4" style={{ color: articleSystemHub.color }} />
+                              </div>
                             </Link>
                           </div>
                         )}

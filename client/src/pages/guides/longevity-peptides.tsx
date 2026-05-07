@@ -9,6 +9,7 @@ import {
   ArticleSection,
   BulletList,
 } from "@/components/entry-article-layout";
+import { BODY_SYSTEM_HUBS_BY_SLUG } from "@/data/body-system-hubs";
 import { RelatedStacks } from "@/components/research-stacks/RelatedStacks";
 
 const LONGEVITY_COLOR = "#a855f7";
@@ -278,6 +279,7 @@ export default function LongevityPeptidesGuide() {
       badgeColor={LONGEVITY_COLOR}
       publishDate="2026-05-06"
       modifiedDate="2026-05-06"
+      systemHub={BODY_SYSTEM_HUBS_BY_SLUG["longevity"]}
       introText={
         <>
           <p className="mb-4">

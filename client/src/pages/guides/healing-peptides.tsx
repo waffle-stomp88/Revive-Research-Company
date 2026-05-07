@@ -10,6 +10,7 @@ import {
   BulletList,
 } from "@/components/entry-article-layout";
 import { RelatedStacks } from "@/components/research-stacks/RelatedStacks";
+import { BODY_SYSTEM_HUBS_BY_SLUG } from "@/data/body-system-hubs";
 
 const HEALING_COLOR = "#22c55e";
 
@@ -375,6 +376,7 @@ export default function HealingPeptidesGuide() {
       badgeColor={HEALING_COLOR}
       publishDate="2026-05-06"
       modifiedDate="2026-05-06"
+      systemHub={BODY_SYSTEM_HUBS_BY_SLUG["healing"]}
       introText={
         <>
           <p className="mb-4">

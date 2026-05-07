@@ -10,6 +10,7 @@ import {
   BulletList,
 } from "@/components/entry-article-layout";
 import { RelatedStacks } from "@/components/research-stacks/RelatedStacks";
+import { BODY_SYSTEM_HUBS_BY_SLUG } from "@/data/body-system-hubs";
 
 const COGNITIVE_COLOR = "#f97316";
 
@@ -407,6 +408,7 @@ export default function CognitivePeptidesGuide() {
       badgeColor={COGNITIVE_COLOR}
       publishDate="2026-05-06"
       modifiedDate="2026-05-06"
+      systemHub={BODY_SYSTEM_HUBS_BY_SLUG["cognitive"]}
       introText={
         <>
           <p className="mb-4">
