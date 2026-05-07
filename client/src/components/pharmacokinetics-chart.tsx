@@ -156,7 +156,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
     return idx >= 0 ? idx : null;
   });
   const [tooltip, setTooltip] = useState<{ clientX: number; clientY: number; label: string; halfLife: string; concentration: number; timeDisp: string } | null>(null);
-  const [ivMarkerTooltip, setIvMarkerTooltip] = useState<{ clientX: number; clientY: number; compoundName: string; ivHalfLifeLabel: string; citationLabel: string; citationUrl: string } | null>(null);
+  const [ivMarkerTooltip, setIvMarkerTooltip] = useState<{ clientX: number; clientY: number; compoundName: string; ivHalfLifeLabel: string; citationLabel: string } | null>(null);
   const [crosshairSvgX, setCrosshairSvgX] = useState<number | null>(null);
   const chartWrapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -834,13 +834,14 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                   data-testid={`iv-marker-hit-${toTestSlug(c.peptide.name)}`}
                   onMouseEnter={e => {
                     const cit = c.pk.citations[0];
+                    setTooltip(null);
+                    setCrosshairSvgX(null);
                     setIvMarkerTooltip({
                       clientX: e.clientX,
                       clientY: e.clientY,
                       compoundName: c.peptide.name,
                       ivHalfLifeLabel: c.pk.ivHalfLifeLabel!,
                       citationLabel: cit?.label ?? "",
-                      citationUrl: cit?.url ?? "",
                     });
                   }}
                   onMouseMove={e => {
