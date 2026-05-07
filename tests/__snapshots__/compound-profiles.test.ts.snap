@@ -76,6 +76,19 @@ exports[`compound-profiles — PK profile snapshots > cagrilintide PK fields are
 }
 `;
 
+exports[`compound-profiles — PK profile snapshots > cjc-1295-w-dac PK fields are present and stable 1`] = `
+{
+  "citationIds": [
+    "16352683",
+  ],
+  "halfLifeLabel": "~6–8 days",
+  "halfLifeMax": 11520,
+  "halfLifeMin": 8640,
+  "route": "subcutaneous",
+  "slug": "cjc-1295-w-dac",
+}
+`;
+
 exports[`compound-profiles — PK profile snapshots > dsip PK fields are present and stable 1`] = `
 {
   "citationIds": [],
@@ -114,6 +127,19 @@ exports[`compound-profiles — PK profile snapshots > foxo4-dri PK fields are pr
 `;
 
 exports[`compound-profiles — PK profile snapshots > ghrp-6 PK fields are present and stable 1`] = `
+{
+  "citationIds": [
+    "9879640",
+  ],
+  "halfLifeLabel": "~15–60 min",
+  "halfLifeMax": 60,
+  "halfLifeMin": 15,
+  "route": "subcutaneous",
+  "slug": "ghrp-6",
+}
+`;
+
+exports[`compound-profiles — PK profile snapshots > ghrp-6 PK fields are present and stable 2`] = `
 {
   "citationIds": [
     "9879640",
@@ -343,6 +369,17 @@ exports[`compound-profiles — PK profile snapshots > slu-pp-332 PK fields are p
   "halfLifeMin": 120,
   "route": "oral",
   "slug": "slu-pp-332",
+}
+`;
+
+exports[`compound-profiles — PK profile snapshots > survodutide PK fields are present and stable 1`] = `
+{
+  "citationIds": [],
+  "halfLifeLabel": "~3–4.5 days",
+  "halfLifeMax": 6480,
+  "halfLifeMin": 4320,
+  "route": "subcutaneous",
+  "slug": "survodutide",
 }
 `;
 

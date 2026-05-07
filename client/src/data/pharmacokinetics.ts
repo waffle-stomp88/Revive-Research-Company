@@ -441,6 +441,12 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
   },
 
   // ─── GH-releasing hormone analogues ─────────────────────────────────────────
+  //
+  // Snapshot convention: every new entry added to this cluster MUST receive a
+  // corresponding it() snapshot test in tests/compound-profiles.test.ts before
+  // the change is merged.  See the "CONTRIBUTING CONVENTION" block in that file
+  // for step-by-step instructions.
+  //
   {
     slug: "cjc-1295-w-dac",
     name: "CJC-1295 w/ DAC",
@@ -454,6 +460,12 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
   },
 
   // ─── GLP-1 / incretin receptor agonists ──────────────────────────────────────
+  //
+  // Snapshot convention: every new entry added to this cluster MUST receive a
+  // corresponding it() snapshot test in tests/compound-profiles.test.ts before
+  // the change is merged.  See the "CONTRIBUTING CONVENTION" block in that file
+  // for step-by-step instructions.
+  //
   {
     slug: "rr-a1",
     name: "RR-A1",
@@ -610,6 +622,12 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
   },
 
   // ─── GH secretagogues ────────────────────────────────────────────────────────
+  //
+  // Snapshot convention: every new entry added to this cluster MUST receive a
+  // corresponding it() snapshot test in tests/compound-profiles.test.ts before
+  // the change is merged.  See the "CONTRIBUTING CONVENTION" block in that file
+  // for step-by-step instructions.
+  //
   {
     slug: "ghrp-6",
     name: "GHRP-6",
@@ -647,6 +665,13 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
   },
 
   // ─── Neuropeptides / CNS ─────────────────────────────────────────────────────
+  //
+  // Snapshot convention: every new hormonal-axis entry added to this cluster
+  // (e.g. oxytocin, vasopressin-axis peptides, or future neurohormone entries)
+  // MUST receive a corresponding it() snapshot test in
+  // tests/compound-profiles.test.ts before the change is merged.  See the
+  // "CONTRIBUTING CONVENTION" block in that file for step-by-step instructions.
+  //
   {
     slug: "dsip",
     name: "DSIP",

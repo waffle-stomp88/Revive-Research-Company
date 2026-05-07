@@ -161,20 +161,30 @@ describe("compound-profiles — value snapshots (formula + MW)", () => {
 // these fields will fail CI and require an explicit `vitest --update-snapshots`
 // to accept the change.
 //
-// ─── CONTRIBUTING CONVENTION — GnRH / hormonal-axis entries ──────────────────
+// ─── CONTRIBUTING CONVENTION — hormonal-axis entries ─────────────────────────
 //
-// Every new compound added to the "GnRH / gonadal axis" section (and any
-// related hormonal-axis compounds such as oxytocin or future kisspeptin
-// isoforms) in client/src/data/pharmacokinetics.ts MUST receive its own
-// it() snapshot test in this block before the change is merged.
+// Every new compound added to ANY of the hormonal-axis clusters in
+// client/src/data/pharmacokinetics.ts MUST receive its own it() snapshot test
+// in this block before the change is merged.  This applies to:
 //
-// Steps when adding a new GnRH-axis entry:
+//   • GnRH / gonadal axis  (gonadorelin, GnRH analogues, kisspeptin isoforms,
+//     enclomiphene and other selective ER modulators acting on the HPG axis)
+//   • GLP-1 / incretin receptor agonists  (GLP-1 RAs, dual GIP/GLP-1 RAs,
+//     triple-incretin RAs, amylin analogues, and blends thereof)
+//   • GH-releasing hormone analogues  (CJC-1295 variants and any future
+//     GHRH-analogue entries)
+//   • GH secretagogues  (GHRP-class peptides, ghrelin mimetics)
+//   • Neuropeptides / CNS  (oxytocin, future vasopressin-axis entries, and
+//     any other peptide whose primary mechanism acts on a hormonal axis)
+//
+// Steps when adding a new hormonal-axis entry:
 //
 //   1. Add the HalfLifeEntry to pharmacokinetics.ts with a unique slug and at
 //      least one PMID citation.
 //
-//   2. Add an it() test below that calls pkSnapshot("<slug>") and asserts
-//      toMatchSnapshot().  Follow the naming pattern:
+//   2. Add an it() test below (in the appropriate section comment group) that
+//      calls pkSnapshot("<slug>") and asserts toMatchSnapshot().  Follow the
+//      naming pattern:
 //
 //        it("<compound-name> PK fields are present and stable", () => {
 //          expect(pkSnapshot("<slug>")).toMatchSnapshot();
@@ -183,12 +193,25 @@ describe("compound-profiles — value snapshots (formula + MW)", () => {
 //   3. Run `vitest --update-snapshots` once to write the initial snapshot,
 //      then commit both the test file and the updated .snap file together.
 //
-// Current GnRH-axis slugs with active snapshots (all verified April 2026):
-//   gonadorelin, triptorelin, enclomiphene, kisspeptin-10, kisspeptin-54,
-//   oxytocin
+// Current hormonal-axis slugs with active snapshots (all verified April 2026):
 //
-// Any future analogue (e.g. buserelin, leuprolide, nafarelin, or additional
-// kisspeptin isoforms) must be added to this list when introduced.
+//   GnRH / gonadal axis:
+//     gonadorelin, triptorelin, enclomiphene, kisspeptin-10, kisspeptin-54
+//
+//   GLP-1 / incretin receptor agonists:
+//     rr-a1, rr-a2, rr-a3, cagrilintide, mazdutide, survodutide,
+//     cag-sema-blend
+//
+//   GH-releasing hormone analogues:
+//     cjc-1295-w-dac
+//
+//   GH secretagogues:
+//     ghrp-6
+//
+//   Neuropeptides / CNS:
+//     oxytocin
+//
+// Any future analogue must be added to the relevant list above when introduced.
 // ─────────────────────────────────────────────────────────────────────────────
 
 describe("compound-profiles — PK profile snapshots", () => {
@@ -204,6 +227,8 @@ describe("compound-profiles — PK profile snapshots", () => {
       citationIds: entry!.citations.map((c) => c.id),
     };
   }
+
+  // ─── GnRH / gonadal axis ─────────────────────────────────────────────────────
 
   it("kisspeptin-54 PK fields are present and stable", () => {
     expect(pkSnapshot("kisspeptin-54")).toMatchSnapshot();
@@ -221,15 +246,11 @@ describe("compound-profiles — PK profile snapshots", () => {
     expect(pkSnapshot("triptorelin")).toMatchSnapshot();
   });
 
-  it("oxytocin PK fields are present and stable", () => {
-    expect(pkSnapshot("oxytocin")).toMatchSnapshot();
-  });
-
   it("enclomiphene PK fields are present and stable", () => {
     expect(pkSnapshot("enclomiphene")).toMatchSnapshot();
   });
 
-  // ─── Metabolic-axis cluster ───────────────────────────────────────────────────
+  // ─── GLP-1 / incretin receptor agonists ──────────────────────────────────────
 
   it("rr-a1 PK fields are present and stable", () => {
     expect(pkSnapshot("rr-a1")).toMatchSnapshot();
@@ -251,9 +272,33 @@ describe("compound-profiles — PK profile snapshots", () => {
     expect(pkSnapshot("mazdutide")).toMatchSnapshot();
   });
 
+  it("survodutide PK fields are present and stable", () => {
+    expect(pkSnapshot("survodutide")).toMatchSnapshot();
+  });
+
   it("cag-sema-blend PK fields are present and stable", () => {
     expect(pkSnapshot("cag-sema-blend")).toMatchSnapshot();
   });
+
+  // ─── GH-releasing hormone analogues ──────────────────────────────────────────
+
+  it("cjc-1295-w-dac PK fields are present and stable", () => {
+    expect(pkSnapshot("cjc-1295-w-dac")).toMatchSnapshot();
+  });
+
+  // ─── GH secretagogues ────────────────────────────────────────────────────────
+
+  it("ghrp-6 PK fields are present and stable", () => {
+    expect(pkSnapshot("ghrp-6")).toMatchSnapshot();
+  });
+
+  // ─── Neuropeptides / CNS ──────────────────────────────────────────────────────
+
+  it("oxytocin PK fields are present and stable", () => {
+    expect(pkSnapshot("oxytocin")).toMatchSnapshot();
+  });
+
+  // ─── Metabolic / small-molecule ──────────────────────────────────────────────
 
   it("mots-c PK fields are present and stable", () => {
     expect(pkSnapshot("mots-c")).toMatchSnapshot();
