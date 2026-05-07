@@ -1,3 +1,7 @@
+export const sanitizeHref = (href: string): string => {
+  return /^\s*(javascript|data|vbscript):/i.test(href) ? '#' : href;
+};
+
 const parseMarkdownTable = (tableText: string): { headers: string[]; rows: string[][] } | null => {
   const lines = tableText.trim().split('\n').filter(line => line.trim());
   if (lines.length < 2) return null;
@@ -24,8 +28,7 @@ const parseMarkdownTable = (tableText: string): { headers: string[]; rows: strin
 
 const sanitizeCellContent = (cell: string): string => {
   return cell.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, text, href) => {
-    const sanitizedHref = /^\s*(javascript|data|vbscript):/i.test(href) ? '#' : href;
-    return `<a href="${sanitizedHref}" class="text-[#21d8ff] underline underline-offset-2 hover:text-[#21d8ff]/80 transition-colors">${text}</a>`;
+    return `<a href="${sanitizeHref(href)}" class="text-[#21d8ff] underline underline-offset-2 hover:text-[#21d8ff]/80 transition-colors">${text}</a>`;
   });
 };
 
@@ -101,8 +104,7 @@ export const renderMarkdown = (content: string): string => {
     .replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground font-semibold">$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, text, href) => {
-      const sanitizedHref = /^\s*(javascript|data|vbscript):/i.test(href) ? '#' : href;
-      return `<a href="${sanitizedHref}" class="text-[#21d8ff] underline underline-offset-2 hover:text-[#21d8ff]/80 transition-colors">${text}</a>`;
+      return `<a href="${sanitizeHref(href)}" class="text-[#21d8ff] underline underline-offset-2 hover:text-[#21d8ff]/80 transition-colors">${text}</a>`;
     })
     .replace(/\n\n/g, '</p><p class="mb-2 text-sm leading-relaxed">')
     .replace(/^(?!\s*<)/gm, '<p class="mb-2 text-sm leading-relaxed">');
