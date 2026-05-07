@@ -160,6 +160,36 @@ describe("compound-profiles — value snapshots (formula + MW)", () => {
 // against published clinical literature.  Any accidental removal or edit of
 // these fields will fail CI and require an explicit `vitest --update-snapshots`
 // to accept the change.
+//
+// ─── CONTRIBUTING CONVENTION — GnRH / hormonal-axis entries ──────────────────
+//
+// Every new compound added to the "GnRH / gonadal axis" section (and any
+// related hormonal-axis compounds such as oxytocin or future kisspeptin
+// isoforms) in client/src/data/pharmacokinetics.ts MUST receive its own
+// it() snapshot test in this block before the change is merged.
+//
+// Steps when adding a new GnRH-axis entry:
+//
+//   1. Add the HalfLifeEntry to pharmacokinetics.ts with a unique slug and at
+//      least one PMID citation.
+//
+//   2. Add an it() test below that calls pkSnapshot("<slug>") and asserts
+//      toMatchSnapshot().  Follow the naming pattern:
+//
+//        it("<compound-name> PK fields are present and stable", () => {
+//          expect(pkSnapshot("<slug>")).toMatchSnapshot();
+//        });
+//
+//   3. Run `vitest --update-snapshots` once to write the initial snapshot,
+//      then commit both the test file and the updated .snap file together.
+//
+// Current GnRH-axis slugs with active snapshots (all verified April 2026):
+//   gonadorelin, triptorelin, enclomiphene, kisspeptin-10, kisspeptin-54,
+//   oxytocin
+//
+// Any future analogue (e.g. buserelin, leuprolide, nafarelin, or additional
+// kisspeptin isoforms) must be added to this list when introduced.
+// ─────────────────────────────────────────────────────────────────────────────
 
 describe("compound-profiles — PK profile snapshots", () => {
   function pkSnapshot(slug: string) {
