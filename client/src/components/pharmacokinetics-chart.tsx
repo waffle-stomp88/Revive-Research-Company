@@ -971,6 +971,64 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                         </a>
                       ))}
                     </div>
+                    {c.pk.ivHalfLifeLabel && (() => {
+                      const scMid = c.pk.halfLifeMin !== undefined && c.pk.halfLifeMax !== undefined
+                        ? (c.pk.halfLifeMin + c.pk.halfLifeMax) / 2
+                        : c.pk.halfLifeMin ?? c.pk.halfLifeMax ?? null;
+                      const ivMid = c.pk.ivHalfLifeMin !== undefined && c.pk.ivHalfLifeMax !== undefined
+                        ? (c.pk.ivHalfLifeMin + c.pk.ivHalfLifeMax) / 2
+                        : c.pk.ivHalfLifeMin ?? c.pk.ivHalfLifeMax ?? null;
+                      const maxMid = scMid !== null && ivMid !== null ? Math.max(scMid, ivMid) : null;
+                      const IV_COLOR = "#f97316";
+                      const scPct = maxMid && scMid !== null ? (scMid / maxMid) * 86 : 86;
+                      const ivPct = maxMid && ivMid !== null ? (ivMid / maxMid) * 86 : 86;
+                      return (
+                        <motion.div
+                          className="border-t border-border/20 pt-2 mt-2"
+                          initial={{ opacity: 0, y: 4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4, delay: 0.3 }}
+                          data-testid="pk-route-comparison"
+                        >
+                          <p className="text-[10px] text-muted-foreground/50 uppercase tracking-widest mb-2">Route comparison</p>
+                          <div className="flex flex-col gap-1.5">
+                            {[
+                              { routeLabel: "SC", halfLifeLabel: c.pk.halfLifeLabel, pct: scPct, color: c.color },
+                              { routeLabel: "IV", halfLifeLabel: c.pk.ivHalfLifeLabel, pct: ivPct, color: IV_COLOR },
+                            ].map(row => (
+                              <div key={row.routeLabel} className="flex items-center gap-2" data-testid={`pk-route-bar-${row.routeLabel.toLowerCase()}`}>
+                                <span
+                                  className="text-[10px] font-semibold tabular-nums shrink-0"
+                                  style={{ color: row.color, width: "1.5rem", textAlign: "right" }}
+                                >
+                                  {row.routeLabel}
+                                </span>
+                                <div className="flex-1 flex items-center gap-1.5 min-w-0">
+                                  <div className="flex-1 h-3 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.05)" }}>
+                                    <motion.div
+                                      className="h-full rounded-full"
+                                      style={{ backgroundColor: row.color, boxShadow: `0 0 6px ${row.color}80` }}
+                                      initial={{ width: "0%" }}
+                                      animate={{ width: `${row.pct}%` }}
+                                      transition={{ duration: 0.75, delay: 0.5 + (row.routeLabel === "IV" ? 0.15 : 0), ease: "easeOut" }}
+                                    />
+                                  </div>
+                                  <span
+                                    className="text-[11px] font-medium tabular-nums shrink-0"
+                                    style={{ color: row.color }}
+                                  >
+                                    {row.halfLifeLabel}
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          <p className="text-[10px] text-muted-foreground/45 mt-1.5 leading-relaxed">
+                            IV administration bypasses the subcutaneous absorption phase, resulting in a shorter observed plasma half-life.
+                          </p>
+                        </motion.div>
+                      );
+                    })()}
                     <p className="text-sm text-muted-foreground leading-relaxed border-t border-border/20 pt-2 mt-2">{c.pk.pkContext}</p>
                     {c.pk.note && <p className="text-xs text-muted-foreground/70 italic pt-1.5">{c.pk.note}</p>}
                   </div>
