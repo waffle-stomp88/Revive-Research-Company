@@ -54,11 +54,15 @@ const PRODUCTS: ProductCase[] = [
 /** Returns true when the page is showing the out-of-stock panel. */
 async function isOutOfStock(page: import("@playwright/test").Page): Promise<boolean> {
   // Wait for the page to render either the CTA stack (in-stock) or the OOS panel,
-  // whichever comes first. This is deterministic and avoids fixed-time sleeps.
+  // whichever comes first.
   await page.waitForSelector(
     '[data-testid="stack-cta"], [data-testid="panel-out-of-stock"]',
     { timeout: 10000 }
   );
+  // Allow any in-flight network requests (e.g. dosage-stock API) to finish so we
+  // observe the *final* rendered state rather than the transient in-stock state
+  // that exists while dosage data is still loading.
+  await page.waitForLoadState("networkidle", { timeout: 10000 }).catch(() => {});
   const panelCount = await page.locator('[data-testid="panel-out-of-stock"]').count();
   return panelCount > 0;
 }
