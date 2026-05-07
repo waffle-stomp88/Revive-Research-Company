@@ -2757,3 +2757,95 @@ export async function seedStripePresetsIfEmpty(): Promise<void> {
 
   await storage.seedStripePresets(DEFAULT_PRESETS);
 }
+
+/**
+ * Ensures the four hormonal compound education articles introduced with the
+ * HPG Cascade and Triptorelin+Enclomiphene research stacks are present and
+ * published in the database. Runs at startup and is a no-op once the records
+ * exist (uses INSERT … ON CONFLICT DO NOTHING).
+ */
+export async function seedHormonalEducationArticlesIfMissing(): Promise<void> {
+  const HORMONAL_ARTICLES: Array<{
+    slug: string;
+    title: string;
+    summary: string;
+    content: string;
+    readTimeMinutes: number;
+    sortOrder: number;
+  }> = [
+    {
+      slug: "what-is-gonadorelin-peptide",
+      title: "Gonadorelin: Synthetic GnRH Research Guide",
+      summary:
+        "Gonadorelin is a synthetic decapeptide identical in sequence to endogenous GnRH. Researchers use it to directly activate pituitary GnRH receptors (GnRHR) and study LH/FSH secretion dynamics in the HPG axis.",
+      content: `Gonadorelin (gonadotropin-releasing hormone; GnRH) is a decapeptide synthesized in hypothalamic neurons of the arcuate and preoptic nuclei and released in coordinated pulses into the hypophyseal portal circulation. As a synthetic sequence-identical analog, Gonadorelin acts directly on GnRH receptors (GnRHR) — Gq-protein-coupled GPCRs — expressed on pituitary gonadotroph cells.
+
+Upon GnRHR binding, Gonadorelin activates phospholipase C (PLC), generating IP3 and DAG second messengers that mobilize intracellular calcium from the endoplasmic reticulum and activate protein kinase C (PKC). The resulting calcium transient drives exocytosis of LH and FSH from gonadotroph secretory granules. GnRH pulse frequency and amplitude strongly determine the LH:FSH ratio released — a pulse-frequency encoding mechanism that Gonadorelin allows researchers to dissect under controlled experimental conditions.
+
+Because Gonadorelin is sequence-identical to endogenous GnRH (unlike modified analogs such as Triptorelin or Leuprolide), it has a short half-life due to rapid proteolytic degradation by endopeptidases and aminopeptidases. This property makes it useful for studying acute GnRHR activation and pituitary responses without the receptor desensitization or downregulation associated with long-acting analogs.
+
+Key research applications include: pulsatile GnRH secretion modeling, pituitary GnRHR pharmacology, LH and FSH secretion dynamics, and HPG cascade relay studies when combined with upstream compounds like Kisspeptin-10 (which activates hypothalamic GnRH neurons via KISS1R) to study consecutive signaling steps in the same experimental model.`,
+      readTimeMinutes: 7,
+      sortOrder: 47,
+    },
+    {
+      slug: "what-is-triptorelin-peptide",
+      title: "Triptorelin: High-Affinity GnRH Analog Research Guide",
+      summary:
+        "Triptorelin is a synthetic GnRH decapeptide analog with a D-Trp6 substitution that confers ~100-fold greater GnRHR binding affinity and proteolytic resistance versus native GnRH. Researchers use it to study receptor occupancy, gonadotropin pulse dynamics, and HPG axis pharmacology.",
+      content: `Triptorelin (D-Trp6-GnRH; also D-Trp6-LHRH) is a synthetic decapeptide GnRH analog in which the natural L-glycine at position 6 is replaced with D-tryptophan. This single D-amino acid substitution produces two critical pharmacological differences from native GnRH or Gonadorelin: (1) resistance to proteolytic cleavage by endopeptidases that rapidly degrade the natural L-amino acid chain, resulting in a substantially extended half-life; and (2) enhanced GnRH receptor (GnRHR) binding affinity approximately 100-fold greater than endogenous GnRH, owing to a complementary fit with the GnRHR binding pocket.
+
+Triptorelin acts as a GnRHR agonist on pituitary gonadotroph cells. Binding activates the Gq-coupled receptor, triggering PLC-mediated hydrolysis of PIP2 into IP3 and DAG, calcium mobilization from the endoplasmic reticulum, PKC activation, and downstream transcriptional upregulation of LHβ and FSHβ gonadotropin subunit genes. The result is robust LH and FSH secretion — an exaggerated response compared to native GnRH due to the higher receptor occupancy and sustained binding kinetics.
+
+A defining research feature of Triptorelin is the agonist paradox: while acute administration produces a pronounced stimulatory gonadotropin surge, sustained or continuous exposure leads to GnRHR internalization, receptor number reduction (downregulation), and progressive desensitization of the gonadotroph response. This biphasic behavior — initial stimulation followed by functional suppression — makes Triptorelin uniquely valuable for studying GnRH receptor desensitization kinetics, receptor trafficking, and the dynamics of HPG axis suppression.
+
+Research applications include: GnRHR pharmacology and desensitization studies, LH/FSH pulse shaping under varying dose frequencies, HPG axis modulation when combined with SERMs like Enclomiphene (which removes the estrogenic brake simultaneously), and receptor occupancy versus pulse-frequency sensitivity investigations.`,
+      readTimeMinutes: 7,
+      sortOrder: 48,
+    },
+    {
+      slug: "what-is-enclomiphene-peptide",
+      title: "Enclomiphene: SERM & Estrogen Feedback Research Guide",
+      summary:
+        "Enclomiphene is the trans-isomer of clomiphene and a selective estrogen receptor modulator (SERM) with ERα antagonist activity at the hypothalamus and anterior pituitary. By blocking estrogen negative feedback, it disinhibits GnRH pulse generation and augments LH/FSH secretion — a key research tool for HPG axis regulatory pharmacology.",
+      content: `Enclomiphene is the trans-isomer (E-isomer) of clomiphene citrate, a triphenylethylene-class selective estrogen receptor modulator (SERM). Unlike the cis-isomer (zuclomiphene), which has partial ERα agonist activity, enclomiphene exhibits preferential ERα antagonist activity — particularly in hypothalamic and anterior pituitary tissue — that underpins its research utility for HPG axis studies.
+
+The endocrine brake that enclomiphene targets is estrogen-mediated negative feedback: circulating estradiol (E2) binds ERα on GnRH neurons in the hypothalamic arcuate and preoptic nuclei, as well as on gonadotroph cells in the anterior pituitary, suppressing GnRH pulse frequency and amplitude and reducing pituitary sensitivity to GnRH input. By competitively antagonizing ERα at these central sites, enclomiphene eliminates this transcriptional repression, disinhibiting hypothalamic GnRH pulse generators and increasing pituitary responsiveness to GnRH signals — leading to elevated LH and FSH secretion.
+
+The molecular geometry of the trans-isomer is critical to its receptor selectivity. The spatial arrangement of the triphenylethylene scaffold in the E-configuration creates a distinct binding interface with the ERα ligand-binding domain that favors antagonism, whereas the Z-configuration (zuclomiphene) adopts a geometry more conducive to partial agonism at certain ERα-expressing tissues.
+
+Research applications include: estrogen negative-feedback pathway dissection, gonadotropin disinhibition studies under controlled feedback removal, dual-mechanism HPG axis models when paired with direct GnRHR agonists like Triptorelin (providing simultaneous receptor stimulation and feedback removal), SERM pharmacology and isomer selectivity research, and HPG axis regulatory variable analysis in reproductive endocrinology models.`,
+      readTimeMinutes: 8,
+      sortOrder: 49,
+    },
+    {
+      slug: "what-is-oxytocin-peptide",
+      title: "Oxytocin: Bonding Neuropeptide Research Guide",
+      summary:
+        "Oxytocin is a hypothalamic nonapeptide released from the posterior pituitary and directly within brain circuits. Researchers study its OXTR-mediated effects on social bonding, limbic reward modulation, and prosocial behavior — including how it interacts with melanocortin and dopaminergic systems.",
+      content: `Oxytocin is a cyclic nonapeptide (nine amino acids with an internal disulfide bridge) synthesized in magnocellular neurons of the hypothalamic paraventricular nucleus (PVN) and supraoptic nucleus (SON). It reaches the periphery via axonal transport to the posterior pituitary, from which it is released into systemic circulation. Critically, oxytocin is also released centrally by axon collaterals and dendrites of PVN/SON neurons that project directly to limbic, cortical, and brainstem structures — two anatomically and functionally distinct release pathways that serve different research functions.
+
+Oxytocin exerts its biological effects through the oxytocin receptor (OXTR), a Gq/11-protein-coupled GPCR that activates PLC/IP3/DAG second messenger cascades upon ligand binding, mobilizing intracellular calcium and activating PKC. OXTR is broadly expressed in the limbic system — including the nucleus accumbens (NAc), amygdala, hippocampus, and ventral tegmental area (VTA) — as well as hypothalamic and brainstem circuits. In the NAc, OXTR activation potentiates dopamine release via modulation of GABAergic interneuron tone, linking oxytocinergic signaling to mesolimbic reward circuitry. In the amygdala, OXTR modulates fear responses and the salience of social stimuli. In the VTA, oxytocin inputs influence dopaminergic neuron excitability, contributing to the reinforcing properties of social interaction.
+
+Research interest in oxytocin centers on its role as a neuromodulator of prosocial behavior, pair bonding, trust, and social reward. As a research compound it enables controlled interrogation of OXTR-mediated limbic circuit function. Combined with melanocortin receptor agonists like PT-141 (which activates MC3R/MC4R on overlapping hypothalamic circuits), oxytocin creates a dual-pathway model for studying the convergence of arousal signaling and social bonding on mesolimbic dopamine systems — two neurochemically distinct but functionally complementary axes whose interaction is a major focus in social neuroscience research.`,
+      readTimeMinutes: 7,
+      sortOrder: 50,
+    },
+  ];
+
+  for (const article of HORMONAL_ARTICLES) {
+    await db
+      .insert(educationArticles)
+      .values({
+        slug: article.slug,
+        title: article.title,
+        category: "peptides",
+        summary: article.summary,
+        content: article.content,
+        readTimeMinutes: article.readTimeMinutes,
+        sortOrder: article.sortOrder,
+        isPublished: true,
+      })
+      .onConflictDoNothing();
+  }
+}

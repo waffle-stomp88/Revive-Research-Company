@@ -1532,6 +1532,162 @@ Think of it like a fertilizer specifically designed to help brain cells form new
     takeaway: "Melanotan I and II are synthetic melanocortin receptor agonists that stimulate melanin production. MT-I is selective for MC1R (skin), while MT-II activates multiple receptors affecting pigmentation, appetite, and other systems."
   },
 
+  "what-is-gonadorelin-peptide": {
+    icon: Activity,
+    iconColor: "#e11d48",
+    intro: `Gonadorelin is a synthetic peptide that is chemically identical to a hormone your body naturally makes in the brain. That hormone — gonadotropin-releasing hormone (GnRH) — is the master signal that tells the pituitary gland to release the hormones that control reproductive function. Gonadorelin gives researchers a precise, controllable version of this signal to study in the lab.`,
+    sections: [
+      {
+        title: "What Gonadorelin Is",
+        content: `Gonadorelin is a ten-amino-acid peptide (a decapeptide) that is a perfect copy of the GnRH your hypothalamus normally produces. Because it is sequence-identical to the natural hormone, it binds the same receptors in the same way — just delivered on the researcher's schedule rather than the body's own rhythm.
+
+**The Pituitary Connection** - Gonadorelin travels to the pituitary gland and attaches to GnRH receptors on specialized cells called gonadotrophs. This triggers the release of two key hormones: LH (luteinizing hormone) and FSH (follicle-stimulating hormone).
+
+**The Downstream Cascade** - LH and FSH then travel to the gonads — testes in males, ovaries in females — where they control sex hormone production and reproductive function. Gonadorelin essentially starts this entire chain reaction.
+
+**Pulse vs. Continuous** - Naturally, GnRH is released in pulses rather than a continuous stream. The frequency and amplitude of those pulses determines which downstream hormones are stimulated and by how much. Gonadorelin lets researchers replicate this pulsatile pattern under controlled conditions.`
+      },
+      {
+        title: "Why Researchers Study It",
+        content: `Gonadorelin is a key research tool because it provides direct access to a critical regulatory node in the hormonal system:
+
+**HPG Axis Research** - The hypothalamic-pituitary-gonadal (HPG) axis is one of the most important hormonal control systems in the body. Gonadorelin allows researchers to activate it at the pituitary level specifically, separating the pituitary response from upstream hypothalamic activity.
+
+**Receptor Studies** - By using Gonadorelin at different doses and pulse frequencies, scientists investigate how GnRH receptors respond, desensitize, and recover — important for understanding receptor pharmacology.
+
+**Gonadotropin Dynamics** - Research models use Gonadorelin to study exactly how much LH and FSH the pituitary releases in response to GnRH, and how that output changes under different conditions.`
+      },
+      {
+        title: "How It Differs from GnRH Analogs",
+        content: `Gonadorelin is important to distinguish from other GnRH-related compounds in research:
+
+**Identical Sequence** - Unlike GnRH analogs such as Triptorelin or Leuprolide, Gonadorelin has no amino acid modifications. It is the natural sequence.
+
+**Short Half-Life** - Because it is unmodified, Gonadorelin is quickly broken down by enzymes. Analogs with modified amino acids (like D-Trp substitutions) last much longer and are used for different experimental purposes.
+
+**Agonist Action** - At normal doses, Gonadorelin stimulates LH and FSH release. This contrasts with prolonged exposure to some analogs, which can paradoxically suppress the HPG axis through receptor downregulation.`
+      }
+    ],
+    takeaway: "Gonadorelin is a synthetic copy of the brain's natural GnRH signal. Researchers use it to directly activate pituitary GnRH receptors and study how the HPG axis responds, making it a fundamental tool for reproductive neuroendocrinology research."
+  },
+
+  "what-is-triptorelin-peptide": {
+    icon: Dna,
+    iconColor: "#e11d48",
+    intro: `Triptorelin is a modified version of GnRH — the brain's reproductive hormone trigger — that has been engineered to be significantly more potent and longer-lasting than the natural signal. While Gonadorelin is an exact copy of the body's own GnRH, Triptorelin has one amino acid changed, giving it a dramatically different pharmacological profile that makes it especially useful in research.`,
+    sections: [
+      {
+        title: "The Key Modification",
+        content: `Triptorelin is a GnRH decapeptide with a D-Tryptophan (D-Trp) substitution at the sixth position of the amino acid chain. This single change has profound effects:
+
+**Enzyme Resistance** - The D-amino acid conformation is unusual — most enzymes in the body are designed to break down L-amino acid chains. The D-Trp at position 6 makes Triptorelin resistant to the proteolytic enzymes that rapidly degrade natural GnRH.
+
+**Longer Half-Life** - Because it survives longer before being broken down, Triptorelin remains active much longer than native GnRH or Gonadorelin, giving researchers more control over the duration of receptor stimulation.
+
+**Increased Potency** - The modification also increases binding affinity for the GnRH receptor by approximately 100-fold compared to natural GnRH — meaning a much smaller amount produces a much stronger signal.`
+      },
+      {
+        title: "How Researchers Use It",
+        content: `The extended activity and enhanced potency of Triptorelin create unique research opportunities:
+
+**Receptor Occupancy Studies** - Because Triptorelin stays bound to GnRHR longer, researchers can study what happens when receptors are occupied continuously versus in pulses. This reveals how receptor desensitization and downregulation work.
+
+**Gonadotropin Pulse Shaping** - Even though the compound persists longer, the pituitary's response to it can be studied across varying dose schedules to understand LH and FSH dynamics.
+
+**HPG Axis Pharmacology** - Triptorelin is used alongside other compounds (like SERMs) to create research models that probe the HPG axis from multiple regulatory angles simultaneously.`
+      },
+      {
+        title: "The Agonist Paradox",
+        content: `One of the most scientifically interesting aspects of Triptorelin research involves what happens with prolonged or continuous exposure:
+
+**Initial Stimulation** - When first administered, Triptorelin strongly stimulates the pituitary, producing a surge of LH and FSH output. This is the expected agonist response.
+
+**Receptor Downregulation** - With sustained exposure, GnRH receptors on pituitary cells are internalized and their number decreases. The pituitary becomes less responsive — a phenomenon called downregulation or desensitization.
+
+**Research Value** - This paradoxical effect — a potent agonist that can effectively suppress the system it initially activates — makes Triptorelin uniquely valuable for studying receptor dynamics, feedback mechanisms, and HPG axis plasticity.`
+      }
+    ],
+    takeaway: "Triptorelin is a high-affinity GnRH analog with a single D-amino acid substitution that makes it ~100× more potent and far longer-lasting than natural GnRH. Researchers use it to study GnRH receptor pharmacology, pituitary gonadotropin dynamics, and HPG axis regulation."
+  },
+
+  "what-is-enclomiphene-peptide": {
+    icon: Shield,
+    iconColor: "#e11d48",
+    intro: `Enclomiphene is a selective estrogen receptor modulator (SERM) — a compound that can block estrogen's effects in specific tissues. It is the active trans-isomer of clomiphene, a well-studied molecule in reproductive research. Enclomiphene is particularly interesting because it acts in the brain to interrupt the hormonal feedback loop that normally tells the body to slow down hormone production.`,
+    sections: [
+      {
+        title: "How SERMs Work",
+        content: `To understand Enclomiphene, it helps to understand selective estrogen receptor modulators:
+
+**Receptor Blocking vs. Activating** - Estrogen receptors can be activated (agonism) or blocked (antagonism). SERMs can do either depending on the tissue, which is why they are called "selective." Enclomiphene acts as an ERα antagonist in the hypothalamus and pituitary.
+
+**The Feedback Brake** - Your body uses estrogen as a feedback signal to regulate how much GnRH and gonadotropins (LH/FSH) it produces. When estrogen is high, it signals the hypothalamus and pituitary to slow production. This is the body's natural brake system.
+
+**Releasing the Brake** - By blocking estrogen receptors in these brain areas, Enclomiphene prevents the brake from working. The hypothalamus and pituitary no longer receive the "slow down" signal, so they continue — or increase — their production of GnRH, LH, and FSH.`
+      },
+      {
+        title: "Research Applications",
+        content: `Enclomiphene is a research tool for studying the HPG axis feedback system:
+
+**Feedback Pathway Studies** - Enclomiphene allows researchers to isolate and study estrogen-mediated negative feedback specifically. By removing this one input, scientists can observe how the HPG axis responds when that regulatory signal is absent.
+
+**Gonadotropin Disinhibition** - With the estrogen brake removed, researchers can measure how much LH and FSH the pituitary secretes when unconstrained. This reveals the system's baseline capacity.
+
+**Combined Axis Models** - When paired with compounds like Triptorelin that directly stimulate GnRHR, Enclomiphene creates dual-mechanism research models that study both receptor-level activation and feedback-loop removal simultaneously.`
+      },
+      {
+        title: "Why the Trans-Isomer Matters",
+        content: `Enclomiphene is specifically the trans-isomer of clomiphene, and that distinction is scientifically significant:
+
+**Clomiphene vs. Enclomiphene** - Clomiphene is actually a mixture of two isomers: zuclomiphene (cis) and enclomiphene (trans). Research has established that the trans-isomer carries the primary ERα antagonist activity relevant to HPG axis research.
+
+**Isomer Selectivity** - The different spatial arrangement of atoms in the trans configuration changes how the molecule interacts with estrogen receptors. This is an important example of how molecular geometry determines biological activity.
+
+**Research Precision** - Using the isolated trans-isomer rather than the mixture gives researchers more precise control over dosing and activity, which is important for reproducible experimental results.`
+      }
+    ],
+    takeaway: "Enclomiphene is a selective estrogen receptor antagonist (trans-isomer of clomiphene) that blocks estrogen's negative-feedback signals in the hypothalamus and pituitary, disinhibiting GnRH and gonadotropin secretion. It is a key research tool for studying HPG axis feedback regulation."
+  },
+
+  "what-is-oxytocin-peptide": {
+    icon: Heart,
+    iconColor: "#f43f5e",
+    intro: `Oxytocin is a nine-amino-acid peptide hormone produced naturally in the hypothalamus and released from the pituitary gland. Often called the "bonding molecule" in popular science, oxytocin has a much more nuanced and complex role in neuroscience research. It plays roles in social behavior, trust, reward, and bonding — and researchers study it to understand how the brain regulates these fundamental aspects of human experience.`,
+    sections: [
+      {
+        title: "Where Oxytocin Comes From",
+        content: `Oxytocin is synthesized by neurons in two specific areas of the hypothalamus:
+
+**Paraventricular Nucleus (PVN)** - A key hypothalamic structure where large oxytocin-producing neurons generate the peptide and send it both to the pituitary and directly to other brain regions.
+
+**Supraoptic Nucleus (SON)** - Another hypothalamic region involved in oxytocin production. Together with the PVN, it coordinates when and how much oxytocin is released.
+
+**Two Release Pathways** - Oxytocin reaches the body in two distinct ways. It is released from the posterior pituitary into the bloodstream (affecting peripheral tissues), and it is released directly within the brain by axon terminals (affecting neural circuits). These two pathways serve different purposes and are studied separately.`
+      },
+      {
+        title: "How It Affects the Brain",
+        content: `Oxytocin's effects on the brain are mediated through its receptor (OXTR), a G-protein coupled receptor found throughout the limbic system and social brain circuits:
+
+**Nucleus Accumbens** - A key reward center where OXTR activation potentiates dopamine signaling. This is thought to underlie the rewarding feelings associated with social connection.
+
+**Amygdala** - Oxytocin modulates amygdala activity, affecting how the brain processes fear, trust, and social cues. Research examines how OXTR activation influences social anxiety and approach behaviors.
+
+**Ventral Tegmental Area (VTA)** - Part of the mesolimbic dopamine system. Oxytocin signaling here contributes to social bonding by linking positive social experiences with dopamine reward circuits.`
+      },
+      {
+        title: "Research Models",
+        content: `Researchers study oxytocin across several scientific contexts:
+
+**Social Bonding Studies** - Oxytocin is a primary model peptide for understanding how the brain forms and maintains social bonds. Research investigates the OXTR-mediated circuits involved in pair-bonding and social memory.
+
+**Reward Circuit Research** - How does social interaction activate the same reward pathways as food or other reinforcers? Oxytocin research helps answer this by tracing its interactions with mesolimbic dopamine.
+
+**Multi-Pathway Models** - When combined with peptides like PT-141, which activates melanocortin receptors in overlapping brain circuits, oxytocin enables researchers to study how arousal and bonding systems interact — two neurochemically distinct pathways that converge on mesolimbic dopamine signaling.`
+      }
+    ],
+    takeaway: "Oxytocin is a hypothalamic nonapeptide released both peripherally and directly within brain circuits. Researchers study it to understand OXTR-mediated social bonding, limbic reward modulation, and how prosocial neural pathways interact with other neuroendocrine systems."
+  },
+
   "what-is-slu-pp-332-peptide": {
     icon: Zap,
     iconColor: "#E7FB10",
