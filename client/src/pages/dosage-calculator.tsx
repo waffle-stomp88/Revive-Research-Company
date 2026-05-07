@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
-import { Calculator, Droplet, Syringe, FlaskConical, AlertTriangle, Info, Beaker, Target, Sparkles, HelpCircle, GraduationCap, Zap } from "lucide-react";
+import { Calculator, Droplet, Syringe, FlaskConical, AlertTriangle, Info, Beaker, Target, Sparkles, HelpCircle, GraduationCap, Zap, Activity } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -121,7 +121,7 @@ export default function DosageCalculator() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 }}
-            className="mb-6 flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-[#E7FB10]/15 via-[#E7FB10]/8 to-transparent border border-[#E7FB10]/40 hover-elevate active-elevate-2 group"
+            className="mb-3 flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-[#E7FB10]/15 via-[#E7FB10]/8 to-transparent border border-[#E7FB10]/40 hover-elevate active-elevate-2 group"
             data-testid="link-try-wizard"
           >
             <div className="p-2.5 rounded-lg bg-[#E7FB10]/20 flex-shrink-0">
@@ -135,6 +135,28 @@ export default function DosageCalculator() {
             </div>
             <span className="text-xs text-[#E7FB10] font-medium hidden sm:inline group-hover:translate-x-1 transition-transform">
               Try it →
+            </span>
+          </motion.a>
+
+          <motion.a
+            href="/tools/peptide-pk-catalog"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08 }}
+            className="mb-6 flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-[#21d8ff]/10 via-[#21d8ff]/5 to-transparent border border-[#21d8ff]/30 hover-elevate active-elevate-2 group"
+            data-testid="link-pk-catalog"
+          >
+            <div className="p-2.5 rounded-lg bg-[#21d8ff]/15 flex-shrink-0">
+              <Activity className="h-5 w-5 text-[#21d8ff]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-[#21d8ff]">Peptide Half-Life Catalog</p>
+              <p className="text-xs text-gray-400 mt-0.5">
+                Compare IV vs SC half-lives side-by-side for 57 research compounds — no toggle needed.
+              </p>
+            </div>
+            <span className="text-xs text-[#21d8ff] font-medium hidden sm:inline group-hover:translate-x-1 transition-transform">
+              Browse →
             </span>
           </motion.a>
 
