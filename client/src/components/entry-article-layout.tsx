@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowLeft, ArrowRight, ChevronRight, FileCheck, BookOpen, Layers, Archive, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronRight, FileCheck, BookOpen, Layers, Archive, CheckCircle2, ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
 import { EmailCapture } from "@/components/email-capture";
 import type { BodySystemHub } from "@/data/body-system-hubs";
@@ -37,6 +37,7 @@ interface EntryArticleLayoutProps {
   publishDate?: string;
   modifiedDate?: string;
   systemHub?: BodySystemHub;
+  qualityTrustHub?: boolean;
 }
 
 export function EntryArticleLayout({
@@ -53,42 +54,70 @@ export function EntryArticleLayout({
   publishDate = "2026-02-05",
   modifiedDate = "2026-02-05",
   systemHub,
+  qualityTrustHub,
 }: EntryArticleLayoutProps) {
   useEffect(() => {
-    if (!systemHub) return;
+    if (!systemHub && !qualityTrustHub) return;
     const script = document.createElement("script");
     script.type = "application/ld+json";
     script.id = "breadcrumb-json-ld-entry";
-    script.textContent = JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Education Center",
-          "item": "https://reviveresearch.co/guides/peptide-education-center"
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": systemHub.name,
-          "item": `https://reviveresearch.co/systems/${systemHub.slug}`
-        },
-        {
-          "@type": "ListItem",
-          "position": 3,
-          "name": title,
-          "item": `https://reviveresearch.co${canonicalPath}`
-        }
-      ]
-    });
+    if (systemHub) {
+      script.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Education Center",
+            "item": "https://reviveresearch.co/guides/peptide-education-center"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": systemHub.name,
+            "item": `https://reviveresearch.co/systems/${systemHub.slug}`
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": title,
+            "item": `https://reviveresearch.co${canonicalPath}`
+          }
+        ]
+      });
+    } else if (qualityTrustHub) {
+      script.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Education Center",
+            "item": "https://reviveresearch.co/guides/peptide-education-center"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Quality & Trust",
+            "item": "https://reviveresearch.co/guides/peptide-education-center?tab=trust"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": title,
+            "item": `https://reviveresearch.co${canonicalPath}`
+          }
+        ]
+      });
+    }
     document.getElementById("breadcrumb-json-ld-entry")?.remove();
     document.head.appendChild(script);
     return () => {
       document.getElementById("breadcrumb-json-ld-entry")?.remove();
     };
-  }, [systemHub, title, canonicalPath]);
+  }, [systemHub, qualityTrustHub, title, canonicalPath]);
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -152,9 +181,9 @@ export function EntryArticleLayout({
           </Link>
         ) : (
           <Link href="/guides/peptide-education-center?tab=trust">
-            <Button variant="ghost" size="sm" className="mb-6 gap-2 text-muted-foreground" data-testid="button-back-to-education">
+            <Button variant="ghost" size="sm" className="mb-3 gap-2 text-muted-foreground" data-testid="button-back-to-education">
               <ArrowLeft className="h-4 w-4" />
-              Back to Trust & Verification
+              Back to Quality & Trust
             </Button>
           </Link>
         )}
@@ -176,6 +205,31 @@ export function EntryArticleLayout({
                   data-testid="link-breadcrumb-system"
                 >
                   {systemHub.name}
+                </Link>
+              </li>
+              <li><ChevronRight className="h-3 w-3 flex-shrink-0" /></li>
+              <li className="text-foreground font-medium" data-testid="text-breadcrumb-current">{title}</li>
+            </ol>
+          </nav>
+        )}
+
+        {qualityTrustHub && (
+          <nav aria-label="Breadcrumb" className="mb-6" data-testid="nav-breadcrumb-trust">
+            <ol className="flex items-center gap-1 text-xs text-muted-foreground flex-wrap">
+              <li>
+                <Link href="/guides/peptide-education-center" className="hover:text-foreground transition-colors" data-testid="link-breadcrumb-education">
+                  Education Center
+                </Link>
+              </li>
+              <li><ChevronRight className="h-3 w-3 flex-shrink-0" /></li>
+              <li>
+                <Link
+                  href="/guides/peptide-education-center?tab=trust"
+                  className="hover:text-foreground transition-colors font-medium"
+                  style={{ color: "#21d8ff" }}
+                  data-testid="link-breadcrumb-trust"
+                >
+                  Quality &amp; Trust
                 </Link>
               </li>
               <li><ChevronRight className="h-3 w-3 flex-shrink-0" /></li>
@@ -314,6 +368,38 @@ export function EntryArticleLayout({
                   </p>
                 </div>
                 <ArrowRight className="h-5 w-5 flex-shrink-0 ml-4" style={{ color: systemHub.color }} />
+              </div>
+            </Link>
+          </motion.div>
+        )}
+
+        {qualityTrustHub && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.35 }}
+            className="mt-8 mb-10"
+            data-testid="section-explore-trust"
+          >
+            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent mb-6" />
+            <Link href="/guides/peptide-education-center?tab=trust" data-testid="link-explore-trust">
+              <div
+                className="flex items-center justify-between p-4 rounded-lg border cursor-pointer hover:opacity-90 transition-opacity"
+                style={{ borderColor: "#21d8ff33", background: "#21d8ff08" }}
+              >
+                <div className="flex items-start gap-3">
+                  <ShieldCheck className="h-5 w-5 mt-0.5 flex-shrink-0" style={{ color: "#21d8ff" }} />
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-widest font-mono mb-0.5">Explore trust content</p>
+                    <p className="font-display font-semibold text-base" style={{ color: "#21d8ff" }}>
+                      Quality &amp; Trust hub
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-0.5">
+                      Browse all guides on COAs, batch testing, purity, and verification
+                    </p>
+                  </div>
+                </div>
+                <ArrowRight className="h-5 w-5 flex-shrink-0 ml-4" style={{ color: "#21d8ff" }} />
               </div>
             </Link>
           </motion.div>

@@ -82,6 +82,7 @@ export default function CoaTrust() {
       }
       faqs={faqs}
       ctaLinks={ctaLinks}
+      qualityTrustHub
     >
       <TrustScaleGraphic />
 

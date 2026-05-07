@@ -87,6 +87,7 @@ export default function VerifyQuality() {
       }
       faqs={faqs}
       ctaLinks={ctaLinks}
+      qualityTrustHub
     >
       <ArticleSection title="Why Healthy Skepticism Matters">
         <p>

@@ -82,6 +82,7 @@ export default function ResearchUseOnly() {
       }
       faqs={faqs}
       ctaLinks={ctaLinks}
+      qualityTrustHub
     >
       <ArticleSection title="What RUO Actually Means">
         <p>

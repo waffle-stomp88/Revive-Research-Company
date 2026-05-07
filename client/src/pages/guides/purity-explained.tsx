@@ -87,6 +87,7 @@ export default function PurityExplained() {
       }
       faqs={faqs}
       ctaLinks={ctaLinks}
+      qualityTrustHub
     >
       <ArticleSection title="What Purity Percentage Measures">
         <p>

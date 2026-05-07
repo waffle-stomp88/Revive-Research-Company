@@ -87,6 +87,7 @@ export default function CheapPeptides() {
       }
       faqs={faqs}
       ctaLinks={ctaLinks}
+      qualityTrustHub
     >
       <ArticleSection title="What Goes Into Peptide Pricing">
         <p>

@@ -81,6 +81,7 @@ export default function BatchTesting() {
       }
       faqs={faqs}
       ctaLinks={ctaLinks}
+      qualityTrustHub
     >
       <BatchTestingPipeline />
 
