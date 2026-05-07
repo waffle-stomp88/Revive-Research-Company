@@ -1557,7 +1557,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                     {c.pk.note && (
                       <div className="mt-3 rounded-md overflow-hidden" style={{ background: "rgba(255,255,255,0.035)", border: "1px solid rgba(255,255,255,0.07)" }}>
                         <p className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground/40 px-2.5 pt-2 pb-1">Search log</p>
-                        <p className="text-[11px] text-muted-foreground/55 italic leading-relaxed px-2.5 pb-2.5">{c.pk.note}</p>
+                        <p className="text-xs text-muted-foreground/60 italic leading-relaxed px-2.5 pb-2.5">{c.pk.note}</p>
                       </div>
                     )}
                   </div>
