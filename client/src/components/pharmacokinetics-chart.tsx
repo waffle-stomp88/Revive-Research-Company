@@ -4,8 +4,8 @@ import { Lock, Clock, Info, ExternalLink, ArrowLeftRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { getHalfLifeByName, hasKineticMismatch, PK_VISIBLE_LOWER_RATIO, PK_VISIBLE_UPPER_RATIO } from "@/data/pharmacokinetics";
-import type { HalfLifeEntry } from "@/data/pharmacokinetics";
+import { getHalfLifeByName, hasKineticMismatch, PK_VISIBLE_LOWER_RATIO, PK_VISIBLE_UPPER_RATIO, getCitationQuality } from "@/data/pharmacokinetics";
+import type { HalfLifeEntry, CitationQuality } from "@/data/pharmacokinetics";
 import { isNonSCRoute, pkMidpoint, computeXMax, buildPKCurve, ptsToD } from "@/lib/pk-curve";
 import { readStoredZoom, writeStoredZoom } from "@/lib/zoom-storage";
 
@@ -142,6 +142,77 @@ function useCountUp(finalValue: string, delay = 0, duration = 1.1): string {
     return () => cancelAnimationFrame(raf);
   }, [finalValue, delay, duration]);
   return displayed;
+}
+
+const CITATION_QUALITY_CONFIG: Record<
+  CitationQuality,
+  { label: string; color: string; bg: string; border: string; description: string }
+> = {
+  primary: {
+    label: "Primary source",
+    color: "#22c55e",
+    bg: "rgba(34,197,94,0.12)",
+    border: "rgba(34,197,94,0.35)",
+    description: "A compound-specific pharmacokinetics study directly measured this half-life value.",
+  },
+  "class-proxy": {
+    label: "Class proxy",
+    color: "#f59e0b",
+    bg: "rgba(245,158,11,0.12)",
+    border: "rgba(245,158,11,0.35)",
+    description: "The half-life is anchored by a review article, a structurally related compound, or indirect class-level pharmacokinetic data.",
+  },
+  estimated: {
+    label: "Estimated",
+    color: "rgba(255,255,255,0.38)",
+    bg: "rgba(255,255,255,0.06)",
+    border: "rgba(255,255,255,0.14)",
+    description: "No pharmacokinetics study was identified; the value is extrapolated from peptide class clearance data or route modelling.",
+  },
+};
+
+const QUALITY_LEGEND = (
+  <div className="space-y-2">
+    <p className="text-[11px] font-semibold text-foreground mb-1.5">Citation quality levels</p>
+    {(Object.entries(CITATION_QUALITY_CONFIG) as [CitationQuality, typeof CITATION_QUALITY_CONFIG[CitationQuality]][]).map(([key, cfg]) => (
+      <div key={key} className="flex items-start gap-2">
+        <span
+          className="mt-0.5 shrink-0 text-[9px] font-semibold px-1.5 py-px rounded"
+          style={{ color: cfg.color, backgroundColor: cfg.bg, border: `1px solid ${cfg.border}` }}
+        >
+          {cfg.label}
+        </span>
+        <p className="text-[10px] text-muted-foreground leading-relaxed">{cfg.description}</p>
+      </div>
+    ))}
+  </div>
+);
+
+function CitationAuditBadge({
+  quality,
+  testId,
+}: {
+  quality: CitationQuality;
+  testId?: string;
+}) {
+  const cfg = CITATION_QUALITY_CONFIG[quality];
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span
+          className="inline-flex items-center text-[9px] font-semibold px-1.5 py-px rounded cursor-help select-none"
+          style={{ color: cfg.color, backgroundColor: cfg.bg, border: `1px solid ${cfg.border}` }}
+          data-testid={testId}
+          aria-label={`Citation quality: ${cfg.label}. ${cfg.description}`}
+        >
+          {cfg.label}
+        </span>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="max-w-[280px] p-3">
+        {QUALITY_LEGEND}
+      </TooltipContent>
+    </Tooltip>
+  );
 }
 
 function AnimatedStat({ label, value, color, delay }: { label: string; value: string; color: string; delay: number }) {
@@ -1119,6 +1190,12 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                     >
                       {routeLabel(c.pk.route)}
                     </span>
+                    {c.basePk && (
+                      <CitationAuditBadge
+                        quality={getCitationQuality(c.basePk, isAltActive ? "alt" : "primary")}
+                        testId={`badge-citation-quality-${toTestSlug(c.peptide.name)}`}
+                      />
+                    )}
                     {hasAltToggle && (
                       <button
                         className="inline-flex items-center gap-1 rounded text-[10px] font-medium px-2 py-0.5 transition-colors"
@@ -1374,6 +1451,12 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                       </button>
                     );
                   })()}
+                  {c.basePk && (
+                    <CitationAuditBadge
+                      quality={getCitationQuality(c.basePk, c.activeRoute === "alt" ? "alt" : "primary")}
+                      testId={`badge-citation-quality-${toTestSlug(c.peptide.name)}`}
+                    />
+                  )}
                   <Popover>
                     <PopoverTrigger asChild>
                       <button

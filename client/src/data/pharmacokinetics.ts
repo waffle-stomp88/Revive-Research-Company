@@ -590,6 +590,86 @@ export interface Citation {
   routeContext?: string;
 }
 
+/**
+ * Citation quality levels for PK half-life data.
+ *
+ * - "primary"     : A compound-specific pharmacokinetics study directly
+ *                   measured the reported half-life.
+ * - "class-proxy" : The half-life is anchored by a review article, a related
+ *                   compound, or indirect class-level PK data.
+ * - "estimated"   : No published pharmacokinetics study was identified; the
+ *                   value is extrapolated from class clearance data or route
+ *                   modelling.
+ */
+export type CitationQuality = "primary" | "class-proxy" | "estimated";
+
+/**
+ * Derive citation quality from citation list, note text, and half-life label.
+ * An explicit `citationQuality` override (when provided) always wins.
+ */
+export function deriveCitationQuality(
+  citations: Citation[],
+  note: string | undefined,
+  halfLifeLabel: string,
+  explicit?: CitationQuality,
+): CitationQuality {
+  if (explicit !== undefined) return explicit;
+
+  const n = (note ?? "").toLowerCase();
+  const label = halfLifeLabel.toLowerCase();
+
+  // No citations at all → definitely estimated
+  if (citations.length === 0) return "estimated";
+
+  // Half-life label explicitly flagged as an estimate
+  if (label.includes("estimate)")) return "estimated";
+
+  // Class-proxy markers — checked before "no compound-specific" so entries
+  // that have a proxy citation with real (indirect) PK data are not
+  // incorrectly collapsed into "estimated".
+  if (
+    n.includes("off-compound proxy") ||
+    n.includes("compiling primary") ||
+    n.includes("secondary source compiling") ||
+    n.includes("no primary pharmacokinetic literature exists") ||
+    n.includes("half-life estimate derived from preclinical") ||
+    n.includes("described by receptor mechanism class") ||
+    (n.includes("is not explicitly reported") && n.includes("estimate"))
+  ) return "class-proxy";
+
+  // No compound-specific PK study found → estimated
+  if (
+    n.includes("no compound-specific") ||
+    n.includes("no english-indexed pubmed pharmacokinetics")
+  ) return "estimated";
+
+  return "primary";
+}
+
+/**
+ * Get the effective citation quality for a PK entry given the active route
+ * toggle ("primary" = main entry, "alt" = altRoute).
+ */
+export function getCitationQuality(
+  entry: HalfLifeEntry,
+  activeRoute: "primary" | "alt" = "primary",
+): CitationQuality {
+  if (activeRoute === "alt" && entry.altRoute) {
+    return deriveCitationQuality(
+      entry.altRoute.citations,
+      entry.altRoute.note,
+      entry.altRoute.halfLifeLabel,
+      entry.altRoute.citationQuality,
+    );
+  }
+  return deriveCitationQuality(
+    entry.citations,
+    entry.note,
+    entry.halfLifeLabel,
+    entry.citationQuality,
+  );
+}
+
 export interface AltRouteHalfLife {
   route: string;
   halfLifeMin?: number;
@@ -597,6 +677,7 @@ export interface AltRouteHalfLife {
   halfLifeLabel: string;
   citations: Citation[];
   note?: string;
+  citationQuality?: CitationQuality;
 }
 
 export interface HalfLifeEntry {
@@ -609,6 +690,7 @@ export interface HalfLifeEntry {
   pkContext: string;
   citations: Citation[];
   note?: string;
+  citationQuality?: CitationQuality;
   altRoute?: AltRouteHalfLife;
   ivHalfLifeMin?: number;
   ivHalfLifeMax?: number;
@@ -825,6 +907,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Documented plasma half-life of approximately 2 hours following subcutaneous administration in human pharmacokinetic studies; peak plasma concentrations observed within 1–2 hours of SC injection. Thymosin alpha-1 (thymalfasin) undergoes proteolytic clearance without accumulation.",
     citations: [pmid("11381492", "Ancell et al. (2001) — Thymosin alpha-1 pharmacological review, Am J Health Syst Pharm")],
+    citationQuality: "class-proxy",
     note: "No compound-specific primary plasma pharmacokinetics study was identified in PubMed. Ancell et al. (2001) is a pharmacological review article, not a primary PK study; it remains the most authoritative English-language PubMed-indexed source synthesising the available clinical PK data and is retained as proxy. Thymalfasin (Zadaxin, SciClone Pharmaceuticals) is a marketed compound whose development program generated plasma PK data informing the ~2 h SC half-life widely cited in clinical pharmacology; however, the underlying primary PK study from the early development era is not indexed in PubMed as a standalone pharmacokinetics paper. May 2026 follow-up audit: PubMed searched with '(thymosin alpha-1 OR thymalfasin OR \"thymosin α1\" OR zadaxin) AND (pharmacokinetics OR \"half-life\" OR \"plasma concentration\" OR bioavailability)' — no standalone primary plasma PK paper distinct from the Ancell 2001 review was identified. Confirmed null result. Half-life estimate is consistent with the ~2 h value cited across thymalfasin clinical pharmacology literature.",
   },
   {
@@ -966,6 +1049,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Plasma half-life of free reduced glutathione (GSH) following intravenous administration is estimated at approximately 1–2 minutes; plasma GSH is rapidly taken up by erythrocytes and peripheral tissues, with cellular GSH pools maintained through intracellular synthesis and the glutathione redox cycle. Intravenous N-acetylcysteine studies using stable isotope labeling confirm indirect GSH plasma kinetics on a similar timescale. Following subcutaneous administration, local absorption prolongs systemic entry; the effective plasma presence window for free GSH is estimated at approximately 10–30 minutes, though most GSH encountered systemically will still be rapidly sequestered by erythrocytes and tissues.",
     citations: [pmid("26052837", "Zhou et al. (2015) — Intravenous N-acetylcysteine and indirect glutathione pharmacokinetics and redox status, J Pharm Sci")],
+    citationQuality: "class-proxy",
     note: "SC route half-life is an estimate based on published small-peptide subcutaneous absorption models; no compound-specific PubMed-indexed SC pharmacokinetics study for glutathione was identified during citation audit (April 2026).",
     altRoute: {
       route: "subcutaneous",
@@ -1230,6 +1314,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Plasma half-life of Melanotan II (a cyclic heptapeptide melanocortin receptor agonist) is approximately 20–40 minutes following subcutaneous administration in published clinical pharmacokinetic studies; more rapid plasma clearance than the linear Melanotan I analogue.",
     citations: [pmid("9647890", "Wessells et al. (1998) — Synthetic melanotropic peptide initiates erections in men: the first clinical trials of PT-141, J Urol")],
+    citationQuality: "class-proxy",
   },
 
   // ─── Neuropeptides / CNS ─────────────────────────────────────────────────────
@@ -1429,7 +1514,9 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Cyanocobalamin (vitamin B12) following intramuscular or subcutaneous injection demonstrates a terminal plasma half-life of approximately 4–6 days; the initial distribution phase is rapid, with liver uptake within 1 hour. Long-term tissue stores in the liver have an effective biological half-life of years, but plasma pharmacokinetics reflect a multi-day terminal phase. Methylcobalamin (an active coenzyme form of B12) administered by subcutaneous or intramuscular injection has been directly characterised in a published LC-MS/MS pharmacokinetics study in rats (Hotta & Mano, 2024), confirming dose-proportional kinetics and complete (~100%) bioavailability via both SC and IM routes.",
     citations: [pmid("39245417", "Hotta & Mano (2024) — Pharmacokinetic profiles of methylcobalamin in rats after multiple administration routes by a simple LC-MS/MS assay, J Pharmacol Toxicol Methods")],
-    note: "Citation upgraded (May 2026): Hotta & Mano (2024, J Pharmacol Toxicol Methods, PMID 39245417) is a primary compound-specific pharmacokinetics study of methylcobalamin (MBL, a biologically active B12 coenzyme form) in rats, developing and validating an LC-MS/MS assay (LLOQ 20 ng/mL, plasma volume 0.01 mL) and characterising PK after intravenous, intramuscular, and subcutaneous administration. The study confirms dose-proportional kinetics at 5–20 mg/kg and complete (~100%) bioavailability for both IM and SC routes. Note: this study characterises methylcobalamin specifically; the existing ~4–6 day terminal plasma half-life value reflects cyanocobalamin (the most common injectable B12 form), which has a substantially longer plasma terminal half-life than methylcobalamin due to lower protein-binding and different hepatic retention kinetics. The cited Hotta & Mano study does not report the multi-day terminal half-life characteristic of cyanocobalamin; it is cited because it is the most relevant compound-specific SC/IM B12-form pharmacokinetics study currently indexed in PubMed. No compound-specific cyanocobalamin SC pharmacokinetics study was identified.",  },
+    citationQuality: "class-proxy",
+    note: "Citation upgraded (May 2026): Hotta & Mano (2024, J Pharmacol Toxicol Methods, PMID 39245417) is a primary compound-specific pharmacokinetics study of methylcobalamin (MBL, a biologically active B12 coenzyme form) in rats, developing and validating an LC-MS/MS assay (LLOQ 20 ng/mL, plasma volume 0.01 mL) and characterising PK after intravenous, intramuscular, and subcutaneous administration. The study confirms dose-proportional kinetics at 5–20 mg/kg and complete (~100%) bioavailability for both IM and SC routes. Note: this study characterises methylcobalamin specifically; the existing ~4–6 day terminal plasma half-life value reflects cyanocobalamin (the most common injectable B12 form), which has a substantially longer plasma terminal half-life than methylcobalamin due to lower protein-binding and different hepatic retention kinetics. The cited Hotta & Mano study does not report the multi-day terminal half-life characteristic of cyanocobalamin; it is cited because it is the most relevant compound-specific SC/IM B12-form pharmacokinetics study currently indexed in PubMed. No compound-specific cyanocobalamin SC pharmacokinetics study was identified.",
+  },
   {
     slug: "l-carnitine",
     name: "L-Carnitine",
@@ -1451,6 +1538,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Lipo-C is a lipotropic complex combining lipoic acid, vitamin C (ascorbic acid), and related cofactors. The plasma half-life of the primary active component, intravenous ascorbic acid (vitamin C), is approximately 30–60 minutes following intravenous administration at research-relevant doses, after which tissue saturation and renal clearance dominate. Individual lipotropic components (methionine, inositol, choline) exhibit longer plasma persistence.",
     citations: [pmid("11340098", "Graumlich et al. (1997) — Pharmacokinetics of ascorbic acid in healthy adults after intravenous and oral dosing, Pharmacotherapy")],
+    citationQuality: "class-proxy",
     note: "Cited half-life reflects the primary ascorbic acid component following IV administration. Other Lipo-C constituents have distinct pharmacokinetic profiles. SC route half-life is an estimate for the ascorbic acid component; no compound-specific PubMed-indexed SC pharmacokinetics study for ascorbic acid was identified (see altRoute.note). The SC estimate extrapolates from the known IV clearance kinetics and the additional absorption-phase delay typical of subcutaneous small-molecule injection.",
     altRoute: {
       route: "subcutaneous",
