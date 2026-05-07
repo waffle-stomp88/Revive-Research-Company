@@ -977,10 +977,10 @@ export default function PkCatalog() {
           </div>
 
           {/* PK info box */}
-          <div className="flex gap-2 items-start rounded-md bg-[#21d8ff]/5 border border-[#21d8ff]/15 px-3 py-2.5 mb-6">
-            <Info className="h-4 w-4 text-[#21d8ff]/60 flex-shrink-0 mt-0.5" />
+          <div className="flex gap-2 items-start rounded-md bg-[#E7FB10]/5 border border-[#E7FB10]/20 px-3 py-2.5 mb-6">
+            <Info className="h-4 w-4 text-[#E7FB10]/70 flex-shrink-0 mt-0.5" />
             <p className="text-sm text-foreground/65 leading-relaxed">
-              <span className="text-[#21d8ff]/80 font-medium">About dual-route compounds.</span>{" "}
+              <span className="text-[#E7FB10]/90 font-medium">About dual-route compounds.</span>{" "}
               Some compounds are studied via multiple administration routes (e.g. IV and SC). Route
               of administration affects the absorption phase, altering the apparent half-life
               researchers observe in plasma. Compounds marked{" "}
