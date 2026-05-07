@@ -225,7 +225,7 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
                     className="inline-flex items-center gap-0.5 rounded text-[9px] px-1.5 py-0.5 bg-amber-500/10 text-amber-400 border border-amber-500/25 cursor-pointer hover-elevate"
                   >
                     <AlertTriangle className="h-2.5 w-2.5 shrink-0" />
-                    Indirect evidence
+                    Indirect evidence{!primaryIsIndirect && altIsIndirect && altRouteAbbrev ? ` (${altRouteAbbrev})` : ""}
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="top" className="max-w-xs text-xs leading-relaxed space-y-1">
