@@ -21,6 +21,8 @@ import { SEOHead } from "@/components/seo-head";
 import { PEPTIDE_HALF_LIVES, getCitationQuality } from "@/data/pharmacokinetics";
 import type { HalfLifeEntry } from "@/data/pharmacokinetics";
 import { isEstimatedLabel, formatPKLabel, getEstimateTooltip, getEstimateShortLabel } from "@/lib/pk-label";
+import { MiniPKChart } from "@/components/mini-pk-chart";
+import { ARTICLE_VISUAL_SLUGS } from "@/pages/education";
 
 // Exclude composite multi-peptide stacks from the catalog
 const COMPOSITE_SLUGS = new Set([
@@ -336,6 +338,11 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
 
           <div className="flex-1" />
 
+          {/* Mini PK curve thumbnail */}
+          <div style={{ maxHeight: 64 }}>
+            <MiniPKChart peptideNames={[entry.name]} stackId={entry.slug} />
+          </div>
+
           {/* PK context */}
           <p
             ref={pkContextRef}
@@ -357,14 +364,18 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
 
           {/* Footer */}
           <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between">
-            <Link
-              href={`/guides/what-is-${entry.slug}-peptide`}
-              data-testid={`link-article-${entry.slug}`}
-            >
-              <span className="text-[10px] text-[#21d8ff]/50 hover:text-[#21d8ff]/80 transition-colors cursor-pointer">
-                Read article →
-              </span>
-            </Link>
+            {ARTICLE_VISUAL_SLUGS.has(`what-is-${entry.slug}-peptide`) ? (
+              <Link
+                href={`/guides/what-is-${entry.slug}-peptide?from=pk-catalog`}
+                data-testid={`link-article-${entry.slug}`}
+              >
+                <span className="text-[10px] text-[#21d8ff]/50 hover:text-[#21d8ff]/80 transition-colors cursor-pointer">
+                  Read article →
+                </span>
+              </Link>
+            ) : (
+              <span />
+            )}
             {altRouteAbbrev && dual && (
               <span className="text-[10px] text-muted-foreground/30">
                 {ROUTE_ABBREV[entry.route.toLowerCase()] ?? entry.route} vs {altRouteAbbrev}

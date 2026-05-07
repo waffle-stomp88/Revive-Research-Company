@@ -184,6 +184,8 @@ const articleVisuals: Record<string, () => JSX.Element> = {
   "what-is-oxytocin-peptide": () => <OxytocinVisual />,
 };
 
+export const ARTICLE_VISUAL_SLUGS: ReadonlySet<string> = new Set(Object.keys(articleVisuals));
+
 const categories = [
   { id: "all", label: "All Articles", icon: BookOpen, color: "#ffffff" },
   { id: "peptides", label: "Peptide Profiles", icon: FlaskConical, color: "#ec4899" },
@@ -526,6 +528,11 @@ export default function Education() {
   const handleBackToArticles = () => {
     setExpandedArticle(null);
     if (params.slug) {
+      const fromParam = new URLSearchParams(window.location.search).get("from");
+      if (fromParam === "pk-catalog") {
+        setLocation("/tools/peptide-pk-catalog");
+        return;
+      }
       setLocation("/guides/peptide-education-center");
     }
     requestAnimationFrame(() => {
@@ -896,7 +903,9 @@ export default function Education() {
                           data-testid="button-back-to-articles"
                         >
                           <ArrowLeft className="h-4 w-4" />
-                          Back to {getCategoryLabel(activeCategory)}
+                          {new URLSearchParams(window.location.search).get("from") === "pk-catalog"
+                            ? "Back to PK Catalog"
+                            : `Back to ${getCategoryLabel(activeCategory)}`}
                         </button>
 
                         {articleSystemHub && (
