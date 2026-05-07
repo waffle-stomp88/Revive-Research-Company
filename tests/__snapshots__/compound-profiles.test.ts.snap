@@ -1,5 +1,18 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`compound-profiles — PK profile snapshots > enclomiphene PK fields are present and stable 1`] = `
+{
+  "citationIds": [
+    "22355298",
+  ],
+  "halfLifeLabel": "~8–12 h",
+  "halfLifeMax": 720,
+  "halfLifeMin": 480,
+  "route": "oral",
+  "slug": "enclomiphene",
+}
+`;
+
 exports[`compound-profiles — PK profile snapshots > gonadorelin PK fields are present and stable 1`] = `
 {
   "citationIds": [
@@ -17,6 +30,7 @@ exports[`compound-profiles — PK profile snapshots > kisspeptin-10 PK fields ar
 {
   "citationIds": [
     "24449855",
+    "19237537",
   ],
   "halfLifeLabel": "~15–30 min",
   "halfLifeMax": 30,

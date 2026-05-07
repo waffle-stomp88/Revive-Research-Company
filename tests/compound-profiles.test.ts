@@ -194,4 +194,8 @@ describe("compound-profiles — PK profile snapshots", () => {
   it("oxytocin PK fields are present and stable", () => {
     expect(pkSnapshot("oxytocin")).toMatchSnapshot();
   });
+
+  it("enclomiphene PK fields are present and stable", () => {
+    expect(pkSnapshot("enclomiphene")).toMatchSnapshot();
+  });
 });
