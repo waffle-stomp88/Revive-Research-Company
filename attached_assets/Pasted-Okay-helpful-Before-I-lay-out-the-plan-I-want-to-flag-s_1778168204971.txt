@@ -1,0 +1,58 @@
+Okay, helpful. Before I lay out the plan, I want to flag something and then have you do some discovery — because "subscription frontend exists" + "stub webhook handler" + "not sure about plans" tells me there's likely more built than you remember, and we need to know what state it's in before deciding what to fix.
+
+**One important thing to flag first:**
+
+"Subscribe & save on individual products" with PayPal subscriptions has a real architectural problem you should be aware of: **PayPal subscriptions require a pre-created billing plan for each price point.** If you have 137 SKUs across multiple dosage tiers and bulk packs, and each can be subscribed to at a discounted recurring rate, you potentially need hundreds of subscription plans created in PayPal — one per (SKU × subscription tier × discount) combo. PayPal supports this but it's painful to manage.
+
+Some platforms work around this with Stripe (which lets you set arbitrary recurring amounts without pre-defined plans). PayPal is stricter. **Worth knowing before we dive in** — I'm not saying don't do it, just flagging the operational reality. We'll see how your code is currently approaching it.
+
+**Discovery I need from your Replit agent before I can give you a real plan:**
+
+Have the agent answer these — paste me the responses:
+
+**1. What's already built in code?**
+
+> "Show me the subscription-related files and routes. Specifically:
+> - Where is the subscription checkout component on the frontend? What does it call?
+> - Is there a server route that creates a PayPal subscription (likely calls `subscriptionsController.createSubscription` or hits `/v1/billing/subscriptions`)?
+> - Are PayPal billing plan IDs stored in the database (in the products table or a separate plans table), or hardcoded somewhere, or fetched dynamically?
+> - Is there a `subscriptions` table in the schema separate from `orders`?"
+
+**2. What's the current state of the webhook handler?**
+
+> "Pull the full `/api/paypal/webhook` handler and list every event type case it has, even the stubs. I want to see what events were anticipated when this was scaffolded."
+
+**3. What plans already exist on PayPal's side?**
+
+You'll need to check this yourself — the agent can't see your PayPal dashboard:
+- Log into PayPal developer dashboard, **Live mode** (toggle top-left)
+- Go to **Apps & Credentials** → click your live app
+- Look for a **Products & Plans** section, OR
+- Run this in the agent: *"Make a GET request to `https://api-m.paypal.com/v1/catalogs/products` using my live PayPal credentials. List any products that come back."*
+- Then: *"Make a GET request to `https://api-m.paypal.com/v1/billing/plans` and list the plans."*
+
+That'll tell us if there are sandbox plans you tested with months ago, live plans someone (you?) created, or nothing at all on the live side.
+
+**4. How is "Subscribe & save" presented on the frontend?**
+
+> "On a product detail page, what does the subscribe option look like in code? Is there a discount applied? Is the customer choosing a frequency (monthly/quarterly)? How does the price get sent to PayPal?"
+
+---
+
+Once you have those four answers, I can tell you concretely:
+
+- Whether the existing code is salvageable or needs to be reworked
+- How many plans you need to create in PayPal (could be 1, could be hundreds, depends on architecture)
+- What webhook events specifically need real handler logic
+- What the test sequence looks like
+- Whether to launch with one-time only and add subscriptions in v2, or push through and launch both
+
+**Honest pre-emptive recommendation:** if the subscription code was scaffolded but never finished, and the webhook handler is stubs, **strongly consider launching with one-time checkout only and adding subscriptions as a v1.1 release in 2-4 weeks.** Reasons:
+
+- Your competitors (the ones you'd compare to on PeptideCritic) mostly don't offer subscriptions for research peptides
+- "Subscribe & save" implies repeat-customer trust you haven't earned yet — you have 7 pre-launch users
+- A broken subscription flow at launch is much worse than no subscription flow
+- It removes a major surface area for things to go wrong on day one
+- Adds zero friction to revenue — customers happy to buy once will buy again manually
+
+But that's your call. Pull the four discovery items and we'll decide based on what's actually in the codebase.

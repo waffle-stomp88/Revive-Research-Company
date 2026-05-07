@@ -1051,64 +1051,24 @@ export default function ProductDetail() {
                   </div>
                   
                   <div 
-                    className={`relative flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                      purchaseType === "subscription" 
-                        ? "border-[#21d8ff] bg-[#21d8ff]/5" 
-                        : "border-border hover:border-border/80"
-                    }`}
-                    onClick={() => setPurchaseType("subscription")}
+                    className="relative flex items-center p-3 rounded-lg border-2 border-border/40 opacity-50 cursor-not-allowed select-none"
                     data-testid="option-subscription"
                   >
                     <div className="flex-1">
                       <div className="flex items-center gap-1.5">
                         <Repeat className="h-3.5 w-3.5" />
                         <span className="font-medium text-sm">Subscribe</span>
-                        <Badge className="bg-[#21d8ff] text-[10px] px-1 py-0">15% off</Badge>
+                        <Badge variant="secondary" className="text-[10px] px-1 py-0">Coming Soon</Badge>
                       </div>
                       <p className="text-xs text-muted-foreground mt-0.5">
                         Auto-delivery
                       </p>
                     </div>
-                    {purchaseType === "subscription" && (
-                      <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-[#21d8ff] flex items-center justify-center flex-shrink-0">
-                        <Check className="h-3 w-3 text-black" />
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
             )}
 
-            {purchaseType === "subscription" && !isOutOfStock && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mb-3 md:mb-4"
-              >
-                <Label className="text-xs font-medium mb-1.5 block text-muted-foreground">Delivery Frequency</Label>
-                <div className="grid grid-cols-3 gap-2">
-                  {subscriptionOptions.map((option) => {
-                    const discountedPrice = getBasePrice() * (1 - option.discount / 100);
-                    return (
-                      <div 
-                        key={option.value}
-                        className={`relative flex flex-col items-center p-2 rounded-lg border cursor-pointer transition-all ${
-                          subscriptionInterval === option.value 
-                            ? "border-[#21d8ff] bg-[#21d8ff]/5" 
-                            : "border-border hover:border-border/80"
-                        }`}
-                        onClick={() => setSubscriptionInterval(option.value)}
-                        data-testid={`option-interval-${option.value}`}
-                      >
-                        <span className="font-medium text-xs">{option.label}</span>
-                        <span className="text-[10px] text-[#21d8ff]">{option.discount}% off</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            )}
 
             <div className="flex items-center justify-between text-xs text-muted-foreground mb-2 md:mb-3">
               {!isOutOfStock && (
@@ -1193,11 +1153,6 @@ export default function ProductDetail() {
                   <Heart className={`h-4 w-4 ${isInWishlist ? "fill-current" : ""}`} />
                   {isInWishlist ? "Saved to Wishlist" : "Save to Wishlist"}
                 </Button>
-                {purchaseType === "subscription" && (
-                  <p className="text-[10px] text-center text-muted-foreground">
-                    Save ${((getBasePrice() - getDiscountedPrice()) * quantity).toFixed(2)} per order • Cancel anytime
-                  </p>
-                )}
               </div>
             ) : (
               /* Out of Stock - Show prominent notification signup */

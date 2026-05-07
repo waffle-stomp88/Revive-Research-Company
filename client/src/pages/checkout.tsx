@@ -1455,44 +1455,16 @@ export default function Checkout() {
                           <Clock className="h-5 w-5" />
                           Coming Soon
                         </Button>
-                      ) : isSubscription && product ? (
-                        <SubscriptionCheckout
-                          basePrice={Number(product.price) * quantity}
-                          frequency={interval as "weekly" | "biweekly" | "monthly"}
-                          productName={product.name}
-                          productId={product.id}
-                          dosage={searchParams.get("dosage") || undefined}
-                          quantity={quantity}
-                          onSuccess={(data) => {
-                            toast({
-                              title: "Subscription Created!",
-                              description: "Your subscription is now active.",
-                            });
-                            clearCart();
-                            localStorage.removeItem("appliedDiscount");
-                          }}
-                          onError={handlePayPalError}
-                          className="w-full"
-                        />
-                      ) : cartSubscriptionItem ? (
-                        <SubscriptionCheckout
-                          basePrice={cartSubscriptionItem.price}
-                          frequency={cartSubscriptionItem.subscriptionInterval || "monthly"}
-                          productName={cartSubscriptionItem.name}
-                          productId={cartSubscriptionItem.productId}
-                          dosage={cartSubscriptionItem.dosage}
-                          quantity={cartSubscriptionItem.quantity}
-                          onSuccess={(data) => {
-                            toast({
-                              title: "Subscription Created!",
-                              description: "Your subscription is now active.",
-                            });
-                            clearCart();
-                            localStorage.removeItem("appliedDiscount");
-                          }}
-                          onError={handlePayPalError}
-                          className="w-full"
-                        />
+                      ) : isSubscription || cartSubscriptionItem ? (
+                        <Button
+                          size="lg"
+                          className="w-full font-display text-lg gap-2 bg-muted text-muted-foreground cursor-not-allowed"
+                          disabled
+                          data-testid="button-subscription-coming-soon"
+                        >
+                          <Clock className="h-5 w-5" />
+                          Subscriptions Coming Soon
+                        </Button>
                       ) : (
                         <PayPalCheckout
                           amount={cartTotal.toFixed(2)}
