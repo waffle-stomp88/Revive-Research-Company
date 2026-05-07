@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import {
@@ -203,6 +203,29 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
   const [pkExpanded, setPkExpanded] = useState(false);
   const pkContextRef = useRef<HTMLParagraphElement>(null);
 
+  // Defer MiniPKChart until the card is near the viewport
+  const [chartVisible, setChartVisible] = useState(false);
+  const chartSlotRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = chartSlotRef.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setChartVisible(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setChartVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   function handleCaveatClick() {
     setPkExpanded(true);
     setTimeout(() => {
@@ -217,7 +240,7 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
       className="h-full"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.02, duration: 0.3 }}
+      transition={{ delay: index < 12 ? index * 0.02 : 0, duration: 0.3 }}
     >
       <div
         className="relative h-full flex flex-col rounded-md bg-[#07070b] border border-white/8 overflow-hidden"
@@ -338,9 +361,11 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
 
           <div className="flex-1" />
 
-          {/* Mini PK curve thumbnail */}
-          <div style={{ maxHeight: 64 }}>
-            <MiniPKChart peptideNames={[entry.name]} stackId={entry.slug} />
+          {/* Mini PK curve thumbnail — deferred until card is near viewport */}
+          <div ref={chartSlotRef} style={{ height: 64 }}>
+            {chartVisible && (
+              <MiniPKChart peptideNames={[entry.name]} stackId={entry.slug} />
+            )}
           </div>
 
           {/* PK context */}
