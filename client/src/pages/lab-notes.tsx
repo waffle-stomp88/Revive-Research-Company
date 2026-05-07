@@ -335,19 +335,30 @@ export default function LabNotes() {
                   <X className="h-3 w-3" />
                 </Badge>
               )}
-              {Array.from(activeCategories).map((cat) => (
-                <Badge
-                  key={cat}
-                  variant="outline"
-                  className="text-xs gap-1 cursor-pointer"
-                  style={{ borderColor: getCategoryColor(cat), color: getCategoryColor(cat) }}
-                  onClick={() => toggleCategory(cat)}
-                  data-testid={`chip-filter-${cat.toLowerCase()}`}
-                >
-                  {cat}
-                  <X className="h-3 w-3" />
-                </Badge>
-              ))}
+              {Array.from(activeCategories).map((cat) => {
+                const color = getCategoryColor(cat);
+                const count = categoryCounts[cat] ?? 0;
+                return (
+                  <Badge
+                    key={cat}
+                    variant="outline"
+                    className="text-xs gap-1 cursor-pointer"
+                    style={{ borderColor: color, color }}
+                    onClick={() => toggleCategory(cat)}
+                    data-testid={`chip-filter-${cat.toLowerCase()}`}
+                  >
+                    {cat}
+                    <span
+                      className="inline-flex items-center justify-center rounded-full text-xs font-semibold min-w-[1.25rem] h-4 px-1"
+                      style={{ backgroundColor: `${color}25`, color }}
+                      data-testid={`chip-badge-count-${cat.toLowerCase()}`}
+                    >
+                      {count}
+                    </span>
+                    <X className="h-3 w-3" />
+                  </Badge>
+                );
+              })}
               <Button
                 variant="ghost"
                 size="sm"
