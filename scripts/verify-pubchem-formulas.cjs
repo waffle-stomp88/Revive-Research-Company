@@ -52,6 +52,7 @@ const ENTRIES = [
   { slug: "gonadorelin",      cid: 638793,     formula: "C55H75N17O13",      mw: "1182.32" },
   { slug: "triptorelin",      cid: 25074470,   formula: "C64H82N18O13",      mw: "1311.46" },
   { slug: "kisspeptin-10",    cid: 25240297,   formula: "C63H83N17O14",      mw: "1302.46" },
+  { slug: "kisspeptin-54",    cid: 71306396,   formula: "C258H401N79O78",     mw: "5857"    },
   { slug: "aicar",            cid: 17513,      formula: "C9H14N4O5",         mw: "258.23"  },
   { slug: "b12-injection",    cid: 6436232,    formula: "C63H91CoN13O14P",   mw: "1344.38" },
   { slug: "l-carnitine",      cid: 2724480,    formula: "C7H15NO3",          mw: "161.20"  },
