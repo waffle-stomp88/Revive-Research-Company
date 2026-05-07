@@ -273,7 +273,7 @@ exports[`compound-profiles — PK profile snapshots > mgf PK fields are present 
 exports[`compound-profiles — PK profile snapshots > mots-c PK fields are present and stable 1`] = `
 {
   "citationIds": [
-    "25738459",
+    "30394592",
   ],
   "halfLifeLabel": "~1–2 h",
   "halfLifeMax": 120,

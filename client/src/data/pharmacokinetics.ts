@@ -90,6 +90,7 @@
  *  - MOTS-C: Lee et al. 2015 (Cell Metab, PMID 25738459) is the discovery /
  *    metabolic-biology paper for MOTS-c, not a pharmacokinetics study. Half-life
  *    estimate is from mitochondrial-derived peptide class data. Note added.
+ *    (Subsequently upgraded — see May 2026 MOTS-C citation update below.)
  *  - Epithalon: Khavinson (2002, Neuro Endocrinol Lett, PMID 12374906) is a
  *    review article on peptides and ageing, not a primary PK study. Note added.
  *  - Thymosin Alpha-1: Ancell et al. (2001, Am J Health Syst Pharm,
@@ -125,9 +126,24 @@
  *    TB-500 doping-control study (Ho et al. 2012, PMID 23084823), consistent
  *    with the individual TB-500 entry upgrade performed in April 2026.
  *
- *  No additional proxy upgrades were possible (at that audit pass): for all
- *  remaining proxy-cited entries, no compound-specific English-indexed PubMed
- *  pharmacokinetics study was identified during that audit pass.
+ *  No additional proxy upgrades were possible at that time: for all remaining
+ *  proxy-cited entries, no compound-specific English-indexed PubMed
+ *  pharmacokinetics study was identified during this audit pass.
+ *
+ * Citation update (May 2026): MOTS-C upgraded from discovery-paper proxy to
+ *  direct compound-specific plasma study:
+ *  - MOTS-C: Lee et al. 2015 (Cell Metab, PMID 25738459) replaced with Knoop,
+ *    Thomas & Thevis (2019, PMID 30394592) — "Development of a mass
+ *    spectrometry based detection method for the mitochondrion-derived peptide
+ *    MOTS-c in plasma samples for doping control purposes", Rapid Commun Mass
+ *    Spectrom 33(4):371–380. The paper develops and fully validates an LC/MS
+ *    assay for MOTS-c in human plasma (LLOQ 100 pg/mL), characterises in vitro
+ *    metabolism (four peptide metabolites, two oxidation products), and confirms
+ *    endogenous plasma reference ranges in healthy subjects. This is a direct,
+ *    compound-specific plasma study of MOTS-c itself — not a proxy. Plasma
+ *    elimination half-life is not explicitly reported; the ~1–2 h estimate is
+ *    retained from mitochondrial-derived peptide class kinetics. The note field
+ *    is updated to reflect the upgrade.
  *
  * Citation update (May 2026): Direct SC vasopressin PK citation added:
  *  - Vasopressin SC: estimated SC window replaced with direct SC measurement.
@@ -282,9 +298,9 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeLabel: "~1–2 h",
     route: "subcutaneous",
     pkContext:
-      "Reported plasma half-life of approximately 1–2 hours following subcutaneous administration in published mitochondrial-derived peptide pharmacokinetic studies.",
-    citations: [pmid("25738459", "Lee et al. (2015) — MOTS-c mitochondrial-derived peptide promotes metabolic homeostasis, Cell Metab")],
-    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed; Lee et al. (2015, Cell Metab) is the primary MOTS-c discovery and metabolic-biology paper, not a pharmacokinetics study. Half-life estimate is based on mitochondrial-derived peptide class clearance data.",
+      "MOTS-c has been directly characterised in human plasma in a PubMed-indexed doping control validation study using liquid chromatography–mass spectrometry (Knoop et al., 2019); the fully validated assay demonstrates MOTS-c is detectable in plasma at concentrations down to 100 pg/mL, and in vitro metabolism studies identified four peptide metabolites and two oxidation products, confirming rapid enzymatic processing of the peptide in plasma. Plasma half-life of approximately 1–2 hours is estimated from mitochondrial-derived peptide class clearance data and the rapid in vitro metabolic degradation profile documented in the cited study.",
+    citations: [pmid("30394592", "Knoop et al. (2019) — Development of a mass spectrometry based detection method for MOTS-c in plasma samples for doping control purposes, Rapid Commun Mass Spectrom")],
+    note: "Citation upgraded (May 2026) from the Lee et al. (2015, Cell Metab, PMID 25738459) discovery-paper proxy to Knoop, Thomas & Thevis (2019, Rapid Commun Mass Spectrom, PMID 30394592) — a direct, compound-specific plasma characterisation study of MOTS-c itself. Plasma elimination half-life is not explicitly reported in the cited study; the ~1–2 h estimate is retained from mitochondrial-derived peptide class kinetics.",
   },
   {
     slug: "rr-a3",
