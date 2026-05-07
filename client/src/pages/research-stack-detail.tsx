@@ -25,6 +25,13 @@ import type { Product } from "@shared/schema";
 import productImage from "@assets/reta bottle_1764310671562.jpg";
 import { RESEARCH_STACKS_BY_ID } from "@/data/research-stacks";
 import { PharmacokineticsChart } from "@/components/pharmacokinetics-chart";
+import {
+  GonadorelinVisual,
+  TriptorelinVisual,
+  EnclomipheneVisual,
+  OxytocinVisual,
+  KisspeptinVisual,
+} from "@/components/education";
 
 type PurchaseType = "one-time" | "subscription";
 type SubscriptionInterval = "weekly" | "biweekly" | "monthly";
@@ -97,6 +104,14 @@ export default function ResearchStackDetail() {
   const isHealingStack = stack.peptides.length > 0 && stack.peptides.every(
     p => HEALING_PEPTIDES.has(p.name.toLowerCase())
   );
+
+  const STACK_VISUALS: Record<string, React.FC[]> = {
+    "gonadorelin-kisspeptin-hpg-cascade": [GonadorelinVisual, KisspeptinVisual],
+    "triptorelin-enclomiphene-hpg-axis": [TriptorelinVisual, EnclomipheneVisual],
+    "melanocortin-arousal-stack": [OxytocinVisual],
+  };
+
+  const stackVisuals = STACK_VISUALS[stack.id] ?? [];
 
   const getBasePrice = () => pricing?.stackPrice ?? 0;
 
@@ -614,6 +629,28 @@ export default function ResearchStackDetail() {
                     ))}
                   </div>
                 </div>
+              )}
+
+              {stackVisuals.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.1 }}
+                  className="mb-8 space-y-10"
+                  data-testid="section-compound-infographics"
+                >
+                  <div className="h-px bg-gradient-to-r from-[#9d4edd]/40 via-[#21d8ff]/30 to-transparent" />
+                  <div className="flex items-center gap-3 mb-6">
+                    <FlaskConical className="h-5 w-5 text-[#9d4edd]" />
+                    <h3 className="font-display font-semibold text-lg">Compound Mechanism Visuals</h3>
+                  </div>
+                  {stackVisuals.map((VisualComponent, idx) => (
+                    <div key={idx} data-testid={`compound-visual-${idx}`}>
+                      <VisualComponent />
+                    </div>
+                  ))}
+                  <div className="h-px bg-gradient-to-r from-[#21d8ff]/40 via-[#9d4edd]/30 to-transparent" />
+                </motion.div>
               )}
 
               <div data-testid="section-storage-overview">
