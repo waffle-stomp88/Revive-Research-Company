@@ -16,7 +16,7 @@ exports[`compound-profiles — PK profile snapshots > 5-amino-1mq PK fields are 
 exports[`compound-profiles — PK profile snapshots > ace-031 PK fields are present and stable 1`] = `
 {
   "citationIds": [
-    "22570080",
+    "23169607",
   ],
   "halfLifeLabel": "~10–14 days",
   "halfLifeMax": 20160,
@@ -55,7 +55,7 @@ exports[`compound-profiles — PK profile snapshots > b12-injection PK fields ar
 exports[`compound-profiles — PK profile snapshots > cag-sema-blend PK fields are present and stable 1`] = `
 {
   "citationIds": [
-    "34555300",
+    "33894838",
   ],
   "halfLifeLabel": "~7 days (both components)",
   "halfLifeMax": undefined,
@@ -68,7 +68,7 @@ exports[`compound-profiles — PK profile snapshots > cag-sema-blend PK fields a
 exports[`compound-profiles — PK profile snapshots > cagrilintide PK fields are present and stable 1`] = `
 {
   "citationIds": [
-    "34555300",
+    "33894838",
   ],
   "halfLifeLabel": "~7 days",
   "halfLifeMax": undefined,
@@ -94,7 +94,7 @@ exports[`compound-profiles — PK profile snapshots > cjc-1295-w-dac PK fields a
 exports[`compound-profiles — PK profile snapshots > dsip PK fields are present and stable 1`] = `
 {
   "citationIds": [
-    "6202839",
+    "6145137",
   ],
   "halfLifeLabel": "~20–30 min (SC estimate)",
   "halfLifeMax": 30,
@@ -107,7 +107,7 @@ exports[`compound-profiles — PK profile snapshots > dsip PK fields are present
 exports[`compound-profiles — PK profile snapshots > enclomiphene PK fields are present and stable 1`] = `
 {
   "citationIds": [
-    "22355298",
+    "23875626",
   ],
   "halfLifeLabel": "~8–12 h",
   "halfLifeMax": 720,
@@ -253,7 +253,7 @@ exports[`compound-profiles — PK profile snapshots > melanotan-ii PK fields are
 exports[`compound-profiles — PK profile snapshots > mgf PK fields are present and stable 1`] = `
 {
   "citationIds": [
-    "12011461",
+    "12095637",
   ],
   "halfLifeLabel": "~20–30 min",
   "halfLifeMax": 30,
@@ -279,7 +279,7 @@ exports[`compound-profiles — PK profile snapshots > mots-c PK fields are prese
 exports[`compound-profiles — PK profile snapshots > oxytocin PK fields are present and stable 1`] = `
 {
   "citationIds": [
-    "6831191",
+    "6831225",
     "6692949",
   ],
   "halfLifeLabel": "~3–5 min",
@@ -293,7 +293,7 @@ exports[`compound-profiles — PK profile snapshots > oxytocin PK fields are pre
 exports[`compound-profiles — PK profile snapshots > peg-mgf PK fields are present and stable 1`] = `
 {
   "citationIds": [
-    "15286081",
+    "15067712",
   ],
   "halfLifeLabel": "~3–5 days",
   "halfLifeMax": 7200,
@@ -319,7 +319,7 @@ exports[`compound-profiles — PK profile snapshots > pinealon PK fields are pre
 exports[`compound-profiles — PK profile snapshots > rr-a1 PK fields are present and stable 1`] = `
 {
   "citationIds": [
-    "27906128",
+    "28349386",
   ],
   "halfLifeLabel": "~7 days",
   "halfLifeMax": 11040,

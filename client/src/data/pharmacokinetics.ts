@@ -1265,7 +1265,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     route: "subcutaneous",
     pkContext:
       "This selective GLP-1 receptor agonist class demonstrates a plasma half-life of approximately 7 days (165–184 hours) following subcutaneous administration, as documented in published pharmacokinetic studies of long-acting GLP-1 receptor agonists engineered with C18 fatty-acid albumin-binding modifications enabling once-weekly dosing.",
-    citations: [pmid("27906128", "Marbury et al. (2017) — Pharmacokinetics of subcutaneous semaglutide once-weekly in subjects with renal impairment, J Clin Pharmacol")],
+    citations: [pmid("28349386", "Marbury et al. (2017) — Pharmacokinetics and tolerability of a single dose of semaglutide in subjects with and without renal impairment, Clin Pharmacokinet")],
     note: "Described by receptor mechanism class only. No originator compound name appears in this entry.",
   },
   {
@@ -1278,7 +1278,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "This dual GLP-1/GIP receptor agonist class demonstrates a plasma half-life of approximately 5 days following subcutaneous administration, as documented in published phase 1 pharmacokinetic studies of dual incretin receptor agonists engineered for once-weekly dosing via C20 fatty-diacid albumin binding.",
     citations: [pmid("35143108", "Urva et al. (2022) — Tirzepatide, a novel GIP and GLP-1 receptor agonist — a 26-week randomised, double-blind, phase 2b dose-finding study in patients with type 2 diabetes, Lancet")],
-    note: "Described by receptor mechanism class only. No originator compound name appears in this entry.",
+    note: "Described by receptor mechanism class only. No originator compound name appears in this entry. PMID audit (May 2026): PMID 35143108 resolves to Serra et al. (2022, Neurogastroenterol Motil — management of bloating), an unrelated paper. Exhaustive NCBI eutils searches for the Urva 2022 tirzepatide Lancet paper returned no matching PMID. No correct PMID was identified; the citation label is retained as-is pending resolution.",
   },
   {
     slug: "cagrilintide",
@@ -1289,7 +1289,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     route: "subcutaneous",
     pkContext:
       "Documented plasma half-life of approximately 7 days following subcutaneous administration in published clinical pharmacokinetic studies; cagrilintide is a long-acting fatty-acid-conjugated amylin analogue engineered for once-weekly administration via albumin binding.",
-    citations: [pmid("34555300", "Enebo et al. (2021) — Safety, tolerability, pharmacokinetics, and pharmacodynamics of cagrilintide, Lancet")],
+    citations: [pmid("33894838", "Enebo et al. (2021) — Safety, tolerability, pharmacokinetics, and pharmacodynamics of concomitant administration of cagrilintide with semaglutide 2·4 mg, Lancet")],
   },
   {
     slug: "mazdutide",
@@ -1301,7 +1301,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Plasma half-life of approximately 4.5–6 days following subcutaneous administration in published pharmacokinetic studies; mazdutide is a GLP-1/glucagon dual receptor agonist with fatty-acid albumin-binding modifications enabling once-weekly administration.",
     citations: [pmid("37086042", "Xu et al. (2023) — Pharmacokinetics and pharmacodynamics of mazdutide in healthy Chinese subjects, Clin Pharmacol Drug Dev")],
-    note: "PMID citation links to a published mazdutide phase 1 pharmacokinetic study; no separate compound-specific PubMed review was identified.",
+    note: "PMID audit (May 2026): PMID 37086042 resolves to Kurose et al. (2024, Pest Manag Sci — invasive weed mycoherbicides), an unrelated paper. Exhaustive NCBI eutils searches for the Xu 2023 mazdutide Clin Pharmacol Drug Dev paper returned no matching PMID. No correct PMID was identified; the citation label is retained as-is pending resolution.",
   },
   {
     slug: "survodutide",
@@ -1330,7 +1330,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     route: "subcutaneous",
     pkContext:
       "The Cag+Sema blend combines cagrilintide (long-acting amylin analogue, t½ ~7 days) and semaglutide (selective GLP-1 receptor agonist, t½ ~1 week), both administered subcutaneously. Both constituent compounds are fatty-acid-conjugated albumin binders engineered for once-weekly dosing, yielding a composite plasma activity window of approximately one week. Published pharmacokinetic data exist for each component independently.",
-    citations: [pmid("34555300", "Enebo et al. (2021) — Cagrilintide pharmacokinetics and pharmacodynamics, Lancet")],
+    citations: [pmid("33894838", "Enebo et al. (2021) — Safety, tolerability, pharmacokinetics, and pharmacodynamics of concomitant administration of cagrilintide with semaglutide 2·4 mg, Lancet")],
     note: "Composite PK profile. Semaglutide and cagrilintide have independently documented ~7-day half-lives following subcutaneous administration; no primary pharmacokinetic literature exists for this specific proprietary blend.",
   },
 
@@ -1363,7 +1363,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Plasma half-life of the base peptide form of triptorelin (a GnRH agonist decapeptide) is approximately 3–8 hours following subcutaneous administration in published pharmacokinetic studies. Depot microsphere formulations dramatically extend the effective duration to weeks or months; the half-life cited here refers to the base peptide, not depot preparations.",
     citations: [pmid("9652178", "Losa et al. (1998) — Pharmacokinetic properties of triptorelin administered by different routes, Eur J Drug Metab Pharmacokinet")],
-    note: "Half-life refers to the base peptide form, not slow-release depot formulations.",
+    note: "Half-life refers to the base peptide form, not slow-release depot formulations. PMID audit (May 2026): PMID 9652178 resolves to Tan et al. (1998, Singapore Med J — sinonasal disease distribution), an unrelated paper. Exhaustive NCBI eutils searches for the Losa 1998 triptorelin Eur J Drug Metab Pharmacokinet paper returned no matching PMID. No correct PMID was identified; the citation label is retained as-is pending resolution.",
   },
   {
     slug: "enclomiphene",
@@ -1374,7 +1374,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     route: "oral",
     pkContext:
       "Plasma half-life of enclomiphene (the trans-isomer of clomiphene) is approximately 8–12 hours following oral administration, as characterized in published pharmacokinetic and pharmacodynamic studies of enclomiphene citrate; enclomiphene undergoes hepatic metabolism and enterohepatic recirculation, yielding a substantially longer half-life than the cis-isomer (zuclomiphene). Selective ERα antagonist activity at the hypothalamus and anterior pituitary persists over the dosing interval consistent with this plasma half-life.",
-    citations: [pmid("22355298", "Wiehle et al. (2013) — Enclomiphene citrate stimulates testosterone and LH secretion pharmacokinetics and pharmacodynamics study, Int J Impot Res")],
+    citations: [pmid("23875626", "Wiehle et al. (2013) — Testosterone restoration by enclomiphene citrate in men with secondary hypogonadism: pharmacodynamics and pharmacokinetics, BJU Int")],
     note: "Half-life refers to the trans-isomer (enclomiphene) specifically; the cis-isomer (zuclomiphene) has a markedly shorter half-life. Cited study documents enclomiphene pharmacokinetics and pharmacodynamics following oral administration.",
   },
   {
@@ -1390,7 +1390,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
       pmid("24449855", "Jayasena et al. (2014) — Kisspeptin-54 and kisspeptin-10 pharmacodynamics compared in healthy men, J Clin Endocrinol Metab"),
       pmid("19237537", "Chan et al. (2009) — Kisspeptin-54 stimulates gonadotropin release most potently via a subcutaneous bolus route of administration with pharmacokinetic profiling, Eur J Endocrinol"),
     ],
-    note: "IV route variant: following intravenous bolus administration, plasma half-life is approximately 2–5 minutes (Chan et al. 2009, PMID 19237537; Jayasena et al. 2014, PMID 24449855), compared with ~15–30 minutes via the subcutaneous route. The shorter IV half-life reflects the 10-residue peptide's rapid neprilysin-mediated cleavage upon direct systemic entry, without the absorption-phase delay seen after subcutaneous injection.",
+    note: "IV route variant: following intravenous bolus administration, plasma half-life is approximately 2–5 minutes (Chan et al. 2009, PMID 19237537; Jayasena et al. 2014, PMID 24449855), compared with ~15–30 minutes via the subcutaneous route. The shorter IV half-life reflects the 10-residue peptide's rapid neprilysin-mediated cleavage upon direct systemic entry, without the absorption-phase delay seen after subcutaneous injection. PMID audit (May 2026): PMID 24449855 resolves to Villafana et al. (2014, Proc Natl Acad Sci — femtosecond pump-probe microscopy of artwork), an unrelated paper. PMID 19237537 resolves to Ehrlund et al. (2009, Mol Cell Biol — E3 ubiquitin ligase RNF31), an unrelated paper. Exhaustive NCBI eutils searches for the Jayasena 2014 JCEM paper and the Chan 2009 Eur J Endocrinol paper returned no matching PMIDs. No correct PMIDs were identified for either citation; both labels are retained as-is pending resolution.",
     ivHalfLifeMin: 2,
     ivHalfLifeMax: 5,
     ivHalfLifeLabel: "~2–5 min",
@@ -1408,12 +1408,12 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
       pmid("24449855", "Jayasena et al. (2014) — Kisspeptin-54 and kisspeptin-10 compared for gonadotropin-stimulating activity in healthy men, J Clin Endocrinol Metab"),
       pmid("19237537", "Chan et al. (2009) — Kisspeptin-54 stimulates gonadotropin release most potently via a subcutaneous bolus route of administration with pharmacokinetic profiling, Eur J Endocrinol"),
     ],
-    note: "IV route variant: following intravenous bolus administration, plasma half-life is approximately 10–20 minutes (Dhillo et al. 2005, PMID 16278289; Chan et al. 2009, PMID 19237537), compared with ~28–35 minutes via the subcutaneous route. The shorter IV half-life reflects direct systemic entry and rapid neprilysin-mediated cleavage without a subcutaneous absorption phase. Citation note: Dhillo et al. (2005, PMID 16278289) characterises IV administration only and is therefore assigned exclusively to the IV altRoute citations array. Chan et al. (2009, PMID 19237537) primarily documents the SC bolus PK profile and is assigned exclusively to the parent SC citations array; its IV comparison data are referenced here by note only.",
+    note: "IV route variant: following intravenous bolus administration, plasma half-life is approximately 10–20 minutes (Dhillo et al. 2005, PMID 16174713; Chan et al. 2009, PMID 19237537), compared with ~28–35 minutes via the subcutaneous route. The shorter IV half-life reflects direct systemic entry and rapid neprilysin-mediated cleavage without a subcutaneous absorption phase. Citation note: Dhillo et al. (2005, PMID 16174713) characterises IV administration only and is therefore assigned exclusively to the IV altRoute citations array. Chan et al. (2009, PMID 19237537) primarily documents the SC bolus PK profile and is assigned exclusively to the parent SC citations array; its IV comparison data are referenced here by note only. PMID correction (May 2026): the Dhillo 2005 JCEM citation was previously recorded as PMID 16278289 which resolves to an unrelated 2006 FASEB J paper; the correct PMID for Dhillo et al. (2005, J Clin Endocrinol Metab) is 16174713, confirmed via NCBI eutils. PMID audit (May 2026 — unresolved): PMID 24449855 (Jayasena 2014) resolves to an unrelated PNAS paper and PMID 19237537 (Chan 2009) resolves to an unrelated Mol Cell Biol paper; no correct PMIDs were found for either after exhaustive eutils search — retained pending resolution.",
     altRoute: {
       route: "intravenous",
       halfLifeLabel: "~10–20 min",
       citations: [
-        pmid("16278289", "Dhillo et al. (2005) — Kisspeptin-54 stimulates the hypothalamic-pituitary gonadal axis in human males, J Clin Endocrinol Metab"),
+        pmid("16174713", "Dhillo et al. (2005) — Kisspeptin-54 stimulates the hypothalamic-pituitary gonadal axis in human males, J Clin Endocrinol Metab"),
       ],
     },
     ivHalfLifeMin: 10,
@@ -1451,6 +1451,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Plasma half-life of Melanotan I (afamelanotide, a linear alpha-MSH analogue) is approximately 1–1.5 hours following subcutaneous administration in published pharmacokinetic studies; slower clearance than Melanotan II owing to linear (vs. cyclic) peptide structure.",
     citations: [pmid("17503484", "Hjuler et al. (2007) — Pharmacokinetics of afamelanotide — a synthetic analogue of alpha-MSH, Eur J Drug Metab Pharmacokinet")],
+    note: "PMID audit (May 2026): PMID 17503484 resolves to Rosenman et al. (2007, Am J Ind Med — worker compensation claims), an unrelated paper. Exhaustive NCBI eutils searches for the Hjuler 2007 afamelanotide Eur J Drug Metab Pharmacokinet paper returned no matching PMID. No correct PMID was identified; the citation label is retained as-is pending resolution.",
   },
   {
     slug: "melanotan-ii",
@@ -1482,8 +1483,8 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     route: "subcutaneous",
     pkContext:
       "Delta sleep-inducing peptide (DSIP) plasma half-life is estimated at approximately 20–30 minutes following subcutaneous administration based on the IV half-life (10–20 min, Graf & Kastin 1984) extended by the subcutaneous absorption-phase delay expected for this nine-amino-acid neuropeptide (Trp-Ala-Gly-Gly-Asp-Ala-Ser-Gly-Glu). Intravenous administration of DSIP in preclinical pharmacokinetics studies yields a plasma half-life of approximately 10–20 minutes, as reviewed by Graf & Kastin (1984), reflecting rapid multi-enzymatic clearance upon direct systemic entry; the SC estimate adds the absorption-phase extension. No compound-specific SC plasma pharmacokinetics study has been identified.",
-    citations: [pmid("6202839", "Graf & Kastin (1984) — Delta-sleep-inducing peptide (DSIP): a review, Neurosci Biobehav Rev")],
-    note: "SC half-life is an estimate derived from the published IV half-life (10–20 min, Graf & Kastin 1984) plus the absorption-phase extension expected for subcutaneous injection of a nine-amino-acid neuropeptide — the same IV-plus-absorption-phase modelling used for VIP (see VIP note). No compound-specific PubMed-indexed plasma pharmacokinetics study for DSIP subcutaneous administration was identified in the April 2026 citation audit or in the May 2026 SC-inferred-from-IV systematic pass. Dedicated PubMed search (May 2026): '(DSIP OR \"delta sleep-inducing peptide\" OR \"delta sleep inducing peptide\" OR \"Trp-Ala-Gly-Gly-Asp-Ala-Ser-Gly-Glu\") AND (subcutaneous OR \"SC\") AND (pharmacokinetics OR absorption OR bioavailability OR \"half-life\" OR \"plasma concentration\")' — DSIP pharmacokinetic literature consists of IV-administered preclinical studies reviewed by Graf & Kastin (1984) and sleep-induction efficacy studies; no primary SC plasma pharmacokinetics study was identified. Confirmed null. IV route variant: plasma half-life of approximately 10–20 minutes following intravenous administration, as compiled in Graf & Kastin (1984, PMID 6202839), a comprehensive DSIP review covering preclinical pharmacokinetics studies of intravenously administered DSIP. The Graf & Kastin review is a secondary source compiling primary IV DSIP pharmacokinetics data.",
+    citations: [pmid("6145137", "Graf & Kastin (1984) — Delta-sleep-inducing peptide (DSIP): a review, Neurosci Biobehav Rev")],
+    note: "SC half-life is an estimate derived from the published IV half-life (10–20 min, Graf & Kastin 1984) plus the absorption-phase extension expected for subcutaneous injection of a nine-amino-acid neuropeptide — the same IV-plus-absorption-phase modelling used for VIP (see VIP note). No compound-specific PubMed-indexed plasma pharmacokinetics study for DSIP subcutaneous administration was identified in the April 2026 citation audit or in the May 2026 SC-inferred-from-IV systematic pass. Dedicated PubMed search (May 2026): '(DSIP OR \"delta sleep-inducing peptide\" OR \"delta sleep inducing peptide\" OR \"Trp-Ala-Gly-Gly-Asp-Ala-Ser-Gly-Glu\") AND (subcutaneous OR \"SC\") AND (pharmacokinetics OR absorption OR bioavailability OR \"half-life\" OR \"plasma concentration\")' — DSIP pharmacokinetic literature consists of IV-administered preclinical studies reviewed by Graf & Kastin (1984) and sleep-induction efficacy studies; no primary SC plasma pharmacokinetics study was identified. Confirmed null. IV route variant: plasma half-life of approximately 10–20 minutes following intravenous administration, as compiled in Graf & Kastin (1984, PMID 6145137), a comprehensive DSIP review covering preclinical pharmacokinetics studies of intravenously administered DSIP. The Graf & Kastin review is a secondary source compiling primary IV DSIP pharmacokinetics data. PMID correction (May 2026): the previous citation carried PMID 6202839 which resolves to McIntyre et al. (1984, J Neurochem — postmortem serotonin changes), an unrelated paper; the correct PMID for Graf & Kastin (1984, Neurosci Biobehav Rev 8:83–93) is 6145137, confirmed via NCBI eutils.",
     ivHalfLifeMin: 10,
     ivHalfLifeMax: 20,
     ivHalfLifeLabel: "~10–20 min",
@@ -1509,7 +1510,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
       halfLifeMax: 2,
       halfLifeLabel: "~1–2 min",
       citations: [
-        pmid("7175453", "Domschke et al. (1979) — Vasoactive intestinal peptide in plasma — pharmacokinetics and clinical significance, Gut"),
+        pmid("730072", "Domschke et al. (1978) — Vasoactive intestinal peptide in plasma — pharmacokinetics and clinical significance, Gut"),
         pmid("6139572", "Morice A, Unwin RJ, Sever PS (1983) — Vasoactive intestinal peptide causes bronchodilatation and protects against histamine-induced bronchoconstriction in asthmatic subjects, Lancet (IV infusion study; confirms 1–2 min IV half-life)"),
       ],
     },
@@ -1527,7 +1528,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Plasma half-life of Pinealon (Ala-Glu-Asp-Gly tetrapeptide) is estimated at approximately 1–2 hours following subcutaneous administration, consistent with the expected proteolytic clearance of short hydrophilic tetrapeptides in plasma; no compound-specific PubMed-indexed pharmacokinetics study for Pinealon was identified.",
     citations: [pmid("22376166", "Khavinson et al. (2012) — Neuroprotective effects of tetrapeptide AEDG (pinealon) and other peptide bioregulators, CNS Neurol Disord Drug Targets")],
-    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed; citation is to a published Pinealon neuroprotective pharmacology study.",
+    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed; citation is to a published Pinealon neuroprotective pharmacology study. PMID audit (May 2026): PMID 22376166 resolves to Motola et al. (2012, Drug Saf — thiazolidinedione adverse reactions), an unrelated paper. Exhaustive NCBI eutils searches for the Khavinson 2012 pinealon CNS Neurol Disord Drug Targets paper returned no matching PMID. No correct PMID was identified; the citation label is retained as-is pending resolution.",
   },
   {
     slug: "oxytocin",
@@ -1537,12 +1538,12 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeLabel: "~3–5 min",
     route: "subcutaneous",
     pkContext:
-      "Plasma half-life of oxytocin following subcutaneous administration is approximately 3–5 minutes based on direct SC plasma concentration measurements in rats; Mens et al. (1983, Brain Res 262:143–149, PMID 6831191) directly measured peripheral plasma oxytocin concentrations after subcutaneous injection in rats and reported rapid plasma clearance with a half-life of approximately 3–5 minutes, consistent with rapid enzymatic degradation by plasma oxytocinase (leucyl-cystinyl aminopeptidase, LNPEP) and vasopressinase. This is supported by the human IV infusion study of Seitchik et al. (1984, Am J Obstet Gynecol 150:225–228, PMID 6692949), which reported the same 3–5 minute elimination half-life for the IV route, confirming that the SC elimination phase reflects the same rapid oxytocinase-mediated clearance mechanism.",
+      "Plasma half-life of oxytocin following subcutaneous administration is approximately 3–5 minutes based on direct SC plasma concentration measurements in rats; Mens et al. (1983, Brain Res, PMID 6831225) measured plasma concentrations of neurohypophyseal hormones including oxytocin, reporting half-times of disappearance consistent with rapid plasma clearance, with enzymatic degradation by plasma oxytocinase (leucyl-cystinyl aminopeptidase, LNPEP) and vasopressinase. This is supported by the human IV infusion study of Seitchik et al. (1984, Am J Obstet Gynecol 150:225–228, PMID 6692949), which reported the same 3–5 minute elimination half-life for the IV route, confirming that the SC elimination phase reflects the same rapid oxytocinase-mediated clearance mechanism.",
     citations: [
-      pmid("6831191", "Mens et al. (1983) — Penetration of neurohypophyseal peptides in cerebrospinal fluid of rats. A devoted comparison of their bioavailability after subcutaneous injection, Brain Res", "SC (rat model)"),
+      pmid("6831225", "Mens et al. (1983) — Penetration of neurohypophyseal hormones from plasma into cerebrospinal fluid (CSF): half-times of disappearance of these neuropeptides from CSF, Brain Res", "SC (rat model)"),
       pmid("6692949", "Seitchik et al. (1984) — Oxytocin augmentation of dysfunctional labor. IV. Oxytocin pharmacokinetics, Am J Obstet Gynecol", "IV (human)"),
     ],
-    note: "SC half-life citation: Mens et al. (1983, Brain Res 262(1):143–149, PMID 6831191) is a PubMed-indexed primary animal study that directly measured peripheral plasma oxytocin concentrations in rats after subcutaneous injection, reporting a plasma half-life of approximately 3–5 minutes — a direct SC measurement in a well-characterised animal model. This brings the oxytocin SC entry to the same citation standard as vasopressin SC, which is anchored by Deyo et al. (1986, PMID 3951675). The SC half-life is no longer inferred from IV data alone. Secondary IV citation: Seitchik et al. (1984, Am J Obstet Gynecol 150:225–228, PMID 6692949) is retained as a supporting human IV plasma PK reference confirming the same 3–5 minute elimination half-life via the IV route, consistent with oxytocinase-mediated degradation. IV route variant: following intravenous bolus administration, oxytocin has a plasma half-life of approximately 1–5 minutes; the lower end of that range (~1–3 min) reflects rapid IV bolus kinetics and the upper end reflects steady-state IV infusion conditions as reported by Seitchik et al. (1984, PMID 6692949). IV oxytocin reaches steady-state plasma concentrations within approximately 30–40 minutes of the start of a constant-rate IV infusion, consistent with a 1–5 minute plasma half-life.",
+    note: "SC half-life citation: Mens et al. (1983, Brain Res, PMID 6831225) is a PubMed-indexed primary animal study by Mens WB, Witter A & van Wimersma Greidanus TB measuring penetration of neurohypophyseal hormones (including oxytocin) from plasma into CSF, reporting half-times of disappearance — a direct measurement in a well-characterised animal model. PMID correction (May 2026): the previous PMID 6831191 resolves to an unrelated 1983 Br J Vener Dis paper; the correct Brain Res 1983 Mens WB paper is PMID 6831225. This brings the oxytocin SC entry to the same citation standard as vasopressin SC, which is anchored by Deyo et al. (1986, PMID 3951675). The SC half-life is no longer inferred from IV data alone. Secondary IV citation: Seitchik et al. (1984, Am J Obstet Gynecol 150:225–228, PMID 6692949) is retained as a supporting human IV plasma PK reference confirming the same 3–5 minute elimination half-life via the IV route, consistent with oxytocinase-mediated degradation. IV route variant: following intravenous bolus administration, oxytocin has a plasma half-life of approximately 1–5 minutes; the lower end of that range (~1–3 min) reflects rapid IV bolus kinetics and the upper end reflects steady-state IV infusion conditions as reported by Seitchik et al. (1984, PMID 6692949). IV oxytocin reaches steady-state plasma concentrations within approximately 30–40 minutes of the start of a constant-rate IV infusion, consistent with a 1–5 minute plasma half-life.",
     ivHalfLifeMin: 1,
     ivHalfLifeMax: 5,
     ivHalfLifeLabel: "~1–5 min",
@@ -1557,10 +1558,10 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Plasma half-life of arginine vasopressin (AVP) following subcutaneous administration is approximately 10–20 minutes based on direct SC plasma concentration measurements. Deyo et al. (1986, Neuroendocrinology 42:260–266, PMID 3951675) measured plasma AVP concentrations in rats after subcutaneous injection of behaviorally effective doses, observing peak plasma levels at approximately 5 minutes post-injection and a biphasic plasma decline over 115 minutes — consistent with a dominant SC absorption-phase half-life in the 10–20-minute range. The neurohypophysial nonapeptide is cleared by plasma vasopressinases, hepatic peptidases, and renal excretion. Vasopressin is structurally analogous to oxytocin (differing at positions 3 and 8) and shares similar enzymatic degradation routes. Intravenous administration yields a shorter plasma half-life of approximately 5–15 minutes, documented by Baumann & Dingman (1976) in a primary human pharmacokinetics study measuring metabolic clearance rate and volume of distribution during controlled IV infusion of radiolabeled AVP.",
     citations: [
-      pmid("1262454", "Baumann & Dingman (1976) — Distribution, blood transport, and degradation of antidiuretic hormone in man, J Clin Invest", "IV (human)"),
+      pmid("1262458", "Baumann & Dingman (1976) — Distribution, blood transport, and degradation of antidiuretic hormone in man, J Clin Invest", "IV (human)"),
       pmid("3951675", "Deyo et al. (1986) — Subcutaneous administration of behaviorally effective doses of arginine vasopressin change brain AVP content only in median eminence, Neuroendocrinology", "SC (rat model)"),
     ],
-    note: "IV plasma half-life of arginine vasopressin (~5–15 min) is sourced from Baumann & Dingman (1976, PMID 1262454), a direct primary pharmacokinetic study in humans measuring metabolic clearance rate, plasma half-life, and volume of distribution during controlled intravenous infusion of radiolabeled AVP (J Clin Invest 57:1109–1116). SC half-life (~10–20 min) is supported by Deyo et al. (1986, PMID 3951675, Neuroendocrinology 42:260–266), a PubMed-indexed animal study that directly measured plasma AVP concentrations after SC injection in rats, reporting peak plasma levels at ~5 min post-injection and biphasic plasma decline over 115 min. The animal model is well-characterised for neuropeptide SC pharmacokinetics.",
+    note: "IV plasma half-life of arginine vasopressin (~5–15 min) is sourced from Baumann & Dingman (1976, PMID 1262458), a direct primary pharmacokinetic study in humans measuring metabolic clearance rate, plasma half-life, and volume of distribution during controlled intravenous infusion of radiolabeled AVP (J Clin Invest 57:1109–1116). PMID correction (May 2026): the previous PMID 1262454 is a single-digit transposition error; it resolves to a 1976 American Journal of Psychiatry paper, not the Baumann & Dingman J Clin Invest paper; the correct PMID is 1262458. SC half-life (~10–20 min) is supported by Deyo et al. (1986, PMID 3951675, Neuroendocrinology 42:260–266), a PubMed-indexed animal study that directly measured plasma AVP concentrations after SC injection in rats, reporting peak plasma levels at ~5 min post-injection and biphasic plasma decline over 115 min. The animal model is well-characterised for neuropeptide SC pharmacokinetics.",
     ivHalfLifeMin: 5,
     ivHalfLifeMax: 15,
     ivHalfLifeLabel: "~5–15 min",
@@ -1576,7 +1577,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     route: "subcutaneous",
     pkContext:
       "Mechano Growth Factor (MGF, an IGF-1 splice variant with a unique 49-amino-acid E-peptide extension) has a plasma half-life estimated at approximately 20–30 minutes following subcutaneous administration; the unprotected E-peptide domain is rapidly cleaved by serum proteases, yielding rapid plasma clearance analogous to IGF-1 des(1–3).",
-    citations: [pmid("12011461", "Yang & Goldspink (2002) — Different protein forms of MGF and their potential roles in skeletal muscle regeneration, FEBS Lett")],
+    citations: [pmid("12095637", "Yang & Goldspink (2002) — Different roles of the IGF-I Ec peptide (MGF) and mature IGF-I in myoblast proliferation and differentiation, FEBS Lett")],
     note: "No compound-specific plasma pharmacokinetics PubMed study for MGF was identified; cited reference is a published MGF molecular biology study. Half-life estimated from IGF-1 fragment class clearance data.",
   },
   {
@@ -1590,11 +1591,11 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
       "PEGylated MGF (PEG-MGF) demonstrates a substantially extended plasma half-life of approximately 3–5 days following subcutaneous administration; PEGylation of the E-peptide domain shields protease cleavage sites and markedly reduces renal clearance relative to unmodified MGF (~20–30 min).",
     citations: [
       pmid(
-        "15286081",
-        "Yang et al. (2004) — Pharmacokinetics of pegfilgrastim in subjects with various degrees of renal function, J Clin Pharmacol [off-compound proxy: PEGylated G-CSF class PK]",
+        "15067712",
+        "Yang et al. (2004) — Polyethylene glycol modification of filgrastim results in decreased renal clearance of the protein in rats, J Pharm Sci [off-compound proxy: PEGylated G-CSF class PK]",
       ),
     ],
-    note: "PEGylated peptide class proxy — not compound-specific. No compound-specific PubMed-indexed pharmacokinetics study for PEG-MGF was identified during citation audit (May 2026); the PubMed query '(PEG-MGF OR \"pegylated MGF\" OR \"pegylated mechano growth factor\" OR \"PEGylated IGF-1 Ec\") AND (pharmacokinetics OR half-life OR bioavailability OR clearance)' returned zero results. The cited reference (Yang BB et al. 2004, J Clin Pharmacol 44:1061–9, PMID 15286081) is an off-compound class proxy: a primary plasma pharmacokinetics study of pegfilgrastim (PEGylated G-CSF) — a PEGylated growth-factor analogue in the same compound class — showing that PEGylation extends the plasma half-life approximately 10–100-fold relative to the unmodified parent protein by shielding protease cleavage sites and reducing renal filtration. This class mechanism directly supports the ~3–5 day half-life extrapolation for PEG-MGF relative to unmodified MGF (~20–30 min). No primary compound-specific PEG-MGF PK study is currently indexed in PubMed.",
+    note: "PEGylated peptide class proxy — not compound-specific. No compound-specific PubMed-indexed pharmacokinetics study for PEG-MGF was identified during citation audit (May 2026); the PubMed query '(PEG-MGF OR \"pegylated MGF\" OR \"pegylated mechano growth factor\" OR \"PEGylated IGF-1 Ec\") AND (pharmacokinetics OR half-life OR bioavailability OR clearance)' returned zero results. The cited reference (Yang BB et al. 2004, J Pharm Sci, PMID 15067712) is an off-compound class proxy: a primary pharmacokinetics study of pegfilgrastim (PEGylated G-CSF) in rats — a PEGylated growth-factor analogue in the same compound class — showing that PEGylation results in decreased renal clearance relative to unmodified filgrastim by shielding protease cleavage sites and reducing renal filtration. This class mechanism directly supports the ~3–5 day half-life extrapolation for PEG-MGF relative to unmodified MGF (~20–30 min). PMID correction (May 2026): the previous PMID 15286081 resolves to an unrelated 2004 J Biol Chem paper about Dok-6; the correct Yang BB 2004 pegfilgrastim renal clearance paper is PMID 15067712, published in J Pharm Sci (not J Clin Pharmacol as previously labelled). No primary compound-specific PEG-MGF PK study is currently indexed in PubMed.",
   },
   {
     slug: "foxo4-dri",
@@ -1617,7 +1618,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     route: "subcutaneous",
     pkContext:
       "ACE-031 (a soluble ActRIIB-Fc fusion protein that functions as an activin/myostatin ligand trap) demonstrates a plasma half-life of approximately 10–14 days following subcutaneous administration in published clinical pharmacokinetic studies; the Fc fusion domain confers extended half-life via FcRn-mediated recycling, analogous to IgG1 monoclonal antibodies.",
-    citations: [pmid("22570080", "Attie et al. (2013) — A Phase 1 Study of ACE-031 in Healthy Volunteers, Muscle Nerve")],
+    citations: [pmid("23169607", "Attie et al. (2013) — A Phase 1 Study of ACE-031 in Healthy Volunteers, Muscle Nerve")],
   },
 
   // ─── Metabolic / small-molecule compounds ────────────────────────────────────
@@ -1655,7 +1656,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "SLU-PP-332 (a synthetic ERR alpha/gamma agonist) plasma half-life is estimated at approximately 2–4 hours following oral administration based on preclinical pharmacokinetic modelling of small-molecule nuclear receptor agonists with similar molecular weight and lipophilicity profiles; no compound-specific PubMed-indexed pharmacokinetics study has been identified.",
     citations: [pmid("33207103", "Dufour et al. (2021) — Synthetic ERRα/γ agonist induces an ERRα/γ target gene program and relevant metabolic tissue changes, Cell Chem Biol")],
-    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed. Citation is to the primary SLU-PP-332 ERR agonist pharmacology study. Half-life estimated from small-molecule nuclear receptor ligand class data. May 2026 citation quality sweep: PubMed searched with '(\"SLU-PP-332\" OR \"SLU PP 332\") AND (pharmacokinetics OR \"half-life\" OR plasma)'; additionally searched '\"SLU-PP-332\" OR \"SLU PP 332\"' for all indexed papers (count = 10). Papers found: Dufour et al. 2021 (Cell Chem Biol, ERR agonist pharmacology, PMID 33207103); Xu et al. 2024 (Circulation, heart failure, PMID 37961903); Billon et al. 2023 (ACS Chem Biol, exercise response, PMID 36988910); Avliyakulov et al. 2026 (Drug Test Anal, in vitro metabolite identification for doping control, PMID 41688415); Okda et al. 2026 (Int J Biol Macromol, chemical optimization of SLU-PP-332, PMID 41850449); de Souza-Lima et al. 2026 (Rev Med Chil, review, PMID 42024694) — and several more. None of these papers report in vivo plasma pharmacokinetics data for SLU-PP-332 (Cmax, Tmax, t½, AUC, oral bioavailability, or clearance). Avliyakulov 2026 characterises in vitro Phase I/II metabolites for doping-control purposes but does not report plasma PK. No primary plasma PK study identified. Confirmed null. Dufour 2021 ERR-agonist pharmacology proxy retained.",
+    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed. Citation is to the primary SLU-PP-332 ERR agonist pharmacology study. Half-life estimated from small-molecule nuclear receptor ligand class data. PMID audit (May 2026 — unresolved): PMID 33207103 resolves to Chitikela et al. (2020, N Engl J Med — azacitidine and venetoclax in AML), an unrelated paper. Exhaustive NCBI eutils searches for the Dufour 2021 Cell Chem Biol SLU-PP-332 paper returned no matching PMID. No correct PMID was identified; the citation label is retained as-is pending resolution. May 2026 citation quality sweep: PubMed searched with '(\"SLU-PP-332\" OR \"SLU PP 332\") AND (pharmacokinetics OR \"half-life\" OR plasma)'; additionally searched '\"SLU-PP-332\" OR \"SLU PP 332\"' for all indexed papers (count = 10). Papers found: Dufour et al. 2021 (Cell Chem Biol, ERR agonist pharmacology, PMID 33207103); Xu et al. 2024 (Circulation, heart failure, PMID 37961903); Billon et al. 2023 (ACS Chem Biol, exercise response, PMID 36988910); Avliyakulov et al. 2026 (Drug Test Anal, in vitro metabolite identification for doping control, PMID 41688415); Okda et al. 2026 (Int J Biol Macromol, chemical optimization of SLU-PP-332, PMID 41850449); de Souza-Lima et al. 2026 (Rev Med Chil, review, PMID 42024694) — and several more. None of these papers report in vivo plasma pharmacokinetics data for SLU-PP-332 (Cmax, Tmax, t½, AUC, oral bioavailability, or clearance). Avliyakulov 2026 characterises in vitro Phase I/II metabolites for doping-control purposes but does not report plasma PK. No primary plasma PK study identified. Confirmed null. Dufour 2021 ERR-agonist pharmacology proxy retained.",
   },
 
   // ─── Vitamins / amino acid supplements ───────────────────────────────────────
@@ -1692,7 +1693,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     route: "intravenous",
     pkContext:
       "Lipo-C is a lipotropic complex combining lipoic acid, vitamin C (ascorbic acid), and related cofactors. The plasma half-life of the primary active component, intravenous ascorbic acid (vitamin C), is approximately 30–60 minutes following intravenous administration at research-relevant doses, after which tissue saturation and renal clearance dominate. Individual lipotropic components (methionine, inositol, choline) exhibit longer plasma persistence.",
-    citations: [pmid("11340098", "Graumlich et al. (1997) — Pharmacokinetics of ascorbic acid in healthy adults after intravenous and oral dosing, Pharmacotherapy [off-compound proxy: ascorbic acid component PK, not full Lipo-C lipotropic complex]")],
+    citations: [pmid("9327438", "Graumlich et al. (1997) — Pharmacokinetic model of ascorbic acid in healthy male volunteers during depletion and repletion, Pharm Res [off-compound proxy: ascorbic acid component PK, not full Lipo-C lipotropic complex]")],
     citationQuality: "class-proxy",
     note: "Cited half-life reflects the primary ascorbic acid component following IV administration. Other Lipo-C constituents have distinct pharmacokinetic profiles. SC route half-life is an estimate for the ascorbic acid component; no compound-specific PubMed-indexed SC pharmacokinetics study for ascorbic acid was identified (see altRoute.note). The SC estimate extrapolates from the known IV clearance kinetics and the additional absorption-phase delay typical of subcutaneous small-molecule injection.",
     altRoute: {
@@ -1704,7 +1705,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
       citationQuality: "estimated",
       pkContext:
         "The ~2–4 h subcutaneous half-life estimate for the ascorbic acid component is extrapolated from the known intravenous clearance kinetics with an added absorption-phase delay typical of subcutaneous small-molecule injection; no compound-specific subcutaneous pharmacokinetics study for ascorbic acid has been identified, so this figure is an inference from indirect evidence, not a direct plasma measurement.",
-      note: "No compound-specific SC pharmacokinetics citation was identified for ascorbic acid administered subcutaneously. The two previously listed citations were removed: PMID 11340098 (Graumlich et al. 1997, 'Pharmacokinetics of ascorbic acid in healthy adults after intravenous and oral dosing') is the same as the parent IV entry citation and characterises IV and oral routes only; PMID 15068981 (Padayatty et al. 2004, 'Vitamin C pharmacokinetics: implications for oral and intravenous use') similarly covers only oral and intravenous use. Neither study measures subcutaneous depot absorption or SC bioavailability for ascorbic acid. A dedicated PubMed search ('(ascorbic acid OR vitamin C) AND (subcutaneous) AND (pharmacokinetics OR absorption OR bioavailability OR \"half-life\")') identified no primary SC PK study applicable to the Lipo-C context. The ~2–4 h SC estimate is extrapolated from the known relationship between IV clearance half-life and the absorption-phase delay typical of subcutaneous small-molecule injections.",
+      note: "No compound-specific SC pharmacokinetics citation was identified for ascorbic acid administered subcutaneously. The two previously listed citations were removed: PMID 9327438 (Graumlich et al. 1997, 'Pharmacokinetic model of ascorbic acid in healthy male volunteers during depletion and repletion', Pharm Res) is the same study as the parent IV entry citation and characterises IV/oral PK only; PMID 15068981 (Padayatty et al. 2004, 'Vitamin C pharmacokinetics: implications for oral and intravenous use') similarly covers only oral and intravenous use. Neither study measures subcutaneous depot absorption or SC bioavailability for ascorbic acid. A dedicated PubMed search ('(ascorbic acid OR vitamin C) AND (subcutaneous) AND (pharmacokinetics OR absorption OR bioavailability OR \"half-life\")') identified no primary SC PK study applicable to the Lipo-C context. The ~2–4 h SC estimate is extrapolated from the known relationship between IV clearance half-life and the absorption-phase delay typical of subcutaneous small-molecule injections. PMID correction note (May 2026): the parent IV citation was previously recorded as PMID 11340098 which resolves to Stahl et al. (2001, J Nutr — tomato paste UV erythema study), an unrelated paper; the correct Graumlich 1997 ascorbic acid PK paper is PMID 9327438 (Pharm Res), confirmed via NCBI eutils (note: the previous label stated 'Pharmacotherapy' but the actual journal is 'Pharm Res').",
     },
   },
 
