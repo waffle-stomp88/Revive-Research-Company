@@ -45,3 +45,14 @@ export function getEstimateTooltip(label?: string): string {
   }
   return "SC estimate — extrapolated from IV data or class-level pharmacokinetics; no direct SC plasma PK study was identified.";
 }
+
+/**
+ * Returns a short human-readable label for the kind of estimate detected in
+ * the label. Used for visible badge text and aria-labels where the full tooltip
+ * string would be too long.
+ */
+export function getEstimateShortLabel(label?: string): string {
+  if (!label) return "SC estimate";
+  if (/\(inhaled-route proxy/i.test(label)) return "Inhaled proxy";
+  return "SC estimate";
+}

@@ -8,7 +8,7 @@ import { getHalfLifeByName, hasKineticMismatch, PK_VISIBLE_LOWER_RATIO, PK_VISIB
 import type { HalfLifeEntry, CitationQuality } from "@/data/pharmacokinetics";
 import { isNonSCRoute, pkMidpoint, computeXMax, buildPKCurve, ptsToD } from "@/lib/pk-curve";
 import { readStoredZoom, writeStoredZoom } from "@/lib/zoom-storage";
-import { isEstimatedLabel, formatPKLabel as formatHLLabel } from "@/lib/pk-label";
+import { isEstimatedLabel, formatPKLabel as formatHLLabel, getEstimateTooltip, getEstimateShortLabel } from "@/lib/pk-label";
 
 export interface StackPeptide {
   name: string;
@@ -662,11 +662,11 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                     <TooltipTrigger asChild>
                       <span className="flex items-center justify-center gap-0.5 text-[9px] cursor-help" style={{ color: "#f59e0b", opacity: 0.75 }} data-testid="badge-estimate-stats">
                         <Info className="h-2.5 w-2.5 flex-shrink-0" />
-                        SC estimate
+                        {getEstimateShortLabel(c.pk.halfLifeLabel)}
                       </span>
                     </TooltipTrigger>
                     <TooltipContent side="right" className="max-w-[200px] text-xs leading-relaxed">
-                      This half-life is an estimate extrapolated from IV data or class-level pharmacokinetics — no direct SC plasma PK study was identified for this compound.
+                      {getEstimateTooltip(c.pk.halfLifeLabel)}
                     </TooltipContent>
                   </Tooltip>
                 )}
@@ -1081,11 +1081,22 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
             </svg>
 
             {/* Estimate footnote — shown when any visible curve has an estimated half-life */}
-            {curves.some(c => c && c.halfLifeXFrac !== null && isEstimatedLabel(c.pk.halfLifeLabel)) && (
-              <p className="text-[10px] leading-snug mt-0.5 mb-0 px-0.5" style={{ color: "#f59e0b", opacity: 0.6 }} data-testid="pk-estimate-footnote">
-                * SC estimate — half-life extrapolated from IV data or class-level pharmacokinetics; no direct SC plasma PK study identified.
-              </p>
-            )}
+            {(() => {
+              const estimatedCurves = curves.filter(c => c && c.halfLifeXFrac !== null && isEstimatedLabel(c.pk.halfLifeLabel));
+              if (!estimatedCurves.length) return null;
+              const hasInhaled = estimatedCurves.some(c => /\(inhaled-route proxy/i.test(c!.pk.halfLifeLabel ?? ""));
+              const hasSC = estimatedCurves.some(c => !/\(inhaled-route proxy/i.test(c!.pk.halfLifeLabel ?? ""));
+              const footnote = hasInhaled && hasSC
+                ? "* Estimates shown — some half-lives are extrapolated from IV data or class-level pharmacokinetics (SC estimate), and some from analogous inhaled-route compounds (inhaled-route proxy); no direct plasma PK studies were identified for these compounds."
+                : hasInhaled
+                  ? "* Inhaled-route proxy — half-life extrapolated from an analogous inhaled compound or route; no direct compound-specific inhaled PK study was identified."
+                  : "* SC estimate — half-life extrapolated from IV data or class-level pharmacokinetics; no direct SC plasma PK study identified.";
+              return (
+                <p className="text-[10px] leading-snug mt-0.5 mb-0 px-0.5" style={{ color: "#f59e0b", opacity: 0.6 }} data-testid="pk-estimate-footnote">
+                  {footnote}
+                </p>
+              );
+            })()}
 
             {/* IV marker tooltip — fixed positioning, shown on hover of IV t½ dashed-line markers */}
             {ivMarkerTooltip && (() => {
@@ -1307,7 +1318,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                           </span>
                         </TooltipTrigger>
                         <TooltipContent side="top" className="max-w-[240px] text-xs leading-relaxed">
-                          <span className="font-semibold text-amber-400">SC estimate</span> — this half-life is extrapolated from IV data or class-level pharmacokinetics. No direct SC plasma PK study was identified for this compound.
+                          {getEstimateTooltip(c.pk.halfLifeLabel)}
                         </TooltipContent>
                       </Tooltip>
                     )}
@@ -1444,7 +1455,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                                     {formatHLLabel(row.halfLifeLabel ?? "")}
                                   </span>
                                   {isEstimatedLabel(row.halfLifeLabel ?? "") && (
-                                    <Info className="h-2.5 w-2.5 flex-shrink-0" style={{ color: "#f59e0b", opacity: 0.75 }} aria-label="SC estimate" />
+                                    <Info className="h-2.5 w-2.5 flex-shrink-0" style={{ color: "#f59e0b", opacity: 0.75 }} aria-label={getEstimateShortLabel(row.halfLifeLabel ?? "")} />
                                   )}
                                 </div>
                               </div>
@@ -1563,7 +1574,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                         <Clock className="h-3 w-3" />
                         <span>t½ {formatHLLabel(c.pk.halfLifeLabel)}</span>
                         {isEstimatedLabel(c.pk.halfLifeLabel) && (
-                          <Info className="h-2.5 w-2.5 flex-shrink-0" style={{ color: "#f59e0b", opacity: 0.85 }} aria-label="SC estimate" />
+                          <Info className="h-2.5 w-2.5 flex-shrink-0" style={{ color: "#f59e0b", opacity: 0.85 }} aria-label={getEstimateShortLabel(c.pk.halfLifeLabel)} />
                         )}
                         <ExternalLink className="h-2.5 w-2.5 opacity-60 ml-0.5" />
                       </button>
@@ -1577,7 +1588,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                               {c.pk.altRoute ? routeAbbrev(c.pk.route) : "Plasma"} t½: {formatHLLabel(c.pk.halfLifeLabel)}
                             </p>
                             {isEstimatedLabel(c.pk.halfLifeLabel) && (
-                              <Info className="h-3 w-3 flex-shrink-0" style={{ color: "#f59e0b", opacity: 0.85 }} aria-label="SC estimate" />
+                              <Info className="h-3 w-3 flex-shrink-0" style={{ color: "#f59e0b", opacity: 0.85 }} aria-label={getEstimateShortLabel(c.pk.halfLifeLabel)} />
                             )}
                           </div>
                           {c.pk.altRoute && (
@@ -1587,7 +1598,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                                 {routeAbbrev(c.pk.altRoute.route)} t½: {formatHLLabel(c.pk.altRoute.halfLifeLabel)}
                               </p>
                               {isEstimatedLabel(c.pk.altRoute.halfLifeLabel) && (
-                                <Info className="h-3 w-3 flex-shrink-0" style={{ color: "#f59e0b", opacity: 0.7 }} aria-label="SC estimate" />
+                                <Info className="h-3 w-3 flex-shrink-0" style={{ color: "#f59e0b", opacity: 0.7 }} aria-label={getEstimateShortLabel(c.pk.altRoute.halfLifeLabel)} />
                               )}
                             </div>
                           )}
