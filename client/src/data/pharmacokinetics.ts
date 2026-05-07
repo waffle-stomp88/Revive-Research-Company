@@ -167,6 +167,24 @@
  *    the same citation standard as vasopressin and the GnRH-axis entries.
  *    Gimpl & Fahrenholz (2001) is retained as a secondary mechanism
  *    reference in the note field only.
+ *
+ * Citation update (May 2026): Gonadorelin proxy citation replaced with primary
+ * pharmacokinetics studies:
+ *  - Gonadorelin: Conn & Crowley (1991, N Engl J Med, PMID 2467720) was a
+ *    broad clinical review of GnRH and analogues that contained PK data but
+ *    was not a primary pharmacokinetics study. It has been replaced with:
+ *    (a) Berger et al. (1988, Life Sci, PMID 3278187) — a primary comparative
+ *        pharmacokinetics study of native GnRH measuring plasma concentration
+ *        curves after IV, IM, and IP administration in rats, fitted to two-
+ *        and one-compartment models, and characterising clearance mechanisms
+ *        including proteolytic degradation by tissues. Published type:
+ *        "Comparative Study, Journal Article". This is the primary PK citation.
+ *    (b) Handelsman & Swerdloff (1986, Endocr Rev, PMID 3007081) — a dedicated
+ *        GnRH pharmacokinetics review compiling IV half-life measurements and
+ *        human PK parameters for native GnRH and its analogues. Retained as
+ *        supplementary human-context PK reference.
+ *    The gonadorelin entry note has been updated to reflect this upgrade;
+ *    the "Proxy citation" label has been removed.
  */
 
 export type CitationType = "PMID" | "DOI";
@@ -683,8 +701,11 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     route: "subcutaneous",
     pkContext:
       "Plasma half-life of native GnRH (gonadorelin) following subcutaneous administration is approximately 5–10 minutes, reflecting a brief subcutaneous absorption phase before systemic entry; rapid enzymatic degradation by endopeptidases and dipeptidylpeptidase IV then clears the decapeptide from plasma within minutes. Pulsatile administration is used in research to mimic physiological hypothalamic secretion.",
-    citations: [pmid("2467720", "Conn & Crowley (1991) — Gonadotropin-releasing hormone and its analogues, N Engl J Med")],
-    note: "Proxy citation: Conn & Crowley (1991, N Engl J Med, PMID 2467720) is a clinical review article on GnRH and its analogues, not a primary plasma pharmacokinetics study. It is cited because it is the most widely indexed reference reporting GnRH plasma half-life parameters and enzymatic degradation routes; no dedicated English-indexed PubMed primary PK study for subcutaneous gonadorelin (native GnRH) was identified. IV route variant: following intravenous bolus administration, native GnRH has a plasma half-life of approximately 2–4 minutes in published clinical pharmacokinetic studies (Conn & Crowley 1991, PMID 2467720), compared with the ~5–10 minute effective window seen after subcutaneous injection where the absorption phase delays peak systemic entry. The markedly shorter IV half-life reflects direct exposure to plasma endopeptidases — principally dipeptidylpeptidase IV and endopeptidase 24.11 (neprilysin) — without any subcutaneous absorption delay. This SC/IV contrast is clinically significant for pulsatile GnRH research protocols: subcutaneous administration provides a slightly broader plasma pulse window than IV bolus delivery.",
+    citations: [
+      pmid("3278187", "Berger et al. (1988) — GnRH pharmacokinetics: peptide hormone pharmacokinetics needs clarification, Life Sci"),
+      pmid("3007081", "Handelsman & Swerdloff (1986) — Pharmacokinetics of gonadotropin-releasing hormone and its analogs, Endocr Rev"),
+    ],
+    note: "Primary citation: Berger et al. (1988, Life Sci 42:985–91, PMID 3278187) is a primary comparative pharmacokinetics study of native GnRH (identical in sequence to gonadorelin) measuring plasma concentration–time curves after intravenous, intramuscular, and intraperitoneal administration in rats, fitted to two- (IV) and one-compartment (IM/IP) models. The study characterises GnRH clearance mechanisms and establishes that proteolytic degradation by tissues contributes substantially to elimination beyond renal and hepatic routes. Supplementary citation: Handelsman & Swerdloff (1986, Endocr Rev 7:95–105, PMID 3007081) is a dedicated human pharmacokinetics review of GnRH and its analogues, compiling IV half-life measurements and human PK parameters. Together these replace the prior proxy citation (Conn & Crowley 1991, N Engl J Med, PMID 2467720), which was a broad clinical review containing PK data but not a primary pharmacokinetics study. IV route variant: following intravenous bolus administration, native GnRH has a plasma half-life of approximately 2–4 minutes in published pharmacokinetic studies, compared with the ~5–10 minute effective window seen after subcutaneous injection where the absorption phase delays peak systemic entry. The markedly shorter IV half-life reflects direct exposure to plasma endopeptidases — principally dipeptidylpeptidase IV and endopeptidase 24.11 (neprilysin) — without any subcutaneous absorption delay. This SC/IV contrast is relevant for pulsatile GnRH research protocols: subcutaneous administration provides a slightly broader plasma pulse window than IV bolus delivery.",
     ivHalfLifeMin: 2,
     ivHalfLifeMax: 4,
     ivHalfLifeLabel: "~2–4 min",
