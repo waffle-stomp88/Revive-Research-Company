@@ -1,5 +1,5 @@
-import { useState, useMemo, useRef, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import {
   Activity,
@@ -8,11 +8,14 @@ import {
   AlertTriangle,
   ArrowUpDown,
   Clock,
+  Download,
+  GitCompareArrows,
   Info,
   Link2,
   Search,
   SortAsc,
   SortDesc,
+  X,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
@@ -188,10 +191,16 @@ function CompoundCard({
   entry,
   index,
   highlighted,
+  comparisonMode,
+  isSelected,
+  onToggleCompare,
 }: {
   entry: HalfLifeEntry;
   index: number;
   highlighted?: boolean;
+  comparisonMode?: boolean;
+  isSelected?: boolean;
+  onToggleCompare?: (slug: string) => void;
 }) {
   const { toast } = useToast();
   const dual = hasDualRoute(entry);
@@ -267,10 +276,32 @@ function CompoundCard({
       transition={{ delay: index < 12 ? index * 0.02 : 0, duration: 0.3 }}
     >
       <div
-        className={`relative h-full flex flex-col rounded-md bg-[#07070b] border border-white/8 overflow-hidden${highlighted ? " pk-highlight-pulse" : ""}`}
-        style={{ borderLeft: `3px solid ${rc.hex}` }}
+        className={`relative h-full flex flex-col rounded-md bg-[#07070b] border overflow-hidden transition-all duration-150${highlighted ? " pk-highlight-pulse" : ""}${isSelected ? " ring-2 ring-[#E7FB10]/60 border-[#E7FB10]/30" : " border-white/8"}`}
+        style={{ borderLeft: `3px solid ${isSelected ? "#E7FB10" : rc.hex}` }}
         data-testid={`card-compound-${entry.slug}`}
       >
+        {/* Comparison checkbox overlay */}
+        {comparisonMode && (
+          <button
+            type="button"
+            onClick={() => onToggleCompare?.(entry.slug)}
+            className="absolute top-2 left-2 z-10 flex items-center justify-center w-5 h-5 rounded border-2 transition-all duration-150 focus:outline-none"
+            style={{
+              backgroundColor: isSelected ? "#E7FB10" : "rgba(0,0,0,0.6)",
+              borderColor: isSelected ? "#E7FB10" : "rgba(255,255,255,0.3)",
+            }}
+            aria-label={isSelected ? `Remove ${entry.name} from comparison` : `Add ${entry.name} to comparison`}
+            aria-pressed={isSelected}
+            data-testid={`checkbox-compare-${entry.slug}`}
+          >
+            {isSelected && (
+              <svg width="10" height="8" viewBox="0 0 10 8" fill="none" aria-hidden="true">
+                <path d="M1 4L3.5 6.5L9 1" stroke="#0a0a0f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            )}
+          </button>
+        )}
+
         {/* Route watermark */}
         <span
           className="absolute right-2 top-1 font-['Bebas_Neue'] text-[4.5rem] leading-none select-none pointer-events-none"
@@ -280,7 +311,7 @@ function CompoundCard({
           {routeAbbrev}
         </span>
 
-        <div className="relative flex flex-col flex-1 p-4">
+        <div className={`relative flex flex-col flex-1 p-4${comparisonMode ? " pt-4 pl-9" : ""}`}>
           {/* Top row: name + badges */}
           <div className="flex items-start justify-between gap-2 mb-3">
             <span
@@ -467,7 +498,218 @@ function CompoundCard({
   );
 }
 
+// ── Compact card used inside the comparison tray ──────────────────────────────
+function TrayCompactCard({
+  entry,
+  onRemove,
+}: {
+  entry: HalfLifeEntry;
+  onRemove: () => void;
+}) {
+  const rc = routeColor(entry.route);
+  const routeAbbrev = ROUTE_ABBREV[entry.route.toLowerCase()] ?? entry.route;
+  const dual = hasDualRoute(entry);
+  const ivOverlay = !dual && hasIvOverlay(entry);
+
+  return (
+    <div
+      className="flex-1 min-w-0 flex flex-col rounded-md bg-[#0d0d14] border border-white/10 p-3 relative"
+      style={{ borderTop: `2px solid ${rc.hex}` }}
+    >
+      {/* Remove button */}
+      <button
+        type="button"
+        onClick={onRemove}
+        className="absolute top-1.5 right-1.5 flex items-center justify-center w-4 h-4 rounded text-muted-foreground/40 hover:text-muted-foreground/80 transition-colors"
+        aria-label={`Remove ${entry.name} from comparison`}
+      >
+        <X className="h-3 w-3" />
+      </button>
+
+      {/* Route badge */}
+      <Badge
+        className={`self-start text-[9px] px-1.5 py-0 border ${rc.bg} ${rc.text} ${rc.border} mb-1.5`}
+      >
+        {routeAbbrev}
+      </Badge>
+
+      {/* Name */}
+      <span className="text-xs font-semibold leading-snug mb-2 pr-4 line-clamp-2">
+        {entry.name}
+      </span>
+
+      {/* t½ value(s) */}
+      {!dual && !ivOverlay && (
+        <div className="flex items-baseline gap-1 mb-1.5">
+          <span
+            className="font-['Bebas_Neue'] text-2xl leading-none tabular-nums"
+            style={{ color: rc.hex, textShadow: `0 0 16px ${rc.hex}44` }}
+          >
+            {formatPKLabel(entry.halfLifeLabel)}
+          </span>
+          <span className="text-[9px] text-muted-foreground/40">t½</span>
+        </div>
+      )}
+      {ivOverlay && (
+        <div className="flex flex-col gap-0.5 mb-1.5">
+          <div className="flex items-baseline gap-1">
+            <span className="font-['Bebas_Neue'] text-xl leading-none tabular-nums" style={{ color: rc.hex }}>
+              {formatPKLabel(entry.halfLifeLabel)}
+            </span>
+            <span className="text-[9px] text-muted-foreground/40">{routeAbbrev}</span>
+          </div>
+          <div className="flex items-baseline gap-1">
+            <span className="font-['Bebas_Neue'] text-xl leading-none tabular-nums text-[#a78bfa]">
+              {formatPKLabel(entry.ivHalfLifeLabel!)}
+            </span>
+            <span className="text-[9px] text-muted-foreground/40">IV</span>
+          </div>
+        </div>
+      )}
+      {dual && (
+        <div className="flex flex-col gap-0.5 mb-1.5">
+          <div className="flex items-baseline gap-1">
+            <span className="font-['Bebas_Neue'] text-xl leading-none tabular-nums" style={{ color: rc.hex }}>
+              {formatPKLabel(entry.halfLifeLabel)}
+            </span>
+            <span className="text-[9px] text-muted-foreground/40">{routeAbbrev}</span>
+          </div>
+          <div className="flex items-baseline gap-1">
+            <span
+              className="font-['Bebas_Neue'] text-xl leading-none tabular-nums"
+              style={{ color: routeColor(entry.altRoute!.route).hex }}
+            >
+              {formatPKLabel(entry.altRoute!.halfLifeLabel)}
+            </span>
+            <span className="text-[9px] text-muted-foreground/40">
+              {ROUTE_ABBREV[entry.altRoute!.route.toLowerCase()] ?? entry.altRoute!.route}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Duration bar */}
+      <div className="h-[3px] rounded-full bg-white/5 overflow-hidden mb-2">
+        <div
+          className="h-full rounded-full"
+          style={{ width: `${pkBarPct(entry)}%`, backgroundColor: rc.hex, opacity: 0.55 }}
+        />
+      </div>
+
+      {/* Mini PK chart */}
+      <MiniPKChart peptideNames={[entry.name]} stackId={`tray-${entry.slug}`} />
+    </div>
+  );
+}
+
+// ── Comparison tray ───────────────────────────────────────────────────────────
+function ComparisonTray({
+  selectedEntries,
+  onRemove,
+  onClear,
+}: {
+  selectedEntries: HalfLifeEntry[];
+  onRemove: (slug: string) => void;
+  onClear: () => void;
+}) {
+  const { toast } = useToast();
+  const trayRef = useRef<HTMLDivElement>(null);
+  const [exporting, setExporting] = useState(false);
+
+  async function handleExport() {
+    if (!trayRef.current) return;
+    setExporting(true);
+    try {
+      // Lazy import html2canvas to avoid bundle bloat
+      const html2canvas = (await import("html2canvas")).default;
+      const canvas = await html2canvas(trayRef.current, {
+        backgroundColor: "#0a0a0f",
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+      const link = document.createElement("a");
+      link.download = "pk-comparison.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+      toast({ description: "Comparison saved as pk-comparison.png", duration: 3000 });
+    } catch {
+      toast({ description: "Export failed — please try again.", duration: 3000 });
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  return (
+    <AnimatePresence>
+      {selectedEntries.length >= 2 && (
+        <motion.div
+          initial={{ y: "100%", opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: "100%", opacity: 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          className="fixed bottom-0 left-0 right-0 z-50"
+          data-testid="section-comparison-tray"
+        >
+          {/* Backdrop blur */}
+          <div className="absolute inset-0 bg-[#07070b]/90 backdrop-blur-md border-t border-white/10" />
+
+          <div className="relative max-w-6xl mx-auto px-4 py-3">
+            {/* Header row */}
+            <div className="flex items-center justify-between mb-2.5 gap-3 flex-wrap">
+              <div className="flex items-center gap-2">
+                <GitCompareArrows className="h-4 w-4 text-[#E7FB10]" />
+                <span className="text-sm font-semibold text-foreground">
+                  Comparing {selectedEntries.length} compounds
+                </span>
+                <span className="text-xs text-muted-foreground/50">
+                  {selectedEntries.length < 4 ? `(add up to ${4 - selectedEntries.length} more)` : "(max 4)"}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleExport}
+                  disabled={exporting}
+                  className="gap-1.5 text-xs border-white/15 text-muted-foreground"
+                  data-testid="button-export-comparison"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  {exporting ? "Exporting…" : "Export as image"}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={onClear}
+                  className="gap-1.5 text-xs text-muted-foreground/70"
+                  data-testid="button-clear-comparison"
+                >
+                  <X className="h-3.5 w-3.5" />
+                  Clear comparison
+                </Button>
+              </div>
+            </div>
+
+            {/* Cards row — this is what gets captured for export */}
+            <div ref={trayRef} className="flex gap-2 overflow-x-auto pb-1">
+              {selectedEntries.map((entry) => (
+                <TrayCompactCard
+                  key={entry.slug}
+                  entry={entry}
+                  onRemove={() => onRemove(entry.slug)}
+                />
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 export default function PkCatalog() {
+  const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [routeFilter, setRouteFilter] = useState<RouteFilter>("all");
   const [dualFilter, setDualFilter] = useState<DualRouteFilter>("all");
@@ -475,6 +717,53 @@ export default function PkCatalog() {
   const [sortKey, setSortKey] = useState<SortKey>("name");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
   const [highlightedSlug, setHighlightedSlug] = useState<string | null>(null);
+
+  // Comparison mode state
+  const [comparisonMode, setComparisonMode] = useState(false);
+  const [selectedSlugs, setSelectedSlugs] = useState<Set<string>>(new Set());
+
+  const MAX_COMPARE = 4;
+
+  function toggleComparisonMode() {
+    setComparisonMode((prev) => {
+      if (prev) {
+        // Exiting comparison mode — clear selections
+        setSelectedSlugs(new Set());
+      }
+      return !prev;
+    });
+  }
+
+  const handleToggleCompare = useCallback((slug: string) => {
+    setSelectedSlugs((prev) => {
+      const next = new Set(prev);
+      if (next.has(slug)) {
+        next.delete(slug);
+      } else {
+        if (next.size >= MAX_COMPARE) {
+          toast({
+            description: "Maximum 4 compounds. Deselect one to add another.",
+            duration: 3000,
+          });
+          return prev;
+        }
+        next.add(slug);
+      }
+      return next;
+    });
+  }, [toast]);
+
+  function handleRemoveFromTray(slug: string) {
+    setSelectedSlugs((prev) => {
+      const next = new Set(prev);
+      next.delete(slug);
+      return next;
+    });
+  }
+
+  function handleClearComparison() {
+    setSelectedSlugs(new Set());
+  }
 
   // Read ?compound= param on mount, clear filters so the card is visible, then scroll to it
   useEffect(() => {
@@ -569,6 +858,15 @@ export default function PkCatalog() {
 
   const SortIcon = sortDir === "asc" ? SortAsc : SortDesc;
 
+  // Derive selected entries for tray (preserve order by selection — use catalog order as fallback)
+  const selectedEntries = useMemo(
+    () => CATALOG_ENTRIES.filter((e) => selectedSlugs.has(e.slug)),
+    [selectedSlugs]
+  );
+
+  // When tray is visible, add bottom padding so content isn't hidden behind it
+  const trayVisible = selectedEntries.length >= 2;
+
   return (
     <>
       <style>{`
@@ -587,8 +885,8 @@ export default function PkCatalog() {
         description="Compare pharmacokinetic half-lives for research peptides side-by-side. Filter by route, identify dual-route compounds, and see IV vs SC differences at a glance."
       />
 
-      <div className="min-h-screen bg-[#0a0a0f] text-foreground">
-        <div className="max-w-6xl mx-auto px-4 pt-24 pb-8">
+      <div className={`min-h-screen bg-[#0a0a0f] text-foreground transition-all duration-300`}>
+        <div className={`max-w-6xl mx-auto px-4 pt-24 pb-8${trayVisible ? " pb-56" : ""}`}>
           {/* Back link */}
           <Link href="/tools/peptide-reconstitution-calculator" data-testid="link-back-tools">
             <Button variant="ghost" size="sm" className="mb-6 gap-2 text-muted-foreground">
@@ -642,8 +940,8 @@ export default function PkCatalog() {
           {/* ── Filters — two-row toolbar ─────────────────────────────── */}
           <div className="mb-6 space-y-2" data-testid="section-filters">
 
-            {/* Row 1 — Search + result count + Sort */}
-            <div className="flex items-center gap-3">
+            {/* Row 1 — Search + result count + Sort + Compare toggle */}
+            <div className="flex items-center gap-3 flex-wrap">
               {/* Search */}
               <div className="relative w-56 shrink-0">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/40 pointer-events-none" />
@@ -665,6 +963,25 @@ export default function PkCatalog() {
 
               <div className="flex-1" />
 
+              {/* Compare toggle */}
+              <button
+                type="button"
+                onClick={toggleComparisonMode}
+                className={`inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded border transition-colors ${
+                  comparisonMode
+                    ? "bg-[#E7FB10]/10 text-[#E7FB10] border-[#E7FB10]/30"
+                    : "bg-transparent text-muted-foreground/60 border-white/15 hover:border-white/30 hover:text-muted-foreground"
+                }`}
+                data-testid="button-toggle-comparison"
+                aria-pressed={comparisonMode}
+              >
+                <GitCompareArrows className="h-3.5 w-3.5" />
+                Compare
+                {comparisonMode && selectedSlugs.size > 0 && (
+                  <span className="text-[10px] opacity-70 tabular-nums">{selectedSlugs.size}</span>
+                )}
+              </button>
+
               {/* Sort */}
               <div className="flex items-center gap-1.5">
                 <ArrowUpDown className="h-3 w-3 text-muted-foreground/30 shrink-0" />
@@ -685,6 +1002,19 @@ export default function PkCatalog() {
                 ))}
               </div>
             </div>
+
+            {/* Comparison mode hint */}
+            {comparisonMode && (
+              <div className="flex items-center gap-2 text-[11px] text-[#E7FB10]/60 bg-[#E7FB10]/5 border border-[#E7FB10]/15 rounded px-3 py-1.5">
+                <GitCompareArrows className="h-3 w-3 shrink-0" />
+                Select 2–4 compounds to compare their PK profiles side-by-side.
+                {selectedSlugs.size >= 2 && (
+                  <span className="text-[#E7FB10]/80 font-medium ml-1">
+                    Comparison tray is ready below.
+                  </span>
+                )}
+              </div>
+            )}
 
             {/* Row 2 — Filter chips */}
             <div className="flex items-center gap-0 flex-wrap rounded-md border border-white/8 bg-white/[0.02] px-3 py-1.5">
@@ -783,6 +1113,9 @@ export default function PkCatalog() {
                   entry={entry}
                   index={i}
                   highlighted={highlightedSlug === entry.slug}
+                  comparisonMode={comparisonMode}
+                  isSelected={selectedSlugs.has(entry.slug)}
+                  onToggleCompare={handleToggleCompare}
                 />
               ))}
             </div>
@@ -820,6 +1153,13 @@ export default function PkCatalog() {
           </div>
         </div>
       </div>
+
+      {/* Comparison tray — fixed at the bottom of the viewport */}
+      <ComparisonTray
+        selectedEntries={selectedEntries}
+        onRemove={handleRemoveFromTray}
+        onClear={handleClearComparison}
+      />
     </>
   );
 }

@@ -79,6 +79,7 @@
     "framer-motion": "^11.13.1",
     "google-auth-library": "^10.5.0",
     "html-to-image": "^1.11.13",
+    "html2canvas": "^1.4.1",
     "input-otp": "^1.4.2",
     "jsdom": "^29.1.0",
     "jsonwebtoken": "^9.0.3",
