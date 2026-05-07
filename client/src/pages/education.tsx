@@ -1861,6 +1861,15 @@ export default function Education() {
                 ) : activeTab === "trust" ? (
                   /* Trust & Verification Tab */
                   <div>
+                    <div className="mb-5">
+                      <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-2">
+                        <Shield className="h-3.5 w-3.5" />
+                        Trust &amp; Verification Guides
+                      </h2>
+                      <p className="text-xs text-muted-foreground">
+                        {TRUST_GUIDES.length} guides — understand COAs, testing, purity, and compliance
+                      </p>
+                    </div>
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       {TRUST_GUIDES.map((guide) => {
                         const Icon = guide.icon;
