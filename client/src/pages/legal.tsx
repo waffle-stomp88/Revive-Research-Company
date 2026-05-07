@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { renderMarkdown } from "@/lib/render-markdown";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo-head";
@@ -71,18 +72,6 @@ export default function LegalHub() {
     });
   };
 
-  const renderMarkdown = (content: string) => {
-    return content
-      .replace(/^### (.*$)/gm, '<h3 class="text-lg font-bold mt-6 mb-2 text-foreground">$1</h3>')
-      .replace(/^## (.*$)/gm, '<h2 class="text-xl font-bold mt-8 mb-3 text-foreground">$1</h2>')
-      .replace(/^# (.*$)/gm, '<h1 class="text-2xl font-bold mt-8 mb-4 text-foreground">$1</h1>')
-      .replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground font-semibold">$1</strong>')
-      .replace(/^\- (.*$)/gm, '<li class="ml-4 mb-1">• $1</li>')
-      .replace(/^\d+\. (.*$)/gm, '<li class="ml-4 mb-1">$1</li>')
-      .replace(/^---$/gm, '<hr class="my-6 border-border/50" />')
-      .replace(/\n\n/g, '</p><p class="mb-4">')
-      .replace(/\| (.*) \|/g, '<span class="font-mono text-sm">$1</span>');
-  };
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
