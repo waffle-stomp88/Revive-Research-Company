@@ -1,7 +1,10 @@
-import { motion } from "framer-motion";
+import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { SEOHead } from "@/components/seo-head";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -13,6 +16,8 @@ import {
   Droplets,
   Sparkles,
   Clock,
+  Search,
+  X,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { renderMarkdown } from "@/lib/render-markdown";
@@ -28,6 +33,9 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string; style?:
   Sparkles,
   Clock,
 };
+
+const CATEGORIES = ["Testing", "Process", "Quality", "Storage"] as const;
+type Category = (typeof CATEGORIES)[number];
 
 const getCategoryColor = (category: string) => {
   switch (category) {
@@ -47,9 +55,10 @@ function LabNoteCard({ note, index }: { note: LabNote; index: number }) {
   return (
     <motion.div
       key={note.id}
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.1 + index * 0.05 }}
+      exit={{ opacity: 0, y: -8 }}
+      transition={{ delay: 0.05 + index * 0.04 }}
     >
       <Card
         className="p-6"
@@ -121,6 +130,48 @@ export default function LabNotes() {
     queryKey: ["/api/lab-notes"],
   });
 
+  const [activeCategories, setActiveCategories] = useState<Set<Category>>(new Set());
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const toggleCategory = (cat: Category) => {
+    setActiveCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(cat)) {
+        next.delete(cat);
+      } else {
+        next.add(cat);
+      }
+      return next;
+    });
+  };
+
+  const clearAll = () => {
+    setActiveCategories(new Set());
+    setSearchQuery("");
+  };
+
+  const filteredNotes = useMemo(() => {
+    if (!notes) return [];
+    let result = notes;
+
+    if (activeCategories.size > 0) {
+      result = result.filter((n) => activeCategories.has(n.category as Category));
+    }
+
+    const q = searchQuery.trim().toLowerCase();
+    if (q) {
+      result = result.filter(
+        (n) =>
+          n.title.toLowerCase().includes(q) ||
+          n.content.toLowerCase().includes(q),
+      );
+    }
+
+    return result;
+  }, [notes, activeCategories, searchQuery]);
+
+  const hasActiveFilters = activeCategories.size > 0 || searchQuery.trim().length > 0;
+
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24">
       <SEOHead title="Lab Notes" description="Technical research updates and compound insights. Stay informed with our scientific archive." canonicalPath="/guides/peptide-lab-research-archive" />
@@ -165,6 +216,97 @@ export default function LabNotes() {
           </Card>
         </motion.div>
 
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="mb-8 space-y-4"
+        >
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <Input
+              placeholder="Search by title or keyword..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 pr-9"
+              data-testid="input-lab-notes-search"
+            />
+            {searchQuery && (
+              <button
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => setSearchQuery("")}
+                data-testid="button-clear-search"
+                aria-label="Clear search"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-sm text-muted-foreground">Filter:</span>
+            {CATEGORIES.map((cat) => {
+              const color = getCategoryColor(cat);
+              const isActive = activeCategories.has(cat);
+              return (
+                <button
+                  key={cat}
+                  onClick={() => toggleCategory(cat)}
+                  data-testid={`button-category-${cat.toLowerCase()}`}
+                  className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium border transition-all duration-150"
+                  style={{
+                    borderColor: isActive ? color : `${color}40`,
+                    color: isActive ? color : `${color}80`,
+                    backgroundColor: isActive ? `${color}15` : "transparent",
+                  }}
+                >
+                  {cat}
+                  {isActive && <X className="h-3 w-3 ml-0.5" />}
+                </button>
+              );
+            })}
+          </div>
+
+          {hasActiveFilters && (
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs text-muted-foreground">Active filters:</span>
+              {searchQuery.trim() && (
+                <Badge
+                  variant="outline"
+                  className="text-xs gap-1 cursor-pointer"
+                  onClick={() => setSearchQuery("")}
+                  data-testid="chip-filter-search"
+                >
+                  &ldquo;{searchQuery.trim()}&rdquo;
+                  <X className="h-3 w-3" />
+                </Badge>
+              )}
+              {Array.from(activeCategories).map((cat) => (
+                <Badge
+                  key={cat}
+                  variant="outline"
+                  className="text-xs gap-1 cursor-pointer"
+                  style={{ borderColor: getCategoryColor(cat), color: getCategoryColor(cat) }}
+                  onClick={() => toggleCategory(cat)}
+                  data-testid={`chip-filter-${cat.toLowerCase()}`}
+                >
+                  {cat}
+                  <X className="h-3 w-3" />
+                </Badge>
+              ))}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearAll}
+                className="text-xs h-7"
+                data-testid="button-clear-all-filters"
+              >
+                Clear all
+              </Button>
+            </div>
+          )}
+        </motion.div>
+
         {isLoading && <LabNotesSkeleton />}
 
         {isError && (
@@ -173,18 +315,29 @@ export default function LabNotes() {
           </div>
         )}
 
-        {notes && notes.length > 0 && (
-          <div className="space-y-6">
-            {notes.map((note, index) => (
-              <LabNoteCard key={note.id} note={note} index={index} />
-            ))}
-          </div>
-        )}
-
-        {notes && notes.length === 0 && (
-          <div className="text-center py-12 text-muted-foreground">
-            No research archive entries available yet.
-          </div>
+        {notes && (
+          <>
+            {filteredNotes.length > 0 ? (
+              <AnimatePresence mode="popLayout">
+                <div className="space-y-6">
+                  {filteredNotes.map((note, index) => (
+                    <LabNoteCard key={note.id} note={note} index={index} />
+                  ))}
+                </div>
+              </AnimatePresence>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-16 text-muted-foreground"
+                data-testid="text-no-results"
+              >
+                {hasActiveFilters
+                  ? "No notes match your current filters. Try adjusting or clearing them."
+                  : "No research archive entries available yet."}
+              </motion.div>
+            )}
+          </>
         )}
 
         <Separator className="my-12" />
