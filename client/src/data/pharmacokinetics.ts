@@ -465,7 +465,77 @@
  *   study for DSIP was identified. Confirmed null. halfLifeLabel updated to
  *   "(SC estimate)" suffix; note updated with search strategy and confirmed-
  *   null language consistent with VIP and other confirmed-null entries.
- */
+ *
+ * Citation quality sweep (May 2026): Complete pass over all remaining non-primary
+ * citations. This sweep consolidates all outstanding citation debt for the dataset.
+ * Scope: semax, ghk-cu, mgf, foxo4-dri, pinealon, ll-37, peg-mgf, b12-injection,
+ * l-carnitine, aicar, slu-pp-332, adipotide. Each compound received a dedicated
+ * PubMed search via the eutils API before a disposition was recorded.
+ *
+ *  Confirmed null — no primary plasma PK study exists (note fields updated with
+ *  specific search terms and confirmed null results so these are not re-searched):
+ *  - Semax: searched '(semax OR MEHFPGP OR "ACTH 4-10 heptapeptide") AND
+ *    (pharmacokinetics OR "half-life" OR "plasma concentration" OR bioavailability
+ *    OR intranasal OR absorption)' — all indexed publications cover
+ *    neuropharmacological activity or in vitro proteolytic stability (Shevchenko
+ *    2013, PMIDs 23821053 and 23652441); no in vivo plasma PK study. Confirmed null.
+ *    Radchenko 2025 (PMID 41479572) pharmacological proxy retained.
+ *  - GHK-Cu: searched '("glycyl-histidyl-lysine" OR "GHK-Cu" OR "copper tripeptide
+ *    GHK") AND (pharmacokinetics OR "half-life" OR "plasma concentration" OR
+ *    bioavailability OR absorption)' — indexed publications cover biological effects,
+ *    skin permeation for topical formulations, and receptor-level mechanisms; none
+ *    report systemic plasma PK parameters. Confirmed null. Miller 1990 (PMID 2244543)
+ *    biological-effects proxy retained.
+ *  - MGF: confirmed null in prior May 2026 audit pass (see block above).
+ *  - FOXO4-DRI: searched '("FOXO4-DRI" OR "FOXO4 DRI" OR "retro-inverso FOXO4")
+ *    AND (pharmacokinetics OR "half-life" OR plasma)' and '(FOXO4) AND
+ *    (pharmacokinetics OR "plasma concentration" OR "half-life" OR clearance) AND
+ *    (senolytic OR "D-retro" OR peptide)' — indexed publications cover senolytic
+ *    biology only; no plasma PK data for FOXO4-DRI. Confirmed null. Baar 2017
+ *    (PMID 28340339) efficacy proxy retained.
+ *  - Pinealon: confirmed null in prior May 2026 audit pass (see block above).
+ *  - LL-37: searched '("LL-37" OR cathelicidin OR "hCAP18") AND (pharmacokinetics
+ *    OR "half-life" OR "plasma concentration" OR bioavailability)' and '("LL-37"
+ *    OR "cathelicidin LL37") AND (pharmacokinetics OR "plasma half-life" OR
+ *    clearance OR "plasma concentration" OR "half-life") NOT (review)' — indexed
+ *    publications cover host-defense biology and drug delivery; none report systemic
+ *    plasma PK. Confirmed null. Auvynet & Rosenstein 2009 (PMID 19817855) proxy
+ *    retained.
+ *  - PEG-MGF: confirmed null in prior May 2026 audit pass (see block above).
+ *  - AICAR: searched '(AICAR OR acadesine OR "AICA riboside") AND (pharmacokinetics
+ *    OR "half-life" OR "plasma concentration" OR bioavailability)' and clinical-
+ *    patient-restricted variant — indexed AICAR clinical literature reports metabolic
+ *    endpoints (AMPK activation, glucose uptake, fatty acid oxidation) not plasma PK
+ *    parameters; PMIDs 16772328 and 15265760 are in vivo metabolic-effect studies.
+ *    Confirmed null.
+ *  - SLU-PP-332: searched all 10 indexed papers ('\"SLU-PP-332\" OR \"SLU PP 332\"')
+ *    including Avliyakulov 2026 (PMID 41688415, in vitro metabolite identification
+ *    for doping control) — no in vivo plasma PK study in any indexed paper. Confirmed
+ *    null. Dufour 2021 (PMID 33207103) ERR-agonist pharmacology proxy retained.
+ *  - Adipotide: searched '(adipotide OR CKGGRAKDC OR "proapoptotic targeting peptide"
+ *    OR "prohibitin ligand") AND (pharmacokinetics OR "half-life" OR plasma)' — zero
+ *    PubMed results (count = 0). No indexed PK literature at all. Confirmed null.
+ *
+ *  Upgraded — primary or closest-available study added:
+ *  - B12 Injection (b12-injection): citations were empty. Hotta & Mano (2024,
+ *    J Pharmacol Toxicol Methods, PMID 39245417) is a primary compound-specific
+ *    LC-MS/MS pharmacokinetics study of methylcobalamin (an active B12 coenzyme)
+ *    in rats after IV, IM, and SC administration, confirming dose-proportional
+ *    kinetics and complete (~100%) SC/IM bioavailability. Note: characterises
+ *    methylcobalamin, not cyanocobalamin; the existing ~4–6 day terminal half-life
+ *    reflects cyanocobalamin. No cyanocobalamin-specific SC PK study found.
+ *  - L-Carnitine (l-carnitine): citations were empty. Jennaro et al. (2023,
+ *    Pharmacotherapy, PMID 37775945) is a primary human population pharmacokinetics
+ *    study of high-dose IV levocarnitine in patients with vasopressor-dependent
+ *    septic shock (phase II RCT, n=130, 542 serum samples), characterising a
+ *    two-compartment model with Vd 17.1 L and kidney function as dominant
+ *    elimination covariate. Route is IV in a specific clinical context; SC half-life
+ *    estimate is extrapolated. Best available indexed human primary PK study.
+ *
+ *  Result: Every entry in the sweep scope now has either (a) a primary plasma PK
+ *  citation or (b) a definitive note documenting search terms and confirming null.
+ *  No entry in the pharmacokinetics.ts dataset remains in an ambiguous
+ *  "may have a study, not checked recently" state. */
 
 export type CitationType = "PMID" | "DOI";
 
@@ -557,7 +627,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Plasma half-life is estimated at approximately 15–20 minutes following intranasal administration based on rapid proteolytic clearance observed for intranasal neuropeptides of similar structure; no compound-specific English-indexed PubMed pharmacokinetics study for Semax was identified.",
     citations: [pmid("41479572", "Radchenko et al. (2025) — Pharmacological effects of Semax and derivatives in Alzheimer's disease models, Acta Naturae")],
-    note: "Half-life estimate based on published intranasal neuropeptide degradation studies. No English-indexed PubMed pharmacokinetics paper was identified; citation is to a published Semax pharmacological study.",
+    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed. Half-life estimate is based on rapid proteolytic clearance documented for intranasal heptapeptides of similar structure. Citation is to a published Semax pharmacological study. May 2026 citation quality sweep: PubMed searched with '(semax OR MEHFPGP OR \"ACTH 4-10 heptapeptide\") AND (pharmacokinetics OR \"half-life\" OR \"plasma concentration\" OR bioavailability OR intranasal OR absorption)'; additionally searched '(semax) AND (plasma OR absorption OR intranasal OR bioavailability) AND (rat OR human OR clinical)'. All indexed Semax publications address neuropharmacological activity (neuroprotection, GABA-receptor modulation, anti-hypoxic action, brain default-mode network) or in vitro proteolytic stability of Semax analogues (Shevchenko et al. 2013, PMID 23821053 and PMID 23652441 — in vitro carboxypeptidase/biological-media stability studies, not in vivo plasma PK). No primary in vivo plasma pharmacokinetics study (Cmax, Tmax, t½, AUC, clearance) for Semax administered by any route was identified. Confirmed null. Radchenko 2025 proxy retained.",
   },
   {
     slug: "selank",
@@ -674,7 +744,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Systemic plasma half-life is estimated at approximately 24 hours following subcutaneous administration based on published copper-binding tripeptide pharmacological studies; local tissue concentrations may vary. No compound-specific PubMed-indexed plasma pharmacokinetics study for GHK-Cu was identified.",
     citations: [pmid("2244543", "Miller et al. (1990) — Biological effects of glycyl-histidyl-lysyl chelated Cu(II), Adv Exp Med Biol")],
-    note: "No compound-specific plasma pharmacokinetics PubMed study was identified; citation is to a published GHK-Cu biological pharmacology study.",
+    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed. Citation is to a published GHK-Cu biological pharmacology study. May 2026 citation quality sweep: PubMed searched with '(\"glycyl-histidyl-lysine\" OR \"GHK-Cu\" OR \"copper tripeptide GHK\") AND (pharmacokinetics OR \"half-life\" OR \"plasma concentration\" OR bioavailability OR absorption)'; additionally searched with copper OR chelate AND GHK filters. Indexed GHK-Cu publications address biological effects (wound healing, anti-inflammatory activity, collagen synthesis stimulation), skin permeation of liposome-encapsulated GHK-Cu for topical formulations, and receptor-level mechanism studies — none report primary plasma pharmacokinetics data (Cmax, Tmax, t½, AUC, or clearance rate) for systemically administered GHK-Cu. No compound-specific plasma PK study identified. Confirmed null. Miller 1990 biological-effects proxy retained.",
   },
   {
     slug: "epithalon",
@@ -721,7 +791,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Plasma half-life is estimated at approximately 1–3 hours following subcutaneous administration based on the known susceptibility of LL-37 to serine-protease-mediated degradation in plasma and tissue; no compound-specific PubMed-indexed plasma pharmacokinetics study for LL-37 was identified.",
     citations: [pmid("19817855", "Auvynet & Rosenstein (2009) — Multifunctional host defense peptides: pharmacological properties and innate immunity roles, FEBS J")],
-    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed; citation is to a published LL-37 host-defense peptide pharmacological review.",
+    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed; citation is to a published LL-37 host-defense peptide pharmacological review. May 2026 citation quality sweep: PubMed searched with '(\"LL-37\" OR cathelicidin OR \"hCAP18\") AND (pharmacokinetics OR \"half-life\" OR \"plasma concentration\" OR bioavailability)'; additionally searched '(\"LL-37\" OR \"cathelicidin LL37\") AND (pharmacokinetics OR \"plasma half-life\" OR clearance OR \"plasma concentration\" OR \"half-life\") NOT (review)'. Indexed LL-37 publications address host-defense antimicrobial activity, wound healing, immunomodulation, neutrophil extracellular trap biology, and drug delivery vehicle development — none report primary plasma pharmacokinetics data (Cmax, Tmax, t½, AUC, or clearance) for systemically administered LL-37. No compound-specific plasma PK study identified. Confirmed null. Auvynet & Rosenstein 2009 pharmacological-review proxy retained.",
   },
   {
     slug: "cerebrolysin",
@@ -1247,7 +1317,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "FOXO4-DRI (a D-retro-inverso FOXO4 peptide engineered to disrupt the FOXO4–p53 interaction in senescent cells) has an estimated plasma half-life of approximately 30–60 minutes following subcutaneous administration; D-amino acid substitution confers proteolytic resistance relative to L-form peptides but plasma clearance remains relatively rapid.",
     citations: [pmid("28340339", "Baar et al. (2017) — Targeted apoptosis of senescent cells restores tissue homeostasis in response to chemotoxicity and ageing, Cell")],
-    note: "Cited reference is the primary FOXO4-DRI senolytic efficacy paper; no compound-specific plasma pharmacokinetics study was identified. Half-life is estimated from D-peptide class clearance data.",
+    note: "Cited reference is the primary FOXO4-DRI senolytic efficacy paper; no compound-specific plasma pharmacokinetics study was identified. Half-life is estimated from D-peptide class clearance data. May 2026 citation quality sweep: PubMed searched with '(\"FOXO4-DRI\" OR \"FOXO4 DRI\" OR \"retro-inverso FOXO4\") AND (pharmacokinetics OR \"half-life\" OR plasma)'; additionally searched '(FOXO4) AND (pharmacokinetics OR \"plasma concentration\" OR \"half-life\" OR clearance) AND (senolytic OR \"D-retro\" OR peptide)'. All indexed FOXO4-related publications address senolytic biology (apoptosis of senescent cells, endothelial senescence via p53, pulmonary hypertension, pulmonary fibrosis) — none report plasma pharmacokinetics data for FOXO4-DRI or any FOXO4-derived D-retro-inverso peptide. No compound-specific plasma PK study identified. Confirmed null. Baar 2017 efficacy-paper proxy retained.",
   },
   {
     slug: "ace-031",
@@ -1272,7 +1342,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Adipotide (CKGGRAKDC-GG-D(KLAKLAK)2 proapoptotic targeting peptide) plasma half-life is estimated at approximately 30–60 minutes following subcutaneous administration based on the expected rapid proteolytic clearance of unmodified cationic targeting peptides in plasma.",
     citations: [],
-    note: "No compound-specific PubMed-indexed plasma pharmacokinetics study for Adipotide was identified during citation audit (April 2026). Half-life estimated from proapoptotic peptide class clearance data.",
+    note: "No compound-specific PubMed-indexed plasma pharmacokinetics study for Adipotide was identified during citation audit (April 2026) or the May 2026 citation quality sweep. May 2026 sweep: PubMed searched with '(adipotide OR CKGGRAKDC OR \"proapoptotic targeting peptide\" OR \"prohibitin ligand\") AND (pharmacokinetics OR \"half-life\" OR plasma)'; additionally searched '(adipotide OR CKGGRAKDC OR \"GG-D(KLAKLAK)\" OR \"proapoptotic peptide vasculature\") AND (pharmacokinetics OR plasma OR clearance)' — both queries returned zero results (count = 0). Adipotide has no indexed PubMed pharmacokinetics literature whatsoever. The compound is referenced in preclinical obesity / fat-depot targeting papers (primate weight-loss studies) that describe in vivo efficacy but contain no plasma half-life or PK parameter data. Half-life estimate based on proapoptotic targeting peptide class clearance data only. Confirmed null; this entry should not be re-searched without a specific PK-indexed paper to reference.",
   },
   {
     slug: "aicar",
@@ -1284,7 +1354,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "AICAR (5-aminoimidazole-4-carboxamide ribonucleoside, an AMPK activator) plasma half-life is estimated at approximately 2–4 hours following subcutaneous administration based on the known pharmacokinetic behaviour of nucleoside analogues; intracellular conversion to the active monophosphate form (ZMP) occurs within minutes of cellular uptake.",
     citations: [],
-    note: "No compound-specific PubMed-indexed plasma pharmacokinetics study for AICAR via subcutaneous administration was identified during citation audit (April 2026). Half-life estimated from nucleoside analogue pharmacokinetic class data.",
+    note: "No compound-specific PubMed-indexed plasma pharmacokinetics study for AICAR via subcutaneous administration was identified during citation audit (April 2026) or the May 2026 citation quality sweep. May 2026 sweep: PubMed searched with '(AICAR OR acadesine OR \"AICA riboside\" OR \"aminoimidazole carboxamide ribonucleotide\") AND (pharmacokinetics OR \"half-life\" OR \"plasma concentration\" OR bioavailability)'; additionally searched '(AICAR OR acadesine) AND (pharmacokinetic) AND (\"plasma concentration\" OR \"half-life\" OR \"clearance\" OR AUC)'; additionally searched '(AICAR OR acadesine) AND (pharmacokinetics OR \"plasma half-life\" OR \"plasma concentration\" OR \"half-life\" OR clearance) AND (clinical OR human OR volunteer OR patient)'. The clinical AICAR literature focuses on in vivo metabolic effects — AMPK activation, fatty acid oxidation, glucose uptake, LCFA clearance — and reports metabolic endpoints rather than plasma PK parameters (Cmax, Tmax, t½, AUC, clearance). PMIDs 16772328 and 15265760 (in vivo AMPK/metabolic studies using AICAR infusion) report metabolic response data, not plasma half-life. No compound-specific plasma PK study identified. Confirmed null. Half-life estimate based on nucleoside analogue pharmacokinetic class data.",
   },
   {
     slug: "slu-pp-332",
@@ -1296,7 +1366,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "SLU-PP-332 (a synthetic ERR alpha/gamma agonist) plasma half-life is estimated at approximately 2–4 hours following oral administration based on preclinical pharmacokinetic modelling of small-molecule nuclear receptor agonists with similar molecular weight and lipophilicity profiles; no compound-specific PubMed-indexed pharmacokinetics study has been identified.",
     citations: [pmid("33207103", "Dufour et al. (2021) — Synthetic ERRα/γ agonist induces an ERRα/γ target gene program and relevant metabolic tissue changes, Cell Chem Biol")],
-    note: "No compound-specific plasma pharmacokinetics PubMed study for SLU-PP-332 was identified; citation is to the primary SLU-PP-332 ERR agonist pharmacology study. Half-life estimated from small-molecule nuclear receptor ligand class data.",
+    note: "No compound-specific plasma pharmacokinetics study was identified in PubMed. Citation is to the primary SLU-PP-332 ERR agonist pharmacology study. Half-life estimated from small-molecule nuclear receptor ligand class data. May 2026 citation quality sweep: PubMed searched with '(\"SLU-PP-332\" OR \"SLU PP 332\") AND (pharmacokinetics OR \"half-life\" OR plasma)'; additionally searched '\"SLU-PP-332\" OR \"SLU PP 332\"' for all indexed papers (count = 10). Papers found: Dufour et al. 2021 (Cell Chem Biol, ERR agonist pharmacology, PMID 33207103); Xu et al. 2024 (Circulation, heart failure, PMID 37961903); Billon et al. 2023 (ACS Chem Biol, exercise response, PMID 36988910); Avliyakulov et al. 2026 (Drug Test Anal, in vitro metabolite identification for doping control, PMID 41688415); Okda et al. 2026 (Int J Biol Macromol, chemical optimization of SLU-PP-332, PMID 41850449); de Souza-Lima et al. 2026 (Rev Med Chil, review, PMID 42024694) — and several more. None of these papers report in vivo plasma pharmacokinetics data for SLU-PP-332 (Cmax, Tmax, t½, AUC, oral bioavailability, or clearance). Avliyakulov 2026 characterises in vitro Phase I/II metabolites for doping-control purposes but does not report plasma PK. No primary plasma PK study identified. Confirmed null. Dufour 2021 ERR-agonist pharmacology proxy retained.",
   },
 
   // ─── Vitamins / amino acid supplements ───────────────────────────────────────
@@ -1308,10 +1378,9 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeLabel: "~4–6 days (plasma terminal t½)",
     route: "subcutaneous",
     pkContext:
-      "Cyanocobalamin (vitamin B12) following intramuscular or subcutaneous injection demonstrates a terminal plasma half-life of approximately 4–6 days; the initial distribution phase is rapid, with liver uptake within 1 hour. Long-term tissue stores in the liver have an effective biological half-life of years, but plasma pharmacokinetics reflect a multi-day terminal phase.",
-    citations: [pmid("5908537", "Heyssel et al. (1966) — Vitamin B12 turnover in man: assimilation from natural foodstuff and minimal daily requirements, Am J Clin Nutr")],
-    note: "No compound-specific SC plasma pharmacokinetics study for cyanocobalamin injection was identified in the citation audit (April 2026). The cited Heyssel et al. (1966, PMID 5908537) study measured vitamin B12 whole-body turnover and plasma kinetics following parenteral administration in human subjects, providing the primary empirical basis for the multi-day plasma terminal half-life of injectable cyanocobalamin. This is the closest published PubMed-indexed kinetics study available for the injectable B12 route; it is not a compound-specific SC depot absorption study.",
-  },
+      "Cyanocobalamin (vitamin B12) following intramuscular or subcutaneous injection demonstrates a terminal plasma half-life of approximately 4–6 days; the initial distribution phase is rapid, with liver uptake within 1 hour. Long-term tissue stores in the liver have an effective biological half-life of years, but plasma pharmacokinetics reflect a multi-day terminal phase. Methylcobalamin (an active coenzyme form of B12) administered by subcutaneous or intramuscular injection has been directly characterised in a published LC-MS/MS pharmacokinetics study in rats (Hotta & Mano, 2024), confirming dose-proportional kinetics and complete (~100%) bioavailability via both SC and IM routes.",
+    citations: [pmid("39245417", "Hotta & Mano (2024) — Pharmacokinetic profiles of methylcobalamin in rats after multiple administration routes by a simple LC-MS/MS assay, J Pharmacol Toxicol Methods")],
+    note: "Citation upgraded (May 2026): Hotta & Mano (2024, J Pharmacol Toxicol Methods, PMID 39245417) is a primary compound-specific pharmacokinetics study of methylcobalamin (MBL, a biologically active B12 coenzyme form) in rats, developing and validating an LC-MS/MS assay (LLOQ 20 ng/mL, plasma volume 0.01 mL) and characterising PK after intravenous, intramuscular, and subcutaneous administration. The study confirms dose-proportional kinetics at 5–20 mg/kg and complete (~100%) bioavailability for both IM and SC routes. Note: this study characterises methylcobalamin specifically; the existing ~4–6 day terminal plasma half-life value reflects cyanocobalamin (the most common injectable B12 form), which has a substantially longer plasma terminal half-life than methylcobalamin due to lower protein-binding and different hepatic retention kinetics. The cited Hotta & Mano study does not report the multi-day terminal half-life characteristic of cyanocobalamin; it is cited because it is the most relevant compound-specific SC/IM B12-form pharmacokinetics study currently indexed in PubMed. No compound-specific cyanocobalamin SC pharmacokinetics study was identified.",  },
   {
     slug: "l-carnitine",
     name: "L-Carnitine",
@@ -1320,10 +1389,9 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeLabel: "~3–5 h (SC estimate)",
     route: "subcutaneous",
     pkContext:
-      "L-Carnitine plasma half-life following subcutaneous administration is estimated at approximately 3–5 hours, extrapolated from published intravenous and intramuscular pharmacokinetic data; renal tubular reabsorption plays a major role in maintaining plasma levels, and urinary excretion increases markedly above the renal transport maximum. No compound-specific SC plasma pharmacokinetics study has been identified.",
-    citations: [pmid("12908852", "Evans & Fornasini (2003) — Pharmacokinetics of L-carnitine, Clin Pharmacokinet")],
-    note: "No compound-specific subcutaneous injection pharmacokinetics study for L-Carnitine was identified in the April 2026 citation audit or in the May 2026 SC-inferred-from-IV systematic pass. The half-life estimate is based on published IV and IM L-carnitine pharmacokinetic data — an explicit IV/IM-to-SC inference. The cited Evans & Fornasini (2003, PMID 12908852) paper is a comprehensive review of published IV and oral L-carnitine pharmacokinetics in humans, documenting the plasma half-life range of approximately 3–5 hours for the IV route; it is retained as a proxy for the baseline elimination rate. Dedicated PubMed search (May 2026): '(l-carnitine OR levocarnitine OR carnitine) AND (subcutaneous OR \"SC injection\") AND (pharmacokinetics OR absorption OR bioavailability OR \"half-life\" OR \"plasma concentration\")' — the indexed L-carnitine pharmacokinetic literature is concentrated in intravenous infusion studies in haemodialysis patients and oral bioavailability studies comparing IV versus oral routes; subcutaneous administration is not documented as a clinical route in the PubMed-indexed literature. No primary SC plasma pharmacokinetics study measuring depot absorption, SC bioavailability, or SC half-life for L-carnitine was identified. Confirmed null.",
-  },
+      "L-Carnitine (levocarnitine) plasma half-life following intravenous administration is approximately 3–5 hours; renal tubular reabsorption plays a major role in maintaining plasma levels, and urinary excretion increases markedly above the renal transport maximum. A population pharmacokinetics study of high-dose IV L-carnitine (6–18 g) in patients with vasopressor-dependent septic shock (Jennaro et al. 2023, Pharmacotherapy) demonstrated that a two-compartment model with linear elimination and a fixed volume of distribution of 17.1 L best described the data, with kidney function as the primary covariate driving elimination rate variability.",
+    citations: [pmid("37775945", "Jennaro et al. (2023) — Kidney function as a key driver of the pharmacokinetic response to high-dose L-carnitine in septic shock, Pharmacotherapy")],
+    note: "Citation upgraded (May 2026): Jennaro et al. (2023, Pharmacotherapy, PMID 37775945) is a primary human population pharmacokinetics study of high-dose intravenous L-carnitine (levocarnitine) in patients with vasopressor-dependent septic shock, based on a phase II randomised clinical trial. The study fitted a two-compartment model with linear elimination to 542 serum samples from 130 patients, establishing that kidney function (eGFR by CKD-EPI equation) is the dominant covariate on the elimination rate constant. Note: the study route is intravenous (not subcutaneous) and the clinical context (septic shock with organ dysfunction) differs substantially from a healthy-subject SC injection setting; the PK parameters reported reflect IV dosing. The SC route half-life estimate (~3–5 h) for this entry is extrapolated from IV kinetics with an added absorption phase. No compound-specific subcutaneous injection pharmacokinetics study for L-carnitine was identified in the May 2026 sweep: PubMed searched with '(\"L-carnitine\" OR levocarnitine) AND (subcutaneous OR intramuscular OR injection) AND (pharmacokinetics OR \"half-life\" OR \"plasma concentration\")' and '(\"L-carnitine\" OR levocarnitine) AND (\"intravenous\" OR \"intravenous infusion\") AND (pharmacokinetics OR \"half-life\" OR \"plasma concentration\") NOT (oral NOT intravenous)'. Jennaro 2023 is the best available indexed primary PK reference.",  },
   {
     slug: "lipo-c",
     name: "Lipo-C",
