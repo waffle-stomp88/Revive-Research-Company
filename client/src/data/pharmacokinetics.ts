@@ -627,6 +627,23 @@
  *   citations; the note documents this confirmed-null result with the search
  *   strategy.
  *
+ * Citation update (May 2026): Cotadutide class-proxy citation added for survodutide
+ *  - Survodutide: citations array was empty following confirmed-null audit above
+ *    (no standalone survodutide PK paper indexed in PubMed). PMID verification
+ *    now completed for the previously deferred cotadutide proxy:
+ *    Ambery P et al. (2018) — "MEDI0382, a GLP-1 and glucagon receptor dual agonist,
+ *    in obese or overweight patients with type 2 diabetes: a randomised, controlled,
+ *    double-blind, ascending dose and phase 2a study", Lancet 391(10140):2607–2618.
+ *    PMID 29731194. Confirmed via PubMed eutils esummary: title matches, authors
+ *    Ambery P et al., source Lancet, pubdate 2018 Jun 16.
+ *    Proxy rationale: cotadutide (MEDI0382) is the closest published GLP-1/glucagon
+ *    receptor co-agonist with a standalone PubMed-indexed pharmacokinetics paper;
+ *    it shares the same dual-receptor mechanism (GLP-1R + GCGR) and fatty-acid
+ *    albumin-binding acylation design as survodutide (BI 456906). The Phase 1/2a
+ *    study characterised cotadutide pharmacokinetics after subcutaneous administration.
+ *    Citation added with citationQuality: "class-proxy"; entry note updated to remove
+ *    "pending PMID verification" language and document the off-compound proxy rationale.
+ *
  * altRoute audit (May 2026): Complete enumeration of all altRoute entries
  *
  *   Scope: every object in PEPTIDE_HALF_LIVES that carries an `altRoute`
@@ -1280,9 +1297,9 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeMax: 6480,
     halfLifeLabel: "~3–4.5 days",
     route: "subcutaneous",
+    citationQuality: "class-proxy",
     pkContext:
       "Plasma half-life of approximately 3–4.5 days following subcutaneous administration in published clinical pharmacokinetic studies; survodutide is a GLP-1/glucagon dual receptor agonist engineered for once-weekly dosing with C18 fatty-acid albumin-binding conjugation.",
-    citationQuality: "class-proxy",
     citations: [
       pmid(
         "29866388",
