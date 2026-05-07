@@ -1337,11 +1337,29 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                     )}
                     <div className="flex flex-wrap gap-3 border-t border-border/20 pt-2 mt-1">
                       {activeCitations.map((cit, j) => (
-                        <span key={j} className="inline-flex items-center gap-1">
+                        <span key={j} className="inline-flex items-center gap-1 flex-wrap">
                           {cit.routeContext && (
                             <span className="text-[10px] font-medium px-1 py-px rounded" style={{ backgroundColor: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.45)", border: "1px solid rgba(255,255,255,0.12)" }}>
                               {cit.routeContext}
                             </span>
+                          )}
+                          {cit.isOffCompoundProxy && (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span
+                                  className="inline-flex items-center gap-0.5 text-[9px] font-semibold px-1 py-px rounded cursor-help select-none"
+                                  style={{ backgroundColor: "rgba(251,146,60,0.14)", color: "#fb923c", border: "1px solid rgba(251,146,60,0.35)" }}
+                                  data-testid={`badge-proxy-citation-${toTestSlug(c.peptide.name)}-${j}`}
+                                  onClick={e => e.stopPropagation()}
+                                >
+                                  <Info className="h-2 w-2 flex-shrink-0" />
+                                  Proxy
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-[260px] p-3 text-xs leading-relaxed">
+                                This citation is from a related compound class, not the compound itself. No compound-specific pharmacokinetics study was identified; the closest indexed analogue study is used as an off-compound proxy.
+                              </TooltipContent>
+                            </Tooltip>
                           )}
                           <a href={cit.url} target="_blank" rel="noopener noreferrer"
                             className="inline-flex items-center gap-1 text-xs text-[#21d8ff] hover:underline opacity-70 hover:opacity-100"
@@ -1608,11 +1626,28 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                         <div className="pt-1 border-t border-border/40">
                           <p className="text-[10px] text-muted-foreground mb-1">Citations:</p>
                           {c.pk.citations.map((cit, j) => (
-                            <span key={j} className="flex items-center gap-1 mb-0.5">
+                            <span key={j} className="flex flex-wrap items-center gap-1 mb-0.5">
                               {cit.routeContext && (
                                 <span className="text-[10px] font-medium px-1 py-px rounded shrink-0" style={{ backgroundColor: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.45)", border: "1px solid rgba(255,255,255,0.12)" }}>
                                   {cit.routeContext}
                                 </span>
+                              )}
+                              {cit.isOffCompoundProxy && (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span
+                                      className="inline-flex items-center gap-0.5 text-[9px] font-semibold px-1 py-px rounded cursor-help select-none shrink-0"
+                                      style={{ backgroundColor: "rgba(251,146,60,0.14)", color: "#fb923c", border: "1px solid rgba(251,146,60,0.35)" }}
+                                      data-testid={`badge-proxy-citation-popover-${toTestSlug(c.peptide.name)}-${j}`}
+                                    >
+                                      <Info className="h-2 w-2 flex-shrink-0" />
+                                      Proxy
+                                    </span>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="top" className="max-w-[260px] p-3 text-xs leading-relaxed">
+                                    This citation is from a related compound class, not the compound itself. No compound-specific pharmacokinetics study was identified; the closest indexed analogue study is used as an off-compound proxy.
+                                  </TooltipContent>
+                                </Tooltip>
                               )}
                               <a href={cit.url} target="_blank" rel="noopener noreferrer"
                                 className="text-[11px] text-[#21d8ff] hover:underline">{cit.label}</a>
@@ -1621,8 +1656,27 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                           {c.pk.altRoute && (
                             c.pk.altRoute.citations.length > 0
                               ? c.pk.altRoute.citations.map((cit, j) => (
-                                <a key={`alt-${j}`} href={cit.url} target="_blank" rel="noopener noreferrer"
-                                  className="text-[11px] text-[#21d8ff] hover:underline block">{cit.label}</a>
+                                <span key={`alt-${j}`} className="flex flex-wrap items-center gap-1 mb-0.5">
+                                  {cit.isOffCompoundProxy && (
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <span
+                                          className="inline-flex items-center gap-0.5 text-[9px] font-semibold px-1 py-px rounded cursor-help select-none shrink-0"
+                                          style={{ backgroundColor: "rgba(251,146,60,0.14)", color: "#fb923c", border: "1px solid rgba(251,146,60,0.35)" }}
+                                          data-testid={`badge-proxy-citation-altroute-popover-${toTestSlug(c.peptide.name)}-${j}`}
+                                        >
+                                          <Info className="h-2 w-2 flex-shrink-0" />
+                                          Proxy
+                                        </span>
+                                      </TooltipTrigger>
+                                      <TooltipContent side="top" className="max-w-[260px] p-3 text-xs leading-relaxed">
+                                        This citation is from a related compound class, not the compound itself. No compound-specific pharmacokinetics study was identified; the closest indexed analogue study is used as an off-compound proxy.
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  )}
+                                  <a href={cit.url} target="_blank" rel="noopener noreferrer"
+                                    className="text-[11px] text-[#21d8ff] hover:underline">{cit.label}</a>
+                                </span>
                               ))
                               : c.pk.altRoute.note && (
                                 <AltRouteNoteToggle

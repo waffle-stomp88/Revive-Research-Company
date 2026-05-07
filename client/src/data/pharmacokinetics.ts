@@ -712,6 +712,13 @@ export interface Citation {
   url: string;
   label: string;
   routeContext?: string;
+  /**
+   * True when the citation describes a related compound or compound class
+   * rather than the named compound itself (off-compound proxy).
+   * Auto-derived from label text containing "[off-compound proxy:" by the
+   * pmid() helper; can also be set explicitly.
+   */
+  isOffCompoundProxy?: boolean;
 }
 
 /**
@@ -833,6 +840,7 @@ const pmid = (id: string, label: string, routeContext?: string): Citation => ({
   url: `https://pubmed.ncbi.nlm.nih.gov/${id}/`,
   label,
   ...(routeContext !== undefined ? { routeContext } : {}),
+  ...(label.includes("[off-compound proxy:") ? { isOffCompoundProxy: true } : {}),
 });
 
 // ─── Tunable thresholds ───────────────────────────────────────────────────────
@@ -1167,7 +1175,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     citationQuality: "class-proxy",
     pkContext:
       "Reported local tissue retention of approximately 4–8 hours following topical application in published pharmacokinetic studies of this acetylated octapeptide (acetyl glutamyl octapeptide-3); transdermal penetration and local epidermal half-life have been characterized for short acetylated neuropeptide fragments in skin pharmacokinetic models.",
-    citations: [pmid("25497319", "Hoppel et al. (2015) — Topical delivery of acetyl hexapeptide-8 from different emulsions: influence of composition and internal structure, Eur J Pharm Sci")],
+    citations: [pmid("25497319", "Hoppel et al. (2015) — Topical delivery of acetyl hexapeptide-8 from different emulsions: influence of composition and internal structure, Eur J Pharm Sci [off-compound proxy: acetyl hexapeptide-8 / Argireline analogue, not SNAP-8 itself]")],
     note: "Off-compound proxy citation: Hoppel et al. (2015) characterises acetyl hexapeptide-8 (Argireline, the hexapeptide Ac-Glu-Glu-Met-Gln-Arg-Arg-NH2), not SNAP-8 itself (acetyl glutamyl octapeptide-3 / Leuphasyl, Ac-Glu-Glu-Met-Gln-Arg-Arg-NH-CH(CO-Phe-Arg)-NH2). The two molecules are structurally related neuropeptide mimetics (both inhibit SNARE-complex assembly) but are distinct compounds. May 2026 follow-up audit: PubMed searched with '(\"SNAP-8\" OR \"acetyl glutamyl octapeptide\" OR \"leuphasyl\") AND (pharmacokinetics OR \"half-life\" OR \"skin penetration\" OR \"topical delivery\" OR absorption)' — SNAP-8 literature focuses on in vitro SNARE-complex inhibition assays and ex vivo wrinkle-attenuation endpoints; no dedicated compound-specific topical delivery or pharmacokinetics study for SNAP-8 itself was identified. Confirmed null result. The cited Argireline topical delivery study is retained as the closest indexed analogue for topical neuropeptide mimetic skin penetration data.",
   },
   {
