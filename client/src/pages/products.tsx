@@ -49,7 +49,8 @@ import {
   Scale,
   MessageCircle,
   ArrowUp,
-  Check
+  Check,
+  BookOpen
 } from "lucide-react";
 import { isInCompare, addToCompare, removeFromCompare } from "@/components/comparison-tool";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -1026,7 +1027,37 @@ function ProductsComponent() {
                     </motion.div>
                   ))}
                 </motion.div>
-                
+
+                {/* Kisspeptin Research Cross-links — shown when any kisspeptin product is on this page */}
+                {paginatedProducts.some((p) => (p.slug || "").toLowerCase().includes("kisspeptin")) && (
+                  <div className="mt-6 p-4 rounded-lg border border-[#a855f7]/20 bg-[#a855f7]/5" data-testid="section-kisspeptin-research-links">
+                    <div className="flex items-center gap-2 mb-3">
+                      <BookOpen className="h-4 w-4 text-[#a855f7]" />
+                      <span className="text-sm font-semibold text-[#a855f7]">Related Research</span>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <Link href="/guides/what-is-kisspeptin-peptide" className="flex-1" data-testid="link-kisspeptin-general-guide">
+                        <div className="flex items-center gap-2 p-3 rounded-md border border-[#a855f7]/20 hover:border-[#a855f7]/50 bg-background/50 hover:bg-[#a855f7]/10 transition-all duration-200 cursor-pointer group">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium group-hover:text-[#a855f7] transition-colors truncate">Kisspeptin: KISS1 Gene Peptide Family Research Guide</p>
+                            <p className="text-xs text-muted-foreground">7 min read</p>
+                          </div>
+                          <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-[#a855f7] transition-colors flex-shrink-0" />
+                        </div>
+                      </Link>
+                      <Link href="/guides/what-is-kisspeptin-54-peptide" className="flex-1" data-testid="link-kisspeptin-54-guide">
+                        <div className="flex items-center gap-2 p-3 rounded-md border border-[#a855f7]/20 hover:border-[#a855f7]/50 bg-background/50 hover:bg-[#a855f7]/10 transition-all duration-200 cursor-pointer group">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium group-hover:text-[#a855f7] transition-colors truncate">Kisspeptin-54: Full-Length KISS1 Isoform Research Guide</p>
+                            <p className="text-xs text-muted-foreground">7 min read</p>
+                          </div>
+                          <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-[#a855f7] transition-colors flex-shrink-0" />
+                        </div>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+
                 {/* Pagination Controls - Bottom */}
                 {totalPages > 1 && (
                   <div className="mt-8 flex flex-col items-center gap-3">

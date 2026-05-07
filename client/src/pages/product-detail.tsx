@@ -833,8 +833,8 @@ export default function ProductDetail() {
                 </div>
 
                 <div className="space-y-2">
-                  {relatedArticles.slice(0, 1).map((article) => (
-                    <Link key={article.id} href={`/education/${article.slug}`}>
+                  {relatedArticles.slice(0, 2).map((article) => (
+                    <Link key={article.id} href={`/guides/${article.slug}`}>
                       <Card 
                         className="p-4 border-[#ec4899]/20 md:hover:border-[#ec4899]/40 transition-all duration-300 cursor-pointer group md:hover:scale-[1.02] md:active:scale-[1.02] md:hover:shadow-[0_0_20px_rgba(236,72,153,0.3)]"
                         data-testid={`card-article-${article.id}`}
@@ -1339,7 +1339,7 @@ export default function ProductDetail() {
                 </CollapsibleTrigger>
                 <CollapsibleContent className="mt-3 space-y-2">
                   {relatedArticles.slice(0, 2).map((article) => (
-                    <Link key={article.id} href={`/education/${article.slug}`}>
+                    <Link key={article.id} href={`/guides/${article.slug}`}>
                       <Card 
                         className="p-3 border-[#ec4899]/20 hover:border-[#ec4899]/40 transition-all cursor-pointer"
                         data-testid={`card-article-mobile-${article.id}`}

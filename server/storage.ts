@@ -2773,6 +2773,7 @@ export async function seedHormonalEducationArticlesIfMissing(): Promise<void> {
     content: string;
     readTimeMinutes: number;
     sortOrder: number;
+    relatedProductIds?: string[];
   }> = [
     {
       slug: "what-is-kisspeptin-peptide",
@@ -2790,6 +2791,7 @@ Research applications include: HPG axis neuroendocrine pharmacology; isoform-sel
 **See also:** [Kisspeptin-54: Full-Length KISS1 Isoform Research Guide](/guides/what-is-kisspeptin-54-peptide) — a detailed comparison of the 54-amino-acid precursor isoform versus kisspeptin-10, covering pharmacokinetic differences, receptor occupancy kinetics, and extended GnRH pulse modeling applications.`,
       readTimeMinutes: 7,
       sortOrder: 46,
+      relatedProductIds: ["4d2b09b2-481d-4901-b54c-8b93ba6fafa7"],
     },
     {
       slug: "what-is-gonadorelin-peptide",
@@ -2852,6 +2854,7 @@ Research applications include: KISS1R agonism and Gq/11-pathway pharmacology; co
 **See also:** [Kisspeptin: KISS1 Gene Peptide Family Research Guide](/guides/what-is-kisspeptin-peptide) — a broader overview of the full kisspeptin isoform family (kisspeptin-10, -13, -14, and -54), KISS1R signaling, KNDy neuron biology, and the dual ARC/AVPV circuit architecture that governs HPG pulse generation and the preovulatory LH surge.`,
       readTimeMinutes: 7,
       sortOrder: 51,
+      relatedProductIds: ["4d2b09b2-481d-4901-b54c-8b93ba6fafa7"],
     },
     {
       slug: "what-is-oxytocin-peptide",
@@ -2880,6 +2883,7 @@ Research interest in oxytocin centers on its role as a neuromodulator of prosoci
         readTimeMinutes: article.readTimeMinutes,
         sortOrder: article.sortOrder,
         isPublished: true,
+        relatedProductIds: article.relatedProductIds ?? [],
       })
       .onConflictDoUpdate({
         target: educationArticles.slug,
@@ -2889,6 +2893,7 @@ Research interest in oxytocin centers on its role as a neuromodulator of prosoci
           content: article.content,
           readTimeMinutes: article.readTimeMinutes,
           sortOrder: article.sortOrder,
+          relatedProductIds: article.relatedProductIds ?? [],
         },
       });
   }
