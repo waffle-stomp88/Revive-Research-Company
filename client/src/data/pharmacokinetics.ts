@@ -544,6 +544,20 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
       "Plasma half-life of kisspeptin-10 is approximately 15–30 minutes following subcutaneous administration in published clinical pharmacokinetic studies; rapid enzymatic clearance by neprilysin and other endopeptidases limits its duration of action in plasma.",
     citations: [pmid("24449855", "Jayasena et al. (2014) — Kisspeptin-54 and kisspeptin-10 pharmacodynamics compared in healthy men, J Clin Endocrinol Metab")],
   },
+  {
+    slug: "kisspeptin-54",
+    name: "Kisspeptin-54",
+    halfLifeMin: 28,
+    halfLifeMax: 35,
+    halfLifeLabel: "~28–35 min",
+    route: "subcutaneous",
+    pkContext:
+      "Plasma half-life of kisspeptin-54 (the full-length 54-amino-acid KISS1 gene product) is approximately 28–35 minutes following subcutaneous administration in published clinical pharmacokinetic studies; substantially longer than kisspeptin-10 (~15–30 min) owing to the larger molecular size and slower neprilysin-mediated cleavage of the intact 54-residue sequence. Kisspeptin-54 directly stimulates pulsatile GnRH secretion via KISS1R on hypothalamic GnRH neurons, with the pharmacokinetic profile documented in a randomized crossover comparison with kisspeptin-10 in healthy male volunteers.",
+    citations: [
+      pmid("24449855", "Jayasena et al. (2014) — Kisspeptin-54 and kisspeptin-10 compared for gonadotropin-stimulating activity in healthy men, J Clin Endocrinol Metab"),
+      pmid("16278289", "Dhillo et al. (2005) — Kisspeptin-54 stimulates the hypothalamic-pituitary gonadal axis in human males, J Clin Endocrinol Metab"),
+    ],
+  },
 
   // ─── GH secretagogues ────────────────────────────────────────────────────────
   {
@@ -886,6 +900,7 @@ const NAME_SLUG_OVERRIDES: Record<string, string> = {
   "triptorelin": "triptorelin",
   "enclomiphene": "enclomiphene",
   "kisspeptin-10": "kisspeptin-10",
+  "kisspeptin-54": "kisspeptin-54",
 
   // GH secretagogues
   "ghrp-6": "ghrp-6",
