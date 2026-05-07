@@ -1311,11 +1311,39 @@ export class DatabaseStorage implements IStorage {
   }
   
   async getEducationArticlesByProductId(productId: string): Promise<EducationArticle[]> {
-    const allArticles = await db.select().from(educationArticles)
-      .where(eq(educationArticles.isPublished, true));
-    return allArticles.filter(article => 
-      article.relatedProductIds && article.relatedProductIds.includes(productId)
-    );
+    const [allArticles, product] = await Promise.all([
+      db.select().from(educationArticles).where(eq(educationArticles.isPublished, true)),
+      db.select().from(products).where(eq(products.id, productId)).limit(1).then(r => r[0] ?? null),
+    ]);
+
+    // Build a set of lowercase keywords from the product name and slug for fuzzy matching.
+    // Words shorter than 3 characters are skipped to avoid noisy matches (e.g. "mg", "5").
+    const STOP_WORDS = new Set(["the", "and", "for", "with", "from", "this", "that", "vial", "kit"]);
+    const productKeywords: string[] = [];
+    if (product) {
+      const raw = `${product.name ?? ""} ${product.slug ?? ""}`.toLowerCase();
+      const tokens = raw.split(/[\s\-_\/]+/).map(t => t.replace(/[^a-z0-9]/g, ""));
+      for (const t of tokens) {
+        if (t.length >= 3 && !STOP_WORDS.has(t)) {
+          productKeywords.push(t);
+        }
+      }
+    }
+
+    return allArticles.filter(article => {
+      // 1. Explicit product mapping (existing behaviour — highest priority)
+      if (article.relatedProductIds && article.relatedProductIds.includes(productId)) {
+        return true;
+      }
+      // 2. Keyword match against article slug and title
+      if (productKeywords.length > 0) {
+        const haystack = `${article.slug ?? ""} ${article.title ?? ""}`.toLowerCase();
+        if (productKeywords.some(kw => haystack.includes(kw))) {
+          return true;
+        }
+      }
+      return false;
+    });
   }
   
   async createEducationArticle(article: InsertEducationArticle): Promise<EducationArticle> {
