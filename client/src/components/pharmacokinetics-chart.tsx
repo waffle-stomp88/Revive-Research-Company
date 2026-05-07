@@ -1192,21 +1192,21 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                         </span>
                       ))}
                       {isAltActive && c.basePk?.altRoute && c.basePk.altRoute.citations.length === 0 && c.basePk.altRoute.note && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
+                        <Popover>
+                          <PopoverTrigger asChild>
                             <span
-                              className="inline-flex items-center gap-1 text-xs text-muted-foreground/60 italic cursor-help"
+                              className="inline-flex items-center gap-1 text-xs text-muted-foreground/60 italic cursor-pointer"
                               onClick={e => e.stopPropagation()}
                               data-testid={`label-no-citation-altroute-${toTestSlug(c.peptide.name)}`}
                             >
                               <Info className="h-2.5 w-2.5 flex-shrink-0" />
                               No route-specific citation found — see note
                             </span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="max-w-[300px] text-xs leading-relaxed">
+                          </PopoverTrigger>
+                          <PopoverContent side="top" className="w-80 p-3 text-xs leading-relaxed text-muted-foreground">
                             {c.basePk.altRoute.note}
-                          </TooltipContent>
-                        </Tooltip>
+                          </PopoverContent>
+                        </Popover>
                       )}
                     </div>
                     {c.pk.ivHalfLifeLabel && (() => {
@@ -1488,20 +1488,20 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                           </a>
                         ))
                         : c.pk.altRoute.note && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
+                          <Popover>
+                            <PopoverTrigger asChild>
                               <span
-                                className="inline-flex items-center gap-1 text-[10px] text-muted-foreground/55 italic cursor-help"
+                                className="inline-flex items-center gap-1 text-[10px] text-muted-foreground/55 italic cursor-pointer"
                                 data-testid={`label-no-citation-altroute-legend-${toTestSlug(c.peptide.name)}`}
                               >
                                 <Info className="h-2.5 w-2.5 flex-shrink-0" />
                                 No SC-specific citation available
                               </span>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="max-w-[300px] text-xs leading-relaxed">
+                            </PopoverTrigger>
+                            <PopoverContent side="top" className="w-80 p-3 text-xs leading-relaxed text-muted-foreground">
                               {c.pk.altRoute.note}
-                            </TooltipContent>
-                          </Tooltip>
+                            </PopoverContent>
+                          </Popover>
                         )
                     )}
                   </div>
