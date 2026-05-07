@@ -170,6 +170,20 @@ export default function LabNotes() {
     return result;
   }, [notes, activeCategories, searchQuery]);
 
+  const categoryCounts = useMemo(() => {
+    if (!notes) return {} as Record<string, number>;
+    const q = searchQuery.trim().toLowerCase();
+    const counts: Record<string, number> = {};
+    for (const cat of CATEGORIES) {
+      counts[cat] = notes.filter((n) => {
+        if (n.category !== cat) return false;
+        if (!q) return true;
+        return n.title.toLowerCase().includes(q) || n.content.toLowerCase().includes(q);
+      }).length;
+    }
+    return counts;
+  }, [notes, searchQuery]);
+
   const hasActiveFilters = activeCategories.size > 0 || searchQuery.trim().length > 0;
 
   return (
@@ -248,12 +262,13 @@ export default function LabNotes() {
             {CATEGORIES.map((cat) => {
               const color = getCategoryColor(cat);
               const isActive = activeCategories.has(cat);
+              const count = categoryCounts[cat] ?? 0;
               return (
                 <button
                   key={cat}
                   onClick={() => toggleCategory(cat)}
                   data-testid={`button-category-${cat.toLowerCase()}`}
-                  className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium border transition-all duration-150"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium border transition-all duration-150"
                   style={{
                     borderColor: isActive ? color : `${color}40`,
                     color: isActive ? color : `${color}80`,
@@ -261,6 +276,16 @@ export default function LabNotes() {
                   }}
                 >
                   {cat}
+                  <span
+                    className="inline-flex items-center justify-center rounded-full text-xs font-semibold min-w-[1.25rem] h-5 px-1"
+                    style={{
+                      backgroundColor: isActive ? `${color}25` : `${color}18`,
+                      color: isActive ? color : `${color}99`,
+                    }}
+                    data-testid={`badge-count-${cat.toLowerCase()}`}
+                  >
+                    {count}
+                  </span>
                   {isActive && <X className="h-3 w-3 ml-0.5" />}
                 </button>
               );
