@@ -184,6 +184,26 @@
  *    characterised animal model, bringing the oxytocin SC entry to the same
  *    citation standard as vasopressin SC (Deyo et al. 1986, PMID 3951675).
  *
+ * IV half-life additions (May 2026): ivHalfLifeMin/Max/Label fields added to
+ * three neuropeptide entries that had published IV clearance data available:
+ *  - Vasopressin: ivHalfLifeMin/Max/Label (~5–15 min) added. Baumann & Dingman
+ *    (1976, PMID 1262454) was already present in the entry citations array as a
+ *    primary IV PK study; the three overlay fields are now populated from that
+ *    data, enabling the IV bolus overlay curve and t½ marker on the PK chart.
+ *  - Selank: ivHalfLifeMin: 2, ivHalfLifeMax: 3, ivHalfLifeLabel: "~2–3 min"
+ *    added. Sourced from Zolotarev et al. (2006, PMID 16637290), the same paper
+ *    already cited for intranasal data, which characterised in vivo biodegradation
+ *    of tritium-labeled Selank after both intranasal and intravenous administration
+ *    in rats. The note field documents the SC/IV half-life contrast. pkContext
+ *    updated to reference the IV data from that study.
+ *  - DSIP: ivHalfLifeMin: 10, ivHalfLifeMax: 20, ivHalfLifeLabel: "~10–20 min"
+ *    added. Graf & Kastin (1984, Neurosci Biobehav Rev 8:83–93, PMID 6202839) —
+ *    a comprehensive DSIP review compiling preclinical IV pharmacokinetics data —
+ *    added to citations array. The entry previously had no citations (citations: []);
+ *    this is the first indexed citation for the DSIP entry. The pkContext and note
+ *    fields document that the Graf & Kastin review is a secondary source compiling
+ *    primary IV DSIP PK data.
+ *
  * Citation update (May 2026): Gonadorelin proxy citation replaced with primary
  * pharmacokinetics studies:
  *  - Gonadorelin: Conn & Crowley (1991, N Engl J Med, PMID 2467720) was a
@@ -299,8 +319,12 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeLabel: "~15–20 min",
     route: "intranasal",
     pkContext:
-      "Reported plasma half-life of approximately 15–20 minutes following intranasal administration in published pharmacokinetic studies; undergoes rapid enzymatic degradation.",
+      "Reported plasma half-life of approximately 15–20 minutes following intranasal administration in published pharmacokinetic studies; undergoes rapid enzymatic degradation. Zolotarev et al. (2006) characterised in vivo biodegradation of tritium-labeled Selank after both intranasal and intravenous administration in rats, demonstrating rapid proteolytic clearance; intravenous bolus administration yielded a markedly shorter plasma half-life of approximately 2–3 minutes, consistent with direct exposure to plasma endopeptidases without an absorption-phase delay.",
     citations: [pmid("16637290", "Zolotarev et al. (2006) — In vivo and in vitro biodegradation of Selank and related tritium-labeled peptides, Bioorg Khim")],
+    note: "IV route variant: following intravenous administration, plasma half-life is approximately 2–3 minutes (Zolotarev et al. 2006, PMID 16637290), substantially shorter than the ~15–20-minute intranasal half-life. The difference reflects the absence of a mucosal absorption phase, with the heptapeptide subject to immediate plasma endopeptidase activity upon systemic entry.",
+    ivHalfLifeMin: 2,
+    ivHalfLifeMax: 3,
+    ivHalfLifeLabel: "~2–3 min",
   },
   {
     slug: "igf-1-lr3",
@@ -853,9 +877,12 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeLabel: "~20–30 min",
     route: "subcutaneous",
     pkContext:
-      "Delta sleep-inducing peptide (DSIP) plasma half-life is estimated at approximately 20–30 minutes following subcutaneous administration based on rapid enzymatic degradation expected for this nonapeptide (Trp-Ala-Gly-Gly-Asp-Ala-Ser-Gly-Glu) in plasma.",
-    citations: [],
-    note: "No compound-specific PubMed-indexed plasma pharmacokinetics study for DSIP subcutaneous administration was identified during citation audit (April 2026). Half-life estimated from neuropeptide class clearance data.",
+      "Delta sleep-inducing peptide (DSIP) plasma half-life is estimated at approximately 20–30 minutes following subcutaneous administration based on rapid enzymatic degradation of this nonapeptide (Trp-Ala-Gly-Gly-Asp-Ala-Ser-Gly-Glu) in plasma. Intravenous administration of DSIP in preclinical pharmacokinetics studies yields a markedly shorter plasma half-life of approximately 10–20 minutes, as reviewed by Graf & Kastin (1984), reflecting the rapid multi-enzymatic clearance of this endogenous neuropeptide upon direct systemic entry; the SC half-life is extended by the additional absorption phase.",
+    citations: [pmid("6202839", "Graf & Kastin (1984) — Delta-sleep-inducing peptide (DSIP): a review, Neurosci Biobehav Rev")],
+    note: "SC half-life estimated from neuropeptide class clearance data; no compound-specific PubMed-indexed plasma pharmacokinetics study for DSIP subcutaneous administration was identified during citation audit (April 2026). IV route variant: plasma half-life of approximately 10–20 minutes following intravenous administration, as compiled in Graf & Kastin (1984, PMID 6202839), a comprehensive DSIP review covering preclinical pharmacokinetics studies of intravenously administered DSIP. The Graf & Kastin review is a secondary source compiling primary IV DSIP pharmacokinetics data.",
+    ivHalfLifeMin: 10,
+    ivHalfLifeMax: 20,
+    ivHalfLifeLabel: "~10–20 min",
   },
   {
     slug: "vip",
@@ -915,12 +942,15 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeLabel: "~10–20 min",
     route: "subcutaneous",
     pkContext:
-      "Plasma half-life of arginine vasopressin (AVP) following subcutaneous administration is approximately 10–20 minutes based on direct SC plasma concentration measurements. Deyo et al. (1986, Neuroendocrinology 42:260–266, PMID 3951675) measured plasma AVP concentrations in rats after subcutaneous injection of behaviorally effective doses, observing peak plasma levels at approximately 5 minutes post-injection and a biphasic plasma decline over 115 minutes — consistent with a dominant SC absorption-phase half-life in the 10–20-minute range. The neurohypophysial nonapeptide is cleared by plasma vasopressinases, hepatic peptidases, and renal excretion. Vasopressin is structurally analogous to oxytocin (differing at positions 3 and 8) and shares similar enzymatic degradation routes.",
+      "Plasma half-life of arginine vasopressin (AVP) following subcutaneous administration is approximately 10–20 minutes based on direct SC plasma concentration measurements. Deyo et al. (1986, Neuroendocrinology 42:260–266, PMID 3951675) measured plasma AVP concentrations in rats after subcutaneous injection of behaviorally effective doses, observing peak plasma levels at approximately 5 minutes post-injection and a biphasic plasma decline over 115 minutes — consistent with a dominant SC absorption-phase half-life in the 10–20-minute range. The neurohypophysial nonapeptide is cleared by plasma vasopressinases, hepatic peptidases, and renal excretion. Vasopressin is structurally analogous to oxytocin (differing at positions 3 and 8) and shares similar enzymatic degradation routes. Intravenous administration yields a shorter plasma half-life of approximately 5–15 minutes, documented by Baumann & Dingman (1976) in a primary human pharmacokinetics study measuring metabolic clearance rate and volume of distribution during controlled IV infusion of radiolabeled AVP.",
     citations: [
       pmid("1262454", "Baumann & Dingman (1976) — Distribution, blood transport, and degradation of antidiuretic hormone in man, J Clin Invest"),
       pmid("3951675", "Deyo et al. (1986) — Subcutaneous administration of behaviorally effective doses of arginine vasopressin change brain AVP content only in median eminence, Neuroendocrinology"),
     ],
-    note: "IV plasma half-life of arginine vasopressin (~5–15 min) is sourced from Baumann & Dingman (1976, PMID 1262454), a direct primary pharmacokinetic study in humans measuring metabolic clearance rate, plasma half-life, and volume of distribution during controlled intravenous infusion of radiolabeled AVP (J Clin Invest 57:1109–1116). SC half-life (~10–20 min) is now supported by Deyo et al. (1986, PMID 3951675, Neuroendocrinology 42:260–266), a PubMed-indexed animal study that directly measured plasma AVP concentrations after SC injection in rats, reporting peak plasma levels at ~5 min post-injection and biphasic plasma decline over 115 min — replacing the earlier SC estimate derived from the IV data plus a neuropeptide absorption model. The animal model is well-characterised for neuropeptide SC pharmacokinetics.",
+    note: "IV plasma half-life of arginine vasopressin (~5–15 min) is sourced from Baumann & Dingman (1976, PMID 1262454), a direct primary pharmacokinetic study in humans measuring metabolic clearance rate, plasma half-life, and volume of distribution during controlled intravenous infusion of radiolabeled AVP (J Clin Invest 57:1109–1116). SC half-life (~10–20 min) is supported by Deyo et al. (1986, PMID 3951675, Neuroendocrinology 42:260–266), a PubMed-indexed animal study that directly measured plasma AVP concentrations after SC injection in rats, reporting peak plasma levels at ~5 min post-injection and biphasic plasma decline over 115 min. The animal model is well-characterised for neuropeptide SC pharmacokinetics.",
+    ivHalfLifeMin: 5,
+    ivHalfLifeMax: 15,
+    ivHalfLifeLabel: "~5–15 min",
   },
 
   // ─── IGF / growth factors ────────────────────────────────────────────────────

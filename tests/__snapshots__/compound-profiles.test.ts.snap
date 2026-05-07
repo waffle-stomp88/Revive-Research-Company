@@ -91,7 +91,9 @@ exports[`compound-profiles — PK profile snapshots > cjc-1295-w-dac PK fields a
 
 exports[`compound-profiles — PK profile snapshots > dsip PK fields are present and stable 1`] = `
 {
-  "citationIds": [],
+  "citationIds": [
+    "6202839",
+  ],
   "halfLifeLabel": "~20–30 min",
   "halfLifeMax": 30,
   "halfLifeMin": 20,
