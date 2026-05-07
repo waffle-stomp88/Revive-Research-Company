@@ -401,8 +401,10 @@ exports[`compound-profiles — PK profile snapshots > triptorelin PK fields are 
 
 exports[`compound-profiles — PK profile snapshots > vip PK fields are present and stable 1`] = `
 {
-  "citationIds": [],
-  "halfLifeLabel": "~10–30 min (SC estimate)",
+  "citationIds": [
+    "6139325",
+  ],
+  "halfLifeLabel": "~10–30 min (inhaled-route proxy; SC estimate)",
   "halfLifeMax": 30,
   "halfLifeMin": 10,
   "route": "subcutaneous",
