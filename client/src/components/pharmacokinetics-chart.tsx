@@ -1224,7 +1224,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                           <p className="text-[10px] text-muted-foreground/50 uppercase tracking-widest mb-2">Route comparison</p>
                           <div className="flex flex-col gap-1.5">
                             {[
-                              { routeLabel: "SC", halfLifeLabel: c.pk.halfLifeLabel, pct: scPct, color: c.color },
+                              { routeLabel: routeAbbrev(c.pk.route), halfLifeLabel: c.pk.halfLifeLabel, pct: scPct, color: c.color },
                               { routeLabel: "IV", halfLifeLabel: c.pk.ivHalfLifeLabel, pct: ivPct, color: IV_COLOR },
                             ].map(row => (
                               <div key={row.routeLabel} className="flex items-center gap-2" data-testid={`pk-route-bar-${row.routeLabel.toLowerCase()}`}>
@@ -1255,7 +1255,7 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                             ))}
                           </div>
                           <p className="text-[10px] text-muted-foreground/45 mt-1.5 leading-relaxed">
-                            IV administration bypasses the subcutaneous absorption phase, resulting in a shorter observed plasma half-life.
+                            IV administration bypasses the absorption phase, resulting in a shorter observed plasma half-life.
                           </p>
                         </motion.div>
                       );
