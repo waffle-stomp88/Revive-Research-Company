@@ -177,7 +177,14 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
     : null;
 
   const isEstimate = isEstimatedLabel(entry.halfLifeLabel);
-  const isIndirectEvidence = getCitationQuality(entry) === "estimated";
+  const primaryIsIndirect = getCitationQuality(entry) === "estimated";
+  const altIsIndirect = dual && getCitationQuality(entry, "alt") === "estimated";
+  const isIndirectEvidence = primaryIsIndirect || altIsIndirect;
+
+  // When the altRoute is the sole reason the badge is shown, prefer its shortNote.
+  const indirectNote = (!primaryIsIndirect && altIsIndirect && entry.altRoute?.shortNote?.trim())
+    ? (() => { const s = entry.altRoute!.shortNote!.trim(); return s.endsWith(".") ? s : s + "."; })()
+    : getIndirectNote(entry);
 
   const [pkExpanded, setPkExpanded] = useState(false);
   const pkContextRef = useRef<HTMLParagraphElement>(null);
@@ -222,7 +229,7 @@ function CompoundCard({ entry, index }: { entry: HalfLifeEntry; index: number })
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="top" className="max-w-xs text-xs leading-relaxed space-y-1">
-                  <p>{getIndirectNote(entry)}</p>
+                  <p>{indirectNote}</p>
                   <p className="text-muted-foreground/60">Click to read the full context.</p>
                 </TooltipContent>
               </Tooltip>
