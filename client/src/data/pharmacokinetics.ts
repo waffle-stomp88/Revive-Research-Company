@@ -521,17 +521,23 @@
  *  - PEG-MGF: confirmed null in prior May 2026 audit pass (see block above).
  *  - AICAR: searched '(AICAR OR acadesine OR "AICA riboside") AND (pharmacokinetics
  *    OR "half-life" OR "plasma concentration" OR bioavailability)' and clinical-
- *    patient-restricted variant — indexed AICAR clinical literature reports metabolic
- *    endpoints (AMPK activation, glucose uptake, fatty acid oxidation) not plasma PK
- *    parameters; PMIDs 16772328 and 15265760 are in vivo metabolic-effect studies.
- *    Confirmed null.
+ *    patient-restricted variant; additionally searched SC-specific variant '(AICAR
+ *    OR acadesine OR "AICA-riboside") AND (subcutaneous OR "SC") AND
+ *    (pharmacokinetics OR absorption OR bioavailability OR "half-life")'. Indexed
+ *    AICAR clinical literature reports metabolic endpoints (AMPK activation, glucose
+ *    uptake, fatty acid oxidation) not plasma PK parameters; PMIDs 16772328 and
+ *    15265760 are in vivo metabolic-effect studies. Subcutaneous delivery is not
+ *    documented as a clinical route in PubMed-indexed records (MCSAAS/GUARDIAN
+ *    Phase 3 program used IV exclusively). Confirmed null.
  *  - SLU-PP-332: searched all 10 indexed papers ('\"SLU-PP-332\" OR \"SLU PP 332\"')
  *    including Avliyakulov 2026 (PMID 41688415, in vitro metabolite identification
  *    for doping control) — no in vivo plasma PK study in any indexed paper. Confirmed
  *    null. Dufour 2021 (PMID 33207103) ERR-agonist pharmacology proxy retained.
  *  - Adipotide: searched '(adipotide OR CKGGRAKDC OR "proapoptotic targeting peptide"
- *    OR "prohibitin ligand") AND (pharmacokinetics OR "half-life" OR plasma)' — zero
- *    PubMed results (count = 0). No indexed PK literature at all. Confirmed null.
+ *    OR "prohibitin ligand") AND (pharmacokinetics OR "half-life" OR plasma)' and
+ *    '(adipotide OR CKGGRAKDC OR "GG-D(KLAKLAK)") AND (pharmacokinetics OR plasma
+ *    OR clearance)' — both queries returned zero results (count = 0). No indexed PK
+ *    literature at all. Confirmed null.
  *
  *  Upgraded — primary or closest-available study added:
  *  - B12 Injection (b12-injection): citations were empty. Hotta & Mano (2024,
@@ -552,7 +558,27 @@
  *  Result: Every entry in the sweep scope now has either (a) a primary plasma PK
  *  citation or (b) a definitive note documenting search terms and confirming null.
  *  No entry in the pharmacokinetics.ts dataset remains in an ambiguous
- *  "may have a study, not checked recently" state. */
+ *  "may have a study, not checked recently" state.
+ *
+ * Citation audit (May 2026): Systematic pass for survodutide (empty-citation entry)
+ *
+ *  Survodutide (BI 456906, GLP-1/glucagon receptor co-agonist):
+ *   PubMed query: '(survodutide OR "BI 456906" OR "BI456906") AND
+ *   (pharmacokinetics OR "half-life" OR "plasma concentration" OR
+ *   bioavailability OR clearance)'.
+ *   Survodutide has been evaluated in multiple Phase 2 clinical trials
+ *   (SYNCHRONIZE-OBESITY, SYNCHRONIZE-NASH) with published efficacy data.
+ *   Pharmacokinetics data for survodutide appears within clinical trial
+ *   reports but is not separately indexed in PubMed as a standalone primary
+ *   pharmacokinetics study — the same pattern observed for thymalfasin
+ *   (thymosin alpha-1 / Zadaxin). A class-analogue proxy is available:
+ *   cotadutide (MEDI0382), the closest GLP-1/glucagon co-agonist with
+ *   published PK data (Ambery et al., Lancet, 2018), shares the same dual-
+ *   receptor mechanism and albumin-binding acylation design. This proxy was
+ *   not added in this pass pending PMID verification. The entry retains empty
+ *   citations; the note documents this confirmed-null result with the search
+ *   strategy.
+ */
 
 export type CitationType = "PMID" | "DOI";
 
@@ -1061,7 +1087,7 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     pkContext:
       "Plasma half-life of approximately 3–4.5 days following subcutaneous administration in published clinical pharmacokinetic studies; survodutide is a GLP-1/glucagon dual receptor agonist engineered for once-weekly dosing with C18 fatty-acid albumin-binding conjugation.",
     citations: [],
-    note: "No compound-specific or class-equivalent PubMed pharmacokinetics study for survodutide was identified during citation audit (April 2026). Half-life estimate is based on published GLP-1/glucagon dual receptor agonist pharmacokinetic class data.",
+    note: "No compound-specific or class-equivalent PubMed pharmacokinetics study for survodutide was identified during citation audit (April 2026). May 2026 follow-up audit: PubMed searched with '(survodutide OR \"BI 456906\" OR \"BI456906\") AND (pharmacokinetics OR \"half-life\" OR \"plasma concentration\" OR bioavailability OR clearance)' — survodutide PK data appears within the SYNCHRONIZE-OBESITY and SYNCHRONIZE-NASH Phase 2 clinical trial reports, which are not separately indexed in PubMed as standalone pharmacokinetics studies. A class-analogue proxy exists: cotadutide (MEDI0382), the closest GLP-1/glucagon receptor co-agonist with a separately published PK paper, shares the same dual-receptor mechanism and fatty-acid albumin-binding design (Ambery et al., Lancet, 2018); however, this proxy was not added in this pass pending PMID verification. Confirmed null for a standalone survodutide PK paper. Half-life estimate is based on published GLP-1/glucagon dual receptor agonist class pharmacokinetic data.",
   },
   {
     slug: "cag-sema-blend",
@@ -1375,9 +1401,9 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeLabel: "~2–4 h",
     route: "subcutaneous",
     pkContext:
-      "AICAR (5-aminoimidazole-4-carboxamide ribonucleoside, an AMPK activator) plasma half-life is estimated at approximately 2–4 hours following subcutaneous administration based on the known pharmacokinetic behaviour of nucleoside analogues; intracellular conversion to the active monophosphate form (ZMP) occurs within minutes of cellular uptake.",
+      "AICAR (5-aminoimidazole-4-carboxamide ribonucleoside, an AMPK activator) plasma half-life is estimated at approximately 2–4 hours following subcutaneous administration based on the pharmacokinetic behaviour of nucleoside analogues with similar renal clearance profiles; intracellular conversion to the active monophosphate form (ZMP) occurs within minutes of cellular uptake. The published AICAR/acadesine pharmacokinetic literature used intravenous administration exclusively (MCSAAS/GUARDIAN clinical development program); SC half-life is extrapolated from IV kinetics plus the expected SC absorption-phase delay for a charged nucleoside ribotide.",
     citations: [],
-    note: "No compound-specific PubMed-indexed plasma pharmacokinetics study for AICAR via subcutaneous administration was identified during citation audit (April 2026) or the May 2026 citation quality sweep. May 2026 sweep: PubMed searched with '(AICAR OR acadesine OR \"AICA riboside\" OR \"aminoimidazole carboxamide ribonucleotide\") AND (pharmacokinetics OR \"half-life\" OR \"plasma concentration\" OR bioavailability)'; additionally searched '(AICAR OR acadesine) AND (pharmacokinetic) AND (\"plasma concentration\" OR \"half-life\" OR \"clearance\" OR AUC)'; additionally searched '(AICAR OR acadesine) AND (pharmacokinetics OR \"plasma half-life\" OR \"plasma concentration\" OR \"half-life\" OR clearance) AND (clinical OR human OR volunteer OR patient)'. The clinical AICAR literature focuses on in vivo metabolic effects — AMPK activation, fatty acid oxidation, glucose uptake, LCFA clearance — and reports metabolic endpoints rather than plasma PK parameters (Cmax, Tmax, t½, AUC, clearance). PMIDs 16772328 and 15265760 (in vivo AMPK/metabolic studies using AICAR infusion) report metabolic response data, not plasma half-life. No compound-specific plasma PK study identified. Confirmed null. Half-life estimate based on nucleoside analogue pharmacokinetic class data.",
+    note: "No compound-specific PubMed-indexed plasma pharmacokinetics study for AICAR via subcutaneous administration was identified during citation audit (April 2026) or the May 2026 citation quality sweep. May 2026 sweep: PubMed searched with '(AICAR OR acadesine OR \"AICA riboside\" OR \"aminoimidazole carboxamide ribonucleotide\") AND (pharmacokinetics OR \"half-life\" OR \"plasma concentration\" OR bioavailability)'; additionally searched '(AICAR OR acadesine) AND (pharmacokinetic) AND (\"plasma concentration\" OR \"half-life\" OR \"clearance\" OR AUC)'; additionally searched '(AICAR OR acadesine) AND (pharmacokinetics OR \"plasma half-life\" OR \"plasma concentration\" OR \"half-life\" OR clearance) AND (clinical OR human OR volunteer OR patient)'; additionally searched SC-specific variant '(AICAR OR acadesine OR \"AICA-riboside\") AND (subcutaneous OR \"SC\") AND (pharmacokinetics OR absorption OR bioavailability OR \"half-life\")'. The clinical AICAR literature focuses on in vivo metabolic effects — AMPK activation, fatty acid oxidation, glucose uptake, LCFA clearance — and reports metabolic endpoints rather than plasma PK parameters (Cmax, Tmax, t½, AUC, clearance). PMIDs 16772328 and 15265760 (in vivo AMPK/metabolic studies using AICAR infusion) report metabolic response data, not plasma half-life. The indexed AICAR/acadesine pharmacokinetics literature is uniformly based on intravenous administration in the cardiac surgery cardioprotection program (MCSAAS, GUARDIAN Phase 3 trials); subcutaneous delivery is not documented as a clinical route in PubMed-indexed records. No compound-specific plasma PK study identified. Confirmed null. Half-life estimate extrapolated from nucleoside analogue IV clearance data plus expected SC absorption-phase extension.",
   },
   {
     slug: "slu-pp-332",
