@@ -331,8 +331,10 @@ function App() {
       clientId={auth0ClientId || ''}
       authorizationParams={{
         redirect_uri: window.location.origin,
+        scope: "openid profile email offline_access",
       }}
       cacheLocation="localstorage"
+      useRefreshTokens={true}
       onRedirectCallback={(appState) => {
         window.location.replace(appState?.returnTo || window.location.pathname);
       }}
