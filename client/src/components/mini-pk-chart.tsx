@@ -13,6 +13,8 @@ const MINI_CHART = {
 
 export const MINI_PK_COLORS = ["#21d8ff", "#E7FB10", "#22c55e", "#f59e0b", "#a855f7"];
 
+const IV_OVERLAY_COLOR = "#f97316";
+
 export function MiniPKChart({ peptideNames, stackId }: { peptideNames: string[]; stackId: string }) {
   const entries = peptideNames.map((name, i) => ({
     name,
@@ -26,15 +28,25 @@ export function MiniPKChart({ peptideNames, stackId }: { peptideNames: string[];
   const xMaxMin = computeXMax(pksWithData).xMaxMin;
   const hasNonSC = pksWithData.some(pk => isNonSCRoute(pk.route));
   const hasAnySC = pksWithData.some(pk => !isNonSCRoute(pk.route));
+  const hasIVOverlay = pksWithData.some(pk => !!pk.ivHalfLifeLabel);
 
   const curves = entries.flatMap(({ name, pk, color }) => {
     if (!pk) return [];
     const mid = pkMidpoint(pk);
     const pts = buildPKCurve(mid, xMaxMin, MINI_CHART, 120);
-    return [{ name, pk, color, d: ptsToD(pts), isNonSC: isNonSCRoute(pk.route) }];
+    const ivMid = pk.ivHalfLifeLabel
+      ? (pk.ivHalfLifeMin !== undefined && pk.ivHalfLifeMax !== undefined
+          ? (pk.ivHalfLifeMin + pk.ivHalfLifeMax) / 2
+          : pk.ivHalfLifeMin ?? pk.ivHalfLifeMax ?? null)
+      : null;
+    const ivPts = ivMid !== null ? buildPKCurve(ivMid, xMaxMin, MINI_CHART, 120) : null;
+    const ivCurveD = ivPts ? ptsToD(ivPts) : null;
+    return [{ name, pk, color, d: ptsToD(pts), isNonSC: isNonSCRoute(pk.route), ivCurveD }];
   });
 
   if (curves.length === 0) return null;
+
+  const showLegend = (hasNonSC && hasAnySC) || hasIVOverlay;
 
   return (
     <div className="mt-3">
@@ -58,8 +70,23 @@ export function MiniPKChart({ peptideNames, stackId }: { peptideNames: string[];
             strokeOpacity="0.75"
           />
         ))}
+        {curves.map((c) =>
+          c.ivCurveD ? (
+            <path
+              key={`iv-${c.name}`}
+              d={c.ivCurveD}
+              fill="none"
+              stroke={IV_OVERLAY_COLOR}
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeDasharray="3 2"
+              strokeOpacity="0.7"
+            />
+          ) : null
+        )}
       </svg>
-      {hasNonSC && hasAnySC && (
+      {showLegend && (
         <div className="flex items-center justify-end gap-3 mt-1" data-testid={`pk-line-style-key-${stackId}`}>
           <div className="flex items-center gap-1.5">
             <svg width="14" height="4" viewBox="0 0 14 4" aria-hidden="true">
@@ -67,12 +94,22 @@ export function MiniPKChart({ peptideNames, stackId }: { peptideNames: string[];
             </svg>
             <span className="text-[9px] text-white/40 font-medium">SC</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <svg width="14" height="4" viewBox="0 0 14 4" aria-hidden="true">
-              <line x1="0" y1="2" x2="14" y2="2" stroke="#fff" strokeWidth="2" strokeDasharray="4 2" strokeLinecap="round" strokeOpacity="0.45" />
-            </svg>
-            <span className="text-[9px] text-white/40 font-medium">Other route</span>
-          </div>
+          {hasNonSC && hasAnySC && (
+            <div className="flex items-center gap-1.5">
+              <svg width="14" height="4" viewBox="0 0 14 4" aria-hidden="true">
+                <line x1="0" y1="2" x2="14" y2="2" stroke="#fff" strokeWidth="2" strokeDasharray="4 2" strokeLinecap="round" strokeOpacity="0.45" />
+              </svg>
+              <span className="text-[9px] text-white/40 font-medium">Other route</span>
+            </div>
+          )}
+          {hasIVOverlay && (
+            <div className="flex items-center gap-1.5" data-testid={`pk-iv-overlay-key-${stackId}`}>
+              <svg width="14" height="4" viewBox="0 0 14 4" aria-hidden="true">
+                <line x1="0" y1="2" x2="14" y2="2" stroke={IV_OVERLAY_COLOR} strokeWidth="2" strokeDasharray="3 2" strokeLinecap="round" strokeOpacity="0.7" />
+              </svg>
+              <span className="text-[9px] font-medium" style={{ color: IV_OVERLAY_COLOR, opacity: 0.7 }}>IV bolus</span>
+            </div>
+          )}
         </div>
       )}
     </div>
