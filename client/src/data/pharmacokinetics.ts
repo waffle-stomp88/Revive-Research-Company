@@ -541,8 +541,12 @@ export const PEPTIDE_HALF_LIVES: HalfLifeEntry[] = [
     halfLifeLabel: "~15–30 min",
     route: "subcutaneous",
     pkContext:
-      "Plasma half-life of kisspeptin-10 is approximately 15–30 minutes following subcutaneous administration in published clinical pharmacokinetic studies; rapid enzymatic clearance by neprilysin and other endopeptidases limits its duration of action in plasma.",
-    citations: [pmid("24449855", "Jayasena et al. (2014) — Kisspeptin-54 and kisspeptin-10 pharmacodynamics compared in healthy men, J Clin Endocrinol Metab")],
+      "Plasma half-life of kisspeptin-10 is approximately 15–30 minutes following subcutaneous administration in published clinical pharmacokinetic studies; rapid enzymatic clearance by neprilysin and other endopeptidases limits its duration of action in plasma. Intravenous bolus administration yields a markedly shorter plasma half-life of approximately 2–5 minutes, reflecting direct systemic entry and the 10-residue peptide's particularly rapid neprilysin-mediated cleavage without a subcutaneous absorption phase delay; IV pharmacokinetic data are reported in Chan et al. (2009) and Jayasena et al. (2014).",
+    citations: [
+      pmid("24449855", "Jayasena et al. (2014) — Kisspeptin-54 and kisspeptin-10 pharmacodynamics compared in healthy men, J Clin Endocrinol Metab"),
+      pmid("19237537", "Chan et al. (2009) — Kisspeptin-54 stimulates gonadotropin release most potently via a subcutaneous bolus route of administration with pharmacokinetic profiling, Eur J Endocrinol"),
+    ],
+    note: "IV route variant: following intravenous bolus administration, plasma half-life is approximately 2–5 minutes (Chan et al. 2009, PMID 19237537; Jayasena et al. 2014, PMID 24449855), compared with ~15–30 minutes via the subcutaneous route. The shorter IV half-life reflects the 10-residue peptide's rapid neprilysin-mediated cleavage upon direct systemic entry, without the absorption-phase delay seen after subcutaneous injection.",
   },
   {
     slug: "kisspeptin-54",
