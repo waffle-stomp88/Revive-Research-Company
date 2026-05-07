@@ -1553,8 +1553,13 @@ export function PharmacokineticsChart({ peptides, stackId }: { peptides: StackPe
                         </motion.div>
                       );
                     })()}
-                    <p className="text-sm text-muted-foreground leading-relaxed border-t border-border/20 pt-2 mt-2">{c.pk.pkContext}</p>
-                    {c.pk.note && <p className="text-xs text-muted-foreground/70 italic pt-1.5">{c.pk.note}</p>}
+                    <p className="text-sm text-foreground/75 leading-relaxed border-t border-border/20 pt-3 mt-2">{c.pk.pkContext}</p>
+                    {c.pk.note && (
+                      <div className="mt-3 rounded-md overflow-hidden" style={{ background: "rgba(255,255,255,0.035)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                        <p className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground/40 px-2.5 pt-2 pb-1">Search log</p>
+                        <p className="text-[11px] text-muted-foreground/55 italic leading-relaxed px-2.5 pb-2.5">{c.pk.note}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               );
