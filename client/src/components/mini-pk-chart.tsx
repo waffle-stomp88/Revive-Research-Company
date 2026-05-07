@@ -140,17 +140,45 @@ export function MiniPKChart({ peptideNames, stackId }: { peptideNames: string[];
           aria-hidden="true"
           data-testid={`mini-pk-chart-${stackId}`}
         >
+          <defs>
+            <filter id={`neon-glow-${stackId}`} x="-10%" y="-60%" width="120%" height="220%">
+              <feGaussianBlur stdDeviation="2.5" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          {/* Glow layer — wide, soft */}
+          {curves.map((c) => (
+            <path
+              key={`glow-${c.name}`}
+              d={c.d}
+              fill="none"
+              stroke={c.color}
+              strokeWidth="5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeDasharray={c.isNonSC ? "6 3" : undefined}
+              strokeOpacity="0.25"
+              filter={`url(#neon-glow-${stackId})`}
+            />
+          ))}
+
+          {/* Core line — sharp */}
           {curves.map((c) => (
             <path
               key={c.name}
               d={c.d}
               fill="none"
               stroke={c.color}
-              strokeWidth="2.5"
+              strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeDasharray={c.isNonSC ? "6 3" : undefined}
-              strokeOpacity="0.75"
+              strokeOpacity="0.95"
             />
           ))}
           {curves.map((c) =>
